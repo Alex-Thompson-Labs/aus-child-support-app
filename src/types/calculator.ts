@@ -43,6 +43,14 @@ export interface ChildResult {
   liabilityB: number;
 }
 
+export interface CostBracketInfo {
+  minIncome: number;
+  maxIncome: number | null;
+  fixed: number;
+  rate: number;
+  incomeInBracket: number;
+}
+
 export interface CalculationResults {
   year: AssessmentYear;
   ATI_A: number;
@@ -59,6 +67,7 @@ export interface CalculationResults {
   incomePercA: number;
   incomePercB: number;
   totalCost: number;
+  costBracketInfo?: CostBracketInfo;
   childResults: ChildResult[];
   totalLiabilityA: number;
   totalLiabilityB: number;

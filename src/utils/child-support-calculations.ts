@@ -1,6 +1,7 @@
 import { CARE_PERIOD_DAYS, CarePeriod } from './child-support-constants';
 import { costOfChildrenByYear, AgeGroupKey, ChildCountKey } from './cost-of-children-tables';
 import type { AssessmentYear } from './child-support-constants';
+import type { CostBracketInfo } from '../types/calculator';
 
 export interface Child {
   age: 'Under 13' | '13+';
@@ -8,12 +9,23 @@ export interface Child {
   careB: number;
 }
 
+export interface ChildCostResult {
+  cost: number;
+  bracketInfo: CostBracketInfo;
+}
+
 /**
  * Calculates the cost of children based on combined income and tables.
+ * Returns both the cost and the bracket info for display purposes.
  */
-export function getChildCost(year: AssessmentYear, children: Child[], CCSI: number): number {
+export function getChildCost(year: AssessmentYear, children: Child[], CCSI: number): ChildCostResult {
   const numChildren = children.length;
-  if (numChildren === 0) return 0;
+  if (numChildren === 0) {
+    return {
+      cost: 0,
+      bracketInfo: { minIncome: 0, maxIncome: null, fixed: 0, rate: 0, incomeInBracket: 0 }
+    };
+  }
 
   const hasYounger = children.some(c => c.age === 'Under 13');
   const hasOlder = children.some(c => c.age === '13+');
@@ -35,7 +47,10 @@ export function getChildCost(year: AssessmentYear, children: Child[], CCSI: numb
   const table = costOfChildrenByYear[year]?.[groupKey];
   if (!table || !table[childKey]) {
     console.error(`Missing cost table for: ${year}, ${groupKey}, ${childKey}`);
-    return 0;
+    return {
+      cost: 0,
+      bracketInfo: { minIncome: 0, maxIncome: null, fixed: 0, rate: 0, incomeInBracket: 0 }
+    };
   }
 
   const brackets = table[childKey];
@@ -45,13 +60,27 @@ export function getChildCost(year: AssessmentYear, children: Child[], CCSI: numb
 
   if (!bracket) {
     console.error(`No matching bracket found for CCSI: ${CCSI}`);
-    return 0;
+    return {
+      cost: 0,
+      bracketInfo: { minIncome: 0, maxIncome: null, fixed: 0, rate: 0, incomeInBracket: 0 }
+    };
   }
 
   // Apply the formula: Fixed amount + Rate * (Income in bracket)
   // Ensure income doesn't exceed the bracket max (if one exists)
   const incomeInBracket = Math.min(CCSI, bracket.max_income || CCSI) - bracket.min_income;
-  return bracket.fixed + incomeInBracket * bracket.rate;
+  const cost = bracket.fixed + incomeInBracket * bracket.rate;
+
+  return {
+    cost,
+    bracketInfo: {
+      minIncome: bracket.min_income,
+      maxIncome: bracket.max_income,
+      fixed: bracket.fixed,
+      rate: bracket.rate,
+      incomeInBracket,
+    }
+  };
 }
 
 /**

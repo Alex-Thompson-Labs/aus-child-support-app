@@ -177,12 +177,12 @@ export function useCalculator() {
       year,
       relDepChildrenA,
       Math.max(0, ATI_A - SSA)
-    );
+    ).cost;
     const relDepDeductibleB = getChildCost(
       year,
       relDepChildrenB,
       Math.max(0, ATI_B - SSA)
-    );
+    ).cost;
 
     const CSI_A = Math.max(0, ATI_A - relDepDeductibleA - SSA);
     const CSI_B = Math.max(0, ATI_B - relDepDeductibleB - SSA);
@@ -194,7 +194,7 @@ export function useCalculator() {
     const incomePercB = CCSI > 0 ? (CSI_B / CCSI) * 100 : 0;
 
     // Step 5: Calculate Total Cost of Children
-    const totalCost = getChildCost(year, children, CCSI);
+    const { cost: totalCost, bracketInfo: costBracketInfo } = getChildCost(year, children, CCSI);
     const costPerChild = children.length > 0 ? totalCost / children.length : 0;
 
     // Step 6–8: Calculate individual liabilities
@@ -367,6 +367,7 @@ export function useCalculator() {
       incomePercA,
       incomePercB,
       totalCost,
+      costBracketInfo,
       childResults,
       totalLiabilityA,
       totalLiabilityB,

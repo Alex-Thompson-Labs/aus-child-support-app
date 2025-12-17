@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { CalculationResults } from "../types/calculator";
+import { ResultsSimpleExplanation } from "./ResultsSimpleExplanation";
 
 interface CalculatorResultsProps {
   results: CalculationResults;
@@ -27,6 +28,7 @@ const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 export function CalculatorResults({ results }: CalculatorResultsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showDetailedView, setShowDetailedView] = useState(false);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const insets = useSafeAreaInsets();
 
@@ -45,6 +47,10 @@ export function CalculatorResults({ results }: CalculatorResultsProps) {
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const toggleView = () => {
+    setShowDetailedView(!showDetailedView);
   };
 
   // Render the expanded full-screen breakdown content
@@ -79,167 +85,101 @@ export function CalculatorResults({ results }: CalculatorResultsProps) {
         </View>
       </View>
 
-      {/* Cost Breakdown */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Cost of Children</Text>
-
-        <View style={styles.costTotalRow}>
-          <Text style={styles.costTotalLabel}>Total Cost</Text>
-          <Text style={styles.costTotalAmount}>
-            {formatCurrency(results.totalCost)}
+      {/* View Toggle */}
+      <View style={styles.viewToggle}>
+        <Pressable
+          onPress={() => setShowDetailedView(false)}
+          style={[styles.toggleButton, !showDetailedView && styles.toggleButtonActive]}
+        >
+          <Text style={[styles.toggleButtonText, !showDetailedView && styles.toggleButtonTextActive]}>
+            Simple Explanation
           </Text>
-        </View>
+        </Pressable>
+        <Pressable
+          onPress={() => setShowDetailedView(true)}
+          style={[styles.toggleButton, showDetailedView && styles.toggleButtonActive]}
+        >
+          <Text style={[styles.toggleButtonText, showDetailedView && styles.toggleButtonTextActive]}>
+            Technical Breakdown
+          </Text>
+        </Pressable>
+      </View>
 
-        <View style={styles.childrenCostList}>
-          {results.childResults.map((child, i) => (
-            <View key={i} style={styles.childCostItem}>
-              <View style={styles.childCostLeft}>
-                <View style={styles.childCostNumber}>
-                  <Text style={styles.childCostNumberText}>{i + 1}</Text>
+      {/* Show either simple or detailed view */}
+      {!showDetailedView ? (
+        <ResultsSimpleExplanation results={results} />
+      ) : (
+        <>
+          {/* Per-Child Breakdown - Only show when 2+ children */}
+          {results.childResults.length > 1 && (
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>Per-Child Breakdown</Text>
+              <View style={styles.table}>
+                <View style={styles.tableRow}>
+                  <Text style={styles.tableHeader}>Child</Text>
+                  <Text style={[styles.tableHeader, styles.tableRight]}>Care A/B</Text>
+                  <Text style={[styles.tableHeader, styles.tableRight]}>Cost A/B</Text>
+                  <Text style={[styles.tableHeader, styles.tableRight]}>Liability</Text>
                 </View>
-                <View>
-                  <Text style={styles.childCostName}>
-                    Child {i + 1} ({child.age})
-                  </Text>
-                  <Text style={styles.childCostCare}>
-                    Care: A {child.roundedCareA}% | B {child.roundedCareB}%
-                  </Text>
-                </View>
+                {results.childResults.map((child, i) => (
+                  <View key={i} style={styles.tableRow}>
+                    <Text style={styles.tableCell}>
+                      {i + 1}. {child.age}
+                    </Text>
+                    <Text style={[styles.tableCell, styles.tableRight]}>
+                      {child.roundedCareA}% / {child.roundedCareB}%
+                    </Text>
+                    <Text style={[styles.tableCell, styles.tableRight]}>
+                      {child.costPercA.toFixed(0)}% / {child.costPercB.toFixed(0)}%
+                    </Text>
+                    <Text style={[styles.tableCell, styles.tableRight]}>
+                      {child.liabilityA > 0 ? formatCurrency(child.liabilityA) : child.liabilityB > 0 ? formatCurrency(child.liabilityB) : "—"}
+                    </Text>
+                  </View>
+                ))}
               </View>
-              <Text style={styles.childCostAmount}>
-                {formatCurrency(child.costPerChild)}
-              </Text>
-            </View>
-          ))}
-        </View>
-      </View>
-
-      {/* Income Details */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Income Details</Text>
-        <View style={styles.table}>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableHeader}>Metric</Text>
-            <Text style={[styles.tableHeader, styles.tableRight]}>Parent A</Text>
-            <Text style={[styles.tableHeader, styles.tableRight]}>Parent B</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>ATI</Text>
-            <Text style={[styles.tableCell, styles.tableRight]}>{formatCurrencyFull(results.ATI_A)}</Text>
-            <Text style={[styles.tableCell, styles.tableRight]}>{formatCurrencyFull(results.ATI_B)}</Text>
-          </View>
-          {(results.relDepDeductibleA > 0 || results.relDepDeductibleB > 0) && (
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>Less: Rel. Deps</Text>
-              <Text style={[styles.tableCell, styles.tableRight]}>{formatCurrencyFull(results.relDepDeductibleA)}</Text>
-              <Text style={[styles.tableCell, styles.tableRight]}>{formatCurrencyFull(results.relDepDeductibleB)}</Text>
             </View>
           )}
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Less: SSA</Text>
-            <Text style={[styles.tableCell, styles.tableRight]}>{formatCurrencyFull(results.SSA)}</Text>
-            <Text style={[styles.tableCell, styles.tableRight]}>{formatCurrencyFull(results.SSA)}</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, styles.tableCellBold]}>CSI</Text>
-            <Text style={[styles.tableCell, styles.tableCellBold, styles.tableRight]}>{formatCurrencyFull(results.CSI_A)}</Text>
-            <Text style={[styles.tableCell, styles.tableCellBold, styles.tableRight]}>{formatCurrencyFull(results.CSI_B)}</Text>
-          </View>
-        </View>
-      </View>
 
-      {/* Child Details */}
-      {results.childResults.map((child, i) => (
-        <View key={i} style={styles.card}>
-          <Text style={styles.cardTitle}>
-            Child {i + 1} ({child.age})
-          </Text>
-          <View style={styles.table}>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableHeader}>Metric</Text>
-              <Text style={[styles.tableHeader, styles.tableRight]}>Parent A</Text>
-              <Text style={[styles.tableHeader, styles.tableRight]}>Parent B</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>Care %</Text>
-              <Text style={[styles.tableCell, styles.tableRight]}>{child.roundedCareA}%</Text>
-              <Text style={[styles.tableCell, styles.tableRight]}>{child.roundedCareB}%</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>Cost %</Text>
-              <Text style={[styles.tableCell, styles.tableRight]}>{child.costPercA.toFixed(1)}%</Text>
-              <Text style={[styles.tableCell, styles.tableRight]}>{child.costPercB.toFixed(1)}%</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>CS %</Text>
-              <Text style={[styles.tableCell, styles.tableRight]}>{child.childSupportPercA.toFixed(1)}%</Text>
-              <Text style={[styles.tableCell, styles.tableRight]}>{child.childSupportPercB.toFixed(1)}%</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, styles.tableCellBold]}>Liability</Text>
-              <Text style={[styles.tableCell, styles.tableCellBold, styles.tableRight]}>
-                {child.liabilityA > 0 ? formatCurrencyFull(child.liabilityA) : "—"}
-              </Text>
-              <Text style={[styles.tableCell, styles.tableCellBold, styles.tableRight]}>
-                {child.liabilityB > 0 ? formatCurrencyFull(child.liabilityB) : "—"}
-              </Text>
-            </View>
-          </View>
-        </View>
-      ))}
-
-      {/* Final Summary */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Final Summary</Text>
-        <View style={styles.table}>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableHeader}>Metric</Text>
-            <Text style={[styles.tableHeader, styles.tableRight]}>Parent A</Text>
-            <Text style={[styles.tableHeader, styles.tableRight]}>Parent B</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Total Liability</Text>
-            <Text style={[styles.tableCell, styles.tableRight]}>{formatCurrencyFull(results.totalLiabilityA)}</Text>
-            <Text style={[styles.tableCell, styles.tableRight]}>{formatCurrencyFull(results.totalLiabilityB)}</Text>
-          </View>
+          {/* Special Rate Notice - Only show when FAR/MAR applies */}
           {results.rateApplied !== "None" && (
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>Rate Applied</Text>
-              <Text style={[styles.tableCell, styles.tableRight, styles.tableCellSpan]}>{results.rateApplied}</Text>
+            <View style={styles.specialRateCard}>
+              <Text style={styles.specialRateTitle}>Special Rate Applied</Text>
+              <Text style={styles.specialRateValue}>{results.rateApplied}</Text>
+              <Text style={styles.specialRateExplanation}>
+                {results.rateApplied.includes("FAR")
+                  ? "The Fixed Annual Rate applies because income is low but above the minimum threshold."
+                  : "The Minimum Annual Rate applies because income is very low and receiving Centrelink support."}
+              </Text>
             </View>
           )}
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, styles.tableCellBold]}>Final Liability</Text>
-            <Text style={[styles.tableCell, styles.tableCellBold, styles.tableRight]}>{formatCurrencyFull(results.finalLiabilityA)}</Text>
-            <Text style={[styles.tableCell, styles.tableCellBold, styles.tableRight]}>{formatCurrencyFull(results.finalLiabilityB)}</Text>
-          </View>
-        </View>
-      </View>
 
-      {/* Reference Values */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>
-          Reference Values ({results.year})
-        </Text>
-        <View style={styles.referenceGrid}>
-          <View style={styles.referenceRow}>
-            <Text style={styles.referenceLabel}>Self-Support Amount (SSA)</Text>
-            <Text style={styles.referenceValue}>{formatCurrencyFull(results.SSA)}</Text>
+          {/* Reference Values */}
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>
+              Reference Values ({results.year})
+            </Text>
+            <View style={styles.referenceGrid}>
+              <View style={styles.referenceRow}>
+                <Text style={styles.referenceLabel}>Self-Support Amount (SSA)</Text>
+                <Text style={styles.referenceValue}>{formatCurrency(results.SSA)}</Text>
+              </View>
+              <View style={styles.referenceRow}>
+                <Text style={styles.referenceLabel}>Fixed Annual Rate (FAR)</Text>
+                <Text style={styles.referenceValue}>{formatCurrency(results.FAR)}</Text>
+              </View>
+              <View style={styles.referenceRow}>
+                <Text style={styles.referenceLabel}>Min Annual Rate (MAR)</Text>
+                <Text style={styles.referenceValue}>{formatCurrency(results.MAR)}</Text>
+              </View>
+              <View style={styles.referenceRow}>
+                <Text style={styles.referenceLabel}>Combined CSI</Text>
+                <Text style={styles.referenceValue}>{formatCurrency(results.CCSI)}</Text>
+              </View>
+            </View>
           </View>
-          <View style={styles.referenceRow}>
-            <Text style={styles.referenceLabel}>Fixed Annual Rate (FAR)</Text>
-            <Text style={styles.referenceValue}>{formatCurrencyFull(results.FAR)}</Text>
-          </View>
-          <View style={styles.referenceRow}>
-            <Text style={styles.referenceLabel}>Min Annual Rate (MAR)</Text>
-            <Text style={styles.referenceValue}>{formatCurrencyFull(results.MAR)}</Text>
-          </View>
-          <View style={styles.referenceRow}>
-            <Text style={styles.referenceLabel}>Combined CSI</Text>
-            <Text style={styles.referenceValue}>{formatCurrencyFull(results.CCSI)}</Text>
-          </View>
-        </View>
-      </View>
+        </>
+      )}
     </ScrollView>
   );
 
@@ -665,6 +605,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#ffffff",
   },
+  tableCellWithHelp: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
   tableCellBold: {
     fontWeight: "500",
   },
@@ -685,12 +631,72 @@ const styles = StyleSheet.create({
   referenceLabel: {
     fontSize: 14,
     color: "#94a3b8", // slate-400
+  },
+  referenceLabelContainer: {
     flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
   },
   referenceValue: {
     fontSize: 14,
     color: "#ffffff",
     textAlign: "right",
+  },
+
+  // Special rate card
+  specialRateCard: {
+    backgroundColor: "#fef3c7", // amber-100
+    borderRadius: 12,
+    padding: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: "#f59e0b", // amber-500
+  },
+  specialRateTitle: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#92400e", // amber-800
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  specialRateValue: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#78350f", // amber-900
+    marginBottom: 8,
+  },
+  specialRateExplanation: {
+    fontSize: 13,
+    color: "#92400e", // amber-800
+    lineHeight: 18,
+  },
+
+  // View toggle styles
+  viewToggle: {
+    flexDirection: "row",
+    backgroundColor: "#1e293b", // slate-800
+    borderRadius: 8,
+    padding: 4,
+    gap: 4,
+  },
+  toggleButton: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    alignItems: "center",
+  },
+  toggleButtonActive: {
+    backgroundColor: "#2563eb", // blue-600
+  },
+  toggleButtonText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#94a3b8", // slate-400
+  },
+  toggleButtonTextActive: {
+    color: "#ffffff",
   },
 });
 
