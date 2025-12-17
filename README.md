@@ -1,50 +1,160 @@
-# Welcome to your Expo app 👋
+# Child Support Calculator - B2B Lead Generation App 🚀
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Australian child support calculator with lawyer lead generation**  
+React Native (Expo) • iOS • Android • Web
 
-## Get started
+---
 
-1. Install dependencies
+## 🎯 What This Is
 
-   ```bash
-   npm install
-   ```
+A **free calculator** that helps Australian parents calculate child support payments, with built-in **complexity detection** that connects high-value cases to family law firms.
 
-2. Start the app
+**Business Model:** B2B lead generation (lawyers pay $20-50 per qualified lead)  
+**Target Revenue:** $3K-$300K/year  
+**Current Phase:** Phase 1 - Validation (Week 1-2)
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+## 🚀 Quick Start
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+### 1. Install Dependencies
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2. Set Up Environment
+```bash
+# Copy environment template
+cp .env.example .env
 
-## Learn more
+# Add your Posthog API key (sign up at https://posthog.com)
+# Edit .env and add: POSTHOG_API_KEY=your_key_here
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### 3. Start Development
+```bash
+npm start          # Start Expo dev server
+npm run ios        # iOS simulator
+npm run android    # Android emulator
+npm run web        # Web browser
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+## 📚 Documentation
 
-Join our community of developers creating universal apps.
+**Start here:**
+- **[guides/phase1/CHECKLIST.md](guides/phase1/CHECKLIST.md)** - This week's tasks (Day 1-7)
+- **[guides/phase1/TESTING.md](guides/phase1/TESTING.md)** - Test before launching
+- **[guides/TROUBLESHOOTING.md](guides/TROUBLESHOOTING.md)** - Common issues & fixes
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+**Strategic planning:**
+- [docs/MASTER_PLAN.md](docs/MASTER_PLAN.md) - Complete implementation roadmap
+
+**Technical reference:**
+- [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) - Colors, spacing, patterns
+- [docs/CLAUDE.md](docs/CLAUDE.md) - Architecture & AI guidance
+- [docs/CHANGELOG.md](docs/CHANGELOG.md) - Change history
+
+---
+
+## 🏗️ Project Structure
+
+```
+csc/
+├── src/
+│   ├── components/       # React components
+│   ├── screens/          # Screen components
+│   ├── hooks/            # Custom hooks (useCalculator)
+│   ├── utils/            # Business logic & calculations
+│   └── types/            # TypeScript types
+├── docs/                 # Documentation (5 essential files)
+├── .env.example          # Environment variables template
+└── PHASE1_CHECKLIST.md   # This week's work
+```
+
+---
+
+## 🎯 Current Phase: Validation (Week 1-2)
+
+**Goal:** Prove parents click "Get Legal Help" buttons  
+**Success Metric:** >2% click-through rate
+
+### This Week's Tasks:
+1. ✅ Environment setup (.env created)
+2. ⏳ Add Posthog analytics
+3. ⏳ Implement complexity triggers
+4. ⏳ Build lawyer alert UI
+5. ⏳ Create inquiry form
+6. ⏳ Test with 100+ users
+
+**See [guides/phase1/CHECKLIST.md](guides/phase1/CHECKLIST.md) for detailed steps.**
+
+---
+
+## 🔧 Available Scripts
+
+```bash
+npm start           # Start Expo dev server
+npm run dev         # Start with cleared cache
+npm run ios         # Run on iOS simulator
+npm run android     # Run on Android emulator
+npm run web         # Run in web browser
+npm run lint        # Run ESLint
+npm run type-check  # TypeScript validation
+```
+
+---
+
+## 🧪 Testing
+
+Before recruiting users:
+1. Complete [guides/phase1/TESTING.md](guides/phase1/TESTING.md)
+2. Verify all analytics events fire
+3. Test on both iOS and Android
+4. Check form submissions work
+
+---
+
+## 🆘 Help
+
+**Issues? Check:**
+1. [guides/TROUBLESHOOTING.md](guides/TROUBLESHOOTING.md) - Common fixes
+2. [docs/MASTER_PLAN.md](docs/MASTER_PLAN.md) - Code snippets in Appendix A
+3. [docs/CLAUDE.md](docs/CLAUDE.md) - Architecture reference
+
+**Still stuck?** Check if `.env` is set up and Expo cache is cleared (`npm run dev`)
+
+---
+
+## 📊 Phase Progress
+
+- [x] Phase 0: Foundation ✅ (Calculator built, docs organized)
+- [ ] Phase 1: Validation 🔄 (THIS WEEK - fake door test)
+- [ ] Phase 2: Pilot (Month 2-3 - recruit 2-3 law firms)
+- [ ] Phase 3: Monetization (Month 4-6 - first paying customers)
+- [ ] Phase 4: Scale (Month 7-12 - 20+ firms, $5K-10K MRR)
+
+---
+
+## 🎨 Tech Stack
+
+- **Framework:** React Native 0.81.5
+- **Build Tool:** Expo 54
+- **Navigation:** Expo Router (file-based)
+- **Language:** TypeScript 5.9
+- **Styling:** React Native StyleSheet (slate/blue theme)
+- **Analytics:** Posthog (Phase 1+)
+- **Payments:** Stripe (Phase 3+)
+
+---
+
+## 🚀 Next Steps
+
+1. Read [guides/phase1/CHECKLIST.md](guides/phase1/CHECKLIST.md)
+2. Sign up for Posthog and add API key to `.env`
+3. Follow Day 1-2 tasks (analytics + triggers)
+4. Test with [guides/phase1/TESTING.md](guides/phase1/TESTING.md)
+5. Launch to 100+ test users by end of week
+
+**Let's build this! 🔥**

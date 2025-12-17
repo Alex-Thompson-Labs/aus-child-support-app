@@ -1,0 +1,678 @@
+# Phase 1: Validation - Implementation Guide
+
+**Goal:** Prove parents click "Get Legal Help" buttons  
+**Success Metric:** >2% click-through rate on complexity alerts
+
+---
+
+## 🎯 How to Use This Guide
+
+**Work at YOUR pace.** Complete tasks in order, but don't rush. Each task has:
+- ✅ Clear outcome (what "done" looks like)
+- 🔥 Difficulty rating (Easy/Medium/Hard for a React Native beginner)
+- ⏱️ Estimated time (with AI assistance)
+- 💡 Tips for using Claude Code effectively
+- 🐛 Common pitfalls to avoid
+
+**When stuck:** Check `guides/TROUBLESHOOTING.md` or ask Claude Code for help.
+
+---
+
+## 📋 Tasks (Complete in Order)
+
+### ✅ TASK 0: Environment Setup
+**Difficulty:** 🟢 Easy (mostly admin work)  
+**Time:** 30-60 minutes  
+**Prerequisites:** None
+
+**Outcome:** 
+- Posthog account created
+- API key added to `.env` file
+- `posthog-react-native` installed
+- App still runs without errors
+
+**Steps:**
+1. Sign up at https://posthog.com (free tier)
+2. Create a new project (name it "Child Support Calculator")
+3. Copy the API key from project settings
+4. Open `.env` file and add: `POSTHOG_API_KEY=your_key_here`
+5. Install package: `npm install posthog-react-native`
+6. Test app runs: `npm run dev` (the `-c` flag clears cache)
+
+**Claude Code Prompt:**
+```
+I've installed posthog-react-native. Show me how to initialize it in my React Native app. 
+My API key is in .env as POSTHOG_API_KEY.
+```
+
+**Done when:**
+- [ ] App starts without errors
+- [ ] No TypeScript errors in VS Code
+- [ ] You can see the Posthog dashboard
+
+**Common Issues:**
+- If `.env` not loading → install `react-native-dotenv` (see TROUBLESHOOTING.md)
+- If app won't start → run `npm run dev` to clear cache
+
+---
+
+### ✅ TASK 1: Analytics Wrapper
+**Difficulty:** 🟢 Easy (mostly copy-paste from AI)  
+**Time:** 30-60 minutes  
+**Prerequisites:** Task 0 complete
+
+**Outcome:**
+- `src/utils/analytics.ts` exists and works
+- Can call `Analytics.track('test_event')` from anywhere
+- Events show up in Posthog dashboard within 1 minute
+
+**What you're building:**
+A simple wrapper around Posthog so you don't have to import Posthog directly everywhere.
+
+**Claude Code Prompt:**
+```
+Create src/utils/analytics.ts that:
+1. Imports Posthog from 'posthog-react-native'
+2. Initializes with POSTHOG_API_KEY from @env
+3. Exports an Analytics object with methods:
+   - track(event, properties)
+   - identify(userId, traits)
+   - screen(name, properties)
+4. Use TypeScript for all types
+5. Add console.log for debugging
+```
+
+**Test it works:**
+Add to `src/screens/CalculatorScreen.tsx` temporarily:
+```typescript
+import { Analytics } from '@/utils/analytics';
+
+// In component, add:
+useEffect(() => {
+  Analytics.track('screen_viewed', { screen: 'Calculator' });
+}, []);
+```
+
+**Done when:**
+- [ ] File created with no TypeScript errors
+- [ ] Event appears in Posthog dashboard
+- [ ] Console.log shows event being tracked
+
+**Common Issues:**
+- "Cannot find module '@env'" → Check TROUBLESHOOTING.md section on env variables
+- Events not showing in Posthog → Wait 1-2 minutes, Posthog has delay
+- TypeScript errors → Ask Claude Code to fix them
+
+**Beginner Tips:**
+- Don't worry about understanding Posthog internals
+- The wrapper keeps your code clean
+- Console.log is your friend - keep it for now
+
+---
+
+### ✅ TASK 2: Complexity Detection Logic
+**Difficulty:** 🟡 Medium (logic complexity, but AI helps)  
+**Time:** 2-3 hours  
+**Prerequisites:** Task 1 complete
+
+**Outcome:**
+- `src/utils/complexity-detection.ts` has 5 working triggers
+- Function returns true/false for each trigger
+- You can test with sample data in a simple script
+
+**What you're building:**
+Logic that detects when a calculation is "complex" enough to show a lawyer alert.
+
+**Claude Code Strategy:**
+Break this into small pieces. Don't ask AI to do it all at once.
+
+**Step 2a: Create the types (15 min)**
+```
+Create src/utils/complexity-detection.ts with:
+1. ComplexityFlags interface (6 boolean flags: highVariance, highValue, etc.)
+2. AlertConfig interface (title, message, urgency, buttonText)
+3. Stub functions that return default values
+4. Add JSDoc comments explaining each flag
+```
+
+**Step 2b: Implement HIGH VALUE trigger (30 min)**
+```
+In complexity-detection.ts, implement detectComplexity():
+- Check if results.finalPaymentAmount > 15000
+- Return true for highValue flag
+- Write a test case in comments showing it works
+```
+
+**Step 2c: Implement ALERT CONFIG (30 min)**
+```
+In complexity-detection.ts, implement getAlertConfig():
+- If highValue flag is true, return AlertConfig with:
+  - title: "💰 High-Value Case"
+  - message: "Your liability is $X/year. Cases over $15k benefit from verification."
+  - urgency: 'medium'
+  - buttonText: "Request Review"
+- Return null if no flags are true
+```
+
+**Step 2d: Add remaining triggers (60 min)**
+Do one at a time with Claude Code:
+- courtDateUrgent (highest priority)
+- highVariance (requires calculating alternate scenario)
+- specialCircumstances (check formData for flags)
+- sharedCareDispute (care between 35-65%)
+
+**Test each trigger:**
+Create a test file or add to comments:
+```typescript
+// Test high value
+const testResults = { finalPaymentAmount: 18000, ... };
+const flags = detectComplexity(testResults, mockFormData);
+console.log('High value trigger:', flags.highValue); // Should be true
+```
+
+**Done when:**
+- [ ] All 5 triggers implemented
+- [ ] getAlertConfig returns correct message for each trigger
+- [ ] You've manually tested each trigger with console.log
+- [ ] No TypeScript errors
+
+**Common Issues:**
+- "How do I calculate care variance?" → See MASTER_PLAN.md Appendix A for logic
+- Triggers not firing → console.log the flags to debug
+- TypeScript errors on formData → Add proper type from calculator.ts
+
+**Beginner Tips:**
+- **Test as you go** - don't build everything then test
+- **Use console.log liberally** - it's not cheating, it's debugging
+- **One trigger at a time** - Don't try to do all 5 at once
+- **Copy existing code** - Look at how useCalculator.ts handles formData
+
+**Why this is Medium difficulty:**
+- Multiple conditions to check
+- Need to understand the business logic (when to show alerts)
+- Requires testing with different scenarios
+- But AI can write most of the code if you break it down
+
+---
+
+### ✅ TASK 3: Lawyer Alert Component
+**Difficulty:** 🟢 Easy (mostly styling)  
+**Time:** 1-2 hours  
+**Prerequisites:** Task 2 complete
+
+**Outcome:**
+- `src/components/LawyerAlert.tsx` displays nicely
+- Matches design system colors (slate/blue)
+- Button is tappable and tracks analytics
+- Works on both iOS and Android
+
+**What you're building:**
+A visual alert card that shows when complexity is detected.
+
+**Claude Code Prompt:**
+```
+Create src/components/LawyerAlert.tsx:
+1. Props: title, message, urgency, buttonText, onPress
+2. Styled with React Native StyleSheet (NO Tailwind)
+3. Colors from our design system:
+   - Background: #1e293b (slate-800)
+   - Border: #334155 (slate-700), or #ef4444 (red) if urgency='high'
+   - Title: #ffffff, 18px, weight 600
+   - Message: #94a3b8 (slate-400), 14px
+   - Button: #2563eb (blue-600), or #ef4444 if urgent
+4. Add subtle border-radius: 12px
+5. Padding: 20px
+6. When button pressed, call Analytics.track before onPress
+```
+
+**Testing:**
+Add to CalculatorResults.tsx temporarily:
+```typescript
+<LawyerAlert
+  title="Test Alert"
+  message="This is a test"
+  urgency="high"
+  buttonText="Click Me"
+  onPress={() => console.log('Clicked!')}
+/>
+```
+
+**Done when:**
+- [ ] Component renders without errors
+- [ ] Looks good on iPhone simulator
+- [ ] Looks good on Android emulator (if you have one)
+- [ ] Button click logs to console
+- [ ] Colors match design system
+
+**Common Issues:**
+- Button not clickable → Use Pressable, not TouchableOpacity
+- Styling looks wrong → Check you're using StyleSheet.create, not CSS
+- Can't import colors → Just use hex codes directly
+
+**Beginner Tips:**
+- **Visual debugging:** Change background colors to bright pink/green to see layout
+- **Test on real device:** Looks different than simulator
+- **Copy existing patterns:** Look at HelpTooltip.tsx for styling examples
+- **Don't perfectionist the styling yet:** Get it working, polish later
+
+---
+
+### ✅ TASK 4: Integrate Alert into Results
+**Difficulty:** 🟡 Medium (integration complexity)  
+**Time:** 1-2 hours  
+**Prerequisites:** Tasks 1, 2, 3 complete
+
+**Outcome:**
+- CalculatorResults shows LawyerAlert when triggers fire
+- Alert has correct message based on complexity
+- Button click tracks analytics
+- Alert hidden when no triggers
+
+**What you're doing:**
+Connecting complexity detection → alert display → analytics tracking.
+
+**Claude Code Strategy:**
+Work in CalculatorResults.tsx step by step.
+
+**Step 4a: Import and detect (15 min)**
+```
+In src/components/CalculatorResults.tsx:
+1. Import detectComplexity and getAlertConfig
+2. Import LawyerAlert component
+3. Import Analytics
+4. After calculating results, call:
+   const flags = detectComplexity(results, formData);
+   const alertConfig = getAlertConfig(flags, results);
+5. Console.log flags and alertConfig to verify
+```
+
+**Step 4b: Render conditionally (15 min)**
+```
+In the JSX, after the results summary, add:
+{alertConfig && (
+  <LawyerAlert
+    title={alertConfig.title}
+    message={alertConfig.message}
+    urgency={alertConfig.urgency}
+    buttonText={alertConfig.buttonText}
+    onPress={() => {
+      Analytics.track('lawyer_button_clicked', {
+        trigger: Object.keys(flags).find(k => flags[k]),
+        liability: results.finalPaymentAmount
+      });
+      // TODO: Navigate to inquiry form (next task)
+      console.log('Navigate to form');
+    }}
+  />
+)}
+```
+
+**Step 4c: Test different scenarios (30-60 min)**
+Test by changing inputs to trigger each alert:
+- High value: Set income to >$150k
+- Court date: Add a form field (or fake it in formData)
+- Variance: Change care nights
+
+**Done when:**
+- [ ] Alert shows for high value cases
+- [ ] Alert hidden for normal cases
+- [ ] Button click logged in Posthog
+- [ ] Console shows which trigger fired
+- [ ] No crashes or TypeScript errors
+
+**Common Issues:**
+- Alert always showing → Check getAlertConfig logic, should return null sometimes
+- Alert never showing → Console.log flags to see which are true
+- TypeScript errors on formData → Make sure types match calculator.ts
+
+**Beginner Tips:**
+- **Test with extreme values** - $1M income, 14 kids, etc.
+- **Watch Posthog in real-time** - Keep dashboard open
+- **Don't worry about navigation yet** - Just console.log for now
+- **This is where it gets real** - You're connecting multiple systems!
+
+**Why this is Medium difficulty:**
+- Need to understand React component lifecycle
+- Passing data between components
+- Conditional rendering logic
+- But if Tasks 1-3 work, this is mostly glue code
+
+---
+
+### ✅ TASK 5: Inquiry Form Screen
+**Difficulty:** 🔴 Hard (lots of moving parts)  
+**Time:** 3-5 hours  
+**Prerequisites:** Tasks 1-4 complete
+
+**Outcome:**
+- LawyerInquiryScreen navigable from calculator
+- Form collects: name, email, phone, message
+- Consent checkbox required
+- Calculation summary displayed (read-only)
+- Form validates before submission
+- Success message after submit
+
+**What you're building:**
+A complete form screen where parents can request legal help.
+
+**Claude Code Strategy:**
+This is complex - break into tiny pieces.
+
+**Step 5a: Navigation setup (30-60 min)**
+```
+1. Add LawyerInquiryScreen to app router
+2. Make it accessible via navigation.navigate('LawyerInquiry')
+3. Test you can navigate to blank screen and back
+```
+
+Ask Claude Code:
+```
+I need to add a new screen 'LawyerInquiry' to my Expo Router app.
+Currently using file-based routing in /app directory.
+Show me:
+1. Where to create the screen file
+2. How to navigate to it from another screen
+3. How to pass calculation data as route params
+```
+
+**Step 5b: Form UI (60-90 min)**
+```
+Build the form layout in LawyerInquiryScreen:
+1. ScrollView wrapper (for keyboard)
+2. TextInput for name (required)
+3. TextInput for email (required, keyboard type email)
+4. TextInput for phone (optional, keyboard type phone)
+5. TextInput for message (multiline, 4 lines)
+6. Checkbox for consent (required)
+7. Submit button
+8. Style like design system (slate colors)
+```
+
+Don't worry about functionality yet - just UI.
+
+**Step 5c: Form state (30 min)**
+```
+Add useState for each field:
+- name, setName
+- email, setEmail  
+- phone, setPhone
+- message, setMessage
+- consent, setConsent
+
+Wire up onChange handlers
+```
+
+**Step 5d: Validation (30-45 min)**
+```
+Create handleSubmit function that:
+1. Checks name.trim().length > 0
+2. Checks email.includes('@')
+3. Checks consent === true
+4. Shows alert if validation fails
+5. Proceeds to submit if valid
+```
+
+**Step 5e: Display calculation summary (30 min)**
+```
+Access route params to get calculation data
+Display read-only summary:
+- Annual liability
+- Income split  
+- Care arrangement
+- Number of children
+Style as a card above the form
+```
+
+**Step 5f: Form submission (60-90 min)**
+```
+In handleSubmit, after validation:
+1. Create lead data object
+2. Track analytics: inquiry_form_submitted
+3. For now: console.log the full lead data (Phase 2: send email)
+4. Show success message
+5. Clear form / navigate back
+```
+
+**Done when:**
+- [ ] Can navigate from alert to form
+- [ ] All fields accept input
+- [ ] Validation blocks invalid submissions
+- [ ] Calculation summary displays correctly
+- [ ] Submit logs data to console
+- [ ] Analytics tracks submission
+- [ ] Success message appears
+- [ ] Tested on iOS and Android
+
+**Common Issues:**
+- Keyboard covers input → Use KeyboardAvoidingView (already in stub)
+- Navigation not working → Check router setup
+- Validation too strict → Test with real data
+- Styling breaks on Android → Test early and often
+
+**Beginner Tips:**
+- **This will take the longest** - Don't rush it
+- **Test on real device** - Keyboard behavior differs
+- **Use Expo Go app** - Easier than simulator for forms
+- **One field at a time** - Get name working perfectly before adding email
+- **Ask Claude Code for debugging help** - "Why isn't my form submitting?"
+- **Check existing React Native forms** - Search GitHub for examples
+
+**Why this is Hard:**
+- Navigation setup (new concept)
+- State management (6+ pieces of state)
+- Validation logic
+- Keyboard handling (iOS vs Android differences)
+- Multiple moving parts that must work together
+- Styling forms is tedious
+
+**When you get frustrated:**
+- Take breaks
+- Test smaller pieces
+- Ask Claude Code specific questions
+- Remember: This is the hardest task in Phase 1
+
+---
+
+### ✅ TASK 6: End-to-End Testing
+**Difficulty:** 🟡 Medium (tedious but important)  
+**Time:** 2-3 hours  
+**Prerequisites:** Tasks 0-5 complete
+
+**Outcome:**
+- Complete flow tested: calculation → alert → click → form → submit
+- Tested on iOS (simulator or device)
+- Tested on Android (if possible)
+- All analytics events verified in Posthog
+- No crashes or errors
+
+**What you're doing:**
+Making sure everything works together before real users touch it.
+
+**Use the testing checklist:**
+Open `guides/phase1/TESTING.md` and go through it systematically.
+
+**Key things to test:**
+1. **Complexity detection:**
+   - High value case shows alert ✓
+   - Normal case shows no alert ✓
+   - Each trigger type works ✓
+
+2. **Alert UI:**
+   - Button tappable ✓
+   - Analytics fires on click ✓
+   - Navigation works ✓
+
+3. **Form:**
+   - All inputs work ✓
+   - Validation catches errors ✓
+   - Submission succeeds ✓
+   - Success message shows ✓
+
+4. **Analytics:**
+   - calculation_completed ✓
+   - complexity_alert_shown ✓
+   - lawyer_button_clicked ✓
+   - inquiry_form_submitted ✓
+
+**Done when:**
+- [ ] Checklist 100% complete
+- [ ] No crashes found
+- [ ] All analytics events visible in Posthog
+- [ ] Tested on at least iOS (Android bonus)
+- [ ] Form data logs correctly
+
+**Common Issues:**
+- Crashes on specific inputs → Add error handling
+- Analytics not tracking → Check Posthog API key
+- Form won't submit → Check validation logic
+
+**Beginner Tips:**
+- **Be thorough** - Users will find bugs you miss
+- **Test extreme cases** - $0 income, 20 kids, special characters in name
+- **Use real test data** - Don't use "test test test"
+- **Keep notes** - Write down any bugs to fix
+
+---
+
+### ✅ TASK 7: Launch to Test Users
+**Difficulty:** 🟢 Easy (but requires patience)  
+**Time:** 3-5 hours spread over a week  
+**Prerequisites:** Task 6 complete
+
+**Outcome:**
+- App posted in 3-5 Australian forums/groups
+- 100+ parents have tested the calculator
+- Analytics shows click-through rate
+- You have enough data to evaluate success
+
+**What you're doing:**
+Getting real users to test your app and click buttons.
+
+**Where to post:**
+1. Reddit: r/AusFinance, r/AusLegal (careful with rules)
+2. Facebook: Australian parenting groups
+3. Whirlpool forums (Australian tech community)
+4. Australian family law forums
+5. Your personal network (ask friends to share)
+
+**Post template:**
+```
+Title: "Free Australian Child Support Calculator (no ads, no signup)"
+
+Body:
+Hi everyone, I built a free child support calculator for separated parents.
+
+Unlike the Services Australia website, it:
+- Shows WHY you pay what you pay (simple explanations)
+- Lets you test "what if" scenarios
+- Works on your phone (native app)
+
+100% free, no ads, no data collection. Just trying to help parents understand a confusing system.
+
+Would love feedback from anyone navigating child support!
+
+[Link to download or TestFlight]
+```
+
+**Monitoring:**
+- Check Posthog daily
+- Respond to any feedback/questions
+- Note which triggers fire most often
+
+**Done when:**
+- [ ] Posted in 3+ places
+- [ ] 100+ calculations completed (Posthog)
+- [ ] 5+ button clicks (Posthog)
+- [ ] Click-through rate calculated
+
+**Success Metrics:**
+- **>2% CTR** = Success! Proceed to Phase 2
+- **1-2% CTR** = Borderline, iterate on messaging
+- **<1% CTR** = Need to improve triggers or alerts
+
+**Beginner Tips:**
+- **Don't spam** - Read forum rules first
+- **Be helpful** - Answer questions, engage
+- **Track manually** - Keep a spreadsheet of where you posted
+- **Be patient** - Takes 3-5 days to get enough users
+
+---
+
+## 🎓 Learning Resources
+
+**When stuck on React Native:**
+- React Native docs: https://reactnative.dev
+- Expo docs: https://docs.expo.dev
+- Search: "[your error] react native" on Stack Overflow
+
+**When stuck on TypeScript:**
+- TypeScript handbook: https://www.typescriptlang.org/docs/handbook/intro.html
+- Ask Claude Code: "Explain this TypeScript error"
+
+**When stuck on Posthog:**
+- Posthog docs: https://posthog.com/docs
+- Check event debugger in Posthog dashboard
+
+**When stuck in general:**
+1. Check `guides/TROUBLESHOOTING.md`
+2. Ask Claude Code specific questions
+3. Google the exact error message
+4. Take a break and come back fresh
+
+---
+
+## 💡 Tips for Using Claude Code
+
+**Good prompts:**
+- "Create X that does Y, Z. Use TypeScript. Follow my design system colors."
+- "I'm getting this error: [paste error]. What's wrong?"
+- "Review this code and suggest improvements for a beginner."
+
+**Bad prompts:**
+- "Make the whole app"
+- "Fix it" (too vague)
+- "Do everything in Task 5"
+
+**Best practice:**
+- Break big tasks into small prompts
+- Show Claude Code your existing code for context
+- Ask for explanations: "Why does this work?"
+- Request beginner-friendly code: "Add comments explaining each step"
+
+---
+
+## 📊 Progress Tracking
+
+Mark tasks complete as you finish them:
+
+- [ ] Task 0: Environment Setup (Easy, 30-60 min)
+- [ ] Task 1: Analytics Wrapper (Easy, 30-60 min)
+- [ ] Task 2: Complexity Detection (Medium, 2-3 hours)
+- [ ] Task 3: Alert Component (Easy, 1-2 hours)
+- [ ] Task 4: Integrate Alert (Medium, 1-2 hours)
+- [ ] Task 5: Inquiry Form (Hard, 3-5 hours)
+- [ ] Task 6: Testing (Medium, 2-3 hours)
+- [ ] Task 7: Launch (Easy, 3-5 hours over a week)
+
+**Total Time Estimate:** 15-25 hours depending on debugging
+
+**At your pace:** Could be 1 week (intense) or 3-4 weeks (relaxed)
+
+---
+
+## 🎯 What Success Looks Like
+
+**End of Phase 1:**
+- ✅ App detects complex cases
+- ✅ Shows compelling alerts
+- ✅ Parents click "Get Legal Help"
+- ✅ Form collects their info
+- ✅ Analytics proves >2% click-through
+- ✅ You're confident to recruit lawyers
+
+**Then:**
+Tell me "Phase 1 complete!" and I'll create Phase 2 guides.
+
+---
+
+**Remember:** You're learning as you go. Progress > perfection. 🚀

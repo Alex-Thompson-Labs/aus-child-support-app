@@ -15,7 +15,6 @@ expo-env.d.ts
 *.jks
 *.p8
 *.p12
-*.key
 *.mobileprovision
 
 # Metro
@@ -28,13 +27,52 @@ yarn-error.*
 
 # macOS
 .DS_Store
-*.pem
 
 # local env files
 .env*.local
+.env
+.env.development
+.env.production
+.env.staging
 
 # typescript
 *.tsbuildinfo
+
+# logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# testing
+coverage/
+.nyc_output/
+
+# sensitive data (important for lead gen business!)
+*.key
+*.pem
+*.cert
+secrets/
+config/secrets.json
+lawyer-contacts.json
+lead-data/
+analytics-keys.json
+
+# build artifacts
+build/
+dist/
+out/
 
 app-example
 
