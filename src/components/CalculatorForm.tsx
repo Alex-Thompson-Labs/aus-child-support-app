@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Switch, Pressable, ScrollView, StyleSheet } from "react-native";
-import type { FormErrors, ChildInput } from "../types/calculator";
+import { Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
+import type { ChildInput, FormErrors } from "../types/calculator";
 import { ChildRow } from "./ChildRow";
 import { HelpTooltip } from "./HelpTooltip";
 
@@ -277,6 +277,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: 16,
+    paddingBottom: 180, // Extra padding for fixed bottom payment card
     gap: 16,
   },
   card: {

@@ -1,9 +1,9 @@
 import React from "react";
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, Pressable } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useCalculator } from "../hooks/useCalculator";
 import { CalculatorForm } from "../components/CalculatorForm";
 import { CalculatorResults } from "../components/CalculatorResults";
+import { useCalculator } from "../hooks/useCalculator";
 
 export function CalculatorScreen() {
   const {
@@ -105,8 +105,10 @@ export function CalculatorScreen() {
             onRelDepAChange={handleRelDepAChange}
             onRelDepBChange={handleRelDepBChange}
           />
-          {results && <CalculatorResults results={results} />}
         </View>
+
+        {/* Fixed Bottom Payment Card - rendered outside scrollable content */}
+        {results && <CalculatorResults results={results} />}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
