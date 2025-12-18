@@ -23,13 +23,19 @@ export function LawyerAlert({
   onPress
 }: LawyerAlertProps) {
   const handlePress = () => {
+    console.log('[LawyerAlert Component] handlePress called');
+    console.log('[LawyerAlert Component] onPress function:', typeof onPress);
+
     // Track analytics before executing onPress
     Analytics.track('lawyer_button_clicked', {
       alert_title: title,
       urgency,
       button_text: buttonText,
     });
+
+    console.log('[LawyerAlert Component] About to call onPress()');
     onPress();
+    console.log('[LawyerAlert Component] onPress() completed');
   };
 
   const isHighUrgency = urgency === 'high';

@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -34,6 +35,7 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
   const [isExpanded, setIsExpanded] = useState(false);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   const monthlyAmount = results.finalPaymentAmount / 12;
   const fortnightlyAmount = results.finalPaymentAmount / 26;
@@ -100,12 +102,40 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
           urgency={alertConfig.urgency}
           buttonText={alertConfig.buttonText}
           onPress={() => {
+            console.log('[LawyerAlert] Button pressed!');
+            console.log('[LawyerAlert] Router object:', router);
+
             Analytics.track('lawyer_button_clicked', {
               trigger: (Object.keys(flags) as Array<keyof ComplexityFlags>).find(k => flags[k]),
               liability: results.finalPaymentAmount
             });
-            // TODO: Navigate to inquiry form (next task)
-            console.log('Navigate to form');
+
+            // Navigate to inquiry form with calculation data
+            const navParams = {
+              pathname: '/lawyer-inquiry' as any,
+              params: {
+                liability: results.finalPaymentAmount.toString(),
+                trigger: (Object.keys(flags) as Array<keyof ComplexityFlags>).find(k => flags[k]) || 'unknown',
+                incomeA: results.ATI_A.toString(),
+                incomeB: results.ATI_B.toString(),
+                children: formData?.children?.length?.toString() || '0'
+              }
+            };
+
+            console.log('[LawyerAlert] Navigation params:', JSON.stringify(navParams, null, 2));
+
+            // Close the modal first, then navigate
+            setIsExpanded(false);
+
+            // Wait for modal to close before navigating
+            setTimeout(() => {
+              try {
+                router.push(navParams);
+                console.log('[LawyerAlert] router.push() called successfully');
+              } catch (error) {
+                console.error('[LawyerAlert] Navigation error:', error);
+              }
+            }, 300); // Wait for modal close animation
           }}
         />
       )}
