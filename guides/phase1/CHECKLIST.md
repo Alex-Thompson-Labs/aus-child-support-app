@@ -377,36 +377,72 @@ Instead, test right in your code with comments:
 At the bottom of complexity-detection.ts, add commented-out test cases:
 
 /*
-// TEST CASE 1: High Value
+// TEST CASE 1: High Value ($18,000)
 const testResults1 = { finalPaymentAmount: 18000, ...other fields... };
 const testFlags1 = detectComplexity(testResults1, {});
-console.log('Test 1 - High Value:', testFlags1.highValue); // Should be true
+console.log('Test 1 - High Value:', testFlags1.highValue);
 
 const alert1 = getAlertConfig(testFlags1, testResults1);
-console.log('Alert 1:', alert1?.title); // Should show high value alert
+console.log('Alert 1:', alert1?.title);
 
-// TEST CASE 2: Normal Value
+// TEST CASE 2: Normal Value ($8,000)
 const testResults2 = { finalPaymentAmount: 8000, ...other fields... };
 const testFlags2 = detectComplexity(testResults2, {});
-console.log('Test 2 - Normal:', testFlags2.highValue); // Should be false
+console.log('Test 2 - Normal:', testFlags2.highValue);
 
 const alert2 = getAlertConfig(testFlags2, testResults2);
-console.log('Alert 2:', alert2); // Should be null
+console.log('Alert 2:', alert2);
 */
 ```
 
+---
+
 **To actually run the tests:**
-1. Uncomment the test code
-2. Run your app
-3. Check the console logs
-4. If they look right, comment them out again
+
+**1. Uncomment the test code** (in VS Code: select the lines, press Cmd+/ on Mac or Ctrl+/ on Windows)
+
+**2. Run your app:**
+```bash
+npm start
+```
+
+**3. Check the console logs in your terminal**
+
+Look for these 4 lines in your terminal output (they'll be mixed in with other Metro bundler messages):
+
+```
+Test 1 - High Value: true          ← Should say "true"
+Alert 1: 💰 High-Value Case        ← Should show alert title
+Test 2 - Normal: false             ← Should say "false"  
+Alert 2: null                       ← Should say "null"
+```
+
+**4. What "looking right" means:**
+
+✅ **CORRECT output (tests passing):**
+- Test 1 High Value: **true** (because $18,000 > $15,000)
+- Alert 1: Shows **"💰 High-Value Case"** or the full title
+- Test 2 Normal: **false** (because $8,000 < $15,000)
+- Alert 2: **null** (no alert needed)
+
+❌ **WRONG output (tests failing):**
+- Test 1 says "false" instead of "true" → Your highValue check is broken
+- Alert 1 says "null" → Your getAlertConfig isn't working
+- Test 2 says "true" instead of "false" → Your threshold is wrong
+- Alert 2 shows an alert → It shouldn't trigger for normal cases
+
+**5. If tests pass:** Comment the code back out (select lines, Cmd+/ or Ctrl+/)
+
+**6. If tests fail:** Ask Claude Code: "My tests show [paste what you see]. What's wrong?"
+
+---
 
 **Done when:**
-- [ ] High value case returns correct flags
-- [ ] Normal case returns correct flags  
-- [ ] Alert shows for high value
-- [ ] Alert is null for normal case
-- [ ] No TypeScript errors
+- [ ] Console shows "Test 1 - High Value: true"
+- [ ] Console shows "Alert 1: 💰 High-Value Case" (or similar)
+- [ ] Console shows "Test 2 - Normal: false"
+- [ ] Console shows "Alert 2: null"
+- [ ] No TypeScript errors in VS Code
 
 ---
 
