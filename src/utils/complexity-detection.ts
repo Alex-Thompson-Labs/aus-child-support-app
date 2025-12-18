@@ -116,13 +116,17 @@ export function detectComplexity(
   // Check for high-value cases (annual payment > $15k)
   const isHighValue = results.finalPaymentAmount > 15000;
 
+  // Debug logging
+  console.log('[detectComplexity] Payment amount:', results.finalPaymentAmount);
+  console.log('[detectComplexity] Is high value (>15000):', isHighValue);
+
   // Check for shared care dispute (care percentage between 35-65% for any child)
   const hasSharedCareDispute = formData.children?.some((child: any) => {
     const carePercA = convertCareToPercentage(child.careAmountA, child.carePeriod);
     const carePercB = convertCareToPercentage(child.careAmountB, child.carePeriod);
 
     return (carePercA >= 35 && carePercA <= 65) ||
-           (carePercB >= 35 && carePercB <= 65);
+      (carePercB >= 35 && carePercB <= 65);
   }) || false;
 
   return {

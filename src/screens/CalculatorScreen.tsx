@@ -108,7 +108,7 @@ export function CalculatorScreen() {
         </View>
 
         {/* Fixed Bottom Payment Card - rendered outside scrollable content */}
-        {results && <CalculatorResults results={results} />}
+        {results && <CalculatorResults results={results} formData={formState} />}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

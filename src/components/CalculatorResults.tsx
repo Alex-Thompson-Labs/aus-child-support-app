@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { CalculationResults } from "../types/calculator";
-import { ResultsSimpleExplanation } from "./ResultsSimpleExplanation";
-import { LawyerAlert } from "./LawyerAlert";
 import { Analytics } from "../utils/analytics";
-import { detectComplexity, getAlertConfig } from "../utils/complexity-detection";
+import { detectComplexity, getAlertConfig, type ComplexityFlags } from "../utils/complexity-detection";
+import { LawyerAlert } from "./LawyerAlert";
+import { ResultsSimpleExplanation } from "./ResultsSimpleExplanation";
 
 interface CalculatorResultsProps {
   results: CalculationResults;
@@ -91,6 +91,24 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
           </View>
         </View>
       </View>
+
+      {/* Lawyer Alert - shown when complexity flags are triggered */}
+      {alertConfig && (
+        <LawyerAlert
+          title={alertConfig.title}
+          message={alertConfig.message}
+          urgency={alertConfig.urgency}
+          buttonText={alertConfig.buttonText}
+          onPress={() => {
+            Analytics.track('lawyer_button_clicked', {
+              trigger: (Object.keys(flags) as Array<keyof ComplexityFlags>).find(k => flags[k]),
+              liability: results.finalPaymentAmount
+            });
+            // TODO: Navigate to inquiry form (next task)
+            console.log('Navigate to form');
+          }}
+        />
+      )}
 
       <ResultsSimpleExplanation results={results} />
     </ScrollView>
