@@ -949,17 +949,332 @@ Build production-ready submission, not a demo.
 
 ---
 
-### ✅ TASK 6: End-to-End Testing
-**Difficulty:** 🟡 Medium (tedious but important)  
+### ✅ TASK 6: Add Analytics Tracking
+**Difficulty:** 🟡 Medium (multiple file changes)  
 **Time:** 2-3 hours  
 **Prerequisites:** Tasks 0-5 complete
+**Plan Mode:** Regular mode ✅ (clear step-by-step implementation)
+
+**Outcome:**
+- Analytics events tracked at key points in user journey
+- All events visible in PostHog dashboard
+- Events include relevant properties (complexity_score, children_count, etc.)
+- Console logs show events firing for debugging
+
+**What you're doing:**
+Adding `analytics.track()` calls throughout the app so you can measure user behavior.
+
+**Claude Code Strategy:**
+Add tracking to 3 files, one at a time.
+
+---
+
+### Step 6a: Track Calculation Completed (30 min)
+
+**Location:** `src/screens/ResultsScreen.tsx` (or wherever results are displayed)
+
+**Ask Claude Code:**
+```
+In ResultsScreen.tsx (or wherever calculation results are shown):
+
+1. Import Analytics from '@/utils/analytics'
+
+2. Add useEffect that fires when results are calculated:
+   - Track event: 'calculation_completed'
+   - Properties to include:
+     * children_count: number of children
+     * annual_liability: final payment amount
+     * care_type: 'equal', 'primary', or 'shared' (derive from care nights)
+     * has_special_circumstances: boolean (if private school/medical costs entered)
+
+3. Only fire once when results first appear (not on every re-render)
+
+4. Add console.log for debugging
+
+PRODUCTION REQUIREMENTS:
+- Don't track if results are undefined/null
+- Handle edge case where calculation failed
+- Debounce to prevent duplicate events if user changes inputs rapidly
+```
+
+**Test it works:**
+1. Complete a calculation in the app
+2. Check console for log message
+3. Open PostHog → Event Definitions
+4. Look for `calculation_completed` event (may take 30-60 seconds)
+5. Click on event to see properties
+
+**Done when:**
+- [ ] Event appears in PostHog
+- [ ] Event includes all required properties
+- [ ] Console log confirms event firing
+- [ ] No duplicate events (check in PostHog event stream)
+
+---
+
+### Step 6b: Track Breakdown Expanded (15 min)
+
+**Location:** `src/components/CalculatorResults.tsx` (or wherever the breakdown toggle is)
+
+**Ask Claude Code:**
+```
+In the component that handles the breakdown toggle/button:
+
+1. Import Analytics from '@/utils/analytics'
+
+2. Add tracking to the breakdown toggle handler:
+   - Track event: 'breakdown_expanded'
+   - Properties to include:
+     * annual_liability: final payment amount
+     * has_complexity_alert: boolean (is there an alert to show?)
+     * children_count: number of children
+
+3. Only fire when user expands (not when they collapse)
+
+4. Add console.log for debugging
+
+PRODUCTION REQUIREMENTS:
+- Only track on expand, not collapse
+- Don't track if already expanded (no duplicate events)
+- Include whether there's a complexity alert waiting to be seen
+```
+
+**Why track this:**
+This tells you how engaged users are with the detailed breakdown. You can measure:
+- What % of users expand to see details
+- Whether having a complexity alert affects expansion rate
+- Funnel: calculations → breakdowns expanded → alerts shown → buttons clicked
+
+**Test it works:**
+1. Complete a calculation
+2. Tap "Breakdown" to expand details
+3. Check console for log message
+4. Check PostHog for `breakdown_expanded` event
+5. Verify properties include has_complexity_alert
+
+**Done when:**
+- [ ] Event appears in PostHog when breakdown expands
+- [ ] Event includes all required properties
+- [ ] Console log confirms event firing
+- [ ] No duplicate events if user toggles multiple times
+
+---
+
+### Step 6c: Track Complexity Alert Shown (30 min)
+
+**Location:** `src/components/LawyerAlert.tsx`
+
+**Ask Claude Code:**
+```
+In LawyerAlert.tsx component:
+
+1. Import Analytics from '@/utils/analytics'
+
+2. Add useEffect that fires when component mounts:
+   - Track event: 'complexity_alert_shown'
+   - Properties to include:
+     * trigger_type: which complexity flag triggered this (from props)
+     * urgency: 'high', 'medium', or 'low'
+     * annual_liability: the payment amount (from props)
+
+3. Only fire once when alert first appears
+
+4. Add console.log for debugging
+
+PRODUCTION REQUIREMENTS:
+- Add trigger_type to LawyerAlert props interface
+- Pass trigger info from parent component
+- Don't fire if alert is hidden/unmounted immediately
+```
+
+**Update the parent component** (wherever LawyerAlert is rendered):
+- Pass the trigger type that caused the alert
+- Example: `trigger_type="high_value"` or `trigger_type="court_date_urgent"`
+
+**Test it works:**
+1. Trigger a high value alert ($18k+ liability)
+2. Check console for log message
+3. Check PostHog for `complexity_alert_shown` event
+4. Verify properties include trigger type
+
+**Done when:**
+- [ ] Event appears in PostHog
+- [ ] trigger_type property shows correctly
+- [ ] Console log confirms event firing
+- [ ] Works for all trigger types (high_value, court_date_urgent, shared_care, etc.)
+
+---
+
+### Step 6d: Track Lawyer Button Clicked (15 min)
+
+**Location:** `src/components/LawyerAlert.tsx` (button onPress handler)
+
+**Ask Claude Code:**
+```
+In LawyerAlert.tsx button onPress handler:
+
+1. Before calling the onPress prop callback, track:
+   - Event: 'lawyer_button_clicked'
+   - Properties to include:
+     * trigger_type: same as alert shown event
+     * urgency: 'high', 'medium', or 'low'
+     * annual_liability: the payment amount
+
+2. Add console.log for debugging
+
+PRODUCTION REQUIREMENTS:
+- Track BEFORE navigation (in case navigation fails)
+- Don't block button action if tracking fails (use try/catch)
+- Prevent double-clicks (disable button briefly after press)
+```
+
+**Test it works:**
+1. Trigger an alert
+2. Click "Get Legal Help" button
+3. Check console for log message
+4. Check PostHog for `lawyer_button_clicked` event
+5. Verify properties match the alert shown event
+
+**Done when:**
+- [ ] Event appears in PostHog
+- [ ] Properties are correct
+- [ ] Console log confirms event firing
+- [ ] Button still navigates correctly after tracking
+
+---
+
+### Step 6e: Track Form Submission (30 min)
+
+**Location:** `src/screens/LawyerInquiryScreen.tsx` (form submit handler)
+
+**Ask Claude Code:**
+```
+In LawyerInquiryScreen.tsx submission handler:
+
+1. After validation passes but BEFORE showing success message, track:
+   - Event: 'inquiry_form_submitted'
+   - Properties to include:
+     * trigger_type: the trigger that brought user here (pass via route params)
+     * annual_liability: the liability amount (pass via route params)
+     * has_phone: boolean (did they provide phone number?)
+     * message_length: character count of their message
+     * time_to_submit: seconds from form opened to submission
+
+2. Add console.log for debugging
+
+PRODUCTION REQUIREMENTS:
+- Track AFTER validation but BEFORE async operations
+- Don't track if submission fails
+- Calculate time_to_submit using timestamp from when form mounted
+```
+
+**Update navigation** to pass trigger info:
+- When navigating from alert to form, pass trigger_type and liability as route params
+- Access these in form submission
+
+**Test it works:**
+1. Complete calculation → trigger alert → click button → fill form → submit
+2. Check console for log message
+3. Check PostHog for `inquiry_form_submitted` event
+4. Verify all properties are present
+
+**Done when:**
+- [ ] Event appears in PostHog
+- [ ] All properties present and accurate
+- [ ] Console log confirms event firing
+- [ ] Works across different trigger types
+
+---
+
+### Step 6f: Verify All Events in PostHog (30 min)
+
+**Location:** PostHog Dashboard
+
+**Manual Testing Checklist:**
+
+1. **Run complete user journey:**
+   - Open app
+   - Enter calculation data (trigger high value case)
+   - View results screen
+   - Tap "Breakdown" to expand details
+   - See complexity alert
+   - Click "Get Legal Help" button
+   - Fill out inquiry form
+   - Submit form
+
+2. **Check PostHog Events:**
+   - Go to Data Management → Event Definitions
+   - Verify these events exist:
+     * `calculation_completed` ✓
+     * `breakdown_expanded` ✓
+     * `complexity_alert_shown` ✓
+     * `lawyer_button_clicked` ✓
+     * `inquiry_form_submitted` ✓
+
+3. **Check Event Properties:**
+   - Click each event in PostHog
+   - View sample properties
+   - Verify all expected properties are present
+   - Check property values look reasonable
+
+4. **Test Different Triggers:**
+   - Test high value case → verify trigger_type='high_value'
+   - Test court date case → verify trigger_type='court_date_urgent'
+   - Test shared care case → verify trigger_type='shared_care'
+
+5. **Create Simple Funnel (optional):**
+   - Go to Product Analytics → New Insight
+   - Create funnel:
+     * Step 1: calculation_completed
+     * Step 2: breakdown_expanded
+     * Step 3: complexity_alert_shown
+     * Step 4: lawyer_button_clicked
+     * Step 5: inquiry_form_submitted
+   - This shows your complete conversion funnel!
+
+**Done when:**
+- [ ] All 5 events appear in PostHog
+- [ ] All events have required properties
+- [ ] Properties contain sensible values (not null/undefined)
+- [ ] Events fire in correct order
+- [ ] Tested with multiple trigger types
+- [ ] Funnel shows conversion rate (optional but recommended)
+
+---
+
+**Common Issues:**
+- **Events not appearing:** Wait 1-2 minutes, PostHog has delay
+- **Events appear but no properties:** Check you're passing properties object to track()
+- **Duplicate events:** Add useEffect dependency arrays to prevent re-firing
+- **Missing trigger_type:** Make sure parent components pass this prop down
+
+**Beginner Tips:**
+- **Keep PostHog dashboard open** while testing
+- **Use PostHog Live Events** view to see events in real-time
+- **Console.log everything** - easier to debug than checking PostHog repeatedly
+- **Test the complete journey** - don't just test individual events in isolation
+- **Take screenshots** of PostHog showing your events as proof it works
+
+**What you're measuring:**
+- How many people complete calculations
+- What percentage expand breakdown to see details
+- What percentage see complexity alerts (of those who expand)
+- What percentage click for legal help (of those who see alerts)
+- What percentage actually submit the inquiry form
+
+This complete funnel proves whether your Phase 1 hypothesis is correct!
+
+### ✅ TASK 7: End-to-End Testing
+**Difficulty:** 🟡 Medium (tedious but important)  
+**Time:** 2-3 hours  
+**Prerequisites:** Tasks 0-6 complete
 **Plan Mode:** Regular mode ✅ (manual testing, no code generation needed)
 
 **Outcome:**
 - Complete flow tested: calculation → alert → click → form → submit
 - Tested on iOS (simulator or device)
 - Tested on Android (if possible)
-- All analytics events verified in Posthog
+- All analytics events verified working end-to-end
 - No crashes or errors
 
 **What you're doing:**
@@ -971,10 +1286,13 @@ Open `guides/phase1/TESTING.md` and go through it systematically.
 **Key things to test:**
 1. **Complexity detection:**
    - High value case shows alert ✓
+   - Court date urgent shows alert ✓
+   - Shared care shows alert ✓
    - Normal case shows no alert ✓
    - Each trigger type works ✓
 
 2. **Alert UI:**
+   - Correct urgency colors (red for urgent, blue for medium) ✓
    - Button tappable ✓
    - Analytics fires on click ✓
    - Navigation works ✓
@@ -985,18 +1303,21 @@ Open `guides/phase1/TESTING.md` and go through it systematically.
    - Submission succeeds ✓
    - Success message shows ✓
 
-4. **Analytics:**
-   - calculation_completed ✓
-   - complexity_alert_shown ✓
-   - lawyer_button_clicked ✓
-   - inquiry_form_submitted ✓
+4. **Analytics complete funnel:**
+   - calculation_completed fires ✓
+   - breakdown_expanded fires ✓
+   - complexity_alert_shown fires ✓
+   - lawyer_button_clicked fires ✓
+   - inquiry_form_submitted fires ✓
+   - All events have correct properties ✓
 
 **Done when:**
 - [ ] Checklist 100% complete
 - [ ] No crashes found
-- [ ] All analytics events visible in Posthog
+- [ ] All analytics events visible in Posthog with properties
 - [ ] Tested on at least iOS (Android bonus)
 - [ ] Form data logs correctly
+- [ ] Analytics funnel shows complete conversion path
 
 **Common Issues:**
 - Crashes on specific inputs → Add error handling
@@ -1011,10 +1332,10 @@ Open `guides/phase1/TESTING.md` and go through it systematically.
 
 ---
 
-### ✅ TASK 7: Launch to Test Users
+### ✅ TASK 8: Launch to Test Users
 **Difficulty:** 🟢 Easy (but requires patience)  
 **Time:** 3-5 hours spread over a week  
-**Prerequisites:** Task 6 complete
+**Prerequisites:** Tasks 0-7 complete
 **Plan Mode:** Regular mode ✅ (no coding, just posting and monitoring)
 
 **Outcome:**
@@ -1130,15 +1451,22 @@ Mark tasks complete as you finish them:
 - [ ] Task 4: Integrate Alert (Medium, 2-3 hours)
   - [ ] Step 4a: Import and detect
   - [ ] Step 4b: Render conditionally
-  - [ ] Step 4c: Add court date feature (NEW - 60-90 min)
+  - [ ] Step 4c: Add court date feature (60-90 min)
   - [ ] Step 4d: Test different scenarios
 - [ ] Task 5: Inquiry Form (Hard, 3-5 hours)
-- [ ] Task 6: Testing (Medium, 2-3 hours)
-- [ ] Task 7: Launch (Easy, 3-5 hours over a week)
+- [ ] Task 6: Add Analytics Tracking (Medium, 2-3 hours)
+  - [ ] Step 6a: Track calculation_completed
+  - [ ] Step 6b: Track breakdown_expanded
+  - [ ] Step 6c: Track complexity_alert_shown
+  - [ ] Step 6d: Track lawyer_button_clicked
+  - [ ] Step 6e: Track inquiry_form_submitted
+  - [ ] Step 6f: Verify all events in PostHog
+- [ ] Task 7: End-to-End Testing (Medium, 2-3 hours)
+- [ ] Task 8: Launch (Easy, 3-5 hours over a week)
 
-**Total Time Estimate:** 16-27 hours depending on debugging (updated for court date feature)
+**Total Time Estimate:** 18-30 hours depending on debugging
 
-**At your pace:** Could be 1 week (intense) or 3-4 weeks (relaxed)
+**At your pace:** Could be 1-2 weeks (intense) or 3-4 weeks (relaxed)
 
 ---
 

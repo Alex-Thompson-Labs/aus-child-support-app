@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { CalculationResults } from "../types/calculator";
-import { Analytics } from "../utils/analytics";
+import { useAnalytics } from "../utils/analytics";
 import { detectComplexity, getAlertConfig, type ComplexityFlags, type ComplexityFormData } from "../utils/complexity-detection";
 import { LawyerAlert } from "./LawyerAlert";
 import { ResultsSimpleExplanation } from "./ResultsSimpleExplanation";
@@ -36,6 +36,7 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
   const slideAnim = useRef(new Animated.Value(0)).current;
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const analytics = useAnalytics();
 
   const monthlyAmount = results.finalPaymentAmount / 12;
   const fortnightlyAmount = results.finalPaymentAmount / 26;
@@ -43,6 +44,9 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
 
   // Track whether navigation is in progress to prevent duplicate navigation
   const [isNavigating, setIsNavigating] = useState(false);
+
+  // Track if we've already fired analytics for this calculation (prevents duplicates)
+  const trackedResultsRef = useRef<string | null>(null);
 
   // Detect complexity and get alert configuration
   const flags = detectComplexity(results, formData ?? {});
@@ -54,10 +58,75 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
     console.log('[CalculatorResults] Alert config:', alertConfig);
   }
 
+  // Track calculation_completed event
+  useEffect(() => {
+    // Don't track if results are undefined/null or invalid
+    if (!results || results.finalPaymentAmount === undefined || results.finalPaymentAmount === null) {
+      console.log('[Analytics] Skipping tracking - invalid results');
+      return;
+    }
+
+    // Create a unique key for this calculation based on key values
+    const resultsKey = `${results.finalPaymentAmount}_${results.childResults?.length ?? 0}`;
+
+    // Debounce: Only fire if we haven't tracked these exact results yet
+    if (trackedResultsRef.current === resultsKey) {
+      console.log('[Analytics] Skipping tracking - already tracked these results');
+      return;
+    }
+
+    // Mark as tracked
+    trackedResultsRef.current = resultsKey;
+
+    try {
+      // Derive care type from care nights (inline to avoid callback dependency)
+      let careType: 'equal' | 'primary' | 'shared' = 'primary';
+      if (results.childResults && results.childResults.length > 0) {
+        const firstChild = results.childResults[0];
+        const carePercA = firstChild.roundedCareA;
+
+        if (carePercA >= 48 && carePercA <= 52) {
+          careType = 'equal';
+        } else if (carePercA >= 35 && carePercA <= 65) {
+          careType = 'shared';
+        }
+      }
+
+      const childrenCount = results.childResults?.length ?? 0;
+
+      // Check for special circumstances
+      // TODO: Update this when private school/medical cost fields are added to formData
+      const hasSpecialCircumstances = flags.specialCircumstances;
+
+      const eventProperties = {
+        children_count: childrenCount,
+        annual_liability: results.finalPaymentAmount,
+        care_type: careType,
+        has_special_circumstances: hasSpecialCircumstances
+      };
+
+      console.log('[Analytics] Tracking calculation_completed:', eventProperties);
+
+      analytics.track('calculation_completed', eventProperties);
+    } catch (error) {
+      console.error('[Analytics] Error tracking calculation_completed:', error);
+    }
+  }, [results, analytics]);
+
   // Find the trigger that fired the alert
   const getTrigger = useCallback((): string => {
     const flagKeys: Array<keyof ComplexityFlags> = ['courtDateUrgent', 'highValue', 'sharedCareDispute', 'specialCircumstances', 'highVariance', 'incomeSuspicion'];
-    return flagKeys.find(k => flags[k]) ?? 'unknown';
+    const triggeredFlag = flagKeys.find(k => flags[k]);
+
+    // Convert camelCase to snake_case for analytics
+    if (!triggeredFlag) {
+      return 'unknown';
+    }
+
+    return triggeredFlag
+      .replace(/([A-Z])/g, '_$1')
+      .toLowerCase()
+      .replace(/^_/, ''); // Remove leading underscore if any
   }, [flags]);
 
   // Navigate to lawyer inquiry form
@@ -67,15 +136,6 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
     }
 
     setIsNavigating(true);
-
-    try {
-      Analytics.track('lawyer_button_clicked', {
-        trigger: getTrigger(),
-        liability: results.finalPaymentAmount
-      });
-    } catch (error) {
-      console.error('[CalculatorResults] Analytics error:', error);
-    }
 
     // Close the modal first
     setIsExpanded(false);
@@ -111,7 +171,7 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
         }
       });
     });
-  }, [isNavigating, router, results, formData, getTrigger]);
+  }, [isNavigating, router, results, formData, getTrigger, analytics]);
 
   useEffect(() => {
     Animated.spring(slideAnim, {
@@ -123,7 +183,28 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
   }, [isExpanded]);
 
   const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
+    const willExpand = !isExpanded;
+
+    // Track analytics only when expanding (not collapsing)
+    if (willExpand && !isExpanded) {
+      try {
+        const childrenCount = results.childResults?.length ?? 0;
+        const hasComplexityAlert = alertConfig !== null;
+
+        const eventProperties = {
+          annual_liability: results.finalPaymentAmount,
+          has_complexity_alert: hasComplexityAlert,
+          children_count: childrenCount
+        };
+
+        console.log('[Analytics] Tracking breakdown_expanded:', eventProperties);
+        analytics.track('breakdown_expanded', eventProperties);
+      } catch (error) {
+        console.error('[Analytics] Error tracking breakdown_expanded:', error);
+      }
+    }
+
+    setIsExpanded(willExpand);
   };
 
   // Render the expanded full-screen breakdown content
@@ -166,6 +247,8 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
           urgency={alertConfig.urgency}
           buttonText={alertConfig.buttonText}
           onPress={navigateToInquiry}
+          triggerType={getTrigger()}
+          annualLiability={results.finalPaymentAmount}
         />
       )}
 

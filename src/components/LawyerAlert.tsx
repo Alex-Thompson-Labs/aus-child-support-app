@@ -1,9 +1,9 @@
 // Lawyer Alert Component
 // Displays complexity alerts with "Get Legal Help" buttons
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Analytics } from '../utils/analytics';
+import { useAnalytics } from '../utils/analytics';
 
 interface LawyerAlertProps {
   title: string;
@@ -11,6 +11,8 @@ interface LawyerAlertProps {
   urgency: 'low' | 'medium' | 'high';
   buttonText: string;
   onPress: () => void;
+  triggerType?: string;
+  annualLiability?: number;
 }
 
 // Default values for edge case handling
@@ -23,15 +25,52 @@ export function LawyerAlert({
   message,
   urgency,
   buttonText,
-  onPress
+  onPress,
+  triggerType,
+  annualLiability
 }: LawyerAlertProps) {
   // Prevent double-taps with loading state
   const [isPressed, setIsPressed] = useState(false);
+
+  // Track if analytics event has been fired
+  const hasTrackedShown = useRef(false);
+
+  // Analytics hook
+  const analytics = useAnalytics();
 
   // Handle edge cases - use defaults for empty strings
   const displayTitle = title?.trim() || DEFAULT_TITLE;
   const displayMessage = message?.trim() || DEFAULT_MESSAGE;
   const displayButtonText = buttonText?.trim() || DEFAULT_BUTTON_TEXT;
+
+  // Track when alert is shown - fires once on mount
+  useEffect(() => {
+    // Only fire once
+    if (hasTrackedShown.current) {
+      return;
+    }
+
+    hasTrackedShown.current = true;
+
+    if (__DEV__) {
+      console.log('[LawyerAlert] Alert shown - tracking analytics', {
+        trigger_type: triggerType,
+        urgency,
+        annual_liability: annualLiability,
+      });
+    }
+
+    // Track analytics event
+    try {
+      analytics.track('complexity_alert_shown', {
+        trigger_type: triggerType,
+        urgency,
+        annual_liability: annualLiability,
+      });
+    } catch (error) {
+      console.error('[LawyerAlert] Failed to track alert shown:', error);
+    }
+  }, [analytics, triggerType, urgency, annualLiability]); // Include dependencies
 
   const handlePress = useCallback(() => {
     // Prevent double-taps
@@ -53,9 +92,11 @@ export function LawyerAlert({
 
     // Track analytics - wrapped in try/catch for safety
     try {
-      Analytics.track('lawyer_button_clicked', {
-        alert_title: displayTitle,
+      analytics.track('lawyer_button_clicked', {
+        trigger_type: triggerType,
         urgency,
+        annual_liability: annualLiability,
+        alert_title: displayTitle,
         button_text: displayButtonText,
       });
     } catch (error) {
@@ -71,7 +112,7 @@ export function LawyerAlert({
 
     // Re-enable button after a short delay
     setTimeout(() => setIsPressed(false), 1000);
-  }, [isPressed, onPress, displayTitle, urgency, displayButtonText]);
+  }, [isPressed, onPress, displayTitle, urgency, displayButtonText, analytics, triggerType, annualLiability]);
 
   const isHighUrgency = urgency === 'high';
   const borderColor = isHighUrgency ? '#ef4444' : '#334155';
