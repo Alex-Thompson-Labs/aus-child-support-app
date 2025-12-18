@@ -159,6 +159,30 @@ Uses **expo-router** with file-based routing. The `app/` directory defines route
 **Goal:** Sign 2-3 pilot law firms and prove lead quality
 **Success Metric:** >20% consultation rate, >5% client conversion rate
 
+## 🎯 Understanding Claude Code Modes
+
+### What's the difference between Plan Mode and Accept Edits?
+
+**They are TWO DIFFERENT settings!** Many beginners confuse these:
+
+**Plan Mode:**
+- Makes Claude Code create a plan BEFORE executing
+- Costs ~10x more per prompt
+- Visual indicator: `" plan mode on (shift+tab to cycle)` below input box
+- **When to use:** Complex multi-file changes, when stuck, big tasks
+
+**Accept Edits:**
+- Auto-approves Claude's code changes without asking you
+- No extra cost
+- Visual indicator: `▶▶ accept edits on (shift+tab to cycle)` below input box
+- **Recommendation:** Keep this OFF so you can review changes
+- **Not related to Plan Mode at all**
+
+**Regular Mode (default):**
+- Visual indicator: `? for shortcuts` or nothing about modes
+- This is what you want for most tasks!
+- Press Shift+Tab to cycle: Regular → Plan → Accept Edits → Regular
+
 ## 🤖 Which Tool to Use?
 
 **Primary: Claude Code**
@@ -174,9 +198,9 @@ Uses **expo-router** with file-based routing. The `app/` directory defines route
 
 For each task in this phase, guidance on whether to use Plan mode or Regular mode:
 
-**Task 1:** Regular mode ✅ (simple, single file)
-**Task 2:** Plan mode ✅ (multi-file, complex)
-**Task 3:** Regular mode ✅ (copy-paste)
+**Task 1:** Regular mode ✅ (simple, single file) - Look for `? for shortcuts` below input
+**Task 2:** Plan mode ✅ (multi-file, complex) - Press Shift+Tab until you see `" plan mode on`
+**Task 3:** Regular mode ✅ (copy-paste) - Default blank input box
 
 See docs/CLAUDE.md for complete Plan mode guidance.
 ```
@@ -203,7 +227,31 @@ See docs/CLAUDE.md for complete Plan mode guidance.
 
 ### 🎯 Plan Mode vs Regular Mode in Claude Code
 
+**IMPORTANT:** Plan Mode and Accept Edits are TWO DIFFERENT settings in Claude Code. Don't confuse them!
+
 **Plan Mode** makes Claude Code think through the task before executing. It costs more but is better for complex work.
+
+#### 🖥️ How to Identify the Mode (Visual Guide)
+
+When typing a prompt in Claude Code, look at the text below the input box:
+
+**Regular Mode (default):** 
+- Shows: `? for shortcuts` or `1 line selected` 
+- NO mention of "plan mode"
+- **Use this for most tasks** ✅
+
+**Plan Mode ON:**
+- Shows: `" plan mode on (shift+tab to cycle)`
+- Appears when you press Shift+Tab once
+- **Only use for complex tasks** (see below)
+
+**Accept Edits ON:**
+- Shows: `▶▶ accept edits on (shift+tab to cycle)`
+- Appears when you press Shift+Tab twice
+- **This is NOT Plan Mode!** This is auto-approval of edits
+- Recommended: Keep this OFF so you can review changes
+
+**How to cycle:** Press **Shift+Tab** to cycle through: Regular → Plan → Accept Edits → Regular
 
 #### ✅ USE Plan Mode for:
 - **Multi-file changes** - "Implement the inquiry form screen" (changes 3+ files)

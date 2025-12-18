@@ -10,12 +10,39 @@
 
 ---
 
+## 🎯 Understanding Claude Code Modes
+
+### What's the difference between Plan Mode and Accept Edits?
+
+**They are TWO DIFFERENT settings!** Many beginners confuse these:
+
+**Plan Mode:**
+- Makes Claude Code create a plan BEFORE executing
+- Costs ~10x more per prompt
+- Visual indicator: `" plan mode on (shift+tab to cycle)` below input box
+- **When to use:** Complex multi-file changes, when stuck, big tasks
+- **Default for Phase 1:** Keep this OFF (Regular mode) for most tasks
+
+**Accept Edits:**
+- Auto-approves Claude's code changes without asking you
+- No extra cost
+- Visual indicator: `▶▶ accept edits on (shift+tab to cycle)` below input box
+- **Recommendation:** Keep this OFF so you can review changes
+- **Not related to Plan Mode at all**
+
+**Regular Mode (default):**
+- Visual indicator: `? for shortcuts` or `1 line selected` (NO mention of modes)
+- This is what you want for most tasks!
+- Press Shift+Tab to cycle: Regular → Plan → Accept Edits → Regular
+
+---
+
 ## 🎯 Plan Mode Quick Reference
 
-**Use Regular Mode (default) for:**
+**Use Regular Mode (default - blank input box) for:**
 - Tasks 0, 1, 2 (individual steps), 3, 6, 7
 
-**Use Plan Mode for:**
+**Use Plan Mode (" plan mode on" showing) for:**
 - Task 4 (if having trouble with integration)
 - Task 5 (inquiry form - definitely use Plan mode)
 

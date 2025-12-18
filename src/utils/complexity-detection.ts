@@ -4,7 +4,7 @@
 // This detects when calculations indicate high-value cases
 // that should trigger "Get Legal Help" prompts
 
-import type { CalculationResults } from '@/types/calculator';
+import type { CalculationResults } from '../types/calculator';
 import { convertCareToPercentage } from './child-support-calculations';
 
 /**
@@ -196,3 +196,122 @@ export function getAlertConfig(
 
   return null; // No alert needed
 }
+
+/*
+// TEST CASE 1: High Value
+const testResults1: CalculationResults = {
+  year: '2024',
+  ATI_A: 120000,
+  ATI_B: 60000,
+  relDepDeductibleA: 0,
+  relDepDeductibleB: 0,
+  SSA: 35168,
+  FAR: 90000,
+  MAR: 45000,
+  MAX_PPS: 18000,
+  CSI_A: 120000,
+  CSI_B: 60000,
+  CCSI: 180000,
+  incomePercA: 66.67,
+  incomePercB: 33.33,
+  totalCost: 25000,
+  childResults: [],
+  totalLiabilityA: 18000,
+  totalLiabilityB: 0,
+  finalLiabilityA: 18000,
+  finalLiabilityB: 0,
+  FAR_A: 90000,
+  FAR_B: 45000,
+  MAR_A: 45000,
+  MAR_B: 22500,
+  rateApplied: 'standard',
+  payer: 'Parent A',
+  receiver: 'Parent B',
+  finalPaymentAmount: 18000,
+};
+const testFlags1 = detectComplexity(testResults1, { children: [] });
+console.log('Test 1 - High Value:', testFlags1.highValue); // Should be true
+
+const alert1 = getAlertConfig(testFlags1, testResults1);
+console.log('Alert 1:', alert1?.title); // Should show "💰 High-Value Case"
+
+// TEST CASE 2: Normal Value
+const testResults2: CalculationResults = {
+  year: '2024',
+  ATI_A: 60000,
+  ATI_B: 40000,
+  relDepDeductibleA: 0,
+  relDepDeductibleB: 0,
+  SSA: 35168,
+  FAR: 90000,
+  MAR: 45000,
+  MAX_PPS: 18000,
+  CSI_A: 60000,
+  CSI_B: 40000,
+  CCSI: 100000,
+  incomePercA: 60,
+  incomePercB: 40,
+  totalCost: 12000,
+  childResults: [],
+  totalLiabilityA: 8000,
+  totalLiabilityB: 0,
+  finalLiabilityA: 8000,
+  finalLiabilityB: 0,
+  FAR_A: 90000,
+  FAR_B: 45000,
+  MAR_A: 45000,
+  MAR_B: 22500,
+  rateApplied: 'standard',
+  payer: 'Parent A',
+  receiver: 'Parent B',
+  finalPaymentAmount: 8000,
+};
+const testFlags2 = detectComplexity(testResults2, { children: [] });
+console.log('Test 2 - Normal:', testFlags2.highValue); // Should be false
+
+const alert2 = getAlertConfig(testFlags2, testResults2);
+console.log('Alert 2:', alert2); // Should be null
+
+// TEST CASE 3: Shared Care Dispute
+const testResults3: CalculationResults = {
+  year: '2024',
+  ATI_A: 80000,
+  ATI_B: 70000,
+  relDepDeductibleA: 0,
+  relDepDeductibleB: 0,
+  SSA: 35168,
+  FAR: 90000,
+  MAR: 45000,
+  MAX_PPS: 18000,
+  CSI_A: 80000,
+  CSI_B: 70000,
+  CCSI: 150000,
+  incomePercA: 53.33,
+  incomePercB: 46.67,
+  totalCost: 15000,
+  childResults: [],
+  totalLiabilityA: 7000,
+  totalLiabilityB: 0,
+  finalLiabilityA: 7000,
+  finalLiabilityB: 0,
+  FAR_A: 90000,
+  FAR_B: 45000,
+  MAR_A: 45000,
+  MAR_B: 22500,
+  rateApplied: 'standard',
+  payer: 'Parent A',
+  receiver: 'Parent B',
+  finalPaymentAmount: 7000,
+};
+const testFormData3 = {
+  children: [
+    { id: '1', age: 'Under 13', careAmountA: 3, careAmountB: 4, carePeriod: 'week' }
+    // 3 nights/week = 42.86% care for Parent A (in dispute zone 35-65%)
+  ]
+};
+const testFlags3 = detectComplexity(testResults3, testFormData3);
+console.log('Test 3 - Shared Care:', testFlags3.sharedCareDispute); // Should be true
+
+const alert3 = getAlertConfig(testFlags3, testResults3);
+console.log('Alert 3:', alert3?.title); // Should show "⚖️ Care Arrangement in Dispute Zone"
+*/
