@@ -109,7 +109,18 @@ export default function LawyerInquiryScreen() {
                         numberOfLines={4}
                     />
 
-                    {/* TODO: Add consent checkbox */}
+                    {/* Consent Checkbox */}
+                    <Pressable
+                        style={styles.checkboxContainer}
+                        onPress={() => setConsent(!consent)}
+                    >
+                        <View style={[styles.checkbox, consent && styles.checkboxChecked]}>
+                            {consent && <Text style={styles.checkboxCheck}>✓</Text>}
+                        </View>
+                        <Text style={styles.checkboxLabel}>
+                            I consent to being contacted by a lawyer regarding my child support case
+                        </Text>
+                    </Pressable>
 
                     <Pressable style={styles.button} onPress={handleSubmit}>
                         <Text style={styles.buttonText}>Submit Inquiry</Text>
@@ -192,6 +203,38 @@ const styles = StyleSheet.create({
     textArea: {
         height: 100,
         textAlignVertical: 'top',
+    },
+    checkboxContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 16,
+        marginBottom: 8,
+    },
+    checkbox: {
+        width: 24,
+        height: 24,
+        borderRadius: 4,
+        borderWidth: 2,
+        borderColor: '#334155', // slate-700
+        backgroundColor: '#1e293b', // slate-800
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 12,
+    },
+    checkboxChecked: {
+        backgroundColor: '#2563eb', // blue-600
+        borderColor: '#2563eb',
+    },
+    checkboxCheck: {
+        color: '#ffffff',
+        fontSize: 16,
+        fontWeight: '700',
+    },
+    checkboxLabel: {
+        flex: 1,
+        fontSize: 14,
+        color: '#cbd5e1', // slate-300
+        lineHeight: 20,
     },
     button: {
         backgroundColor: '#2563eb', // blue-600
