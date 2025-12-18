@@ -29,6 +29,7 @@ export interface CalculatorFormState {
   children: ChildInput[];
   relDepA: RelevantDependents;
   relDepB: RelevantDependents;
+  courtDate?: string; // Optional court date in dd/mm/yyyy format
 }
 
 const initialFormState: CalculatorFormState = {
@@ -40,6 +41,7 @@ const initialFormState: CalculatorFormState = {
   children: [],
   relDepA: { u13: 0, plus13: 0 },
   relDepB: { u13: 0, plus13: 0 },
+  courtDate: "", // Empty string by default
 };
 
 export function useCalculator() {

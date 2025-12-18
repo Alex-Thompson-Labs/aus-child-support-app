@@ -50,6 +50,10 @@ export function CalculatorScreen() {
     }));
   };
 
+  const handleCourtDateChange = (value: string) => {
+    setFormState((prev) => ({ ...prev, courtDate: value }));
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <KeyboardAvoidingView
@@ -90,6 +94,7 @@ export function CalculatorScreen() {
             childrenData={formState.children}
             relDepA={formState.relDepA}
             relDepB={formState.relDepB}
+            courtDate={formState.courtDate}
             errors={errors}
             incomePercA={results?.incomePercA}
             incomePercB={results?.incomePercB}
@@ -104,6 +109,7 @@ export function CalculatorScreen() {
             onUpdateChild={updateChild}
             onRelDepAChange={handleRelDepAChange}
             onRelDepBChange={handleRelDepBChange}
+            onCourtDateChange={handleCourtDateChange}
           />
         </View>
 

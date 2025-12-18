@@ -54,10 +54,6 @@ export default function LawyerInquiryScreen() {
                             <Text style={styles.summaryAmount}>${liability ? parseFloat(liability).toLocaleString() : '0'}/year</Text>
                         </View>
                         <View style={styles.summaryRow}>
-                            <Text style={styles.summaryLabel}>Complexity Trigger:</Text>
-                            <Text style={styles.summaryValue}>{trigger || 'unknown'}</Text>
-                        </View>
-                        <View style={styles.summaryRow}>
                             <Text style={styles.summaryLabel}>Parent A Income:</Text>
                             <Text style={styles.summaryValue}>${incomeA ? parseFloat(incomeA).toLocaleString() : '0'}</Text>
                         </View>

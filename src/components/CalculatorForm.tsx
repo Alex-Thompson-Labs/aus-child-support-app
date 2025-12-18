@@ -12,6 +12,7 @@ interface CalculatorFormProps {
   childrenData: ChildInput[];
   relDepA: { u13: number; plus13: number };
   relDepB: { u13: number; plus13: number };
+  courtDate?: string;
   errors: FormErrors;
   incomePercA?: number;
   incomePercB?: number;
@@ -26,6 +27,7 @@ interface CalculatorFormProps {
   onUpdateChild: (childId: string, updates: Partial<ChildInput>) => void;
   onRelDepAChange: (updates: Partial<{ u13: number; plus13: number }>) => void;
   onRelDepBChange: (updates: Partial<{ u13: number; plus13: number }>) => void;
+  onCourtDateChange: (value: string) => void;
 }
 
 export function CalculatorForm({
@@ -36,6 +38,7 @@ export function CalculatorForm({
   childrenData,
   relDepA,
   relDepB,
+  courtDate,
   errors,
   incomePercA,
   incomePercB,
@@ -50,6 +53,7 @@ export function CalculatorForm({
   onUpdateChild,
   onRelDepAChange,
   onRelDepBChange,
+  onCourtDateChange,
 }: CalculatorFormProps) {
   const [showRelDeps, setShowRelDeps] = useState(false);
 
@@ -267,6 +271,30 @@ export function CalculatorForm({
           </View>
         )}
       </View>
+
+      {/* Court Date Card */}
+      <View style={styles.card}>
+        <View style={styles.labelRow}>
+          <Text style={styles.cardTitle}>Court Date (Optional)</Text>
+          <HelpTooltip
+            what="If you have a scheduled court appearance related to child support."
+            why="Cases with upcoming court dates may benefit from urgent legal advice. Enter date as dd/mm/yyyy (e.g., 25/12/2024)."
+          />
+        </View>
+        <TextInput
+          style={styles.courtDateInput}
+          value={courtDate || ""}
+          onChangeText={onCourtDateChange}
+          placeholder="dd/mm/yyyy"
+          placeholderTextColor="#64748b"
+          keyboardType="numbers-and-punctuation"
+        />
+        {courtDate && courtDate.length > 0 && (
+          <Text style={styles.courtDateHint}>
+            Enter as: day/month/year (e.g., 25/12/2024)
+          </Text>
+        )}
+      </View>
     </ScrollView>
   );
 }
@@ -477,6 +505,22 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     backgroundColor: "#334155", // slate-700
     fontSize: 14,
+  },
+  courtDateInput: {
+    backgroundColor: "#334155", // slate-700
+    borderWidth: 1,
+    borderColor: "#475569", // slate-600
+    borderRadius: 8,
+    padding: 12,
+    color: "#ffffff",
+    fontSize: 16,
+    marginTop: 8,
+  },
+  courtDateHint: {
+    fontSize: 12,
+    color: "#64748b", // slate-500
+    marginTop: 4,
+    fontStyle: "italic",
   },
 });
 

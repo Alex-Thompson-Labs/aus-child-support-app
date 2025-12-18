@@ -6,6 +6,7 @@
 
 import type { CalculationResults } from '../types/calculator';
 import { convertCareToPercentage } from './child-support-calculations';
+import { isWithinDays } from './date-utils';
 
 /**
  * Flags indicating different types of complexity detected in child support calculations
@@ -129,12 +130,18 @@ export function detectComplexity(
       (carePercB >= 35 && carePercB <= 65);
   }) || false;
 
+  // Check for urgent court date (within 30 days)
+  const hasCourtDateUrgent = formData.courtDate ? isWithinDays(formData.courtDate, 30) : false;
+
+  console.log('[detectComplexity] Court date:', formData.courtDate);
+  console.log('[detectComplexity] Is court date urgent (within 30 days):', hasCourtDateUrgent);
+
   return {
     highVariance: false, // TODO: Calculate care variance
     highValue: isHighValue,
     specialCircumstances: false, // TODO: Check if formData has private school costs, medical expenses, etc.
     incomeSuspicion: false, // TODO: Check formData flags
-    courtDateUrgent: false, // TODO: Check if formData.courtDate is within 30 days
+    courtDateUrgent: hasCourtDateUrgent,
     sharedCareDispute: hasSharedCareDispute,
   };
 }
