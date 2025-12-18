@@ -4,7 +4,8 @@
 // Displays complexity alerts with "Get Legal Help" buttons
 
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Analytics } from '../utils/analytics';
 
 interface LawyerAlertProps {
   title: string;
@@ -21,11 +22,25 @@ export function LawyerAlert({
   buttonText,
   onPress
 }: LawyerAlertProps) {
+  const handlePress = () => {
+    // Track analytics before executing onPress
+    Analytics.track('lawyer_button_clicked', {
+      alert_title: title,
+      urgency,
+      button_text: buttonText,
+    });
+    onPress();
+  };
+
+  const isHighUrgency = urgency === 'high';
+  const borderColor = isHighUrgency ? '#ef4444' : '#334155';
+  const buttonColor = isHighUrgency ? '#ef4444' : '#2563eb';
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { borderColor }]}>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.message}>{message}</Text>
-      <Pressable style={styles.button} onPress={onPress}>
+      <Pressable style={[styles.button, { backgroundColor: buttonColor }]} onPress={handlePress}>
         <Text style={styles.buttonText}>{buttonText}</Text>
       </Pressable>
     </View>
@@ -39,7 +54,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginVertical: 16,
     borderWidth: 1,
-    borderColor: '#334155',
+    // borderColor is dynamic based on urgency
   },
   title: {
     fontSize: 18,
@@ -54,7 +69,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   button: {
-    backgroundColor: '#2563eb',
+    // backgroundColor is dynamic based on urgency
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 20,

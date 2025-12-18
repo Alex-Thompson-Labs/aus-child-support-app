@@ -6,6 +6,24 @@
 
 import { usePostHog } from 'posthog-react-native';
 
+// Static Analytics object for use without hooks (Phase 1)
+export const Analytics = {
+  track: (event: string, properties?: Record<string, any>) => {
+    console.log('[Analytics] Track event:', event, properties);
+    // TODO: Wire up to PostHog in Phase 2
+  },
+
+  identify: (userId: string, traits?: Record<string, any>) => {
+    console.log('[Analytics] Identify user:', userId, traits);
+    // TODO: Wire up to PostHog in Phase 2
+  },
+
+  screen: (name: string, properties?: Record<string, any>) => {
+    console.log('[Analytics] Screen view:', name, properties);
+    // TODO: Wire up to PostHog in Phase 2
+  }
+};
+
 // Hook for use in components
 export function useAnalytics() {
   const posthog = usePostHog();

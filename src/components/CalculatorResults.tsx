@@ -3,9 +3,13 @@ import { Animated, Dimensions, Modal, Pressable, ScrollView, StyleSheet, Text, V
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { CalculationResults } from "../types/calculator";
 import { ResultsSimpleExplanation } from "./ResultsSimpleExplanation";
+import { LawyerAlert } from "./LawyerAlert";
+import { Analytics } from "../utils/analytics";
+import { detectComplexity, getAlertConfig } from "../utils/complexity-detection";
 
 interface CalculatorResultsProps {
   results: CalculationResults;
+  formData?: any; // TODO: Add proper FormData type
 }
 
 // Helper to format currency
@@ -26,15 +30,22 @@ const formatCurrencyFull = (num: number | undefined | null): string => {
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-export function CalculatorResults({ results }: CalculatorResultsProps) {
+export function CalculatorResults({ results, formData }: CalculatorResultsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showDetailedView, setShowDetailedView] = useState(false);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const insets = useSafeAreaInsets();
 
   const monthlyAmount = results.finalPaymentAmount / 12;
   const fortnightlyAmount = results.finalPaymentAmount / 26;
   const dailyAmount = results.finalPaymentAmount / 365;
+
+  // Detect complexity and get alert configuration
+  const flags = detectComplexity(results, formData || {});
+  const alertConfig = getAlertConfig(flags, results);
+
+  // Log for verification (Phase 1)
+  console.log('[CalculatorResults] Complexity flags:', flags);
+  console.log('[CalculatorResults] Alert config:', alertConfig);
 
   useEffect(() => {
     Animated.spring(slideAnim, {
@@ -47,10 +58,6 @@ export function CalculatorResults({ results }: CalculatorResultsProps) {
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
-  };
-
-  const toggleView = () => {
-    setShowDetailedView(!showDetailedView);
   };
 
   // Render the expanded full-screen breakdown content
@@ -85,101 +92,7 @@ export function CalculatorResults({ results }: CalculatorResultsProps) {
         </View>
       </View>
 
-      {/* View Toggle */}
-      <View style={styles.viewToggle}>
-        <Pressable
-          onPress={() => setShowDetailedView(false)}
-          style={[styles.toggleButton, !showDetailedView && styles.toggleButtonActive]}
-        >
-          <Text style={[styles.toggleButtonText, !showDetailedView && styles.toggleButtonTextActive]}>
-            Simple Explanation
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={() => setShowDetailedView(true)}
-          style={[styles.toggleButton, showDetailedView && styles.toggleButtonActive]}
-        >
-          <Text style={[styles.toggleButtonText, showDetailedView && styles.toggleButtonTextActive]}>
-            Technical Breakdown
-          </Text>
-        </Pressable>
-      </View>
-
-      {/* Show either simple or detailed view */}
-      {!showDetailedView ? (
-        <ResultsSimpleExplanation results={results} />
-      ) : (
-        <>
-          {/* Per-Child Breakdown - Only show when 2+ children */}
-          {results.childResults.length > 1 && (
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>Per-Child Breakdown</Text>
-              <View style={styles.table}>
-                <View style={styles.tableRow}>
-                  <Text style={styles.tableHeader}>Child</Text>
-                  <Text style={[styles.tableHeader, styles.tableRight]}>Care A/B</Text>
-                  <Text style={[styles.tableHeader, styles.tableRight]}>Cost A/B</Text>
-                  <Text style={[styles.tableHeader, styles.tableRight]}>Liability</Text>
-                </View>
-                {results.childResults.map((child, i) => (
-                  <View key={i} style={styles.tableRow}>
-                    <Text style={styles.tableCell}>
-                      {i + 1}. {child.age}
-                    </Text>
-                    <Text style={[styles.tableCell, styles.tableRight]}>
-                      {child.roundedCareA}% / {child.roundedCareB}%
-                    </Text>
-                    <Text style={[styles.tableCell, styles.tableRight]}>
-                      {child.costPercA.toFixed(0)}% / {child.costPercB.toFixed(0)}%
-                    </Text>
-                    <Text style={[styles.tableCell, styles.tableRight]}>
-                      {child.liabilityA > 0 ? formatCurrency(child.liabilityA) : child.liabilityB > 0 ? formatCurrency(child.liabilityB) : "—"}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-
-          {/* Special Rate Notice - Only show when FAR/MAR applies */}
-          {results.rateApplied !== "None" && (
-            <View style={styles.specialRateCard}>
-              <Text style={styles.specialRateTitle}>Special Rate Applied</Text>
-              <Text style={styles.specialRateValue}>{results.rateApplied}</Text>
-              <Text style={styles.specialRateExplanation}>
-                {results.rateApplied.includes("FAR")
-                  ? "The Fixed Annual Rate applies because income is low but above the minimum threshold."
-                  : "The Minimum Annual Rate applies because income is very low and receiving Centrelink support."}
-              </Text>
-            </View>
-          )}
-
-          {/* Reference Values */}
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>
-              Reference Values ({results.year})
-            </Text>
-            <View style={styles.referenceGrid}>
-              <View style={styles.referenceRow}>
-                <Text style={styles.referenceLabel}>Self-Support Amount (SSA)</Text>
-                <Text style={styles.referenceValue}>{formatCurrency(results.SSA)}</Text>
-              </View>
-              <View style={styles.referenceRow}>
-                <Text style={styles.referenceLabel}>Fixed Annual Rate (FAR)</Text>
-                <Text style={styles.referenceValue}>{formatCurrency(results.FAR)}</Text>
-              </View>
-              <View style={styles.referenceRow}>
-                <Text style={styles.referenceLabel}>Min Annual Rate (MAR)</Text>
-                <Text style={styles.referenceValue}>{formatCurrency(results.MAR)}</Text>
-              </View>
-              <View style={styles.referenceRow}>
-                <Text style={styles.referenceLabel}>Combined CSI</Text>
-                <Text style={styles.referenceValue}>{formatCurrency(results.CCSI)}</Text>
-              </View>
-            </View>
-          </View>
-        </>
-      )}
+      <ResultsSimpleExplanation results={results} />
     </ScrollView>
   );
 
