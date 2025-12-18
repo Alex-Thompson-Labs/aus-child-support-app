@@ -135,6 +135,7 @@ Uses **expo-router** with file-based routing. The `app/` directory defines route
    - Difficulty ratings (Easy/Medium/Hard) based on developer's skill level
    - Realistic time estimates
    - Claude Code prompts for each task
+   - **Plan mode recommendation for EACH task** (Regular mode ✅ or Plan mode ✅)
    - Step-by-step breakdowns for complex tasks
    - Beginner tips and common pitfalls
    - **Recommended Claude model** at the top (use guidance from "Recommended Claude Model by Phase" section)
@@ -152,6 +153,7 @@ Uses **expo-router** with file-based routing. The `app/` directory defines route
 **Recommended Tool:** Claude Code (primary) + Desktop Commander (planning)
 **Recommended Model:** Sonnet 4.5 ✅
 **Thinking Mode:** Can turn OFF (simple integrations, manual processes)
+**Plan Mode:** Use for X, Y, Z tasks (see below for when to use)
 **Why:** Simple integrations, mostly manual processes, well-documented APIs
 
 **Goal:** Sign 2-3 pilot law firms and prove lead quality
@@ -167,6 +169,16 @@ Uses **expo-router** with file-based routing. The `app/` directory defines route
 - Use for planning email templates
 - Use for updating documentation
 - Use when stuck or need strategic advice
+
+## 🎯 When to Use Plan Mode
+
+For each task in this phase, guidance on whether to use Plan mode or Regular mode:
+
+**Task 1:** Regular mode ✅ (simple, single file)
+**Task 2:** Plan mode ✅ (multi-file, complex)
+**Task 3:** Regular mode ✅ (copy-paste)
+
+See docs/CLAUDE.md for complete Plan mode guidance.
 ```
 
 ### 💭 Thinking Mode Recommendations by Phase
@@ -188,6 +200,58 @@ Uses **expo-router** with file-based routing. The `app/` directory defines route
 - Turn OFF for: Implementation tasks, routine work
 
 **General rule:** ON when learning something new or when bugs are costly. OFF when tasks are routine or manual.
+
+### 🎯 Plan Mode vs Regular Mode in Claude Code
+
+**Plan Mode** makes Claude Code think through the task before executing. It costs more but is better for complex work.
+
+#### ✅ USE Plan Mode for:
+- **Multi-file changes** - "Implement the inquiry form screen" (changes 3+ files)
+- **Complex features** - Navigation setup, state management, integrations
+- **When stuck** - You've tried 2-3 times and it's not working
+- **Architecture decisions** - "How should I structure this feature?"
+- **Big tasks** - Anything marked 🔴 Hard or taking 2+ hours
+- **Phase transitions** - Starting a new major phase
+
+**Examples from Phase 1:**
+- Task 5 (Inquiry Form) - Use Plan mode ✅
+- Task 4 (Integrate Alert) - Maybe, if having trouble
+- Task 2 complex logic - Maybe, if confused
+
+#### ❌ DON'T use Plan Mode for:
+- **Single-line changes** - Adding one flag or constant
+- **Copy-paste tasks** - Instructions are crystal clear
+- **Small edits** - Updating one function with 5-10 lines
+- **Adding comments** - TODOs, documentation
+- **Simple prompts** - "Add this field to the interface"
+- **Debugging typos** - "Fix this TypeScript error"
+
+**Examples from Phase 1:**
+- Task 2d steps (adding individual triggers) - Regular mode ✅
+- Task 1 (Analytics wrapper) - Regular mode ✅
+- Task 3 (UI component) - Regular mode ✅
+
+#### 💰 Cost Difference
+- **Regular mode:** ~$0.01-0.05 per prompt
+- **Plan mode:** ~$0.10-0.50 per prompt (10x more)
+- **Phase 1 total:** $2-3 with smart Plan mode use vs $10-15 using it everywhere
+
+#### 📏 Rule of Thumb
+**Prompt length test:**
+- 1-3 sentences? → Regular mode
+- Full paragraph with multiple requirements? → Plan mode
+
+**Complexity test:**
+- Changes one thing? → Regular mode  
+- Changes multiple files/systems? → Plan mode
+
+**Effort test:**
+- Should take <30 min? → Regular mode
+- Will take 1+ hour? → Plan mode
+
+**Confidence test:**
+- You know exactly what you want? → Regular mode
+- You need help figuring out the approach? → Plan mode
 
 ### 🚨 CRITICAL: Update MASTER_PLAN.md as You Work
 **Whenever you complete a task from MASTER_PLAN.md, you MUST:**

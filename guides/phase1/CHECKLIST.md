@@ -3,9 +3,23 @@
 **Recommended Tool:** Claude Code (with Desktop Commander if needed)  
 **Recommended Model:** Sonnet 4.5 ✅  
 **Thinking Mode:** Keep ON for Phase 1 (worth the extra $1 for better debugging)
+**Plan Mode:** See each task for guidance (use sparingly to save cost)
 
 **Goal:** Prove parents click "Get Legal Help" buttons  
 **Success Metric:** >2% click-through rate on complexity alerts
+
+---
+
+## 🎯 Plan Mode Quick Reference
+
+**Use Regular Mode (default) for:**
+- Tasks 0, 1, 2 (individual steps), 3, 6, 7
+
+**Use Plan Mode for:**
+- Task 4 (if having trouble with integration)
+- Task 5 (inquiry form - definitely use Plan mode)
+
+See detailed guidance for each task below.
 
 ---
 
@@ -66,6 +80,7 @@
 **Difficulty:** 🟢 Easy (mostly admin work)  
 **Time:** 30-60 minutes  
 **Prerequisites:** None
+**Plan Mode:** Regular mode ✅ (simple commands)
 
 **Outcome:** 
 - Posthog account created
@@ -102,6 +117,7 @@ My API key is in .env as POSTHOG_API_KEY.
 **Difficulty:** 🟢 Easy (mostly copy-paste from AI)  
 **Time:** 30-60 minutes  
 **Prerequisites:** Task 0 complete
+**Plan Mode:** Regular mode ✅ (single file, clear instructions)
 
 **Outcome:**
 - `src/utils/analytics.ts` exists and works
@@ -156,6 +172,7 @@ useEffect(() => {
 **Difficulty:** 🟡 Medium (logic complexity, but AI helps)  
 **Time:** 2-3 hours  
 **Prerequisites:** Task 1 complete
+**Plan Mode:** Regular mode ✅ (each step is small and clear)
 
 **Outcome:**
 - `src/utils/complexity-detection.ts` has 5 working triggers
@@ -168,72 +185,241 @@ Logic that detects when a calculation is "complex" enough to show a lawyer alert
 **Claude Code Strategy:**
 Break this into small pieces. Don't ask AI to do it all at once.
 
-**Step 2a: Create the types (15 min)**
+### Step 2a: Create the types (15 min)
+
+**Ask Claude Code:**
 ```
 Create src/utils/complexity-detection.ts with:
-1. ComplexityFlags interface (6 boolean flags: highVariance, highValue, etc.)
+1. ComplexityFlags interface (6 boolean flags: highVariance, highValue, specialCircumstances, incomeSuspicion, courtDateUrgent, sharedCareDispute)
 2. AlertConfig interface (title, message, urgency, buttonText)
 3. Stub functions that return default values
 4. Add JSDoc comments explaining each flag
 ```
 
-**Step 2b: Implement HIGH VALUE trigger (30 min)**
+**Done when you see:**
+- File created
+- Two interfaces defined
+- Empty functions (they don't work yet, that's OK!)
+
+---
+
+### Step 2b: Implement HIGH VALUE trigger (30 min)
+
+**Ask Claude Code:**
 ```
 In complexity-detection.ts, implement detectComplexity():
+- Take results and formData as parameters
 - Check if results.finalPaymentAmount > 15000
-- Return true for highValue flag
-- Write a test case in comments showing it works
-```
-
-**Step 2c: Implement ALERT CONFIG (30 min)**
-```
-In complexity-detection.ts, implement getAlertConfig():
-- If highValue flag is true, return AlertConfig with:
-  - title: "💰 High-Value Case"
-  - message: "Your liability is $X/year. Cases over $15k benefit from verification."
-  - urgency: 'medium'
-  - buttonText: "Request Review"
-- Return null if no flags are true
-```
-
-**Step 2d: Add remaining triggers (60 min)**
-Do one at a time with Claude Code:
-- courtDateUrgent (highest priority)
-- highVariance (requires calculating alternate scenario)
-- specialCircumstances (check formData for flags)
-- sharedCareDispute (care between 35-65%)
-
-**Test each trigger:**
-Create a test file or add to comments:
-```typescript
-// Test high value
-const testResults = { finalPaymentAmount: 18000, ... };
-const flags = detectComplexity(testResults, mockFormData);
-console.log('High value trigger:', flags.highValue); // Should be true
+- Return ComplexityFlags object with highValue = true if it exceeds 15000
+- All other flags should be false for now
+- Add comments showing example: if payment is $18,000, highValue should be true
 ```
 
 **Done when:**
-- [ ] All 5 triggers implemented
-- [ ] getAlertConfig returns correct message for each trigger
-- [ ] You've manually tested each trigger with console.log
+- Function exists
+- Returns an object with all 6 flags
+- highValue flag works correctly
+
+---
+
+### Step 2c: Implement ALERT CONFIG (30 min)
+
+**THE CONFUSING PART - HERE'S WHAT TO DO:**
+
+You need a function that creates the alert message. Here's what it means:
+
+**Ask Claude Code:**
+```
+In complexity-detection.ts, implement getAlertConfig():
+
+This function takes:
+- flags: the ComplexityFlags object from detectComplexity()
+- results: the calculation results
+
+It should:
+1. Check if flags.highValue is true
+2. If yes, return an AlertConfig object like this:
+   {
+     title: "💰 High-Value Case",
+     message: "Your liability is $[amount]/year. Cases over $15k benefit from verification.",
+     urgency: 'medium',
+     buttonText: "Request Review"
+   }
+   (Replace [amount] with the actual results.finalPaymentAmount)
+
+3. If no flags are true, return null
+
+Just do the highValue case for now. We'll add others later.
+```
+
+**What this means in plain English:**
+- You're creating a function that looks at the flags
+- If something complex was detected, it creates a message to show the user
+- If nothing complex, it returns null (no message needed)
+
+**Done when:**
+- Function exists
+- Returns null when highValue is false
+- Returns an alert object when highValue is true
+- The message includes the actual dollar amount
+
+---
+
+### Step 2d: Add remaining triggers (ONE AT A TIME!)
+
+**THIS IS WHERE YOU'RE STUCK - HERE'S THE CLEAR PLAN:**
+
+You're going to do 4 more triggers, ONE AT A TIME. Don't do them all together!
+
+#### 2d-1: Court Date Urgent (30 min)
+
+**Ask Claude Code:**
+```
+In detectComplexity() function, add courtDateUrgent trigger:
+
+1. For now, just set it to false (we'll make it work in Phase 2 when we have the form field)
+2. Add a comment: "// TODO: Check if formData.courtDate is within 30 days"
+```
+
+**Then update getAlertConfig():**
+```
+In getAlertConfig(), add courtDateUrgent check BEFORE the highValue check:
+
+if (flags.courtDateUrgent) {
+  return {
+    title: "⚖️ URGENT: Court Date Soon",
+    message: "You need legal advice BEFORE your court appearance.",
+    urgency: 'high',
+    buttonText: "Get Emergency Consultation"
+  };
+}
+
+// Then keep the existing highValue check below it
+```
+
+**Why before?** Court dates are more urgent than high value, so we check them first.
+
+**Done:** Court date trigger is stubbed (not working yet, but ready for Phase 2)
+
+---
+
+#### 2d-2: High Variance (skip for now!)
+
+**This one is HARD. Skip it for now. We'll come back to it.**
+
+---
+
+#### 2d-3: Special Circumstances (30 min)
+
+**Ask Claude Code:**
+```
+In detectComplexity(), add specialCircumstances check:
+
+For now, just set to false with a comment:
+// TODO: Check if formData has private school costs, medical expenses, etc.
+```
+
+**Then in getAlertConfig():**
+```
+Add this check after courtDateUrgent but before highValue:
+
+if (flags.specialCircumstances) {
+  return {
+    title: "📋 Special Circumstances Detected",
+    message: "Cases with additional costs often benefit from legal review.",
+    urgency: 'medium',
+    buttonText: "Request Review"
+  };
+}
+```
+
+**Done:** Special circumstances is stubbed
+
+---
+
+#### 2d-4: Shared Care Dispute (30 min)
+
+**Ask Claude Code:**
+```
+In detectComplexity(), add sharedCareDispute check:
+
+Check if care percentage is between 35% and 65%:
+- Calculate total care nights from formData.children
+- If any child has care split between 35-65% for either parent, set flag to true
+```
+
+**Then in getAlertConfig():**
+```
+Add after specialCircumstances:
+
+if (flags.sharedCareDispute) {
+  return {
+    title: "⚖️ Care Arrangement in Dispute Zone",
+    message: "Shared care between 35-65% is often contested. Consider professional advice.",
+    urgency: 'medium',
+    buttonText: "Get Guidance"
+  };
+}
+```
+
+**Done:** All basic triggers are implemented (except highVariance which we're skipping)
+
+---
+
+### Step 2e: Test your work (30 min)
+
+**DON'T CREATE A SEPARATE TEST FILE!** That's confusing for beginners.
+
+Instead, test right in your code with comments:
+
+**Ask Claude Code:**
+```
+At the bottom of complexity-detection.ts, add commented-out test cases:
+
+/*
+// TEST CASE 1: High Value
+const testResults1 = { finalPaymentAmount: 18000, ...other fields... };
+const testFlags1 = detectComplexity(testResults1, {});
+console.log('Test 1 - High Value:', testFlags1.highValue); // Should be true
+
+const alert1 = getAlertConfig(testFlags1, testResults1);
+console.log('Alert 1:', alert1?.title); // Should show high value alert
+
+// TEST CASE 2: Normal Value
+const testResults2 = { finalPaymentAmount: 8000, ...other fields... };
+const testFlags2 = detectComplexity(testResults2, {});
+console.log('Test 2 - Normal:', testFlags2.highValue); // Should be false
+
+const alert2 = getAlertConfig(testFlags2, testResults2);
+console.log('Alert 2:', alert2); // Should be null
+*/
+```
+
+**To actually run the tests:**
+1. Uncomment the test code
+2. Run your app
+3. Check the console logs
+4. If they look right, comment them out again
+
+**Done when:**
+- [ ] High value case returns correct flags
+- [ ] Normal case returns correct flags  
+- [ ] Alert shows for high value
+- [ ] Alert is null for normal case
 - [ ] No TypeScript errors
 
-**Common Issues:**
-- "How do I calculate care variance?" → See MASTER_PLAN.md Appendix A for logic
-- Triggers not firing → console.log the flags to debug
-- TypeScript errors on formData → Add proper type from calculator.ts
+---
 
-**Beginner Tips:**
-- **Test as you go** - don't build everything then test
-- **Use console.log liberally** - it's not cheating, it's debugging
-- **One trigger at a time** - Don't try to do all 5 at once
-- **Copy existing code** - Look at how useCalculator.ts handles formData
+**SUMMARY OF TASK 2:**
 
-**Why this is Medium difficulty:**
-- Multiple conditions to check
-- Need to understand the business logic (when to show alerts)
-- Requires testing with different scenarios
-- But AI can write most of the code if you break it down
+You now have:
+- ✅ Types defined (ComplexityFlags, AlertConfig)
+- ✅ detectComplexity() working for highValue
+- ✅ getAlertConfig() returning alerts
+- ✅ 4 triggers stubbed (ready for Phase 2)
+- ✅ Basic testing done
+
+**Move on to Task 3!**
 
 ---
 
@@ -241,6 +427,7 @@ console.log('High value trigger:', flags.highValue); // Should be true
 **Difficulty:** 🟢 Easy (mostly styling)  
 **Time:** 1-2 hours  
 **Prerequisites:** Task 2 complete
+**Plan Mode:** Regular mode ✅ (single component, clear requirements)
 
 **Outcome:**
 - `src/components/LawyerAlert.tsx` displays nicely
@@ -303,6 +490,7 @@ Add to CalculatorResults.tsx temporarily:
 **Difficulty:** 🟡 Medium (integration complexity)  
 **Time:** 1-2 hours  
 **Prerequisites:** Tasks 1, 2, 3 complete
+**Plan Mode:** Start with Regular mode. Use Plan mode if stuck after 2-3 attempts.
 
 **Outcome:**
 - CalculatorResults shows LawyerAlert when triggers fire
@@ -385,6 +573,7 @@ Test by changing inputs to trigger each alert:
 **Difficulty:** 🔴 Hard (lots of moving parts)  
 **Time:** 3-5 hours  
 **Prerequisites:** Tasks 1-4 complete
+**Plan Mode:** Use Plan mode ✅ (multi-file changes, navigation, complex state management)
 
 **Outcome:**
 - LawyerInquiryScreen navigable from calculator
@@ -519,6 +708,7 @@ In handleSubmit, after validation:
 **Difficulty:** 🟡 Medium (tedious but important)  
 **Time:** 2-3 hours  
 **Prerequisites:** Tasks 0-5 complete
+**Plan Mode:** Regular mode ✅ (manual testing, no code generation needed)
 
 **Outcome:**
 - Complete flow tested: calculation → alert → click → form → submit
@@ -580,6 +770,7 @@ Open `guides/phase1/TESTING.md` and go through it systematically.
 **Difficulty:** 🟢 Easy (but requires patience)  
 **Time:** 3-5 hours spread over a week  
 **Prerequisites:** Task 6 complete
+**Plan Mode:** Regular mode ✅ (no coding, just posting and monitoring)
 
 **Outcome:**
 - App posted in 3-5 Australian forums/groups

@@ -5,6 +5,7 @@
 // that should trigger "Get Legal Help" prompts
 
 import type { CalculationResults } from '@/types/calculator';
+import { convertCareToPercentage } from './child-support-calculations';
 
 /**
  * Flags indicating different types of complexity detected in child support calculations
@@ -115,13 +116,22 @@ export function detectComplexity(
   // Check for high-value cases (annual payment > $15k)
   const isHighValue = results.finalPaymentAmount > 15000;
 
+  // Check for shared care dispute (care percentage between 35-65% for any child)
+  const hasSharedCareDispute = formData.children?.some((child: any) => {
+    const carePercA = convertCareToPercentage(child.careAmountA, child.carePeriod);
+    const carePercB = convertCareToPercentage(child.careAmountB, child.carePeriod);
+
+    return (carePercA >= 35 && carePercA <= 65) ||
+           (carePercB >= 35 && carePercB <= 65);
+  }) || false;
+
   return {
     highVariance: false, // TODO: Calculate care variance
     highValue: isHighValue,
-    specialCircumstances: false, // TODO: Check formData flags
+    specialCircumstances: false, // TODO: Check if formData has private school costs, medical expenses, etc.
     incomeSuspicion: false, // TODO: Check formData flags
-    courtDateUrgent: false, // TODO: Check formData flags
-    sharedCareDispute: false, // TODO: Check care percentages
+    courtDateUrgent: false, // TODO: Check if formData.courtDate is within 30 days
+    sharedCareDispute: hasSharedCareDispute,
   };
 }
 
@@ -148,6 +158,36 @@ export function getAlertConfig(
       message: "You need legal advice BEFORE your court appearance.",
       urgency: 'high',
       buttonText: "Get Emergency Consultation"
+    };
+  }
+
+  // Priority 2: Special circumstances
+  if (flags.specialCircumstances) {
+    return {
+      title: "📋 Special Circumstances Detected",
+      message: "Cases with additional costs often benefit from legal review.",
+      urgency: 'medium',
+      buttonText: "Request Review"
+    };
+  }
+
+  // Priority 3: Shared care dispute
+  if (flags.sharedCareDispute) {
+    return {
+      title: "⚖️ Care Arrangement in Dispute Zone",
+      message: "Shared care between 35-65% is often contested. Consider professional advice.",
+      urgency: 'medium',
+      buttonText: "Get Guidance"
+    };
+  }
+
+  // Priority 4: High value cases
+  if (flags.highValue) {
+    return {
+      title: "💰 High-Value Case",
+      message: `Your liability is $${results.finalPaymentAmount.toLocaleString()}/year. Cases over $15k benefit from verification.`,
+      urgency: 'medium',
+      buttonText: "Request Review"
     };
   }
 
