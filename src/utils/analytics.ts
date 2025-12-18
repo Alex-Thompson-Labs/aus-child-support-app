@@ -63,9 +63,14 @@ export function useAnalytics() {
     track: (event: string, properties?: AnalyticsProperties): void => {
       if (__DEV__) {
         console.log('[Analytics] Track event:', event, properties);
+        console.log('[Analytics] PostHog instance:', posthog ? 'AVAILABLE' : 'NULL');
       }
       if (posthog) {
+        console.log('[Analytics] Calling posthog.capture()...');
         posthog.capture(event, properties);
+        // Flush immediately to ensure event is sent (especially important for form submissions)
+        posthog.flush();
+        console.log('[Analytics] posthog.capture() and flush() called successfully');
       } else {
         warnNotInitialized();
       }

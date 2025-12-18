@@ -13,7 +13,7 @@ import {
     View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Analytics } from '../src/utils/analytics';
+import { useAnalytics } from '../src/utils/analytics';
 
 // ============================================================================
 // Types
@@ -183,6 +183,7 @@ function validateConsent(consent: boolean): string | undefined {
 export default function LawyerInquiryScreen() {
     const params = useLocalSearchParams();
     const router = useRouter();
+    const analytics = useAnalytics();
 
     // Parse route params with safe defaults
     const liability = typeof params.liability === 'string' ? params.liability : '0';
@@ -221,6 +222,9 @@ export default function LawyerInquiryScreen() {
     const emailRef = useRef<TextInput>(null);
     const phoneRef = useRef<TextInput>(null);
     const messageRef = useRef<TextInput>(null);
+
+    // Capture mount timestamp for time_to_submit calculation
+    const mountTimeRef = useRef<number>(Date.now());
 
     /**
      * Validate a single field
@@ -357,12 +361,15 @@ export default function LawyerInquiryScreen() {
         };
 
         try {
-            // Track analytics
-            Analytics.track('inquiry_form_submitted', {
-                trigger,
-                liability: parseFloat(liability) || 0,
+            // Track analytics with correct property names
+            const timeToSubmit = Math.round((Date.now() - mountTimeRef.current) / 1000);
+
+            analytics.track('inquiry_form_submitted', {
+                trigger_type: trigger || 'unknown',
+                annual_liability: parseFloat(liability) || 0,
                 has_phone: !!leadData.phone,
-                message_length: leadData.message.length
+                message_length: leadData.message.length,
+                time_to_submit: timeToSubmit
             });
         } catch (error) {
             // Log but don't fail submission on analytics error
@@ -389,7 +396,7 @@ export default function LawyerInquiryScreen() {
                 router.replace('/');
             }
         }, 2500);
-    }, [isSubmitting, validateAllFields, name, email, phone, message, liability, trigger, incomeA, incomeB, children, router]);
+    }, [isSubmitting, validateAllFields, name, email, phone, message, liability, trigger, incomeA, incomeB, children, router, analytics]);
 
     /**
      * Format currency for display
