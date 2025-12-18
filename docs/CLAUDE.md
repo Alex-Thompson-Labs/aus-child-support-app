@@ -138,6 +138,8 @@ Uses **expo-router** with file-based routing. The `app/` directory defines route
    - Step-by-step breakdowns for complex tasks
    - Beginner tips and common pitfalls
    - **Recommended Claude model** at the top (use guidance from "Recommended Claude Model by Phase" section)
+   - **Thinking mode recommendation** (ON for complex phases, OFF for simple ones)
+   - **Tool recommendation** (Claude Code vs Desktop Commander usage)
 
 4. **Update** `guides/README.md` to reference the new phase
 5. **Update** MASTER_PLAN.md to mark the phase as active
@@ -147,12 +149,45 @@ Uses **expo-router** with file-based routing. The `app/` directory defines route
 ```markdown
 # Phase 2: Pilot Program - Implementation Guide
 
+**Recommended Tool:** Claude Code (primary) + Desktop Commander (planning)
 **Recommended Model:** Sonnet 4.5 ✅
+**Thinking Mode:** Can turn OFF (simple integrations, manual processes)
 **Why:** Simple integrations, mostly manual processes, well-documented APIs
 
 **Goal:** Sign 2-3 pilot law firms and prove lead quality
 **Success Metric:** >20% consultation rate, >5% client conversion rate
+
+## 🤖 Which Tool to Use?
+
+**Primary: Claude Code**
+- Use for all code implementation
+- Better for multi-file editing
+
+**Secondary: Desktop Commander**
+- Use for planning email templates
+- Use for updating documentation
+- Use when stuck or need strategic advice
 ```
+
+### 💭 Thinking Mode Recommendations by Phase
+
+**Phase 1:** Keep ON ✅
+- Reason: Complex logic, learning curve, form screen is hard
+- Worth: Extra $1 saves hours of debugging
+
+**Phase 2:** Can turn OFF ⚪
+- Reason: Simple integrations, manual processes, email templates
+- Worth: Save $0.50-1, tasks are straightforward
+
+**Phase 3:** Keep ON ✅
+- Reason: Payment security, Stripe integration critical
+- Worth: Extra $1-2 prevents costly payment bugs
+
+**Phase 4:** Situational ⚪
+- Keep ON for: Architecture decisions, ML features, optimization
+- Turn OFF for: Implementation tasks, routine work
+
+**General rule:** ON when learning something new or when bugs are costly. OFF when tasks are routine or manual.
 
 ### 🚨 CRITICAL: Update MASTER_PLAN.md as You Work
 **Whenever you complete a task from MASTER_PLAN.md, you MUST:**

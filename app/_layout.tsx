@@ -2,6 +2,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import { PostHogProvider } from 'posthog-react-native';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -12,7 +13,13 @@ export const unstable_settings = {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
-  return (
+  // Get PostHog configuration from environment variables
+  // TODO: Move to EXPO_PUBLIC_ prefixed env vars for production
+  const posthogApiKey = process.env.EXPO_PUBLIC_POSTHOG_API_KEY || 'phc_HsAJl0DQIvAd64OQn37pPPAIG1Yo1WRu7QQGBo0Bv9j';
+  const posthogHost = process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com';
+  const enableAnalytics = process.env.EXPO_PUBLIC_ENABLE_ANALYTICS !== 'false';
+
+  const content = (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -21,4 +28,22 @@ export default function RootLayout() {
       <StatusBar style="auto" />
     </ThemeProvider>
   );
+
+  // Only enable PostHog if API key is provided and analytics is enabled
+  if (enableAnalytics && posthogApiKey) {
+    return (
+      <PostHogProvider
+        apiKey={posthogApiKey}
+        options={{
+          host: posthogHost,
+          enableSessionReplay: true,
+        }}
+        autocapture
+      >
+        {content}
+      </PostHogProvider>
+    );
+  }
+
+  return content;
 }

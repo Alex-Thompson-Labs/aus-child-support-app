@@ -23,6 +23,34 @@ Practical guides for building and troubleshooting the app.
 
 ---
 
+## 💭 Thinking Mode Settings
+
+**Phase 1:** Keep ON ✅ (worth extra $1 for better debugging)  
+**Phase 2:** Can turn OFF (simple integrations)  
+**Phase 3:** Keep ON (payment security critical)  
+**Phase 4:** Situational (ON for architecture, OFF for routine work)
+
+---
+
+## 🛠️ Which Tool to Use?
+
+**Claude Code (claude.ai/code):**
+- ✅ Best for writing actual code
+- ✅ Multi-file editing
+- ✅ Integrated with editor
+- **Use for:** All implementation tasks (Tasks 1-5)
+
+**Desktop Commander (this MCP chat):**
+- ✅ Best for planning and strategy
+- ✅ File organization
+- ✅ Documentation updates
+- ✅ Getting unstuck
+- **Use for:** Guidance, planning, doc updates
+
+**Cost:** Similar, but Claude Code is better for coding specifically.
+
+---
+
 ## 🚀 Phase 1 (Current)
 
 **Location:** `guides/phase1/`

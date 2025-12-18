@@ -1,36 +1,44 @@
 // Analytics wrapper for Posthog
-// TODO: Implement this in Day 1-2 of Phase 1
-//
-// Setup:
-// 1. Sign up at https://posthog.com
-// 2. Add POSTHOG_API_KEY to .env
-// 3. npm install posthog-react-native
-//
-// Usage:
-// import { Analytics } from '@/utils/analytics';
-// Analytics.track('event_name', { property: 'value' });
+// Usage in components:
+// import { useAnalytics } from '@/src/utils/analytics';
+// const analytics = useAnalytics();
+// analytics.track('event_name', { property: 'value' });
 
-import { POSTHOG_API_KEY, POSTHOG_HOST } from '@env';
+import { usePostHog } from 'posthog-react-native';
 
-// Posthog will be imported here after installation
-// import Posthog from 'posthog-react-native';
+// Hook for use in components
+export function useAnalytics() {
+  const posthog = usePostHog();
 
-export const Analytics = {
-  track: (event: string, properties?: Record<string, any>) => {
-    // TODO: Implement Posthog tracking
-    console.log('[Analytics] Event:', event, properties);
-  },
-  
-  identify: (userId: string, traits?: Record<string, any>) => {
-    // TODO: Implement Posthog identify
-    console.log('[Analytics] Identify:', userId, traits);
-  },
-  
-  screen: (name: string, properties?: Record<string, any>) => {
-    // TODO: Implement Posthog screen tracking
-    console.log('[Analytics] Screen:', name, properties);
-  }
-};
+  return {
+    track: (event: string, properties?: Record<string, any>) => {
+      console.log('[Analytics] Track event:', event, properties);
+      if (posthog) {
+        posthog.capture(event, properties);
+      } else {
+        console.warn('[Analytics] PostHog not initialized');
+      }
+    },
+
+    identify: (userId: string, traits?: Record<string, any>) => {
+      console.log('[Analytics] Identify user:', userId, traits);
+      if (posthog) {
+        posthog.identify(userId, traits);
+      } else {
+        console.warn('[Analytics] PostHog not initialized');
+      }
+    },
+
+    screen: (name: string, properties?: Record<string, any>) => {
+      console.log('[Analytics] Screen view:', name, properties);
+      if (posthog) {
+        posthog.screen(name, properties);
+      } else {
+        console.warn('[Analytics] PostHog not initialized');
+      }
+    }
+  };
+}
 
 // Events to track (Phase 1):
 // - calculation_completed

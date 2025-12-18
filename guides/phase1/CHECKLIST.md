@@ -1,7 +1,49 @@
 # Phase 1: Validation - Implementation Guide
 
+**Recommended Tool:** Claude Code (with Desktop Commander if needed)  
+**Recommended Model:** Sonnet 4.5 ✅  
+**Thinking Mode:** Keep ON for Phase 1 (worth the extra $1 for better debugging)
+
 **Goal:** Prove parents click "Get Legal Help" buttons  
 **Success Metric:** >2% click-through rate on complexity alerts
+
+---
+
+## 🤖 Which Tool to Use?
+
+**Primary: Claude Code** (claude.ai/code)
+- ✅ Best for writing code files
+- ✅ Integrated with your editor
+- ✅ Can read/edit multiple files at once
+- ✅ Better for implementation tasks
+- **Use for:** Tasks 1-5 (all code implementation)
+
+**Secondary: Desktop Commander (this chat)**
+- ✅ Best for planning and advice
+- ✅ File organization and management
+- ✅ Updating documentation
+- ✅ Explaining concepts
+- **Use for:** Getting unstuck, planning next steps, updating docs
+
+**Cost Comparison:**
+- Claude Code: ~$2-3 for Phase 1 (with thinking ON)
+- Desktop Commander: Similar, but better for planning than coding
+- **Strategy:** Use Claude Code for coding, Desktop Commander for guidance
+
+---
+
+## 💭 Thinking Mode Guidance
+
+**Phase 1: Keep ON** ✅
+- Complex logic (complexity detection)
+- Hard tasks (form screen)
+- Debugging sessions
+- You're learning - worth the $1 extra
+
+**When to turn OFF:**
+- Simple UI components (Task 3)
+- Basic questions
+- Phase 2 (simpler work)
 
 ---
 
