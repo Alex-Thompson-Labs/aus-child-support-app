@@ -403,7 +403,7 @@ console.log('Alert 2:', alert2);
 
 **2. Run your app:**
 ```bash
-npm start
+npx expo start
 ```
 
 **3. Check the console logs in your terminal**
