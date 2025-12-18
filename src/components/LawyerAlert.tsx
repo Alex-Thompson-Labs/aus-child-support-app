@@ -1,9 +1,7 @@
 // Lawyer Alert Component
-// TODO: Implement this in Day 1-2 of Phase 1
-//
 // Displays complexity alerts with "Get Legal Help" buttons
 
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Analytics } from '../utils/analytics';
 
@@ -15,6 +13,11 @@ interface LawyerAlertProps {
   onPress: () => void;
 }
 
+// Default values for edge case handling
+const DEFAULT_TITLE = 'Important Information';
+const DEFAULT_MESSAGE = 'You may benefit from professional legal advice.';
+const DEFAULT_BUTTON_TEXT = 'Get Help';
+
 export function LawyerAlert({
   title,
   message,
@@ -22,32 +25,91 @@ export function LawyerAlert({
   buttonText,
   onPress
 }: LawyerAlertProps) {
-  const handlePress = () => {
-    console.log('[LawyerAlert Component] handlePress called');
-    console.log('[LawyerAlert Component] onPress function:', typeof onPress);
+  // Prevent double-taps with loading state
+  const [isPressed, setIsPressed] = useState(false);
 
-    // Track analytics before executing onPress
-    Analytics.track('lawyer_button_clicked', {
-      alert_title: title,
-      urgency,
-      button_text: buttonText,
-    });
+  // Handle edge cases - use defaults for empty strings
+  const displayTitle = title?.trim() || DEFAULT_TITLE;
+  const displayMessage = message?.trim() || DEFAULT_MESSAGE;
+  const displayButtonText = buttonText?.trim() || DEFAULT_BUTTON_TEXT;
 
-    console.log('[LawyerAlert Component] About to call onPress()');
-    onPress();
-    console.log('[LawyerAlert Component] onPress() completed');
-  };
+  const handlePress = useCallback(() => {
+    // Prevent double-taps
+    if (isPressed) {
+      return;
+    }
+
+    // Guard against undefined onPress
+    if (typeof onPress !== 'function') {
+      console.error('[LawyerAlert] onPress is not a function');
+      return;
+    }
+
+    setIsPressed(true);
+
+    if (__DEV__) {
+      console.log('[LawyerAlert] Button pressed');
+    }
+
+    // Track analytics - wrapped in try/catch for safety
+    try {
+      Analytics.track('lawyer_button_clicked', {
+        alert_title: displayTitle,
+        urgency,
+        button_text: displayButtonText,
+      });
+    } catch (error) {
+      console.error('[LawyerAlert] Analytics tracking failed:', error);
+    }
+
+    // Execute onPress callback
+    try {
+      onPress();
+    } catch (error) {
+      console.error('[LawyerAlert] onPress callback failed:', error);
+    }
+
+    // Re-enable button after a short delay
+    setTimeout(() => setIsPressed(false), 1000);
+  }, [isPressed, onPress, displayTitle, urgency, displayButtonText]);
 
   const isHighUrgency = urgency === 'high';
   const borderColor = isHighUrgency ? '#ef4444' : '#334155';
   const buttonColor = isHighUrgency ? '#ef4444' : '#2563eb';
 
+  // Accessibility: Announce urgency level
+  const urgencyLabel = isHighUrgency ? 'Urgent alert' : 'Alert';
+
   return (
-    <View style={[styles.container, { borderColor }]}>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.message}>{message}</Text>
-      <Pressable style={[styles.button, { backgroundColor: buttonColor }]} onPress={handlePress}>
-        <Text style={styles.buttonText}>{buttonText}</Text>
+    <View
+      style={[styles.container, { borderColor }]}
+      accessible={true}
+      accessibilityRole="alert"
+      accessibilityLabel={`${urgencyLabel}: ${displayTitle}. ${displayMessage}`}
+    >
+      <Text
+        style={styles.title}
+        accessibilityRole="header"
+      >
+        {displayTitle}
+      </Text>
+      <Text style={styles.message}>{displayMessage}</Text>
+      <Pressable
+        style={({ pressed }) => [
+          styles.button,
+          { backgroundColor: buttonColor },
+          pressed && styles.buttonPressed,
+          isPressed && styles.buttonDisabled
+        ]}
+        onPress={handlePress}
+        disabled={isPressed}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel={displayButtonText}
+        accessibilityHint="Navigates to lawyer inquiry form"
+        accessibilityState={{ disabled: isPressed }}
+      >
+        <Text style={styles.buttonText}>{displayButtonText}</Text>
       </Pressable>
     </View>
   );
@@ -80,6 +142,13 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 20,
     alignItems: 'center',
+  },
+  buttonPressed: {
+    opacity: 0.8,
+    transform: [{ scale: 0.98 }],
+  },
+  buttonDisabled: {
+    opacity: 0.6,
   },
   buttonText: {
     color: '#ffffff',

@@ -1,12 +1,59 @@
 # Phase 1: Validation - Implementation Guide
 
 **Recommended Tool:** Claude Code (with Desktop Commander if needed)  
-**Recommended Model:** Sonnet 4.5 ✅  
+**Recommended Model:** Sonnet 4.5 ✅ (or Opus 4 for complex tasks)  
 **Thinking Mode:** Keep ON for Phase 1 (worth the extra $1 for better debugging)
 **Plan Mode:** See each task for guidance (use sparingly to save cost)
 
 **Goal:** Prove parents click "Get Legal Help" buttons  
 **Success Metric:** >2% click-through rate on complexity alerts
+
+---
+
+## 💡 CRITICAL: How to Prompt Claude for Production Code
+
+**The Problem:** When you ask Claude to "create a component", it builds a WORKING component. But working ≠ production-ready.
+
+**The Solution:** Always add these requirements to EVERY code generation task:
+
+```
+Before you write code:
+1. What could go wrong? (error cases)
+2. What am I forgetting? (loading states, validation, edge cases)
+3. Is this production-ready or just a demo?
+
+Then implement with:
+- Proper TypeScript types (no 'any')
+- Error handling for all failure cases
+- Loading states where needed
+- Input validation and sanitization
+- Edge case handling
+```
+
+**Example GOOD Prompt:**
+```
+Create src/components/LawyerAlert.tsx with:
+1. Props: title, message, urgency, buttonText, onPress
+2. Production-ready: proper types, error boundaries, accessibility
+3. Think critically: what edge cases am I missing?
+```
+
+**Example BAD Prompt:**
+```
+Create src/components/LawyerAlert.tsx
+```
+
+**Apply this to EVERY task below.** Claude will only build production-quality code if you explicitly ask for it.
+
+**🔥 WHY THIS MATTERS:**
+We tested this. When Claude builds a form without these instructions, it:
+- Has no error state management ❌
+- Has no validation ❌
+- Has no loading states ❌
+- Uses type assertions (as string) instead of proper validation ❌
+- Has no success/failure handling ❌
+
+The same Claude, with better prompts, builds production-ready code. **The difference is in YOUR prompt, not in Claude's capabilities.**
 
 ---
 
@@ -163,8 +210,16 @@ Create src/utils/analytics.ts that:
    - track(event, properties)
    - identify(userId, traits)
    - screen(name, properties)
-4. Use TypeScript for all types
-5. Add console.log for debugging
+4. Use proper TypeScript types (no 'any')
+5. Add error handling for initialization failures
+6. Add console.log for debugging
+
+CRITICAL: Think about what could go wrong:
+- What if API key is missing?
+- What if Posthog initialization fails?
+- What if network is offline?
+
+Build production-ready code, not just a demo.
 ```
 
 **Test it works:**
@@ -515,6 +570,13 @@ Create src/components/LawyerAlert.tsx:
 4. Add subtle border-radius: 12px
 5. Padding: 20px
 6. When button pressed, call Analytics.track before onPress
+
+PRODUCTION REQUIREMENTS:
+- Proper TypeScript interface for props (no 'any')
+- What if onPress is undefined? Handle gracefully
+- What if title/message are empty? Show reasonable defaults
+- Add accessibility labels for screen readers
+- Disable button during press to prevent double-taps
 ```
 
 **Testing:**
@@ -530,11 +592,11 @@ Add to CalculatorResults.tsx temporarily:
 ```
 
 **Done when:**
-- [ ] Component renders without errors
-- [ ] Looks good on iPhone simulator
-- [ ] Looks good on Android emulator (if you have one)
-- [ ] Button click logs to console
-- [ ] Colors match design system
+- [x] Component renders without errors
+- [x] Looks good on iPhone simulator
+- [x] Looks good on Android emulator (if you have one)
+- [x] Button click logs to console
+- [x] Colors match design system
 
 **Common Issues:**
 - Button not clickable → Use Pressable, not TouchableOpacity
@@ -600,14 +662,72 @@ In the JSX, after the results summary, add:
 )}
 ```
 
-**Step 4c: Test different scenarios (30-60 min)**
+**Step 4c: Add Court Date Feature (60-90 min)**
+
+The court date trigger needs a field on the calculator screen to collect the date.
+
+Ask Claude Code:
+```
+Add court date functionality to the calculator:
+
+1. Create src/utils/date-utils.ts with:
+   - parseAustralianDate(dateStr): Converts dd/mm/yyyy to Date object
+   - isWithinDays(dateStr, days): Checks if date within N days
+   - isValidAustralianDate(dateStr): Validates format
+   - IMPORTANT: Use Australian date format dd/mm/yyyy (NOT yyyy-mm-dd)
+
+2. Update src/hooks/useCalculator.ts:
+   - Add courtDate?: string to CalculatorFormState interface
+   - Add to initialFormState
+
+3. Update src/screens/CalculatorScreen.tsx:
+   - Add handleCourtDateChange handler
+   - Pass courtDate and handler to CalculatorForm
+
+4. Update src/components/CalculatorForm.tsx:
+   - Add courtDate prop and onCourtDateChange to interface
+   - Add court date input field after Relevant Dependents section
+   - Placeholder: "dd/mm/yyyy"
+   - Add help tooltip explaining Australian format
+   - Add styles for courtDateInput
+
+5. Update src/utils/complexity-detection.ts:
+   - Import isWithinDays from date-utils
+   - Check if formData.courtDate is within 30 days
+   - Set courtDateUrgent flag accordingly
+   - Add console.log for debugging
+
+PRODUCTION REQUIREMENTS:
+- Validate date format (dd/mm/yyyy only)
+- Handle invalid dates gracefully (31/02/2024 should return null)
+- Handle empty/undefined dates (no error)
+- Court date is optional, not required
+- Alert shows highest priority (court date > high value)
+
+Test dates from today (December 18, 2024):
+- Within 30 days (should alert): 07/01/2025, 15/01/2025
+- Over 30 days (no alert): 15/03/2025, 01/06/2025
+```
+
+**Done when:**
+- [ ] Court date field appears on calculator screen
+- [ ] Can enter dates in dd/mm/yyyy format
+- [ ] Date within 30 days shows RED "URGENT: Court Date Soon" alert
+- [ ] Date over 30 days shows no court date alert
+- [ ] Empty court date works fine (no errors)
+- [ ] Console logs show courtDateUrgent flag correctly
+
+---
+
+**Step 4d: Test different scenarios (30-60 min)**
 Test by changing inputs to trigger each alert:
 - High value: Set income to >$150k
-- Court date: Add a form field (or fake it in formData)
-- Variance: Change care nights
+- Court date: Enter date within 30 days (e.g., 07/01/2025)
+- Shared care: Set care nights between 35-65%
 
 **Done when:**
 - [ ] Alert shows for high value cases
+- [ ] Alert shows for urgent court dates
 - [ ] Alert hidden for normal cases
 - [ ] Button click logged in Posthog
 - [ ] Console shows which trigger fired
@@ -697,13 +817,42 @@ Wire up onChange handlers
 ```
 
 **Step 5d: Validation (30-45 min)**
+
+**CRITICAL:** This is where previous implementation failed. Don't just build validation - build a PRODUCTION validation system.
+
+Ask Claude Code:
 ```
-Create handleSubmit function that:
-1. Checks name.trim().length > 0
-2. Checks email.includes('@')
-3. Checks consent === true
-4. Shows alert if validation fails
-5. Proceeds to submit if valid
+Implement form validation for LawyerInquiryScreen with:
+
+REQUIREMENTS:
+1. Error state management:
+   - Add errors state: useState<{[key: string]: string}>({})
+   - Display errors below each field in red text
+   
+2. Validation rules:
+   - name: Required, min 2 chars, trim whitespace
+   - email: Required, valid email format (regex), trim whitespace
+   - phone: Optional, but if provided must be valid format
+   - message: Required, min 10 chars, max 500 chars
+   - consent: Must be checked
+   
+3. Validation timing:
+   - On submit: Validate all fields
+   - On blur: Validate individual field (after user leaves it)
+   - Clear error when user starts typing
+   
+4. User feedback:
+   - Show specific error messages (not just "invalid")
+   - Disable submit button if form has errors
+   - Show loading state during validation
+
+5. Edge cases to handle:
+   - What if user pastes 10,000 characters?
+   - What if email is "test@"?
+   - What if they spam the submit button?
+   - What if name is just spaces?
+
+Build production-ready validation, not a demo.
 ```
 
 **Step 5e: Display calculation summary (30 min)**
@@ -718,13 +867,46 @@ Style as a card above the form
 ```
 
 **Step 5f: Form submission (60-90 min)**
+
+Ask Claude Code:
 ```
-In handleSubmit, after validation:
-1. Create lead data object
-2. Track analytics: inquiry_form_submitted
-3. For now: console.log the full lead data (Phase 2: send email)
-4. Show success message
-5. Clear form / navigate back
+Implement form submission for LawyerInquiryScreen with:
+
+REQUIREMENTS:
+1. Loading state management:
+   - Add isSubmitting state
+   - Disable submit button while submitting
+   - Show loading spinner on button
+   
+2. Submission flow:
+   - Validate all fields first
+   - If invalid: show errors, stop
+   - If valid: set isSubmitting=true
+   - Create lead data object (sanitize inputs)
+   - Track analytics: inquiry_form_submitted
+   - Console.log full lead data (Phase 2 will send email)
+   - Wait 1 second (simulate network)
+   - Show success message
+   - Clear form after 2 seconds
+   - Navigate back to calculator
+   
+3. Error handling:
+   - What if analytics.track fails? (catch and log)
+   - What if navigation fails? (try/catch)
+   - What if React state update fails? (error boundary)
+   
+4. Success feedback:
+   - Modal or alert with "Thank you" message
+   - Confirmation that lawyer will contact them
+   - Clear next steps
+   
+5. Data sanitization:
+   - Trim all string fields
+   - Remove extra whitespace from message
+   - Lowercase email
+   - Format phone number consistently
+
+Build production-ready submission, not a demo.
 ```
 
 **Done when:**
@@ -945,12 +1127,16 @@ Mark tasks complete as you finish them:
 - [ ] Task 1: Analytics Wrapper (Easy, 30-60 min)
 - [ ] Task 2: Complexity Detection (Medium, 2-3 hours)
 - [ ] Task 3: Alert Component (Easy, 1-2 hours)
-- [ ] Task 4: Integrate Alert (Medium, 1-2 hours)
+- [ ] Task 4: Integrate Alert (Medium, 2-3 hours)
+  - [ ] Step 4a: Import and detect
+  - [ ] Step 4b: Render conditionally
+  - [ ] Step 4c: Add court date feature (NEW - 60-90 min)
+  - [ ] Step 4d: Test different scenarios
 - [ ] Task 5: Inquiry Form (Hard, 3-5 hours)
 - [ ] Task 6: Testing (Medium, 2-3 hours)
 - [ ] Task 7: Launch (Easy, 3-5 hours over a week)
 
-**Total Time Estimate:** 15-25 hours depending on debugging
+**Total Time Estimate:** 16-27 hours depending on debugging (updated for court date feature)
 
 **At your pace:** Could be 1 week (intense) or 3-4 weeks (relaxed)
 
@@ -959,11 +1145,12 @@ Mark tasks complete as you finish them:
 ## 🎯 What Success Looks Like
 
 **End of Phase 1:**
-- ✅ App detects complex cases
-- ✅ Shows compelling alerts
+- ✅ App detects complex cases (high value, court dates, shared care, etc.)
+- ✅ Shows compelling alerts with proper urgency levels
 - ✅ Parents click "Get Legal Help"
-- ✅ Form collects their info
+- ✅ Form collects their info with validation
 - ✅ Analytics proves >2% click-through
+- ✅ Court date feature working (Australian dd/mm/yyyy format)
 - ✅ You're confident to recruit lawyers
 
 **Then:**

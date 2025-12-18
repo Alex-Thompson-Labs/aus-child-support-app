@@ -4,7 +4,7 @@
 // This detects when calculations indicate high-value cases
 // that should trigger "Get Legal Help" prompts
 
-import type { CalculationResults } from '../types/calculator';
+import type { CalculationResults, ChildInput } from '../types/calculator';
 import { convertCareToPercentage } from './child-support-calculations';
 import { isWithinDays } from './date-utils';
 
@@ -110,31 +110,44 @@ export interface AlertConfig {
  * // Expected: flags3.highValue === false
  * // Reason: 15000 is NOT > 15000 (must exceed threshold)
  */
+/**
+ * Partial form data type for complexity detection
+ * Only includes fields needed for detection, making it more flexible
+ */
+export interface ComplexityFormData {
+  children?: ChildInput[];
+  courtDate?: string;
+}
+
 export function detectComplexity(
   results: CalculationResults,
-  formData: any // Replace with proper FormData type
+  formData: ComplexityFormData
 ): ComplexityFlags {
   // Check for high-value cases (annual payment > $15k)
   const isHighValue = results.finalPaymentAmount > 15000;
 
-  // Debug logging
-  console.log('[detectComplexity] Payment amount:', results.finalPaymentAmount);
-  console.log('[detectComplexity] Is high value (>15000):', isHighValue);
+  // Debug logging (only in dev)
+  if (__DEV__) {
+    console.log('[detectComplexity] Payment amount:', results.finalPaymentAmount);
+    console.log('[detectComplexity] Is high value (>15000):', isHighValue);
+  }
 
   // Check for shared care dispute (care percentage between 35-65% for any child)
-  const hasSharedCareDispute = formData.children?.some((child: any) => {
+  const hasSharedCareDispute = formData.children?.some((child: ChildInput) => {
     const carePercA = convertCareToPercentage(child.careAmountA, child.carePeriod);
     const carePercB = convertCareToPercentage(child.careAmountB, child.carePeriod);
 
     return (carePercA >= 35 && carePercA <= 65) ||
       (carePercB >= 35 && carePercB <= 65);
-  }) || false;
+  }) ?? false;
 
   // Check for urgent court date (within 30 days)
   const hasCourtDateUrgent = formData.courtDate ? isWithinDays(formData.courtDate, 30) : false;
 
-  console.log('[detectComplexity] Court date:', formData.courtDate);
-  console.log('[detectComplexity] Is court date urgent (within 30 days):', hasCourtDateUrgent);
+  if (__DEV__) {
+    console.log('[detectComplexity] Court date:', formData.courtDate);
+    console.log('[detectComplexity] Is court date urgent (within 30 days):', hasCourtDateUrgent);
+  }
 
   return {
     highVariance: false, // TODO: Calculate care variance

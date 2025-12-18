@@ -124,17 +124,75 @@ Uses **expo-router** with file-based routing. The `app/` directory defines route
 - Same work with Opus: ~$4-6
 - You'll iterate a lot as a beginner, so cost efficiency matters
 
-### 🚨 CRITICAL: Creating New Phase Guides
+---
+
+### 💡 CRITICAL: How to Prompt for Production Code
+
+**⚠️ READ THIS BEFORE IMPLEMENTING ANYTHING ⚠️**
+
+**The Problem:**
+When you ask Claude to "create a component", it builds a WORKING component. But **working ≠ production-ready.**
+
+Testing shows that without explicit instructions, Claude will:
+- Skip error state management ❌
+- Skip input validation ❌
+- Skip loading states ❌
+- Use type assertions (as any) instead of proper types ❌
+- Skip edge case handling ❌
+
+**The Solution:**
+Always include these requirements in EVERY code generation task:
+
+```
+Before you write code:
+1. What could go wrong? (error cases)
+2. What am I forgetting? (loading states, validation, edge cases)
+3. Is this production-ready or just a demo?
+
+Then implement with:
+- Proper TypeScript types (no 'any')
+- Error handling for all failure cases
+- Loading states where needed
+- Input validation and sanitization
+- Edge case handling (empty strings, null, undefined, extreme values)
+- Accessibility labels where appropriate
+```
+
+**Example GOOD Prompt:**
+```
+Create src/components/LawyerAlert.tsx with:
+1. Props: title, message, urgency, buttonText, onPress
+2. Production requirements:
+   - Proper TypeScript interface (no 'any')
+   - Handle undefined props gracefully with defaults
+   - Disable button during press to prevent double-taps
+   - Add accessibility labels for screen readers
+   - Error handling if onPress throws
+3. Think critically: what edge cases am I missing?
+```
+
+**Example BAD Prompt:**
+```
+Create src/components/LawyerAlert.tsx with title, message, urgency, buttonText, onPress props
+```
+
+**Why This Matters:**
+The difference between demo code and production code is in YOUR prompt, not in Claude's capabilities. Claude will build exactly what you ask for - no more, no less.
+
+**See `guides/phase1/CHECKLIST.md` for detailed examples of production-quality prompts for each task.**
+
+---
 
 **When developer completes a phase and requests next phase guides:**
 
 1. **Read the current phase status** from MASTER_PLAN.md
 2. **Extract relevant sections** for the new phase from MASTER_PLAN.md
 3. **Create** `guides/phaseN/CHECKLIST.md` with:
+   - **PRODUCTION PROMPTING GUIDANCE** at the top (copy from Phase 1 CHECKLIST.md)
    - Outcome-based tasks (not time-based)
    - Difficulty ratings (Easy/Medium/Hard) based on developer's skill level
    - Realistic time estimates
-   - Claude Code prompts for each task
+   - **Production-quality Claude Code prompts** for each task (include error handling, validation, edge cases)
    - **Plan mode recommendation for EACH task** (Regular mode ✅ or Plan mode ✅)
    - Step-by-step breakdowns for complex tasks
    - Beginner tips and common pitfalls
@@ -146,18 +204,42 @@ Uses **expo-router** with file-based routing. The `app/` directory defines route
 5. **Update** MASTER_PLAN.md to mark the phase as active
 6. **Provide** a summary of what changed and where to start
 
+**⚠️ CRITICAL FOR ALL PHASE GUIDES:**
+Every code generation prompt MUST include production requirements:
+- Error handling
+- Loading states
+- Input validation
+- Edge cases
+- TypeScript types (no 'any')
+- Accessibility where appropriate
+
+See Phase 1 CHECKLIST.md for examples of good prompts.
+
 **Example phase guide header:**
 ```markdown
-# Phase 2: Pilot Program - Implementation Guide
+# Phase N: [Phase Name] - Implementation Guide
 
-**Recommended Tool:** Claude Code (primary) + Desktop Commander (planning)
-**Recommended Model:** Sonnet 4.5 ✅
-**Thinking Mode:** Can turn OFF (simple integrations, manual processes)
-**Plan Mode:** Use for X, Y, Z tasks (see below for when to use)
-**Why:** Simple integrations, mostly manual processes, well-documented APIs
+**Recommended Tool:** Claude Code (with Desktop Commander if needed)  
+**Recommended Model:** Sonnet 4.5 ✅ (or Opus 4 for [specific complex tasks])  
+**Thinking Mode:** [Keep ON/Can turn OFF] ([reasoning])
+**Plan Mode:** See each task for guidance (use sparingly to save cost)
 
-**Goal:** Sign 2-3 pilot law firms and prove lead quality
-**Success Metric:** >20% consultation rate, >5% client conversion rate
+**Goal:** [One-sentence goal for this phase]
+**Success Metric:** [Measurable metric, e.g., >2% CTR, >20% conversion]
+
+---
+
+## 💡 CRITICAL: How to Prompt Claude for Production Code
+
+[COPY THE ENTIRE PRODUCTION PROMPTING SECTION FROM PHASE 1 CHECKLIST.md]
+
+This includes:
+- The Problem/Solution
+- Good vs Bad prompt examples
+- Why it matters (with evidence)
+- Apply to EVERY task instruction
+
+---
 
 ## 🎯 Understanding Claude Code Modes
 
@@ -170,6 +252,265 @@ Uses **expo-router** with file-based routing. The `app/` directory defines route
 - Costs ~10x more per prompt
 - Visual indicator: `" plan mode on (shift+tab to cycle)` below input box
 - **When to use:** Complex multi-file changes, when stuck, big tasks
+- **Default for Phase N:** Keep this OFF (Regular mode) for most tasks
+
+**Accept Edits:**
+- Auto-approves Claude's code changes without asking you
+- No extra cost
+- Visual indicator: `▶▶ accept edits on (shift+tab to cycle)` below input box
+- **Recommendation:** Keep this OFF so you can review changes
+- **Not related to Plan Mode at all**
+
+**Regular Mode (default):**
+- Visual indicator: `? for shortcuts` or `1 line selected` (NO mention of modes)
+- This is what you want for most tasks!
+- Press Shift+Tab to cycle: Regular → Plan → Accept Edits → Regular
+
+---
+
+## 🎯 Plan Mode Quick Reference
+
+**Use Regular Mode (default - blank input box) for:**
+- Tasks [list simple tasks]
+
+**Use Plan Mode (" plan mode on" showing) for:**
+- Task [X] (if having trouble with [specific challenge])
+- Task [Y] ([specific complex requirement])
+
+See detailed guidance for each task below.
+
+---
+
+## 🤖 Which Tool to Use?
+
+**Primary: Claude Code** (claude.ai/code)
+- ✅ Best for writing code files
+- ✅ Integrated with your editor
+- ✅ Can read/edit multiple files at once
+- ✅ Better for implementation tasks
+- **Use for:** [List implementation tasks]
+
+**Secondary: Desktop Commander (this chat)**
+- ✅ Best for planning and advice
+- ✅ File organization and management
+- ✅ Updating documentation
+- ✅ Explaining concepts
+- **Use for:** Getting unstuck, planning next steps, updating docs
+
+**Cost Comparison:**
+- Claude Code: ~$X-Y for Phase N (with thinking [ON/OFF])
+- Desktop Commander: Similar, but better for planning than coding
+- **Strategy:** Use Claude Code for coding, Desktop Commander for guidance
+
+---
+
+## 💭 Thinking Mode Guidance
+
+**Phase N: [Keep ON / Can turn OFF]** [✅/❌]
+- [Reasoning for this phase]
+- [Specific tasks that need it]
+- [Cost consideration]
+
+**When to turn OFF:**
+- [Simple tasks]
+- [When relevant]
+
+---
+
+## 🎯 How to Use This Guide
+
+**Work at YOUR pace.** Complete tasks in order, but don't rush. Each task has:
+- ✅ Clear outcome (what "done" looks like)
+- 🔥 Difficulty rating (Easy/Medium/Hard for [target skill level])
+- ⏱️ Estimated time (with AI assistance)
+- 💡 Tips for using Claude Code effectively
+- 🐛 Common pitfalls to avoid
+
+**When stuck:** Check `guides/TROUBLESHOOTING.md` or ask Claude Code for help.
+
+---
+
+## 📋 Tasks (Complete in Order)
+
+### ✅ TASK 0: [Task Name]
+**Difficulty:** 🟢 Easy / 🟡 Medium / 🔴 Hard ([reasoning])  
+**Time:** [X-Y minutes/hours]  
+**Prerequisites:** [None / Task N complete]
+**Plan Mode:** Regular mode ✅ / Plan mode ✅ ([reasoning])
+
+**Outcome:** 
+- [Specific deliverable 1]
+- [Specific deliverable 2]
+- [Specific deliverable 3]
+
+**What you're building:**
+[1-2 sentence explanation of what this task accomplishes]
+
+**Claude Code Prompt:**
+```
+[Full prompt with production requirements]
+
+PRODUCTION REQUIREMENTS:
+- [Specific error handling needed]
+- [Specific validation needed]
+- [Edge cases to handle]
+
+CRITICAL: Think about what could go wrong:
+- [Question 1]
+- [Question 2]
+
+Build production-ready code, not just a demo.
+```
+
+**Testing:**
+[How to test the implementation]
+
+**Done when:**
+- [ ] [Specific verification step 1]
+- [ ] [Specific verification step 2]
+- [ ] [Specific verification step 3]
+
+**Common Issues:**
+- [Issue] → [Solution]
+- [Issue] → [Solution]
+
+**Beginner Tips:**
+- [Tip 1]
+- [Tip 2]
+
+---
+
+[REPEAT FOR ALL TASKS]
+
+---
+
+## 🎓 Learning Resources
+
+**When stuck on [Technology]:**
+- [Resource 1]
+- [Resource 2]
+
+**When stuck in general:**
+1. Check `guides/TROUBLESHOOTING.md`
+2. Ask Claude Code specific questions
+3. Google the exact error message
+4. Take a break and come back fresh
+
+---
+
+## 💡 Tips for Using Claude Code
+
+**Good prompts:**
+- "Create X that does Y, Z. Production-ready with error handling."
+- "I'm getting this error: [paste error]. What's wrong?"
+- "Review this code for production readiness."
+
+**Bad prompts:**
+- "Make the whole thing"
+- "Fix it" (too vague)
+- "Create X" (no production requirements)
+
+**Best practice:**
+- Break big tasks into small prompts
+- Show Claude Code your existing code for context
+- Always include production requirements
+- Ask for explanations: "Why does this work?"
+
+---
+
+## 📊 Progress Tracking
+
+Mark tasks complete as you finish them:
+
+- [ ] Task 0: [Name] ([Difficulty], [Time])
+- [ ] Task 1: [Name] ([Difficulty], [Time])
+  - [ ] Step 1a: [Sub-step] (if task has sub-steps)
+  - [ ] Step 1b: [Sub-step]
+- [ ] Task 2: [Name] ([Difficulty], [Time])
+
+**Total Time Estimate:** [X-Y] hours depending on debugging
+
+**At your pace:** Could be [X] week (intense) or [Y] weeks (relaxed)
+
+---
+
+## 🎯 What Success Looks Like
+
+**End of Phase N:**
+- ✅ [Success criterion 1]
+- ✅ [Success criterion 2]
+- ✅ [Success criterion 3]
+- ✅ [Measured success metric achieved]
+
+**Then:**
+Tell me "Phase N complete!" and I'll create Phase [N+1] guides.
+
+---
+```
+
+**Key Elements That MUST Be In Every Phase Guide:**
+
+1. ✅ **Header Section:**
+   - [ ] Recommended Tool (Claude Code + Desktop Commander)
+   - [ ] Recommended Model (Sonnet/Opus with reasoning)
+   - [ ] Thinking Mode recommendation (ON/OFF with reasoning)
+   - [ ] Plan Mode guidance (see each task)
+   - [ ] Goal (one sentence)
+   - [ ] Success Metric (measurable)
+
+2. ✅ **Production Prompting Section (CRITICAL):**
+   - [ ] Copy entire section from Phase 1 CHECKLIST.md
+   - [ ] Include Problem/Solution
+   - [ ] Include Good vs Bad examples
+   - [ ] Include "Why This Matters" evidence
+   - [ ] Reminder to apply to ALL tasks
+
+3. ✅ **Mode Explanations:**
+   - [ ] Plan Mode vs Accept Edits (full explanation)
+   - [ ] Plan Mode Quick Reference (which tasks use what)
+   - [ ] Visual indicators for each mode
+   - [ ] Shift+Tab cycling instructions
+
+4. ✅ **Tool Guidance:**
+   - [ ] Which Tool to Use section
+   - [ ] Primary/Secondary recommendations
+   - [ ] Cost comparison
+   - [ ] Strategy guidance
+
+5. ✅ **Thinking Mode Guidance:**
+   - [ ] When to keep ON/turn OFF
+   - [ ] Cost considerations
+   - [ ] Specific task recommendations
+
+6. ✅ **For Each Task:**
+   - [ ] Difficulty rating (🟢🟡🔴 with reasoning)
+   - [ ] Time estimate
+   - [ ] Prerequisites
+   - [ ] Plan Mode recommendation (Regular ✅ / Plan ✅)
+   - [ ] Outcome (bullet list)
+   - [ ] What you're building (explanation)
+   - [ ] **Production-quality Claude Code Prompt** (with PRODUCTION REQUIREMENTS section)
+   - [ ] Testing instructions
+   - [ ] Done when (checkboxes)
+   - [ ] Common Issues
+   - [ ] Beginner Tips
+
+7. ✅ **Supporting Sections:**
+   - [ ] Learning Resources
+   - [ ] Tips for Using Claude Code
+   - [ ] Progress Tracking (with sub-steps if needed)
+   - [ ] What Success Looks Like
+
+**Verification Before Publishing:**
+- [ ] All prompts include production requirements
+- [ ] Each task has Plan Mode guidance
+- [ ] Difficulty ratings consider target audience skill level
+- [ ] Time estimates are realistic
+- [ ] Success metric is measurable
+- [ ] Links to TROUBLESHOOTING.md work
+- [ ] Cross-references to other docs are accurate
+
+**Key Elements That MUST Be In Every Phase Guide:**
 
 **Accept Edits:**
 - Auto-approves Claude's code changes without asking you

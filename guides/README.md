@@ -4,6 +4,21 @@ Practical guides for building and troubleshooting the app.
 
 ---
 
+## 💡 IMPORTANT: Production Code Prompting
+
+**Before using any guide:** Read the "💡 CRITICAL: How to Prompt Claude for Production Code" section at the top of Phase 1 CHECKLIST.md.
+
+**TL;DR:** Claude builds exactly what you ask for. If you ask for "a component", you get a working demo. If you ask for "a production-ready component with error handling, validation, and edge cases", you get that instead.
+
+**Every prompt should include:**
+- What could go wrong? (error cases)
+- What am I forgetting? (loading states, validation)
+- Is this production-ready or just a demo?
+
+See Phase 1 CHECKLIST.md for detailed examples and best practices that apply to ALL phases.
+
+---
+
 ## 🤖 Which Claude Model to Use?
 
 **Phase 1 (Current):** Sonnet 4.5 ✅

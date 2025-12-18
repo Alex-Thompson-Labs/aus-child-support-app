@@ -1,16 +1,16 @@
 import { useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { CalculationResults } from "../types/calculator";
 import { Analytics } from "../utils/analytics";
-import { detectComplexity, getAlertConfig, type ComplexityFlags } from "../utils/complexity-detection";
+import { detectComplexity, getAlertConfig, type ComplexityFlags, type ComplexityFormData } from "../utils/complexity-detection";
 import { LawyerAlert } from "./LawyerAlert";
 import { ResultsSimpleExplanation } from "./ResultsSimpleExplanation";
 
 interface CalculatorResultsProps {
   results: CalculationResults;
-  formData?: any; // TODO: Add proper FormData type
+  formData?: ComplexityFormData;
 }
 
 // Helper to format currency
@@ -41,13 +41,77 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
   const fortnightlyAmount = results.finalPaymentAmount / 26;
   const dailyAmount = results.finalPaymentAmount / 365;
 
+  // Track whether navigation is in progress to prevent duplicate navigation
+  const [isNavigating, setIsNavigating] = useState(false);
+
   // Detect complexity and get alert configuration
-  const flags = detectComplexity(results, formData || {});
+  const flags = detectComplexity(results, formData ?? {});
   const alertConfig = getAlertConfig(flags, results);
 
-  // Log for verification (Phase 1)
-  console.log('[CalculatorResults] Complexity flags:', flags);
-  console.log('[CalculatorResults] Alert config:', alertConfig);
+  // Log for verification (Phase 1 - only in dev)
+  if (__DEV__) {
+    console.log('[CalculatorResults] Complexity flags:', flags);
+    console.log('[CalculatorResults] Alert config:', alertConfig);
+  }
+
+  // Find the trigger that fired the alert
+  const getTrigger = useCallback((): string => {
+    const flagKeys: Array<keyof ComplexityFlags> = ['courtDateUrgent', 'highValue', 'sharedCareDispute', 'specialCircumstances', 'highVariance', 'incomeSuspicion'];
+    return flagKeys.find(k => flags[k]) ?? 'unknown';
+  }, [flags]);
+
+  // Navigate to lawyer inquiry form
+  const navigateToInquiry = useCallback(() => {
+    if (isNavigating) {
+      return;
+    }
+
+    setIsNavigating(true);
+
+    try {
+      Analytics.track('lawyer_button_clicked', {
+        trigger: getTrigger(),
+        liability: results.finalPaymentAmount
+      });
+    } catch (error) {
+      console.error('[CalculatorResults] Analytics error:', error);
+    }
+
+    // Close the modal first
+    setIsExpanded(false);
+
+    // Navigate after modal animation completes
+    // Using requestAnimationFrame for more reliable timing than setTimeout
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        try {
+          // Serialize care arrangement data for each child
+          const careData = (formData?.children ?? []).map((child, index) => ({
+            index,
+            careA: results.childResults[index]?.roundedCareA ?? 0,
+            careB: results.childResults[index]?.roundedCareB ?? 0
+          }));
+
+          router.push({
+            pathname: '/lawyer-inquiry',
+            params: {
+              liability: results.finalPaymentAmount.toString(),
+              trigger: getTrigger(),
+              incomeA: results.ATI_A.toString(),
+              incomeB: results.ATI_B.toString(),
+              children: (formData?.children?.length ?? 0).toString(),
+              careData: JSON.stringify(careData)
+            }
+          });
+        } catch (error) {
+          console.error('[CalculatorResults] Navigation error:', error);
+        } finally {
+          // Reset navigation state after a delay
+          setTimeout(() => setIsNavigating(false), 500);
+        }
+      });
+    });
+  }, [isNavigating, router, results, formData, getTrigger]);
 
   useEffect(() => {
     Animated.spring(slideAnim, {
@@ -101,42 +165,7 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
           message={alertConfig.message}
           urgency={alertConfig.urgency}
           buttonText={alertConfig.buttonText}
-          onPress={() => {
-            console.log('[LawyerAlert] Button pressed!');
-            console.log('[LawyerAlert] Router object:', router);
-
-            Analytics.track('lawyer_button_clicked', {
-              trigger: (Object.keys(flags) as Array<keyof ComplexityFlags>).find(k => flags[k]),
-              liability: results.finalPaymentAmount
-            });
-
-            // Navigate to inquiry form with calculation data
-            const navParams = {
-              pathname: '/lawyer-inquiry' as any,
-              params: {
-                liability: results.finalPaymentAmount.toString(),
-                trigger: (Object.keys(flags) as Array<keyof ComplexityFlags>).find(k => flags[k]) || 'unknown',
-                incomeA: results.ATI_A.toString(),
-                incomeB: results.ATI_B.toString(),
-                children: formData?.children?.length?.toString() || '0'
-              }
-            };
-
-            console.log('[LawyerAlert] Navigation params:', JSON.stringify(navParams, null, 2));
-
-            // Close the modal first, then navigate
-            setIsExpanded(false);
-
-            // Wait for modal to close before navigating
-            setTimeout(() => {
-              try {
-                router.push(navParams);
-                console.log('[LawyerAlert] router.push() called successfully');
-              } catch (error) {
-                console.error('[LawyerAlert] Navigation error:', error);
-              }
-            }, 300); // Wait for modal close animation
-          }}
+          onPress={navigateToInquiry}
         />
       )}
 
