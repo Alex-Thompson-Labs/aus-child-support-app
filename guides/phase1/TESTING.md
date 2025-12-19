@@ -7,36 +7,36 @@ Use this to test your implementation before launching to users.
 ## ✅ Functionality Tests
 
 ### Complexity Detection
-- [ ] High value case (>$15k) triggers alert
-- [ ] High variance (care change creates $3k+ swing) triggers alert
+- [x] High value case (>$15k) triggers alert
+- [x] High variance (care change creates $3k+ swing) triggers alert
 - [ ] Special circumstances (private school mentioned) triggers alert
-- [ ] Multiple triggers show highest priority alert
-- [ ] Calculations without triggers show no alert
+- [x] Multiple triggers show highest priority alert
+- [x] Calculations without triggers show no alert
 
 ### Lawyer Alert UI
-- [ ] Alert displays with correct title/message
-- [ ] Button is tappable
-- [ ] Analytics tracks button click
-- [ ] Navigation to inquiry form works
-- [ ] Alert styling matches design system (slate/blue)
+- [x] Alert displays with correct title/message
+- [x] Button is tappable
+- [x] Analytics tracks button click
+- [x] Navigation to inquiry form works
+- [x] Alert styling matches design system (slate/blue)
 
 ### Inquiry Form
-- [ ] All fields accept input
+- [x] All fields accept input
 - [ ] Email validation works
-- [ ] Phone is truly optional
-- [ ] Consent checkbox required
-- [ ] Form won't submit without required fields
-- [ ] Calculation summary displays correctly
-- [ ] Submit button triggers form submission
-- [ ] Success message shows after submit
-- [ ] Analytics tracks form submission
+- [x] Phone is truly optional
+- [x] Consent checkbox required
+- [x] Form won't submit without required fields
+- [x] Calculation summary displays correctly
+- [x] Submit button triggers form submission
+- [x] Success message shows after submit
+- [x] Analytics tracks form submission
 
 ### Analytics
-- [ ] calculation_completed fires
-- [ ] complexity_alert_shown fires with trigger type
-- [ ] lawyer_button_clicked fires with context
+- [x] calculation_completed fires
+- [x] complexity_alert_shown fires with trigger type
+- [x] lawyer_button_clicked fires with context
 - [ ] inquiry_form_opened fires
-- [ ] inquiry_form_submitted fires
+- [x] inquiry_form_submitted fires
 - [ ] Events visible in Posthog dashboard
 
 ---
@@ -45,9 +45,9 @@ Use this to test your implementation before launching to users.
 
 ### Mobile (iOS)
 - [ ] Alerts look good on iPhone SE (small screen)
-- [ ] Alerts look good on iPhone 15 Pro Max (large screen)
-- [ ] Keyboard doesn't cover form inputs
-- [ ] Scrolling works smoothly
+- [x] Alerts look good on iPhone 15 Pro Max (large screen)
+- [x] Keyboard doesn't cover form inputs
+- [x] Scrolling works smoothly
 - [ ] Touch targets are easy to tap (44x44pt minimum)
 
 ### Mobile (Android)

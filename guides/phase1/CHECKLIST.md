@@ -1,12 +1,23 @@
-# Phase 1: Validation - Implementation Guide
+# Phase 1: Validation - Full Booking Flow Implementation
 
 **Recommended Tool:** Claude Code (with Desktop Commander if needed)  
 **Recommended Model:** Sonnet 4.5 ✅ (or Opus 4 for complex tasks)  
 **Thinking Mode:** Keep ON for Phase 1 (worth the extra $1 for better debugging)
 **Plan Mode:** See each task for guidance (use sparingly to save cost)
 
-**Goal:** Prove parents click "Get Legal Help" buttons  
-**Success Metric:** >2% click-through rate on complexity alerts
+**Goal:** Build complete calendar booking system and validate lawyer willingness to pay  
+**Success Metric:** 3+ lawyers agree to pay $100/booking, 50+ consultations booked
+
+**PRICING MODEL:** Pay-Per-Consultation-Booked ($100 per confirmed appointment)
+
+**WHY THIS IS BETTER:**
+- Lawyers pay for VALUE (confirmed meetings) not HOPE (raw phone numbers)
+- $100 vs $400/hour lawyer rate = 4:1 minimum ROI
+- Platform handles scheduling = saves lawyers 15-30 min per lead
+- Higher conversion: 30-40% of consultations become clients (vs 20-30% of leads)
+- Regulatory safe: "marketing fee" not "referral commission"
+
+**Full Analysis:** See `docs/PRICING_STRATEGY_ANALYSIS.md` for comprehensive regulatory compliance analysis and comparison with 4 alternative models (including why Option 4 "Pay-Per-Client" is a FATAL FLAW due to ASCR Rule 12 fee-sharing prohibition).
 
 ---
 
@@ -150,7 +161,102 @@ See detailed guidance for each task below.
 
 ## 📋 Tasks (Complete in Order)
 
-### ✅ TASK 0: Environment Setup
+### 🆕 TASK 0: Bulk Lawyer Recruitment (COMPLETE FIRST!)
+**Difficulty:** 🟢 Easy (just emailing)  
+**Time:** 2-3 hours  
+**Prerequisites:** None
+**Plan Mode:** Not needed (this is business work, not coding)
+
+**Outcome:**
+- 40 law firms contacted across 3-4 cities
+- 8-12 firms express interest in FREE TRIAL (expected 20-30% response rate)
+- Firms understand the value prop: calendar-booked consultations, not raw leads
+- List of firms ready for calendar integration
+
+**WHY THIS IS TASK 0:**
+You're building calendar booking integration. You need lawyers to AGREE TO TEST the booking system before you build it. This validates demand and gets their calendar preferences.
+
+**EMAIL TEMPLATE (Updated for Booking Model):**
+
+```
+Subject: Free Trial - Pre-Booked Consultations Direct to Your Calendar
+
+Hi [Lawyer Name],
+
+I've built a tool that Australian parents use to calculate child support. It's getting traction, and I'm now building a B2B system that delivers pre-booked consultations directly to family lawyers' calendars.
+
+Here's how it works:
+1. Parents use the calculator (free for them)
+2. Complex cases trigger an alert: "Talk to a specialist"
+3. They select a time slot from YOUR calendar
+4. You get a confirmed appointment with case details
+
+This is NOT a lead gen agency selling phone numbers. You get:
+- Pre-qualified clients (high value, court dates, disputes)
+- Calendar-booked appointments (no phone tag)
+- Case summary in advance (liability amount, complexity flags)
+
+**3-Month Free Trial** - I just need you to:
+- Connect your calendar (Calendly/Google Calendar)
+- Take the consultations
+- Tell me if you'd pay $100 per booking after trial
+
+Interested in testing this? Takes 15 minutes to set up.
+
+Reply with your calendar link or availability, and I'll get you connected.
+
+Cheers,
+[Your Name]
+```
+
+**Steps:**
+
+**Step 1: Create Firm List (1 hour)**
+1. Open Google Sheets or Excel
+2. Create columns: City | Firm Name | Contact Name | Email | Phone | Website | Calendar System | Status
+3. Google search for each city:
+   - Melbourne: "family lawyer melbourne" → Copy 10 firms
+   - Sydney: "family lawyer sydney" → Copy 10 firms  
+   - Brisbane: "family lawyer brisbane" → Copy 10 firms
+   - Perth: "family lawyer perth" → Copy 10 firms
+4. Find contact emails (usually on "Contact" page or use hunter.io)
+5. Note if they mention Calendly/booking system on their website
+6. Mark all as "Status: To Contact"
+
+**Step 2: Send Emails (1.5 hours)**
+1. Send 10 emails Monday, 10 Tuesday, 10 Wednesday, 10 Thursday
+2. Track in spreadsheet: "Status: Email Sent [Date]"
+3. Include your real name and phone number (builds trust)
+
+**Step 3: Track Responses (ongoing, 30 min/day)**
+1. Check email daily for responses
+2. When lawyer responds with interest:
+   - Status: "Interested - Trial Partner"
+   - Ask: "What calendar system do you use? Calendly, Google Calendar, Outlook?"
+   - Record their calendar preference
+   - Get their typical availability (e.g., "Tuesdays 2-5pm, Thursdays 10am-1pm")
+3. When lawyer says no or doesn't respond after 1 week:
+   - Status: "No Response - Follow Up Later"
+
+**Expected Results by End of Week:**
+- 8-12 firms interested (realistic 20-30% response rate)
+- 3-5 firms ready to connect calendar immediately
+- Clear understanding of which calendar systems to integrate with
+
+**Done when:**
+- [ ] 40 firms contacted
+- [ ] At least 5 firms expressed interest in FREE TRIAL
+- [ ] At least 3 firms ready to connect their calendar
+- [ ] You know which calendar API to build (Calendly, Google, or both)
+
+**Common Issues:**
+- Low response rate (<10%): Follow up via phone or LinkedIn message
+- Lawyers skeptical: Emphasize "FREE TRIAL" and "no phone tag" benefit
+- Can't find email addresses: Check LinkedIn, firm website contact forms
+
+---
+
+### ✅ TASK 1: Environment Setup (Analytics)
 **Difficulty:** 🟢 Easy (mostly admin work)  
 **Time:** 30-60 minutes  
 **Prerequisites:** None
@@ -177,9 +283,9 @@ My API key is in .env as POSTHOG_API_KEY.
 ```
 
 **Done when:**
-- [ ] App starts without errors
-- [ ] No TypeScript errors in VS Code
-- [ ] You can see the Posthog dashboard
+- [x] App starts without errors
+- [x] No TypeScript errors in VS Code
+- [x] You can see the Posthog dashboard
 
 **Common Issues:**
 - If `.env` not loading → install `react-native-dotenv` (see TROUBLESHOOTING.md)
@@ -234,9 +340,9 @@ useEffect(() => {
 ```
 
 **Done when:**
-- [ ] File created with no TypeScript errors
-- [ ] Event appears in Posthog dashboard
-- [ ] Console.log shows event being tracked
+- [x] File created with no TypeScript errors
+- [x] Event appears in Posthog dashboard
+- [x] Console.log shows event being tracked
 
 **Common Issues:**
 - "Cannot find module '@env'" → Check TROUBLESHOOTING.md section on env variables
@@ -520,11 +626,11 @@ Alert 2: null                       ← Should say "null"
 ---
 
 **Done when:**
-- [ ] Console shows "Test 1 - High Value: true"
-- [ ] Console shows "Alert 1: 💰 High-Value Case" (or similar)
-- [ ] Console shows "Test 2 - Normal: false"
-- [ ] Console shows "Alert 2: null"
-- [ ] No TypeScript errors in VS Code
+- [x] Console shows "Test 1 - High Value: true"
+- [x] Console shows "Alert 1: 💰 High-Value Case" (or similar)
+- [x] Console shows "Test 2 - Normal: false"
+- [x] Console shows "Alert 2: null"
+- [x] No TypeScript errors in VS Code
 
 ---
 
@@ -710,12 +816,12 @@ Test dates from today (December 18, 2024):
 ```
 
 **Done when:**
-- [ ] Court date field appears on calculator screen
-- [ ] Can enter dates in dd/mm/yyyy format
-- [ ] Date within 30 days shows RED "URGENT: Court Date Soon" alert
-- [ ] Date over 30 days shows no court date alert
-- [ ] Empty court date works fine (no errors)
-- [ ] Console logs show courtDateUrgent flag correctly
+- [x] Court date field appears on calculator screen
+- [x] Can enter dates in dd/mm/yyyy format
+- [x] Date within 30 days shows RED "URGENT: Court Date Soon" alert
+- [x] Date over 30 days shows no court date alert
+- [x] Empty court date works fine (no errors)
+- [x] Console logs show courtDateUrgent flag correctly
 
 ---
 
@@ -726,12 +832,12 @@ Test by changing inputs to trigger each alert:
 - Shared care: Set care nights between 35-65%
 
 **Done when:**
-- [ ] Alert shows for high value cases
-- [ ] Alert shows for urgent court dates
-- [ ] Alert hidden for normal cases
-- [ ] Button click logged in Posthog
-- [ ] Console shows which trigger fired
-- [ ] No crashes or TypeScript errors
+- [x] Alert shows for high value cases
+- [x] Alert shows for urgent court dates
+- [x] Alert hidden for normal cases
+- [x] Button click logged in Posthog
+- [x] Console shows which trigger fired
+- [x] No crashes or TypeScript errors
 
 **Common Issues:**
 - Alert always showing → Check getAlertConfig logic, should return null sometimes
@@ -910,14 +1016,14 @@ Build production-ready submission, not a demo.
 ```
 
 **Done when:**
-- [ ] Can navigate from alert to form
-- [ ] All fields accept input
-- [ ] Validation blocks invalid submissions
-- [ ] Calculation summary displays correctly
-- [ ] Submit logs data to console
-- [ ] Analytics tracks submission
-- [ ] Success message appears
-- [ ] Tested on iOS and Android
+- [x] Can navigate from alert to form
+- [x] All fields accept input
+- [x] Validation blocks invalid submissions
+- [x] Calculation summary displays correctly
+- [x] Submit logs data to console
+- [x] Analytics tracks submission
+- [x] Success message appears
+- [x] Tested on iOS and Android
 
 **Common Issues:**
 - Keyboard covers input → Use KeyboardAvoidingView (already in stub)
@@ -1005,10 +1111,10 @@ PRODUCTION REQUIREMENTS:
 5. Click on event to see properties
 
 **Done when:**
-- [ ] Event appears in PostHog
-- [ ] Event includes all required properties
-- [ ] Console log confirms event firing
-- [ ] No duplicate events (check in PostHog event stream)
+- [x] Event appears in PostHog
+- [x] Event includes all required properties
+- [x] Console log confirms event firing
+- [x] No duplicate events (check in PostHog event stream)
 
 ---
 
@@ -1053,10 +1159,10 @@ This tells you how engaged users are with the detailed breakdown. You can measur
 5. Verify properties include has_complexity_alert
 
 **Done when:**
-- [ ] Event appears in PostHog when breakdown expands
-- [ ] Event includes all required properties
-- [ ] Console log confirms event firing
-- [ ] No duplicate events if user toggles multiple times
+- [x] Event appears in PostHog when breakdown expands
+- [x] Event includes all required properties
+- [x] Console log confirms event firing
+- [x] No duplicate events if user toggles multiple times
 
 ---
 
@@ -1098,10 +1204,10 @@ PRODUCTION REQUIREMENTS:
 4. Verify properties include trigger type
 
 **Done when:**
-- [ ] Event appears in PostHog
-- [ ] trigger_type property shows correctly
-- [ ] Console log confirms event firing
-- [ ] Works for all trigger types (high_value, court_date_urgent, shared_care, etc.)
+- [x] Event appears in PostHog
+- [x] trigger_type property shows correctly
+- [x] Console log confirms event firing
+- [x] Works for all trigger types (high_value, court_date_urgent, shared_care, etc.)
 
 ---
 
@@ -1136,10 +1242,10 @@ PRODUCTION REQUIREMENTS:
 5. Verify properties match the alert shown event
 
 **Done when:**
-- [ ] Event appears in PostHog
-- [ ] Properties are correct
-- [ ] Console log confirms event firing
-- [ ] Button still navigates correctly after tracking
+- [x] Event appears in PostHog
+- [x] Properties are correct
+- [x] Console log confirms event firing
+- [x] Button still navigates correctly after tracking
 
 ---
 
@@ -1179,10 +1285,10 @@ PRODUCTION REQUIREMENTS:
 4. Verify all properties are present
 
 **Done when:**
-- [ ] Event appears in PostHog
-- [ ] All properties present and accurate
-- [ ] Console log confirms event firing
-- [ ] Works across different trigger types
+- [x] Event appears in PostHog
+- [x] All properties present and accurate
+- [x] Console log confirms event firing
+- [x] Works across different trigger types
 
 ---
 
@@ -1233,12 +1339,12 @@ PRODUCTION REQUIREMENTS:
    - This shows your complete conversion funnel!
 
 **Done when:**
-- [ ] All 5 events appear in PostHog
-- [ ] All events have required properties
-- [ ] Properties contain sensible values (not null/undefined)
-- [ ] Events fire in correct order
-- [ ] Tested with multiple trigger types
-- [ ] Funnel shows conversion rate (optional but recommended)
+- [x] All 5 events appear in PostHog
+- [x] All events have required properties
+- [x] Properties contain sensible values (not null/undefined)
+- [x] Events fire in correct order
+- [x] Tested with multiple trigger types
+- [x] Funnel shows conversion rate (optional but recommended)
 
 ---
 
@@ -1444,23 +1550,23 @@ Would love feedback from anyone navigating child support!
 
 Mark tasks complete as you finish them:
 
-- [ ] Task 0: Environment Setup (Easy, 30-60 min)
-- [ ] Task 1: Analytics Wrapper (Easy, 30-60 min)
-- [ ] Task 2: Complexity Detection (Medium, 2-3 hours)
-- [ ] Task 3: Alert Component (Easy, 1-2 hours)
-- [ ] Task 4: Integrate Alert (Medium, 2-3 hours)
-  - [ ] Step 4a: Import and detect
-  - [ ] Step 4b: Render conditionally
-  - [ ] Step 4c: Add court date feature (60-90 min)
-  - [ ] Step 4d: Test different scenarios
-- [ ] Task 5: Inquiry Form (Hard, 3-5 hours)
-- [ ] Task 6: Add Analytics Tracking (Medium, 2-3 hours)
-  - [ ] Step 6a: Track calculation_completed
-  - [ ] Step 6b: Track breakdown_expanded
-  - [ ] Step 6c: Track complexity_alert_shown
-  - [ ] Step 6d: Track lawyer_button_clicked
-  - [ ] Step 6e: Track inquiry_form_submitted
-  - [ ] Step 6f: Verify all events in PostHog
+- [x] Task 0: Environment Setup (Easy, 30-60 min)
+- [x] Task 1: Analytics Wrapper (Easy, 30-60 min)
+- [x] Task 2: Complexity Detection (Medium, 2-3 hours)
+- [x] Task 3: Alert Component (Easy, 1-2 hours)
+- [x] Task 4: Integrate Alert (Medium, 2-3 hours)
+  - [x] Step 4a: Import and detect
+  - [x] Step 4b: Render conditionally
+  - [x] Step 4c: Add court date feature (60-90 min)
+  - [x] Step 4d: Test different scenarios
+- [x] Task 5: Inquiry Form (Hard, 3-5 hours)
+- [x] Task 6: Add Analytics Tracking (Medium, 2-3 hours)
+  - [x] Step 6a: Track calculation_completed
+  - [x] Step 6b: Track breakdown_expanded
+  - [x] Step 6c: Track complexity_alert_shown
+  - [x] Step 6d: Track lawyer_button_clicked
+  - [x] Step 6e: Track inquiry_form_submitted
+  - [x] Step 6f: Verify all events in PostHog
 - [ ] Task 7: End-to-End Testing (Medium, 2-3 hours)
 - [ ] Task 8: Launch (Easy, 3-5 hours over a week)
 

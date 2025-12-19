@@ -389,7 +389,13 @@ export default function LawyerInquiryScreen() {
         // Navigate back after delay
         setTimeout(() => {
             try {
-                router.back();
+                // Check if we can go back before attempting navigation
+                if (router.canGoBack()) {
+                    router.back();
+                } else {
+                    // No previous screen, go to home
+                    router.replace('/');
+                }
             } catch (error) {
                 console.error('[LawyerInquiry] Navigation error:', error);
                 // Fallback: try to go to home

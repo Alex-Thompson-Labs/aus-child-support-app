@@ -33,8 +33,9 @@ cp .env.example .env
 - Parents use FREE calculator
 - Complexity triggers detect high-value cases (high variance, special circumstances, court dates)
 - "Get Legal Help" buttons connect parents with lawyers
-- Lawyers pay $20-50 per qualified lead
-- Target: $3K-$300K/year revenue (see MASTER_PLAN.md for details)
+- Lawyers pay $100 per booked consultation
+- Target: $4K-$380K/year revenue (see MASTER_PLAN.md for details)
+- **Full Model Justification:** See docs/PRICING_STRATEGY_ANALYSIS.md for comprehensive regulatory compliance analysis and comparison with 4 alternative pricing models
 
 This is an Expo/React Native app that implements an Australian Child Support Calculator ported from a Next.js web app.
 

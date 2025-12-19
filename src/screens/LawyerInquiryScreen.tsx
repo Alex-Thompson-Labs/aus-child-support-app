@@ -123,7 +123,13 @@ export function LawyerInquiryScreen() {
       [
         {
           text: 'OK',
-          onPress: () => router.back(),
+          onPress: () => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/');
+            }
+          },
         },
       ]
     );

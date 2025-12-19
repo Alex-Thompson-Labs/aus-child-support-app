@@ -40,17 +40,20 @@ After analyzing the original B2C subscription model, the reality is harsh:
 
 ### The Smart Pivot (What We're Doing Now)
 **New Strategy:** Transform calculator from B2C utility → B2B lead generation engine
-- **Revenue model:** $20-50 per qualified lead to lawyers
-- **Value proposition:** We deliver pre-qualified, high-intent parents to family law firms
-- **Unit economics:** PROFITABLE (CAC $10-30, lead value $50-200)
-- **Projected Year 1 revenue:** $3,000-$72,000 (realistic and scalable)
+- **Revenue model:** $100 per booked consultation (Pay-Per-Consultation-Booked)
+- **Value proposition:** We deliver calendar-booked, pre-qualified consultations to family law firms
+- **Unit economics:** PROFITABLE (CAC $10-30, consultation value $100)
+- **Projected Year 1 revenue:** $4,000-$270,000 (conservative to optimistic, based on booking volume)
+- **Why this works:** Lawyers pay for VALUE (confirmed meetings) not HOPE (raw contact info)
 
 ### Why This Works
-✅ Lawyers pay for qualified leads ($50-200 per client inquiry)  
-✅ Parents get free calculator + optional legal help  
-✅ Better economics: 2-5x return on acquisition cost  
-✅ Scalable: More users = more leads = more revenue  
-✅ Defensible: Lawyers prefer exclusive partners over aggregators  
+✅ **Lawyers pay for booked consultations** ($100 per confirmed appointment)  
+✅ **Parents get free calculator** + optional legal help  
+✅ **Better economics:** Lawyers only pay for confirmed meetings they can bill  
+✅ **Scalable:** More users = more bookings = more revenue  
+✅ **Defensible:** Automated calendar booking creates moat vs manual lead agencies  
+✅ **Regulatory compliant:** Pay-per-consultation is marketing fee, not referral commission  
+✅ **Higher conversion:** ~30-40% of consultations become clients (vs 20-30% of raw leads)  
 
 ---
 
@@ -68,9 +71,9 @@ After analyzing the original B2C subscription model, the reality is harsh:
 ### What We Don't Have (Critical Gaps)
 ❌ No analytics/tracking system  
 ❌ No complexity detection triggers  
+❌ No calendar integration for booking system  
 ❌ No lawyer partnership infrastructure  
-❌ No lead routing system  
-❌ No payment processing  
+❌ No payment processing (Stripe)  
 ❌ No App Store presence yet  
 ❌ No user base (0 users)  
 
@@ -89,38 +92,60 @@ Triggers "complexity alert" (5-10% of calculations)
     ↓
 Clicks "Get Legal Help" button (15-25% of alerts)
     ↓
-Submits inquiry form with calculation data
+Selects time slot on lawyer's calendar (integration with Calendly/Google Calendar)
     ↓
-Lead routed to partner lawyer (geo-fenced)
+Books consultation appointment
     ↓
-Lawyer pays us $20-50 per lead
+Lawyer pays us $100 per booked consultation
     ↓
-Lawyer converts 20-30% to paying clients ($3,000-5,000 each)
+Lawyer converts 30-40% of consultations to paying clients ($3,000-5,000 each)
 ```
 
 ### Revenue Projections (Conservative → Optimistic)
 
-**Conservative Case:**
+**PRICING MODEL: Pay-Per-Consultation-Booked ($100 per appointment)**
+
+**Conservative Case (Year 1):**
 - 1,000 app users/month
-- 3% trigger alerts = 30 potential leads
-- 15% submit inquiry = 5 leads/month
-- $50 per lead = **$250/month = $3,000/year**
+- 5% trigger complexity alerts = 50 potential opportunities
+- 20% click "Get Legal Help" = 10 users want help
+- 40% complete booking = 4 confirmed consultations/month
+- $100 per booking = **$400/month = $4,800/year**
 
-**Moderate Case:**
+**Moderate Case (Year 1-2):**
 - 5,000 app users/month
-- 5% trigger alerts = 250 potential leads
-- 20% submit inquiry = 50 leads/month
-- 10 law firms @ $500/month retainer = $5,000/month
-- 50 leads × $20/lead = $1,000/month
-- **$6,000/month = $72,000/year**
+- 7% trigger alerts = 350 opportunities
+- 25% click through = 88 users want help
+- 50% complete booking = 44 consultations/month
+- $100 per booking = **$4,400/month = $52,800/year**
 
-**Optimistic Case:**
+**Optimistic Case (Year 2-3):**
 - 20,000 app users/month
-- 10% trigger alerts = 2,000 potential leads
-- 25% submit = 500 leads/month
-- 30 firms @ $500/month retainer = $15,000/month
-- 500 leads × $20/lead = $10,000/month
-- **$25,000/month = $300,000/year**
+- 10% trigger alerts = 2,000 opportunities
+- 30% click through = 600 users want help
+- 60% complete booking = 360 consultations/month
+- Volume pricing: 
+  * First 20 bookings/month: $100 each = $2,000
+  * Additional bookings: $75 each = $25,500 (340 × $75)
+- Platform fees (optional): 30 firms × $149/month = $4,470
+- **$31,970/month = $383,640/year**
+
+**Hybrid Model (Year 2+):**
+- Monthly subscription: $149/month per firm
+- Reduced booking fee: $50 per consultation (for subscribers)
+- Non-subscribers: $100 per consultation
+- Example with 20 firms, 200 bookings/month:
+  * Subscriptions: 20 × $149 = $2,980/month
+  * Bookings: 200 × $50 = $10,000/month
+  * **Total: $12,980/month = $155,760/year**
+
+**Why This Model Works Better Than Alternatives:**
+- ✅ **vs Pay-Per-Lead ($50):** Lawyers pay for CONFIRMED meetings, not unverified phone numbers
+- ✅ **vs Pay-Per-Client ($300-500):** Avoids fee-sharing prohibition, simpler disclosure requirements
+- ✅ **vs Raw Leads:** Platform handles scheduling friction = lawyers save 15-30 min per lead
+- ✅ **User deposit option:** $20-50 refundable booking deposit eliminates no-shows
+- ✅ **High lawyer ROI:** $100 booking fee vs $400+/hour billable rate = 4:1 minimum return
+- ✅ **Conversion data:** 30-40% of consultations become $3k-10k clients = massive lawyer value
 
 ---
 
@@ -136,7 +161,7 @@ Lawyer converts 20-30% to paying clients ($3,000-5,000 each)
 > "⚠️ **High Variance Detected**  
 > Changing care by just 1 night per week could save/cost you **$3,200 per year**.  
 > Small differences in care arrangements have major financial impact.  
-> [Get a Free Case Review]"
+> [Book Free Consultation]"
 
 **Why this works:**
 - Parents are genuinely shocked by the variance
@@ -155,7 +180,7 @@ Lawyer converts 20-30% to paying clients ($3,000-5,000 each)
 > "💼 **Special Circumstances Detected**  
 > Private school fees and medical costs are NOT automatically included in standard calculations.  
 > You may need a **Binding Child Support Agreement** to secure these payments legally.  
-> [Talk to a Specialist]"
+> [Book Specialist Consultation]"
 
 **Why this works:**
 - Parents don't realize standard formula excludes these costs
@@ -174,7 +199,7 @@ Lawyer converts 20-30% to paying clients ($3,000-5,000 each)
 > "💰 **High-Value Case**  
 > Your annual liability is **$18,450**. Cases over $15,000/year benefit from legal verification.  
 > Ensure you're paying/receiving the correct amount.  
-> [Request Professional Review]"
+> [Book Professional Review]"
 
 **Why this works:**
 - High-value cases justify legal fees
@@ -193,7 +218,7 @@ Lawyer converts 20-30% to paying clients ($3,000-5,000 each)
 > "🔍 **Income Verification May Be Needed**  
 > Forensic accounting or legal discovery can uncover hidden income.  
 > If you suspect under-reporting, specialist investigation is recommended.  
-> [Connect with a Forensic Specialist]"
+> [Book Forensic Consultation]"
 
 **Why this works:**
 - Taps into existing suspicion/anger
@@ -210,12 +235,12 @@ Lawyer converts 20-30% to paying clients ($3,000-5,000 each)
 > "⚖️ **URGENT: Court Date in < 30 Days**  
 > You need legal advice BEFORE your court appearance.  
 > Preparation time is critical for favorable outcomes.  
-> [Get Emergency Consultation]"
+> [Book Emergency Consultation Now]"
 
 **Why this works:**
 - Desperation = highest conversion rate (50%+)
 - Users WILL pay for legal help (not optional)
-- Lawyers pay PREMIUM for urgent cases ($100-200 per lead)
+- Lawyers pay PREMIUM for urgent cases ($150-200 per booking vs $100 standard)
 
 ---
 
@@ -300,160 +325,200 @@ This is an inquiry only - not a confirmed client engagement.
 ---
 
 ### 🔲 PHASE 1: VALIDATION (Week 1-2) - **START HERE**
-**Goal:** Prove parents click "Get Legal Help" buttons
+**Goal:** Prove parents click "Get Legal Help" buttons AND lawyers will pay for booked consultations
 
-#### Week 1 Tasks (10 hours total)
-1. **Add "Fake Door" Buttons** (3 hours)
-   - High variance alert → "Get Free Case Review"
-   - High value case → "Request Professional Review"  
-   - Special circumstances → "Talk to a Specialist"
+**CRITICAL CHANGE:** Phase 1 now builds the COMPLETE booking flow (not fake doors).
+We're validating the full value proposition: calendar-booked consultations are worth $100.
 
-2. **Implement Basic Analytics** (4 hours)
-   - Track button clicks
-   - Track which triggers fire most
-   - Track user flow through calculator
-   - Use privacy-focused solution (Posthog/Mixpanel)
+#### Week 1 Tasks (12 hours total)
+1. **Recruit 3-5 Pilot Lawyers FIRST** (4 hours)
+   - Contact 40 firms across 3-4 cities (Melbourne, Sydney, Brisbane, Perth)
+   - Email template: "Free trial - we book consultations directly on your calendar"
+   - Phone follow-up for interested firms
+   - Goal: 3-5 firms agree to test (realistic 20-30% response rate)
+   - Collect their calendar availability and preferences
 
-3. **Create Simple Inquiry Form** (3 hours)
-   - Name, email, phone (optional)
-   - "What do you need help with?" (text field)
-   - Pre-filled calculation summary
-   - Explicit consent checkbox
-   - Sends email to you (manual routing for now)
+2. **Add Complexity Detection** (4 hours)
+   - Implement triggers: high value, court date urgent, shared care dispute
+   - Track which triggers fire most often
+   - Display context-appropriate alerts
 
-#### Week 2 Tasks (8 hours)
-4. **Test on Real Users** (2 hours)
-   - Post in Australian parenting forums
-   - Reddit: r/AusFinance, r/AusLegal
-   - Facebook groups   - Target: 100+ users in 2 weeks
+3. **Implement Calendar Booking Integration** (4 hours)
+   - Integrate with Calendly API (or Squares Appointments/Google Calendar)
+   - User selects from lawyer's available time slots
+   - Confirmation email to both parties
+   - Analytics: track booking completion rate
 
-5. **Measure Click-Through Rates** (1 hour)
-   - Review analytics data
-   - Calculate: clicks ÷ total calculations
-   - Goal: >2% CTR = validation success
+#### Week 2 Tasks (10 hours)
+4. **Build Inquiry Capture Flow** (3 hours)
+   - Name, email, phone (for confirmation)
+   - "What brings you here?" (pre-filled: complexity trigger)
+   - Consent checkbox
+   - Display calculation summary (read-only)
+   - Submit → Books calendar slot + notifies lawyer
 
-6. **Interview Clickers** (3 hours)
-   - Email 10-20 people who clicked
-   - Ask: "What made you want legal help?"
-   - Ask: "Would you pay for this service?"
-   - Document insights
+5. **Test on Real Users** (2 hours)
+   - Post in Australian forums (r/AusFinance, Facebook parenting groups)
+   - Target: 100+ calculations, 5-10 booking attempts
+   - Monitor conversion funnel: calculations → alerts → clicks → bookings
 
-7. **Build Pitch Deck for Lawyers** (2 hours)
-   - "We have X users, Y% need legal help"
-   - Show sample lead data
-   - Explain geo-fencing model
-   - Pricing proposal
+6. **Validate Lawyer Value** (3 hours)
+   - Follow up with pilot lawyers: "Did the booked clients show up?"
+   - "Would you pay $100 for these pre-booked consultations?"
+   - Track: consultation completion rate (target: >80% show up)
+   - Track: consultation-to-client conversion (target: >30%)
+
+7. **Build Pitch for Full Launch** (2 hours)
+   - "We delivered X booked consultations, Y attended, Z became clients"
+   - "What's that worth to you?"
+   - Finalize pricing: $100 per booking (standard) or tiered volume pricing
 
 **Success Criteria:**
-- ✅ >2% of users click "Get Legal Help"
-- ✅ >5% of calculations trigger alerts
-- ✅ At least 10 inquiry form submissions
-- ✅ Positive user feedback on value
+- ✅ >3% of calculations trigger alerts
+- ✅ >20% of alerts result in booking attempts
+- ✅ >50% of booking attempts complete (get a time slot)
+- ✅ >80% of booked consultations actually occur (minimal no-shows)
+- ✅ At least 2 lawyers say "Yes, I'd pay $100 for these"
 
-**If this fails:** Pivot triggers, improve messaging, try different alerts
+**Technology Stack for Phase 1:**
+- Analytics: Posthog (free tier)
+- Calendar: Calendly API or Google Calendar API
+- Emails: Resend.com or SendGrid (free tier)
+- Payments: Not needed yet (pilot is free)
+
+**If this fails:** 
+- Low click rate → Improve alert messaging, test different triggers
+- Low booking completion → Simplify calendar UI, reduce friction
+- Lawyers say "not valuable enough" → Improve lead qualification, add more data to briefing
 
 ---
 
 ### 🔲 PHASE 2: PILOT PROGRAM (Month 2-3)
-**Goal:** Sign 2-3 pilot law firms, prove lead quality
+**Goal:** Scale to 8-12 law firms, automate booking system, prove $100/booking pricing
 
 #### Month 2 Tasks (20 hours)
-1. **Recruit Pilot Partners** (12 hours)
-   - Identify 10 family law firms (Melb, Syd, Brisbane)
-   - Email pitch: "Free leads for 3 months, give us feedback"
-   - Phone follow-up
-   - Goal: Sign 2-3 firms
+1. **Expand Lawyer Network** (10 hours)
+   - Now have proof: "5 firms tested, 30 consultations booked, 80% showed up, 35% became clients"
+   - Email additional 50 firms with case study data
+   - Offer "Early Partner Pricing": First 3 months at $75/booking (normally $100)
+   - Goal: Sign 5-8 additional firms (total 8-12 active)
 
-2. **Build Manual Lead Routing** (4 hours)
-   - Simple geo-match logic (postcode → firm)
-   - Automated email forwarding
-   - BCC yourself to track
-   - No fancy tech needed yet
+2. **Build Automated Calendar System** (6 hours)
+   - Multi-lawyer calendar routing by postcode
+   - Round-robin scheduling if multiple lawyers in area
+   - Automatic availability sync (daily calendar pulls)
+   - SMS reminders 24 hours before consultation
+   - No-show tracking and refund logic
 
-3. **Create Lawyer Dashboard (Basic)** (4 hours)
-   - Google Sheet or Airtable
-   - Columns: Date, Name, Location, Liability, Complexity, Status
-   - Share with pilot lawyers
-   - Track which leads convert
+3. **Implement User Booking Deposit** (4 hours)
+   - Optional: $20-30 booking deposit (via Stripe)
+   - Fully refundable if they attend
+   - Credited toward legal fees if they hire the lawyer
+   - Dramatically reduces no-shows (from 20% to <5%)
+   - Test with/without deposit to measure impact
 
-#### Month 3 Tasks (10 hours)
-4. **Weekly Check-Ins with Lawyers** (5 hours)
-   - "How's the quality?"
-   - "Which leads converted?"
-   - "What data would make leads better?"
-   - Document feedback
+#### Month 3 Tasks (15 hours)
+4. **Set Up Payment Processing** (6 hours)
+   - Stripe Connect for lawyer billing
+   - Invoice lawyers monthly: bookings × $100
+   - Automated payment collection
+   - Usage dashboard showing: bookings this month, total billed, payment status
 
-5. **Iterate on Triggers** (3 hours)
-   - If lawyers say "too many low-value leads" → tighten triggers
-   - If lawyers say "not enough leads" → lower thresholds
-   - Adjust complexity scoring
+5. **Build Lawyer Dashboard V1** (6 hours)
+   - View upcoming consultations
+   - See lead details before meeting
+   - Mark consultation outcomes: showed/no-show, became client/didn't
+   - Track conversion rates
+   - Update calendar availability
 
-6. **Calculate Conversion Rates** (2 hours)
-   - Leads sent: X
-   - Consultations booked: Y
-   - Clients signed: Z
-   - Conversion rate: Z/X
-   - Goal: >20% consultation rate, >5% client rate
+6. **Measure Financial Metrics** (3 hours)
+   - Bookings per firm per month (avg)
+   - No-show rate (target: <10% without deposit, <5% with)
+   - Consultation-to-client conversion (benchmark: 30-40%)
+   - Revenue per firm: bookings × $100
+   - Calculate: Total MRR, lawyer LTV, unit economics
 
 **Success Criteria:**
-- ✅ 2+ pilot firms actively taking leads
-- ✅ >20% of leads result in consultation
-- ✅ >5% convert to paying clients
-- ✅ Positive lawyer feedback
+- ✅ 8-12 active law firms using the platform
+- ✅ 50+ consultations booked/month across all firms
+- ✅ <10% no-show rate
+- ✅ $5,000+ monthly revenue ($100 × 50 bookings)
+- ✅ Lawyers actively using dashboard and paying invoices
+- ✅ Positive lawyer NPS score (Net Promoter Score)
 
-**If this fails:** Improve lead quality, adjust targeting, add more data to briefs
+**Pricing Validation:**
+- Test $100/booking with 5-7 firms
+- Test $75/booking with 3-5 firms (to see if volume increases)
+- Survey lawyers: "What's the maximum you'd pay per booked consultation?"
+- Finalize pricing for Phase 3 based on willingness-to-pay data
+
+**If this fails:**
+- Low booking volume → Increase marketing to users, lower trigger thresholds
+- High no-shows → Implement mandatory user deposit
+- Lawyers complain about price → Test $75 or $50 pricing tier
+- Calendar integration issues → Switch to manual scheduling fallback
 
 ---
 
-### 🔲 PHASE 3: MONETIZATION (Month 4-6)
-**Goal:** Convert pilot to paid relationships, define pricing model
+### 🔲 PHASE 3: MONETIZATION & HYBRID MODEL (Month 4-6)
+**Goal:** Introduce subscription tier, scale to 20 firms, $12K-15K MRR
 
 #### Month 4 Tasks (15 hours)
-1. **Present Pilot Results to Lawyers** (3 hours)
-   - "You received 20 leads"
-   - "5 became consultations"
-   - "2 signed as clients = $6,000-10,000 revenue"
-   - "What's that worth to you?"
+1. **Launch Hybrid Pricing Model** (4 hours)
+   - Standard: $100 per booked consultation (pay-as-you-go)
+   - Premium: $149/month subscription + $50 per booking
+   - Exclusive Territory: $299/month + $50 per booking + geographic exclusivity
+   - Present to existing firms with ROI analysis
 
-2. **Negotiate Pricing Models** (5 hours)
-   - Model A: $50 per lead (pay-as-you-go)
-   - Model B: $500/month retainer + $20/lead
-   - Model C: Exclusive territory ($1,000/month, unlimited leads)
-   - Test which lawyers prefer
+2. **Build Subscription Management** (6 hours)
+   - Stripe subscription billing
+   - Tiered pricing logic
+   - Automatic invoice generation
+   - Upgrade/downgrade flows
+   - Usage tracking per firm
 
-3. **Draft Service Agreement** (4 hours)
-   - Lead delivery terms
-   - Exclusivity clauses (if applicable)
-   - Payment terms (monthly billing)
-   - Data usage and privacy
-   - Get legal review ($500-1000)
+3. **Create Marketing Materials** (5 hours)
+   - Case studies: "Firm X booked 15 consultations, 5 became clients worth $18K"
+   - ROI calculator: "Average booking converts at 35% = $1,050 client value for $100 spend"
+   - One-pager explaining booking system vs traditional lead gen
+   - Video demo of booking flow
 
-4. **Set Up Payment Processing** (3 hours)
-   - Stripe for billing
-   - Monthly invoicing
-   - Automated payment collection
+#### Month 5-6 Tasks (25 hours)
+4. **Aggressive Firm Recruitment** (12 hours)
+   - Target 100 firms across all major Australian cities
+   - Cold email with proven results: "$5,000 MRR, 50 consultations/month, 35% conversion"
+   - Follow-up calls to interested firms
+   - Goal: Sign 10-15 new firms (total 20-25 active)
 
-#### Month 5-6 Tasks (20 hours)
-5. **Build Automated Lead Routing System** (15 hours)
-   - Replace manual email forwarding
-   - Postcode → Firm mapping database
-   - Automated PDF brief generation
-   - Email templates with tracking
-   - Admin dashboard to monitor
+5. **Enhance Lawyer Dashboard** (8 hours)
+   - Analytics: conversion rates, revenue attribution, ROI per booking
+   - Calendar management: set availability, block times, vacation mode
+   - Lead quality feedback: rate each consultation 1-5 stars
+   - Automated reporting: monthly summary emails
 
-6. **Recruit 5 More Firms** (5 hours)
-   - Now you have proof: "2 firms, 40 leads, 8 clients signed"
-   - Easier pitch with testimonials
-   - Offer founding member pricing
-   - Target: 7-10 total firms by Month 6
+6. **Optimize User Booking Flow** (5 hours)
+   - A/B test calendar UI variations
+   - Test different booking deposit amounts ($0, $20, $30, $50)
+   - Add "instant booking" for lawyers with real-time calendar access
+   - Reduce friction: fewer form fields, faster confirmation
 
 **Success Criteria:**
-- ✅ 2+ paying law firms
-- ✅ $1,000+ monthly recurring revenue
-- ✅ Automated lead routing working
-- ✅ 50+ leads delivered/month
+- ✅ 20+ active law firms
+- ✅ 5-10 firms on Premium subscription ($149/month)
+- ✅ 200+ consultations booked/month
+- ✅ $12,000-15,000 monthly recurring revenue
+- ✅ Subscription renewals: >90% retention month-over-month
+- ✅ Net Revenue Retention: >100% (upsells offset churn)
 
-**If this fails:** Adjust pricing, improve automation, add more value-adds
+**Financial Targets Month 6:**
+- 15 firms on Standard: 10 bookings/month × $100 = $15,000
+- 8 firms on Premium: 8 × $149 + (15 bookings × $50) = $1,192 + $6,000 = $7,192
+- Total MRR: ~$22,000/month = $264K annual run rate
+
+**If this fails:**
+- Low subscription adoption → Adjust pricing, improve value props
+- High churn → Survey churned lawyers, identify pain points
+- Booking volume plateau → Increase user acquisition marketing
 
 ---
 

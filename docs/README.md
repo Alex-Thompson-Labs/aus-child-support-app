@@ -33,6 +33,20 @@ This folder contains all project documentation for the Child Support Calculator 
 - Complexity triggers explained in detail
 - Critical analysis with recommendations
 
+### **PRICING_STRATEGY_ANALYSIS.md** 💰 ⭐ CHOSEN MODEL
+**⭐ CHOSEN MODEL: Pay-Per-Consultation-Booked ($100). Comprehensive regulatory and financial analysis of 5 pricing options.**
+- **Decision:** Option 3 (Pay-Per-Consultation-Booked) selected after regulatory analysis
+- **Evolution:** Phase 3 at $100/booking → Phase 4 Hybrid ($149/month + $50/booking)
+- **Why this beats alternatives:**
+  - Regulatory compliance (ASCR Rule 12.4.3 safe)
+  - Fraud prevention (OTP verification, booking deposits)
+  - Lawyer value (no scheduling friction, 4:1 ROI minimum)
+- **Rejected models:**
+  - Option 4 (Pay-Per-Client): FATAL FLAW - fee-sharing prohibition
+  - Option 1 (Pay-Per-Lead): High fraud risk, "tyre-kicker" fatigue
+- **Length:** 428 lines of regulatory analysis, unit economics, technical requirements
+- **Who needs it:** Developer (implementation), lawyers (service agreement)
+
 ### **Lawyer Lead Generation Strategy.md** 📊
 **Original strategy document outlining the pivot approach.**
 - Complexity triggers system
@@ -72,9 +86,20 @@ This folder contains all project documentation for the Child Support Calculator 
 
 ### **CHANGELOG.md** 📆
 **Change tracking with dates and reasoning.**
+- December 20, 2024: Pricing Model Finalized (Pay-Per-Consultation-Booked)
+- December 19, 2024: Phase 1 & 2 Strategic Planning
 - December 17, 2024: Results display redesign
 - Earlier implementation history
 - Documents all major changes
+
+### **PHASE_1_2_UPDATES.md** 📋
+**Summary of Phase 1 & 2 strategic changes and updated pricing model (Dec 2024).**
+- Lawyer recruitment moved to Phase 1
+- Full lead routing system built from day 1
+- **Updated pricing model:** Pay-Per-Consultation-Booked ($100) with evolution to Hybrid ($149/month + $50/booking)
+- Revenue projections: Conservative $48k/year → Optimistic $383k/year
+- Technical requirements: Calendar integration, Stripe, fraud prevention stack
+- Regulatory compliance summary
 
 ---
 
@@ -124,18 +149,20 @@ This folder contains all project documentation for the Child Support Calculator 
 
 | Document | Lines | Purpose | Last Updated |
 |----------|-------|---------|--------------|
-| MASTER_PLAN.md | 1,533 | **Implementation roadmap** ⭐ | Dec 17, 2024 |
+| MASTER_PLAN.md | 1,626 | **Implementation roadmap** ⭐ | Dec 20, 2024 |
 | PROJECT_SUMMARY.md | 592 | Project overview | Dec 17, 2024 |
 | BRUTAL_REALITY_CHECK.md | 429 | B2C failure analysis | Dec 17, 2024 |
+| **PRICING_STRATEGY_ANALYSIS.md** | **428** | **Pricing model analysis** 💰 | **Dec 20, 2024** |
 | LAWYER_STRATEGY_ANALYSIS.md | 402 | B2B strategy eval | Dec 17, 2024 |
+| PHASE_1_2_UPDATES.md | 289 | Phase 1-2 updates & pricing | Dec 20, 2024 |
 | DESIGN_SYSTEM.md | 201 | Design guide | Dec 17, 2024 |
 | CALCULATOR-PORTING-GUIDE.md | 172 | Porting instructions | Dec 17, 2024 |
 | IMPLEMENTATION_SUMMARY.md | 149 | Recent work summary | Dec 17, 2024 |
+| CHANGELOG.md | 148 | Change tracking | Dec 20, 2024 |
 | Lawyer Lead Generation Strategy.md | 117 | Original pivot doc | Dec 17, 2024 |
-| CLAUDE.md | 114 | AI helper guide | Dec 17, 2024 |
-| CHANGELOG.md | 66 | Change tracking | Dec 17, 2024 |
+| CLAUDE.md | 114 | AI helper guide | Dec 20, 2024 |
 
-**Total documentation: 3,775 lines**
+**Total documentation: 4,667 lines**
 
 ---
 
