@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAnalytics } from '../src/utils/analytics';
+import { getCoAReasonById } from '../src/utils/change-of-assessment-reasons';
 
 // ============================================================================
 // Types
@@ -197,6 +198,17 @@ export default function LawyerInquiryScreen() {
         ? JSON.parse(params.careData) as Array<{ index: number; careA: number; careB: number }>
         : [];
 
+    // Parse CoA reasons data with error handling
+    let coaReasons: string[] | null = null;
+    try {
+        coaReasons = typeof params.coaReasons === 'string'
+            ? JSON.parse(params.coaReasons) as string[]
+            : null;
+    } catch (error) {
+        console.error('[LawyerInquiry] Failed to parse coaReasons:', error);
+        // Continue without pre-fill
+    }
+
     // Form state
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -225,6 +237,20 @@ export default function LawyerInquiryScreen() {
 
     // Capture mount timestamp for time_to_submit calculation
     const mountTimeRef = useRef<number>(Date.now());
+
+    // Pre-fill message when CoA reasons are present
+    useEffect(() => {
+        if (coaReasons && coaReasons.length > 0) {
+            const reasonLabels = coaReasons
+                .map(id => getCoAReasonById(id)?.label)
+                .filter(Boolean)
+                .join('\n- ');
+
+            const prefillMessage = `I would like help requesting a Change of Assessment for the following reasons:\n\n- ${reasonLabels}\n\nPlease contact me to discuss my situation.`;
+
+            setMessage(prefillMessage);
+        }
+    }, [coaReasons]);
 
     /**
      * Validate a single field

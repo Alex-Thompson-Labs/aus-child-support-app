@@ -43,18 +43,14 @@ npm run web        # Web browser
 
 ## 📚 Documentation
 
-**Start here:**
-- **[guides/phase1/CHECKLIST.md](guides/phase1/CHECKLIST.md)** - This week's tasks (Day 1-7)
-- **[guides/phase1/TESTING.md](guides/phase1/TESTING.md)** - Test before launching
-- **[guides/TROUBLESHOOTING.md](guides/TROUBLESHOOTING.md)** - Common issues & fixes
+**Current Work:**
+- [guides/CHRISTMAS_BREAK_PLAN.md](guides/CHRISTMAS_BREAK_PLAN.md) - Tasks for Dec 24 - Jan 2
 
-**Strategic planning:**
-- [docs/MASTER_PLAN.md](docs/MASTER_PLAN.md) - Complete implementation roadmap
-
-**Technical reference:**
-- [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) - Colors, spacing, patterns
-- [docs/CLAUDE.md](docs/CLAUDE.md) - Architecture & AI guidance
-- [docs/CHANGELOG.md](docs/CHANGELOG.md) - Change history
+**Reference:**
+- [docs/CLAUDE.md](docs/CLAUDE.md) - Architecture & production code requirements
+- [docs/BUSINESS_MODEL.md](docs/BUSINESS_MODEL.md) - $50/lead model
+- [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) - Colors, spacing
+- [guides/TROUBLESHOOTING.md](guides/TROUBLESHOOTING.md) - Common issues
 
 ---
 

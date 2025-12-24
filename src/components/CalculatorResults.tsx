@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { CalculationResults } from "../types/calculator";
 import { useAnalytics } from "../utils/analytics";
 import { detectComplexity, getAlertConfig, type ComplexityFlags, type ComplexityFormData } from "../utils/complexity-detection";
+import { ChangeOfAssessmentPrompt } from "./ChangeOfAssessmentPrompt";
 import { LawyerAlert } from "./LawyerAlert";
 import { ResultsSimpleExplanation } from "./ResultsSimpleExplanation";
 
@@ -199,6 +200,10 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
 
         console.log('[Analytics] Tracking breakdown_expanded:', eventProperties);
         analytics.track('breakdown_expanded', eventProperties);
+
+        // Also track CoA prompt shown
+        console.log('[Analytics] Tracking coa_prompt_shown:', eventProperties);
+        analytics.track('coa_prompt_shown', eventProperties);
       } catch (error) {
         console.error('[Analytics] Error tracking breakdown_expanded:', error);
       }
@@ -251,6 +256,13 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
           annualLiability={results.finalPaymentAmount}
         />
       )}
+
+      {/* Change of Assessment Prompt - always shown */}
+      <ChangeOfAssessmentPrompt
+        results={results}
+        formData={formData}
+        onNavigate={() => setIsExpanded(false)}
+      />
 
       <ResultsSimpleExplanation results={results} />
     </ScrollView>

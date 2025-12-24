@@ -131,6 +131,8 @@ Uses **expo-router** with file-based routing. The `app/` directory defines route
 
 **⚠️ READ THIS BEFORE IMPLEMENTING ANYTHING ⚠️**
 
+**⚠️ APPLY TO EVERY PROMPT - NO EXCEPTIONS ⚠️**
+
 **The Problem:**
 When you ask Claude to "create a component", it builds a WORKING component. But **working ≠ production-ready.**
 
@@ -142,7 +144,7 @@ Testing shows that without explicit instructions, Claude will:
 - Skip edge case handling ❌
 
 **The Solution:**
-Always include these requirements in EVERY code generation task:
+**EVERY code generation prompt MUST include these requirements:**
 
 ```
 Before you write code:

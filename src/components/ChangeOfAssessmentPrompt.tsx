@@ -1,0 +1,457 @@
+import { useRouter } from "expo-router";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Alert, Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import type { CalculationResults } from "../types/calculator";
+import { useAnalytics } from "../utils/analytics";
+import {
+  CHANGE_OF_ASSESSMENT_REASONS,
+  getCoAReasonById,
+  getHighestPriorityReason,
+  type ChangeOfAssessmentReason,
+} from "../utils/change-of-assessment-reasons";
+import type { ComplexityFormData } from "../utils/complexity-detection";
+import { HelpTooltip } from "./HelpTooltip";
+
+interface ChangeOfAssessmentPromptProps {
+  results: CalculationResults;
+  formData?: ComplexityFormData;
+  onNavigate: () => void; // Callback to close modal before navigation
+}
+
+export function ChangeOfAssessmentPrompt({
+  results,
+  formData,
+  onNavigate,
+}: ChangeOfAssessmentPromptProps) {
+  // State management
+  const [isCoAExpanded, setIsCoAExpanded] = useState(false);
+  const [selectedReasons, setSelectedReasons] = useState<Set<string>>(new Set());
+  const [isNavigatingFromCoA, setIsNavigatingFromCoA] = useState(false);
+
+  // Animation
+  const coaHeightAnim = useRef(new Animated.Value(0)).current;
+  const coaContentHeight = useRef(0);
+
+  // Hooks
+  const router = useRouter();
+  const analytics = useAnalytics();
+
+  // Guard against empty reasons array
+  if (CHANGE_OF_ASSESSMENT_REASONS.length === 0) {
+    console.warn("[CoAPrompt] No CoA reasons available");
+    return null;
+  }
+
+  // Group reasons by priority
+  const urgentReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.priority <= 3);
+  const normalReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.priority > 3);
+
+  // Determine button state and style
+  const hasUrgentReasons = Array.from(selectedReasons).some((id) => {
+    const reason = getCoAReasonById(id);
+    return reason && reason.priority <= 3;
+  });
+
+  const buttonDisabled = selectedReasons.size === 0 || isNavigatingFromCoA;
+  const buttonStyle = buttonDisabled
+    ? styles.coaButtonDisabled
+    : hasUrgentReasons
+      ? styles.coaButtonRed
+      : styles.coaButtonBlue;
+
+  // Expand/collapse animation
+  useEffect(() => {
+    Animated.spring(coaHeightAnim, {
+      toValue: isCoAExpanded ? 1 : 0,
+      useNativeDriver: false, // Required for height animation
+      tension: 65, // Same as modal animation
+      friction: 11, // Same as modal animation
+    }).start();
+  }, [isCoAExpanded, coaHeightAnim]);
+
+  // Checkbox toggle handler
+  const handleCheckboxToggle = useCallback(
+    (reasonId: string) => {
+      // Functional setState prevents race conditions on rapid toggling
+      setSelectedReasons((prev) => {
+        const next = new Set(prev); // Create new Set (immutability)
+        const wasChecked = next.has(reasonId);
+
+        if (wasChecked) {
+          next.delete(reasonId);
+        } else {
+          next.add(reasonId);
+        }
+
+        // Track analytics (debouncing handled by setTimeout)
+        setTimeout(() => {
+          try {
+            analytics.track("coa_reason_toggled", {
+              reason_id: reasonId,
+              is_checked: !wasChecked,
+              total_selected: next.size,
+            });
+          } catch (error) {
+            console.error("[CoAPrompt] Analytics error:", error);
+          }
+        }, 100);
+
+        return next;
+      });
+    },
+    [analytics]
+  );
+
+  // Expand/collapse toggle handler
+  const handleToggleExpand = useCallback(() => {
+    const willExpand = !isCoAExpanded;
+    setIsCoAExpanded(willExpand);
+
+    // Track analytics
+    try {
+      analytics.track("coa_section_toggled", {
+        is_expanded: willExpand,
+        annual_liability: results.finalPaymentAmount,
+      });
+    } catch (error) {
+      console.error("[CoAPrompt] Analytics error:", error);
+    }
+  }, [isCoAExpanded, analytics, results.finalPaymentAmount]);
+
+  // Navigation handler
+  const handleNavigateToCoA = useCallback(() => {
+    if (isNavigatingFromCoA || selectedReasons.size === 0) {
+      return;
+    }
+
+    setIsNavigatingFromCoA(true);
+
+    // Track analytics
+    try {
+      analytics.track("coa_button_clicked", {
+        reasons_selected: JSON.stringify(Array.from(selectedReasons)),
+        reason_count: selectedReasons.size,
+        highest_priority:
+          getHighestPriorityReason(Array.from(selectedReasons))?.priority ?? null,
+        annual_liability: results.finalPaymentAmount,
+      });
+    } catch (error) {
+      console.error("[CoAPrompt] Analytics error:", error);
+    }
+
+    // Close modal first (via callback)
+    onNavigate();
+
+    // Navigate after modal animation completes
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        try {
+          // Serialize care arrangement data for each child
+          const careData = (formData?.children ?? []).map((_child, index) => ({
+            index,
+            careA: results.childResults[index]?.roundedCareA ?? 0,
+            careB: results.childResults[index]?.roundedCareB ?? 0,
+          }));
+
+          router.push({
+            pathname: "/lawyer-inquiry",
+            params: {
+              // Existing params
+              liability: results.finalPaymentAmount.toString(),
+              trigger: "change_of_assessment",
+              incomeA: results.ATI_A.toString(),
+              incomeB: results.ATI_B.toString(),
+              children: (formData?.children?.length ?? 0).toString(),
+              careData: JSON.stringify(careData),
+
+              // NEW CoA params
+              coaReasons: JSON.stringify(Array.from(selectedReasons)),
+              coaHighestPriority:
+                getHighestPriorityReason(Array.from(selectedReasons))?.id ?? "",
+            },
+          });
+        } catch (error) {
+          console.error("[CoAPrompt] Navigation failed:", error);
+          Alert.alert(
+            "Navigation Error",
+            "Unable to open inquiry form. Please try again."
+          );
+        } finally {
+          setTimeout(() => setIsNavigatingFromCoA(false), 500);
+        }
+      });
+    });
+  }, [
+    isNavigatingFromCoA,
+    selectedReasons,
+    onNavigate,
+    router,
+    results,
+    formData,
+    analytics,
+  ]);
+
+  // Render checkbox for a reason
+  const renderCheckbox = (reason: ChangeOfAssessmentReason) => {
+    const isChecked = selectedReasons.has(reason.id);
+
+    return (
+      <Pressable
+        key={reason.id}
+        style={styles.checkboxRow}
+        onPress={() => handleCheckboxToggle(reason.id)}
+        accessible={true}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: isChecked }}
+        accessibilityLabel={reason.label}
+        accessibilityHint={`Double tap to ${isChecked ? "uncheck" : "check"}`}
+      >
+        <View
+          style={[styles.checkbox, isChecked && styles.checkboxChecked]}
+        >
+          {isChecked && <Text style={styles.checkboxCheck}>✓</Text>}
+        </View>
+        <View style={styles.checkboxLabelContainer}>
+          <Text style={styles.checkboxLabel}>{reason.label}</Text>
+          <HelpTooltip what={reason.description} why={reason.description} />
+        </View>
+      </Pressable>
+    );
+  };
+
+  return (
+    <View style={styles.coaContainer}>
+      {/* Header - Always visible, tappable to expand */}
+      <Pressable
+        onPress={handleToggleExpand}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel={`Change of Assessment options. ${
+          isCoAExpanded ? "Collapse" : "Expand"
+        }`}
+        accessibilityState={{ expanded: isCoAExpanded }}
+      >
+        <View style={styles.coaHeader}>
+          <View style={styles.coaHeaderLeft}>
+            <Text style={styles.coaTitle}>⚖️ Does this result seem unfair?</Text>
+            <Text style={styles.coaSubtitle}>
+              Cases with these factors often benefit from legal review
+            </Text>
+          </View>
+          <Text style={styles.coaChevron}>{isCoAExpanded ? "▼" : "▶"}</Text>
+        </View>
+      </Pressable>
+
+      {/* Expandable content */}
+      <View style={{ overflow: "hidden" }}>
+        <Animated.View
+          style={{
+            maxHeight: coaHeightAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 2000], // Large enough to fit all content
+            }),
+            opacity: coaHeightAnim.interpolate({
+              inputRange: [0, 0.3, 1],
+              outputRange: [0, 0.5, 1],
+            }),
+          }}
+        >
+          <View
+            onLayout={(e) => {
+              if (coaContentHeight.current === 0) {
+                coaContentHeight.current = e.nativeEvent.layout.height;
+              }
+            }}
+          >
+          {/* Urgent Reasons Group */}
+          {urgentReasons.length > 0 && (
+            <View style={styles.reasonGroup}>
+              <View style={styles.groupHeader}>
+                <Text style={[styles.groupTitle, styles.groupTitleUrgent]}>
+                  ⚠️ URGENT
+                </Text>
+              </View>
+              <View style={styles.urgentBorder}>
+                {urgentReasons.map(renderCheckbox)}
+              </View>
+            </View>
+          )}
+
+          {/* Normal Reasons Group */}
+          {normalReasons.length > 0 && (
+            <View style={styles.reasonGroup}>
+              <View style={styles.groupHeader}>
+                <Text style={styles.groupTitle}>📋 Common</Text>
+              </View>
+              {normalReasons.map(renderCheckbox)}
+            </View>
+          )}
+
+          {/* Bottom section with count and button */}
+          <View style={styles.coaFooter}>
+            <Text style={styles.selectedCount}>
+              {selectedReasons.size} reason
+              {selectedReasons.size === 1 ? "" : "s"} selected
+            </Text>
+            <Pressable
+              style={[styles.coaButton, buttonStyle]}
+              onPress={handleNavigateToCoA}
+              disabled={buttonDisabled}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Request Legal Review"
+              accessibilityHint={`${selectedReasons.size} reason${
+                selectedReasons.size === 1 ? "" : "s"
+              } selected`}
+              accessibilityState={{ disabled: buttonDisabled }}
+            >
+              <Text style={styles.coaButtonText}>Request Legal Review</Text>
+            </Pressable>
+            <Text style={styles.coaDisclaimer}>
+              Free consultation, no obligation
+            </Text>
+          </View>
+        </View>
+      </Animated.View>
+    </View>
+  </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  // Container
+  coaContainer: {
+    backgroundColor: "#1e293b", // slate-800
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#334155", // slate-700
+    padding: 20,
+    marginBottom: 16,
+  },
+
+  // Header
+  coaHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  coaHeaderLeft: {
+    flex: 1,
+  },
+  coaTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#ffffff",
+    marginBottom: 4,
+  },
+  coaSubtitle: {
+    fontSize: 14,
+    color: "#94a3b8", // slate-400
+  },
+  coaChevron: {
+    fontSize: 14,
+    color: "#94a3b8", // slate-400
+    marginLeft: 12,
+  },
+
+  // Groups
+  reasonGroup: {
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  groupHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  groupTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#cbd5e1", // slate-300
+  },
+  groupTitleUrgent: {
+    color: "#ef4444", // red-500
+  },
+  urgentBorder: {
+    borderLeftWidth: 3,
+    borderLeftColor: "#ef4444", // red-500
+    paddingLeft: 12,
+  },
+
+  // Checkboxes
+  checkboxRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 12,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: "#334155", // slate-700
+    backgroundColor: "#1e293b", // slate-800
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 2,
+    marginRight: 12,
+  },
+  checkboxChecked: {
+    backgroundColor: "#2563eb", // blue-600
+    borderColor: "#2563eb",
+  },
+  checkboxCheck: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  checkboxLabelContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  checkboxLabel: {
+    fontSize: 14,
+    color: "#cbd5e1", // slate-300
+    lineHeight: 20,
+    flex: 1,
+  },
+
+  // Footer
+  coaFooter: {
+    marginTop: 16,
+    alignItems: "center",
+  },
+  selectedCount: {
+    fontSize: 14,
+    color: "#94a3b8", // slate-400
+    marginBottom: 12,
+  },
+  coaButton: {
+    borderRadius: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    alignItems: "center",
+    width: "100%",
+  },
+  coaButtonBlue: {
+    backgroundColor: "#2563eb", // blue-600
+  },
+  coaButtonRed: {
+    backgroundColor: "#ef4444", // red-500
+  },
+  coaButtonDisabled: {
+    backgroundColor: "#64748b", // slate-500
+    opacity: 0.6,
+  },
+  coaButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  coaDisclaimer: {
+    fontSize: 12,
+    color: "#64748b", // slate-500
+    marginTop: 8,
+  },
+});

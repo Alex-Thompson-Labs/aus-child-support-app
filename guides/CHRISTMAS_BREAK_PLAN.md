@@ -1,12 +1,19 @@
 # Christmas Break Action Plan (Dec 24 - Jan 2)
 
-**Goal:** Finish Phase 1 completely + Prepare Phase 2 materials + Clean up confusing docs  
-**Timeline:** 10 days (lawyers closed anyway)  
-**Outcome:** Hit the ground running Jan 2nd with polished product
+**Goal:** Finish Phase 1 completely + Prepare Phase 2 materials  
+**Timeline:** 10 days  
+**Outcome:** Ready to email lawyers Jan 2nd
 
 ---
 
 ## 🗑️ STEP 1: Documentation Cleanup (30 min - DO THIS FIRST)
+
+**Tool:** Claude Code  
+**Model:** Sonnet 4.5 ✅  
+**Thinking Mode:** Can turn OFF ⚪ (simple file deletions and removals)  
+**Plan Mode:** Regular ✅ (straightforward operations)
+
+---
 
 ### Files to DELETE (outdated/confusing):
 ```bash
@@ -99,80 +106,372 @@ Create simple `BUSINESS_MODEL.md` with current state:
 
 ---
 
-## ✅ STEP 2: Finish Phase 1 - Special Circumstances (Dec 24-26)
+## ✅ STEP 2: Finish Phase 1 - Change of Assessment Triggers (Dec 24-26)
 
-**Time:** 2-4 hours  
-**Goal:** Add special circumstances fields to calculator
+**Time:** 4-5 hours  
+**Goal:** Add post-result Change of Assessment prompt to trigger lawyer alerts
 
-### Task 2.1: Add Form Fields (1 hour)
+---
+
+## 🤖 Claude Code Configuration for Step 2
+
+### Recommended Settings:
+
+**Model:** Sonnet 4.5 ✅
+- **Why:** Standard React Native components, form state management
+- **Cost:** ~$1-2 for all of Step 2
+- **Don't use Opus:** Not needed for this work
+
+**Thinking Mode:** Keep ON ✅
+- **Why:** Complex state management, animation, multi-file changes
+- **Cost:** Extra $0.50-1 for Step 2
+- **Worth it:** YES - prevents bugs in state management
+
+**Plan Mode by Task:**
+- **Task 2.1 (Constants):** Regular mode ✅ - Simple file creation
+- **Task 2.2 (UI Component):** Plan mode ✅ - Complex multi-state component with animations
+- **Task 2.3 (Complexity Detection):** Regular mode ✅ - Straightforward logic updates
+- **Task 2.4 (Inquiry Form):** Regular mode ✅ - Simple display component
+- **Task 2.5 (Testing):** Regular mode ✅ - Manual testing, no code generation
+
+**How to Check Your Mode:**
+Look at the text below the input box in Claude Code:
+- Regular mode: `? for shortcuts` or `1 line selected`
+- Plan mode: `" plan mode on (shift+tab to cycle)`
+- Press **Shift+Tab** to cycle between modes
+
+**Accept Edits:** Keep OFF ✅
+- **Why:** You want to review each change
+- **This is NOT Plan Mode** - it's auto-approval of edits
+
+---
+
+## 🎯 WHY THIS APPROACH IS BETTER:
+- ✅ User sees result FIRST → feels emotional impact → motivated to act
+- ✅ Uses official Services Australia "Change of Assessment" language (credible)
+- ✅ Teaches users the 10 official grounds for appeal (educational)
+- ✅ Better lead quality: Lawyers get specific CoA reasons, not vague "special circumstances"
+- ✅ Higher conversion: "This feels unfair!" is a stronger trigger than pre-calculation checkboxes
+- ✅ Fear factor: "Would the other parent think this is unfair?" = defensive motivation
+
+---
+
+### 💡 CRITICAL: Production Code Reminder
+
+**ALL prompts in this step follow production-quality standards:**
+- ✅ Error handling for all failure cases
+- ✅ Input validation and sanitization
+- ✅ Loading states where needed
+- ✅ Edge case handling
+- ✅ Proper TypeScript types (no 'any')
+- ✅ Accessibility labels where appropriate
+
+**These are not suggestions - they are requirements.** Claude will build exactly what you ask for. If you don't ask for production quality, you'll get demo quality.
+
+---
+
+### Task 2.1: Add Change of Assessment Constants (30 min)
+
+**Settings:** Sonnet 4.5, Thinking ON, Regular mode ✅
 
 Ask Claude Code:
 ```
-Add special circumstances fields to the calculator:
+Create src/utils/change-of-assessment-reasons.ts with the 10 official Change of Assessment reasons from Services Australia:
 
-1. In src/components/CalculatorForm.tsx, add 3 new fields AFTER the children section:
+1. Define ChangeOfAssessmentReason interface:
+   - id: string (e.g., 'income_not_reflected')
+   - label: string (user-facing text)
+   - description: string (help tooltip text)
+   - priority: number (1-10, for sorting alerts by urgency)
 
-SPECIAL CIRCUMSTANCES (optional):
-- Checkbox: "This case involves private school fees"
-- Checkbox: "There are significant medical expenses for the children"
-- Checkbox: "Other special circumstances to mention to a lawyer"
-- Text input (appears if "other" checked): 200 char limit
+2. Export array CHANGE_OF_ASSESSMENT_REASONS with all 10 reasons:
+   - Income not accurately reflected in ATI
+   - High costs of child care (medical, disability, special needs)
+   - High costs of contact (travel for visitation)
+   - Private school fees
+   - Supporting other children (relevant dependents)
+   - Property settlement impacts capacity to pay
+   - Business or partnership income not captured
+   - Trust distributions not in ATI
+   - Other substantial income (rental, investments, overseas)
+   - Other special circumstances
 
-2. Update src/hooks/useCalculator.ts:
-- Add to CalculatorFormState interface:
-  * hasPrivateSchool: boolean
-  * hasMedicalCosts: boolean
-  * hasOtherCircumstances: boolean
-  * otherCircumstancesDetail?: string
+3. Add helper function getCoAReasonById(id: string)
+4. Add helper function getHighestPriorityReason(selectedIds: string[])
 
-3. Style consistently with design system
-4. All fields are OPTIONAL (not required)
-5. Add help tooltips explaining each
+PRODUCTION REQUIREMENTS:
+- Proper TypeScript types (no 'any')
+- Handle invalid IDs gracefully (return null, don't crash)
+- Add JSDoc comments for each reason explaining when it applies
+- Make array immutable (readonly)
+- Export type for use in other components
 
-Production requirements:
-- Proper TypeScript types
-- Validation on "other" field (max 200 chars)
-- Clear labels and descriptions
+CRITICAL: Think about what could go wrong:
+- What if someone passes an invalid ID?
+- What if the array is accidentally mutated?
+- What if selectedIds is empty or undefined?
+
+Build production-ready code, not just a demo.
 ```
 
-### Task 2.2: Update Complexity Detection (1 hour)
+---
+
+### Task 2.2: Add Change of Assessment UI Component (1.5-2 hours)
+
+**Settings:** Sonnet 4.5, Thinking ON, **PLAN MODE** ✅ (Press Shift+Tab until you see "" plan mode on")
 
 Ask Claude Code:
 ```
-Update src/utils/complexity-detection.ts to use special circumstances:
+Update src/components/CalculatorResults.tsx to add Change of Assessment prompt AFTER the results display:
 
-1. In detectComplexity():
-   - Set specialCircumstances = true if ANY of these are checked:
-     * formData.hasPrivateSchool
-     * formData.hasMedicalCosts
-     * formData.hasOtherCircumstances
+1. Add state management:
+   - selectedReasons: string[] (IDs of selected CoA reasons)
+   - showCoASection: boolean (collapsed by default, expand when user taps)
 
-2. In getAlertConfig(), update specialCircumstances message:
-   - If hasPrivateSchool: "Private school fees require a Binding Agreement"
-   - If hasMedicalCosts: "Medical costs may qualify as special circumstances"
-   - If hasOtherCircumstances: "Special circumstances may require legal review"
-   - If multiple: "Multiple special circumstances detected"
+2. Add UI section after main results, styled as a card:
 
-3. Include details in lead brief for lawyers
+   Header (always visible, tappable to expand):
+   "⚖️ Does this result seem unfair?"
+   "...or do you expect the other parent would think it's unfair?"
+   
+   Subtext: 
+   "Cases with these factors often benefit from legal review"
+   
+   When expanded:
+   - Map over CHANGE_OF_ASSESSMENT_REASONS
+   - Render each as a checkbox with label + help icon
+   - Help icon shows description tooltip
+   - Group by priority (urgent vs normal)
+   
+   Visual hierarchy:
+   - High priority reasons (1-3) in red/orange group labeled "⚠️ URGENT"
+   - Normal reasons (4-10) in blue group labeled "📋 Common"
+   
+   Bottom:
+   - Show count: "X reasons selected"
+   - Button: "Request Legal Review" (only if ≥1 selected)
+   - Secondary text: "Free consultation, no obligation"
+
+3. Button behavior:
+   - Track analytics: 'coa_reasons_selected' with selectedReasons array
+   - Navigate to lawyer inquiry form
+   - Pass selectedReasons + calculation data as params
+
+PRODUCTION REQUIREMENTS:
+- Proper TypeScript types for all state
+- Smooth expand/collapse animation (use Animated API)
+- Handle rapid checkbox toggling without state corruption
+- Validate at least 1 reason selected before showing button
+- Add accessibility labels (ARIA) for screen readers
+- Disable button during navigation (prevent double-tap)
+- Show loading state if navigation is slow
+- Handle undefined/null formData gracefully
+
+STYLING (match design system):
+- Card background: #1e293b (slate-800)
+- Border: #334155 (slate-700)
+- Urgent section border: #ef4444 (red-500)
+- Header text: #ffffff, 18px, weight 600
+- Checkbox labels: #e2e8f0 (slate-200), 14px
+- Help icon: #94a3b8 (slate-400)
+- Button: #2563eb (blue-600), or #ef4444 if urgent reasons selected
+- Border radius: 12px
+- Padding: 20px
+
+CRITICAL: Think about what could go wrong:
+- What if user rapidly toggles all 10 checkboxes?
+- What if they select 0 reasons and try to submit?
+- What if navigation.navigate fails?
+- What if selectedReasons becomes undefined?
+- What if user expands/collapses rapidly?
+- How do you prevent double-button-press?
+
+Build production-ready code, not just a demo.
 ```
 
-### Task 2.3: Update Inquiry Form Email (30 min)
+---
 
-Make sure special circumstances data is included in the email you receive when parent submits inquiry.
+### Task 2.3: Update Complexity Detection (45 min)
 
-### Task 2.4: Test Complete (30 min)
+**Settings:** Sonnet 4.5, Thinking ON, Regular mode ✅
 
-- [ ] Add private school fees → See alert
-- [ ] Add medical costs → See alert  
-- [ ] Add other circumstances → See alert
-- [ ] Submit inquiry form → Email includes special circumstances
-- [ ] Analytics tracks special_circumstances flag
+Ask Claude Code:
+```
+Update src/utils/complexity-detection.ts to use Change of Assessment reasons:
+
+1. Add to ComplexityFormData interface:
+   - selectedCoAReasons?: string[] (optional)
+
+2. Update detectComplexity():
+   - Set specialCircumstances = true if formData.selectedCoAReasons.length > 0
+   - Handle undefined gracefully (treat as empty array)
+   - Add console.log for debugging which reasons selected
+
+3. Update getAlertConfig() for special circumstances:
+   - Import getHighestPriorityReason from change-of-assessment-reasons
+   - Get the highest priority reason from selected list
+   - Use reason-specific message based on priority:
+   
+   Priority 1-3 (URGENT):
+   "⚠️ URGENT: [Reason] Detected"
+   "This requires immediate legal review before proceeding."
+   urgency: 'high'
+   
+   Priority 4-10 (NORMAL):
+   "📋 Change of Assessment: [Reason]"
+   "Cases with [reason] often benefit from legal review."
+   urgency: 'medium'
+   
+   Multiple reasons:
+   "[X] Factors Affecting Fairness Detected"
+   "Multiple Change of Assessment grounds apply to your case."
+   urgency: based on highest priority reason
+
+4. Create lead data object for lawyers:
+   - Include array of selected CoA reason labels (not IDs)
+   - Include description of each reason for context
+   - Format for email template:
+     ```
+     CHANGE OF ASSESSMENT GROUNDS:
+     1. Income not accurately reflected (priority: URGENT)
+        → Tax return doesn't reflect current earnings
+     2. Private school fees (priority: Normal)
+        → Education costs beyond standard calculation
+     ```
+
+PRODUCTION REQUIREMENTS:
+- Proper TypeScript types for all functions
+- Handle undefined formData.selectedCoAReasons gracefully
+- Handle empty array (no reasons selected)
+- Don't crash if reason ID is invalid
+- Sanitize reason labels before including in lead data
+- Add console.log for debugging which alert triggered
+- Unit test with edge cases:
+  * selectedCoAReasons is undefined
+  * selectedCoAReasons is empty []
+  * selectedCoAReasons has 1 urgent reason
+  * selectedCoAReasons has 1 normal reason
+  * selectedCoAReasons has mix of urgent + normal
+  * selectedCoAReasons has invalid ID
+
+CRITICAL: Think about what could go wrong:
+- What if selectedCoAReasons is undefined?
+- What if it contains invalid IDs?
+- What if it's an empty array?
+- What if getHighestPriorityReason returns null?
+- How do you prevent XSS in reason labels?
+- What if multiple URGENT reasons are selected?
+
+Build production-ready code, not just a demo.
+```
+
+---
+
+### Task 2.4: Update Inquiry Form to Include CoA Data (30 min)
+
+**Settings:** Sonnet 4.5, Thinking ON, Regular mode ✅
+
+Ask Claude Code:
+```
+Update src/screens/LawyerInquiryScreen.tsx to display and submit Change of Assessment reasons:
+
+1. Accept route params:
+   - selectedCoAReasons: string[] (from previous screen)
+   - Pass through from CalculatorResults navigation
+
+2. Display CoA reasons in read-only summary card ABOVE the inquiry form:
+   
+   Card title: "📋 Change of Assessment Grounds Selected"
+   
+   List each reason with:
+   - Icon based on priority (⚠️ for urgent, 📋 for normal)
+   - Reason label
+   - Reason description (smaller text)
+   
+   Example:
+   ```
+   📋 CHANGE OF ASSESSMENT GROUNDS SELECTED
+   
+   ⚠️ Income not accurately reflected
+      Tax return doesn't reflect current earnings
+   
+   📋 Private school fees
+      Education costs beyond standard calculation
+   ```
+
+3. Include in lead data object when form submitted:
+   - Add changeOfAssessmentReasons array
+   - Include both labels and descriptions
+   - Format for lawyer email (see Task 2.3 format)
+
+4. Update analytics tracking:
+   - Event: 'inquiry_submitted'
+   - Properties:
+     * hasCoAReasons: boolean
+     * coaReasonCount: number
+     * coaReasonIds: string[]
+     * hasUrgentReasons: boolean
+
+PRODUCTION REQUIREMENTS:
+- Handle undefined selectedCoAReasons gracefully (show nothing)
+- Handle empty array (show nothing, don't show empty card)
+- Validate reason IDs before displaying (skip invalid ones)
+- Sanitize reason text before displaying/submitting
+- Add error handling if analytics.track fails
+- Don't crash if route params are missing
+- Show loading state while submitting
+
+STYLING (match design system):
+- Card background: #1e293b (slate-800)
+- Border: #334155 (slate-700), or #ef4444 (red) if urgent reasons
+- Reason label: #ffffff, 15px, weight 600
+- Description: #94a3b8 (slate-400), 13px
+- Icon: #ef4444 (urgent) or #3b82f6 (normal)
+- Padding: 16px
+- Border radius: 12px
+- Margin bottom: 20px (space before form)
+
+CRITICAL: Think about what could go wrong:
+- What if selectedCoAReasons is undefined?
+- What if it contains invalid reason IDs?
+- What if navigation params are corrupted?
+- What if the card takes up too much screen space?
+- How do you handle very long reason descriptions?
+- What if analytics is blocked?
+
+Build production-ready code, not just a demo.
+```
+
+### Task 2.5: Test Complete (45 min)
+
+**Settings:** Manual testing - no Claude Code needed
+
+**Test the full Change of Assessment flow:**
+
+1. [ ] Complete calculation → Results show
+2. [ ] Tap "Does this result seem unfair?" → Section expands
+3. [ ] See 10 CoA reasons grouped by priority (Urgent vs Common)
+4. [ ] Select 1 urgent reason → Button shows with red styling
+5. [ ] Select 1 normal reason → Button shows with blue styling
+6. [ ] Select multiple reasons → Button shows count "3 reasons selected"
+7. [ ] Tap button → Navigate to inquiry form
+8. [ ] See CoA reasons displayed in read-only card above form
+9. [ ] Submit form → Console.log shows CoA data
+10. [ ] PostHog tracks: hasCoAReasons, coaReasonCount, coaReasonIds
+
+**Edge cases:**
+- [ ] Select 0 reasons → Button doesn't appear
+- [ ] Rapidly toggle checkboxes → No state corruption
+- [ ] Navigate back → Selected reasons persist
+- [ ] Invalid reason ID in data → Skipped gracefully
 
 **Done when:**
-- [ ] Special circumstances fields added to calculator
+- [ ] Change of Assessment section added to results
+- [ ] 10 official reasons implemented
 - [ ] Complexity detection working
-- [ ] Inquiry form includes data
+- [ ] Inquiry form includes CoA data
 - [ ] All tested end-to-end
+- [ ] Analytics tracking working
 
 ---
 
@@ -180,6 +479,12 @@ Make sure special circumstances data is included in the email you receive when p
 
 **Time:** 2-3 hours  
 **Goal:** Complete testing checklist
+
+**Tool:** Your hands + the app (no AI needed!)  
+**What you're doing:** Manual testing on iOS simulator/Android emulator  
+**Verify:** All features work, no crashes, analytics firing correctly
+
+---
 
 ### Full User Journey Test:
 
@@ -205,27 +510,55 @@ Make sure special circumstances data is included in the email you receive when p
 3. [ ] Complete flow
 4. [ ] Verify tracking
 
-**Test 4: Special Circumstances**
-1. [ ] Check "private school fees"
-2. [ ] See special circumstances alert
-3. [ ] Complete flow
-4. [ ] Email includes "hasPrivateSchool: true"
+**Test 4: Change of Assessment - Urgent Reason**
+1. [ ] Complete calculation → See results
+2. [ ] Expand "Does this result seem unfair?" section
+3. [ ] Select "Income not accurately reflected" (urgent)
+4. [ ] See red "Request Legal Review" button
+5. [ ] Click → Navigate to inquiry form
+6. [ ] See urgent CoA reason displayed with ⚠️ icon
+7. [ ] Submit form
+8. [ ] Email includes: "CHANGE OF ASSESSMENT GROUNDS (URGENT): Income not accurately reflected"
+9. [ ] PostHog tracks: hasCoAReasons: true, hasUrgentReasons: true
 
-**Test 5: No Triggers**
-1. [ ] Enter simple calculation ($5K liability, no court date, no special circumstances)
-2. [ ] NO alert should show
-3. [ ] No "Get Legal Help" button
-4. [ ] Just normal results
+**Test 5: Change of Assessment - Multiple Reasons**
+1. [ ] Complete calculation → See results
+2. [ ] Expand CoA section
+3. [ ] Select 3 reasons: "Private school fees", "High costs of contact", "Other income"
+4. [ ] See button show "3 reasons selected"
+5. [ ] Submit inquiry
+6. [ ] Email shows all 3 reasons with descriptions
+7. [ ] PostHog tracks: coaReasonCount: 3
+
+**Test 6: Defensive Motivation (Fear Factor)**
+1. [ ] Enter calculation where THEY would pay
+2. [ ] See result: "You will receive $X/year"
+3. [ ] Read: "...or do you expect the other parent would think it's unfair?"
+4. [ ] Select reasons they might use to challenge
+5. [ ] Get defensive consultation ("protect my entitlement")
+
+**Test 7: No Triggers**
+1. [ ] Enter simple calculation ($5K liability, no court date, no CoA selected)
+2. [ ] NO alert should show initially
+3. [ ] CoA section still available (collapsed)
+4. [ ] User can expand and select reasons if they want
+5. [ ] If they select reasons → lawyer alert triggers
 
 **Edge Case Tests:**
 - [ ] Submit form with invalid email → Validation error
 - [ ] Submit form without name → Validation error
 - [ ] Enter court date in past → Should not trigger urgent
 - [ ] Enter court date >30 days → Should not trigger urgent
+- [ ] Select 0 CoA reasons → No button, no alert
+- [ ] Select 10 CoA reasons → All show in form, email readable
+- [ ] Navigate back from inquiry form → CoA selections preserved
+- [ ] Rapidly toggle CoA checkboxes → No crashes, smooth updates
 - [ ] Turn off wifi → Error handling works gracefully
 
 **PostHog Verification:**
-- [ ] All 5 events appear in dashboard
+- [ ] All events appear in dashboard
+- [ ] CoA reason IDs tracked correctly
+- [ ] Urgent vs normal reasons distinguished
 - [ ] Properties are correct
 - [ ] Funnel shows complete path
 
@@ -233,6 +566,7 @@ Make sure special circumstances data is included in the email you receive when p
 - [ ] All tests pass
 - [ ] No crashes or errors
 - [ ] Analytics working perfectly
+- [ ] Change of Assessment flow working end-to-end
 - [ ] Ready for real users
 
 ---
@@ -241,6 +575,13 @@ Make sure special circumstances data is included in the email you receive when p
 
 **Time:** 4-5 hours  
 **Goal:** Have all docs ready so you can START emailing lawyers Jan 2nd
+
+**Tool:** Desktop Commander (this chat) - better for writing docs than Claude Code  
+**Model:** Sonnet 4.5 ✅  
+**Thinking Mode:** Can turn OFF ⚪ (writing templates and spreadsheets)  
+**Why use Desktop Commander:** Better for creating documents, templates, and planning materials
+
+---
 
 ### Task 4.1: Partnership Agreement (1.5 hours)
 
