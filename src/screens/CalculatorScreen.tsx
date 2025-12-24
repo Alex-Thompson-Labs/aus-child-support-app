@@ -1,5 +1,5 @@
 import React from "react";
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CalculatorForm } from "../components/CalculatorForm";
 import { CalculatorResults } from "../components/CalculatorResults";
@@ -15,10 +15,6 @@ export function CalculatorScreen() {
     removeChild,
     updateChild,
   } = useCalculator();
-
-  const handleYearChange = (year: typeof formState.year) => {
-    setFormState((prev) => ({ ...prev, year }));
-  };
 
   const handleIncomeAChange = (value: number) => {
     setFormState((prev) => ({ ...prev, incomeA: value }));
@@ -62,27 +58,6 @@ export function CalculatorScreen() {
       >
         <View style={styles.header}>
           <Text style={styles.title}>Child Support Calculator</Text>
-          <View style={styles.yearButtonsContainer}>
-            {(["2025", "2024", "2023", "2022", "2021", "2020"] as const).map((yr) => (
-              <Pressable
-                key={yr}
-                onPress={() => handleYearChange(yr)}
-                style={[
-                  styles.yearButton,
-                  formState.year === yr && styles.yearButtonActive,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.yearButtonText,
-                    formState.year === yr && styles.yearButtonTextActive,
-                  ]}
-                >
-                  {yr}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
         </View>
 
         <View style={styles.content}>
@@ -132,34 +107,12 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#1e293b", // slate-800
-    gap: 12,
   },
   title: {
     fontSize: 20,
     fontWeight: "700",
     color: "#ffffff",
     textAlign: "center",
-  },
-  yearButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 4,
-  },
-  yearButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-    backgroundColor: "#334155", // slate-700
-  },
-  yearButtonActive: {
-    backgroundColor: "#2563eb", // blue-600
-  },
-  yearButtonText: {
-    fontSize: 12,
-    color: "#94a3b8", // slate-400
-  },
-  yearButtonTextActive: {
-    color: "#ffffff",
   },
   content: {
     flex: 1,

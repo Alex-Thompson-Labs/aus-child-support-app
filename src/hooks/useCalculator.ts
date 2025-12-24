@@ -1,27 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type {
-  CalculationResults,
-  CalculatorInputs,
-  ChildInput,
-  FormErrors,
-  RelevantDependents,
+    CalculationResults,
+    CalculatorInputs,
+    ChildInput,
+    FormErrors,
+    RelevantDependents,
 } from "../types/calculator";
 import {
-  convertCareToPercentage,
-  getChildCost,
-  mapCareToCostPercent,
-  roundCarePercentage,
+    convertCareToPercentage,
+    getChildCost,
+    mapCareToCostPercent,
+    roundCarePercentage,
 } from "../utils/child-support-calculations";
-import {
-  FAR_BY_YEAR,
-  MAR_BY_YEAR,
-  MAX_PPS_BY_YEAR,
-  SSA_BY_YEAR,
-  type AssessmentYear,
-} from "../utils/child-support-constants";
+import { FAR, MAR, MAX_PPS, SSA } from "../utils/child-support-constants";
 
 export interface CalculatorFormState {
-  year: AssessmentYear;
   incomeA: number;
   incomeB: number;
   supportA: boolean;
@@ -33,7 +26,6 @@ export interface CalculatorFormState {
 }
 
 const initialFormState: CalculatorFormState = {
-  year: "2025",
   incomeA: 0,
   incomeB: 0,
   supportA: false,
@@ -147,14 +139,10 @@ export function useCalculator() {
       return null;
     }
 
-    const year = formState.year;
     const { incomeA, incomeB, supportA, supportB, relDepA, relDepB } = formState;
     const ATI_A = incomeA;
     const ATI_B = incomeB;
-    const SSA = SSA_BY_YEAR[year];
-    const FAR = FAR_BY_YEAR[year];
-    const MAX_PPS = MAX_PPS_BY_YEAR[year];
-    const MAR = MAR_BY_YEAR[year];
+    // Using 2025 rates - current calendar year
 
     // Convert children to calculation format
     const children = formState.children.map((c) => ({
@@ -176,12 +164,12 @@ export function useCalculator() {
 
     // Step 2-4: Calculate Child Support Income (CSI)
     const relDepDeductibleA = getChildCost(
-      year,
+      "2025",
       relDepChildrenA,
       Math.max(0, ATI_A - SSA)
     ).cost;
     const relDepDeductibleB = getChildCost(
-      year,
+      "2025",
       relDepChildrenB,
       Math.max(0, ATI_B - SSA)
     ).cost;
@@ -196,7 +184,7 @@ export function useCalculator() {
     const incomePercB = CCSI > 0 ? (CSI_B / CCSI) * 100 : 0;
 
     // Step 5: Calculate Total Cost of Children
-    const { cost: totalCost, bracketInfo: costBracketInfo } = getChildCost(year, children, CCSI);
+    const { cost: totalCost, bracketInfo: costBracketInfo } = getChildCost("2025", children, CCSI);
     const costPerChild = children.length > 0 ? totalCost / children.length : 0;
 
     // Step 6–8: Calculate individual liabilities
@@ -354,7 +342,6 @@ export function useCalculator() {
     }
 
     return {
-      year,
       ATI_A,
       ATI_B,
       relDepDeductibleA,
@@ -425,7 +412,6 @@ export function useCalculator() {
     }));
 
     return {
-      year: formState.year,
       ATI_A: formState.incomeA,
       ATI_B: formState.incomeB,
       supportA: formState.supportA,

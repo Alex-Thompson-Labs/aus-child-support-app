@@ -506,7 +506,28 @@ Interested? Reply and I'll send the partnership agreement.
 **Time:** 2-4 hours (if you want)  
 **Goal:** Make calculator as good as possible
 
-### Polish Tasks (Pick What Matters to You):
+### Option A: App Store Deployment (Recommended)
+
+**Publish to iOS and Android stores in parallel with finishing Phase 1!**
+
+See detailed guide: `/guides/APP_STORE_DEPLOYMENT.md`
+
+**Quick summary:**
+- Day 1: Create app icon, screenshots, privacy policy (30 min)
+- Day 2: Build and submit iOS (1 hour)
+- Day 3: Build and submit Android (45 min)
+- Wait 3-7 days for approval (meanwhile finish Phase 1)
+- By Jan 2-5: Live on both stores!
+
+**Why do this now:**
+- Takes 1-2 weeks for approval anyway
+- Lawyers can see/download the app
+- Professional credibility
+- SEO/discovery in app stores
+
+### Option B: UI Polish (If Skipping App Stores)
+
+Polish Tasks (Pick What Matters to You):
 
 - [ ] Improve calculator UI styling (any rough edges?)
 - [ ] Add more help tooltips (explain complexity better)

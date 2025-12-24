@@ -14,7 +14,6 @@ export interface RelevantDependents {
 }
 
 export interface CalculatorInputs {
-  year: AssessmentYear;
   ATI_A: number;
   ATI_B: number;
   supportA: boolean;
@@ -52,7 +51,6 @@ export interface CostBracketInfo {
 }
 
 export interface CalculationResults {
-  year: AssessmentYear;
   ATI_A: number;
   ATI_B: number;
   relDepDeductibleA: number;
