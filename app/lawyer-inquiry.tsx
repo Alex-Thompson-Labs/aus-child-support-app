@@ -15,6 +15,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAnalytics } from '../src/utils/analytics';
 import { getCoAReasonById } from '../src/utils/change-of-assessment-reasons';
+import type { ChangeOfAssessmentReason } from '../src/utils/change-of-assessment-reasons';
 
 // ============================================================================
 // Types
@@ -238,6 +239,23 @@ export default function LawyerInquiryScreen() {
     // Capture mount timestamp for time_to_submit calculation
     const mountTimeRef = useRef<number>(Date.now());
 
+    // Get valid CoA reasons for display
+    const validCoAReasons: Array<ChangeOfAssessmentReason & { urgency: 'URGENT' | 'NORMAL' }> = 
+        (coaReasons || [])
+            .map(id => {
+                const reason = getCoAReasonById(id);
+                if (!reason) return null;
+                
+                // Determine urgency based on priority (1-3 = URGENT, 4-10 = NORMAL)
+                const urgency = reason.priority <= 3 ? 'URGENT' : 'NORMAL';
+                
+                return { ...reason, urgency };
+            })
+            .filter((reason): reason is NonNullable<typeof reason> => reason !== null);
+
+    // Determine if any urgent reasons exist (for card border styling)
+    const hasUrgentReasonsForDisplay = validCoAReasons.some(r => r.urgency === 'URGENT');
+
     // Pre-fill message when CoA reasons are present
     useEffect(() => {
         if (coaReasons && coaReasons.length > 0) {
@@ -395,7 +413,12 @@ export default function LawyerInquiryScreen() {
                 annual_liability: parseFloat(liability) || 0,
                 has_phone: !!leadData.phone,
                 message_length: leadData.message.length,
-                time_to_submit: timeToSubmit
+                time_to_submit: timeToSubmit,
+                // CoA tracking properties
+                has_coa_reasons: (coaReasons?.length ?? 0) > 0,
+                coa_reason_count: coaReasons?.length ?? 0,
+                coa_reason_ids: coaReasons?.join(',') ?? '',
+                has_urgent_reasons: validCoAReasons.some(r => r.urgency === 'URGENT')
             });
         } catch (error) {
             // Log but don't fail submission on analytics error
@@ -467,6 +490,38 @@ export default function LawyerInquiryScreen() {
                     keyboardShouldPersistTaps="handled"
                 >
                     <Text style={styles.title}>Request Legal Help</Text>
+
+                    {/* Change of Assessment Reasons Card - Show only if reasons exist */}
+                    {validCoAReasons.length > 0 && (
+                        <View style={[
+                            styles.coaCard,
+                            hasUrgentReasonsForDisplay && styles.coaCardUrgent
+                        ]}>
+                            <Text style={styles.coaTitle}>📋 CHANGE OF ASSESSMENT GROUNDS SELECTED</Text>
+                            
+                            {validCoAReasons.map((reason, index) => (
+                                <View key={reason.id} style={[
+                                    styles.coaReasonContainer,
+                                    index < validCoAReasons.length - 1 && styles.coaReasonBorder
+                                ]}>
+                                    <View style={styles.coaReasonHeader}>
+                                        <Text style={[
+                                            styles.coaReasonIcon,
+                                            reason.urgency === 'URGENT' ? styles.coaIconUrgent : styles.coaIconNormal
+                                        ]}>
+                                            {reason.urgency === 'URGENT' ? '⚠️' : '📋'}
+                                        </Text>
+                                        <Text style={styles.coaReasonLabel} numberOfLines={2}>
+                                            {reason.label}
+                                        </Text>
+                                    </View>
+                                    <Text style={styles.coaReasonDescription} numberOfLines={3}>
+                                        {reason.description}
+                                    </Text>
+                                </View>
+                            ))}
+                        </View>
+                    )}
 
                     {/* Calculation Summary (read-only) */}
                     <View style={styles.summaryCard}>
@@ -695,6 +750,62 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: '#ffffff',
         marginBottom: 20,
+    },
+    // Change of Assessment card styles
+    coaCard: {
+        backgroundColor: '#1e293b', // slate-800
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 20,
+        borderWidth: 2,
+        borderColor: '#334155', // slate-700 (normal)
+    },
+    coaCardUrgent: {
+        borderColor: '#ef4444', // red-500 (urgent)
+    },
+    coaTitle: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: '#94a3b8', // slate-400
+        letterSpacing: 0.5,
+        marginBottom: 16,
+    },
+    coaReasonContainer: {
+        marginBottom: 12,
+    },
+    coaReasonBorder: {
+        paddingBottom: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#334155', // slate-700
+    },
+    coaReasonHeader: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        marginBottom: 6,
+    },
+    coaReasonIcon: {
+        fontSize: 16,
+        marginRight: 8,
+        marginTop: 2,
+    },
+    coaIconUrgent: {
+        color: '#ef4444', // red-500
+    },
+    coaIconNormal: {
+        color: '#3b82f6', // blue-500
+    },
+    coaReasonLabel: {
+        flex: 1,
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#ffffff',
+        lineHeight: 20,
+    },
+    coaReasonDescription: {
+        fontSize: 13,
+        color: '#94a3b8', // slate-400
+        lineHeight: 18,
+        marginLeft: 24, // Align with label (icon width + margin)
     },
     summaryCard: {
         backgroundColor: '#1e293b', // slate-800

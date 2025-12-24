@@ -7,6 +7,7 @@
 import type { CalculationResults, ChildInput } from '../types/calculator';
 import { convertCareToPercentage } from './child-support-calculations';
 import { isWithinDays } from './date-utils';
+import { getHighestPriorityReason, getCoAReasonById } from './change-of-assessment-reasons';
 
 /**
  * Flags indicating different types of complexity detected in child support calculations
@@ -117,6 +118,11 @@ export interface AlertConfig {
 export interface ComplexityFormData {
   children?: ChildInput[];
   courtDate?: string;
+  /**
+   * Array of selected Change of Assessment reason IDs
+   * Used to detect special circumstances requiring legal review
+   */
+  selectedCoAReasons?: string[];
 }
 
 export function detectComplexity(
@@ -149,10 +155,20 @@ export function detectComplexity(
     console.log('[detectComplexity] Is court date urgent (within 30 days):', hasCourtDateUrgent);
   }
 
+  // Check for special circumstances via Change of Assessment reasons
+  // Handle undefined gracefully - treat as empty array
+  const selectedReasons = formData.selectedCoAReasons ?? [];
+  const hasSpecialCircumstances = selectedReasons.length > 0;
+
+  if (__DEV__) {
+    console.log('[detectComplexity] Selected CoA reasons:', selectedReasons);
+    console.log('[detectComplexity] Has special circumstances:', hasSpecialCircumstances);
+  }
+
   return {
     highVariance: false, // TODO: Calculate care variance
     highValue: isHighValue,
-    specialCircumstances: false, // TODO: Check if formData has private school costs, medical expenses, etc.
+    specialCircumstances: hasSpecialCircumstances,
     incomeSuspicion: false, // TODO: Check formData flags
     courtDateUrgent: hasCourtDateUrgent,
     sharedCareDispute: hasSharedCareDispute,
@@ -169,11 +185,13 @@ export function detectComplexity(
  *
  * @param flags - The complexity flags detected from calculation
  * @param results - The calculation results for context in alert messages
+ * @param formData - The form data used for complexity detection (needed for CoA reason details)
  * @returns AlertConfig for the highest-priority issue, or null if no alert needed
  */
 export function getAlertConfig(
   flags: ComplexityFlags,
-  results: CalculationResults
+  results: CalculationResults,
+  formData?: ComplexityFormData
 ): AlertConfig | null {
   // Priority 1: Urgent court date
   if (flags.courtDateUrgent) {
@@ -185,14 +203,74 @@ export function getAlertConfig(
     };
   }
 
-  // Priority 2: Special circumstances
+  // Priority 2: Special circumstances (Change of Assessment reasons)
   if (flags.specialCircumstances) {
-    return {
-      title: "📋 Special Circumstances Detected",
-      message: "Cases with additional costs often benefit from legal review.",
-      urgency: 'medium',
-      buttonText: "Request Review"
-    };
+    // Safely get selected reasons, handle undefined/null
+    const selectedIds = formData?.selectedCoAReasons ?? [];
+    
+    // Get the highest priority reason from the selected list
+    const highestPriorityReason = getHighestPriorityReason(selectedIds);
+    
+    if (__DEV__) {
+      console.log('[getAlertConfig] Selected CoA reason IDs:', selectedIds);
+      console.log('[getAlertConfig] Highest priority reason:', highestPriorityReason);
+    }
+
+    // Handle edge case: flag is true but no valid reasons found
+    if (!highestPriorityReason) {
+      if (__DEV__) {
+        console.warn('[getAlertConfig] specialCircumstances flag is true but no valid reasons found');
+      }
+      // Fallback to generic message
+      return {
+        title: "📋 Special Circumstances Detected",
+        message: "Your case has factors that may benefit from legal review.",
+        urgency: 'medium',
+        buttonText: "Request Review"
+      };
+    }
+
+    // Determine urgency based on priority level
+    // Priority 1-3: URGENT (critical income/capacity issues)
+    // Priority 4-10: NORMAL (significant but less urgent)
+    const isUrgent = highestPriorityReason.priority <= 3;
+    
+    // Handle multiple reasons vs single reason
+    const reasonCount = selectedIds.filter(id => getCoAReasonById(id) !== null).length;
+    
+    if (reasonCount > 1) {
+      // Multiple reasons selected
+      return {
+        title: isUrgent 
+          ? `⚠️ URGENT: ${reasonCount} Factors Affecting Fairness Detected`
+          : `📋 ${reasonCount} Factors Affecting Fairness Detected`,
+        message: isUrgent
+          ? "Multiple Change of Assessment grounds apply to your case. This requires immediate legal review before proceeding."
+          : "Multiple Change of Assessment grounds apply to your case. Professional review can help ensure fair assessment.",
+        urgency: isUrgent ? 'high' : 'medium',
+        buttonText: isUrgent ? "Get Urgent Review" : "Request Review"
+      };
+    } else {
+      // Single reason - use reason-specific message
+      // Sanitize the label to prevent any potential issues
+      const sanitizedLabel = highestPriorityReason.label.replace(/[<>]/g, '');
+      
+      if (isUrgent) {
+        return {
+          title: `⚠️ URGENT: ${sanitizedLabel}`,
+          message: "This requires immediate legal review before proceeding.",
+          urgency: 'high',
+          buttonText: "Get Urgent Review"
+        };
+      } else {
+        return {
+          title: `📋 Change of Assessment: ${sanitizedLabel}`,
+          message: `Cases with ${sanitizedLabel.toLowerCase()} often benefit from legal review.`,
+          urgency: 'medium',
+          buttonText: "Request Review"
+        };
+      }
+    }
   }
 
   // Priority 3: Shared care dispute
@@ -219,6 +297,94 @@ export function getAlertConfig(
   // See docs/MASTER_PLAN.md for complete implementation
 
   return null; // No alert needed
+}
+
+/**
+ * Formats Change of Assessment reasons for lawyer lead data
+ * 
+ * Creates a structured representation of selected CoA reasons with their
+ * labels, descriptions, and priority levels for inclusion in lawyer referral emails.
+ * 
+ * @param selectedIds - Array of selected CoA reason IDs from form data
+ * @returns Formatted object containing reason details, or null if no valid reasons
+ * 
+ * @example
+ * ```typescript
+ * const leadData = formatCoAReasonsForLead(['income_not_reflected', 'school_fees']);
+ * // Returns:
+ * // {
+ * //   count: 2,
+ * //   reasons: [
+ * //     {
+ * //       label: 'Income not accurately reflected in ATI',
+ * //       description: '...',
+ * //       urgency: 'URGENT'
+ * //     },
+ * //     {
+ * //       label: 'Private school fees',
+ * //       description: '...',
+ * //       urgency: 'Normal'
+ * //     }
+ * //   ],
+ * //   formattedText: 'CHANGE OF ASSESSMENT GROUNDS:\n1. Income not accurately...'
+ * // }
+ * ```
+ */
+export interface CoALeadData {
+  /** Number of valid reasons selected */
+  count: number;
+  /** Array of reason details for lawyer review */
+  reasons: Array<{
+    label: string;
+    description: string;
+    urgency: 'URGENT' | 'Normal';
+  }>;
+  /** Pre-formatted text block for email templates */
+  formattedText: string;
+}
+
+export function formatCoAReasonsForLead(
+  selectedIds: string[] | undefined | null
+): CoALeadData | null {
+  // Handle undefined/null/empty gracefully
+  if (!selectedIds || !Array.isArray(selectedIds) || selectedIds.length === 0) {
+    return null;
+  }
+
+  // Get all valid reasons, filter out invalid IDs
+  const validReasons = selectedIds
+    .map(id => getCoAReasonById(id))
+    .filter((reason): reason is NonNullable<typeof reason> => reason !== null);
+
+  if (validReasons.length === 0) {
+    if (__DEV__) {
+      console.warn('[formatCoAReasonsForLead] No valid reasons found from IDs:', selectedIds);
+    }
+    return null;
+  }
+
+  // Sort by priority (most urgent first)
+  const sortedReasons = [...validReasons].sort((a, b) => a.priority - b.priority);
+
+  // Format each reason with sanitized data
+  const reasons = sortedReasons.map(reason => ({
+    label: reason.label.replace(/[<>]/g, ''), // Sanitize for safety
+    description: reason.description.replace(/[<>]/g, ''),
+    urgency: (reason.priority <= 3 ? 'URGENT' : 'Normal') as 'URGENT' | 'Normal'
+  }));
+
+  // Create formatted text block for email templates
+  const formattedLines = reasons.map((reason, index) => {
+    return `${index + 1}. ${reason.label} (priority: ${reason.urgency})\n   → ${reason.description}`;
+  });
+
+  const formattedText = `CHANGE OF ASSESSMENT GROUNDS:\n${formattedLines.join('\n\n')}`;
+
+  return {
+    count: reasons.length,
+    reasons,
+    formattedText
+  };
 }
 
 /*
@@ -256,7 +422,7 @@ const testResults1: CalculationResults = {
 const testFlags1 = detectComplexity(testResults1, { children: [] });
 console.log('Test 1 - High Value:', testFlags1.highValue); // Should be true
 
-const alert1 = getAlertConfig(testFlags1, testResults1);
+const alert1 = getAlertConfig(testFlags1, testResults1, { children: [] });
 console.log('Alert 1:', alert1?.title); // Should show "💰 High-Value Case"
 
 // TEST CASE 2: Normal Value
@@ -293,7 +459,7 @@ const testResults2: CalculationResults = {
 const testFlags2 = detectComplexity(testResults2, { children: [] });
 console.log('Test 2 - Normal:', testFlags2.highValue); // Should be false
 
-const alert2 = getAlertConfig(testFlags2, testResults2);
+const alert2 = getAlertConfig(testFlags2, testResults2, { children: [] });
 console.log('Alert 2:', alert2); // Should be null
 
 // TEST CASE 3: Shared Care Dispute
@@ -336,6 +502,6 @@ const testFormData3 = {
 const testFlags3 = detectComplexity(testResults3, testFormData3);
 console.log('Test 3 - Shared Care:', testFlags3.sharedCareDispute); // Should be true
 
-const alert3 = getAlertConfig(testFlags3, testResults3);
+const alert3 = getAlertConfig(testFlags3, testResults3, testFormData3);
 console.log('Alert 3:', alert3?.title); // Should show "⚖️ Care Arrangement in Dispute Zone"
 */

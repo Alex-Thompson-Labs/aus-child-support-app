@@ -161,7 +161,11 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
               incomeA: results.ATI_A.toString(),
               incomeB: results.ATI_B.toString(),
               children: (formData?.children?.length ?? 0).toString(),
-              careData: JSON.stringify(careData)
+              careData: JSON.stringify(careData),
+              // Include CoA reasons if they were selected
+              ...(formData?.selectedCoAReasons && formData.selectedCoAReasons.length > 0 
+                ? { coaReasons: JSON.stringify(formData.selectedCoAReasons) }
+                : {})
             }
           });
         } catch (error) {
