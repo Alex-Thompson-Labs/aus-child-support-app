@@ -4,6 +4,18 @@ Practical guides for building and troubleshooting the app.
 
 ---
 
+## 🚀 **START HERE** ← Read this first!
+
+**New to this project?** Read **[START_HERE.md](START_HERE.md)** for a complete 15-day roadmap from Dec 26 → Jan 9.
+
+**Quick summary:**
+- Timeline: 15 days (Dec 26 - Jan 9)
+- Investment: $61 total
+- Goal: Transform into Alex Thompson, launch Phase 2, sign 3-5 lawyer partners
+- Revenue potential: $1,500-$3,750 first month
+
+---
+
 ## 💡 IMPORTANT: Production Code Prompting
 
 **Before using any guide:** Read the "💡 CRITICAL: How to Prompt Claude for Production Code" section at the top of Phase 1 CHECKLIST.md.
@@ -74,6 +86,22 @@ See Phase 1 CHECKLIST.md for detailed examples and best practices that apply to 
 - **[TESTING.md](phase1/TESTING.md)** - Test before launching to users
 
 **Start here:** Read CHECKLIST.md and follow it day by day.
+
+---
+
+## 🎯 Phase 2 Launch (Starting Jan 2)
+
+**Location:** `guides/`
+
+- **[CHRISTMAS_BREAK_PLAN.md](CHRISTMAS_BREAK_PLAN.md)** - Complete Dec 24-Jan 2 roadmap
+- **[ALEX_THOMPSON_SETUP.md](ALEX_THOMPSON_SETUP.md)** - Business identity creation guide
+- **[DAILY_CHECKLIST.md](https://claude.ai/chat/...)** - Day-by-day Dec 26-Jan 9 execution (download from chat outputs)
+
+**Phase 2 strategy:**
+- `phase2/README.md` - Lead generation business model ($50/lead)
+- `phase2/CHECKLIST.md` - Implementation tasks
+
+**Start here for Phase 2:** Follow CHRISTMAS_BREAK_PLAN.md, then DAILY_CHECKLIST.md
 
 ---
 

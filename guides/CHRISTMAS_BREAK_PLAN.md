@@ -448,30 +448,70 @@ Build production-ready code, not just a demo.
 
 **Test the full Change of Assessment flow:**
 
-1. [ ] Complete calculation → Results show
-2. [ ] Tap "Does this result seem unfair?" → Section expands
-3. [ ] See 10 CoA reasons grouped by priority (Urgent vs Common)
-4. [ ] Select 1 urgent reason → Button shows with red styling
-5. [ ] Select 1 normal reason → Button shows with blue styling
-6. [ ] Select multiple reasons → Button shows count "3 reasons selected"
-7. [ ] Tap button → Navigate to inquiry form
-8. [ ] See CoA reasons displayed in read-only card above form
-9. [ ] Submit form → Console.log shows CoA data
-10. [ ] PostHog tracks: hasCoAReasons, coaReasonCount, coaReasonIds
+1. [x] Complete calculation → Results show
+2. [x] Tap "Does this result seem unfair?" → Section expands
+3. [x] See 10 CoA reasons grouped by priority (Urgent vs Common)
+4. [x] Select 1 urgent reason → Button shows with red styling
+5. [x] Select 1 normal reason → Button shows with blue styling
+6. [x] Select multiple reasons → Button shows count "3 reasons selected"
+7. [x] Tap button → Navigate to inquiry form
+8. [x] See CoA reasons displayed in read-only card above form
+9. [x] Submit form → Console.log shows CoA data
+10. [x] PostHog tracks: hasCoAReasons, coaReasonCount, coaReasonIds
 
 **Edge cases:**
-- [ ] Select 0 reasons → Button doesn't appear
-- [ ] Rapidly toggle checkboxes → No state corruption
-- [ ] Navigate back → Selected reasons persist
-- [ ] Invalid reason ID in data → Skipped gracefully
+- [x] Select 0 reasons → Button doesn't appear
+- [x] Rapidly toggle checkboxes → No state corruption
+- [x] Navigate back → Selected reasons persist
+- [x] Invalid reason ID in data → Skipped gracefully
 
 **Done when:**
-- [ ] Change of Assessment section added to results
-- [ ] 10 official reasons implemented
-- [ ] Complexity detection working
-- [ ] Inquiry form includes CoA data
-- [ ] All tested end-to-end
-- [ ] Analytics tracking working
+- [x] Change of Assessment section added to results
+- [x] 10 official reasons implemented
+- [x] Complexity detection working
+- [x] Inquiry form includes CoA data
+- [x] All tested end-to-end
+- [x] Analytics tracking working
+
+---
+
+### Task 2.6: Redesign Special Circumstances Messaging (TBD - Discussion needed)
+
+**Settings:** Desktop Commander (discussion + planning), then Claude Code for implementation
+
+**PROBLEM IDENTIFIED:**
+Current approach lists 10 specific CoA reasons (5.2.1, 5.2.2, etc.) which makes it too obvious users could DIY this themselves. We're essentially handing them the instruction manual for filing Form A with Services Australia.
+
+**STRATEGIC GOAL:**
+Reframe the messaging to:
+1. Use plain language that feels like outcomes/problems, not bureaucratic categories
+2. Make lawyers seem necessary (gatekeepers to "adjustments")
+3. Focus on the most common triggers (8A/8B by huge margin)
+4. Avoid mentioning "change of assessment" explicitly
+5. Increase lead quality by getting users who genuinely need help
+
+**KEY INSIGHTS:**
+- **Most common:** Reasons 8A & 8B (income/earning capacity issues) - need to be front and centre
+- **Next tier:** Reason 3 (special needs/education costs)
+- **Secondary:** Reasons 1, 2, 4 (travel costs, medical, transfers to child)
+- **Skip:** Reason 7 (low income payers obviously can't afford legal help)
+
+**DISCUSSION NEEDED WITH CLAUDE CODE:**
+1. How to restructure the UI - checkboxes vs passive mention vs conditional trigger?
+2. What copy/messaging makes lawyers seem necessary without being too obvious?
+3. Should this be interactive or just informational?
+4. How to track which approach converts better?
+
+**NEXT STEPS:**
+- [ ] Continue discussion with Claude Code in separate session
+- [ ] Decide on implementation approach (Options 1, 2, or 3 from initial discussion)
+- [ ] Draft actual copy/messaging
+- [ ] Update Task 2.2 implementation based on new approach
+- [ ] Update Task 2.3 to align with new messaging strategy
+- [ ] Test different versions if needed (A/B test)
+
+**CONTEXT FOR CLAUDE CODE:**
+When you open Claude Code for this, reference this task and the uploaded screenshot showing the 10 CoA reasons. The goal is to make this feel less like a checklist and more like a natural conversation about complexity.
 
 ---
 
@@ -489,46 +529,46 @@ Build production-ready code, not just a demo.
 ### Full User Journey Test:
 
 **Test 1: High Value Case**
-1. [ ] Enter calculation with >$15K liability
-2. [ ] See "High Value Case" alert
-3. [ ] Click "Get Legal Help"
-4. [ ] Fill inquiry form
-5. [ ] Submit successfully
+1. [x] Enter calculation with >$15K liability
+2. [x] See "High Value Case" alert
+3. [x] Click "Get Legal Help"
+4. [x] Fill inquiry form
+5. [x] Submit successfully
 6. [ ] Receive email with lead details
-7. [ ] All PostHog events fire correctly
+7. [x] All PostHog events fire correctly
 
 **Test 2: Court Date Urgent**
-1. [ ] Enter calculation with court date in 2 weeks
-2. [ ] See "URGENT: Court Date Soon" alert (red border)
-3. [ ] Click button → form → submit
+1. [x] Enter calculation with court date in 2 weeks
+2. [x] See "URGENT: Court Date Soon" alert (red border)
+3. [x] Click button → form → submit
 4. [ ] Email shows urgency flag
 5. [ ] Analytics tracks urgency level
 
 **Test 3: Shared Care Dispute**
-1. [ ] Enter 50/50 care split
-2. [ ] See shared care alert
-3. [ ] Complete flow
-4. [ ] Verify tracking
+1. [x] Enter 50/50 care split
+2. [x] See shared care alert
+3. [x] Complete flow
+4. [x] Verify tracking
 
 **Test 4: Change of Assessment - Urgent Reason**
-1. [ ] Complete calculation → See results
-2. [ ] Expand "Does this result seem unfair?" section
-3. [ ] Select "Income not accurately reflected" (urgent)
-4. [ ] See red "Request Legal Review" button
-5. [ ] Click → Navigate to inquiry form
-6. [ ] See urgent CoA reason displayed with ⚠️ icon
-7. [ ] Submit form
+1. [x] Complete calculation → See results
+2. [x] Expand "Does this result seem unfair?" section
+3. [x] Select "Income not accurately reflected" (urgent)
+4. [x] See red "Request Legal Review" button
+5. [x] Click → Navigate to inquiry form
+6. [x] See urgent CoA reason displayed with ⚠️ icon
+7. [x] Submit form
 8. [ ] Email includes: "CHANGE OF ASSESSMENT GROUNDS (URGENT): Income not accurately reflected"
 9. [ ] PostHog tracks: hasCoAReasons: true, hasUrgentReasons: true
 
 **Test 5: Change of Assessment - Multiple Reasons**
-1. [ ] Complete calculation → See results
-2. [ ] Expand CoA section
-3. [ ] Select 3 reasons: "Private school fees", "High costs of contact", "Other income"
-4. [ ] See button show "3 reasons selected"
-5. [ ] Submit inquiry
+1. [x] Complete calculation → See results
+2. [x] Expand CoA section
+3. [x] Select 3 reasons: "Private school fees", "High costs of contact", "Other income"
+4. [x] See button show "3 reasons selected"
+5. [x] Submit inquiry
 6. [ ] Email shows all 3 reasons with descriptions
-7. [ ] PostHog tracks: coaReasonCount: 3
+7. [x] PostHog tracks: coaReasonCount: 3
 
 **Test 6: Defensive Motivation (Fear Factor)**
 1. [ ] Enter calculation where THEY would pay
@@ -571,7 +611,391 @@ Build production-ready code, not just a demo.
 
 ---
 
-## ✅ STEP 4: Prepare Phase 2 Materials (Dec 29-31)
+## ✅ STEP 4: Business Identity Setup (Dec 27-28)
+
+**Time:** 3-4 hours  
+**Goal:** Professional business presence for lawyer outreach (LinkedIn, business identity, professional image)
+
+**Why this matters:** You need to look legitimate when reaching out to lawyers. An alias protects your privacy while building professional credibility.
+
+---
+
+### Task 4.1: Domain Registration & Business Email Setup (Dec 26 - 30 min + $20)
+
+**DECISION MADE:** 
+- Alias: **Alex Thompson**
+- Business: **Australian Child Support Calculator**
+- Domain: **childsupportcalc.com.au** (or backup if taken)
+
+**Register Domain via VentraIP (10 minutes + $20/year):**
+
+1. [ ] Go to https://ventraip.com.au
+2. [ ] Search for: `childsupportcalc.com.au`
+3. [ ] If taken, try backups in order:
+   - `cscalculator.com.au`
+   - `childsupportcalc.au`
+   - `aussiecsc.com.au`
+   - `csccalc.com.au`
+4. [ ] Add to cart (1 year registration)
+5. [ ] Create VentraIP account
+6. [ ] Pay (~$20)
+7. [ ] Select "Email Forwarding" when offered (FREE - included)
+
+**Set Up Email Forwarding (5 minutes):**
+
+1. [ ] In VentraIP dashboard → Email Forwarding
+2. [ ] Create: `alex@childsupportcalc.com.au`
+3. [ ] Forward to: Your real Gmail address
+4. [ ] Save settings
+5. [ ] Test: Send email to alex@childsupportcalc.com.au, verify it arrives in your Gmail
+
+**Set Up "Send As" in Gmail (15 minutes):**
+
+1. [ ] Open Gmail → Settings (gear) → See all settings
+2. [ ] Go to "Accounts and Import" tab
+3. [ ] Click "Add another email address"
+4. [ ] Name: `Alex Thompson`
+5. [ ] Email: `alex@childsupportcalc.com.au`
+6. [ ] Uncheck "Treat as alias"
+7. [ ] SMTP Settings (check VentraIP docs for exact values):
+   - Server: `mail.ventraip.com.au`
+   - Port: 587
+   - Username: `alex@childsupportcalc.com.au`
+   - Password: (create in VentraIP email settings)
+8. [ ] Verify via email confirmation
+9. [ ] Test: Send email FROM alex@childsupportcalc.com.au
+
+**Create Email Signature:**
+
+1. [ ] Gmail → Settings → General → Signature
+2. [ ] Create new: "Alex Thompson Business"
+3. [ ] Copy-paste:
+   ```
+   Alex Thompson
+   Founder
+   Australian Child Support Calculator
+   
+   E: alex@childsupportcalc.com.au
+   P: [Phone - add after getting virtual number]
+   W: www.childsupportcalc.com.au
+   ```
+4. [ ] Set as default for alex@childsupportcalc.com.au
+5. [ ] Save
+
+**Optional: Simple Landing Page (20 minutes):**
+
+1. [ ] VentraIP Dashboard → Website Builder
+2. [ ] Choose simple template
+3. [ ] Create single page:
+   - Headline: "Australian Child Support Calculator"
+   - Subtext: "Free calculator helping parents understand their support obligations"
+   - Contact: "For family lawyers: alex@childsupportcalc.com.au"
+4. [ ] Publish to www.childsupportcalc.com.au
+
+**Done when:**
+- [ ] Domain registered and active
+- [ ] Email forwarding working (test received)
+- [ ] Gmail "Send As" working (test sent)
+- [ ] Email signature created
+- [ ] Optional: Landing page live
+
+**Total Cost:** $20/year
+
+---
+
+### Task 4.2: AI Professional Headshot (Dec 26 - 45 min + $29)
+
+**Take Selfies (15 minutes):**
+
+Requirements: 5-10 photos of yourself
+- [ ] Different angles (straight on, slight left, slight right)
+- [ ] Different lighting (window light, indoor light)
+- [ ] Different expressions (neutral, slight smile)
+- [ ] Just face and shoulders
+- [ ] Don't worry about background or clothes - AI will fix
+
+**Pro tips:**
+- Use natural light from a window
+- Look directly at camera
+- Relax your face
+- Take more than you think you need (10-15 is fine)
+
+**Upload to AI Service (30 minutes + $29):**
+
+**Option A - HeadShot Pro (Recommended):**
+1. [ ] Go to https://www.headshotpro.com
+2. [ ] Create account
+3. [ ] Upload your 5-10 selfies
+4. [ ] Select style: "Corporate Professional" or "Business Headshot"
+5. [ ] Pay $29 (one-time payment)
+6. [ ] Wait 2 hours for AI to generate 100+ variations
+7. [ ] Browse results and pick most professional/trustworthy one
+8. [ ] Download high-resolution version
+
+**Option B - Alternatives if HeadShot Pro unavailable:**
+- ProfilePicture.ai ($15-20)
+- Remini AI (free tier available)
+- PhotoAI ($25)
+
+**Option C - Free Canva Logo (if skipping AI headshot):**
+1. [ ] Go to Canva.com (free account)
+2. [ ] Search "LinkedIn profile picture" template
+3. [ ] Create circle logo with "AT" or "Alex Thompson"
+4. [ ] Use professional blue/grey colors (#2563eb blue, #64748b grey)
+5. [ ] Download PNG
+
+**What you're looking for:**
+✓ Professional attire (suit/blazer or business casual)
+✓ Clean/neutral background
+✓ Slight smile or confident neutral expression
+✓ Good lighting on face
+✓ Approachable and trustworthy vibe
+
+**Done when:**
+- [ ] Professional headshot downloaded (or logo created)
+- [ ] Image looks credible and professional
+- [ ] File saved and ready to upload to LinkedIn
+
+**Total Cost:** $29 (or $0 if using Canva logo)
+
+---
+
+### Task 4.3: Create LinkedIn Profile as Alex Thompson (Dec 26-27 - 1 hour)
+
+**IMPORTANT:** Use the complete profile text from `/home/claude/alex_thompson_setup_guide.md`
+
+**Create Account:**
+1. [ ] Go to https://www.linkedin.com
+2. [ ] Click "Join now"
+3. [ ] Enter NEW email (not your personal one): _____________@gmail.com
+4. [ ] Create password
+5. [ ] **Name:** Alex Thompson
+6. [ ] Complete signup
+
+**Upload Photo:**
+- [ ] Upload AI headshot (or Canva logo)
+
+**Complete Profile (copy-paste from setup guide):**
+
+1. [ ] **Headline:**
+   ```
+   Founder at Australian Child Support Calculator | Connecting Parents with Family Law Expertise
+   ```
+
+2. [ ] **Location:** Melbourne, Victoria, Australia (or your actual city)
+
+3. [ ] **About section:** (see alex_thompson_setup_guide.md for full text)
+
+4. [ ] **Experience - Add Position:**
+   - Title: Founder
+   - Company: Australian Child Support Calculator
+   - Employment type: Self-employed
+   - Start date: January 2025
+   - Currently working: ✓ checked
+   - Location: Australia
+   - Description: (see setup guide)
+
+5. [ ] **Projects - Add Project:**
+   - Project name: Australian Child Support Calculator
+   - Start: 2024
+   - Currently working: ✓ checked
+   - Description: (see setup guide)
+
+6. [ ] **Skills - Add these 5:**
+   - Family Law
+   - Legal Technology
+   - Lead Generation
+   - Business Development
+   - Software Development
+
+7. [ ] **Education:** Leave blank (or "Self-taught" if forced)
+
+**Privacy Settings:**
+1. [ ] Settings & Privacy → Visibility
+2. [ ] Edit public profile
+3. [ ] Make visible: Name, headline, location, current position
+4. [ ] Hide: Education, past experience, connections
+
+**Add Contact Info:**
+1. [ ] Profile → Contact Info
+2. [ ] Add: alex@childsupportcalc.com.au
+3. [ ] Add: [Virtual phone when you get it]
+4. [ ] Add: www.childsupportcalc.com.au
+
+**Done when:**
+- [ ] Profile complete with all sections
+- [ ] Photo uploaded
+- [ ] Looks professional and credible
+- [ ] Privacy settings configured
+- [ ] Ready to send connection requests
+
+---
+
+### Task 4.4: Virtual Phone Number Setup (Dec 27 - 30 min + $12)
+
+**Option 1: Prepaid SIM Card (Easiest for Australia):**
+
+1. [ ] Go to Woolworths or Coles
+2. [ ] Buy prepaid SIM card ($2)
+3. [ ] Buy $10 recharge credit
+4. [ ] Activate SIM
+5. [ ] Add number to LinkedIn contact info
+6. [ ] Add number to email signature
+7. [ ] Test: Call the number from your real phone
+
+**Option 2: Virtual Phone Service:**
+- Hushed app (iOS/Android)
+- Burner app
+- Any AU virtual number service
+
+**Option 3: Google Voice (requires VPN):**
+1. [ ] Install VPN (set to USA)
+2. [ ] Sign up for Google Voice
+3. [ ] Get phone number
+4. [ ] Forward to your real phone
+
+**Done when:**
+- [ ] Virtual phone number active
+- [ ] Added to LinkedIn profile
+- [ ] Added to email signature
+- [ ] Tested and working
+
+**Total Cost:** $12 (SIM + credit)
+
+---
+
+### Task 4.5: LinkedIn Warm-Up & Tracking (Dec 27-Jan 1 - 10 min/day)
+
+**Create Tracking Spreadsheet:**
+
+1. [ ] Open Google Sheets
+2. [ ] Create new sheet: "LinkedIn Outreach Tracker"
+3. [ ] Add columns:
+   ```
+   Date | Name | Firm | LinkedIn URL | State | Request Sent | Accepted | Date Accepted | Message Sent | Response | Status | Notes
+   ```
+
+**LinkedIn Warm-Up Schedule:**
+
+**Dec 27 (Day 1):**
+- [ ] Send 5 connection requests to NSW family lawyers
+- [ ] Use message template from setup guide
+- [ ] Track in spreadsheet
+
+**Dec 28 (Day 2):**
+- [ ] Send 5 connection requests
+- [ ] Track in spreadsheet
+- [ ] Check for acceptances
+
+**Dec 29 (Day 3):**
+- [ ] Send 8 connection requests
+- [ ] Track in spreadsheet  
+- [ ] Message anyone who accepted (use follow-up template from guide)
+
+**Dec 30 (Day 4):**
+- [ ] Send 10 connection requests
+- [ ] Track in spreadsheet
+- [ ] Message new acceptances
+
+**Dec 31 (Day 5):**
+- [ ] Send 10 connection requests
+- [ ] Track in spreadsheet
+- [ ] Message new acceptances
+- [ ] Respond to any replies within 2 hours
+
+**Jan 1 (Day 6):**
+- [ ] Send 10 connection requests
+- [ ] Track in spreadsheet
+- [ ] Continue messaging accepted connections
+
+**Jan 2+ (Launch):**
+- [ ] Send 15 connection requests/day
+- [ ] Add email outreach (5-10/day)
+- [ ] Continue messaging and responding
+
+**Finding NSW Lawyers:**
+
+Method 1 - LinkedIn Search:
+1. LinkedIn search bar
+2. Search: "family lawyer NSW"
+3. Filter: People, Location: New South Wales
+4. Send to lawyers only (not paralegals/admins)
+
+Method 2 - Use Your CSV:
+1. Open family_law_contacts_full.csv
+2. Filter: state = "NSW" AND linkedin != ""
+3. Visit their LinkedIn profiles
+4. Send connection requests
+
+**Connection Request Template:**
+```
+Hi [First Name],
+
+I've built a child support calculator that generates leads for family lawyers. Would you be open to a quick conversation about how we might work together?
+
+Best,
+Alex
+```
+
+**Follow-Up Message (1-2 days after acceptance):**
+```
+Thanks for connecting, [First Name]!
+
+Quick context on what I'm building:
+
+I send family lawyers pre-qualified leads when complex child support cases come through my calculator—things like high-value amounts, upcoming court dates, or change of assessment scenarios.
+
+The model is straightforward: $50 per lead, sent via email with full case details (income, care split, complexity triggers, contact info). No software to install, no calendar integration needed.
+
+I'm currently partnering with 3-5 family law firms across NSW and looking to add a few more.
+
+Would this be relevant for your practice? Happy to send you an example of what a lead looks like.
+
+Cheers,
+Alex
+```
+
+**Done when:**
+- [ ] Tracking spreadsheet set up and in use
+- [ ] 48 connection requests sent by Jan 1
+- [ ] 15-25 connections accepted (~50% rate)
+- [ ] 10+ follow-up messages sent
+- [ ] 2-5 conversations started
+- [ ] Account warmed up for Jan 2 launch
+
+**CRITICAL RULES:**
+- ❌ Don't send >5-10/day in first week (ban risk)
+- ❌ Don't use automation tools
+- ❌ Don't copy-paste exact same message
+- ✅ Personalize with first names
+- ✅ Track everything
+- ✅ Wait 1-2 days before follow-up message
+- ✅ Respond within 2 hours if someone replies
+
+---
+
+**STEP 4 COMPLETE:**
+By end of Dec 27, you should have:
+- ✅ Domain registered: childsupportcalc.com.au
+- ✅ Business email working: alex@childsupportcalc.com.au
+- ✅ AI headshot created
+- ✅ LinkedIn profile live as Alex Thompson
+- ✅ Virtual phone number active
+- ✅ First 5 connection requests sent
+- ✅ Tracking spreadsheet created
+- ✅ You ARE Alex Thompson now
+
+**Total Investment:**
+- Domain: $20/year
+- AI Headshot: $29 one-time
+- Phone: $12 one-time
+- **Total: $61**
+
+
+
+---
+
+## ✅ STEP 5: Prepare Phase 2 Materials (Dec 29-31)
 
 **Time:** 4-5 hours  
 **Goal:** Have all docs ready so you can START emailing lawyers Jan 2nd
@@ -583,7 +1007,7 @@ Build production-ready code, not just a demo.
 
 ---
 
-### Task 4.1: Partnership Agreement (1.5 hours)
+### Task 5.1: Partnership Agreement (1.5 hours)
 
 Create `docs/LAWYER_PARTNERSHIP_AGREEMENT.md`:
 
@@ -897,19 +1321,23 @@ Polish Tasks (Pick What Matters to You):
 
 **Dec 27:**
 - Task 3: End-to-end testing (2-3 hours)
+- Task 4: Business identity setup (3-4 hours)
 
 **Dec 28:**
-- Finish any remaining testing
-- Start Task 4: Phase 2 materials
+- Finish Task 4: LinkedIn warm-up continues (5 requests/day)
+- Start Task 5: Phase 2 materials
 
 **Dec 29-30:**
-- Complete Task 4: Partnership agreement, templates, spreadsheets
+- Complete Task 5: Partnership agreement, templates, spreadsheets
+- Continue LinkedIn warm-up (5-10 requests/day)
 
 **Dec 31:**
 - Review everything, make final tweaks
+- LinkedIn warm-up continues
 
 **Jan 1:**
 - Rest
+- LinkedIn warm-up continues (now 10/day as account warms up)
 
 **Jan 2 (LAUNCH DAY):**
 - Send first batch of 50 lawyer emails (NSW)
@@ -933,12 +1361,22 @@ By Jan 2, you should have:
 - [ ] Email templates ready (4 templates)
 - [ ] Tracking spreadsheets set up (2 sheets)
 - [ ] Lawyer outreach email drafted
-- [ ] 286 firm emails ready to send
+- [ ] LinkedIn profile created with professional photo
+- [ ] Business email and phone set up
+- [ ] 35-50 LinkedIn connection requests sent (warming up account)
 
 **Documentation Clean:**
 - [ ] Deleted confusing/outdated files
 - [ ] Created simple BUSINESS_MODEL.md
 - [ ] All docs reflect current plan ($50/lead, manual routing)
+
+**Business Identity:**
+- [ ] Professional alias chosen
+- [ ] LinkedIn profile live and active
+- [ ] AI headshot or professional logo created
+- [ ] Business email functioning
+- [ ] Virtual phone number set up
+- [ ] LinkedIn account warmed up (5-10 connections/day since Dec 27)
 
 **Mental State:**
 - [ ] Clear on what you're building
@@ -950,20 +1388,38 @@ By Jan 2, you should have:
 
 ## 🚀 LAUNCH DAY PLAN (Jan 2)
 
-**9am:**
-- Send first batch: 50 NSW lawyer emails
-- Use template from Task 4.4
+**Updated Strategy: LinkedIn + Email Hybrid**
 
-**Throughout day:**
-- Monitor responses
-- Reply within 1 hour to interested lawyers
-- Send partnership agreement to anyone who responds
+**Morning (9am-12pm):**
+- LinkedIn: Send 10-15 connection requests to NSW lawyers (account should be warmed up by now)
+- Email: Send 5 personalized emails to NSW lawyers who DON'T have LinkedIn
+- Use templates from Task 5.2
 
-**Evening:**
-- Track responses in spreadsheet
-- Plan batch 2 for Jan 3
+**Afternoon (1pm-4pm):**
+- Message LinkedIn connections who accepted from previous week
+- Reply to any email responses within 1 hour
+- Send partnership agreement to interested lawyers
 
-**Goal:** Get first 3 lawyers signed by end of week (Jan 2-6)
+**Evening (5pm-7pm):**
+- Track all responses in spreadsheet
+- Update LinkedIn/email lists
+- Plan tomorrow's outreach
+
+**Day 2-7 (Jan 3-9):**
+- LinkedIn: 10-15 requests/day
+- Email: 5-10/day to non-LinkedIn lawyers
+- Phone calls: 5/day to non-responders (optional but effective)
+
+**Goal:** Get first 3-5 lawyers interested by end of week (Jan 2-9)
+
+**Key Metrics to Track:**
+- Connection requests sent
+- Acceptance rate
+- Messages sent
+- Responses received
+- Conversations started
+- Partnership agreements sent
+- Partnerships signed
 
 ---
 

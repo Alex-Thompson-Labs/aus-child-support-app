@@ -4,10 +4,10 @@
  * Covers all edge cases from CHRISTMAS_BREAK_PLAN.md requirements
  */
 
-import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import { LawyerInquiryScreen } from '../LawyerInquiryScreen';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { useLocalSearchParams } from 'expo-router';
+import React from 'react';
+import { LawyerInquiryScreen } from '../LawyerInquiryScreen';
 
 // Mock expo-router
 jest.mock('expo-router', () => ({
@@ -410,4 +410,5 @@ describe('LawyerInquiryScreen - Lead Brief Generation', () => {
     expect(expectedLeadBrief).toBeDefined();
   });
 });
+
 

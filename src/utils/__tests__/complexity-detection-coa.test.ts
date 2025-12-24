@@ -4,8 +4,8 @@
  * Covers all edge cases from CHRISTMAS_BREAK_PLAN.md requirements
  */
 
-import { detectComplexity, getAlertConfig, formatCoAReasonsForLead } from '../complexity-detection';
 import type { CalculationResults } from '../../types/calculator';
+import { detectComplexity, formatCoAReasonsForLead, getAlertConfig } from '../complexity-detection';
 
 // Base calculation results for testing (low value, no other flags)
 const baseResults: CalculationResults = {
@@ -460,4 +460,5 @@ describe('Integration: Full workflow', () => {
     expect(leadData?.formattedText).toContain('CHANGE OF ASSESSMENT GROUNDS');
   });
 });
+
 
