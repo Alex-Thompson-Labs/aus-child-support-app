@@ -19,6 +19,7 @@ This folder contains all project documentation for the Child Support Calculator 
 
 ### **BRUTAL_REALITY_CHECK.md** 💀
 **Harsh analysis of why the original B2C subscription model fails.**
+
 - Original projected revenue: $65,000/year
 - Realistic revenue: $700-1,000/year  
 - Problems: Single-use utility, no retention, free alternatives
@@ -32,6 +33,17 @@ This folder contains all project documentation for the Child Support Calculator 
 - Revenue projections with three scenarios
 - Complexity triggers explained in detail
 - Critical analysis with recommendations
+
+### **BUSINESS_MODEL_CANVAS.md** 🎯 ⭐ STRATEGIC OVERVIEW
+**Complete business model visualization across 9 building blocks.**
+- **Customer Segments:** Family law firms (B2B paying), separated parents (B2C free users)
+- **Value Proposition:** "Pay $100 for confirmed bookings, not unverified leads. Save 15-30 min per case."
+- **Revenue Streams:** $100/booking (Phase 3) → $149/month + $50/booking (Phase 4 Hybrid)
+- **Unit Economics:** LTV $12,000 per firm, CAC $25-50, LTV:CAC ratio 240:1
+- **Growth Plan:** $48k (Year 1) → $155k (Year 2) → $300k+ (Year 3)
+- **Risks & Mitigation:** Regulatory change, low adoption, fraud/abuse strategies
+- **Length:** 850+ lines covering all strategic aspects
+- **Who needs it:** Investors, partners, strategic planning
 
 ### **PRICING_STRATEGY_ANALYSIS.md** 💰 ⭐ CHOSEN MODEL
 **⭐ CHOSEN MODEL: Pay-Per-Consultation-Booked ($100). Comprehensive regulatory and financial analysis of 5 pricing options.**
@@ -150,6 +162,7 @@ This folder contains all project documentation for the Child Support Calculator 
 | Document | Lines | Purpose | Last Updated |
 |----------|-------|---------|--------------|
 | MASTER_PLAN.md | 1,626 | **Implementation roadmap** ⭐ | Dec 20, 2024 |
+| **BUSINESS_MODEL_CANVAS.md** | **850** | **Business model overview** 🎯 | **Dec 20, 2024** |
 | PROJECT_SUMMARY.md | 592 | Project overview | Dec 17, 2024 |
 | BRUTAL_REALITY_CHECK.md | 429 | B2C failure analysis | Dec 17, 2024 |
 | **PRICING_STRATEGY_ANALYSIS.md** | **428** | **Pricing model analysis** 💰 | **Dec 20, 2024** |
@@ -162,7 +175,7 @@ This folder contains all project documentation for the Child Support Calculator 
 | Lawyer Lead Generation Strategy.md | 117 | Original pivot doc | Dec 17, 2024 |
 | CLAUDE.md | 114 | AI helper guide | Dec 20, 2024 |
 
-**Total documentation: 4,667 lines**
+**Total documentation: 5,517 lines**
 
 ---
 
