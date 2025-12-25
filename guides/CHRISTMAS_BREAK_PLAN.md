@@ -295,6 +295,30 @@ Build production-ready code, not just a demo.
 
 **Settings:** Sonnet 4.5, Thinking ON, Regular mode ✅
 
+**IMPORTANT - Forensic Accountant Value-Add Note:**
+
+For COA Reason 8 cases (income from self-employment/trusts/companies), we want to educate users about forensic accountants WITHOUT making them feel they can skip the lawyer.
+
+When implementing the complexity detection alerts, add this educational note specifically for Reason 8:
+
+**Primary message:** "Your ex may be hiding income through their business/trust structure."
+
+**Value-add note (below primary message, smaller/lighter text):**
+"Tip: Family lawyers who specialize in complex income cases may recommend a forensic accountant to investigate. These typically cost $5,000-$15,000 but can uncover hidden income worth 10-50x their fee. Your lawyer will advise if this is appropriate for your case."
+
+**Styling for the value-add note:**
+- Font size: slightly smaller than primary message
+- Color: #94a3b8 (slate-400) - lighter than main text
+- Margin: 8px separation from primary message
+- Keep tone educational, not salesy
+- Emphasize: "Your lawyer will advise" - keeps lawyers in control
+
+This approach:
+✓ Gives users more reasons to engage (conversion optimization)
+✓ Educates about available tools (adds value)
+✓ Prevents false impression they can skip lawyers (lawyers recommend the accountant)
+✓ Sets realistic expectations (cost range upfront)
+
 Ask Claude Code:
 ```
 Update src/utils/complexity-detection.ts to use Change of Assessment reasons:
@@ -515,7 +539,67 @@ When you open Claude Code for this, reference this task and the uploaded screens
 
 ---
 
-## ✅ STEP 3: Phase 1 Task 7 - End-to-End Testing (Dec 27-28)
+## ✅ STEP 3: Add Forensic Accountant Value-Add Note (Dec 26 - 15 min)
+
+**Time:** 15 minutes  
+**Goal:** Add educational note about forensic accountants for income suspicion cases (CoA Reason 8)
+
+**Tool:** Claude Code  
+**Model:** Sonnet 4.5 ✅  
+**Thinking Mode:** Can turn OFF ⚪ (simple text addition)  
+**Plan Mode:** Regular ✅ (single file edit)
+
+---
+
+### Claude Code Prompt:
+
+```
+Update the alert messaging for CoA Reason 8 (income suspicion) cases:
+
+In src/utils/complexity-detection.ts, find the alert config for "Income not accurately reflected" or similar income-related triggers.
+
+Add a two-part message structure:
+
+PRIMARY MESSAGE (existing):
+"Your ex may be hiding income through their business/trust structure."
+
+VALUE-ADD NOTE (new - add below primary message):
+"Tip: Family lawyers who specialize in complex income cases may recommend a forensic accountant to investigate. These typically cost $5,000-$15,000 but can uncover hidden income worth 10-50x their fee. Your lawyer will advise if this is appropriate for your case."
+
+STYLING FOR VALUE-ADD NOTE:
+- Render in LawyerAlert component below main message
+- Font size: 13px (slightly smaller than primary message)
+- Color: #94a3b8 (slate-400 - lighter than main text)
+- Margin top: 8px (separate from primary message)
+- Keep tone educational, not salesy
+
+UPDATE LawyerAlert COMPONENT:
+If the component doesn't support a secondary message, update it to accept an optional "tip" or "note" prop that renders below the main message with the styling above.
+
+PRODUCTION REQUIREMENTS:
+- Make the tip/note prop optional (not all alerts need it)
+- Only show for relevant triggers (income suspicion cases)
+- Proper TypeScript types
+- Test that it renders correctly without breaking existing alerts
+```
+
+---
+
+**Test it works:**
+1. [ ] Complete calculation that triggers income suspicion (CoA Reason 8)
+2. [ ] See alert with primary message + educational note
+3. [ ] Verify styling: lighter color, smaller text, proper spacing
+4. [ ] Verify other alerts (high value, court date) still work without the note
+
+**Done when:**
+- [ ] Educational note displays for income suspicion cases
+- [ ] Styling looks clean and professional
+- [ ] Other alerts unaffected
+- [ ] No TypeScript errors
+
+---
+
+## ✅ STEP 4: Phase 1 Task 7 - End-to-End Testing (Dec 27-28)
 
 **Time:** 2-3 hours  
 **Goal:** Complete testing checklist

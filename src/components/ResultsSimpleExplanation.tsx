@@ -58,7 +58,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
         <View style={styles.deductionCards}>
           {/* Parent A breakdown */}
           <View style={styles.deductionCard}>
-            <Text style={styles.deductionCardTitle}>Parent A</Text>
+            <Text style={[styles.deductionCardTitle, { color: '#3b82f6' }]}>Parent A</Text>
             <View style={styles.deductionRow}>
               <Text style={styles.deductionLabel}>Taxable income</Text>
               <Text style={styles.deductionValue}>{formatCurrency(results.ATI_A)}</Text>
@@ -82,7 +82,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
 
           {/* Parent B breakdown */}
           <View style={styles.deductionCard}>
-            <Text style={styles.deductionCardTitle}>Parent B</Text>
+            <Text style={[styles.deductionCardTitle, { color: '#8b5cf6' }]}>Parent B</Text>
             <View style={styles.deductionRow}>
               <Text style={styles.deductionLabel}>Taxable income</Text>
               <Text style={styles.deductionValue}>{formatCurrency(results.ATI_B)}</Text>
@@ -112,7 +112,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
 
         <View style={styles.incomeComparison}>
           <View style={styles.incomeRow}>
-            <Text style={styles.incomeLabel}>Parent A</Text>
+            <Text style={[styles.incomeLabel, { color: '#3b82f6' }]}>Parent A</Text>
             <Text style={styles.incomeValue}>{formatCurrency(Math.max(0, results.CSI_A))}</Text>
             <View style={styles.percentBadge}>
               <Text style={styles.percentBadgeText}>{formatPercent(results.incomePercA)}</Text>
@@ -126,7 +126,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
           </View>
 
           <View style={styles.incomeRow}>
-            <Text style={styles.incomeLabel}>Parent B</Text>
+            <Text style={[styles.incomeLabel, { color: '#8b5cf6' }]}>Parent B</Text>
             <Text style={styles.incomeValue}>{formatCurrency(Math.max(0, results.CSI_B))}</Text>
             <View style={styles.percentBadge}>
               <Text style={styles.percentBadgeText}>{formatPercent(results.incomePercB)}</Text>
@@ -159,7 +159,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
 
         <View style={styles.careComparison}>
           <View style={styles.careRow}>
-            <Text style={styles.careLabel}>Parent A cares</Text>
+            <Text style={styles.careLabel}><Text style={{ color: '#3b82f6' }}>Parent A</Text> cares</Text>
             <Text style={styles.carePercent}>{formatPercent(avgCareA)}</Text>
             <Text style={styles.careSubtext}>of the time</Text>
           </View>
@@ -171,7 +171,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
           </View>
 
           <View style={styles.careRow}>
-            <Text style={styles.careLabel}>Parent B cares</Text>
+            <Text style={styles.careLabel}><Text style={{ color: '#8b5cf6' }}>Parent B</Text> cares</Text>
             <Text style={styles.carePercent}>{formatPercent(avgCareB)}</Text>
             <Text style={styles.careSubtext}>of the time</Text>
           </View>
@@ -181,12 +181,12 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
         <View style={styles.careConversion}>
           <Text style={styles.careConversionTitle}>Care time → Cost credit</Text>
           <Text style={styles.careConversionExplanation}>
-            The government uses a formula to convert care time into cost credit. More care time = more credit, but it's not 1:1.
+            A formula converts care time into cost credit. More care time = more credit, but it's not 1:1.
           </Text>
 
           <View style={styles.conversionCards}>
             <View style={styles.conversionCard}>
-              <Text style={styles.conversionCardLabel}>Parent A</Text>
+              <Text style={[styles.conversionCardLabel, { color: '#3b82f6' }]}>Parent A</Text>
               <View style={styles.conversionRow}>
                 <Text style={styles.conversionValue}>{formatPercent(avgCareA)}</Text>
                 <Text style={styles.conversionArrow}>→</Text>
@@ -199,7 +199,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
             </View>
 
             <View style={styles.conversionCard}>
-              <Text style={styles.conversionCardLabel}>Parent B</Text>
+              <Text style={[styles.conversionCardLabel, { color: '#8b5cf6' }]}>Parent B</Text>
               <View style={styles.conversionRow}>
                 <Text style={styles.conversionValue}>{formatPercent(avgCareB)}</Text>
                 <Text style={styles.conversionArrow}>→</Text>
@@ -256,7 +256,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
               </View>
               <View style={styles.gapDivider} />
               <View style={styles.gapRow}>
-                <Text style={[styles.gapLabel, styles.gapLabelBold]}>Parent A still owes</Text>
+                <Text style={[styles.gapLabel, styles.gapLabelBold]}>Parent A owes</Text>
                 <Text style={[styles.gapValue, styles.gapValueHighlight]}>
                   {formatPercent(Math.max(0, incomeGapA))}
                 </Text>
@@ -276,7 +276,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
               </View>
               <View style={styles.gapDivider} />
               <View style={styles.gapRow}>
-                <Text style={[styles.gapLabel, styles.gapLabelBold]}>Parent B still owes</Text>
+                <Text style={[styles.gapLabel, styles.gapLabelBold]}>Parent B owes</Text>
                 <Text style={[styles.gapValue, styles.gapValueHighlight]}>
                   {formatPercent(Math.max(0, incomeGapB))}
                 </Text>
@@ -302,8 +302,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
         </View>
 
         <Text style={styles.stepExplanation}>
-          The government calculates how much it costs to raise {results.childResults.length} child
-          {results.childResults.length > 1 ? "ren" : ""} based on your combined income.
+          Child costs are calculated based on your combined income and how many children you have.
         </Text>
 
         {/* Combined income */}
@@ -887,7 +886,7 @@ const styles = StyleSheet.create({
   finalResultValue: {
     fontSize: 36,
     fontWeight: "700",
-    color: "#ffffff",
+    color: "#8b5cf6", // violet-500
     letterSpacing: -0.5,
   },
   finalResultPeriod: {

@@ -258,6 +258,7 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
           onPress={navigateToInquiry}
           triggerType={getTrigger()}
           annualLiability={results.finalPaymentAmount}
+          tip={alertConfig.tip}
         />
       )}
 

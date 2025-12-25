@@ -7,7 +7,7 @@
 import type { CalculationResults, ChildInput } from '../types/calculator';
 import { convertCareToPercentage } from './child-support-calculations';
 import { isWithinDays } from './date-utils';
-import { getHighestPriorityReason, getCoAReasonById } from './change-of-assessment-reasons';
+import { getHighestPriorityReason, getCoAReasonById, formatOfficialCoAReasons } from './change-of-assessment-reasons';
 
 /**
  * Flags indicating different types of complexity detected in child support calculations
@@ -76,6 +76,12 @@ export interface AlertConfig {
    * Text for the call-to-action button (e.g., "Get Legal Help")
    */
   buttonText: string;
+
+  /**
+   * Optional educational tip/note displayed below main message
+   * Used for value-add information like forensic accountant recommendations
+   */
+  tip?: string;
 }
 
 /**
@@ -119,8 +125,8 @@ export interface ComplexityFormData {
   children?: ChildInput[];
   courtDate?: string;
   /**
-   * Array of selected Change of Assessment reason IDs
-   * Used to detect special circumstances requiring legal review
+   * Array of selected complexity trigger reason IDs
+   * Used to detect situations requiring legal review
    */
   selectedCoAReasons?: string[];
 }
@@ -155,8 +161,7 @@ export function detectComplexity(
     console.log('[detectComplexity] Is court date urgent (within 30 days):', hasCourtDateUrgent);
   }
 
-  // Check for special circumstances via Change of Assessment reasons
-  // Handle undefined gracefully - treat as empty array
+  // Check for special circumstances via selected CoA reasons
   const selectedReasons = formData.selectedCoAReasons ?? [];
   const hasSpecialCircumstances = selectedReasons.length > 0;
 
@@ -203,21 +208,21 @@ export function getAlertConfig(
     };
   }
 
-  // Priority 2: Special circumstances (Change of Assessment reasons)
+  // Priority 2: Complexity triggers (special circumstances)
   if (flags.specialCircumstances) {
     // Safely get selected reasons, handle undefined/null
     const selectedIds = formData?.selectedCoAReasons ?? [];
-    
-    // Get the highest priority reason from the selected list
-    const highestPriorityReason = getHighestPriorityReason(selectedIds);
-    
+
+    // Get the most important reason (based on priority)
+    const mostImportantReason = getHighestPriorityReason(selectedIds);
+
     if (__DEV__) {
-      console.log('[getAlertConfig] Selected CoA reason IDs:', selectedIds);
-      console.log('[getAlertConfig] Highest priority reason:', highestPriorityReason);
+      console.log('[getAlertConfig] Selected complexity reason IDs:', selectedIds);
+      console.log('[getAlertConfig] Most important reason:', mostImportantReason);
     }
 
     // Handle edge case: flag is true but no valid reasons found
-    if (!highestPriorityReason) {
+    if (!mostImportantReason) {
       if (__DEV__) {
         console.warn('[getAlertConfig] specialCircumstances flag is true but no valid reasons found');
       }
@@ -226,48 +231,69 @@ export function getAlertConfig(
         title: "📋 Special Circumstances Detected",
         message: "Your case has factors that may benefit from legal review.",
         urgency: 'medium',
-        buttonText: "Request Review"
+        buttonText: "Talk to a Lawyer"
       };
     }
 
-    // Determine urgency based on priority level
-    // Priority 1-3: URGENT (critical income/capacity issues)
-    // Priority 4-10: NORMAL (significant but less urgent)
-    const isUrgent = highestPriorityReason.priority <= 3;
-    
+    // Determine importance based on priority
+    // Priority 1-3: URGENT (affects calculation directly or critical issues)
+    // Priority 4-10: Normal (still important but less critical)
+    const isHighPriority = mostImportantReason.priority <= 3;
+
     // Handle multiple reasons vs single reason
     const reasonCount = selectedIds.filter(id => getCoAReasonById(id) !== null).length;
-    
+
     if (reasonCount > 1) {
       // Multiple reasons selected
+      // Check if any selected reason is Reason 8A (income suspicion)
+      const hasReason8A = selectedIds.some(id => {
+        const reason = getCoAReasonById(id);
+        return reason?.officialCoAReasons.includes('5.2.8');
+      });
+
+      const forensicAccountantTip = hasReason8A
+        ? "Tip: Family lawyers who specialize in complex income cases may recommend a forensic accountant to investigate. These typically cost $5,000-$15,000 but can uncover hidden income worth 10-50x their fee. Your lawyer will advise if this is appropriate for your case."
+        : undefined;
+
       return {
-        title: isUrgent 
-          ? `⚠️ URGENT: ${reasonCount} Factors Affecting Fairness Detected`
-          : `📋 ${reasonCount} Factors Affecting Fairness Detected`,
-        message: isUrgent
-          ? "Multiple Change of Assessment grounds apply to your case. This requires immediate legal review before proceeding."
-          : "Multiple Change of Assessment grounds apply to your case. Professional review can help ensure fair assessment.",
-        urgency: isUrgent ? 'high' : 'medium',
-        buttonText: isUrgent ? "Get Urgent Review" : "Request Review"
+        title: isHighPriority
+          ? `💰 ${reasonCount} Issues Affecting Fairness Detected`
+          : `📋 ${reasonCount} Factors Affecting Fairness`,
+        message: isHighPriority
+          ? "The income situation looks complicated—a lawyer can help you request an adjustment. This often increases support by $5,000+/year."
+          : "Multiple complexity factors apply to your case. A lawyer can help ensure fair assessment.",
+        urgency: isHighPriority ? 'high' : 'medium',
+        buttonText: "Talk to a Lawyer About This",
+        tip: forensicAccountantTip
       };
     } else {
       // Single reason - use reason-specific message
       // Sanitize the label to prevent any potential issues
-      const sanitizedLabel = highestPriorityReason.label.replace(/[<>]/g, '');
-      
-      if (isUrgent) {
+      const sanitizedLabel = mostImportantReason.label.replace(/[<>]/g, '');
+      const categoryEmoji = mostImportantReason.category === 'income' ? '💰' :
+                            mostImportantReason.category === 'child' ? '👶' : '🏡';
+
+      // Check if this is a Reason 8A income suspicion case (hidden income)
+      const isReason8A = mostImportantReason.officialCoAReasons.includes('5.2.8');
+      const forensicAccountantTip = isReason8A
+        ? "Tip: Family lawyers who specialize in complex income cases may recommend a forensic accountant to investigate. These typically cost $5,000-$15,000 but can uncover hidden income worth 10-50x their fee. Your lawyer will advise if this is appropriate for your case."
+        : undefined;
+
+      if (isHighPriority) {
         return {
-          title: `⚠️ URGENT: ${sanitizedLabel}`,
-          message: "This requires immediate legal review before proceeding.",
+          title: `${categoryEmoji} URGENT: ${sanitizedLabel}`,
+          message: "The income situation looks complicated—a lawyer can help you request an adjustment to make it fair. This often makes a $5,000+ difference in annual support.",
           urgency: 'high',
-          buttonText: "Get Urgent Review"
+          buttonText: "Talk to a Lawyer",
+          tip: forensicAccountantTip
         };
       } else {
         return {
-          title: `📋 Change of Assessment: ${sanitizedLabel}`,
-          message: `Cases with ${sanitizedLabel.toLowerCase()} often benefit from legal review.`,
+          title: `${categoryEmoji} Change of Assessment: ${sanitizedLabel}`,
+          message: "This situation can be complex—a lawyer knows how to navigate the assessment process to ensure fairness.",
           urgency: 'medium',
-          buttonText: "Request Review"
+          buttonText: "Get Legal Help",
+          tip: forensicAccountantTip
         };
       }
     }
@@ -300,35 +326,13 @@ export function getAlertConfig(
 }
 
 /**
- * Formats Change of Assessment reasons for lawyer lead data
- * 
- * Creates a structured representation of selected CoA reasons with their
- * labels, descriptions, and priority levels for inclusion in lawyer referral emails.
- * 
- * @param selectedIds - Array of selected CoA reason IDs from form data
+ * Formats complexity trigger reasons for lawyer lead data
+ *
+ * Creates a structured representation of selected complexity reasons with their
+ * labels, descriptions, official CoA codes, and category for lawyer referral emails.
+ *
+ * @param selectedIds - Array of selected complexity reason IDs from form data
  * @returns Formatted object containing reason details, or null if no valid reasons
- * 
- * @example
- * ```typescript
- * const leadData = formatCoAReasonsForLead(['income_not_reflected', 'school_fees']);
- * // Returns:
- * // {
- * //   count: 2,
- * //   reasons: [
- * //     {
- * //       label: 'Income not accurately reflected in ATI',
- * //       description: '...',
- * //       urgency: 'URGENT'
- * //     },
- * //     {
- * //       label: 'Private school fees',
- * //       description: '...',
- * //       urgency: 'Normal'
- * //     }
- * //   ],
- * //   formattedText: 'CHANGE OF ASSESSMENT GROUNDS:\n1. Income not accurately...'
- * // }
- * ```
  */
 export interface CoALeadData {
   /** Number of valid reasons selected */
@@ -337,7 +341,9 @@ export interface CoALeadData {
   reasons: Array<{
     label: string;
     description: string;
+    category: string;
     urgency: 'URGENT' | 'Normal';
+    officialCoAReasons: string;
   }>;
   /** Pre-formatted text block for email templates */
   formattedText: string;
@@ -363,19 +369,21 @@ export function formatCoAReasonsForLead(
     return null;
   }
 
-  // Sort by priority (most urgent first)
+  // Sort by priority (most urgent first: 1, 2, 3, ... 10)
   const sortedReasons = [...validReasons].sort((a, b) => a.priority - b.priority);
 
-  // Format each reason with sanitized data
+  // Format each reason with sanitized data and urgency
   const reasons = sortedReasons.map(reason => ({
     label: reason.label.replace(/[<>]/g, ''), // Sanitize for safety
     description: reason.description.replace(/[<>]/g, ''),
-    urgency: (reason.priority <= 3 ? 'URGENT' : 'Normal') as 'URGENT' | 'Normal'
+    category: reason.category,
+    urgency: (reason.priority <= 3 ? 'URGENT' : 'Normal') as 'URGENT' | 'Normal',
+    officialCoAReasons: formatOfficialCoAReasons(reason)
   }));
 
   // Create formatted text block for email templates
   const formattedLines = reasons.map((reason, index) => {
-    return `${index + 1}. ${reason.label} (priority: ${reason.urgency})\n   → ${reason.description}`;
+    return `${index + 1}. ${reason.label} (priority: ${reason.urgency})\n   → ${reason.description}\n   → Official grounds: ${reason.officialCoAReasons}`;
   });
 
   const formattedText = `CHANGE OF ASSESSMENT GROUNDS:\n${formattedLines.join('\n\n')}`;
@@ -422,7 +430,7 @@ const testResults1: CalculationResults = {
 const testFlags1 = detectComplexity(testResults1, { children: [] });
 console.log('Test 1 - High Value:', testFlags1.highValue); // Should be true
 
-const alert1 = getAlertConfig(testFlags1, testResults1, { children: [] });
+const alert1 = getAlertConfig(testFlags1, testResults1);
 console.log('Alert 1:', alert1?.title); // Should show "💰 High-Value Case"
 
 // TEST CASE 2: Normal Value
@@ -459,7 +467,7 @@ const testResults2: CalculationResults = {
 const testFlags2 = detectComplexity(testResults2, { children: [] });
 console.log('Test 2 - Normal:', testFlags2.highValue); // Should be false
 
-const alert2 = getAlertConfig(testFlags2, testResults2, { children: [] });
+const alert2 = getAlertConfig(testFlags2, testResults2);
 console.log('Alert 2:', alert2); // Should be null
 
 // TEST CASE 3: Shared Care Dispute
@@ -502,6 +510,6 @@ const testFormData3 = {
 const testFlags3 = detectComplexity(testResults3, testFormData3);
 console.log('Test 3 - Shared Care:', testFlags3.sharedCareDispute); // Should be true
 
-const alert3 = getAlertConfig(testFlags3, testResults3, testFormData3);
+const alert3 = getAlertConfig(testFlags3, testResults3);
 console.log('Alert 3:', alert3?.title); // Should show "⚖️ Care Arrangement in Dispute Zone"
 */

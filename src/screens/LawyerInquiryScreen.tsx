@@ -21,6 +21,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAnalytics } from '@/src/utils/analytics';
 import { getCoAReasonById, formatCoAReasonsForLead } from '@/src/utils/complexity-detection';
 import type { ChangeOfAssessmentReason } from '@/src/utils/change-of-assessment-reasons';
+import { getCategoryDisplayInfo, formatOfficialCoAReasons } from '@/src/utils/change-of-assessment-reasons';
 
 export function LawyerInquiryScreen() {
   const params = useLocalSearchParams();
@@ -91,20 +92,21 @@ export function LawyerInquiryScreen() {
   }, []);
 
   // Get valid CoA reasons for display
-  const validCoAReasons: Array<ChangeOfAssessmentReason & { urgency: 'URGENT' | 'NORMAL' }> = selectedCoAReasons
-    .map(id => {
-      const reason = getCoAReasonById(id);
-      if (!reason) return null;
-      
-      // Determine urgency based on priority (1-3 = URGENT, 4-10 = NORMAL)
-      const urgency = reason.priority <= 3 ? 'URGENT' : 'NORMAL';
-      
-      return { ...reason, urgency };
-    })
-    .filter((reason): reason is NonNullable<typeof reason> => reason !== null);
+  const validCoAReasons: ChangeOfAssessmentReason[] = selectedCoAReasons
+    .map(id => getCoAReasonById(id))
+    .filter((reason): reason is ChangeOfAssessmentReason => reason !== null);
 
-  // Determine if any urgent reasons exist (for card border styling)
-  const hasUrgentReasonsForDisplay = validCoAReasons.some(r => r.urgency === 'URGENT');
+  // Determine most important category (for card border styling)
+  // Priority: income > child > other
+  const mostImportantCategory = validCoAReasons.reduce<'income' | 'child' | 'other' | null>(
+    (highest, reason) => {
+      if (!highest) return reason.category;
+      if (reason.category === 'income') return 'income';
+      if (reason.category === 'child' && highest !== 'income') return 'child';
+      return highest;
+    },
+    null
+  );
 
   // DEBUG: Test button to force-fire analytics event
   const testAnalytics = () => {
@@ -144,9 +146,9 @@ export function LawyerInquiryScreen() {
     // 2. Calculate time_to_submit (seconds from mount to submission)
     const timeToSubmit = Math.round((Date.now() - mountTimeRef.current) / 1000);
 
-    // 3. Prepare Change of Assessment data
+    // 3. Prepare complexity trigger data
     const coaData = formatCoAReasonsForLead(selectedCoAReasons);
-    const hasUrgentReasons = coaData?.reasons.some(r => r.urgency === 'URGENT') ?? false;
+    const hasIncomeReasons = validCoAReasons.some(r => r.category === 'income');
 
     // 4. Track analytics event AFTER validation but BEFORE async operations
     const analyticsProperties = {
@@ -155,11 +157,12 @@ export function LawyerInquiryScreen() {
       has_phone: phone.trim().length > 0,
       message_length: message.trim().length,
       time_to_submit: timeToSubmit,
-      // Change of Assessment analytics
-      has_coa_reasons: selectedCoAReasons.length > 0,
-      coa_reason_count: selectedCoAReasons.length,
-      coa_reason_ids: selectedCoAReasons.join(','), // Convert array to string for PostHog
-      has_urgent_reasons: hasUrgentReasons,
+      // Complexity trigger analytics
+      has_complexity_reasons: selectedCoAReasons.length > 0,
+      complexity_reason_count: selectedCoAReasons.length,
+      complexity_reason_ids: selectedCoAReasons.join(','), // Convert array to string for PostHog
+      has_income_reasons: hasIncomeReasons,
+      most_important_category: mostImportantCategory,
     };
 
     console.log('[LawyerInquiryScreen] Form submitted:', {
@@ -198,12 +201,13 @@ export function LawyerInquiryScreen() {
       incomeB: incomeB ? parseFloat(incomeB) : 0,
       numChildren: children ? parseInt(children) : 0,
       
-      // Change of Assessment data
-      changeOfAssessmentReasons: coaData ? {
+      // Complexity triggers data
+      complexityTriggers: coaData ? {
         count: coaData.count,
         reasons: coaData.reasons,
         formattedText: coaData.formattedText,
-        hasUrgent: hasUrgentReasons,
+        hasIncomeReasons: hasIncomeReasons,
+        mostImportantCategory: mostImportantCategory,
       } : null,
       
       // Metadata
@@ -242,35 +246,44 @@ export function LawyerInquiryScreen() {
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
           <Text style={styles.title}>Request Legal Help</Text>
 
-          {/* Change of Assessment Reasons Card - Show only if reasons exist */}
+          {/* Complexity Triggers Card - Show only if reasons exist */}
           {validCoAReasons.length > 0 && (
             <View style={[
               styles.coaCard,
-              hasUrgentReasonsForDisplay && styles.coaCardUrgent
+              mostImportantCategory && {
+                borderColor: getCategoryDisplayInfo(mostImportantCategory).accentColor,
+                borderWidth: 2,
+              }
             ]}>
-              <Text style={styles.coaTitle}>📋 CHANGE OF ASSESSMENT GROUNDS SELECTED</Text>
-              
-              {validCoAReasons.map((reason, index) => (
-                <View key={reason.id} style={[
-                  styles.coaReasonContainer,
-                  index < validCoAReasons.length - 1 && styles.coaReasonBorder
-                ]}>
-                  <View style={styles.coaReasonHeader}>
-                    <Text style={[
-                      styles.coaReasonIcon,
-                      reason.urgency === 'URGENT' ? styles.coaIconUrgent : styles.coaIconNormal
-                    ]}>
-                      {reason.urgency === 'URGENT' ? '⚠️' : '📋'}
+              <Text style={styles.coaTitle}>💭 COMPLEXITY TRIGGERS SELECTED</Text>
+
+              {validCoAReasons.map((reason, index) => {
+                const categoryInfo = getCategoryDisplayInfo(reason.category);
+                return (
+                  <View key={reason.id} style={[
+                    styles.coaReasonContainer,
+                    index < validCoAReasons.length - 1 && styles.coaReasonBorder
+                  ]}>
+                    <View style={styles.coaReasonHeader}>
+                      <Text style={[
+                        styles.coaReasonIcon,
+                        { color: categoryInfo.accentColor }
+                      ]}>
+                        {categoryInfo.emoji}
+                      </Text>
+                      <Text style={styles.coaReasonLabel} numberOfLines={2}>
+                        {reason.label}
+                      </Text>
+                    </View>
+                    <Text style={styles.coaReasonDescription} numberOfLines={3}>
+                      {reason.description}
                     </Text>
-                    <Text style={styles.coaReasonLabel} numberOfLines={2}>
-                      {reason.label}
+                    <Text style={styles.coaOfficialReasons}>
+                      Official grounds: {formatOfficialCoAReasons(reason)}
                     </Text>
                   </View>
-                  <Text style={styles.coaReasonDescription} numberOfLines={3}>
-                    {reason.description}
-                  </Text>
-                </View>
-              ))}
+                );
+              })}
             </View>
           )}
 
@@ -369,17 +382,14 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     marginBottom: 20,
   },
-  // Change of Assessment card styles
+  // Complexity triggers card styles
   coaCard: {
     backgroundColor: '#1e293b', // slate-800
     borderRadius: 12,
     padding: 16,
     marginBottom: 20,
     borderWidth: 2,
-    borderColor: '#334155', // slate-700 (normal)
-  },
-  coaCardUrgent: {
-    borderColor: '#ef4444', // red-500 (urgent)
+    borderColor: '#334155', // slate-700 (default, overridden inline by category color)
   },
   coaTitle: {
     fontSize: 13,
@@ -405,12 +415,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 8,
     marginTop: 2,
-  },
-  coaIconUrgent: {
-    color: '#ef4444', // red-500
-  },
-  coaIconNormal: {
-    color: '#3b82f6', // blue-500
+    // color set inline based on category
   },
   coaReasonLabel: {
     flex: 1,
@@ -424,6 +429,14 @@ const styles = StyleSheet.create({
     color: '#94a3b8', // slate-400
     lineHeight: 18,
     marginLeft: 24, // Align with label (icon width + margin)
+  },
+  coaOfficialReasons: {
+    fontSize: 11,
+    color: '#64748b', // slate-500
+    fontStyle: 'italic',
+    marginTop: 4,
+    marginLeft: 24, // Align with description
+    lineHeight: 16,
   },
   summaryCard: {
     backgroundColor: '#1e293b', // slate-800

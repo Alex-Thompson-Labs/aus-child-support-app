@@ -7,7 +7,9 @@ import {
   CHANGE_OF_ASSESSMENT_REASONS,
   getCoAReasonById,
   getHighestPriorityReason,
+  getCategoryDisplayInfo,
   type ChangeOfAssessmentReason,
+  type ComplexityCategory,
 } from "../utils/change-of-assessment-reasons";
 import type { ComplexityFormData } from "../utils/complexity-detection";
 import { HelpTooltip } from "./HelpTooltip";
@@ -42,22 +44,22 @@ export function ChangeOfAssessmentPrompt({
     return null;
   }
 
-  // Group reasons by priority
-  const urgentReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.priority <= 3);
-  const normalReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.priority > 3);
+  // Group reasons by category
+  const incomeReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.category === 'income');
+  const childReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.category === 'child');
+  const otherReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.category === 'other');
 
-  // Determine button state and style
-  const hasUrgentReasons = Array.from(selectedReasons).some((id) => {
-    const reason = getCoAReasonById(id);
-    return reason && reason.priority <= 3;
-  });
-
+  // Determine button state and style based on most important selected category
+  const mostImportantReason = getHighestPriorityReason(Array.from(selectedReasons));
   const buttonDisabled = selectedReasons.size === 0 || isNavigatingFromCoA;
+
   const buttonStyle = buttonDisabled
     ? styles.coaButtonDisabled
-    : hasUrgentReasons
-      ? styles.coaButtonRed
-      : styles.coaButtonBlue;
+    : mostImportantReason?.category === 'income'
+      ? styles.coaButtonIncome
+      : mostImportantReason?.category === 'child'
+        ? styles.coaButtonChild
+        : styles.coaButtonOther;
 
   // Expand/collapse animation
   useEffect(() => {
@@ -131,8 +133,8 @@ export function ChangeOfAssessmentPrompt({
       analytics.track("coa_button_clicked", {
         reasons_selected: JSON.stringify(Array.from(selectedReasons)),
         reason_count: selectedReasons.size,
-        highest_priority:
-          getHighestPriorityReason(Array.from(selectedReasons))?.priority ?? null,
+        most_important_category:
+          getHighestPriorityReason(Array.from(selectedReasons))?.category ?? null,
         annual_liability: results.finalPaymentAmount,
       });
     } catch (error) {
@@ -226,16 +228,17 @@ export function ChangeOfAssessmentPrompt({
         onPress={handleToggleExpand}
         accessible={true}
         accessibilityRole="button"
-        accessibilityLabel={`Change of Assessment options. ${
+        accessibilityLabel={`Complexity factors. ${
           isCoAExpanded ? "Collapse" : "Expand"
         }`}
         accessibilityState={{ expanded: isCoAExpanded }}
       >
         <View style={styles.coaHeader}>
           <View style={styles.coaHeaderLeft}>
-            <Text style={styles.coaTitle}>⚖️ Does this result seem unfair?</Text>
-            <Text style={styles.coaSubtitle}>
-              Cases with these factors often benefit from legal review
+            <Text style={styles.coaTitle}>💭 Is this assessment result unfair?</Text>
+            <Text style={styles.coaExplainer}>
+              Some situations are too complex for the standard calculator.
+              If any of these apply, a lawyer can help you request adjustments.
             </Text>
           </View>
           <Text style={styles.coaChevron}>{isCoAExpanded ? "▼" : "▶"}</Text>
@@ -263,27 +266,45 @@ export function ChangeOfAssessmentPrompt({
               }
             }}
           >
-          {/* Urgent Reasons Group */}
-          {urgentReasons.length > 0 && (
+          {/* Income Issues Group */}
+          {incomeReasons.length > 0 && (
             <View style={styles.reasonGroup}>
               <View style={styles.groupHeader}>
-                <Text style={[styles.groupTitle, styles.groupTitleUrgent]}>
-                  ⚠️ URGENT
+                <Text style={[styles.groupTitle, { color: '#f59e0b' }]}>
+                  {getCategoryDisplayInfo('income').emoji} {getCategoryDisplayInfo('income').title}
                 </Text>
               </View>
-              <View style={styles.urgentBorder}>
-                {urgentReasons.map(renderCheckbox)}
+              <View style={[styles.categoryBorder, { borderLeftColor: '#f59e0b' }]}>
+                {incomeReasons.map(renderCheckbox)}
               </View>
             </View>
           )}
 
-          {/* Normal Reasons Group */}
-          {normalReasons.length > 0 && (
+          {/* Child-Related Group */}
+          {childReasons.length > 0 && (
             <View style={styles.reasonGroup}>
               <View style={styles.groupHeader}>
-                <Text style={styles.groupTitle}>📋 Common</Text>
+                <Text style={[styles.groupTitle, { color: '#8b5cf6' }]}>
+                  {getCategoryDisplayInfo('child').emoji} {getCategoryDisplayInfo('child').title}
+                </Text>
               </View>
-              {normalReasons.map(renderCheckbox)}
+              <View style={[styles.categoryBorder, { borderLeftColor: '#8b5cf6' }]}>
+                {childReasons.map(renderCheckbox)}
+              </View>
+            </View>
+          )}
+
+          {/* Other Factors Group */}
+          {otherReasons.length > 0 && (
+            <View style={styles.reasonGroup}>
+              <View style={styles.groupHeader}>
+                <Text style={[styles.groupTitle, { color: '#3b82f6' }]}>
+                  {getCategoryDisplayInfo('other').emoji} {getCategoryDisplayInfo('other').title}
+                </Text>
+              </View>
+              <View style={[styles.categoryBorder, { borderLeftColor: '#3b82f6' }]}>
+                {otherReasons.map(renderCheckbox)}
+              </View>
             </View>
           )}
 
@@ -299,16 +320,16 @@ export function ChangeOfAssessmentPrompt({
               disabled={buttonDisabled}
               accessible={true}
               accessibilityRole="button"
-              accessibilityLabel="Request Legal Review"
+              accessibilityLabel="Talk to a Lawyer About This"
               accessibilityHint={`${selectedReasons.size} reason${
                 selectedReasons.size === 1 ? "" : "s"
               } selected`}
               accessibilityState={{ disabled: buttonDisabled }}
             >
-              <Text style={styles.coaButtonText}>Request Legal Review</Text>
+              <Text style={styles.coaButtonText}>Talk to a Lawyer About This</Text>
             </Pressable>
             <Text style={styles.coaDisclaimer}>
-              Free consultation, no obligation
+              Free consultation • They'll explain your options
             </Text>
           </View>
         </View>
@@ -347,6 +368,13 @@ const styles = StyleSheet.create({
   coaSubtitle: {
     fontSize: 14,
     color: "#94a3b8", // slate-400
+    marginTop: 2,
+  },
+  coaExplainer: {
+    fontSize: 13,
+    color: "#64748b", // slate-500
+    marginTop: 8,
+    lineHeight: 18,
   },
   coaChevron: {
     fontSize: 14,
@@ -367,15 +395,12 @@ const styles = StyleSheet.create({
   groupTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#cbd5e1", // slate-300
+    color: "#cbd5e1", // slate-300 (overridden by inline styles)
   },
-  groupTitleUrgent: {
-    color: "#ef4444", // red-500
-  },
-  urgentBorder: {
+  categoryBorder: {
     borderLeftWidth: 3,
-    borderLeftColor: "#ef4444", // red-500
     paddingLeft: 12,
+    // borderLeftColor set inline per category
   },
 
   // Checkboxes
@@ -434,11 +459,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
   },
-  coaButtonBlue: {
-    backgroundColor: "#2563eb", // blue-600
+  coaButtonIncome: {
+    backgroundColor: "#f59e0b", // amber-500 (income category)
   },
-  coaButtonRed: {
-    backgroundColor: "#ef4444", // red-500
+  coaButtonChild: {
+    backgroundColor: "#8b5cf6", // violet-500 (child category)
+  },
+  coaButtonOther: {
+    backgroundColor: "#3b82f6", // blue-500 (other category)
   },
   coaButtonDisabled: {
     backgroundColor: "#64748b", // slate-500

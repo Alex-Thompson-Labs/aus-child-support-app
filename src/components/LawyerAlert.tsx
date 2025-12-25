@@ -13,6 +13,11 @@ interface LawyerAlertProps {
   onPress: () => void;
   triggerType?: string;
   annualLiability?: number;
+  /**
+   * Optional educational tip/note displayed below main message
+   * Rendered in lighter color with smaller font
+   */
+  tip?: string;
 }
 
 // Default values for edge case handling
@@ -27,7 +32,8 @@ export function LawyerAlert({
   buttonText,
   onPress,
   triggerType,
-  annualLiability
+  annualLiability,
+  tip
 }: LawyerAlertProps) {
   // Prevent double-taps with loading state
   const [isPressed, setIsPressed] = useState(false);
@@ -135,6 +141,9 @@ export function LawyerAlert({
         {displayTitle}
       </Text>
       <Text style={styles.message}>{displayMessage}</Text>
+      {tip && tip.trim() && (
+        <Text style={styles.tip}>{tip.trim()}</Text>
+      )}
       <Pressable
         style={({ pressed }) => [
           styles.button,
@@ -175,6 +184,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#94a3b8',
     lineHeight: 20,
+    marginBottom: 16,
+  },
+  tip: {
+    fontSize: 13,
+    color: '#94a3b8',
+    lineHeight: 18,
+    marginTop: 8,
     marginBottom: 16,
   },
   button: {

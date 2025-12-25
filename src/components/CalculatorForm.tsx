@@ -66,7 +66,7 @@ export function CalculatorForm({
           <View style={styles.parentSection}>
             <View style={styles.inputGroup}>
               <View style={styles.labelRow}>
-                <Text style={styles.parentTitle}>Parent A</Text>
+                <Text style={styles.parentTitleA}>Parent A</Text>
                 <Text style={styles.label}> - Adjusted Taxable Income</Text>
                 <HelpTooltip
                   what="Enter ATI from tax assessment. Includes taxable income plus reportable fringe benefits, foreign income, and certain tax-free pensions."
@@ -105,17 +105,6 @@ export function CalculatorForm({
               {errors.incomeA && (
                 <Text style={styles.errorText}>{errors.incomeA}</Text>
               )}
-              {incomePercA !== undefined && (
-                <View style={styles.incomeBarContainer}>
-                  <View style={styles.incomeBar}>
-                    <View style={[styles.incomeBarFill, { width: `${incomePercA}%`, backgroundColor: "#3b82f6" }]} />
-                  </View>
-                  <Text style={styles.incomePercText}>{Math.round(incomePercA)}%</Text>
-                  {csiA !== undefined && (
-                    <Text style={styles.csiText}>CSI: ${Math.round(csiA).toLocaleString()}</Text>
-                  )}
-                </View>
-              )}
             </View>
           </View>
 
@@ -123,7 +112,7 @@ export function CalculatorForm({
           <View style={styles.parentSection}>
             <View style={styles.inputGroup}>
               <View style={styles.labelRow}>
-                <Text style={styles.parentTitle}>Parent B</Text>
+                <Text style={styles.parentTitleB}>Parent B</Text>
                 <Text style={styles.label}> - Adjusted Taxable Income</Text>
                 <HelpTooltip
                   what="Enter ATI from tax assessment. Includes taxable income plus reportable fringe benefits, foreign income, and certain tax-free pensions."
@@ -161,17 +150,6 @@ export function CalculatorForm({
               </View>
               {errors.incomeB && (
                 <Text style={styles.errorText}>{errors.incomeB}</Text>
-              )}
-              {incomePercB !== undefined && (
-                <View style={styles.incomeBarContainer}>
-                  <View style={styles.incomeBar}>
-                    <View style={[styles.incomeBarFill, { width: `${incomePercB}%`, backgroundColor: "#a78bfa" }]} />
-                  </View>
-                  <Text style={[styles.incomePercText, { color: "#a78bfa" }]}>{Math.round(incomePercB)}%</Text>
-                  {csiB !== undefined && (
-                    <Text style={styles.csiText}>CSI: ${Math.round(csiB).toLocaleString()}</Text>
-                  )}
-                </View>
               )}
             </View>
           </View>
@@ -342,6 +320,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     color: "#94a3b8", // slate-400
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  parentTitleA: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#3b82f6", // blue-500
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  parentTitleB: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#8b5cf6", // violet-500
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },

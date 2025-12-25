@@ -1,7 +1,11 @@
 /**
- * Tests for Change of Assessment integration in complexity detection
- * 
- * Covers all edge cases from CHRISTMAS_BREAK_PLAN.md requirements
+ * Tests for Complexity Triggers integration in complexity detection
+ *
+ * Updated for redesigned messaging (Task 2.6):
+ * - 5 core reasons instead of 10
+ * - Plain language labels instead of bureaucratic terms
+ * - Category-based grouping instead of urgency-only
+ * - Official CoA codes maintained for lawyers
  */
 
 import type { CalculationResults } from '../../types/calculator';
@@ -9,7 +13,6 @@ import { detectComplexity, formatCoAReasonsForLead, getAlertConfig } from '../co
 
 // Base calculation results for testing (low value, no other flags)
 const baseResults: CalculationResults = {
-  year: '2024',
   ATI_A: 60000,
   ATI_B: 40000,
   relDepDeductibleA: 0,
@@ -39,7 +42,7 @@ const baseResults: CalculationResults = {
   finalPaymentAmount: 8000,
 };
 
-describe('detectComplexity - Change of Assessment Integration', () => {
+describe('detectComplexity - Complexity Triggers Integration', () => {
   describe('Edge Case: selectedCoAReasons is undefined', () => {
     it('should handle undefined selectedCoAReasons gracefully', () => {
       const flags = detectComplexity(baseResults, {});
@@ -63,42 +66,34 @@ describe('detectComplexity - Change of Assessment Integration', () => {
     });
   });
 
-  describe('Edge Case: selectedCoAReasons has 1 urgent reason (priority 1-3)', () => {
-    it('should detect urgent reason: income_not_reflected (priority 1)', () => {
-      const flags = detectComplexity(baseResults, { 
-        selectedCoAReasons: ['income_not_reflected'] 
+  describe('Edge Case: selectedCoAReasons has 1 income reason (high priority)', () => {
+    it('should detect income reason: income_lifestyle_mismatch', () => {
+      const flags = detectComplexity(baseResults, {
+        selectedCoAReasons: ['income_lifestyle_mismatch']
       });
-      
+
       expect(flags.specialCircumstances).toBe(true);
     });
 
-    it('should detect urgent reason: business_income (priority 2)', () => {
-      const flags = detectComplexity(baseResults, { 
-        selectedCoAReasons: ['business_income'] 
+    it('should detect income reason: earning_capacity', () => {
+      const flags = detectComplexity(baseResults, {
+        selectedCoAReasons: ['earning_capacity']
       });
-      
-      expect(flags.specialCircumstances).toBe(true);
-    });
 
-    it('should detect urgent reason: trust_distributions (priority 3)', () => {
-      const flags = detectComplexity(baseResults, { 
-        selectedCoAReasons: ['trust_distributions'] 
-      });
-      
       expect(flags.specialCircumstances).toBe(true);
     });
   });
 
-  describe('Edge Case: selectedCoAReasons has 1 normal reason (priority 4-10)', () => {
-    it('should detect normal reason: school_fees (priority 9)', () => {
-      const flags = detectComplexity(baseResults, { 
-        selectedCoAReasons: ['school_fees'] 
+  describe('Edge Case: selectedCoAReasons has 1 child/other reason', () => {
+    it('should detect child reason: special_needs', () => {
+      const flags = detectComplexity(baseResults, {
+        selectedCoAReasons: ['special_needs']
       });
-      
+
       expect(flags.specialCircumstances).toBe(true);
     });
 
-    it('should detect normal reason: property_settlement (priority 5)', () => {
+    it('should detect other reason: property_settlement', () => {
       const flags = detectComplexity(baseResults, { 
         selectedCoAReasons: ['property_settlement'] 
       });
