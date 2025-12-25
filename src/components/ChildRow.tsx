@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import type { ChildInput } from "../types/calculator";
 import { CARE_PERIOD_DAYS } from "../utils/child-support-constants";
 
@@ -55,66 +55,78 @@ export function ChildRow({
         isOverLimit && styles.containerError,
       ]}
     >
-      <View style={styles.row}>
-        {/* Age Buttons */}
-        <View style={styles.ageButtons}>
-          <Pressable
-            onPress={() => onUpdate({ age: "Under 13" })}
-            style={[styles.ageButton, child.age === "Under 13" && styles.ageButtonActive]}
-          >
-            <Text style={[styles.ageButtonText, child.age === "Under 13" && styles.ageButtonTextActive]}>{"<13"}</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => onUpdate({ age: "13+" })}
-            style={[styles.ageButton, child.age === "13+" && styles.ageButtonActive]}
-          >
-            <Text style={[styles.ageButtonText, child.age === "13+" && styles.ageButtonTextActive]}>13+</Text>
-          </Pressable>
+      <View style={styles.mainRow}>
+        {/* Left side: Parent inputs */}
+        <View style={styles.parentsSection}>
+          <View style={styles.parentColumn}>
+            <Text style={styles.headerLabelA}>PARENT A</Text>
+            <TextInput
+              style={styles.careInput}
+              value={child.careAmountA.toString()}
+              onChangeText={handleCareAmountAChange}
+              keyboardType="numeric"
+              maxLength={5}
+            />
+          </View>
+          <View style={styles.parentColumn}>
+            <Text style={styles.headerLabelB}>PARENT B</Text>
+            <TextInput
+              style={styles.careInput}
+              value={child.careAmountB.toString()}
+              onChangeText={handleCareAmountBChange}
+              keyboardType="numeric"
+              maxLength={5}
+            />
+          </View>
         </View>
 
-        {/* Care Inputs */}
-        <View style={styles.careSection}>
-          <Text style={[styles.label, { color: '#3b82f6', fontSize: 14 }]}>A:</Text>
-          <TextInput
-            style={styles.careInput}
-            value={child.careAmountA.toString()}
-            onChangeText={handleCareAmountAChange}
-            keyboardType="numeric"
-            maxLength={5}
-          />
-          <Text style={[styles.label, { color: '#8b5cf6', fontSize: 14 }]}>B:</Text>
-          <TextInput
-            style={styles.careInput}
-            value={child.careAmountB.toString()}
-            onChangeText={handleCareAmountBChange}
-            keyboardType="numeric"
-            maxLength={5}
-          />
-        </View>
+        {/* Right side: Controls */}
+        <View style={styles.controlsSection}>
+          {/* Age toggle */}
+          <View style={[styles.toggleGroup, styles.ageToggleGroup]}>
+            <Pressable
+              onPress={() => onUpdate({ age: "Under 13" })}
+              style={[styles.toggleButton, styles.toggleButtonLeft, child.age === "Under 13" && styles.toggleButtonActive]}
+            >
+              <Text style={[styles.toggleButtonText, child.age === "Under 13" && styles.toggleButtonTextActive]}>{"<13"}</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => onUpdate({ age: "13+" })}
+              style={[styles.toggleButton, styles.toggleButtonRight, child.age === "13+" && styles.toggleButtonActive]}
+            >
+              <Text style={[styles.toggleButtonText, child.age === "13+" && styles.toggleButtonTextActive]}>13+</Text>
+            </Pressable>
+          </View>
 
-        {/* Period Buttons + Remove */}
-        <View style={styles.periodAndRemove}>
-          <View style={styles.periodButtons}>
-            {(["week", "fortnight", "year"] as const).map((period) => (
+          {/* Period toggle */}
+          <View style={[styles.toggleGroup, styles.periodToggleGroup]}>
+            {(["week", "fortnight", "year"] as const).map((period, index) => (
               <Pressable
                 key={period}
                 onPress={() => handlePeriodChange(period)}
-                style={[styles.periodButton, child.carePeriod === period && styles.periodButtonActive]}
+                style={[
+                  styles.toggleButton,
+                  index === 0 && styles.toggleButtonLeft,
+                  index === 2 && styles.toggleButtonRight,
+                  child.carePeriod === period && styles.toggleButtonActive,
+                ]}
               >
-                <Text style={[styles.periodButtonText, child.carePeriod === period && styles.periodButtonTextActive]}>
+                <Text style={[styles.toggleButtonText, child.carePeriod === period && styles.toggleButtonTextActive]}>
                   {period === "week" ? "wk" : period === "fortnight" ? "fn" : "yr"}
                 </Text>
               </Pressable>
             ))}
           </View>
-          <Pressable
-            onPress={onRemove}
-            style={styles.removeButton}
-            accessibilityLabel="Remove child"
-          >
-            <Text style={styles.removeButtonText}>×</Text>
-          </Pressable>
         </View>
+
+        {/* Remove button - top right corner */}
+        <Pressable
+          onPress={onRemove}
+          style={styles.removeButton}
+          accessibilityLabel="Remove child"
+        >
+          <Text style={styles.removeButtonText}>×</Text>
+        </Pressable>
       </View>
 
       {/* Warning when total exceeds maximum */}
@@ -130,93 +142,103 @@ export function ChildRow({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 8,
+    padding: 12,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#475569", // slate-600
-    backgroundColor: "#334155", // slate-700
+    backgroundColor: "transparent",
     marginBottom: 8,
   },
   containerError: {
     borderColor: "#ef4444", // red-500
     backgroundColor: "rgba(239, 68, 68, 0.1)", // red-500 with opacity
   },
-  row: {
+  mainRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    gap: 24,
+    position: "relative",
   },
-  ageButtons: {
+  parentsSection: {
     flexDirection: "row",
-    gap: 2,
+    gap: 16,
+    flex: 1,
   },
-  ageButton: {
-    paddingHorizontal: 5,
-    paddingVertical: 3,
-    borderRadius: 4,
-    backgroundColor: "#475569", // slate-600
+  parentColumn: {
+    alignItems: "center",
+    gap: 6,
   },
-  ageButtonActive: {
-    backgroundColor: "#f59e0b", // amber-500
-  },
-  ageButtonText: {
+  headerLabelA: {
     fontSize: 12,
-    color: "#94a3b8", // slate-400
-  },
-  ageButtonTextActive: {
-    color: "#000000",
     fontWeight: "600",
+    color: "#3b82f6", // blue-500
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
-  careSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  label: {
-    fontSize: 11,
-    color: "#94a3b8", // slate-400
+  headerLabelB: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#8b5cf6", // violet-500
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
   careInput: {
-    width: 38,
-    paddingHorizontal: 2,
-    paddingVertical: 5,
-    fontSize: 13,
+    width: 70,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    fontSize: 18,
     textAlign: "center",
     color: "#ffffff",
     borderWidth: 1,
     borderColor: "#475569", // slate-600
-    borderRadius: 4,
-    backgroundColor: "#475569", // slate-600
+    borderRadius: 8,
+    backgroundColor: "#1e293b", // slate-800
   },
-  periodAndRemove: {
-    flexDirection: "row",
-    alignItems: "center",
+  controlsSection: {
     gap: 6,
+    alignItems: "flex-end",
   },
-  periodButtons: {
+  toggleGroup: {
     flexDirection: "row",
-    gap: 2,
+    borderRadius: 6,
+    overflow: "hidden",
   },
-  periodButton: {
-    paddingHorizontal: 5,
-    paddingVertical: 3,
-    borderRadius: 4,
-    backgroundColor: "#475569", // slate-600
+  ageToggleGroup: {
+    marginRight: 32,
   },
-  periodButtonActive: {
-    backgroundColor: "#f59e0b", // amber-500
+  periodToggleGroup: {
+    marginRight: 16,
   },
-  periodButtonText: {
+  toggleButton: {
+    width: 32,
+    paddingVertical: 4,
+    alignItems: "center",
+    backgroundColor: "#334155", // slate-700
+  },
+  toggleButtonLeft: {
+    borderTopLeftRadius: 6,
+    borderBottomLeftRadius: 6,
+  },
+  toggleButtonRight: {
+    borderTopRightRadius: 6,
+    borderBottomRightRadius: 6,
+  },
+  toggleButtonActive: {
+    backgroundColor: "#5eead4", // teal-300
+  },
+  toggleButtonText: {
     fontSize: 12,
+    fontWeight: "600",
     color: "#94a3b8", // slate-400
   },
-  periodButtonTextActive: {
-    color: "#000000",
-    fontWeight: "600",
+  toggleButtonTextActive: {
+    color: "#0f172a", // slate-900
   },
   removeButton: {
+    position: "absolute",
+    top: -4,
+    right: -4,
     padding: 4,
-    borderRadius: 4,
   },
   removeButtonText: {
     color: "#64748b", // slate-500
@@ -224,7 +246,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   warning: {
-    marginTop: 6,
+    marginTop: 8,
     fontSize: 11,
     color: "#f87171", // red-400
   },

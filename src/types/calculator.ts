@@ -40,6 +40,12 @@ export interface ChildResult {
   childSupportPercB: number;
   liabilityA: number;
   liabilityB: number;
+  finalLiabilityA: number;
+  finalLiabilityB: number;
+  farAppliedA: boolean;
+  farAppliedB: boolean;
+  marAppliedA: boolean;
+  marAppliedB: boolean;
 }
 
 export interface CostBracketInfo {

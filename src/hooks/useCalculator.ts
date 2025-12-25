@@ -232,6 +232,13 @@ export function useCalculator() {
         childSupportPercB,
         liabilityA,
         liabilityB,
+        // Placeholder values - will be updated below
+        finalLiabilityA: liabilityA,
+        finalLiabilityB: liabilityB,
+        farAppliedA: false,
+        farAppliedB: false,
+        marAppliedA: false,
+        marAppliedB: false,
       };
     });
 
@@ -251,15 +258,19 @@ export function useCalculator() {
 
       let liabilityA = child.liabilityA;
       let appliedRateA: string | null = null;
+      let farAppliedA = false;
+      let marAppliedA = false;
 
       if (ATI_A < SSA && supportA && roundedCareB >= 87) {
         MAR_A += MAR;
         liabilityA = MAR;
         appliedRateA = `MAR (Parent A, Child ${index + 1})`;
+        marAppliedA = true;
       } else if (ATI_A < MAX_PPS && !supportA && roundedCareB >= 66) {
         FAR_A += FAR;
         liabilityA = FAR;
         appliedRateA = `FAR (Parent A, Child ${index + 1})`;
+        farAppliedA = true;
       }
 
       if (appliedRateA) {
@@ -269,21 +280,33 @@ export function useCalculator() {
 
       let liabilityB = child.liabilityB;
       let appliedRateB: string | null = null;
+      let farAppliedB = false;
+      let marAppliedB = false;
 
       if (ATI_B < SSA && supportB && roundedCareA >= 87) {
         MAR_B += MAR;
         liabilityB = MAR;
         appliedRateB = `MAR (Parent B, Child ${index + 1})`;
+        marAppliedB = true;
       } else if (ATI_B < MAX_PPS && !supportB && roundedCareA >= 66) {
         FAR_B += FAR;
         liabilityB = FAR;
         appliedRateB = `FAR (Parent B, Child ${index + 1})`;
+        farAppliedB = true;
       }
 
       if (appliedRateB) {
         appliedRates.push(appliedRateB);
       }
       finalLiabilityB += liabilityB;
+
+      // Update child result with final liability and rate flags
+      child.finalLiabilityA = liabilityA;
+      child.finalLiabilityB = liabilityB;
+      child.farAppliedA = farAppliedA;
+      child.farAppliedB = farAppliedB;
+      child.marAppliedA = marAppliedA;
+      child.marAppliedB = marAppliedB;
     });
 
     // Determine rate applied string

@@ -115,10 +115,6 @@ export function CalculatorForm({
               <View style={styles.labelRow}>
                 <Text style={styles.parentTitleB}>Parent B</Text>
                 <Text style={styles.label}> - Adjusted Taxable Income</Text>
-                <HelpTooltip
-                  what="Enter ATI from tax assessment. Includes taxable income plus reportable fringe benefits, foreign income, and certain tax-free pensions."
-                  why="ATI determines each parent's capacity to pay and their share of combined child support income."
-                />
               </View>
               <View style={styles.inputRow}>
                 <View style={styles.currencyInputContainer}>
@@ -209,44 +205,63 @@ export function CalculatorForm({
 
         {showRelDeps && (
           <View style={styles.relDepsRow}>
-            <Text style={[styles.relDepsLabel, { color: '#3b82f6' }]}>A:</Text>
-            <TextInput
-              style={styles.relDepsInput}
-              value={relDepA.u13.toString()}
-              onChangeText={(text) =>
-                onRelDepAChange({ u13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
-              }
-              keyboardType="numeric"
-            />
-            <Text style={[styles.relDepsAgeLabel, { color: '#f59e0b' }]}>&lt;13</Text>
-            <TextInput
-              style={styles.relDepsInput}
-              value={relDepA.plus13.toString()}
-              onChangeText={(text) =>
-                onRelDepAChange({ plus13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
-              }
-              keyboardType="numeric"
-            />
-            <Text style={[styles.relDepsAgeLabel, { color: '#f59e0b' }]}>13+</Text>
-            <Text style={[styles.relDepsLabel, styles.relDepsLabelB, { color: '#8b5cf6' }]}>B:</Text>
-            <TextInput
-              style={styles.relDepsInput}
-              value={relDepB.u13.toString()}
-              onChangeText={(text) =>
-                onRelDepBChange({ u13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
-              }
-              keyboardType="numeric"
-            />
-            <Text style={[styles.relDepsAgeLabel, { color: '#f59e0b' }]}>&lt;13</Text>
-            <TextInput
-              style={styles.relDepsInput}
-              value={relDepB.plus13.toString()}
-              onChangeText={(text) =>
-                onRelDepBChange({ plus13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
-              }
-              keyboardType="numeric"
-            />
-            <Text style={[styles.relDepsAgeLabel, { color: '#f59e0b' }]}>13+</Text>
+            {/* Parent A Section */}
+            <View style={styles.relDepsParentSection}>
+              <Text style={styles.parentTitleA}>Parent A</Text>
+              <View style={styles.relDepsInputPair}>
+                <View style={styles.relDepsInputGroup}>
+                  <TextInput
+                    style={styles.relDepsInput}
+                    value={relDepA.u13.toString()}
+                    onChangeText={(text) =>
+                      onRelDepAChange({ u13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
+                    }
+                    keyboardType="numeric"
+                  />
+                  <Text style={[styles.relDepsAgeLabel, { color: '#14b8a6' }]}>&lt;13</Text>
+                </View>
+                <View style={styles.relDepsInputGroup}>
+                  <TextInput
+                    style={styles.relDepsInput}
+                    value={relDepA.plus13.toString()}
+                    onChangeText={(text) =>
+                      onRelDepAChange({ plus13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
+                    }
+                    keyboardType="numeric"
+                  />
+                  <Text style={[styles.relDepsAgeLabel, { color: '#14b8a6' }]}>13+</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Parent B Section */}
+            <View style={styles.relDepsParentSection}>
+              <Text style={styles.parentTitleB}>Parent B</Text>
+              <View style={styles.relDepsInputPair}>
+                <View style={styles.relDepsInputGroup}>
+                  <TextInput
+                    style={styles.relDepsInput}
+                    value={relDepB.u13.toString()}
+                    onChangeText={(text) =>
+                      onRelDepBChange({ u13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
+                    }
+                    keyboardType="numeric"
+                  />
+                  <Text style={[styles.relDepsAgeLabel, { color: '#14b8a6' }]}>&lt;13</Text>
+                </View>
+                <View style={styles.relDepsInputGroup}>
+                  <TextInput
+                    style={styles.relDepsInput}
+                    value={relDepB.plus13.toString()}
+                    onChangeText={(text) =>
+                      onRelDepBChange({ plus13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
+                    }
+                    keyboardType="numeric"
+                  />
+                  <Text style={[styles.relDepsAgeLabel, { color: '#14b8a6' }]}>13+</Text>
+                </View>
+              </View>
+            </View>
           </View>
         )}
       </View>
@@ -305,7 +320,7 @@ const styles = StyleSheet.create({
   sectionHeading: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#7dd3fc", // sky-300
+    color: "#f59e0b", // amber-500
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 12,
@@ -464,7 +479,7 @@ const styles = StyleSheet.create({
   },
   relDepsHeader: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     gap: 8,
   },
   relDepsTitle: {
@@ -476,13 +491,31 @@ const styles = StyleSheet.create({
   },
   relDepsSwitch: {
     marginLeft: "auto",
+    transform: [{ scaleX: 0.75 }, { scaleY: 0.75 }],
+    marginTop: -5,
   },
   relDepsRow: {
     marginTop: 12,
     flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 24,
+    paddingBottom: 8,
+  },
+  relDepsParentSection: {
+    flex: 1,
+    flexDirection: "column",
     alignItems: "center",
     gap: 8,
-    paddingBottom: 8,
+  },
+  relDepsInputPair: {
+    flexDirection: "row",
+    gap: 24,
+    justifyContent: "center",
+  },
+  relDepsInputGroup: {
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 4,
   },
   relDepsLabel: {
     fontSize: 14,
