@@ -62,34 +62,28 @@
 **Profile Photo:**
 - Upload your AI-generated headshot
 
-**Headline:**
-```
-Founder at Australian Child Support Calculator | Connecting Parents with Family Law Expertise
-```
+**Basic Info:**
+- Job title: Family Law Technology Consultant
+- Employment type: Self-Employed
+- Company: Independent Consultant (select "IT Services and IT Consulting")
+- Location: Melbourne, Victoria, Australia
+- Location type: Remote
 
-**Location:**
-- Melbourne, Victoria, Australia (or wherever makes sense)
+**Experience Section (You'll have TWO entries - this is normal):**
 
-**About Section:**
-```
-I've built a free online calculator that helps Australian parents understand their child support obligations using the official Services Australia formula.
+**Entry 1:**
+- Title: Family Law Technology Consultant
+- Company: Independent Consultant
+- Employment type: Self-employed
+- Location: Melbourne, Remote
 
-What started as a tool to simplify complex calculations revealed something important: many parents face situations where the standard formula doesn't quite fit. High-value cases, upcoming court dates, change of assessment scenarios—these require professional legal guidance, not just a calculator.
-
-That's where I come in. When complex cases come through the calculator, I connect these parents with experienced family law firms who can provide the expert help they need.
-
-If you're a family lawyer interested in receiving pre-qualified leads from parents who genuinely need legal assistance, I'd welcome a conversation about how we might work together.
-```
-
-**Experience Section:**
-
-**Add Position:**
+**Entry 2:**
 - Title: Founder
 - Company: Australian Child Support Calculator
 - Employment type: Self-employed
 - Start date: January 2025
 - End date: Currently working (checked)
-- Location: Australia
+- Location: Australia, Remote
 - Description:
 ```
 Built a web-based calculator that implements the Services Australia child support formula, helping Australian parents understand their support obligations.
@@ -99,32 +93,27 @@ The platform identifies complex cases (high-liability amounts, court deadlines, 
 Currently partnering with family law practices across Australia to provide qualified leads on a pay-per-lead basis.
 ```
 
-**Projects Section (Optional but recommended):**
-- Project name: Australian Child Support Calculator
-- Start date: 2024
-- Currently working: Yes
-- Description:
-```
-Free calculator that helps Australian parents calculate child support obligations using the official Services Australia formula. Built with React Native/Expo, implements the full calculation including income testing, care percentages, and cost of children tables. Generates qualified leads for family law firms when cases exceed complexity thresholds.
-```
-
-**Skills (Add these 5):**
-- Family Law
-- Legal Technology  
-- Lead Generation
-- Business Development
+**Skills (Add 3-5 from suggested or type these):**
+- Legal Technology
 - Software Development
+- Family Law
+- Business Consulting
+- Client Relations
 
-**Education:**
-- Leave blank OR add "Self-taught" if forced
+**Media Section:**
+- Skip entirely (leave blank)
 
-### Step 3: Privacy Settings
-**IMPORTANT - Set these correctly:**
+**Additional Sections:**
+- Skip volunteer, publications, patents, honors, etc.
+- Skip education unless forced
+- Skip everything except Contact Info (see reminder below)
 
-1. Go to Settings & Privacy
-2. Visibility → Edit public profile
-3. Make visible: Name, headline, location, current position
-4. Hide everything else (past experience, education, etc.)
+### Step 3: Visibility Settings
+
+**Profile Photo Visibility:**
+- Select: "All LinkedIn members"
+
+**Note:** Contact info section will be completed AFTER you set up your business email domain (see reminder at end of Phase 3)
 
 ---
 
@@ -157,6 +146,14 @@ E: alex@childsupportcalculator.com.au
 P: [Phone number]
 W: www.childsupportcalculator.com.au
 ```
+
+**🔔 REMINDER - Complete LinkedIn Contact Info:**
+Once your email is set up and working:
+1. Go back to LinkedIn profile
+2. Click "Add contact info" (under Additional sections)
+3. Add your alex@[yourdomain].com.au email
+4. Save
+5. LinkedIn profile is now 100% complete
 
 ---
 
@@ -339,9 +336,9 @@ Dec 27 | Sarah Chen | Chen Family Law | linkedin.com/... | Yes | Not yet | - | N
 **Before Dec 28:**
 - [ ] AI headshot created and downloaded
 - [ ] LinkedIn account created as "Alex Thompson"
-- [ ] Profile complete (headline, about, experience)
-- [ ] Photo uploaded
+- [ ] LinkedIn profile complete (photo, experience, skills, visibility settings)
 - [ ] Business email set up (or using Gmail temporarily)
+- [ ] LinkedIn contact info updated with business email ⚠️
 - [ ] Virtual phone number activated
 - [ ] Tracking spreadsheet created
 - [ ] First 5 connection requests sent (Dec 27)

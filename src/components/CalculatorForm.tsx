@@ -61,6 +61,7 @@ export function CalculatorForm({
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {/* Combined Parents Card */}
       <View style={styles.card}>
+        <Text style={styles.sectionHeading}>Income</Text>
         <View style={styles.parentsGrid}>
           {/* Parent A */}
           <View style={styles.parentSection}>
@@ -158,7 +159,7 @@ export function CalculatorForm({
 
       {/* Children Card */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Children</Text>
+        <Text style={styles.sectionHeading}>Children</Text>
 
         <View style={styles.childrenList}>
           {childrenData.map((child) => (
@@ -186,7 +187,7 @@ export function CalculatorForm({
       {/* Relevant Dependents Card */}
       <View style={styles.card}>
         <View style={styles.relDepsHeader}>
-          <Text style={styles.relDepsTitle}>Relevant Dependents</Text>
+          <Text style={styles.sectionHeading}>Relevant Dependents</Text>
           <HelpTooltip
             what="Other biological/adopted children living with a parent who are NOT part of this assessment."
             why="Reduces child support income via 'multi-case allowance', recognizing they support other children."
@@ -208,7 +209,7 @@ export function CalculatorForm({
 
         {showRelDeps && (
           <View style={styles.relDepsRow}>
-            <Text style={styles.relDepsLabel}>A:</Text>
+            <Text style={[styles.relDepsLabel, { color: '#3b82f6' }]}>A:</Text>
             <TextInput
               style={styles.relDepsInput}
               value={relDepA.u13.toString()}
@@ -217,7 +218,7 @@ export function CalculatorForm({
               }
               keyboardType="numeric"
             />
-            <Text style={styles.relDepsAgeLabel}>&lt;13</Text>
+            <Text style={[styles.relDepsAgeLabel, { color: '#f59e0b' }]}>&lt;13</Text>
             <TextInput
               style={styles.relDepsInput}
               value={relDepA.plus13.toString()}
@@ -226,8 +227,8 @@ export function CalculatorForm({
               }
               keyboardType="numeric"
             />
-            <Text style={styles.relDepsAgeLabel}>13+</Text>
-            <Text style={[styles.relDepsLabel, styles.relDepsLabelB]}>B:</Text>
+            <Text style={[styles.relDepsAgeLabel, { color: '#f59e0b' }]}>13+</Text>
+            <Text style={[styles.relDepsLabel, styles.relDepsLabelB, { color: '#8b5cf6' }]}>B:</Text>
             <TextInput
               style={styles.relDepsInput}
               value={relDepB.u13.toString()}
@@ -236,7 +237,7 @@ export function CalculatorForm({
               }
               keyboardType="numeric"
             />
-            <Text style={styles.relDepsAgeLabel}>&lt;13</Text>
+            <Text style={[styles.relDepsAgeLabel, { color: '#f59e0b' }]}>&lt;13</Text>
             <TextInput
               style={styles.relDepsInput}
               value={relDepB.plus13.toString()}
@@ -245,7 +246,7 @@ export function CalculatorForm({
               }
               keyboardType="numeric"
             />
-            <Text style={styles.relDepsAgeLabel}>13+</Text>
+            <Text style={[styles.relDepsAgeLabel, { color: '#f59e0b' }]}>13+</Text>
           </View>
         )}
       </View>
@@ -253,7 +254,7 @@ export function CalculatorForm({
       {/* Court Date Card */}
       <View style={styles.card}>
         <View style={styles.labelRow}>
-          <Text style={styles.cardTitle}>Court Date (Optional)</Text>
+          <Text style={styles.sectionHeading}>Court Date (Optional)</Text>
           <HelpTooltip
             what="If you have a scheduled court appearance related to child support."
             why="Cases with upcoming court dates may benefit from urgent legal advice. Enter date as dd/mm/yyyy (e.g., 25/12/2024)."
@@ -297,6 +298,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     color: "#94a3b8", // slate-400
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: 12,
+  },
+  sectionHeading: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#7dd3fc", // sky-300
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 12,

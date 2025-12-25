@@ -476,7 +476,7 @@ const styles = StyleSheet.create({
   expandedHeroSection: {
     alignItems: "center",
     paddingVertical: 24,
-    backgroundColor: "#2563eb", // blue-600
+    backgroundColor: "#1e40af", // blue-800
     borderRadius: 16,
     marginBottom: 8,
   },

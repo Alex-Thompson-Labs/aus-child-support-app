@@ -328,9 +328,6 @@ export function ChangeOfAssessmentPrompt({
             >
               <Text style={styles.coaButtonText}>Talk to a Lawyer About This</Text>
             </Pressable>
-            <Text style={styles.coaDisclaimer}>
-              Free consultation • They'll explain your options
-            </Text>
           </View>
         </View>
       </Animated.View>

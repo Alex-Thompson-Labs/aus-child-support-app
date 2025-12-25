@@ -1,125 +1,112 @@
 # Implementation Guides
 
-Practical guides for building and troubleshooting the app.
+**Everything you need to execute your business launch.**
 
 ---
 
 ## 🚀 **START HERE** ← Read this first!
 
-**New to this project?** Read **[START_HERE.md](START_HERE.md)** for a complete 15-day roadmap from Dec 26 → Jan 9.
+**[START_HERE.md](START_HERE.md)** - Complete 15-day roadmap (Dec 26 → Jan 9)
 
-**Quick summary:**
-- Timeline: 15 days (Dec 26 - Jan 9)
+Quick summary:
+- Timeline: 15 days
 - Investment: $61 total
-- Goal: Transform into Alex Thompson, launch Phase 2, sign 3-5 lawyer partners
+- Goal: Launch as Alex Thompson, sign 3-5 lawyer partners
 - Revenue potential: $1,500-$3,750 first month
 
 ---
 
-## 💡 IMPORTANT: Production Code Prompting
+## 📋 Active Guides (Use These)
 
-**Before using any guide:** Read the "💡 CRITICAL: How to Prompt Claude for Production Code" section at the top of Phase 1 CHECKLIST.md.
+### Primary Execution Documents
 
-**TL;DR:** Claude builds exactly what you ask for. If you ask for "a component", you get a working demo. If you ask for "a production-ready component with error handling, validation, and edge cases", you get that instead.
+1. **[ALEX_THOMPSON_SETUP.md](ALEX_THOMPSON_SETUP.md)** ← Start here on Dec 26
+   - Complete identity creation guide
+   - LinkedIn profile setup
+   - Domain, email, phone setup
+   - LinkedIn warm-up strategy
+   - All templates included
 
-**Every prompt should include:**
-- What could go wrong? (error cases)
-- What am I forgetting? (loading states, validation)
-- Is this production-ready or just a demo?
+2. **[CHRISTMAS_BREAK_PLAN.md](CHRISTMAS_BREAK_PLAN.md)**
+   - Strategic overview (Dec 24-Jan 2)
+   - Partnership agreement templates
+   - Email templates for lawyers
+   - Technical implementation guidance
 
-See Phase 1 CHECKLIST.md for detailed examples and best practices that apply to ALL phases.
+3. **[APP_STORE_DEPLOYMENT.md](APP_STORE_DEPLOYMENT.md)**
+   - App publishing guide (Phase 3)
+   - Apple App Store process
+   - Google Play Store process
+   - Use after business is running
 
----
-
-## 🤖 Which Claude Model to Use?
-
-**Phase 1 (Current):** Sonnet 4.5 ✅
-- Standard React Native work
-- Perfect for learning and iteration
-- Cost-effective for beginners
-
-**Phase 2-3:** Sonnet 4.5 ✅
-- Most tasks are straightforward
-- Only use Opus for payment security decisions
-
-**Phase 4:** Sonnet 4.5 + Opus (selectively)
-- Use Opus only for architectural decisions
-- Sonnet handles implementation
-
-**See `docs/CLAUDE.md` for detailed model recommendations by phase.**
+4. **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)**
+   - Common issues and quick fixes
+   - Applies to all phases
 
 ---
 
-## 💭 Thinking Mode Settings
+## 📚 Reference Documents (Background Info)
 
-**Phase 1:** Keep ON ✅ (worth extra $1 for better debugging)  
-**Phase 2:** Can turn OFF (simple integrations)  
-**Phase 3:** Keep ON (payment security critical)  
-**Phase 4:** Situational (ON for architecture, OFF for routine work)
+### Completed Work Archives
 
----
+**[COMPLETED_PHASES.md](COMPLETED_PHASES.md)** - Archive of Phase 1 & 2 detailed checklists
+- Phase 1: Technical development (completed)
+- Phase 2: Business operations (week-by-week breakdown)
+- Reference only - not needed for daily execution
 
-## 🛠️ Which Tool to Use?
+### Old Structure (Don't Use These Directly)
 
-**Claude Code (claude.ai/code):**
-- ✅ Best for writing actual code
-- ✅ Multi-file editing
-- ✅ Integrated with editor
-- **Use for:** All implementation tasks (Tasks 1-5)
+The following folders contain detailed archives but have been consolidated into the guides above:
 
-**Desktop Commander (this MCP chat):**
-- ✅ Best for planning and strategy
-- ✅ File organization
-- ✅ Documentation updates
-- ✅ Getting unstuck
-- **Use for:** Guidance, planning, doc updates
+- `phase1/` - Phase 1 technical development details (archived in COMPLETED_PHASES.md)
+- `phase2/` - Phase 2 business operations details (archived in COMPLETED_PHASES.md)
 
-**Cost:** Similar, but Claude Code is better for coding specifically.
+**You don't need to open these folders.** Everything you need is in the main guides listed above.
 
 ---
 
-## 🚀 Phase 1 (Current)
+## 🎯 Document Usage Guide
 
-**Location:** `guides/phase1/`
-
-- **[CHECKLIST.md](phase1/CHECKLIST.md)** - Day-by-day tasks for this week (Dec 18-24)
-- **[TESTING.md](phase1/TESTING.md)** - Test before launching to users
-
-**Start here:** Read CHECKLIST.md and follow it day by day.
-
----
-
-## 🎯 Phase 2 Launch (Starting Jan 2)
-
-**Location:** `guides/`
-
-- **[CHRISTMAS_BREAK_PLAN.md](CHRISTMAS_BREAK_PLAN.md)** - Complete Dec 24-Jan 2 roadmap
-- **[ALEX_THOMPSON_SETUP.md](ALEX_THOMPSON_SETUP.md)** - Business identity creation guide
-- **[DAILY_CHECKLIST.md](https://claude.ai/chat/...)** - Day-by-day Dec 26-Jan 9 execution (download from chat outputs)
-
-**Phase 2 strategy:**
-- `phase2/README.md` - Lead generation business model ($50/lead)
-- `phase2/CHECKLIST.md` - Implementation tasks
-
-**Start here for Phase 2:** Follow CHRISTMAS_BREAK_PLAN.md, then DAILY_CHECKLIST.md
+| When You're... | Use This Document |
+|----------------|-------------------|
+| Starting setup (Dec 26-27) | **ALEX_THOMPSON_SETUP.md** |
+| Need email/agreement templates | **CHRISTMAS_BREAK_PLAN.md** |
+| Stuck on something | **TROUBLESHOOTING.md** |
+| Ready to publish app | **APP_STORE_DEPLOYMENT.md** |
+| Need motivation | **START_HERE.md** |
+| Want to review past work | **COMPLETED_PHASES.md** |
 
 ---
 
-## 🔧 General Guides
+## 🚨 Common Questions
 
-- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Common issues and quick fixes (applies to all phases)
+**Q: Where do I start?**  
+A: Read START_HERE.md, then follow ALEX_THOMPSON_SETUP.md on Dec 26.
+
+**Q: Do I need to read the phase1/ or phase2/ folders?**  
+A: No. Everything is consolidated into the main guides.
+
+**Q: What about the technical implementation from Phase 1?**  
+A: It's complete. The app works. Focus on business setup now.
+
+**Q: Where are the partnership agreements and email templates?**  
+A: In CHRISTMAS_BREAK_PLAN.md under "Phase 2 Materials"
+
+**Q: I'm overwhelmed. What's the ONE file I need?**  
+A: **ALEX_THOMPSON_SETUP.md** - Start there, everything else follows.
 
 ---
 
-## 📚 Other Documentation
+## 🛠️ Tool Recommendations
 
-**Strategic planning:**
-- `docs/MASTER_PLAN.md` - Complete implementation roadmap (all 4 phases)
+**For business setup (current phase):**
+- Desktop Commander (this chat) - Best for planning and guidance
+- No coding tools needed yet
 
-**Technical reference:**
-- `docs/DESIGN_SYSTEM.md` - Design patterns, colors, formulas
-- `docs/CLAUDE.md` - Architecture and AI assistant guidance
-- `docs/CHANGELOG.md` - Change history
+**For technical work (if needed later):**
+- Claude Code - Best for actual code implementation
+- Desktop Commander - Best for planning and getting unstuck
 
-**Project overview:**
-- `README.md` (root) - Quick start and project summary
+---
+
+**Simple workflow: START_HERE.md → ALEX_THOMPSON_SETUP.md → Execute → Reference other guides as needed**

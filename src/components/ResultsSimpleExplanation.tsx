@@ -17,21 +17,9 @@ const formatPercent = (num: number): string => {
 };
 
 export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationProps) {
-  // Calculate the "gap" - the key insight
-  const incomeGapA = results.incomePercA - (results.childResults[0]?.costPercA || 0);
-  const incomeGapB = results.incomePercB - (results.childResults[0]?.costPercB || 0);
-  
-  // Determine who pays based on the gap
-  const parentAPays = incomeGapA > 0 && incomeGapA > incomeGapB;
-  const parentBPays = incomeGapB > 0 && incomeGapB > incomeGapA;
-  
-  // Get average care percentage across all children
-  const avgCareA = results.childResults.length > 0
-    ? results.childResults.reduce((sum, child) => sum + child.roundedCareA, 0) / results.childResults.length
-    : 0;
-  const avgCareB = results.childResults.length > 0
-    ? results.childResults.reduce((sum, child) => sum + child.roundedCareB, 0) / results.childResults.length
-    : 0;
+  // Determine who pays based on final liabilities (not gap calculation)
+  const parentAPays = results.payer === "Parent A";
+  const parentBPays = results.payer === "Parent B";
 
   return (
     <View style={styles.container}>
@@ -144,153 +132,163 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
         </View>
       </View>
 
-      {/* Step 2: Care Split */}
-      <View style={styles.step}>
-        <View style={styles.stepHeader}>
-          <View style={styles.stepNumber}>
-            <Text style={styles.stepNumberText}>2</Text>
-          </View>
-          <Text style={styles.stepTitle}>Care Split</Text>
-        </View>
-
-        <Text style={styles.stepExplanation}>
-          When you care for a child, you cover costs directly (food, activities, etc.). This gives you "credit" toward your share.
-        </Text>
-
-        <View style={styles.careComparison}>
-          <View style={styles.careRow}>
-            <Text style={styles.careLabel}><Text style={{ color: '#3b82f6' }}>Parent A</Text> cares</Text>
-            <Text style={styles.carePercent}>{formatPercent(avgCareA)}</Text>
-            <Text style={styles.careSubtext}>of the time</Text>
-          </View>
-
-          {/* Visual bar for care */}
-          <View style={styles.visualBar}>
-            <View style={[styles.barSegmentA, { flex: avgCareA }]} />
-            <View style={[styles.barSegmentB, { flex: avgCareB }]} />
-          </View>
-
-          <View style={styles.careRow}>
-            <Text style={styles.careLabel}><Text style={{ color: '#8b5cf6' }}>Parent B</Text> cares</Text>
-            <Text style={styles.carePercent}>{formatPercent(avgCareB)}</Text>
-            <Text style={styles.careSubtext}>of the time</Text>
-          </View>
-        </View>
-
-        {/* Care to Cost conversion */}
-        <View style={styles.careConversion}>
-          <Text style={styles.careConversionTitle}>Care time → Cost credit</Text>
-          <Text style={styles.careConversionExplanation}>
-            A formula converts care time into cost credit. More care time = more credit, but it's not 1:1.
-          </Text>
-
-          <View style={styles.conversionCards}>
-            <View style={styles.conversionCard}>
-              <Text style={[styles.conversionCardLabel, { color: '#3b82f6' }]}>Parent A</Text>
-              <View style={styles.conversionRow}>
-                <Text style={styles.conversionValue}>{formatPercent(avgCareA)}</Text>
-                <Text style={styles.conversionArrow}>→</Text>
-                <Text style={styles.conversionResult}>{formatPercent(results.childResults[0]?.costPercA || 0)}</Text>
-              </View>
-              <View style={styles.conversionLabels}>
-                <Text style={styles.conversionSubLabel}>care time</Text>
-                <Text style={styles.conversionSubLabel}>cost credit</Text>
-              </View>
+      {/* Step 2: Care Split - Per Child */}
+      {results.childResults.map((child, index) => (
+        <View key={index} style={styles.step}>
+          <View style={styles.stepHeader}>
+            <View style={styles.stepNumber}>
+              <Text style={styles.stepNumberText}>
+                2{results.childResults.length > 1 ? String.fromCharCode(97 + index) : ''}
+              </Text>
             </View>
-
-            <View style={styles.conversionCard}>
-              <Text style={[styles.conversionCardLabel, { color: '#8b5cf6' }]}>Parent B</Text>
-              <View style={styles.conversionRow}>
-                <Text style={styles.conversionValue}>{formatPercent(avgCareB)}</Text>
-                <Text style={styles.conversionArrow}>→</Text>
-                <Text style={styles.conversionResult}>{formatPercent(results.childResults[0]?.costPercB || 0)}</Text>
-              </View>
-              <View style={styles.conversionLabels}>
-                <Text style={styles.conversionSubLabel}>care time</Text>
-                <Text style={styles.conversionSubLabel}>cost credit</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.stepConclusion}>
-          <Text style={styles.conclusionText}>
-            ➜ Parent A's cost credit: <Text style={styles.highlightText}>
-              {formatPercent(results.childResults[0]?.costPercA || 0)}
+            <Text style={styles.stepTitle}>
+              Care Split{results.childResults.length > 1 ? ` - Child ${index + 1}` : ''}
             </Text>
-          </Text>
-          <Text style={styles.conclusionText}>
-            ➜ Parent B's cost credit: <Text style={styles.highlightText}>
-              {formatPercent(results.childResults[0]?.costPercB || 0)}
-            </Text>
-          </Text>
-        </View>
-      </View>
-
-      {/* Step 3: The Gap (KEY INSIGHT) */}
-      <View style={[styles.step, styles.keyInsightStep]}>
-        <View style={styles.stepHeader}>
-          <View style={[styles.stepNumber, styles.keyStepNumber]}>
-            <Text style={styles.stepNumberText}>3</Text>
           </View>
-          <Text style={styles.stepTitle}>The Gap</Text>
-          <View style={styles.keyBadge}>
-            <Text style={styles.keyBadgeText}>KEY</Text>
-          </View>
-        </View>
 
-        <Text style={styles.stepExplanation}>
-          If your income responsibility is higher than what you cover through care, you pay the difference.
-        </Text>
+          <Text style={styles.stepExplanation}>
+            When you care for a child, you cover costs directly (food, activities, etc.). This gives you "credit" toward your share.
+          </Text>
 
-        <View style={styles.gapCalculation}>
-          {parentAPays && (
-            <>
-              <View style={styles.gapRow}>
-                <Text style={styles.gapLabel}>Income responsibility</Text>
-                <Text style={styles.gapValue}>{formatPercent(results.incomePercA)}</Text>
-              </View>
-              <View style={styles.gapRow}>
-                <Text style={styles.gapLabel}>Covered through care</Text>
-                <Text style={styles.gapValue}>− {formatPercent(results.childResults[0]?.costPercA || 0)}</Text>
-              </View>
-              <View style={styles.gapDivider} />
-              <View style={styles.gapRow}>
-                <Text style={[styles.gapLabel, styles.gapLabelBold]}>Parent A owes</Text>
-                <Text style={[styles.gapValue, styles.gapValueHighlight]}>
-                  {formatPercent(Math.max(0, incomeGapA))}
-                </Text>
-              </View>
-            </>
-          )}
-          
-          {parentBPays && (
-            <>
-              <View style={styles.gapRow}>
-                <Text style={styles.gapLabel}>Income responsibility</Text>
-                <Text style={styles.gapValue}>{formatPercent(results.incomePercB)}</Text>
-              </View>
-              <View style={styles.gapRow}>
-                <Text style={styles.gapLabel}>Covered through care</Text>
-                <Text style={styles.gapValue}>− {formatPercent(results.childResults[0]?.costPercB || 0)}</Text>
-              </View>
-              <View style={styles.gapDivider} />
-              <View style={styles.gapRow}>
-                <Text style={[styles.gapLabel, styles.gapLabelBold]}>Parent B owes</Text>
-                <Text style={[styles.gapValue, styles.gapValueHighlight]}>
-                  {formatPercent(Math.max(0, incomeGapB))}
-                </Text>
-              </View>
-            </>
-          )}
-
-          {!parentAPays && !parentBPays && (
-            <View style={styles.gapRow}>
-              <Text style={styles.gapLabel}>Both parents cover their share through care</Text>
+          <View style={styles.careComparison}>
+            <View style={styles.careRow}>
+              <Text style={styles.careLabel}><Text style={{ color: '#3b82f6' }}>Parent A</Text> cares</Text>
+              <Text style={styles.carePercent}>{formatPercent(child.roundedCareA)}</Text>
+              <Text style={styles.careSubtext}>of the time</Text>
             </View>
-          )}
+
+            {/* Visual bar for care */}
+            <View style={styles.visualBar}>
+              <View style={[styles.barSegmentA, { flex: child.roundedCareA }]} />
+              <View style={[styles.barSegmentB, { flex: child.roundedCareB }]} />
+            </View>
+
+            <View style={styles.careRow}>
+              <Text style={styles.careLabel}><Text style={{ color: '#8b5cf6' }}>Parent B</Text> cares</Text>
+              <Text style={styles.carePercent}>{formatPercent(child.roundedCareB)}</Text>
+              <Text style={styles.careSubtext}>of the time</Text>
+            </View>
+          </View>
+
+          {/* Care to Cost conversion */}
+          <View style={styles.careConversion}>
+            <Text style={styles.careConversionTitle}>Care time → Cost credit</Text>
+            <Text style={styles.careConversionExplanation}>
+              A formula converts care time into cost credit. More care time = more credit, but it's not 1:1.
+            </Text>
+
+            <View style={styles.conversionCards}>
+              <View style={styles.conversionCard}>
+                <Text style={[styles.conversionCardLabel, { color: '#3b82f6' }]}>Parent A</Text>
+                <View style={styles.conversionRow}>
+                  <Text style={styles.conversionValue}>{formatPercent(child.roundedCareA)}</Text>
+                  <Text style={styles.conversionArrow}>→</Text>
+                  <Text style={styles.conversionResult}>{formatPercent(child.costPercA)}</Text>
+                </View>
+                <View style={styles.conversionLabels}>
+                  <Text style={styles.conversionSubLabel}>care time</Text>
+                  <Text style={styles.conversionSubLabel}>cost credit</Text>
+                </View>
+              </View>
+
+              <View style={styles.conversionCard}>
+                <Text style={[styles.conversionCardLabel, { color: '#8b5cf6' }]}>Parent B</Text>
+                <View style={styles.conversionRow}>
+                  <Text style={styles.conversionValue}>{formatPercent(child.roundedCareB)}</Text>
+                  <Text style={styles.conversionArrow}>→</Text>
+                  <Text style={[styles.conversionResult, { color: '#8b5cf6' }]}>{formatPercent(child.costPercB)}</Text>
+                </View>
+                <View style={styles.conversionLabels}>
+                  <Text style={styles.conversionSubLabel}>care time</Text>
+                  <Text style={styles.conversionSubLabel}>cost credit</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.stepConclusion}>
+            <Text style={styles.conclusionText}>
+              ➜ Parent A's cost credit: <Text style={styles.highlightText}>
+                {formatPercent(child.costPercA)}
+              </Text>
+            </Text>
+            <Text style={styles.conclusionText}>
+              ➜ Parent B's cost credit: <Text style={[styles.highlightText, { color: '#8b5cf6' }]}>
+                {formatPercent(child.costPercB)}
+              </Text>
+            </Text>
+          </View>
         </View>
-      </View>
+      ))}
+
+      {/* Step 3: The Gap - Per Child */}
+      {results.childResults.map((child, index) => (
+        <View key={index} style={styles.step}>
+          <View style={styles.stepHeader}>
+            <View style={styles.stepNumber}>
+              <Text style={styles.stepNumberText}>
+                3{results.childResults.length > 1 ? String.fromCharCode(97 + index) : ''}
+              </Text>
+            </View>
+            <Text style={styles.stepTitle}>
+              The Gap{results.childResults.length > 1 ? ` - Child ${index + 1}` : ''}
+            </Text>
+          </View>
+
+          <Text style={styles.stepExplanation}>
+            If your income responsibility is higher than what you cover through care, you pay the difference.
+          </Text>
+
+          <View style={styles.gapCalculation}>
+            {/* Show calculation for the parent who owes for this child */}
+            {child.childSupportPercA > 0 && child.childSupportPercA > child.childSupportPercB && (
+              <>
+                <View style={styles.gapRow}>
+                  <Text style={styles.gapLabel}>Income responsibility</Text>
+                  <Text style={styles.gapValue}>{formatPercent(results.incomePercA)}</Text>
+                </View>
+                <View style={styles.gapRow}>
+                  <Text style={styles.gapLabel}>Covered through care</Text>
+                  <Text style={styles.gapValue}>− {formatPercent(child.costPercA)}</Text>
+                </View>
+                <View style={styles.gapDivider} />
+                <View style={styles.gapRow}>
+                  <Text style={[styles.gapLabel, styles.gapLabelBold, { color: '#3b82f6' }]}>Parent A owes</Text>
+                  <Text style={[styles.gapValue, styles.gapValueHighlight]}>
+                    {formatPercent(Math.max(0, child.childSupportPercA))}
+                  </Text>
+                </View>
+              </>
+            )}
+
+            {child.childSupportPercB > 0 && child.childSupportPercB > child.childSupportPercA && (
+              <>
+                <View style={styles.gapRow}>
+                  <Text style={styles.gapLabel}>Income responsibility</Text>
+                  <Text style={styles.gapValue}>{formatPercent(results.incomePercB)}</Text>
+                </View>
+                <View style={styles.gapRow}>
+                  <Text style={styles.gapLabel}>Covered through care</Text>
+                  <Text style={[styles.gapValue, { color: '#8b5cf6' }]}>− {formatPercent(child.costPercB)}</Text>
+                </View>
+                <View style={styles.gapDivider} />
+                <View style={styles.gapRow}>
+                  <Text style={[styles.gapLabel, styles.gapLabelBold, { color: '#8b5cf6' }]}>Parent B owes</Text>
+                  <Text style={[styles.gapValue, styles.gapValueHighlight]}>
+                    {formatPercent(Math.max(0, child.childSupportPercB))}
+                  </Text>
+                </View>
+              </>
+            )}
+
+            {child.childSupportPercA <= 0 && child.childSupportPercB <= 0 && (
+              <View style={styles.gapRow}>
+                <Text style={styles.gapLabel}>Both parents cover their share through care</Text>
+              </View>
+            )}
+          </View>
+        </View>
+      ))}
 
       {/* Step 4: Total Costs */}
       <View style={styles.step}>
@@ -337,6 +335,25 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
             </View>
           </View>
         )}
+
+        {/* Per-child cost breakdown */}
+        {results.childResults.length > 0 && (
+          <View style={styles.perChildCostBreakdown}>
+            <Text style={styles.perChildCostTitle}>
+              Cost per child: {formatCurrency(results.totalCost / results.childResults.length)} each
+            </Text>
+            {results.childResults.map((child, index) => (
+              <View key={index} style={styles.perChildCostRow}>
+                <Text style={styles.perChildCostLabel}>
+                  Child {index + 1}
+                </Text>
+                <Text style={styles.perChildCostValue}>
+                  {formatCurrency(child.costPerChild)}
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
       </View>
 
       {/* Step 5: Your Payment */}
@@ -349,14 +366,50 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
         </View>
 
         <Text style={styles.stepExplanation}>
-          Apply the gap percentage to the total cost to get the final payment.
+          Apply each child's gap percentage to their cost to get the final payment.
         </Text>
+
+        {/* Per-child gap calculation breakdown */}
+        {results.childResults.length > 0 && results.finalPaymentAmount > 0 && (
+          <View style={styles.perChildGapBreakdown}>
+            {results.childResults.map((child, index) => {
+              // Determine which parent is paying for this child
+              const parentAOwesForChild = child.childSupportPercA > child.childSupportPercB && child.childSupportPercA > 0;
+              const parentBOwesForChild = child.childSupportPercB > child.childSupportPercA && child.childSupportPercB > 0;
+
+              // Only show if this matches the paying parent
+              const showForParentA = parentAPays && parentAOwesForChild;
+              const showForParentB = parentBPays && parentBOwesForChild;
+
+              if (!showForParentA && !showForParentB) {
+                return null;
+              }
+
+              const gapPercentage = showForParentA
+                ? Math.max(0, child.childSupportPercA)
+                : Math.max(0, child.childSupportPercB);
+              const liability = showForParentA ? child.liabilityA : child.liabilityB;
+
+              return (
+                <View key={index} style={styles.perChildGapRow}>
+                  <Text style={styles.perChildGapLabel}>
+                    Child {index + 1}: {formatPercent(gapPercentage)} × {formatCurrency(child.costPerChild)}
+                  </Text>
+                  <Text style={styles.perChildGapValue}>
+                    {formatCurrency(liability)}
+                  </Text>
+                </View>
+              );
+            })}
+            <View style={styles.perChildGapDivider} />
+          </View>
+        )}
 
         <View style={styles.finalCalculation}>
           {parentAPays && (
             <>
               <View style={styles.finalRow}>
-                <Text style={styles.finalLabel}>{formatPercent(Math.max(0, incomeGapA))} of {formatCurrency(results.totalCost)}</Text>
+                <Text style={styles.finalLabel}>Total payment</Text>
               </View>
               <View style={styles.finalResult}>
                 <Text style={styles.finalResultLabel}>Parent A pays</Text>
@@ -369,7 +422,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
           {parentBPays && (
             <>
               <View style={styles.finalRow}>
-                <Text style={styles.finalLabel}>{formatPercent(Math.max(0, incomeGapB))} of {formatCurrency(results.totalCost)}</Text>
+                <Text style={styles.finalLabel}>Total payment</Text>
               </View>
               <View style={styles.finalResult}>
                 <Text style={styles.finalResultLabel}>Parent B pays</Text>
@@ -401,26 +454,36 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
       )}
 
       {/* Notice for $0 payment when low income but has care */}
-      {results.finalPaymentAmount === 0 && results.rateApplied === "None" && (
-        <>
-          {results.ATI_A < results.SSA && avgCareA >= 14 && (
-            <View style={styles.specialNotice}>
-              <Text style={styles.specialNoticeTitle}>ℹ️ No Payment Required</Text>
-              <Text style={styles.specialNoticeText}>
-                Parent A's income ({formatCurrency(results.ATI_A)}) is below the self-support amount ({formatCurrency(results.SSA)}), so they have no income-based obligation. Their care time ({formatPercent(avgCareA)}) means they're already contributing by covering costs directly during care.
-              </Text>
-            </View>
-          )}
-          {results.ATI_B < results.SSA && avgCareB >= 14 && (
-            <View style={styles.specialNotice}>
-              <Text style={styles.specialNoticeTitle}>ℹ️ No Payment Required</Text>
-              <Text style={styles.specialNoticeText}>
-                Parent B's income ({formatCurrency(results.ATI_B)}) is below the self-support amount ({formatCurrency(results.SSA)}), so they have no income-based obligation. Their care time ({formatPercent(avgCareB)}) means they're already contributing by covering costs directly during care.
-              </Text>
-            </View>
-          )}
-        </>
-      )}
+      {results.finalPaymentAmount === 0 && results.rateApplied === "None" && (() => {
+        // Calculate average care for the notice messages
+        const avgCareA = results.childResults.length > 0
+          ? results.childResults.reduce((sum, child) => sum + child.roundedCareA, 0) / results.childResults.length
+          : 0;
+        const avgCareB = results.childResults.length > 0
+          ? results.childResults.reduce((sum, child) => sum + child.roundedCareB, 0) / results.childResults.length
+          : 0;
+
+        return (
+          <>
+            {results.ATI_A < results.SSA && avgCareA >= 14 && (
+              <View style={styles.specialNotice}>
+                <Text style={styles.specialNoticeTitle}>ℹ️ No Payment Required</Text>
+                <Text style={styles.specialNoticeText}>
+                  Parent A's income ({formatCurrency(results.ATI_A)}) is below the self-support amount ({formatCurrency(results.SSA)}), so they have no income-based obligation. Their care time ({formatPercent(avgCareA)}) means they're already contributing by covering costs directly during care.
+                </Text>
+              </View>
+            )}
+            {results.ATI_B < results.SSA && avgCareB >= 14 && (
+              <View style={styles.specialNotice}>
+                <Text style={styles.specialNoticeTitle}>ℹ️ No Payment Required</Text>
+                <Text style={styles.specialNoticeText}>
+                  Parent B's income ({formatCurrency(results.ATI_B)}) is below the self-support amount ({formatCurrency(results.SSA)}), so they have no income-based obligation. Their care time ({formatPercent(avgCareB)}) means they're already contributing by covering costs directly during care.
+                </Text>
+              </View>
+            )}
+          </>
+        );
+      })()}
     </View>
   );
 }
@@ -580,7 +643,7 @@ const styles = StyleSheet.create({
   deductionTotalValue: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#60a5fa", // blue-400
+    color: "#f59e0b", // amber-500
   },
 
   // Income split summary
@@ -858,6 +921,63 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "700",
     color: "#ffffff",
+  },
+
+  // Per-child cost breakdown
+  perChildCostBreakdown: {
+    backgroundColor: "#0f172a", // slate-900
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 12,
+    gap: 8,
+  },
+  perChildCostTitle: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#94a3b8", // slate-400
+    marginBottom: 4,
+  },
+  perChildCostRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  perChildCostLabel: {
+    fontSize: 13,
+    color: "#94a3b8", // slate-400
+  },
+  perChildCostValue: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: "#cbd5e1", // slate-300
+  },
+
+  // Per-child gap breakdown
+  perChildGapBreakdown: {
+    backgroundColor: "rgba(0,0,0,0.2)",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+    gap: 8,
+  },
+  perChildGapRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  perChildGapLabel: {
+    fontSize: 13,
+    color: "#bfdbfe", // blue-200
+  },
+  perChildGapValue: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#ffffff",
+  },
+  perChildGapDivider: {
+    height: 1,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    marginTop: 4,
   },
 
   // Final calculation

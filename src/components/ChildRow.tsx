@@ -74,7 +74,7 @@ export function ChildRow({
 
         {/* Care Inputs */}
         <View style={styles.careSection}>
-          <Text style={styles.label}>A:</Text>
+          <Text style={[styles.label, { color: '#3b82f6', fontSize: 14 }]}>A:</Text>
           <TextInput
             style={styles.careInput}
             value={child.careAmountA.toString()}
@@ -82,7 +82,7 @@ export function ChildRow({
             keyboardType="numeric"
             maxLength={5}
           />
-          <Text style={styles.label}>B:</Text>
+          <Text style={[styles.label, { color: '#8b5cf6', fontSize: 14 }]}>B:</Text>
           <TextInput
             style={styles.careInput}
             value={child.careAmountB.toString()}
@@ -157,14 +157,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#475569", // slate-600
   },
   ageButtonActive: {
-    backgroundColor: "#2563eb", // blue-600
+    backgroundColor: "#f59e0b", // amber-500
   },
   ageButtonText: {
     fontSize: 12,
     color: "#94a3b8", // slate-400
   },
   ageButtonTextActive: {
-    color: "#ffffff",
+    color: "#000000",
+    fontWeight: "600",
   },
   careSection: {
     flexDirection: "row",
@@ -203,14 +204,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#475569", // slate-600
   },
   periodButtonActive: {
-    backgroundColor: "#2563eb", // blue-600
+    backgroundColor: "#f59e0b", // amber-500
   },
   periodButtonText: {
     fontSize: 12,
     color: "#94a3b8", // slate-400
   },
   periodButtonTextActive: {
-    color: "#ffffff",
+    color: "#000000",
+    fontWeight: "600",
   },
   removeButton: {
     padding: 4,

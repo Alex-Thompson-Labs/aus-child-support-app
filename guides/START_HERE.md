@@ -12,22 +12,9 @@
 
 ---
 
-## 📋 The Three Documents You Need
+## 📋 The Documents You Need
 
-### 1. **CHRISTMAS_BREAK_PLAN.md** (Strategic Master Plan)
-**Location:** `/Users/sammcdougal/d/csc/guides/CHRISTMAS_BREAK_PLAN.md`
-
-**What it is:** Complete Dec 24 → Jan 2 strategy with 5 major steps
-
-**Use it for:**
-- Understanding the overall approach
-- Technical implementation details (Claude Code prompts)
-- Phase 2 materials (partnership agreements, email templates)
-
-**Read this:** Once, at the beginning. Skim when you need technical details.
----
-
-### 2. **ALEX_THOMPSON_SETUP.md** (Identity Creation Guide)
+### 1. **ALEX_THOMPSON_SETUP.md** (Identity Creation Guide) ← START HERE
 **Location:** `/Users/sammcdougal/d/csc/guides/ALEX_THOMPSON_SETUP.md`
 
 **What it is:** Complete guide to becoming Alex Thompson
@@ -46,20 +33,41 @@
 
 ---
 
-### 3. **daily_checklist_dec26_jan2.md** (Daily Execution Plan)
-**Location:** Downloaded from this chat
+### 2. **CHRISTMAS_BREAK_PLAN.md** (Strategic Master Plan)
+**Location:** `/Users/sammcdougal/d/csc/guides/CHRISTMAS_BREAK_PLAN.md`
 
-**What it is:** Checkbox-style daily plan
+**What it is:** Complete Dec 24 → Jan 2 strategy with 5 major steps
 
-**Covers:**
-- Dec 26: Setup day (domain, AI headshot, LinkedIn)
-- Dec 27: First outreach (phone, 5 requests, tracking)
-- Dec 28-31: Scale outreach, finish Phase 1, create materials
-- Jan 1: Light day, final prep
-- Jan 2: LAUNCH (15 LinkedIn + 5 emails)
-- Jan 3-9: Daily rhythm template
+**Use it for:**
+- Understanding the overall approach
+- Technical implementation details (Claude Code prompts)
+- Phase 2 materials (partnership agreements, email templates)
 
-**Use this:** EVERY SINGLE DAY. Open it each morning. Check boxes. Track metrics.
+**Read this:** Once, at the beginning. Reference when you need templates or technical guidance.
+
+---
+
+### 3. **COMPLETED_PHASES.md** (Archive - Reference Only)
+**Location:** `/Users/sammcdougal/d/csc/guides/COMPLETED_PHASES.md`
+
+**What it is:** Archive of Phase 1 (technical development) and Phase 2 (business operations) detailed checklists
+
+**Use it for:**
+- Understanding what's already been done
+- Detailed technical implementation if you need to revisit code
+- Phase 2 week-by-week breakdown (after identity setup complete)
+
+**Read this:** Only if you need to reference completed work. Not needed for daily execution.
+
+---
+
+### 4. **APP_STORE_DEPLOYMENT.md** (App Publishing Guide)
+**Location:** `/Users/sammcdougal/d/csc/guides/APP_STORE_DEPLOYMENT.md`
+
+**Use it for:** Publishing app to Apple App Store and Google Play Store (Phase 3)
+
+**Read this:** After business is running and you're ready to publish publicly.
+
 ---
 
 ## 🎯 Your Exact Path (Quick Version)
@@ -302,11 +310,16 @@ And by Jan 9, Alex Thompson has 3-5 lawyer partners.
 | Document | Purpose | When to Use |
 |----------|---------|-------------|
 | **START_HERE.md** (this file) | Overview & motivation | Beginning + when stuck |
-| **CHRISTMAS_BREAK_PLAN.md** | Strategic plan | Once at start, reference for tech details |
-| **ALEX_THOMPSON_SETUP.md** | Identity creation | Dec 26-27 during setup |
-| **daily_checklist_dec26_jan2.md** | Daily execution | EVERY DAY Dec 26 → Jan 9 |
+| **ALEX_THOMPSON_SETUP.md** | Identity creation | Dec 26-27 during setup (PRIMARY) |
+| **CHRISTMAS_BREAK_PLAN.md** | Strategic plan + templates | Reference for materials/tech details |
+| **COMPLETED_PHASES.md** | Phase 1/2 archives | Reference only if needed |
+| **APP_STORE_DEPLOYMENT.md** | App publishing | Phase 3 (after business running) |
 
-**Primary workflow:** Daily checklist → Reference setup guide when needed → Check master plan for technical prompts
+**Primary workflow:** 
+1. Start with ALEX_THOMPSON_SETUP.md
+2. Reference CHRISTMAS_BREAK_PLAN.md for templates
+3. Check START_HERE.md when you need motivation
+4. Ignore phase1/ and phase2/ folders (everything is consolidated)
 
 ---
 
