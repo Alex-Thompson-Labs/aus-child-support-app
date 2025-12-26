@@ -1,6 +1,6 @@
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import type { CalculationResults } from "../types/calculator";
 import { HelpTooltip } from "./HelpTooltip";
 
@@ -166,7 +166,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
               </Text>
             </View>
             <Text style={styles.stepTitle}>
-              CARE/COST PERCENTAGE{results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''}
+              CARE/COST PERCENTAGES{results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''}
             </Text>
             <Text style={styles.chevron}>{expandedSteps.step2 ? '▼' : '▶'}</Text>
           </Pressable>
@@ -288,7 +288,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
               </Text>
             </View>
             <Text style={styles.stepTitle}>
-              CHILD SUPPORT PERCENTAGE{results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''}
+              CHILD SUPPORT PERCENTAGES{results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''}
             </Text>
             <Text style={styles.chevron}>{expandedSteps.step3 ? '▼' : '▶'}</Text>
           </Pressable>
@@ -315,7 +315,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
                     </View>
                     <View style={styles.gapCardRow}>
                       <Text style={styles.gapCardLabel}>Cost %</Text>
-                      <Text style={[styles.gapCardValue, { color: '#f87171' }]}>− ({formatPercent(child.costPercA)})</Text>
+                      <Text style={[styles.gapCardValue, { color: '#f87171' }]}>({formatPercent(child.costPercA)})</Text>
                     </View>
                     <View style={styles.gapCardDivider} />
                     <View style={styles.gapCardRow}>
@@ -355,7 +355,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
                     </View>
                     <View style={styles.gapCardRow}>
                       <Text style={styles.gapCardLabel}>Cost %</Text>
-                      <Text style={[styles.gapCardValue, { color: '#f87171' }]}>− ({formatPercent(child.costPercB)})</Text>
+                      <Text style={[styles.gapCardValue, { color: '#f87171' }]}>({formatPercent(child.costPercB)})</Text>
                     </View>
                     <View style={styles.gapCardDivider} />
                     <View style={styles.gapCardRow}>
@@ -465,7 +465,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
         {expandedSteps.step5 && (
           <>
             <Text style={styles.stepExplanation}>
-          Each child's liability rate is calculated by multiplying their cost <Text style={{ color: '#06b6d4' }}>(</Text><Text style={{ fontWeight: '600', color: '#06b6d4' }}>STEP 4</Text><Text style={{ color: '#06b6d4' }}>)</Text> by their child support percentage <Text style={{ color: '#06b6d4' }}>(</Text><Text style={{ fontWeight: '600', color: '#06b6d4' }}>STEP 3</Text><Text style={{ color: '#06b6d4' }}>)</Text>.
+          Each child's liability rate is calculated by multiplying their child support percentage <Text style={{ color: '#06b6d4' }}>(</Text><Text style={{ fontWeight: '600', color: '#06b6d4' }}>STEP 3</Text><Text style={{ color: '#06b6d4' }}>)</Text> by their cost <Text style={{ color: '#06b6d4' }}>(</Text><Text style={{ fontWeight: '600', color: '#06b6d4' }}>STEP 4</Text><Text style={{ color: '#06b6d4' }}>)</Text>.
         </Text>
 
         {/* Per-child payment breakdown */}
@@ -507,7 +507,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
                       </>
                     )}
                   </Text>
-                  <Text style={styles.perChildGapValue}>
+                  <Text style={[styles.perChildGapValue, { color: payingParentColor }]}>
                     {formatCurrency(liability)}
                   </Text>
                 </View>
@@ -589,21 +589,21 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
             </LinearGradient>
           )}
         </View>
+
+        {/* Optional: Special rates notice */}
+        {results.rateApplied !== "None" && (
+          <View style={styles.specialNotice}>
+            <Text style={styles.specialNoticeTitle}>ℹ️ Special Rate Applied</Text>
+            <Text style={styles.specialNoticeText}>
+              {results.rateApplied} was applied instead of the standard formula calculation.
+              {results.rateApplied.includes("FAR") && " This happens when income is low but above the minimum threshold."}
+              {results.rateApplied.includes("MAR") && " This happens when income is very low and receiving Centrelink support."}
+            </Text>
+          </View>
+        )}
           </>
         )}
       </View>
-
-      {/* Optional: Special rates notice */}
-      {results.rateApplied !== "None" && (
-        <View style={styles.specialNotice}>
-          <Text style={styles.specialNoticeTitle}>ℹ️ Special Rate Applied</Text>
-          <Text style={styles.specialNoticeText}>
-            {results.rateApplied} was applied instead of the standard formula calculation.
-            {results.rateApplied.includes("FAR") && " This happens when income is low but above the minimum threshold."}
-            {results.rateApplied.includes("MAR") && " This happens when income is very low and receiving Centrelink support."}
-          </Text>
-        </View>
-      )}
 
       {/* Notice for $0 payment when low income but has care */}
       {results.finalPaymentAmount === 0 && results.rateApplied === "None" && (() => {
@@ -665,8 +665,8 @@ const styles = StyleSheet.create({
   // Step container
   step: {
     backgroundColor: "#1e293b", // slate-800
-    borderRadius: 12,
-    padding: 20,
+    borderRadius: 10,
+    padding: 16,
     borderWidth: 1,
     borderColor: "#334155", // slate-700
   },
@@ -683,14 +683,16 @@ const styles = StyleSheet.create({
   stepHeader: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    marginBottom: 12,
+    gap: 10,
+    marginBottom: 10,
   },
   stepNumber: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "#334155", // slate-700
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "transparent",
+    borderWidth: 2,
+    borderColor: "#10b981", // emerald-500
     alignItems: "center",
     justifyContent: "center",
   },
@@ -702,13 +704,13 @@ const styles = StyleSheet.create({
   },
   stepNumberText: {
     fontSize: 16,
-    fontWeight: "700",
-    color: "#ffffff",
+    fontWeight: "600",
+    color: "#10b981", // emerald-500
   },
   stepTitle: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#f59e0b", // amber-500
+    color: "#10b981", // emerald-500
     flex: 1,
   },
   chevron: {
@@ -731,11 +733,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#cbd5e1", // slate-300
     lineHeight: 20,
-    marginBottom: 16,
+    marginBottom: 12,
   },
   stepConclusion: {
-    marginTop: 12,
-    paddingTop: 12,
+    marginTop: 10,
+    paddingTop: 10,
     borderTopWidth: 1,
     borderTopColor: "#334155", // slate-700
   },
@@ -751,13 +753,13 @@ const styles = StyleSheet.create({
 
   // Deduction breakdown cards
   deductionCards: {
-    gap: 12,
+    gap: 10,
     marginBottom: 16,
   },
   deductionCard: {
     backgroundColor: "#0f172a", // slate-900
     borderRadius: 8,
-    padding: 12,
+    padding: 10,
     gap: 6,
   },
   deductionCardTitle: {
@@ -834,7 +836,7 @@ const styles = StyleSheet.create({
 
   // Income comparison
   incomeComparison: {
-    gap: 12,
+    gap: 10,
   },
   incomeRow: {
     flexDirection: "row",
@@ -870,8 +872,8 @@ const styles = StyleSheet.create({
   // Visual bar
   visualBar: {
     flexDirection: "row",
-    height: 12,
-    borderRadius: 6,
+    height: 10,
+    borderRadius: 5,
     overflow: "hidden",
     backgroundColor: "#334155", // slate-700
   },
@@ -884,7 +886,7 @@ const styles = StyleSheet.create({
 
   // Care comparison
   careComparison: {
-    gap: 12,
+    gap: 10,
   },
   careHeaderLabel: {
     fontSize: 12,
@@ -921,7 +923,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     backgroundColor: "#0f172a", // slate-900
     borderRadius: 8,
-    padding: 12,
+    padding: 10,
   },
   careConversionTitle: {
     fontSize: 12,
@@ -939,7 +941,7 @@ const styles = StyleSheet.create({
   },
   conversionCards: {
     flexDirection: "row",
-    gap: 12,
+    gap: 10,
   },
   conversionCard: {
     flex: 1,
@@ -998,13 +1000,13 @@ const styles = StyleSheet.create({
   // Step 3: Gap calculation cards (side-by-side)
   gapCards: {
     flexDirection: "row",
-    gap: 12,
+    gap: 10,
   },
   gapCard: {
     flex: 1,
     backgroundColor: "#1e293b", // slate-800 (matches Step 2)
     borderRadius: 8,
-    padding: 12,
+    padding: 10,
   },
   gapCardTitle: {
     fontSize: 11,
@@ -1075,7 +1077,7 @@ const styles = StyleSheet.create({
   bracketCalculation: {
     backgroundColor: "#0f172a", // slate-900
     borderRadius: 8,
-    padding: 12,
+    padding: 10,
   },
   bracketTitle: {
     fontSize: 12,
@@ -1167,7 +1169,7 @@ const styles = StyleSheet.create({
   perChildGapBreakdown: {
     backgroundColor: "#0f172a", // slate-900
     borderRadius: 8,
-    padding: 12,
+    padding: 10,
     marginBottom: 12,
     gap: 8,
   },
@@ -1243,7 +1245,7 @@ const styles = StyleSheet.create({
   expandedSecondaryValue: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#ffffff",
+    color: "#fbbf24", // amber-400
     marginBottom: 4,
   },
   expandedSecondaryLabel: {

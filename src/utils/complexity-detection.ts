@@ -313,7 +313,7 @@ export function getAlertConfig(
   if (flags.highValue) {
     return {
       title: "💰 High-Value Case",
-      message: `Your liability is $${results.finalPaymentAmount.toLocaleString()}/year. Cases over $15k benefit from verification.`,
+      message: `Your liability is $${Math.round(results.finalPaymentAmount).toLocaleString()}/year. Cases over $15k benefit from verification.`,
       urgency: 'medium',
       buttonText: "Request Review"
     };

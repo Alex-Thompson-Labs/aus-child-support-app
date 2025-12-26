@@ -98,7 +98,7 @@ export function CalculatorForm({
               <Switch
                 value={supportA}
                 onValueChange={onSupportAChange}
-                trackColor={{ false: "#475569", true: "#3b82f6" }}
+                trackColor={{ false: "#475569", true: "#f59e0b" }}
                 thumbColor="#ffffff"
                 style={styles.smallSwitch}
               />
@@ -140,7 +140,7 @@ export function CalculatorForm({
               <Switch
                 value={supportB}
                 onValueChange={onSupportBChange}
-                trackColor={{ false: "#475569", true: "#3b82f6" }}
+                trackColor={{ false: "#475569", true: "#f59e0b" }}
                 thumbColor="#ffffff"
                 style={styles.smallSwitch}
               />
@@ -156,7 +156,7 @@ export function CalculatorForm({
       {/* Children Card */}
       <View style={styles.card}>
         <View style={[styles.labelRow, { gap: 8, marginBottom: 8 }]}>
-          <Text style={[styles.sectionHeading, { marginBottom: 0 }]}>Children Care Details</Text>
+          <Text style={[styles.sectionHeading, { marginBottom: 0 }]}>CARE</Text>
           <HelpTooltip
             header="CARE = OVERNIGHT"
             what="Enter the number of nights each parent has care of the child per week, fortnight, or year and if the child is over or under 13 years of age."
@@ -207,7 +207,7 @@ export function CalculatorForm({
                 onRelDepBChange({ u13: 0, plus13: 0 });
               }
             }}
-            trackColor={{ false: "#475569", true: "#3b82f6" }}
+            trackColor={{ false: "#475569", true: "#f59e0b" }}
             thumbColor="#ffffff"
             style={[styles.smallSwitch, styles.relDepsSwitch]}
           />
@@ -228,7 +228,7 @@ export function CalculatorForm({
                     }
                     keyboardType="numeric"
                   />
-                  <Text style={[styles.relDepsAgeLabel, { color: '#14b8a6' }]}>&lt;13</Text>
+                  <Text style={[styles.relDepsAgeLabel, { color: '#f59e0b' }]}>&lt;13</Text>
                 </View>
                 <View style={styles.relDepsInputGroup}>
                   <TextInput
@@ -239,7 +239,7 @@ export function CalculatorForm({
                     }
                     keyboardType="numeric"
                   />
-                  <Text style={[styles.relDepsAgeLabel, { color: '#14b8a6' }]}>13+</Text>
+                  <Text style={[styles.relDepsAgeLabel, { color: '#f59e0b' }]}>13+</Text>
                 </View>
               </View>
             </View>
@@ -257,7 +257,7 @@ export function CalculatorForm({
                     }
                     keyboardType="numeric"
                   />
-                  <Text style={[styles.relDepsAgeLabel, { color: '#14b8a6' }]}>&lt;13</Text>
+                  <Text style={[styles.relDepsAgeLabel, { color: '#f59e0b' }]}>&lt;13</Text>
                 </View>
                 <View style={styles.relDepsInputGroup}>
                   <TextInput
@@ -268,7 +268,7 @@ export function CalculatorForm({
                     }
                     keyboardType="numeric"
                   />
-                  <Text style={[styles.relDepsAgeLabel, { color: '#14b8a6' }]}>13+</Text>
+                  <Text style={[styles.relDepsAgeLabel, { color: '#f59e0b' }]}>13+</Text>
                 </View>
               </View>
             </View>
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
   sectionHeading: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#f59e0b", // amber-500
+    color: "#10b981", // emerald-500
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 8,

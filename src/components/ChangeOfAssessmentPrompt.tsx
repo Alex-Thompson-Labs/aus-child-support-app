@@ -317,7 +317,7 @@ export function ChangeOfAssessmentPrompt({
                   <View style={styles.valueAddNote}>
                     <Text style={styles.valueAddEmoji}>💼</Text>
                     <View style={styles.valueAddTextContainer}>
-                      <Text style={styles.valueAddTitle}>Forensic Accountant Value-Add</Text>
+                      <Text style={styles.valueAddTitle}>Forensic Accountant</Text>
                       <Text style={styles.valueAddDescription}>
                         Forensic accountants specialize in uncovering hidden income, verifying actual earning capacity,
                         and providing expert evidence for court proceedings. They can analyze business records, trust
@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
   coaTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#ffffff",
+    color: "#f59e0b",
     marginBottom: 4,
   },
   coaSubtitle: {
@@ -470,8 +470,8 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   checkboxChecked: {
-    backgroundColor: "#2563eb", // blue-600
-    borderColor: "#2563eb",
+    backgroundColor: "#f59e0b", // amber-500
+    borderColor: "#f59e0b",
   },
   checkboxCheck: {
     color: "#ffffff",

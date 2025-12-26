@@ -123,6 +123,7 @@ export function LawyerAlert({
   const isHighUrgency = urgency === 'high';
   const borderColor = isHighUrgency ? '#ef4444' : '#f59e0b';
   const buttonColor = isHighUrgency ? '#ef4444' : '#2563eb';
+  const titleColor = urgency === 'high' ? '#ef4444' : urgency === 'medium' ? '#f59e0b' : '#60a5fa';
 
   // Accessibility: Announce urgency level
   const urgencyLabel = isHighUrgency ? 'Urgent alert' : 'Alert';
@@ -135,7 +136,7 @@ export function LawyerAlert({
       accessibilityLabel={`${urgencyLabel}: ${displayTitle}. ${displayMessage}`}
     >
       <Text
-        style={styles.title}
+        style={[styles.title, { color: titleColor }]}
         accessibilityRole="header"
       >
         {displayTitle}

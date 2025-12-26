@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 6,
   },
   toggleButtonActive: {
-    backgroundColor: "#5eead4", // teal-300
+    backgroundColor: "#f59e0b", // amber-500
   },
   toggleButtonText: {
     fontSize: 12,

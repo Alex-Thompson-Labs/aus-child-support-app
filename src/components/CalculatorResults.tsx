@@ -252,7 +252,7 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
         style={styles.expandedHeroSection}
       >
         <Text style={styles.expandedHeroLabel}>
-          {results.payer === "Neither" ? "No payment required" : `${results.payer} pays ${results.receiver}`}
+          {results.payer === "Neither" ? "No payment required" : `${results.payer} pays`}
         </Text>
         <Text style={styles.expandedHeroAmount}>{formatCurrency(results.finalPaymentAmount)}</Text>
         <Text style={styles.expandedHeroSubtext}>per year</Text>
@@ -321,7 +321,7 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
             <View style={styles.collapsedContent}>
               <View style={styles.collapsedLeft}>
                 <Text style={styles.collapsedLabel}>
-                  {results.payer === "Neither" ? "No payment" : `${results.payer} pays ${results.receiver}`}
+                  {results.payer === "Neither" ? "No payment" : `${results.payer} pays`}
                 </Text>
                 <Text style={styles.collapsedAmount}>{formatCurrency(results.finalPaymentAmount)}</Text>
                 <Text style={styles.collapsedSubtext}>per year</Text>
@@ -360,7 +360,7 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
         <View style={[styles.expandedContainer, { paddingTop: insets.top }]}>
           {/* Header with Close Button */}
           <View style={styles.expandedHeader}>
-            <Text style={styles.expandedHeaderTitle}>Payment Details</Text>
+            <Text style={styles.expandedHeaderTitle}>Full Breakdown</Text>
             <Pressable onPress={toggleExpand} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>✕</Text>
             </Pressable>
@@ -442,7 +442,7 @@ const styles = StyleSheet.create({
   collapsedSecondaryValue: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#ffffff",
+    color: "#fbbf24", // amber-400
   },
   collapsedSecondaryLabel: {
     fontSize: 10,
@@ -539,7 +539,7 @@ const styles = StyleSheet.create({
   expandedSecondaryValue: {
     fontSize: 20,
     fontWeight: "600",
-    color: "#ffffff",
+    color: "#fbbf24", // amber-400
   },
   expandedSecondaryLabel: {
     fontSize: 12,

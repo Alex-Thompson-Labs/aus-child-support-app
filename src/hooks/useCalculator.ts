@@ -30,7 +30,15 @@ const initialFormState: CalculatorFormState = {
   incomeB: 0,
   supportA: false,
   supportB: false,
-  children: [],
+  children: [
+    {
+      id: `child-${Date.now()}`,
+      age: "Under 13",
+      careAmountA: 8,
+      careAmountB: 6,
+      carePeriod: "fortnight",
+    },
+  ],
   relDepA: { u13: 0, plus13: 0 },
   relDepB: { u13: 0, plus13: 0 },
   courtDate: "", // Empty string by default
