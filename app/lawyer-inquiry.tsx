@@ -511,11 +511,11 @@ export default function LawyerInquiryScreen() {
                                         ]}>
                                             {reason.urgency === 'URGENT' ? '⚠️' : '📋'}
                                         </Text>
-                                        <Text style={styles.coaReasonLabel} numberOfLines={2}>
+                                        <Text style={styles.coaReasonLabel}>
                                             {reason.label}
                                         </Text>
                                     </View>
-                                    <Text style={styles.coaReasonDescription} numberOfLines={3}>
+                                    <Text style={styles.coaReasonDescription}>
                                         {reason.description}
                                     </Text>
                                 </View>

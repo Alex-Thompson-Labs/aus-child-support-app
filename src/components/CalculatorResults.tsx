@@ -220,7 +220,7 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
   // Get gradient colors for collapsed bottom card
   const getCollapsedGradientColors = (payer: string): string[] => {
     if (payer === 'Neither') {
-      return ['#1e40af', '#1e40af']; // Solid blue for "no payment"
+      return ['#475569', '#334155']; // Slate gradient for "no payment" (matches breakdown)
     }
     return payer === 'Parent A'
       ? ['#3b82f6', '#8b5cf6']  // A → B: blue → purple
@@ -230,7 +230,7 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
   // Get gradient colors for expanded hero section
   const getExpandedGradientColors = (payer: string): string[] => {
     if (payer === 'Neither') {
-      return ['#1e40af', '#1e40af']; // Solid blue for "no payment"
+      return ['#475569', '#475569', '#334155']; // Slate gradient for "no payment" (matches breakdown)
     }
     return payer === 'Parent A'
       ? ['#3b82f6', '#1e3a8a', '#8b5cf6']  // A → B with darker middle
@@ -295,7 +295,13 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
         onNavigate={() => setIsExpanded(false)}
       />
 
-      <ResultsSimpleExplanation results={results} />
+      <ResultsSimpleExplanation
+        results={results}
+        formState={{
+          supportA: formData?.supportA ?? false,
+          supportB: formData?.supportB ?? false
+        }}
+      />
     </ScrollView>
   );
 

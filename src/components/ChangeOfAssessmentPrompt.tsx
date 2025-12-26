@@ -335,11 +335,11 @@ export function ChangeOfAssessmentPrompt({
           {childReasons.length > 0 && (
             <View style={styles.reasonGroup}>
               <View style={styles.groupHeader}>
-                <Text style={[styles.groupTitle, { color: '#10b981' }]}>
+                <Text style={[styles.groupTitle, { color: '#8b5cf6' }]}>
                   {getCategoryDisplayInfo('child').emoji} {getCategoryDisplayInfo('child').title}
                 </Text>
               </View>
-              <View style={[styles.categoryBorder, { borderLeftColor: '#10b981' }]}>
+              <View style={[styles.categoryBorder, { borderLeftColor: '#8b5cf6' }]}>
                 {childReasons.map(renderCheckbox)}
               </View>
             </View>
@@ -349,11 +349,11 @@ export function ChangeOfAssessmentPrompt({
           {otherReasons.length > 0 && (
             <View style={styles.reasonGroup}>
               <View style={styles.groupHeader}>
-                <Text style={[styles.groupTitle, { color: '#14b8a6' }]}>
+                <Text style={[styles.groupTitle, { color: '#3b82f6' }]}>
                   {getCategoryDisplayInfo('other').emoji} {getCategoryDisplayInfo('other').title}
                 </Text>
               </View>
-              <View style={[styles.categoryBorder, { borderLeftColor: '#14b8a6' }]}>
+              <View style={[styles.categoryBorder, { borderLeftColor: '#3b82f6' }]}>
                 {otherReasons.map(renderCheckbox)}
               </View>
             </View>
@@ -511,10 +511,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#f59e0b", // amber-500 (income category)
   },
   coaButtonChild: {
-    backgroundColor: "#10b981", // emerald-500 (child category)
+    backgroundColor: "#8b5cf6", // violet-500 (child category - Parent B color)
   },
   coaButtonOther: {
-    backgroundColor: "#14b8a6", // teal-500 (other category)
+    backgroundColor: "#3b82f6", // blue-500 (other category - Parent A color)
   },
   coaButtonDisabled: {
     backgroundColor: "#64748b", // slate-500

@@ -3,9 +3,11 @@ import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { CalculationResults } from "../types/calculator";
 import { HelpTooltip } from "./HelpTooltip";
+import { detectZeroPaymentScenario, isFarLimitReached } from "../utils/zero-payment-detection";
 
 interface ResultsSimpleExplanationProps {
   results: CalculationResults;
+  formState: { supportA: boolean; supportB: boolean };
 }
 
 // Helper to format currency
@@ -31,7 +33,7 @@ const getGradientColors = (payer: string) => {
   return ['#8b5cf6', '#5b21b6', '#3b82f6'] as const; // purple → dark purple → blue
 };
 
-export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationProps) {
+export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleExplanationProps) {
   // Collapsible state management
   const [expandedSteps, setExpandedSteps] = useState({
     step1: false,  // Income Percentages - collapsed
@@ -39,6 +41,7 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
     step3: true,   // Child Support % - EXPANDED
     step4: false,  // Cost of Children - collapsed
     step5: true,   // Assessment Result - EXPANDED
+    specialRate: false, // Special Rate notice - collapsed
   });
 
   // Calculate payment periods
@@ -322,19 +325,16 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
                       <Text style={[styles.gapCardLabel, styles.gapCardLabelBold]}>CS %</Text>
                       <Text style={[
                         styles.gapCardValue,
-                        child.childSupportPercA > 0 && styles.gapCardValueHighlight
+                        child.childSupportPercA > 0 && !child.farAppliedB && !child.marAppliedB && styles.gapCardValueHighlight
                       ]}>
-                        {child.childSupportPercA > 0 ? formatPercent(child.childSupportPercA) : '—'}
+                        {(child.farAppliedB || child.marAppliedB) ? '—' : (child.childSupportPercA > 0 ? formatPercent(child.childSupportPercA) : '—')}
                       </Text>
                     </View>
                   </>
                 ) : (
                   <View style={styles.gapCardSpecialRate}>
                     <Text style={styles.gapCardSpecialRateText}>
-                      Low income and provides less than {child.marAppliedA ? '87%' : '66%'} care.
-                    </Text>
-                    <Text style={styles.gapCardSpecialRateText}>
-                      Must pay the {child.farAppliedA ? 'FAR' : 'MAR'}.
+                      {child.farAppliedA ? 'Fixed annual rate to apply - see below for details' : 'Minimum annual rate applied'}
                     </Text>
                     <Text style={[styles.gapCardValue, styles.gapCardValueHighlight, { marginTop: 8 }]}>
                       {formatCurrency(child.farAppliedA ? results.FAR : results.MAR)}
@@ -362,19 +362,16 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
                       <Text style={[styles.gapCardLabel, styles.gapCardLabelBold]}>CS %</Text>
                       <Text style={[
                         styles.gapCardValue,
-                        child.childSupportPercB > 0 && styles.gapCardValueHighlight
+                        child.childSupportPercB > 0 && !child.farAppliedA && !child.marAppliedA && styles.gapCardValueHighlight
                       ]}>
-                        {child.childSupportPercB > 0 ? formatPercent(child.childSupportPercB) : '—'}
+                        {(child.farAppliedA || child.marAppliedA) ? '—' : (child.childSupportPercB > 0 ? formatPercent(child.childSupportPercB) : '—')}
                       </Text>
                     </View>
                   </>
                 ) : (
                   <View style={styles.gapCardSpecialRate}>
                     <Text style={styles.gapCardSpecialRateText}>
-                      Low income and provides less than {child.marAppliedB ? '87%' : '66%'} care.
-                    </Text>
-                    <Text style={styles.gapCardSpecialRateText}>
-                      Must pay the {child.farAppliedB ? 'FAR' : 'MAR'}.
+                      {child.farAppliedB ? 'Fixed annual rate to apply - see below for details' : 'Minimum annual rate applied'}
                     </Text>
                     <Text style={[styles.gapCardValue, styles.gapCardValueHighlight, { marginTop: 8 }]}>
                       {formatCurrency(child.farAppliedB ? results.FAR : results.MAR)}
@@ -469,51 +466,160 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
         </Text>
 
         {/* Per-child payment breakdown */}
-        {results.childResults.length > 0 && (
-          <View style={styles.perChildGapBreakdown}>
-            {results.childResults.map((child, index) => {
-              // Determine which parent is paying for this child
-              const parentAOwesForChild = (child.childSupportPercA > child.childSupportPercB && child.childSupportPercA > 0) || child.farAppliedA || child.marAppliedA;
-              const parentBOwesForChild = (child.childSupportPercB > child.childSupportPercA && child.childSupportPercB > 0) || child.farAppliedB || child.marAppliedB;
+        {results.childResults.length > 0 && (() => {
+          // Check if MAR is applied to any child
+          const hasMarA = results.childResults.some(c => c.marAppliedA);
+          const hasMarB = results.childResults.some(c => c.marAppliedB);
+          const hasAnyMar = hasMarA || hasMarB;
 
-              // Determine which parent to show for this child
-              const showForParentA = parentAOwesForChild;
-              const showForParentB = parentBOwesForChild;
+          // If MAR is applied, show a single consolidated line
+          if (hasAnyMar) {
+            const payingParentColor = hasMarA ? '#3b82f6' : '#8b5cf6';
+            const totalMarAmount = results.finalPaymentAmount;
 
-              // If neither parent owes, don't show this child
-              if (!showForParentA && !showForParentB) {
-                return null;
-              }
-
-              // Determine color and values based on who owes
-              const payingParentColor = showForParentA ? '#3b82f6' : '#8b5cf6';
-              const farApplied = showForParentA ? child.farAppliedA : child.farAppliedB;
-              const marApplied = showForParentA ? child.marAppliedA : child.marAppliedB;
-              const gapPercentage = showForParentA
-                ? Math.max(0, child.childSupportPercA)
-                : Math.max(0, child.childSupportPercB);
-              const liability = showForParentA ? child.finalLiabilityA : child.finalLiabilityB;
-
-              return (
-                <View key={index} style={styles.perChildGapRow}>
+            return (
+              <View style={styles.perChildGapBreakdown}>
+                <View style={styles.perChildGapRow}>
                   <Text style={styles.perChildGapLabel}>
-                    {farApplied ? (
-                      `Child ${index + 1} - Fixed annual rate`
-                    ) : marApplied ? (
-                      `Child ${index + 1} - Minimum annual rate`
-                    ) : (
-                      <>
-                        Child {index + 1}: <Text style={{ color: '#f87171' }}>({formatPercent(gapPercentage)})</Text> × {formatCurrency(child.costPerChild)}
-                      </>
-                    )}
+                    All children - <Text style={{ color: payingParentColor }}>Minimum annual rate</Text>
                   </Text>
                   <Text style={[styles.perChildGapValue, { color: payingParentColor }]}>
-                    {formatCurrency(liability)}
+                    {formatCurrency(totalMarAmount)}
                   </Text>
                 </View>
-              );
-            })}
-            <View style={styles.perChildGapDivider} />
+                <View style={styles.perChildGapDivider} />
+              </View>
+            );
+          }
+
+          // Otherwise, show per-child breakdown (original logic)
+          return (
+            <View style={styles.perChildGapBreakdown}>
+              {results.childResults.map((child, index) => {
+                // Determine which parent is paying for this child based on final liabilities
+                // When FAR/MAR is applied, the liability will be non-zero for the paying parent
+                const parentAOwesForChild = child.finalLiabilityA > 0;
+                const parentBOwesForChild = child.finalLiabilityB > 0;
+
+                // If neither parent owes, show "No payment" explanation
+                if (!parentAOwesForChild && !parentBOwesForChild) {
+                  // Check if this is due to FAR limit being reached
+                  const isFarLimit = isFarLimitReached(index, results, formState);
+                  const displayText = isFarLimit ? 'FAR limit reached' : 'No payment required';
+
+                  return (
+                    <View key={index} style={styles.perChildGapRow}>
+                      <Text style={styles.perChildGapLabel}>
+                        Child {index + 1} - <Text style={{ color: '#64748b' }}>{displayText}</Text>
+                      </Text>
+                      <Text style={[styles.perChildGapValue, { color: '#64748b' }]}>
+                        $0
+                      </Text>
+                    </View>
+                  );
+                }
+
+                // Determine color and values based on who actually pays (use final liability as source of truth)
+                const showForParentA = parentAOwesForChild;
+                const payingParentColor = showForParentA ? '#3b82f6' : '#8b5cf6';
+                const farApplied = showForParentA ? child.farAppliedA : child.farAppliedB;
+                const gapPercentage = showForParentA
+                  ? Math.max(0, child.childSupportPercA)
+                  : Math.max(0, child.childSupportPercB);
+                const liability = showForParentA ? child.finalLiabilityA : child.finalLiabilityB;
+
+                return (
+                  <View key={index} style={styles.perChildGapRow}>
+                    <Text style={styles.perChildGapLabel}>
+                      {farApplied ? (
+                        <>Child {index + 1} - <Text style={{ color: payingParentColor }}>Fixed annual rate</Text></>
+                      ) : (
+                        <>
+                          Child {index + 1} - <Text style={{ color: payingParentColor }}>({formatPercent(gapPercentage)})</Text> × {formatCurrency(child.costPerChild)}
+                        </>
+                      )}
+                    </Text>
+                    <Text style={[styles.perChildGapValue, { color: payingParentColor }]}>
+                      {formatCurrency(liability)}
+                    </Text>
+                  </View>
+                );
+              })}
+              <View style={styles.perChildGapDivider} />
+            </View>
+          );
+        })()}
+
+        {/* No payment explanation - shown when any child has no payment */}
+        {results.childResults.some(child => child.finalLiabilityA === 0 && child.finalLiabilityB === 0) && (() => {
+          const scenario = detectZeroPaymentScenario(results, formState);
+
+          if (scenario.type === 'none') return null;
+
+          return (
+            <View style={[styles.specialNotice, { borderLeftColor: '#64748b' }]}>
+              <Text style={[styles.specialNoticeTitle, { color: '#94a3b8' }]}>
+                ℹ️ {scenario.title}
+              </Text>
+              <View style={styles.specialNoticeContent}>
+                <Text style={styles.specialNoticeText}>
+                  {scenario.explanation}
+                </Text>
+                {scenario.details?.parentADetails && (
+                  <Text style={[styles.specialNoticeText, { marginTop: 8 }]}>
+                    • Parent A: {scenario.details.parentADetails}
+                  </Text>
+                )}
+                {scenario.details?.parentBDetails && (
+                  <Text style={[styles.specialNoticeText, { marginTop: 4 }]}>
+                    • Parent B: {scenario.details.parentBDetails}
+                  </Text>
+                )}
+              </View>
+            </View>
+          );
+        })()}
+
+        {/* Optional: Special rates notice */}
+        {results.rateApplied !== "None" && (
+          <View style={styles.specialNotice}>
+            <Pressable
+              onPress={() => setExpandedSteps(prev => ({...prev, specialRate: !prev.specialRate}))}
+              style={styles.specialNoticeHeader}
+            >
+              <Text style={styles.specialNoticeTitle}>
+                {results.rateApplied.includes("FAR") ? "What is the Fixed Annual Rate?" : "What is the Minimum Annual Rate?"}
+              </Text>
+              <Text style={styles.specialNoticeChevron}>{expandedSteps.specialRate ? '▼' : '▶'}</Text>
+            </Pressable>
+
+            {expandedSteps.specialRate && (
+              <View style={styles.specialNoticeContent}>
+                {results.rateApplied.includes("FAR") ? (
+                  <>
+                    <Text style={styles.specialNoticeText}>
+                      The FAR is for low-income parents whose income doesn't reflect their capacity to pay. It is a way to prevent parents from reducing their payments by minimising their income. It is a rate paid per child (maximum 3) and requires three eligibility criteria be met:
+                    </Text>
+                    <Text style={styles.specialNoticeText}>
+                      {'\n'}1. The parent must have less than 35% care of the child.
+                      {'\n\n'}2. The income used in the assessment must be less than the pension Parenting Payment (single) maximum basic amount.
+                      {'\n\n'}3. The parent did not receive an income support payment in the ATI.
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <Text style={styles.specialNoticeText}>
+                      The MAR is paid per case (up to a maximum of three cases) and is put in place for low income parents who wouldn't be able to afford a higher amount. It requires three eligibility criteria be met:
+                    </Text>
+                    <Text style={styles.specialNoticeText}>
+                      {'\n'}1. The parent must have received an income support payment in their ATI.
+                      {'\n\n'}2. The parent has less than 14% care of all children.
+                      {'\n\n'}3. The parent's ATI must be below the self-support amount.
+                    </Text>
+                  </>
+                )}
+              </View>
+            )}
           </View>
         )}
 
@@ -589,18 +695,6 @@ export function ResultsSimpleExplanation({ results }: ResultsSimpleExplanationPr
             </LinearGradient>
           )}
         </View>
-
-        {/* Optional: Special rates notice */}
-        {results.rateApplied !== "None" && (
-          <View style={styles.specialNotice}>
-            <Text style={styles.specialNoticeTitle}>ℹ️ Special Rate Applied</Text>
-            <Text style={styles.specialNoticeText}>
-              {results.rateApplied} was applied instead of the standard formula calculation.
-              {results.rateApplied.includes("FAR") && " This happens when income is low but above the minimum threshold."}
-              {results.rateApplied.includes("MAR") && " This happens when income is very low and receiving Centrelink support."}
-            </Text>
-          </View>
-        )}
           </>
         )}
       </View>
@@ -1260,21 +1354,34 @@ const styles = StyleSheet.create({
 
   // Special notice
   specialNotice: {
-    backgroundColor: "#fef3c7", // amber-100
+    backgroundColor: "#1e293b", // slate-800 (matches main cards)
     borderRadius: 8,
     padding: 16,
     borderLeftWidth: 4,
-    borderLeftColor: "#fbbf24", // amber-400
+    borderLeftColor: "#06b6d4", // cyan-500 (info highlight)
+  },
+  specialNoticeHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   specialNoticeTitle: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#78350f", // amber-900
-    marginBottom: 4,
+    color: "#06b6d4", // cyan-500 (matches border)
+    flex: 1,
+  },
+  specialNoticeChevron: {
+    fontSize: 14,
+    color: "#94a3b8", // slate-400 (subtle)
+    marginLeft: 8,
+  },
+  specialNoticeContent: {
+    marginTop: 12,
   },
   specialNoticeText: {
     fontSize: 13,
-    color: "#92400e", // amber-800
+    color: "#cbd5e1", // slate-300 (primary text)
     lineHeight: 18,
   },
 });

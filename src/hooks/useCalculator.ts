@@ -260,6 +260,23 @@ export function useCalculator() {
     let rateApplied = "None";
     const appliedRates: string[] = [];
 
+    // Check if MAR applies at case level (once per case, not per child)
+    // MAR criteria:
+    // 1. Parent received income support payment
+    // 2. Parent has less than 14% care of ALL children
+    // 3. Parent's ATI is below the self-support amount
+    const marAppliesA = ATI_A < SSA && supportA && childResults.every(c => c.roundedCareA < 14);
+    const marAppliesB = ATI_B < SSA && supportB && childResults.every(c => c.roundedCareB < 14);
+
+    if (marAppliesA) {
+      MAR_A = MAR; // Set once for the entire case
+      appliedRates.push("MAR (Parent A)");
+    }
+    if (marAppliesB) {
+      MAR_B = MAR; // Set once for the entire case
+      appliedRates.push("MAR (Parent B)");
+    }
+
     childResults.forEach((child, index) => {
       const roundedCareA = child.roundedCareA;
       const roundedCareB = child.roundedCareB;
@@ -269,16 +286,19 @@ export function useCalculator() {
       let farAppliedA = false;
       let marAppliedA = false;
 
-      if (ATI_A < SSA && supportA && roundedCareB >= 87) {
-        MAR_A += MAR;
-        liabilityA = MAR;
-        appliedRateA = `MAR (Parent A, Child ${index + 1})`;
+      // Check if MAR applies for this parent (already determined at case level)
+      if (marAppliesA) {
+        // MAR is paid once per case, so divide by total children to show per-child breakdown
+        liabilityA = MAR / childResults.length;
         marAppliedA = true;
       } else if (ATI_A < MAX_PPS && !supportA && roundedCareB >= 66) {
-        FAR_A += FAR;
-        liabilityA = FAR;
-        appliedRateA = `FAR (Parent A, Child ${index + 1})`;
-        farAppliedA = true;
+        // FAR is paid per child (up to 3 children)
+        if (FAR_A / FAR < 3) {
+          FAR_A += FAR;
+          liabilityA = FAR;
+          appliedRateA = `FAR (Parent A, Child ${index + 1})`;
+          farAppliedA = true;
+        }
       }
 
       if (appliedRateA) {
@@ -291,16 +311,19 @@ export function useCalculator() {
       let farAppliedB = false;
       let marAppliedB = false;
 
-      if (ATI_B < SSA && supportB && roundedCareA >= 87) {
-        MAR_B += MAR;
-        liabilityB = MAR;
-        appliedRateB = `MAR (Parent B, Child ${index + 1})`;
+      // Check if MAR applies for this parent (already determined at case level)
+      if (marAppliesB) {
+        // MAR is paid once per case, so divide by total children to show per-child breakdown
+        liabilityB = MAR / childResults.length;
         marAppliedB = true;
       } else if (ATI_B < MAX_PPS && !supportB && roundedCareA >= 66) {
-        FAR_B += FAR;
-        liabilityB = FAR;
-        appliedRateB = `FAR (Parent B, Child ${index + 1})`;
-        farAppliedB = true;
+        // FAR is paid per child (up to 3 children)
+        if (FAR_B / FAR < 3) {
+          FAR_B += FAR;
+          liabilityB = FAR;
+          appliedRateB = `FAR (Parent B, Child ${index + 1})`;
+          farAppliedB = true;
+        }
       }
 
       if (appliedRateB) {
@@ -325,12 +348,8 @@ export function useCalculator() {
       const farB = appliedRates.filter((r) =>
         r.startsWith("FAR (Parent B")
       ).length;
-      const marA = appliedRates.filter((r) =>
-        r.startsWith("MAR (Parent A")
-      ).length;
-      const marB = appliedRates.filter((r) =>
-        r.startsWith("MAR (Parent B")
-      ).length;
+      const hasMarA = appliedRates.some((r) => r.startsWith("MAR (Parent A"));
+      const hasMarB = appliedRates.some((r) => r.startsWith("MAR (Parent B"));
 
       if (farA > 0 && farB > 0) {
         rateApplied = "FAR (Both Parents)";
@@ -338,12 +357,12 @@ export function useCalculator() {
         rateApplied = `FAR (Parent A, ${farA} child${farA > 1 ? "ren" : ""})`;
       } else if (farB > 0) {
         rateApplied = `FAR (Parent B, ${farB} child${farB > 1 ? "ren" : ""})`;
-      } else if (marA > 0 && marB > 0) {
+      } else if (hasMarA && hasMarB) {
         rateApplied = "MAR (Both Parents)";
-      } else if (marA > 0) {
-        rateApplied = `MAR (Parent A, ${marA} child${marA > 1 ? "ren" : ""})`;
-      } else if (marB > 0) {
-        rateApplied = `MAR (Parent B, ${marB} child${marB > 1 ? "ren" : ""})`;
+      } else if (hasMarA) {
+        rateApplied = "MAR (Parent A)";
+      } else if (hasMarB) {
+        rateApplied = "MAR (Parent B)";
       }
     }
 
