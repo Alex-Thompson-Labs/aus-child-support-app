@@ -62,100 +62,108 @@ export function CalculatorForm({
       {/* Combined Parents Card */}
       <View style={styles.card}>
         <Text style={styles.sectionHeading}>Income</Text>
-        <View style={styles.parentsGrid}>
-          {/* Parent A */}
-          <View style={styles.parentSection}>
-            <View style={styles.inputGroup}>
-              <View style={styles.labelRow}>
-                <Text style={styles.parentTitleA}>Parent A</Text>
-                <Text style={styles.label}> - Adjusted Taxable Income</Text>
-                <HelpTooltip
-                  what="Enter ATI from tax assessment. Includes taxable income plus reportable fringe benefits, foreign income, and certain tax-free pensions."
-                  why="ATI determines each parent's capacity to pay and their share of combined child support income."
-                />
-              </View>
-              <View style={styles.inputRow}>
-                <View style={styles.currencyInputContainer}>
-                  <Text style={styles.currencySymbol}>$</Text>
-                  <TextInput
-                    style={[styles.currencyInput, errors.incomeA && styles.inputError]}
-                    value={incomeA ? incomeA.toString() : ""}
-                    onChangeText={(text) => {
-                      const val = text.replace(/[^0-9]/g, "");
-                      onIncomeAChange(parseInt(val) || 0);
-                    }}
-                    keyboardType="numeric"
-                    placeholder="0"
-                  />
-                </View>
-                <View style={styles.switchRow}>
-                  <Switch
-                    value={supportA}
-                    onValueChange={onSupportAChange}
-                    trackColor={{ false: "#475569", true: "#3b82f6" }}
-                    thumbColor="#ffffff"
-                    style={styles.smallSwitch}
-                  />
-                  <Text style={styles.switchLabelSmall}>Inc. support</Text>
-                  <HelpTooltip
-                    what="Check if parent received Centrelink income support (JobSeeker, Parenting Payment, etc.) during the period."
-                    why="Income support recipients have their income set to 2/3 of annualised MTAWE, which may be higher than actual income."
-                  />
-                </View>
-              </View>
-              {errors.incomeA && (
-                <Text style={styles.errorText}>{errors.incomeA}</Text>
-              )}
+        
+        {/* Parent A */}
+        <View style={styles.inputGroup}>
+          <View style={[styles.labelRow, { gap: 8 }]}>
+            <Text style={styles.parentTitleA}>Parent A</Text>
+            <Text style={styles.label}> - Adjusted Taxable Income</Text>
+            <HelpTooltip
+              header="What's Included in ATI?"
+              what="- Taxable income
+- Reportable fringe benefits
+- Target foreign income
+- Total net investment loss
+- Tax-free pensions or benefits
+- Reportable superannuation contributions"
+              why=""
+              hideWhatLabel
+            />
+          </View>
+          <View style={styles.inputRow}>
+            <View style={styles.currencyInputContainer}>
+              <Text style={styles.currencySymbol}>$</Text>
+              <TextInput
+                style={[styles.currencyInput, errors.incomeA && styles.inputError]}
+                value={incomeA ? incomeA.toString() : ""}
+                onChangeText={(text) => {
+                  const val = text.replace(/[^0-9]/g, "");
+                  onIncomeAChange(parseInt(val) || 0);
+                }}
+                keyboardType="numeric"
+                placeholder="0"
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <Switch
+                value={supportA}
+                onValueChange={onSupportAChange}
+                trackColor={{ false: "#475569", true: "#3b82f6" }}
+                thumbColor="#ffffff"
+                style={styles.smallSwitch}
+              />
+              <Text style={styles.switchLabelSmall}>Inc. support</Text>
+              <HelpTooltip
+                header="MINIMUM ANNUAL RATE / FIXED ANNUAL RATE"
+                what="Whether or not a parent received an income support payment in their taxable income can move the assessment away from using the formula to a fixed or minimum rate under certain conditions"
+                why=""
+                hideWhatLabel
+              />
             </View>
           </View>
+          {errors.incomeA && (
+            <Text style={styles.errorText}>{errors.incomeA}</Text>
+          )}
+        </View>
 
-          {/* Parent B */}
-          <View style={styles.parentSection}>
-            <View style={styles.inputGroup}>
-              <View style={styles.labelRow}>
-                <Text style={styles.parentTitleB}>Parent B</Text>
-                <Text style={styles.label}> - Adjusted Taxable Income</Text>
-              </View>
-              <View style={styles.inputRow}>
-                <View style={styles.currencyInputContainer}>
-                  <Text style={styles.currencySymbol}>$</Text>
-                  <TextInput
-                    style={[styles.currencyInput, errors.incomeB && styles.inputError]}
-                    value={incomeB ? incomeB.toString() : ""}
-                    onChangeText={(text) => {
-                      const val = text.replace(/[^0-9]/g, "");
-                      onIncomeBChange(parseInt(val) || 0);
-                    }}
-                    keyboardType="numeric"
-                    placeholder="0"
-                  />
-                </View>
-                <View style={styles.switchRow}>
-                  <Switch
-                    value={supportB}
-                    onValueChange={onSupportBChange}
-                    trackColor={{ false: "#475569", true: "#3b82f6" }}
-                    thumbColor="#ffffff"
-                    style={styles.smallSwitch}
-                  />
-                  <Text style={styles.switchLabelSmall}>Inc. support</Text>
-                  <HelpTooltip
-                    what="Check if parent received Centrelink income support (JobSeeker, Parenting Payment, etc.) during the period."
-                    why="Income support recipients have their income set to 2/3 of annualised MTAWE, which may be higher than actual income."
-                  />
-                </View>
-              </View>
-              {errors.incomeB && (
-                <Text style={styles.errorText}>{errors.incomeB}</Text>
-              )}
+        {/* Parent B */}
+        <View style={[styles.inputGroup, { marginTop: 16 }]}>
+          <View style={styles.labelRow}>
+            <Text style={styles.parentTitleB}>Parent B</Text>
+            <Text style={styles.label}> - Adjusted Taxable Income</Text>
+          </View>
+          <View style={styles.inputRow}>
+            <View style={styles.currencyInputContainer}>
+              <Text style={styles.currencySymbol}>$</Text>
+              <TextInput
+                style={[styles.currencyInput, errors.incomeB && styles.inputError]}
+                value={incomeB ? incomeB.toString() : ""}
+                onChangeText={(text) => {
+                  const val = text.replace(/[^0-9]/g, "");
+                  onIncomeBChange(parseInt(val) || 0);
+                }}
+                keyboardType="numeric"
+                placeholder="0"
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <Switch
+                value={supportB}
+                onValueChange={onSupportBChange}
+                trackColor={{ false: "#475569", true: "#3b82f6" }}
+                thumbColor="#ffffff"
+                style={styles.smallSwitch}
+              />
+              <Text style={styles.switchLabelSmall}>Inc. support</Text>
             </View>
           </View>
+          {errors.incomeB && (
+            <Text style={styles.errorText}>{errors.incomeB}</Text>
+          )}
         </View>
       </View>
 
       {/* Children Card */}
       <View style={styles.card}>
-        <Text style={styles.sectionHeading}>Children</Text>
+        <View style={[styles.labelRow, { gap: 8, marginBottom: 8 }]}>
+          <Text style={[styles.sectionHeading, { marginBottom: 0 }]}>Children Care Details</Text>
+          <HelpTooltip
+            header="CARE = OVERNIGHT"
+            what="Enter the number of nights each parent has care of the child per week, fortnight, or year and if the child is over or under 13 years of age."
+            why=""
+            hideWhatLabel
+          />
+        </View>
 
         <View style={styles.childrenList}>
           {childrenData.map((child) => (
@@ -185,8 +193,10 @@ export function CalculatorForm({
         <View style={styles.relDepsHeader}>
           <Text style={styles.sectionHeading}>Relevant Dependents</Text>
           <HelpTooltip
-            what="Other biological/adopted children living with a parent who are NOT part of this assessment."
-            why="Reduces child support income via 'multi-case allowance', recognizing they support other children."
+            header="REDUCES ASSESSABLE INCOME"
+            what="Number of children in the parents care from a different relationship and not a claimed for child in a separate case."
+            why=""
+            hideWhatLabel
           />
           <Switch
             value={showRelDeps}
@@ -268,11 +278,13 @@ export function CalculatorForm({
 
       {/* Court Date Card */}
       <View style={styles.card}>
-        <View style={styles.labelRow}>
-          <Text style={styles.sectionHeading}>Court Date (Optional)</Text>
+        <View style={[styles.labelRow, { gap: 8 }]}>
+          <Text style={[styles.sectionHeading, { marginBottom: 0 }]}>Court Date (Optional)</Text>
           <HelpTooltip
-            what="If you have a scheduled court appearance related to child support."
-            why="Cases with upcoming court dates may benefit from urgent legal advice. Enter date as dd/mm/yyyy (e.g., 25/12/2024)."
+            header="PREPARATION IS KEY"
+            what="Cases with upcoming court dates may benefit from urgent legal advice."
+            why=""
+            hideWhatLabel
           />
         </View>
         <TextInput
@@ -283,11 +295,6 @@ export function CalculatorForm({
           placeholderTextColor="#64748b"
           keyboardType="numbers-and-punctuation"
         />
-        {courtDate && courtDate.length > 0 && (
-          <Text style={styles.courtDateHint}>
-            Enter as: day/month/year (e.g., 25/12/2024)
-          </Text>
-        )}
       </View>
     </ScrollView>
   );
@@ -323,7 +330,7 @@ const styles = StyleSheet.create({
     color: "#f59e0b", // amber-500
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    marginBottom: 12,
+    marginBottom: 8,
   },
   cardSubtitle: {
     fontSize: 12,
@@ -377,7 +384,6 @@ const styles = StyleSheet.create({
   inputRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     gap: 12,
   },
   currencyInputContainer: {
@@ -385,6 +391,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "relative",
     width: 150,
+    flex: 0,
   },
   currencySymbol: {
     position: "absolute",
@@ -495,11 +502,11 @@ const styles = StyleSheet.create({
     marginTop: -5,
   },
   relDepsRow: {
-    marginTop: 12,
+    marginTop: 8,
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 24,
-    paddingBottom: 8,
+    paddingBottom: 0,
   },
   relDepsParentSection: {
     flex: 1,
@@ -525,7 +532,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   relDepsAgeLabel: {
-    fontSize: 11,
+    fontSize: 13,
     color: "#64748b", // slate-500
   },
   relDepsInput: {

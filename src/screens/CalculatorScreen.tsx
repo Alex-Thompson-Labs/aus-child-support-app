@@ -1,6 +1,7 @@
 import React from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 import { CalculatorForm } from "../components/CalculatorForm";
 import { CalculatorResults } from "../components/CalculatorResults";
 import { useCalculator } from "../hooks/useCalculator";
@@ -57,7 +58,10 @@ export function CalculatorScreen() {
         style={styles.keyboardView}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Child Support Calculator</Text>
+          <View style={styles.titleContainer}>
+            <Ionicons name="people" size={28} color="#f59e0b" />
+            <Text style={styles.title}>Child Support Calculator</Text>
+          </View>
         </View>
 
         <View style={styles.content}>
@@ -104,15 +108,23 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    padding: 16,
+    padding: 20,
+    paddingTop: 24,
+    paddingBottom: 24,
     borderBottomWidth: 1,
-    borderBottomColor: "#1e293b", // slate-800
+    borderBottomColor: "#334155", // slate-700
+  },
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
   },
   title: {
-    fontSize: 20,
+    fontSize: 26,
     fontWeight: "700",
     color: "#ffffff",
-    textAlign: "center",
+    letterSpacing: 0.5,
   },
   content: {
     flex: 1,

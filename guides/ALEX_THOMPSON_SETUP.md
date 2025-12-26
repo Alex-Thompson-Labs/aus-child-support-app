@@ -47,6 +47,138 @@
 
 ---
 
+## PHASE 1.5: Create Logo & Brand Assets (Dec 26 - 1 hour)
+
+### Option A: Quick & Easy - Canva (Recommended)
+
+**Go to: https://www.canva.com**
+
+1. Sign up free (or use existing account)
+2. Search templates: "app logo" or "app icon"
+3. Customize with your app name
+4. Keep it professional/trustworthy (blues, greens, balance/scale symbols)
+5. Export all required sizes (see below)
+
+**Required deliverables:**
+- [ ] App icon - 1024x1024px (required for iOS/Android app stores)
+- [ ] Horizontal logo - for website header (transparent PNG, ~2000px wide)
+- [ ] Square logo - for social media/LinkedIn (512x512px)
+- [ ] Favicon - 32x32px (for website browser tab)
+
+### Option B: AI Logo Generator
+
+**Services ($20-65 one-time):**
+- Looka.com
+- Brandmark.io
+- LogoAI.com
+
+**Process:**
+1. Enter business name: "Australian Child Support Calculator"
+2. Select industry: Legal/Financial Services
+3. Choose style preferences: Professional, Trustworthy, Modern
+4. Generate 50+ options
+5. Pick favorite and customize
+6. Pay for full package (gets you all file formats/sizes)
+
+### Design Guidelines
+
+**DO:**
+✓ Professional/trustworthy vibe (legal + financial matters)
+✓ Work in monochrome (for letterheads, invoices)
+✓ Colors: Blues (trust), greens (stability/growth)
+✓ Symbols: Balance scales, parent+child silhouettes, protective shield
+✓ Test readability at 32px (tiny favicon size)
+
+**DON'T:**
+✗ Reds (suggests conflict/debt)
+✗ Overly playful or cartoon-y
+✗ Complex gradients (won't scale down well)
+✗ Too many colors (max 2-3)
+
+### Quick Start Path
+
+**If you're short on time:**
+1. Canva → "App Logo" template
+2. Change colors to professional blue
+3. Add text: "CSC" or scales icon
+4. Export as 1024x1024px PNG
+5. Use ezgif.com to resize for other dimensions
+6. Done in 30 minutes
+
+**Save files as:**
+- `logo_1024.png` (app stores)
+- `logo_horizontal.png` (website)
+- `logo_512.png` (LinkedIn/social)
+- `favicon.ico` (website tab)
+
+---
+
+## PHASE 1.5: Create Logo & Brand Assets (Dec 26 - 1 hour)
+
+### Option A: Quick & Easy - Canva (Recommended)
+
+**Go to: https://www.canva.com**
+
+1. Sign up free (or use existing account)
+2. Search templates: "app logo" or "app icon"
+3. Customize with your app name
+4. Keep it professional/trustworthy (blues, greens, balance/scale symbols)
+5. Export all required sizes (see below)
+
+**Required deliverables:**
+- [ ] App icon - 1024x1024px (required for iOS/Android app stores)
+- [ ] Horizontal logo - for website header (transparent PNG, ~2000px wide)
+- [ ] Square logo - for social media/LinkedIn (512x512px)
+- [ ] Favicon - 32x32px (for website browser tab)
+
+### Option B: AI Logo Generator
+
+**Services ($20-65 one-time):**
+- Looka.com
+- Brandmark.io
+- LogoAI.com
+
+**Process:**
+1. Enter business name: "Australian Child Support Calculator"
+2. Select industry: Legal/Financial Services
+3. Choose style preferences: Professional, Trustworthy, Modern
+4. Generate 50+ options
+5. Pick favorite and customize
+6. Pay for full package (gets you all file formats/sizes)
+
+### Design Guidelines
+
+**DO:**
+✓ Professional/trustworthy vibe (legal + financial matters)
+✓ Work in monochrome (for letterheads, invoices)
+✓ Colors: Blues (trust), greens (stability/growth)
+✓ Symbols: Balance scales, parent+child silhouettes, protective shield
+✓ Test readability at 32px (tiny favicon size)
+
+**DON'T:**
+✗ Reds (suggests conflict/debt)
+✗ Overly playful or cartoon-y
+✗ Complex gradients (won't scale down well)
+✗ Too many colors (max 2-3)
+
+### Quick Start Path
+
+**If you're short on time:**
+1. Canva → "App Logo" template
+2. Change colors to professional blue
+3. Add text: "CSC" or scales icon
+4. Export as 1024x1024px PNG
+5. Use ezgif.com to resize for other dimensions
+6. Done in 30 minutes
+
+**Save files as:**
+- `logo_1024.png` (app stores)
+- `logo_horizontal.png` (website)
+- `logo_512.png` (LinkedIn/social)
+- `favicon.ico` (website tab)
+
+---
+
 ## PHASE 2: Create LinkedIn Account (Dec 26 Evening - 1 hour)
 
 ### Step 1: Sign Up
@@ -119,22 +251,88 @@ Currently partnering with family law practices across Australia to provide quali
 
 ## PHASE 3: Business Email Setup (Dec 26-27)
 
-### Option A: If you already own a domain
+### Domain Registration & Email Setup
 
-**Set up email forwarding:**
-1. Go to domain registrar (e.g., Namecheap, GoDaddy)
-2. Create email: alex@yourdomain.com.au
-3. Forward to your real email
-4. Set up "Send As" in Gmail/Outlook
+**Register domain at Namecheap (15 min + $10-15/year):**
+1. Go to Namecheap.com
+2. Search for domain: auschildsupport.com (or your preferred alternative)
+3. Purchase domain (~$10-15/year for .com)
+4. Complete registration with Alex Thompson details
 
-### Option B: If you need a domain
+**Set up Namecheap Private Email (FREE for 2 months, then $1-2/month):**
 
-**Register domain (15 min + $15-30/year):**
-1. Go to Namecheap.com or VentraIP.com.au (Australian registrar)
-2. Search: childsupportcalculator.com.au OR csc.com.au OR csccalculator.com.au
-3. Purchase domain ($15-30/year)
-4. Set up email forwarding (included free usually)
-5. Create: alex@[yourdomain].com.au
+1. **Start Private Email trial:**
+   - In Namecheap dashboard, click "Private Email" in left sidebar
+   - Click "Start my free trial" button
+   - Select your domain (auschildsupport.com)
+   - Complete setup wizard
+
+2. **Create email mailbox:**
+   - Mailbox name: alex
+   - Password: [create strong password - save it]
+   - Complete creation
+
+3. **Wait for setup (5-10 minutes):**
+   - Namecheap automatically configures MX records
+   - No manual DNS configuration needed
+
+4. **Set up Gmail integration:**
+   - Gmail → Settings (gear icon) → "See all settings"
+   - Go to "Accounts and Import" tab
+   - Under "Check mail from other accounts", click "Add a mail account"
+   
+   **Add account details:**
+   - Email address: alex@auschildsupport.com
+   - Click "Next"
+   - Select "Import emails from my other account (POP3)"
+   - Click "Next"
+   
+   **POP3 settings:**
+   - Username: alex@auschildsupport.com
+   - Password: [password you created]
+   - POP Server: mail.privateemail.com
+   - Port: 995
+   - Check "Always use a secure connection (SSL)"
+   - Click "Add Account"
+   
+   **Set up sending:**
+   - When prompted "Would you like to send mail as...", click "Yes"
+   - Name: Alex Thompson
+   - Email: alex@auschildsupport.com
+   - Leave "Treat as an alias" checked
+   - Click "Next Step"
+   
+   **SMTP settings:**
+   - SMTP Server: mail.privateemail.com
+   - Port: 465
+   - Username: alex@auschildsupport.com
+   - Password: [same password]
+   - Select "Secured connection using SSL"
+   - Click "Add Account"
+   
+   **Verify:**
+   - Gmail sends verification email to alex@auschildsupport.com
+   - Check Gmail inbox (it imports from Private Email)
+   - Click verification link
+   - Done
+
+5. **Test email:**
+   - Send test email from Gmail as alex@auschildsupport.com
+   - Send test email TO alex@auschildsupport.com from another account
+   - Confirm both work
+
+**Set up Gmail "Send As" (so replies come from alex@auschildsupport.com):**
+1. Gmail → Settings (gear icon) → "See all settings"
+2. Go to "Accounts and Import" tab
+3. Under "Send mail as", click "Add another email address"
+4. Enter: Alex Thompson, alex@auschildsupport.com
+5. Select "Treat as an alias"
+6. Click "Next Step"
+7. **IMPORTANT:** Choose "Send through Gmail" (easier, no SMTP setup needed)
+8. Gmail will send verification email to alex@auschildsupport.com
+9. Check your Gmail inbox (the forwarded verification)
+10. Click verification link
+11. Done - you can now send emails as alex@auschildsupport.com from Gmail
 
 **Email signature template:**
 ```
@@ -142,16 +340,16 @@ Alex Thompson
 Founder
 Australian Child Support Calculator
 
-E: alex@childsupportcalculator.com.au
+E: alex@auschildsupport.com
 P: [Phone number]
-W: www.childsupportcalculator.com.au
+W: www.auschildsupport.com
 ```
 
 **🔔 REMINDER - Complete LinkedIn Contact Info:**
 Once your email is set up and working:
 1. Go back to LinkedIn profile
 2. Click "Add contact info" (under Additional sections)
-3. Add your alex@[yourdomain].com.au email
+3. Add your alex@auschildsupport.com email
 4. Save
 5. LinkedIn profile is now 100% complete
 
@@ -335,8 +533,9 @@ Dec 27 | Sarah Chen | Chen Family Law | linkedin.com/... | Yes | Not yet | - | N
 
 **Before Dec 28:**
 - [ ] AI headshot created and downloaded
+- [ ] Logo created (all required sizes exported)
 - [ ] LinkedIn account created as "Alex Thompson"
-- [ ] LinkedIn profile complete (photo, experience, skills, visibility settings)
+- [ ] LinkedIn profile complete (photo, logo as banner optional, experience, skills, visibility settings)
 - [ ] Business email set up (or using Gmail temporarily)
 - [ ] LinkedIn contact info updated with business email ⚠️
 - [ ] Virtual phone number activated

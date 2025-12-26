@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { View, Text, Pressable, Modal, StyleSheet } from "react-native";
 
 interface HelpTooltipProps {
-  what: string;
+  what: string | React.ReactNode;
   why: string;
+  hideWhatLabel?: boolean;
+  header?: string;
 }
 
-export function HelpTooltip({ what, why }: HelpTooltipProps) {
+export function HelpTooltip({ what, why, hideWhatLabel, header }: HelpTooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   return (
@@ -30,14 +32,29 @@ export function HelpTooltip({ what, why }: HelpTooltipProps) {
         >
           <Pressable style={styles.tooltip} onPress={(e) => e.stopPropagation()}>
             <View style={styles.content}>
+              {header && (
+                <View style={styles.section}>
+                  <Text style={styles.sectionHeader}>{header}</Text>
+                </View>
+              )}
+              {!hideWhatLabel && (
+                <View style={styles.section}>
+                  <Text style={styles.sectionLabel}>What to enter</Text>
+                </View>
+              )}
               <View style={styles.section}>
-                <Text style={styles.sectionLabel}>What to enter</Text>
-                <Text style={styles.sectionText}>{what}</Text>
+                {typeof what === 'string' ? (
+                  <Text style={styles.sectionText}>{what}</Text>
+                ) : (
+                  what
+                )}
               </View>
-              <View style={styles.section}>
-                <Text style={styles.sectionLabelWhy}>Why it matters</Text>
-                <Text style={styles.sectionTextWhy}>{why}</Text>
-              </View>
+              {why && (
+                <View style={styles.section}>
+                  <Text style={styles.sectionLabelWhy}>Why it matters</Text>
+                  <Text style={styles.sectionTextWhy}>{why}</Text>
+                </View>
+              )}
             </View>
           </Pressable>
         </Pressable>
@@ -88,6 +105,14 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   section: {
+    marginBottom: 8,
+  },
+  sectionHeader: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#f59e0b", // amber-500
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
     marginBottom: 8,
   },
   sectionLabel: {

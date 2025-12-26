@@ -121,7 +121,7 @@ export function LawyerAlert({
   }, [isPressed, onPress, displayTitle, urgency, displayButtonText, analytics, triggerType, annualLiability]);
 
   const isHighUrgency = urgency === 'high';
-  const borderColor = isHighUrgency ? '#ef4444' : '#334155';
+  const borderColor = isHighUrgency ? '#ef4444' : '#f59e0b';
   const buttonColor = isHighUrgency ? '#ef4444' : '#2563eb';
 
   // Accessibility: Announce urgency level

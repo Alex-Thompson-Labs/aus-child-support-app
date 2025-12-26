@@ -194,8 +194,8 @@ export function getCategoryDisplayInfo(category: ComplexityCategory): {
 } {
   const displayInfo: Record<ComplexityCategory, { emoji: string; title: string; accentColor: string }> = {
     income: { emoji: '💰', title: 'Income Issues', accentColor: '#f59e0b' }, // amber-500
-    child: { emoji: '👶', title: 'Child-Related', accentColor: '#8b5cf6' }, // violet-500
-    other: { emoji: '🏡', title: 'Other Factors', accentColor: '#3b82f6' }, // blue-500
+    child: { emoji: '👶', title: 'Child-Related', accentColor: '#10b981' }, // emerald-500
+    other: { emoji: '🏡', title: 'Other Factors', accentColor: '#14b8a6' }, // teal-500
   };
 
   return displayInfo[category];

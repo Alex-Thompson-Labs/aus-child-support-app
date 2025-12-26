@@ -8,6 +8,7 @@ import { detectComplexity, getAlertConfig, type ComplexityFlags, type Complexity
 import { ChangeOfAssessmentPrompt } from "./ChangeOfAssessmentPrompt";
 import { LawyerAlert } from "./LawyerAlert";
 import { ResultsSimpleExplanation } from "./ResultsSimpleExplanation";
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface CalculatorResultsProps {
   results: CalculationResults;
@@ -216,6 +217,26 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
     setIsExpanded(willExpand);
   };
 
+  // Get gradient colors for collapsed bottom card
+  const getCollapsedGradientColors = (payer: string): string[] => {
+    if (payer === 'Neither') {
+      return ['#1e40af', '#1e40af']; // Solid blue for "no payment"
+    }
+    return payer === 'Parent A'
+      ? ['#3b82f6', '#8b5cf6']  // A → B: blue → purple
+      : ['#8b5cf6', '#3b82f6']; // B → A: purple → blue
+  };
+
+  // Get gradient colors for expanded hero section
+  const getExpandedGradientColors = (payer: string): string[] => {
+    if (payer === 'Neither') {
+      return ['#1e40af', '#1e40af']; // Solid blue for "no payment"
+    }
+    return payer === 'Parent A'
+      ? ['#3b82f6', '#1e3a8a', '#8b5cf6']  // A → B with darker middle
+      : ['#8b5cf6', '#5b21b6', '#3b82f6']; // B → A with darker middle
+  };
+
   // Render the expanded full-screen breakdown content
   const renderBreakdownContent = () => (
     <ScrollView
@@ -224,7 +245,12 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
       showsVerticalScrollIndicator={true}
     >
       {/* Hero Section in Expanded View */}
-      <View style={styles.expandedHeroSection}>
+      <LinearGradient
+        colors={getExpandedGradientColors(results.payer)}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+        style={styles.expandedHeroSection}
+      >
         <Text style={styles.expandedHeroLabel}>
           {results.payer === "Neither" ? "No payment required" : `${results.payer} pays ${results.receiver}`}
         </Text>
@@ -246,7 +272,7 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
             <Text style={styles.expandedSecondaryLabel}>/day</Text>
           </View>
         </View>
-      </View>
+      </LinearGradient>
 
       {/* Lawyer Alert - shown when complexity flags are triggered */}
       {alertConfig && (
@@ -279,41 +305,48 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
       {!isExpanded && (
         <Pressable
           onPress={toggleExpand}
-          style={[styles.fixedBottomCard, { paddingBottom: Math.max(insets.bottom, 16) }]}
+          style={{ paddingBottom: Math.max(insets.bottom, 16) }}
         >
-          {/* Drag Handle */}
-          <View style={styles.dragHandleContainer}>
-            <View style={styles.dragHandle} />
-          </View>
-
-          <View style={styles.collapsedContent}>
-            <View style={styles.collapsedLeft}>
-              <Text style={styles.collapsedLabel}>
-                {results.payer === "Neither" ? "No payment" : `${results.payer} pays ${results.receiver}`}
-              </Text>
-              <Text style={styles.collapsedAmount}>{formatCurrency(results.finalPaymentAmount)}</Text>
-              <Text style={styles.collapsedSubtext}>per year</Text>
+          <LinearGradient
+            colors={getCollapsedGradientColors(results.payer)}
+            start={{ x: 0, y: 0.5 }}
+            end={{ x: 1, y: 0.5 }}
+            style={styles.fixedBottomCard}
+          >
+            {/* Drag Handle */}
+            <View style={styles.dragHandleContainer}>
+              <View style={styles.dragHandle} />
             </View>
-            <View style={styles.collapsedRight}>
-              <View style={styles.collapsedSecondary}>
-                <Text style={styles.collapsedSecondaryValue}>{formatCurrency(monthlyAmount)}</Text>
-                <Text style={[styles.collapsedSecondaryLabel, { width: 32 }]}>/mo</Text>
+
+            <View style={styles.collapsedContent}>
+              <View style={styles.collapsedLeft}>
+                <Text style={styles.collapsedLabel}>
+                  {results.payer === "Neither" ? "No payment" : `${results.payer} pays ${results.receiver}`}
+                </Text>
+                <Text style={styles.collapsedAmount}>{formatCurrency(results.finalPaymentAmount)}</Text>
+                <Text style={styles.collapsedSubtext}>per year</Text>
               </View>
-              <View style={styles.collapsedSecondary}>
-                <Text style={styles.collapsedSecondaryValue}>{formatCurrency(fortnightlyAmount)}</Text>
-                <Text style={[styles.collapsedSecondaryLabel, { width: 32 }]}>/fn</Text>
-              </View>
-              <View style={styles.collapsedSecondary}>
-                <Text style={styles.collapsedSecondaryValue}>{formatCurrency(dailyAmount)}</Text>
-                <Text style={[styles.collapsedSecondaryLabel, { width: 32 }]}>/day</Text>
+              <View style={styles.collapsedRight}>
+                <View style={styles.collapsedSecondary}>
+                  <Text style={styles.collapsedSecondaryValue}>{formatCurrency(monthlyAmount)}</Text>
+                  <Text style={[styles.collapsedSecondaryLabel, { width: 32 }]}>/mo</Text>
+                </View>
+                <View style={styles.collapsedSecondary}>
+                  <Text style={styles.collapsedSecondaryValue}>{formatCurrency(fortnightlyAmount)}</Text>
+                  <Text style={[styles.collapsedSecondaryLabel, { width: 32 }]}>/fn</Text>
+                </View>
+                <View style={styles.collapsedSecondary}>
+                  <Text style={styles.collapsedSecondaryValue}>{formatCurrency(dailyAmount)}</Text>
+                  <Text style={[styles.collapsedSecondaryLabel, { width: 32 }]}>/day</Text>
+                </View>
               </View>
             </View>
-          </View>
 
-          <View style={styles.expandHint}>
-            <Text style={styles.expandHintText}>Tap to see full breakdown</Text>
-            <Text style={styles.expandChevron}>▲</Text>
-          </View>
+            <View style={styles.expandHint}>
+              <Text style={styles.expandHintText}>Tap to see full breakdown</Text>
+              <Text style={styles.expandChevron}>▲</Text>
+            </View>
+          </LinearGradient>
         </Pressable>
       )}
 
@@ -352,7 +385,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#1e40af", // blue-800
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingHorizontal: 20,
@@ -383,7 +415,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   collapsedLabel: {
-    color: "#93c5fd", // blue-300
+    color: "#dbeafe", // blue-100
     fontSize: 12,
     fontWeight: "500",
     marginBottom: 2,
@@ -391,11 +423,11 @@ const styles = StyleSheet.create({
   collapsedAmount: {
     fontSize: 32,
     fontWeight: "700",
-    color: "#ffffff",
+    color: "#fbbf24",
     letterSpacing: -0.5,
   },
   collapsedSubtext: {
-    color: "#93c5fd", // blue-300
+    color: "#dbeafe", // blue-100
     fontSize: 12,
   },
   collapsedRight: {
@@ -414,7 +446,7 @@ const styles = StyleSheet.create({
   },
   collapsedSecondaryLabel: {
     fontSize: 10,
-    color: "#93c5fd", // blue-300
+    color: "#dbeafe", // blue-100
   },
   expandHint: {
     flexDirection: "row",
@@ -425,12 +457,12 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
   },
   expandHintText: {
-    color: "#93c5fd", // blue-300
+    color: "#dbeafe", // blue-100
     fontSize: 11,
     fontWeight: "500",
   },
   expandChevron: {
-    color: "#93c5fd", // blue-300
+    color: "#dbeafe", // blue-100
     fontSize: 10,
   },
 
@@ -476,12 +508,11 @@ const styles = StyleSheet.create({
   expandedHeroSection: {
     alignItems: "center",
     paddingVertical: 24,
-    backgroundColor: "#1e40af", // blue-800
     borderRadius: 16,
     marginBottom: 8,
   },
   expandedHeroLabel: {
-    color: "#bfdbfe", // blue-200
+    color: "#e0e7ff", // indigo-100
     fontSize: 14,
     fontWeight: "500",
     marginBottom: 4,
@@ -489,11 +520,11 @@ const styles = StyleSheet.create({
   expandedHeroAmount: {
     fontSize: 48,
     fontWeight: "700",
-    color: "#ffffff",
+    color: "#fbbf24",
     letterSpacing: -1,
   },
   expandedHeroSubtext: {
-    color: "#bfdbfe", // blue-200
+    color: "#e0e7ff", // indigo-100
     fontSize: 14,
     marginBottom: 16,
   },
@@ -512,7 +543,7 @@ const styles = StyleSheet.create({
   },
   expandedSecondaryLabel: {
     fontSize: 12,
-    color: "#bfdbfe", // blue-200
+    color: "#e0e7ff", // indigo-100
   },
   expandedDivider: {
     width: 1,

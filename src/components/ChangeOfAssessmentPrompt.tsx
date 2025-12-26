@@ -33,6 +33,7 @@ export function ChangeOfAssessmentPrompt({
   // Animation
   const coaHeightAnim = useRef(new Animated.Value(0)).current;
   const coaContentHeight = useRef(0);
+  const incomeBorderPulse = useRef(new Animated.Value(1)).current;
 
   // Hooks
   const router = useRouter();
@@ -70,6 +71,28 @@ export function ChangeOfAssessmentPrompt({
       friction: 11, // Same as modal animation
     }).start();
   }, [isCoAExpanded, coaHeightAnim]);
+
+  // Income border pulse animation (continuous when expanded)
+  useEffect(() => {
+    if (isCoAExpanded && incomeReasons.length > 0) {
+      const pulseAnimation = Animated.loop(
+        Animated.sequence([
+          Animated.timing(incomeBorderPulse, {
+            toValue: 1.3,
+            duration: 1200,
+            useNativeDriver: false,
+          }),
+          Animated.timing(incomeBorderPulse, {
+            toValue: 1,
+            duration: 1200,
+            useNativeDriver: false,
+          }),
+        ])
+      );
+      pulseAnimation.start();
+      return () => pulseAnimation.stop();
+    }
+  }, [isCoAExpanded, incomeBorderPulse, incomeReasons.length]);
 
   // Checkbox toggle handler
   const handleCheckboxToggle = useCallback(
@@ -274,9 +297,37 @@ export function ChangeOfAssessmentPrompt({
                   {getCategoryDisplayInfo('income').emoji} {getCategoryDisplayInfo('income').title}
                 </Text>
               </View>
-              <View style={[styles.categoryBorder, { borderLeftColor: '#f59e0b' }]}>
+              <Animated.View
+                style={[
+                  styles.categoryBorder,
+                  {
+                    borderLeftColor: '#f59e0b',
+                    borderLeftWidth: incomeBorderPulse.interpolate({
+                      inputRange: [1, 1.3],
+                      outputRange: [3, 5],
+                    }),
+                  }
+                ]}
+              >
                 {incomeReasons.map(renderCheckbox)}
-              </View>
+
+                {/* Forensic Accountant Value-Add Note */}
+                {(selectedReasons.has('income_resources_not_reflected') ||
+                  selectedReasons.has('earning_capacity')) && (
+                  <View style={styles.valueAddNote}>
+                    <Text style={styles.valueAddEmoji}>💼</Text>
+                    <View style={styles.valueAddTextContainer}>
+                      <Text style={styles.valueAddTitle}>Forensic Accountant Value-Add</Text>
+                      <Text style={styles.valueAddDescription}>
+                        Forensic accountants specialize in uncovering hidden income, verifying actual earning capacity,
+                        and providing expert evidence for court proceedings. They can analyze business records, trust
+                        distributions, asset holdings, and other financial structures to reveal a parent's true financial
+                        position beyond what appears in tax returns.
+                      </Text>
+                    </View>
+                  </View>
+                )}
+              </Animated.View>
             </View>
           )}
 
@@ -284,11 +335,11 @@ export function ChangeOfAssessmentPrompt({
           {childReasons.length > 0 && (
             <View style={styles.reasonGroup}>
               <View style={styles.groupHeader}>
-                <Text style={[styles.groupTitle, { color: '#8b5cf6' }]}>
+                <Text style={[styles.groupTitle, { color: '#10b981' }]}>
                   {getCategoryDisplayInfo('child').emoji} {getCategoryDisplayInfo('child').title}
                 </Text>
               </View>
-              <View style={[styles.categoryBorder, { borderLeftColor: '#8b5cf6' }]}>
+              <View style={[styles.categoryBorder, { borderLeftColor: '#10b981' }]}>
                 {childReasons.map(renderCheckbox)}
               </View>
             </View>
@@ -298,11 +349,11 @@ export function ChangeOfAssessmentPrompt({
           {otherReasons.length > 0 && (
             <View style={styles.reasonGroup}>
               <View style={styles.groupHeader}>
-                <Text style={[styles.groupTitle, { color: '#3b82f6' }]}>
+                <Text style={[styles.groupTitle, { color: '#14b8a6' }]}>
                   {getCategoryDisplayInfo('other').emoji} {getCategoryDisplayInfo('other').title}
                 </Text>
               </View>
-              <View style={[styles.categoryBorder, { borderLeftColor: '#3b82f6' }]}>
+              <View style={[styles.categoryBorder, { borderLeftColor: '#14b8a6' }]}>
                 {otherReasons.map(renderCheckbox)}
               </View>
             </View>
@@ -460,10 +511,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#f59e0b", // amber-500 (income category)
   },
   coaButtonChild: {
-    backgroundColor: "#8b5cf6", // violet-500 (child category)
+    backgroundColor: "#10b981", // emerald-500 (child category)
   },
   coaButtonOther: {
-    backgroundColor: "#3b82f6", // blue-500 (other category)
+    backgroundColor: "#14b8a6", // teal-500 (other category)
   },
   coaButtonDisabled: {
     backgroundColor: "#64748b", // slate-500
@@ -478,5 +529,35 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#64748b", // slate-500
     marginTop: 8,
+  },
+
+  // Value-Add Note
+  valueAddNote: {
+    flexDirection: "row",
+    backgroundColor: "#0f172a", // slate-900 (darker than container)
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: "#334155", // slate-700
+  },
+  valueAddEmoji: {
+    fontSize: 20,
+    marginRight: 12,
+    marginTop: 2,
+  },
+  valueAddTextContainer: {
+    flex: 1,
+  },
+  valueAddTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#f59e0b", // amber-500 (matches income category)
+    marginBottom: 4,
+  },
+  valueAddDescription: {
+    fontSize: 13,
+    color: "#94a3b8", // slate-400
+    lineHeight: 18,
   },
 });
