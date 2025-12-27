@@ -20,34 +20,28 @@ Claude Code will run: `npx expo install react-native-web react-dom @expo/metro-r
 
 ## Step 2: Update app.json Configuration
 
-Add web platform support to your `app.json`:
+**Ask Claude Code to do this:**
 
-```json
-{
-  "expo": {
-    "platforms": ["ios", "android", "web"],
-    "web": {
-      "output": "static",
-      "favicon": "./assets/images/favicon.png",
-      "bundler": "metro"
-    }
-  }
-}
+```
+Update app.json to add web platform support with static output and metro bundler
 ```
 
-**What this does:**
-- `platforms`: Tells Expo to build for web in addition to mobile
-- `output: "static"`: Creates a static website (no server required)
-- `bundler: "metro"`: Uses Metro bundler (same as mobile)
+Claude Code will add this to your app.json:
+- Add "web" to platforms array
+- Add web configuration with static output and metro bundler
+- Keep existing favicon path
 
 ---
 
 ## Step 3: Create a Favicon (Optional)
 
-If you don't have one already:
+**Ask Claude Code to do this:**
 
-1. Create or download a 48x48 pixel PNG icon
-2. Save it as `assets/images/favicon.png`
+```
+Check if we have a favicon at assets/images/favicon.png, if not create a simple one or find a placeholder
+```
+
+Or skip this step - the app will work without it.
 
 ---
 
@@ -73,35 +67,59 @@ This will:
 
 ## Step 5: Fix Web-Specific Issues
 
-### 5.1 Check for Native-Only Features
+### 5.1 Disable PostHog for Web (Required)
 
-Search your codebase for features that won't work on web:
-- Haptic feedback (`Haptics.impactAsync()`)
-- Native alerts that need replacement
-- Platform-specific components
+**Ask Claude Code to do this:**
 
-### 5.2 Add Platform-Specific Code (if needed)
+```
+PostHog doesn't work on web without additional configuration. Find the PostHog initialization code and wrap it in a Platform.OS check so it only runs on iOS/Android, not web.
+```
 
-Use `Platform.OS` to handle web differently:
-
+Claude Code will find your PostHog setup (likely in `app/_layout.tsx`) and add:
 ```typescript
-import { Platform } from 'react-native';
-
-if (Platform.OS === 'web') {
-  // Web-specific code
-} else {
-  // Mobile code
+if (Platform.OS !== 'web') {
+  // PostHog initialization
 }
 ```
 
-### 5.3 Test All Features
+### 5.2 Find Other Native-Only Features
 
-Go through your app and test:
-- Calculator functionality
-- Navigation between screens
-- Form inputs
-- Results display
-- PDF generation (might need web alternative)
+**Ask Claude Code to do this:**
+
+```
+Search the codebase for other web-incompatible features like Haptics, native alerts, or platform-specific APIs and create a list of files that need fixing
+```
+
+### 5.3 Fix Platform-Specific Code
+
+**Ask Claude Code to do this:**
+
+```
+For each file with web-incompatible features, wrap them in Platform.OS checks or provide web alternatives
+```
+
+### 5.4 Fix Web Styling and UX (⚠️ Use Opus for this)
+
+**Switch to Opus and ask:**
+
+```
+The web version is working but has styling issues - components are too large, spacing is off, and navigation doesn't feel right for web. Audit the app for web-specific styling issues and add responsive design improvements. Focus on:
+1. Making form inputs appropriately sized for web
+2. Adjusting spacing and padding for larger screens
+3. Adding max-width constraints so content doesn't stretch too wide
+4. Improving navigation for mouse/keyboard users
+5. Making the overall layout more web-friendly
+```
+
+This requires design judgment and understanding responsive design patterns - Opus handles this better.
+
+### 5.5 Test All Features
+
+Manually go through the app and test:
+- Calculator works
+- Navigation works
+- Forms work
+- Results display correctly
 
 ---
 
@@ -162,49 +180,102 @@ You have several free/cheap options:
 
 ## Step 8: Deploy
 
-### For Netlify (Drag & Drop):
+### For Netlify (Easiest - Drag & Drop):
 
-1. Build: `npx expo export --platform web`
-2. Go to [app.netlify.com](https://app.netlify.com)
-3. Drag the `dist/` folder to the upload area
-4. Done! Your site is live
-
-### For Netlify (CLI - Automatic Deploys):
-
-1. Install Netlify CLI: `npm install -g netlify-cli`
-2. Run `netlify init` in your project
-3. Connect to your Netlify account
-4. For future deploys:
-   ```bash
-   npx expo export --platform web
-   netlify deploy --prod --dir=dist
+1. **Ask Claude Code to do this:**
    ```
+   Build the web version for production
+   ```
+   Claude Code will run: `npx expo export --platform web`
+
+2. Go to [app.netlify.com/drop](https://app.netlify.com/drop)
+3. Drag the entire `dist/` folder to the upload area
+4. Done! Your site is live with a URL like `random-name-123.netlify.app`
+
+### For Netlify (CLI - For Auto Updates):
+
+**Ask Claude Code to do this:**
+
+```
+Set up Netlify CLI deployment with automatic builds
+```
+
+Claude Code will:
+- Install netlify-cli globally
+- Run `netlify init` to connect your site
+- Add a deploy script to package.json
+- Show you how to deploy with one command
 
 ---
 
-## Step 9: Add Custom Domain (Optional)
+## Step 9: Add Custom Domain
 
-### If using Netlify:
+### Setting up auschildsupport.com with Netlify:
 
-1. Go to Site Settings → Domain Management
+You have two options for using your domain:
+
+#### Option A: Use the entire domain (auschildsupport.com)
+
+1. In Netlify dashboard: Site Settings → Domain Management
 2. Click "Add custom domain"
-3. Enter your domain (e.g., `calculator.alexthompson.com.au`)
-4. Follow DNS configuration instructions
-5. Netlify handles HTTPS automatically
+3. Enter: `auschildsupport.com`
+4. Netlify will show you nameserver instructions
+5. Go to your domain registrar (where you bought auschildsupport.com)
+6. Update nameservers to Netlify's nameservers:
+   ```
+   dns1.p01.nsone.net
+   dns2.p01.nsone.net
+   dns3.p01.nsone.net
+   dns4.p01.nsone.net
+   ```
+7. Wait 10-60 minutes for DNS to propagate
+8. Netlify automatically provisions free HTTPS
+
+**Result:** `auschildsupport.com` → your calculator app
+
+#### Option B: Use www subdomain (www.auschildsupport.com)
+
+1. In Netlify dashboard: Site Settings → Domain Management
+2. Click "Add custom domain"
+3. Enter: `www.auschildsupport.com`
+4. Netlify will show you a CNAME record
+5. Go to your domain registrar's DNS settings
+6. Add CNAME record:
+   ```
+   Name: www
+   Value: [your-netlify-site].netlify.app
+   ```
+7. Also add root domain redirect (optional):
+   - Add an A record or ALIAS pointing to Netlify's load balancer
+   - Or use your registrar's forwarding to redirect auschildsupport.com → www.auschildsupport.com
+8. Wait 10-60 minutes for DNS to propagate
+9. Netlify automatically provisions free HTTPS
+
+**Result:** Both `auschildsupport.com` and `www.auschildsupport.com` work
+
+#### Recommendation:
+
+Use **Option A** (entire domain) - it's simpler and more professional. Since this domain is dedicated to the calculator, no need for subdomains.
 
 ---
 
 ## Step 10: Set Up Continuous Deployment (Optional)
 
-### If using GitHub + Netlify:
+### If using GitHub + Netlify (⚠️ Use Opus for this):
 
-1. Push your code to GitHub
-2. In Netlify, choose "New site from Git"
-3. Connect your repository
-4. Build settings:
-   - Build command: `npx expo export --platform web`
-   - Publish directory: `dist`
-5. Every git push will auto-deploy
+**Switch to Opus and ask:**
+
+```
+Set up continuous deployment with Netlify so every git push automatically deploys the web app
+```
+
+This involves coordinating GitHub, Netlify, and build configurations - Opus handles complex integrations better.
+
+Claude Code will:
+- Help you push to GitHub if not already there
+- Guide you through connecting Netlify to GitHub
+- Set up the build settings (build command: `npx expo export --platform web`, publish directory: `dist`)
+- Verify the deployment works
 
 ---
 
@@ -212,10 +283,15 @@ You have several free/cheap options:
 
 ### To update the live site:
 
-1. Make your changes locally
-2. Test with `npx expo start --web`
-3. Build: `npx expo export --platform web`
-4. Deploy (method depends on hosting choice)
+**Ask Claude Code to do this:**
+
+```
+Build and deploy the latest changes to the web app
+```
+
+Claude Code will:
+1. Build the production version
+2. Deploy using your configured method (Netlify CLI or show you the dist/ folder to drag-drop)
 
 ### Monitor for issues:
 
@@ -229,27 +305,39 @@ You have several free/cheap options:
 ## Troubleshooting
 
 ### Build fails with "metro" error
-- Make sure you installed `@expo/metro-runtime`
-- Clear cache: `npx expo start --web --clear`
+
+**Ask Claude Code to do this:**
+```
+Clear the Expo cache and rebuild for web
+```
 
 ### Fonts don't load
-- Check font paths in app.json
-- Ensure fonts are in assets/fonts
-- Web needs font files to be publicly accessible
+
+**Ask Claude Code to do this:**
+```
+Check font configuration for web and fix any path issues
+```
 
 ### Navigation doesn't work
-- Expo Router should work on web automatically
-- Check that all routes use proper Expo Router conventions
+
+**Ask Claude Code to do this:**
+```
+Check Expo Router configuration for web compatibility and fix any issues
+```
 
 ### Styling looks different on web
-- Web uses different default styles
-- Check for `Platform.OS === 'web'` specific styling
-- Test responsive design at different screen sizes
+
+**Ask Claude Code to do this:**
+```
+Find styling differences between mobile and web, add Platform.OS checks where needed
+```
 
 ### Analytics not tracking
-- Web needs different analytics setup than mobile
-- Consider Google Analytics for web
-- PostHog should work on web with same config
+
+**Ask Claude Code to do this:**
+```
+Set up PostHog analytics for web platform
+```
 
 ---
 
@@ -266,12 +354,27 @@ You have several free/cheap options:
 
 ## Next Steps After Deployment
 
-1. Set up analytics tracking for web
-2. Add SEO meta tags in app.json
-3. Create a landing page/marketing site
-4. Submit to Google Search Console
-5. Monitor performance with Lighthouse
-6. Test accessibility (screen readers, keyboard navigation)
+**⚠️ Use Opus for #1, Sonnet is fine for #2-4**
+
+1. **Set up web analytics** (recommended - do this first, ⚠️ use Opus):
+   ```
+   Add Google Analytics or Plausible to track web users. Keep PostHog for mobile only.
+   ```
+   
+   Why you need this: PostHog is mobile-only now, so you need separate analytics for web visitors.
+   
+   **Best options:**
+   - **Google Analytics 4** - Free, comprehensive, industry standard
+   - **Plausible** - Privacy-focused, simpler, $9/month
+   - **Umami** - Open source, self-hosted, free
+   
+   Opus can better handle the integration complexity, environment variables, and ensuring it doesn't conflict with PostHog.
+
+2. `Add SEO meta tags to improve search engine visibility` (Sonnet OK)
+
+3. `Test web app accessibility with screen readers` (Sonnet OK)
+
+4. `Optimize web performance and check Lighthouse score` (Sonnet OK)
 
 ---
 

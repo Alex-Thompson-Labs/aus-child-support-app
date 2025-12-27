@@ -3,6 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from
 import type { ChildInput, FormErrors } from "../types/calculator";
 import { ChildRow } from "./ChildRow";
 import { HelpTooltip } from "./HelpTooltip";
+import { useResponsive, MAX_CONTENT_WIDTH, isWeb, webInputStyles, webClickableStyles } from "../utils/responsive";
 
 interface CalculatorFormProps {
   incomeA: number;
@@ -56,9 +57,20 @@ export function CalculatorForm({
   onCourtDateChange,
 }: CalculatorFormProps) {
   const [showRelDeps, setShowRelDeps] = useState(false);
+  const { isMobile, isDesktop, width } = useResponsive();
+
+  // Web-specific container styles
+  const webContainerStyle = isWeb ? {
+    maxWidth: MAX_CONTENT_WIDTH,
+    width: '100%' as const,
+    alignSelf: 'center' as const,
+  } : {};
+
+  // Responsive input width
+  const inputWidth = isMobile ? 130 : isDesktop ? 180 : 160;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView style={styles.container} contentContainerStyle={[styles.contentContainer, webContainerStyle]}>
       {/* Combined Parents Card */}
       <View style={styles.card}>
         <Text style={styles.sectionHeading}>Income</Text>
@@ -81,10 +93,10 @@ export function CalculatorForm({
             />
           </View>
           <View style={styles.inputRow}>
-            <View style={styles.currencyInputContainer}>
+            <View style={[styles.currencyInputContainer, { width: inputWidth }]}>
               <Text style={styles.currencySymbol}>$</Text>
               <TextInput
-                style={[styles.currencyInput, errors.incomeA && styles.inputError]}
+                style={[styles.currencyInput, errors.incomeA && styles.inputError, isWeb && webInputStyles]}
                 value={incomeA ? incomeA.toString() : ""}
                 onChangeText={(text) => {
                   const val = text.replace(/[^0-9]/g, "");
@@ -92,6 +104,7 @@ export function CalculatorForm({
                 }}
                 keyboardType="numeric"
                 placeholder="0"
+                placeholderTextColor="#64748b"
               />
             </View>
             <View style={styles.switchRow}>
@@ -123,10 +136,10 @@ export function CalculatorForm({
             <Text style={styles.label}> - Adjusted Taxable Income</Text>
           </View>
           <View style={styles.inputRow}>
-            <View style={styles.currencyInputContainer}>
+            <View style={[styles.currencyInputContainer, { width: inputWidth }]}>
               <Text style={styles.currencySymbol}>$</Text>
               <TextInput
-                style={[styles.currencyInput, errors.incomeB && styles.inputError]}
+                style={[styles.currencyInput, errors.incomeB && styles.inputError, isWeb && webInputStyles]}
                 value={incomeB ? incomeB.toString() : ""}
                 onChangeText={(text) => {
                   const val = text.replace(/[^0-9]/g, "");
@@ -134,6 +147,7 @@ export function CalculatorForm({
                 }}
                 keyboardType="numeric"
                 placeholder="0"
+                placeholderTextColor="#64748b"
               />
             </View>
             <View style={styles.switchRow}>
@@ -182,7 +196,7 @@ export function CalculatorForm({
 
         <Pressable
           onPress={onAddChild}
-          style={styles.addChildButton}
+          style={[styles.addChildButton, isWeb && webClickableStyles]}
         >
           <Text style={styles.addChildButtonText}>+ Add Child</Text>
         </Pressable>
@@ -288,7 +302,7 @@ export function CalculatorForm({
           />
         </View>
         <TextInput
-          style={styles.courtDateInput}
+          style={[styles.courtDateInput, isWeb && webInputStyles]}
           value={courtDate || ""}
           onChangeText={onCourtDateChange}
           placeholder="dd/mm/yyyy"
@@ -315,6 +329,13 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: 1,
     borderColor: "#334155", // slate-700
+    // Web shadow for better depth perception
+    ...(isWeb ? {
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    } : {}),
   },
   cardTitle: {
     fontSize: 14,
@@ -390,7 +411,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     position: "relative",
-    width: 150,
+    // Width is now set dynamically via inline style
     flex: 0,
   },
   currencySymbol: {

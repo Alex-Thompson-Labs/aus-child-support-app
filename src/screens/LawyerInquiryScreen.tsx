@@ -22,6 +22,7 @@ import { useAnalytics } from '@/src/utils/analytics';
 import { getCoAReasonById, formatCoAReasonsForLead } from '@/src/utils/complexity-detection';
 import type { ChangeOfAssessmentReason } from '@/src/utils/change-of-assessment-reasons';
 import { getCategoryDisplayInfo, formatOfficialCoAReasons } from '@/src/utils/change-of-assessment-reasons';
+import { useResponsive, MAX_FORM_WIDTH, isWeb, webInputStyles, webClickableStyles } from '@/src/utils/responsive';
 
 export function LawyerInquiryScreen() {
   const params = useLocalSearchParams();
@@ -108,6 +109,15 @@ export function LawyerInquiryScreen() {
     null
   );
 
+  const { isMobile, isDesktop } = useResponsive();
+
+  // Web-specific container styles
+  const webContainerStyle = isWeb ? {
+    maxWidth: MAX_FORM_WIDTH,
+    width: '100%' as const,
+    alignSelf: 'center' as const,
+  } : {};
+
   // DEBUG: Test button to force-fire analytics event
   const testAnalytics = () => {
     console.log('[DEBUG] Test button clicked - firing test event');
@@ -124,22 +134,38 @@ export function LawyerInquiryScreen() {
   const handleSubmit = () => {
     // 1. Validate fields
     if (!name.trim()) {
-      Alert.alert('Missing Information', 'Please enter your name.');
+      if (Platform.OS === 'web') {
+        alert('Missing Information\n\nPlease enter your name.');
+      } else {
+        Alert.alert('Missing Information', 'Please enter your name.');
+      }
       return;
     }
     if (!email.trim()) {
-      Alert.alert('Missing Information', 'Please enter your email address.');
+      if (Platform.OS === 'web') {
+        alert('Missing Information\n\nPlease enter your email address.');
+      } else {
+        Alert.alert('Missing Information', 'Please enter your email address.');
+      }
       return;
     }
     if (!message.trim()) {
-      Alert.alert('Missing Information', 'Please tell us what you need help with.');
+      if (Platform.OS === 'web') {
+        alert('Missing Information\n\nPlease tell us what you need help with.');
+      } else {
+        Alert.alert('Missing Information', 'Please tell us what you need help with.');
+      }
       return;
     }
 
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      Alert.alert('Invalid Email', 'Please enter a valid email address.');
+      if (Platform.OS === 'web') {
+        alert('Invalid Email\n\nPlease enter a valid email address.');
+      } else {
+        Alert.alert('Invalid Email', 'Please enter a valid email address.');
+      }
       return;
     }
 
@@ -219,22 +245,31 @@ export function LawyerInquiryScreen() {
     // 6. TODO: Send email to yourself (Phase 1)
 
     // 7. Show success message
-    Alert.alert(
-      'Inquiry Submitted',
-      'Thank you! A lawyer will review your case and contact you soon.',
-      [
-        {
-          text: 'OK',
-          onPress: () => {
-            if (router.canGoBack()) {
-              router.back();
-            } else {
-              router.replace('/');
-            }
+    if (Platform.OS === 'web') {
+      alert('Inquiry Submitted\n\nThank you! A lawyer will review your case and contact you soon.');
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace('/');
+      }
+    } else {
+      Alert.alert(
+        'Inquiry Submitted',
+        'Thank you! A lawyer will review your case and contact you soon.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              if (router.canGoBack()) {
+                router.back();
+              } else {
+                router.replace('/');
+              }
+            },
           },
-        },
-      ]
-    );
+        ]
+      );
+    }
   };
 
   return (
@@ -243,8 +278,8 @@ export function LawyerInquiryScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-          <Text style={styles.title}>Request Legal Help</Text>
+        <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, webContainerStyle]}>
+          <Text style={[styles.title, isDesktop && styles.titleDesktop]}>Request Legal Help</Text>
 
           {/* Complexity Triggers Card - Show only if reasons exist */}
           {validCoAReasons.length > 0 && (
@@ -315,31 +350,36 @@ export function LawyerInquiryScreen() {
           <Text style={styles.formTitle}>Your Information</Text>
 
           <TextInput
-            style={styles.input}
+            style={[styles.input, isWeb && webInputStyles]}
             placeholder="Your Name"
+            placeholderTextColor="#64748b"
             value={name}
             onChangeText={setName}
           />
 
           <TextInput
-            style={styles.input}
+            style={[styles.input, isWeb && webInputStyles]}
             placeholder="Email"
+            placeholderTextColor="#64748b"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
+            autoCapitalize="none"
           />
 
           <TextInput
-            style={styles.input}
+            style={[styles.input, isWeb && webInputStyles]}
             placeholder="Phone (optional)"
+            placeholderTextColor="#64748b"
             value={phone}
             onChangeText={setPhone}
             keyboardType="phone-pad"
           />
 
           <TextInput
-            style={[styles.input, styles.textArea]}
+            style={[styles.input, styles.textArea, isWeb && webInputStyles]}
             placeholder="What do you need help with?"
+            placeholderTextColor="#64748b"
             value={message}
             onChangeText={setMessage}
             multiline
@@ -349,11 +389,11 @@ export function LawyerInquiryScreen() {
           {/* TODO: Add consent checkbox */}
 
           {/* DEBUG: Test analytics button - REMOVE BEFORE PRODUCTION */}
-          <Pressable style={[styles.button, { backgroundColor: '#dc2626' }]} onPress={testAnalytics}>
+          <Pressable style={[styles.button, { backgroundColor: '#dc2626' }, isWeb && webClickableStyles]} onPress={testAnalytics}>
             <Text style={styles.buttonText}>🐛 TEST: Fire Analytics Event</Text>
           </Pressable>
 
-          <Pressable style={styles.button} onPress={handleSubmit}>
+          <Pressable style={[styles.button, isWeb && webClickableStyles, isWeb && styles.buttonWeb]} onPress={handleSubmit}>
             <Text style={styles.buttonText}>Submit Inquiry</Text>
           </Pressable>
         </ScrollView>
@@ -381,6 +421,10 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#ffffff',
     marginBottom: 20,
+  },
+  titleDesktop: {
+    fontSize: 28,
+    marginBottom: 24,
   },
   // Complexity triggers card styles
   coaCard: {
@@ -497,6 +541,10 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
     marginTop: 20,
+  },
+  buttonWeb: {
+    paddingVertical: 14,
+    // Slight hover effect handled by webClickableStyles cursor
   },
   buttonText: {
     color: '#ffffff',

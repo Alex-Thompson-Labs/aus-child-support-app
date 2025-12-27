@@ -48,28 +48,30 @@
 
 ## ✅ CURRENT STATUS
 
-### Phase 1: NEARLY COMPLETE (95%)
+### Phase 1: COMPLETE ✅
 **What's Done:**
 - ✅ Calculator built (Australian 2020-2025 formula)
 - ✅ Complexity detection (high value, court date, shared care)
 - ✅ Alert system (shows "Get Legal Help" buttons)
 - ✅ Inquiry form (collects parent details)
 - ✅ Analytics tracking (PostHog events)
+- ✅ **Web app live at auschildsupport.com**
 
-**What's Left:**
-- ⏳ Special circumstances fields (private school, medical costs)
-- ⏳ End-to-end testing
-- ⏳ Launch to users (waiting for Jan 2)
-
-**Timeline:** Finish by Dec 27
+**Timeline:** Complete Dec 27, 2024
 
 ### Phase 2: READY TO START (Jan 2)
 **Plan:**
-- Onboard 8-12 lawyers via email outreach
+- Onboard 8-12 lawyers via email outreach **with live demo**
 - Deliver 50+ qualified leads
 - Generate first revenue ($2-3K)
 - Validate $50/lead pricing
 - Build lawyer relationship management process
+
+**New Strategy:** Lead with working product
+- Email includes link to live calculator
+- Lawyers can test it themselves immediately
+- Demonstrates credibility and professionalism
+- Shortens sales cycle (proof over promises)
 
 **Timeline:** 6-8 weeks (Jan-Feb 2025)
 

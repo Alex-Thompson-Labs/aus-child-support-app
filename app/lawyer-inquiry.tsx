@@ -240,18 +240,18 @@ export default function LawyerInquiryScreen() {
     const mountTimeRef = useRef<number>(Date.now());
 
     // Get valid CoA reasons for display
-    const validCoAReasons: Array<ChangeOfAssessmentReason & { urgency: 'URGENT' | 'NORMAL' }> = 
+    const validCoAReasons: Array<ChangeOfAssessmentReason & { urgency: 'URGENT' | 'NORMAL' }> =
         (coaReasons || [])
             .map(id => {
                 const reason = getCoAReasonById(id);
                 if (!reason) return null;
-                
+
                 // Determine urgency based on priority (1-3 = URGENT, 4-10 = NORMAL)
-                const urgency = reason.priority <= 3 ? 'URGENT' : 'NORMAL';
-                
+                const urgency: 'URGENT' | 'NORMAL' = reason.priority <= 3 ? 'URGENT' : 'NORMAL';
+
                 return { ...reason, urgency };
             })
-            .filter((reason): reason is NonNullable<typeof reason> => reason !== null);
+            .filter((reason): reason is ChangeOfAssessmentReason & { urgency: 'URGENT' | 'NORMAL' } => reason !== null);
 
     // Determine if any urgent reasons exist (for card border styling)
     const hasUrgentReasonsForDisplay = validCoAReasons.some(r => r.urgency === 'URGENT');
@@ -381,10 +381,15 @@ export default function LawyerInquiryScreen() {
 
         if (!isValid) {
             // Scroll to first error or show alert
-            Alert.alert(
-                'Please fix the errors',
-                'Some fields need your attention before submitting.'
-            );
+            if (Platform.OS === 'web') {
+                // On web, use browser alert for better compatibility
+                alert('Please fix the errors\n\nSome fields need your attention before submitting.');
+            } else {
+                Alert.alert(
+                    'Please fix the errors',
+                    'Some fields need your attention before submitting.'
+                );
+            }
             return;
         }
 

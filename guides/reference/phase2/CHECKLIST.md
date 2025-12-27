@@ -50,7 +50,7 @@ We're using the inquiry form you already built in Phase 1. When a parent submits
 **Task 1.1: Lawyer Partnership Agreement** (1.5 hours)
 
 Create simple one-page agreement covering:
-- Service: "We send you pre-qualified family law leads via email"
+- Service: "We operate auschildsupport.com - a free calculator that identifies parents who need legal help with complex child support cases"
 - Pricing: "$50 per lead"
 - Payment: "Monthly invoice via Stripe, net 14 days"
 - Lead definition: "Parent who clicked 'Get Legal Help', filled inquiry form, meets complexity threshold"
@@ -65,33 +65,40 @@ Save as: `docs/LAWYER_PARTNERSHIP_AGREEMENT.md`
 Create template for new lawyer partners:
 
 ```
-Subject: Welcome to [Your Platform Name] - Lead Partnership
+Subject: Welcome to Australian Child Support Calculator - Lead Partnership
 
 Hi [Lawyer Name],
 
-Welcome! You're now receiving family law leads from our calculator app.
+Welcome! You're now receiving family law leads from our calculator at auschildsupport.com.
 
 HOW IT WORKS:
-1. We send you leads via email (name, contact, case details)
-2. You contact them directly within 24 hours
-3. We bill you $50 per lead at month-end via Stripe
+1. Parents use our free calculator to understand their child support
+2. Complex cases are flagged (high value, court dates, special circumstances)
+3. Parent clicks "Get Legal Help" and fills inquiry form
+4. We send you their details via email within 1 hour
+5. You contact them directly within 24 hours
+6. We bill you $50 per lead at month-end via Stripe
 
 WHAT'S IN A LEAD:
 - Parent's contact info (name, email, phone)
 - Calculation summary (liability amount, income, care split)
-- Complexity flags (high value, court date, special circumstances)
+- Complexity flags (what makes this case worth legal help)
 - Their message/questions
 - Preferred contact times
 
 GETTING STARTED:
 1. Set up your Stripe account: [link]
-2. Reply to this email confirming you're ready
-3. You'll start receiving leads within 48 hours
+2. Confirm your service area and preferred email for leads
+3. Reply confirming you're ready
+4. You'll start receiving leads within 48 hours
+
+Try the calculator yourself: auschildsupport.com
 
 Questions? Reply to this email.
 
-Thanks,
-[Your Name]
+Best,
+Alex Thompson
+auschildsupport.com
 ```
 
 **Task 1.3: Lead Email Template** (30 min)
@@ -148,20 +155,27 @@ Call 3 lawyers from your Phase 1 Task 0 list:
 
 **Call script:**
 ```
-"Hi [Name], it's [You] from the child support calculator. 
+"Hi [Name], it's Alex Thompson from Australian Child Support Calculator. 
 
-Remember we talked about sending you leads? System is ready.
+I wanted to follow up - the calculator is now live at auschildsupport.com. Have you had a chance to try it?
 
-Here's how it works:
-- I email you when a parent needs help
-- You contact them directly to schedule a consultation
+[If yes]: Great! So you've seen how it flags complex cases. I'm now connecting those parents with local lawyers for $50 per qualified lead.
+
+[If no]: Let me walk you through it quickly - [give 30-second demo while they look at site]
+
+Here's how the partnership works:
+- Parent uses calculator and it detects complexity (high value, court dates, special circumstances)
+- They click "Get Legal Help" and fill out inquiry form
+- I email you their contact details with full case summary
+- You contact them directly to schedule consultation
 - I bill you $50 per lead at end of month
 
-No calendar integration, no software to learn. 
-Just qualified leads to your inbox.
+No calendar integration, no software to learn, no tech setup. Just qualified leads to your inbox.
 
-Want to start? I can send you the agreement right now."
+Want to start? I can send you the partnership agreement right now."
 ```
+
+**Key change:** Reference the live website immediately - it establishes credibility and gives them something tangible to evaluate.
 
 **For each lawyer who says yes:**
 1. Email them the partnership agreement
@@ -264,34 +278,37 @@ You have 111 NSW firms from your scrape. Send to first 50:
 
 **Email Template:**
 ```
-Subject: Pre-Qualified Family Law Leads - Sydney/NSW
+Subject: Quick way to identify complex child support cases
 
-Hi [Firm Name],
+Hi [Lawyer Name],
 
-I've built a child support calculator that Australian parents use daily. 
-When complex cases arise, I connect them with local family lawyers.
+I've built a calculator at auschildsupport.com that helps Australian parents understand their child support assessments.
 
-I'm looking for 3-5 NSW firms to partner with.
+The interesting part for family lawyers: it automatically flags cases that need professional help - things like income departures, care percentage disputes, or special circumstances that trigger Change of Assessment.
 
-What you get:
-✓ Pre-qualified leads (high-value, court dates, disputes)
-✓ Sent via email with full case details
-✓ $50 per lead, billed monthly
-✓ No software, no calendar integration required
+When it identifies a complex case, I can refer that lead to your firm for $50 per qualified referral.
 
-What I need from you:
-• Email address for leads
-• Service area (suburbs/regions you cover)
-• Stripe account for billing
+Try the calculator yourself: auschildsupport.com
 
-Interested? Reply and I'll send you the partnership agreement.
+How it works:
+✓ Parent uses calculator (free, no signup)
+✓ Complex case detected → they click "Get Legal Help"
+✓ I email you their details with full case summary
+✓ You contact them directly to schedule consultation
+✓ $50 per lead, billed monthly via Stripe
+✓ No software to learn, no calendar integration
 
-[Your Name]
+Interested in receiving leads from [City/Region]? Reply and I'll send you the partnership agreement.
+
+Best,
+Alex Thompson
+auschildsupport.com
 [Phone]
-[Website]
 ```
 
 Send 50 emails on Monday/Tuesday.
+
+**Important:** Always include the live link early in the email - it's your credibility proof.
 
 **Task 2.2: Follow-Up Calls** (2-3 hours)
 
@@ -444,13 +461,25 @@ Questions? Email: [your email]
 
 ### Task 4.1: Drive More App Traffic (3 hours)
 
-Post calculator in more places:
-- 5 more Reddit communities
-- 10 Facebook parenting groups
+**Now that you have a professional web app**, promote it more confidently:
+
+Post calculator link (auschildsupport.com) in:
+- 5 more Reddit communities (r/AusLegal, r/AusFinance parenting threads)
+- 10 Facebook parenting groups (Australian focused)
 - Australian family law forums
-- Your personal network
+- Single parent support groups
+- Your personal network (now you can proudly share it)
+
+**Pitch:** "I built a free calculator to help Australian parents understand child support - auschildsupport.com"
 
 Goal: Get 200+ calculations this week (vs 100 last week)
+
+**The web app makes marketing easier:**
+- Professional URL (not "download our app")
+- Works on any device (no app store friction)
+- Instant access (no install required)
+- Sharable (people can text the link)
+- Credible (real website = real business)
 
 **Task 4.2: Send Batch 3 Emails (2 hours)
 

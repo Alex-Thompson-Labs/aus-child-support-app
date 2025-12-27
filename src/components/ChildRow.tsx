@@ -2,6 +2,7 @@ import React from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import type { ChildInput } from "../types/calculator";
 import { CARE_PERIOD_DAYS } from "../utils/child-support-constants";
+import { useResponsive, isWeb, webInputStyles, webClickableStyles } from "../utils/responsive";
 
 interface ChildRowProps {
   child: ChildInput;
@@ -14,12 +15,17 @@ export function ChildRow({
   onUpdate,
   onRemove,
 }: ChildRowProps) {
+  const { isMobile, isDesktop } = useResponsive();
+
   const maxValue =
     child.carePeriod === "week"
       ? 7
       : child.carePeriod === "fortnight"
         ? 14
         : 365;
+
+  // Responsive input width
+  const careInputWidth = isMobile ? 60 : isDesktop ? 80 : 70;
 
   // Calculate if total exceeds maximum
   const totalCare = child.careAmountA + child.careAmountB;
@@ -61,21 +67,23 @@ export function ChildRow({
           <View style={styles.parentColumn}>
             <Text style={styles.headerLabelA}>PARENT A</Text>
             <TextInput
-              style={styles.careInput}
+              style={[styles.careInput, { width: careInputWidth }, isWeb && webInputStyles]}
               value={child.careAmountA.toString()}
               onChangeText={handleCareAmountAChange}
               keyboardType="numeric"
               maxLength={5}
+              placeholderTextColor="#64748b"
             />
           </View>
           <View style={styles.parentColumn}>
             <Text style={styles.headerLabelB}>PARENT B</Text>
             <TextInput
-              style={styles.careInput}
+              style={[styles.careInput, { width: careInputWidth }, isWeb && webInputStyles]}
               value={child.careAmountB.toString()}
               onChangeText={handleCareAmountBChange}
               keyboardType="numeric"
               maxLength={5}
+              placeholderTextColor="#64748b"
             />
           </View>
         </View>
@@ -86,13 +94,13 @@ export function ChildRow({
           <View style={[styles.toggleGroup, styles.ageToggleGroup]}>
             <Pressable
               onPress={() => onUpdate({ age: "Under 13" })}
-              style={[styles.toggleButton, styles.toggleButtonLeft, child.age === "Under 13" && styles.toggleButtonActive]}
+              style={[styles.toggleButton, styles.toggleButtonLeft, child.age === "Under 13" && styles.toggleButtonActive, isWeb && webClickableStyles]}
             >
               <Text style={[styles.toggleButtonText, child.age === "Under 13" && styles.toggleButtonTextActive]}>{"<13"}</Text>
             </Pressable>
             <Pressable
               onPress={() => onUpdate({ age: "13+" })}
-              style={[styles.toggleButton, styles.toggleButtonRight, child.age === "13+" && styles.toggleButtonActive]}
+              style={[styles.toggleButton, styles.toggleButtonRight, child.age === "13+" && styles.toggleButtonActive, isWeb && webClickableStyles]}
             >
               <Text style={[styles.toggleButtonText, child.age === "13+" && styles.toggleButtonTextActive]}>13+</Text>
             </Pressable>
@@ -109,6 +117,7 @@ export function ChildRow({
                   index === 0 && styles.toggleButtonLeft,
                   index === 2 && styles.toggleButtonRight,
                   child.carePeriod === period && styles.toggleButtonActive,
+                  isWeb && webClickableStyles,
                 ]}
               >
                 <Text style={[styles.toggleButtonText, child.carePeriod === period && styles.toggleButtonTextActive]}>
@@ -122,7 +131,7 @@ export function ChildRow({
         {/* Remove button - top right corner */}
         <Pressable
           onPress={onRemove}
-          style={styles.removeButton}
+          style={[styles.removeButton, isWeb && webClickableStyles]}
           accessibilityLabel="Remove child"
         >
           <Text style={styles.removeButtonText}>×</Text>
@@ -183,7 +192,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   careInput: {
-    width: 70,
+    // Width is now set dynamically via inline style
     paddingHorizontal: 8,
     paddingVertical: 8,
     fontSize: 18,

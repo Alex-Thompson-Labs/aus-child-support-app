@@ -1,6 +1,7 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { Platform } from 'react-native';
 import { PostHogProvider } from 'posthog-react-native';
 import 'react-native-reanimated';
 
@@ -38,7 +39,8 @@ export default function RootLayout() {
   );
 
   // Only enable PostHog if API key is provided and analytics is enabled
-  if (enableAnalytics && posthogApiKey) {
+  // PostHog doesn't work on web without additional configuration, so we disable it for web
+  if (enableAnalytics && posthogApiKey && Platform.OS !== 'web') {
     return (
       <PostHogProvider
         apiKey={posthogApiKey}

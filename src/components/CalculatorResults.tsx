@@ -9,6 +9,7 @@ import { ChangeOfAssessmentPrompt } from "./ChangeOfAssessmentPrompt";
 import { LawyerAlert } from "./LawyerAlert";
 import { ResultsSimpleExplanation } from "./ResultsSimpleExplanation";
 import { LinearGradient } from 'expo-linear-gradient';
+import { useResponsive, MAX_CONTENT_WIDTH, MAX_MODAL_WIDTH, isWeb, webClickableStyles } from "../utils/responsive";
 
 interface CalculatorResultsProps {
   results: CalculationResults;
@@ -39,6 +40,7 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const analytics = useAnalytics();
+  const { isMobile, isDesktop, width } = useResponsive();
 
   const monthlyAmount = results.finalPaymentAmount / 12;
   const fortnightlyAmount = results.finalPaymentAmount / 26;
@@ -218,30 +220,45 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
   };
 
   // Get gradient colors for collapsed bottom card
-  const getCollapsedGradientColors = (payer: string): string[] => {
+  const getCollapsedGradientColors = (payer: string): readonly [string, string] => {
     if (payer === 'Neither') {
-      return ['#475569', '#334155']; // Slate gradient for "no payment" (matches breakdown)
+      return ['#475569', '#334155'] as const; // Slate gradient for "no payment" (matches breakdown)
     }
     return payer === 'Parent A'
-      ? ['#3b82f6', '#8b5cf6']  // A → B: blue → purple
-      : ['#8b5cf6', '#3b82f6']; // B → A: purple → blue
+      ? ['#3b82f6', '#8b5cf6'] as const  // A → B: blue → purple
+      : ['#8b5cf6', '#3b82f6'] as const; // B → A: purple → blue
   };
 
   // Get gradient colors for expanded hero section
-  const getExpandedGradientColors = (payer: string): string[] => {
+  const getExpandedGradientColors = (payer: string): readonly [string, string, string] => {
     if (payer === 'Neither') {
-      return ['#475569', '#475569', '#334155']; // Slate gradient for "no payment" (matches breakdown)
+      return ['#475569', '#475569', '#334155'] as const; // Slate gradient for "no payment" (matches breakdown)
     }
     return payer === 'Parent A'
-      ? ['#3b82f6', '#1e3a8a', '#8b5cf6']  // A → B with darker middle
-      : ['#8b5cf6', '#5b21b6', '#3b82f6']; // B → A with darker middle
+      ? ['#3b82f6', '#1e3a8a', '#8b5cf6'] as const  // A → B with darker middle
+      : ['#8b5cf6', '#5b21b6', '#3b82f6'] as const; // B → A with darker middle
   };
+
+  // Web-specific container styles for modal content
+  const webModalContainerStyle = isWeb ? {
+    maxWidth: MAX_MODAL_WIDTH,
+    width: '100%' as const,
+    alignSelf: 'center' as const,
+  } : {};
+
+  // Web-specific card container styles
+  const webCardContainerStyle = isWeb ? {
+    maxWidth: MAX_CONTENT_WIDTH,
+    width: '100%' as const,
+    alignSelf: 'center' as const,
+    marginHorizontal: 'auto' as const,
+  } : {};
 
   // Render the expanded full-screen breakdown content
   const renderBreakdownContent = () => (
     <ScrollView
       style={styles.expandedScrollView}
-      contentContainerStyle={[styles.expandedContentContainer, { paddingBottom: insets.bottom + 20 }]}
+      contentContainerStyle={[styles.expandedContentContainer, { paddingBottom: insets.bottom + 20 }, webModalContainerStyle]}
       showsVerticalScrollIndicator={true}
     >
       {/* Hero Section in Expanded View */}
@@ -311,13 +328,17 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
       {!isExpanded && (
         <Pressable
           onPress={toggleExpand}
-          style={{ paddingBottom: Math.max(insets.bottom, 16) }}
+          style={[
+            { paddingBottom: Math.max(insets.bottom, 16) },
+            isWeb && webClickableStyles,
+            isWeb && styles.fixedBottomCardWebWrapper,
+          ]}
         >
           <LinearGradient
             colors={getCollapsedGradientColors(results.payer)}
             start={{ x: 0, y: 0.5 }}
             end={{ x: 1, y: 0.5 }}
-            style={styles.fixedBottomCard}
+            style={[styles.fixedBottomCard, isWeb && styles.fixedBottomCardWeb]}
           >
             {/* Drag Handle */}
             <View style={styles.dragHandleContainer}>
@@ -363,13 +384,15 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
         presentationStyle="fullScreen"
         onRequestClose={toggleExpand}
       >
-        <View style={[styles.expandedContainer, { paddingTop: insets.top }]}>
+        <View style={[styles.expandedContainer, { paddingTop: insets.top }, isWeb && styles.expandedContainerWeb]}>
           {/* Header with Close Button */}
-          <View style={styles.expandedHeader}>
-            <Text style={styles.expandedHeaderTitle}>Full Breakdown</Text>
-            <Pressable onPress={toggleExpand} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>✕</Text>
-            </Pressable>
+          <View style={[styles.expandedHeader, isWeb && styles.expandedHeaderWeb]}>
+            <View style={[styles.expandedHeaderContent, webModalContainerStyle]}>
+              <Text style={styles.expandedHeaderTitle}>Full Breakdown</Text>
+              <Pressable onPress={toggleExpand} style={[styles.closeButton, isWeb && webClickableStyles]}>
+                <Text style={styles.closeButtonText}>✕</Text>
+              </Pressable>
+            </View>
           </View>
 
           {/* Drag Handle to Collapse */}
@@ -400,6 +423,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 10,
+  },
+  fixedBottomCardWebWrapper: {
+    // Center the card on web
+  },
+  fixedBottomCardWeb: {
+    maxWidth: MAX_CONTENT_WIDTH,
+    marginHorizontal: 'auto',
+    left: 'auto',
+    right: 'auto',
+    borderRadius: 16,
+    marginBottom: 16,
   },
   dragHandleContainer: {
     alignItems: "center",
@@ -477,14 +511,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#0f172a", // slate-900
   },
+  expandedContainerWeb: {
+    // Add subtle padding on web for breathing room
+  },
   expandedHeader: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#1e293b", // slate-800
+  },
+  expandedHeaderWeb: {
+    paddingVertical: 16,
+  },
+  expandedHeaderContent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flex: 1,
   },
   expandedHeaderTitle: {
     fontSize: 18,

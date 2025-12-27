@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Alert, Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Animated, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import type { CalculationResults } from "../types/calculator";
 import { useAnalytics } from "../utils/analytics";
 import {
@@ -13,6 +13,7 @@ import {
 } from "../utils/change-of-assessment-reasons";
 import type { ComplexityFormData } from "../utils/complexity-detection";
 import { HelpTooltip } from "./HelpTooltip";
+import { isWeb, webClickableStyles } from "../utils/responsive";
 
 interface ChangeOfAssessmentPromptProps {
   results: CalculationResults;
@@ -197,10 +198,14 @@ export function ChangeOfAssessmentPrompt({
           });
         } catch (error) {
           console.error("[CoAPrompt] Navigation failed:", error);
-          Alert.alert(
-            "Navigation Error",
-            "Unable to open inquiry form. Please try again."
-          );
+          if (Platform.OS === 'web') {
+            alert("Navigation Error\n\nUnable to open inquiry form. Please try again.");
+          } else {
+            Alert.alert(
+              "Navigation Error",
+              "Unable to open inquiry form. Please try again."
+            );
+          }
         } finally {
           setTimeout(() => setIsNavigatingFromCoA(false), 500);
         }
@@ -223,7 +228,7 @@ export function ChangeOfAssessmentPrompt({
     return (
       <Pressable
         key={reason.id}
-        style={styles.checkboxRow}
+        style={[styles.checkboxRow, isWeb && webClickableStyles]}
         onPress={() => handleCheckboxToggle(reason.id)}
         accessible={true}
         accessibilityRole="checkbox"
@@ -249,6 +254,7 @@ export function ChangeOfAssessmentPrompt({
       {/* Header - Always visible, tappable to expand */}
       <Pressable
         onPress={handleToggleExpand}
+        style={isWeb && webClickableStyles}
         accessible={true}
         accessibilityRole="button"
         accessibilityLabel={`Complexity factors. ${
@@ -366,7 +372,7 @@ export function ChangeOfAssessmentPrompt({
               {selectedReasons.size === 1 ? "" : "s"} selected
             </Text>
             <Pressable
-              style={[styles.coaButton, buttonStyle]}
+              style={[styles.coaButton, buttonStyle, isWeb && !buttonDisabled && webClickableStyles]}
               onPress={handleNavigateToCoA}
               disabled={buttonDisabled}
               accessible={true}

@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { CalculatorForm } from "../components/CalculatorForm";
 import { CalculatorResults } from "../components/CalculatorResults";
 import { useCalculator } from "../hooks/useCalculator";
+import { useResponsive, MAX_CONTENT_WIDTH, isWeb, webOnlyStyles } from "../utils/responsive";
 
 export function CalculatorScreen() {
   const {
@@ -16,6 +17,8 @@ export function CalculatorScreen() {
     removeChild,
     updateChild,
   } = useCalculator();
+
+  const { isMobile, isDesktop, width } = useResponsive();
 
   const handleIncomeAChange = (value: number) => {
     setFormState((prev) => ({ ...prev, incomeA: value }));
@@ -51,16 +54,26 @@ export function CalculatorScreen() {
     setFormState((prev) => ({ ...prev, courtDate: value }));
   };
 
+  // Web-specific wrapper styles for centered, constrained layout
+  const webWrapperStyle = isWeb ? {
+    maxWidth: MAX_CONTENT_WIDTH,
+    width: '100%' as const,
+    alignSelf: 'center' as const,
+    ...webOnlyStyles,
+  } : {};
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
       >
-        <View style={styles.header}>
-          <View style={styles.titleContainer}>
-            <Ionicons name="people" size={28} color="#f59e0b" />
-            <Text style={styles.title}>Child Support Calculator</Text>
+        <View style={[styles.header, isWeb && styles.headerWeb]}>
+          <View style={[styles.titleContainer, webWrapperStyle]}>
+            <Ionicons name="people" size={isDesktop ? 32 : 28} color="#f59e0b" />
+            <Text style={[styles.title, isDesktop && styles.titleDesktop]}>
+              Child Support Calculator
+            </Text>
           </View>
         </View>
 
@@ -114,6 +127,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#334155", // slate-700
   },
+  headerWeb: {
+    paddingTop: 16,
+    paddingBottom: 16,
+  },
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -125,6 +142,9 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#ffffff",
     letterSpacing: 0.5,
+  },
+  titleDesktop: {
+    fontSize: 28,
   },
   content: {
     flex: 1,
