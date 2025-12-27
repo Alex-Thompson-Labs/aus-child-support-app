@@ -123,6 +123,7 @@ export function WebInquiryPanel({
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [location, setLocation] = useState('');
   const [message, setMessage] = useState('');
   const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -169,6 +170,7 @@ export function WebInquiryPanel({
       analytics.track('inquiry_form_submitted', {
         trigger_type: trigger || 'unknown',
         annual_liability: parseFloat(liability) || 0,
+        has_location: location.trim().length > 0,
         // Track auto-detected triggers
         auto_triggers_count: complexityTriggers.length,
         auto_triggers: complexityTriggers.join(','),
@@ -199,7 +201,7 @@ export function WebInquiryPanel({
         parent_name: sanitizeString(name),
         parent_email: sanitizeEmail(email),
         parent_phone: sanitizePhone(phone) || null,
-        location: null,
+        location: location.trim() || null,
         income_parent_a: parseFloat(incomeA) || 0,
         income_parent_b: parseFloat(incomeB) || 0,
         children_count: parseInt(children) || 0,
@@ -324,6 +326,17 @@ export function WebInquiryPanel({
             </View>
 
             <View style={styles.field}>
+              <Text style={styles.label}>Location</Text>
+              <TextInput
+                style={[styles.input, webInputStyles]}
+                value={location}
+                onChangeText={setLocation}
+                placeholder="e.g. Sydney, NSW"
+                placeholderTextColor="#64748b"
+              />
+            </View>
+
+            <View style={styles.field}>
               <View style={styles.labelRow}>
                 <Text style={styles.label}>Message *</Text>
                 <Text style={styles.charCount}>{message.length}/500</Text>
@@ -381,7 +394,7 @@ export function WebInquiryPanel({
 
             {/* Privacy link */}
             <Pressable
-              onPress={() => Linking.openURL('https://auschildsupport.com/privacy')}
+              onPress={() => Linking.openURL('https://bespoke-gumption-e0c968.netlify.app/')}
               style={[styles.privacyLink, webClickableStyles]}
             >
               <Text style={styles.privacyLinkText}>View Privacy Policy</Text>

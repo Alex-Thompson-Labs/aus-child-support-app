@@ -44,20 +44,6 @@
 
 ### TIER 1: Before Lawyer Outreach
 
-#### Task 1: Attach Privacy Policy to Web App (15 min)
-**Why:** Legal requirement for inquiry form
-
-**Steps:**
-1. Add privacy policy link to footer of web app
-2. Verify privacy policy opens at auschildsupport.com/privacy
-3. Test the link from inquiry form
-
-**Done when:**
-- [ ] Privacy policy accessible from web app
-- [ ] Link works on deployed site
-
----
-
 ### TIER 2: Can Wait Until Next Week
 
 #### Task 3: Get Virtual Phone Number (30 min, $12)

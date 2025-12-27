@@ -546,6 +546,16 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                 );
               })}
               <View style={styles.perChildGapDivider} />
+
+              {/* Total Annual Liability */}
+              <View style={styles.perChildGapRow}>
+                <Text style={[styles.perChildGapLabel, { fontWeight: '700' }]}>
+                  Total Annual Liability
+                </Text>
+                <Text style={[styles.perChildGapValue, { fontWeight: '700', fontSize: 18 }]}>
+                  {formatCurrency(results.finalPaymentAmount)}
+                </Text>
+              </View>
             </View>
           );
         })()}
@@ -622,79 +632,6 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
             )}
           </View>
         )}
-
-        <View style={styles.stepConclusion}>
-          {parentAPays && (
-            <LinearGradient
-              colors={getGradientColors("Parent A")}
-              start={{ x: 0.5, y: 0 }}
-              end={{ x: 0.5, y: 1 }}
-              style={styles.finalResultGradient}
-            >
-              <Text style={styles.finalResultLabel}>Parent A pays</Text>
-              <Text style={styles.finalResultValue}>{formatCurrency(results.finalPaymentAmount)}</Text>
-              <Text style={styles.finalResultPeriod}>per year</Text>
-              <View style={styles.expandedSecondaryAmounts}>
-                <View style={styles.expandedSecondaryItem}>
-                  <Text style={styles.expandedSecondaryValue}>{formatCurrency(monthlyAmount)}</Text>
-                  <Text style={styles.expandedSecondaryLabel}>/month</Text>
-                </View>
-                <View style={styles.expandedDivider} />
-                <View style={styles.expandedSecondaryItem}>
-                  <Text style={styles.expandedSecondaryValue}>{formatCurrency(fortnightlyAmount)}</Text>
-                  <Text style={styles.expandedSecondaryLabel}>/fortnight</Text>
-                </View>
-                <View style={styles.expandedDivider} />
-                <View style={styles.expandedSecondaryItem}>
-                  <Text style={styles.expandedSecondaryValue}>{formatCurrency(dailyAmount)}</Text>
-                  <Text style={styles.expandedSecondaryLabel}>/day</Text>
-                </View>
-              </View>
-            </LinearGradient>
-          )}
-
-          {parentBPays && (
-            <LinearGradient
-              colors={getGradientColors("Parent B")}
-              start={{ x: 0.5, y: 0 }}
-              end={{ x: 0.5, y: 1 }}
-              style={styles.finalResultGradient}
-            >
-              <Text style={styles.finalResultLabel}>Parent B pays</Text>
-              <Text style={styles.finalResultValue}>{formatCurrency(results.finalPaymentAmount)}</Text>
-              <Text style={styles.finalResultPeriod}>per year</Text>
-              <View style={styles.expandedSecondaryAmounts}>
-                <View style={styles.expandedSecondaryItem}>
-                  <Text style={styles.expandedSecondaryValue}>{formatCurrency(monthlyAmount)}</Text>
-                  <Text style={styles.expandedSecondaryLabel}>/month</Text>
-                </View>
-                <View style={styles.expandedDivider} />
-                <View style={styles.expandedSecondaryItem}>
-                  <Text style={styles.expandedSecondaryValue}>{formatCurrency(fortnightlyAmount)}</Text>
-                  <Text style={styles.expandedSecondaryLabel}>/fortnight</Text>
-                </View>
-                <View style={styles.expandedDivider} />
-                <View style={styles.expandedSecondaryItem}>
-                  <Text style={styles.expandedSecondaryValue}>{formatCurrency(dailyAmount)}</Text>
-                  <Text style={styles.expandedSecondaryLabel}>/day</Text>
-                </View>
-              </View>
-            </LinearGradient>
-          )}
-
-          {!parentAPays && !parentBPays && (
-            <LinearGradient
-              colors={getGradientColors("Neither")}
-              start={{ x: 0.5, y: 0 }}
-              end={{ x: 0.5, y: 1 }}
-              style={styles.finalResultGradient}
-            >
-              <Text style={styles.finalResultLabel}>No payment required</Text>
-              <Text style={styles.finalResultValue}>$0</Text>
-              <Text style={styles.finalResultPeriod}>per year</Text>
-            </LinearGradient>
-          )}
-        </View>
           </>
         )}
       </View>

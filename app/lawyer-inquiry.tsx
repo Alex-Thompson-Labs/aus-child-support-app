@@ -763,7 +763,7 @@ export default function LawyerInquiryScreen() {
                         style={styles.privacyLinkContainer}
                         onPress={() => {
                             // Open Privacy Policy in browser
-                            Linking.openURL('https://auschildsupport.com/privacy');
+                            Linking.openURL('https://bespoke-gumption-e0c968.netlify.app/');
                         }}
                         disabled={isSubmitting}
                     >

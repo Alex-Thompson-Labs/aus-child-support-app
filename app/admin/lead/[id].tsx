@@ -21,6 +21,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase, type LeadSubmission } from '@/src/utils/supabase';
 import { useResponsive, isWeb, webInputStyles, webClickableStyles } from '@/src/utils/responsive';
+import { exportLeadAsPDF } from '@/src/utils/exportLeadPDF';
 
 type LeadStatus = 'new' | 'reviewing' | 'sent' | 'converted' | 'lost';
 
@@ -36,6 +37,7 @@ export default function LeadDetailScreen() {
   const [notes, setNotes] = useState('');
   const [savingNotes, setSavingNotes] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [exportingPDF, setExportingPDF] = useState(false);
 
   useEffect(() => {
     checkAuthAndLoadLead();
@@ -230,6 +232,31 @@ auschildsupport.com`;
       console.error('[LeadDetail] Unexpected error:', error);
     } finally {
       setSavingNotes(false);
+    }
+  };
+
+  const handleExportPDF = async () => {
+    if (!lead) return;
+
+    try {
+      setExportingPDF(true);
+      await exportLeadAsPDF(lead);
+
+      // Show success message
+      if (Platform.OS === 'web') {
+        alert('Print Dialog Opened!\n\nUse the print dialog to save as PDF or print the lead report.');
+      } else {
+        Alert.alert('PDF Exported', 'The lead report has been generated successfully.');
+      }
+    } catch (error) {
+      console.error('[LeadDetail] Error exporting PDF:', error);
+      if (Platform.OS === 'web') {
+        alert(`Export Failed\n\n${error instanceof Error ? error.message : 'Unknown error occurred'}`);
+      } else {
+        Alert.alert('Export Failed', error instanceof Error ? error.message : 'Unknown error occurred');
+      }
+    } finally {
+      setExportingPDF(false);
     }
   };
 
@@ -438,12 +465,24 @@ auschildsupport.com`;
         {/* Actions */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Actions</Text>
-          
+
           <Pressable
             style={[styles.actionButton, styles.actionButtonPrimary, isWeb && webClickableStyles]}
             onPress={generateTeaserEmail}
           >
             <Text style={styles.actionButtonText}>📋 Generate Teaser Email</Text>
+          </Pressable>
+
+          <Pressable
+            style={[styles.actionButton, styles.actionButtonPrimary, isWeb && webClickableStyles]}
+            onPress={handleExportPDF}
+            disabled={exportingPDF}
+          >
+            {exportingPDF ? (
+              <ActivityIndicator color="#ffffff" size="small" />
+            ) : (
+              <Text style={styles.actionButtonText}>📄 Export Lead as PDF</Text>
+            )}
           </Pressable>
 
           <View style={styles.statusActions}>

@@ -19,12 +19,14 @@ interface ChangeOfAssessmentPromptProps {
   results: CalculationResults;
   formData?: ComplexityFormData;
   onNavigate: () => void; // Callback to close modal before navigation
+  onRequestInquiry?: () => void; // Callback to show inline inquiry panel (web mode)
 }
 
 export function ChangeOfAssessmentPrompt({
   results,
   formData,
   onNavigate,
+  onRequestInquiry,
 }: ChangeOfAssessmentPromptProps) {
   // State management
   const [isCoAExpanded, setIsCoAExpanded] = useState(false);
@@ -168,6 +170,16 @@ export function ChangeOfAssessmentPrompt({
       console.error("[CoAPrompt] Analytics error:", error);
     }
 
+    // If onRequestInquiry callback exists (web inline mode), use it instead of navigation
+    if (onRequestInquiry) {
+      // Call the callback to show inline inquiry panel
+      onRequestInquiry();
+      // Reset navigation state
+      setTimeout(() => setIsNavigatingFromCoA(false), 500);
+      return;
+    }
+
+    // Otherwise, use navigation (mobile mode)
     // Close modal first (via callback)
     onNavigate();
 
@@ -218,6 +230,7 @@ export function ChangeOfAssessmentPrompt({
     isNavigatingFromCoA,
     selectedReasons,
     onNavigate,
+    onRequestInquiry,
     router,
     results,
     formData,

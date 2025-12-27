@@ -422,6 +422,7 @@ export function CalculatorResults({
             results={results}
             formData={formData}
             onNavigate={() => {}}  // No modal to close in inline mode
+            onRequestInquiry={handleInquiryPress}
           />
         </View>
 

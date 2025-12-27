@@ -25,6 +25,16 @@ This folder contains all project documentation for the Child Support Calculator 
 - **Length:** 237 lines
 - **Who needs it:** Everyone - this is the current source of truth
 
+### **PRODUCT_ROADMAP.md** 🗺️
+**Strategic product roadmap and growth plan.**
+- 6-phase roadmap (Phase 1-2 complete, Phase 3 starting)
+- Revenue projections and milestones
+- Feature prioritization framework
+- Risk management strategies
+- Monthly/quarterly review processes
+- **Read this to understand where we're going**
+- **Length:** ~700 lines
+
 ### **DESIGN_SYSTEM.md** 🎨
 **Complete design system and architecture guide.**
 - Color palette (slate/blue theme)
@@ -115,9 +125,16 @@ Historical planning documents from the development phases:
 
 **If you're NEW to the project:**
 1. **BUSINESS_MODEL.md** - Understand what we're building
-2. **guides/active/REMAINING_TASKS.md** - See current status
-3. **DESIGN_SYSTEM.md** - Learn the UI system
-4. **CLAUDE.md** - Technical reference
+2. **PRODUCT_ROADMAP.md** - See where we're going
+3. **guides/active/REMAINING_TASKS.md** - See current status
+4. **DESIGN_SYSTEM.md** - Learn the UI system
+5. **CLAUDE.md** - Technical reference
+
+**If you're PLANNING strategy or features:**
+1. **PRODUCT_ROADMAP.md** - 6-phase growth plan
+2. **BUSINESS_MODEL.md** - Revenue model and projections
+3. **KEY_PERSONAS.md** - User needs and priorities
+4. **guides/active/REMAINING_TASKS.md** - Current priorities
 
 **If you're DEPLOYING the web app:**
 1. **guides/active/WEB_DEPLOYMENT_GUIDE.md** - Complete deployment steps
@@ -142,8 +159,9 @@ Historical planning documents from the development phases:
 | Document | Lines | Purpose | Last Updated |
 |----------|-------|---------|--------------|
 | **CLAUDE.md** | **859** | **Technical guide** | Dec 27, 2024 |
-| **DESIGN_SYSTEM.md** | **388** | **Design system** | Dec 27, 2024 |
+| **PRODUCT_ROADMAP.md** | **~700** | **Strategic roadmap** ⭐ | Dec 28, 2024 |
 | **guides/active/WEB_DEPLOYMENT_GUIDE.md** | **385** | **Deployment** | Dec 27, 2024 |
+| **DESIGN_SYSTEM.md** | **388** | **Design system** | Dec 27, 2024 |
 | **BUSINESS_MODEL.md** | **237** | **Business overview** ⭐ | Dec 27, 2024 |
 | **guides/active/REMAINING_TASKS.md** | **135** | **Current tasks** | Dec 27, 2024 |
 | **templates/LAWYER_PARTNERSHIP_AGREEMENT.md** | **128** | **Legal template** | Dec 27, 2024 |
@@ -155,7 +173,7 @@ Historical planning documents from the development phases:
 | **templates/EMAIL_MONTHLY_INVOICE.md** | **30** | **Email template** | Dec 27, 2024 |
 | **templates/EMAIL_WEEKLY_CHECKIN.md** | **22** | **Email template** | Dec 27, 2024 |
 
-**Total active documentation: ~2,460 lines**  
+**Total active documentation: ~3,160 lines**  
 **Archived documentation:** See `/docs/guides/old/`
 
 ---
