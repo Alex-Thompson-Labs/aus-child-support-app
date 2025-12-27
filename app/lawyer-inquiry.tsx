@@ -4,6 +4,7 @@ import {
     ActivityIndicator,
     Alert,
     KeyboardAvoidingView,
+    Linking,
     Platform,
     Pressable,
     ScrollView,
@@ -16,6 +17,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAnalytics } from '../src/utils/analytics';
 import { getCoAReasonById } from '../src/utils/change-of-assessment-reasons';
 import type { ChangeOfAssessmentReason } from '../src/utils/change-of-assessment-reasons';
+import { submitLead } from '../src/utils/supabase';
+import type { LeadSubmission } from '../src/utils/supabase';
 
 // ============================================================================
 // Types
@@ -35,19 +38,6 @@ interface FormTouched {
     phone: boolean;
     message: boolean;
     consent: boolean;
-}
-
-interface LeadData {
-    name: string;
-    email: string;
-    phone: string;
-    message: string;
-    liability: string;
-    trigger: string;
-    incomeA: string;
-    incomeB: string;
-    childrenCount: string;
-    submittedAt: string;
 }
 
 // ============================================================================
@@ -395,67 +385,131 @@ export default function LawyerInquiryScreen() {
 
         setIsSubmitting(true);
 
-        // Create sanitized lead data
-        const leadData: LeadData = {
-            name: sanitizeString(name),
-            email: sanitizeEmail(email),
-            phone: sanitizePhone(phone),
-            message: sanitizeString(message),
-            liability,
-            trigger,
-            incomeA,
-            incomeB,
-            childrenCount: children,
-            submittedAt: new Date().toISOString()
-        };
-
         try {
-            // Track analytics with correct property names
+            // Track analytics BEFORE submission
             const timeToSubmit = Math.round((Date.now() - mountTimeRef.current) / 1000);
 
-            analytics.track('inquiry_form_submitted', {
-                trigger_type: trigger || 'unknown',
-                annual_liability: parseFloat(liability) || 0,
-                has_phone: !!leadData.phone,
-                message_length: leadData.message.length,
-                time_to_submit: timeToSubmit,
-                // CoA tracking properties
-                has_coa_reasons: (coaReasons?.length ?? 0) > 0,
-                coa_reason_count: coaReasons?.length ?? 0,
-                coa_reason_ids: coaReasons?.join(',') ?? '',
-                has_urgent_reasons: validCoAReasons.some(r => r.urgency === 'URGENT')
-            });
-        } catch (error) {
-            // Log but don't fail submission on analytics error
-            console.error('[LawyerInquiry] Analytics error:', error);
-        }
-
-        // Log lead data (Phase 2 will send this to backend)
-        console.log('[LawyerInquiry] Lead data:', JSON.stringify(leadData, null, 2));
-
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Show success
-        setIsSubmitting(false);
-        setShowSuccess(true);
-
-        // Navigate back after delay
-        setTimeout(() => {
             try {
-                // Check if we can go back before attempting navigation
-                if (router.canGoBack()) {
-                    router.back();
+                analytics.track('inquiry_form_submitted', {
+                    trigger_type: trigger || 'unknown',
+                    annual_liability: parseFloat(liability) || 0,
+                    has_phone: !!sanitizePhone(phone),
+                    message_length: sanitizeString(message).length,
+                    time_to_submit: timeToSubmit,
+                    // CoA tracking properties
+                    has_coa_reasons: (coaReasons?.length ?? 0) > 0,
+                    coa_reason_count: coaReasons?.length ?? 0,
+                    coa_reason_ids: coaReasons?.join(',') ?? '',
+                    has_urgent_reasons: validCoAReasons.some(r => r.urgency === 'URGENT')
+                });
+            } catch (error) {
+                // Log but don't fail submission on analytics error
+                console.error('[LawyerInquiry] Analytics error:', error);
+            }
+
+            // Prepare CoA reasons data
+            const coaReasonsData = validCoAReasons.length > 0 ? {
+                count: validCoAReasons.length,
+                reasons: validCoAReasons.map(r => ({
+                    id: r.id,
+                    label: r.label,
+                    description: r.description,
+                    category: r.category,
+                    priority: r.priority,
+                }))
+            } : null;
+
+            // Create lead submission for Supabase
+            const leadSubmission: LeadSubmission = {
+                // Parent contact
+                parent_name: sanitizeString(name),
+                parent_email: sanitizeEmail(email),
+                parent_phone: sanitizePhone(phone) || null,
+                location: null, // We don't collect location yet
+                
+                // Calculation data
+                income_parent_a: parseFloat(incomeA) || 0,
+                income_parent_b: parseFloat(incomeB) || 0,
+                children_count: parseInt(children) || 0,
+                annual_liability: parseFloat(liability) || 0,
+                
+                // Care arrangement
+                care_data: careData.length > 0 ? careData : null,
+                
+                // Complexity data
+                complexity_trigger: trigger || 'unknown',
+                complexity_reasons: coaReasons || [],
+                coa_reasons: coaReasonsData,
+                
+                // Message
+                parent_message: sanitizeString(message),
+                preferred_contact: null, // Could add this as a field later
+                
+                // Privacy compliance
+                consent_given: consent,
+                
+                // Initial status
+                status: 'new',
+            };
+
+            console.log('[LawyerInquiry] Submitting lead to Supabase...');
+
+            // Submit to Supabase
+            const result = await submitLead(leadSubmission);
+
+            if (!result.success) {
+                // Handle submission error
+                console.error('[LawyerInquiry] Submission failed:', result.error);
+                
+                setIsSubmitting(false);
+                
+                if (Platform.OS === 'web') {
+                    alert('Submission Failed\n\nThere was an error submitting your inquiry. Please try again or contact us directly.');
                 } else {
-                    // No previous screen, go to home
+                    Alert.alert(
+                        'Submission Failed',
+                        'There was an error submitting your inquiry. Please try again or contact us directly.'
+                    );
+                }
+                return;
+            }
+
+            console.log('[LawyerInquiry] Lead submitted successfully. ID:', result.leadId);
+
+            // Show success
+            setIsSubmitting(false);
+            setShowSuccess(true);
+
+            // Navigate back after delay
+            setTimeout(() => {
+                try {
+                    // Check if we can go back before attempting navigation
+                    if (router.canGoBack()) {
+                        router.back();
+                    } else {
+                        // No previous screen, go to home
+                        router.replace('/');
+                    }
+                } catch (error) {
+                    console.error('[LawyerInquiry] Navigation error:', error);
+                    // Fallback: try to go to home
                     router.replace('/');
                 }
-            } catch (error) {
-                console.error('[LawyerInquiry] Navigation error:', error);
-                // Fallback: try to go to home
-                router.replace('/');
+            }, 2500);
+        } catch (error) {
+            console.error('[LawyerInquiry] Unexpected error:', error);
+            
+            setIsSubmitting(false);
+            
+            if (Platform.OS === 'web') {
+                alert('Unexpected Error\n\nAn unexpected error occurred. Please try again.');
+            } else {
+                Alert.alert(
+                    'Unexpected Error',
+                    'An unexpected error occurred. Please try again.'
+                );
             }
-        }, 2500);
+        }
     }, [isSubmitting, validateAllFields, name, email, phone, message, liability, trigger, incomeA, incomeB, children, router, analytics]);
 
     /**
@@ -685,7 +739,7 @@ export default function LawyerInquiryScreen() {
                         accessible={true}
                         accessibilityRole="checkbox"
                         accessibilityState={{ checked: consent }}
-                        accessibilityLabel="Consent to be contacted"
+                        accessibilityLabel="Consent to share information with legal practitioners"
                     >
                         <View style={[
                             styles.checkbox,
@@ -694,13 +748,29 @@ export default function LawyerInquiryScreen() {
                         ]}>
                             {consent && <Text style={styles.checkboxCheck}>✓</Text>}
                         </View>
-                        <Text style={styles.checkboxLabel}>
-                            I consent to being contacted by a lawyer regarding my child support case *
-                        </Text>
+                        <View style={styles.checkboxTextContainer}>
+                            <Text style={styles.checkboxLabel}>
+                                I consent to my information being shared with legal practitioners for the purpose of consultation. *
+                            </Text>
+                        </View>
                     </Pressable>
                     {touched.consent && errors.consent && (
                         <Text style={[styles.errorText, styles.checkboxErrorText]}>{errors.consent}</Text>
                     )}
+                    
+                    {/* Privacy Policy Link */}
+                    <Pressable
+                        style={styles.privacyLinkContainer}
+                        onPress={() => {
+                            // Open Privacy Policy in browser
+                            Linking.openURL('https://auschildsupport.com/privacy');
+                        }}
+                        disabled={isSubmitting}
+                    >
+                        <Text style={styles.privacyLink}>
+                            Read our Privacy Policy
+                        </Text>
+                    </Pressable>
 
                     {/* Submit Button */}
                     <Pressable
@@ -946,8 +1016,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '700',
     },
-    checkboxLabel: {
+    checkboxTextContainer: {
         flex: 1,
+    },
+    checkboxLabel: {
         fontSize: 14,
         color: '#cbd5e1', // slate-300
         lineHeight: 20,
@@ -955,6 +1027,15 @@ const styles = StyleSheet.create({
     checkboxErrorText: {
         marginLeft: 36,
         marginTop: 0,
+    },
+    privacyLinkContainer: {
+        marginBottom: 8,
+        marginLeft: 36, // Align with checkbox label
+    },
+    privacyLink: {
+        fontSize: 13,
+        color: '#3b82f6', // blue-500
+        textDecorationLine: 'underline',
     },
     button: {
         backgroundColor: '#2563eb', // blue-600

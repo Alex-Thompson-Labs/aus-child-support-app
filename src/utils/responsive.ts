@@ -21,6 +21,11 @@ export const MAX_CONTENT_WIDTH = 680;
 export const MAX_FORM_WIDTH = 560;
 export const MAX_MODAL_WIDTH = 640;
 
+// Desktop two-column layout constants
+export const MAX_TWO_COLUMN_WIDTH = 1400;  // Max container width for desktop
+export const FORM_COLUMN_WIDTH = 480;       // Left column fixed width
+export const COLUMN_GAP = 32;               // Gap between columns
+
 /**
  * Check if we're on web platform
  */
@@ -36,6 +41,8 @@ export function useResponsive() {
   const isMobile = width < BREAKPOINTS.md;
   const isTablet = width >= BREAKPOINTS.md && width < BREAKPOINTS.lg;
   const isDesktop = width >= BREAKPOINTS.lg;
+  const isDesktopWeb = isWeb && width >= BREAKPOINTS.lg;  // Original two-column layout threshold
+  const isTabletOrDesktop = isWeb && width >= BREAKPOINTS.md;  // New horizontal layout threshold (≥768px)
 
   // Calculate content container style
   const containerStyle = {
@@ -59,6 +66,8 @@ export function useResponsive() {
     isMobile,
     isTablet,
     isDesktop,
+    isDesktopWeb,
+    isTabletOrDesktop,
     isWeb,
     containerStyle,
     formContainerStyle,

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import type {
     CalculationResults,
     CalculatorInputs,
@@ -13,6 +13,7 @@ import {
     roundCarePercentage,
 } from "../utils/child-support-calculations";
 import { FAR, MAR, MAX_PPS, SSA } from "../utils/child-support-constants";
+import { isWeb } from "../utils/responsive";
 
 export interface CalculatorFormState {
   incomeA: number;
@@ -25,12 +26,13 @@ export interface CalculatorFormState {
   courtDate?: string; // Optional court date in dd/mm/yyyy format
 }
 
-const initialFormState: CalculatorFormState = {
-  incomeA: 0,
-  incomeB: 0,
-  supportA: false,
-  supportB: false,
-  children: [
+// On web, start with no children (blank state)
+// On mobile, start with one child pre-filled for better UX
+const getInitialChildren = (): ChildInput[] => {
+  if (isWeb) {
+    return [];
+  }
+  return [
     {
       id: `child-${Date.now()}`,
       age: "Under 13",
@@ -38,7 +40,15 @@ const initialFormState: CalculatorFormState = {
       careAmountB: 6,
       carePeriod: "fortnight",
     },
-  ],
+  ];
+};
+
+const initialFormState: CalculatorFormState = {
+  incomeA: 0,
+  incomeB: 0,
+  supportA: false,
+  supportB: false,
+  children: getInitialChildren(),
   relDepA: { u13: 0, plus13: 0 },
   relDepB: { u13: 0, plus13: 0 },
   courtDate: "", // Empty string by default
@@ -430,29 +440,20 @@ export function useCalculator() {
     }
   }, [performCalculation]);
 
-  // Live calculation with debounce
-  const debounceRef = useRef<number | null>(null);  
-  useEffect(() => {
-    // Clear any existing timeout
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-    
-    // Debounce the calculation by 300ms
-    debounceRef.current = setTimeout(() => {
-      const calculationResults = performCalculation();
-      if (calculationResults) {
-        setResults(calculationResults);
-      }
-    }, 300);
-    
-    // Cleanup on unmount
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
-  }, [formState, performCalculation]);
+  const reset = useCallback(() => {
+    setFormState({
+      incomeA: 0,
+      incomeB: 0,
+      supportA: false,
+      supportB: false,
+      children: getInitialChildren(),
+      relDepA: { u13: 0, plus13: 0 },
+      relDepB: { u13: 0, plus13: 0 },
+      courtDate: "",
+    });
+    setResults(null);
+    setErrors({});
+  }, []);
 
   const getInputsForSave = useCallback((): CalculatorInputs => {
     const children = formState.children.map((c) => ({
@@ -482,6 +483,7 @@ export function useCalculator() {
     updateChild,
     validateForm,
     calculate,
+    reset,
     getInputsForSave,
   };
 }

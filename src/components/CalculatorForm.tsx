@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from
 import type { ChildInput, FormErrors } from "../types/calculator";
 import { ChildRow } from "./ChildRow";
 import { HelpTooltip } from "./HelpTooltip";
-import { useResponsive, MAX_CONTENT_WIDTH, isWeb, webInputStyles, webClickableStyles } from "../utils/responsive";
+import { useResponsive, MAX_CONTENT_WIDTH, MAX_TWO_COLUMN_WIDTH, isWeb, webInputStyles, webClickableStyles, webOnlyStyles } from "../utils/responsive";
 
 interface CalculatorFormProps {
   incomeA: number;
@@ -29,6 +29,9 @@ interface CalculatorFormProps {
   onRelDepAChange: (updates: Partial<{ u13: number; plus13: number }>) => void;
   onRelDepBChange: (updates: Partial<{ u13: number; plus13: number }>) => void;
   onCourtDateChange: (value: string) => void;
+  onCalculate: () => void;
+  onReset: () => void;
+  isDesktopWeb?: boolean;  // Controls padding and width for two-column layout
 }
 
 export function CalculatorForm({
@@ -55,22 +58,28 @@ export function CalculatorForm({
   onRelDepAChange,
   onRelDepBChange,
   onCourtDateChange,
+  onCalculate,
+  onReset,
+  isDesktopWeb = false,
 }: CalculatorFormProps) {
   const [showRelDeps, setShowRelDeps] = useState(false);
   const { isMobile, isDesktop, width } = useResponsive();
 
-  // Web-specific container styles
-  const webContainerStyle = isWeb ? {
+  // Web-specific container styles (only apply max-width when NOT in two-column mode)
+  const webContainerStyle = isWeb && !isDesktopWeb ? {
     maxWidth: MAX_CONTENT_WIDTH,
     width: '100%' as const,
     alignSelf: 'center' as const,
   } : {};
 
-  // Responsive input width
-  const inputWidth = isMobile ? 130 : isDesktop ? 180 : 160;
+  // Adjust bottom padding: smaller padding now that we have Calculate button (no floating card until results)
+  const contentPaddingBottom = isDesktopWeb ? 40 : 40;
+
+  // Responsive input width - sized for 8 digits (up to $99,999,999)
+  const inputWidth = isMobile ? 160 : isDesktop ? 200 : 180;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={[styles.contentContainer, webContainerStyle]}>
+    <ScrollView style={styles.container} contentContainerStyle={[styles.contentContainer, { paddingBottom: contentPaddingBottom }, webContainerStyle]}>
       {/* Combined Parents Card */}
       <View style={styles.card}>
         <Text style={styles.sectionHeading}>Income</Text>
@@ -93,10 +102,10 @@ export function CalculatorForm({
             />
           </View>
           <View style={styles.inputRow}>
-            <View style={[styles.currencyInputContainer, { width: inputWidth }]}>
+            <View style={[styles.currencyInputContainer, { width: inputWidth, minWidth: inputWidth }]}>
               <Text style={styles.currencySymbol}>$</Text>
               <TextInput
-                style={[styles.currencyInput, errors.incomeA && styles.inputError, isWeb && webInputStyles]}
+                style={[styles.currencyInput, { width: inputWidth, minWidth: inputWidth }, errors.incomeA && styles.inputError, isWeb && webInputStyles]}
                 value={incomeA ? incomeA.toString() : ""}
                 onChangeText={(text) => {
                   const val = text.replace(/[^0-9]/g, "");
@@ -136,10 +145,10 @@ export function CalculatorForm({
             <Text style={styles.label}> - Adjusted Taxable Income</Text>
           </View>
           <View style={styles.inputRow}>
-            <View style={[styles.currencyInputContainer, { width: inputWidth }]}>
+            <View style={[styles.currencyInputContainer, { width: inputWidth, minWidth: inputWidth }]}>
               <Text style={styles.currencySymbol}>$</Text>
               <TextInput
-                style={[styles.currencyInput, errors.incomeB && styles.inputError, isWeb && webInputStyles]}
+                style={[styles.currencyInput, { width: inputWidth, minWidth: inputWidth }, errors.incomeB && styles.inputError, isWeb && webInputStyles]}
                 value={incomeB ? incomeB.toString() : ""}
                 onChangeText={(text) => {
                   const val = text.replace(/[^0-9]/g, "");
@@ -310,6 +319,22 @@ export function CalculatorForm({
           keyboardType="numbers-and-punctuation"
         />
       </View>
+
+      {/* Action Buttons */}
+      <View style={styles.actionButtons}>
+        <Pressable
+          onPress={onCalculate}
+          style={[styles.calculateButton, isWeb && webClickableStyles]}
+        >
+          <Text style={styles.calculateButtonText}>Calculate</Text>
+        </Pressable>
+        <Pressable
+          onPress={onReset}
+          style={[styles.resetButton, isWeb && webClickableStyles]}
+        >
+          <Text style={styles.resetButtonText}>Reset</Text>
+        </Pressable>
+      </View>
     </ScrollView>
   );
 }
@@ -320,7 +345,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: 16,
-    paddingBottom: 180, // Extra padding for fixed bottom payment card
+    // paddingBottom is set dynamically based on isDesktopWeb
     gap: 16,
   },
   card: {
@@ -406,6 +431,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
+    flexWrap: "nowrap",
   },
   currencyInputContainer: {
     flexDirection: "row",
@@ -413,6 +439,8 @@ const styles = StyleSheet.create({
     position: "relative",
     // Width is now set dynamically via inline style
     flex: 0,
+    flexShrink: 0,
+    zIndex: 2,
   },
   currencySymbol: {
     position: "absolute",
@@ -423,7 +451,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   currencyInput: {
-    width: "100%",
+    // Width is set via inline style for responsive behavior
     paddingLeft: 32,
     paddingRight: 12,
     paddingVertical: 10,
@@ -476,6 +504,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+    flexShrink: 0,
   },
   smallSwitch: {
     transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
@@ -583,6 +612,487 @@ const styles = StyleSheet.create({
     color: "#64748b", // slate-500
     marginTop: 4,
     fontStyle: "italic",
+  },
+  actionButtons: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 8,
+  },
+  calculateButton: {
+    flex: 2,
+    backgroundColor: "#3b82f6", // blue-500
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  calculateButtonText: {
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  resetButton: {
+    flex: 1,
+    backgroundColor: "#334155", // slate-700
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#475569", // slate-600
+  },
+  resetButtonText: {
+    color: "#94a3b8", // slate-400
+    fontSize: 16,
+    fontWeight: "600",
+  },
+});
+
+// ============================================================================
+// WebHorizontalForm - Horizontal layout for tablet/desktop web (≥768px)
+// ============================================================================
+
+interface WebHorizontalFormProps extends CalculatorFormProps {}
+
+export function WebHorizontalForm({
+  incomeA,
+  incomeB,
+  supportA,
+  supportB,
+  childrenData,
+  relDepA,
+  relDepB,
+  courtDate,
+  errors,
+  onIncomeAChange,
+  onIncomeBChange,
+  onSupportAChange,
+  onSupportBChange,
+  onAddChild,
+  onRemoveChild,
+  onUpdateChild,
+  onRelDepAChange,
+  onRelDepBChange,
+  onCourtDateChange,
+  onCalculate,
+  onReset,
+}: WebHorizontalFormProps) {
+  const { width } = useResponsive();
+
+  // Compact input width for horizontal layout
+  const inputWidth = 140;
+
+  return (
+    <View style={[horizontalStyles.container, { maxWidth: MAX_TWO_COLUMN_WIDTH }, webOnlyStyles as any]}>
+      {/* Main horizontal row */}
+      <View style={horizontalStyles.mainRow}>
+        {/* Parent A Income */}
+        <View style={horizontalStyles.section}>
+          <Text style={horizontalStyles.sectionLabel}>Parent A Income</Text>
+          <View style={horizontalStyles.incomeRow}>
+            <View style={[horizontalStyles.currencyInputContainer, { width: inputWidth }]}>
+              <Text style={horizontalStyles.currencySymbol}>$</Text>
+              <TextInput
+                style={[horizontalStyles.currencyInput, { width: inputWidth }, errors.incomeA && styles.inputError, webInputStyles]}
+                value={incomeA ? incomeA.toString() : ""}
+                onChangeText={(text) => {
+                  const val = text.replace(/[^0-9]/g, "");
+                  onIncomeAChange(parseInt(val) || 0);
+                }}
+                keyboardType="numeric"
+                placeholder="0"
+                placeholderTextColor="#64748b"
+              />
+            </View>
+            <View style={horizontalStyles.switchRow}>
+              <Switch
+                value={supportA}
+                onValueChange={onSupportAChange}
+                trackColor={{ false: "#475569", true: "#f59e0b" }}
+                thumbColor="#ffffff"
+                style={horizontalStyles.smallSwitch}
+              />
+              <Text style={horizontalStyles.switchLabel}>Inc. support</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Parent B Income */}
+        <View style={horizontalStyles.section}>
+          <Text style={horizontalStyles.sectionLabel}>Parent B Income</Text>
+          <View style={horizontalStyles.incomeRow}>
+            <View style={[horizontalStyles.currencyInputContainer, { width: inputWidth }]}>
+              <Text style={horizontalStyles.currencySymbol}>$</Text>
+              <TextInput
+                style={[horizontalStyles.currencyInput, { width: inputWidth }, errors.incomeB && styles.inputError, webInputStyles]}
+                value={incomeB ? incomeB.toString() : ""}
+                onChangeText={(text) => {
+                  const val = text.replace(/[^0-9]/g, "");
+                  onIncomeBChange(parseInt(val) || 0);
+                }}
+                keyboardType="numeric"
+                placeholder="0"
+                placeholderTextColor="#64748b"
+              />
+            </View>
+            <View style={horizontalStyles.switchRow}>
+              <Switch
+                value={supportB}
+                onValueChange={onSupportBChange}
+                trackColor={{ false: "#475569", true: "#f59e0b" }}
+                thumbColor="#ffffff"
+                style={horizontalStyles.smallSwitch}
+              />
+              <Text style={horizontalStyles.switchLabel}>Inc. support</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Children / Care */}
+        <View style={horizontalStyles.sectionWide}>
+          <View style={horizontalStyles.sectionHeader}>
+            <Text style={horizontalStyles.sectionLabel}>
+              Children (Care Nights) {childrenData.length > 0 && `- ${childrenData.length} child${childrenData.length > 1 ? 'ren' : ''}`}
+            </Text>
+            <Pressable
+              onPress={onAddChild}
+              style={[horizontalStyles.addButton, webClickableStyles]}
+            >
+              <Text style={horizontalStyles.addButtonText}>+ Add</Text>
+            </Pressable>
+          </View>
+          {childrenData.length === 0 ? (
+            <Text style={horizontalStyles.noChildrenText}>No children added</Text>
+          ) : (
+            <View style={horizontalStyles.childrenScrollContainer}>
+              <ScrollView
+                horizontal
+                style={horizontalStyles.childrenScrollView}
+                contentContainerStyle={horizontalStyles.childrenScrollContent}
+                showsHorizontalScrollIndicator={true}
+              >
+                {childrenData.map((child, index) => (
+                  <View key={child.id} style={horizontalStyles.childCardWrapper}>
+                    <ChildRow
+                      child={child}
+                      onUpdate={(updates) => onUpdateChild(child.id, updates)}
+                      onRemove={() => onRemoveChild(child.id)}
+                      childIndex={index + 1}
+                      totalChildren={childrenData.length}
+                    />
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+          {errors.children && (
+            <Text style={styles.errorText}>{errors.children}</Text>
+          )}
+        </View>
+
+        {/* Relevant Dependents - always visible inline */}
+        <View style={horizontalStyles.section}>
+          <Text style={horizontalStyles.sectionLabel}>Relevant Dependents</Text>
+          <View style={horizontalStyles.depsContainer}>
+            {/* Parent A deps */}
+            <View style={horizontalStyles.depsParent}>
+              <Text style={horizontalStyles.depsParentLabel}>A</Text>
+              <View style={horizontalStyles.depsInputGroup}>
+                <TextInput
+                  style={[horizontalStyles.depsInput, webInputStyles]}
+                  value={relDepA.u13.toString()}
+                  onChangeText={(text) =>
+                    onRelDepAChange({ u13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
+                  }
+                  keyboardType="numeric"
+                />
+                <Text style={horizontalStyles.depsAgeLabel}>&lt;13</Text>
+              </View>
+              <View style={horizontalStyles.depsInputGroup}>
+                <TextInput
+                  style={[horizontalStyles.depsInput, webInputStyles]}
+                  value={relDepA.plus13.toString()}
+                  onChangeText={(text) =>
+                    onRelDepAChange({ plus13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
+                  }
+                  keyboardType="numeric"
+                />
+                <Text style={horizontalStyles.depsAgeLabel}>13+</Text>
+              </View>
+            </View>
+            {/* Parent B deps */}
+            <View style={horizontalStyles.depsParent}>
+              <Text style={horizontalStyles.depsParentLabelB}>B</Text>
+              <View style={horizontalStyles.depsInputGroup}>
+                <TextInput
+                  style={[horizontalStyles.depsInput, webInputStyles]}
+                  value={relDepB.u13.toString()}
+                  onChangeText={(text) =>
+                    onRelDepBChange({ u13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
+                  }
+                  keyboardType="numeric"
+                />
+                <Text style={horizontalStyles.depsAgeLabel}>&lt;13</Text>
+              </View>
+              <View style={horizontalStyles.depsInputGroup}>
+                <TextInput
+                  style={[horizontalStyles.depsInput, webInputStyles]}
+                  value={relDepB.plus13.toString()}
+                  onChangeText={(text) =>
+                    onRelDepBChange({ plus13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
+                  }
+                  keyboardType="numeric"
+                />
+                <Text style={horizontalStyles.depsAgeLabel}>13+</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* Court Date */}
+        <View style={horizontalStyles.section}>
+          <Text style={horizontalStyles.sectionLabel}>Court Date</Text>
+          <TextInput
+            style={[horizontalStyles.courtDateInput, webInputStyles]}
+            value={courtDate || ""}
+            onChangeText={onCourtDateChange}
+            placeholder="dd/mm/yyyy"
+            placeholderTextColor="#64748b"
+            keyboardType="numbers-and-punctuation"
+          />
+        </View>
+
+        {/* Action Buttons */}
+        <View style={horizontalStyles.buttonsSection}>
+          <Pressable
+            onPress={onCalculate}
+            style={[horizontalStyles.calculateButton, webClickableStyles]}
+          >
+            <Text style={horizontalStyles.calculateButtonText}>Calculate</Text>
+          </Pressable>
+          <Pressable
+            onPress={onReset}
+            style={[horizontalStyles.resetButton, webClickableStyles]}
+          >
+            <Text style={horizontalStyles.resetButtonText}>Reset</Text>
+          </Pressable>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+const horizontalStyles = StyleSheet.create({
+  container: {
+    width: "100%",
+    alignSelf: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    backgroundColor: "#1e293b", // slate-800
+    borderBottomWidth: 1,
+    borderBottomColor: "#334155", // slate-700
+  },
+  mainRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+    gap: 20,
+  },
+  section: {
+    minWidth: 160,
+  },
+  sectionWide: {
+    minWidth: 300,
+    maxWidth: 600,
+    flexShrink: 1,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  sectionLabel: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: "#10b981", // emerald-500
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: 8,
+  },
+  incomeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  currencyInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    position: "relative",
+  },
+  currencySymbol: {
+    position: "absolute",
+    left: 10,
+    color: "#94a3b8", // slate-400
+    fontSize: 16,
+    fontWeight: "500",
+    zIndex: 1,
+  },
+  currencyInput: {
+    paddingLeft: 28,
+    paddingRight: 10,
+    paddingVertical: 8,
+    fontSize: 16,
+    color: "#ffffff",
+    borderWidth: 1,
+    borderColor: "#475569", // slate-600
+    borderRadius: 6,
+    backgroundColor: "#334155", // slate-700
+  },
+  switchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  smallSwitch: {
+    transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
+  },
+  switchLabel: {
+    fontSize: 11,
+    color: "#94a3b8", // slate-400
+  },
+  childrenContainer: {
+    gap: 8,
+  },
+  childrenScrollContainer: {
+    width: '100%',
+    ...(isWeb ? {
+      overflow: 'hidden',
+      flex: 0,
+    } : {}),
+  },
+  childrenScrollView: {
+    maxHeight: 200,
+    flexGrow: 0,
+    flexShrink: 1,
+    ...(isWeb ? {
+      width: '100%',
+      overflowX: 'auto',
+      overflowY: 'hidden',
+    } : {}),
+  },
+  childrenScrollContent: {
+    flexDirection: "row",
+    gap: 12,
+    paddingVertical: 4,
+    paddingHorizontal: 2,
+  },
+  childCardWrapper: {
+    width: 280,
+    flexShrink: 0,
+  },
+  noChildrenText: {
+    fontSize: 13,
+    color: "#64748b", // slate-500
+    fontStyle: "italic",
+    paddingVertical: 8,
+  },
+  addButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: "#475569", // slate-600
+    borderRadius: 4,
+  },
+  addButtonText: {
+    fontSize: 12,
+    color: "#94a3b8", // slate-400
+  },
+  depsContainer: {
+    flexDirection: "row",
+    gap: 16,
+  },
+  depsParent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  depsParentLabel: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#3b82f6", // blue-500
+    width: 16,
+  },
+  depsParentLabelB: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#8b5cf6", // violet-500
+    width: 16,
+  },
+  depsInputGroup: {
+    alignItems: "center",
+    gap: 2,
+  },
+  depsInput: {
+    width: 36,
+    paddingHorizontal: 4,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: "#475569", // slate-600
+    borderRadius: 4,
+    textAlign: "center",
+    color: "#ffffff",
+    backgroundColor: "#334155", // slate-700
+    fontSize: 14,
+  },
+  depsAgeLabel: {
+    fontSize: 10,
+    color: "#f59e0b", // amber-500
+  },
+  courtDateInput: {
+    width: 110,
+    backgroundColor: "#334155", // slate-700
+    borderWidth: 1,
+    borderColor: "#475569", // slate-600
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    color: "#ffffff",
+    fontSize: 14,
+  },
+  buttonsSection: {
+    flexDirection: "row",
+    gap: 8,
+    alignItems: "flex-end",
+    paddingTop: 16,
+  },
+  calculateButton: {
+    backgroundColor: "#3b82f6", // blue-500
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  calculateButtonText: {
+    color: "#ffffff",
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  resetButton: {
+    backgroundColor: "#334155", // slate-700
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#475569", // slate-600
+  },
+  resetButtonText: {
+    color: "#94a3b8", // slate-400
+    fontSize: 14,
+    fontWeight: "600",
   },
 });
 

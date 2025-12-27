@@ -8,12 +8,16 @@ interface ChildRowProps {
   child: ChildInput;
   onUpdate: (updates: Partial<ChildInput>) => void;
   onRemove: () => void;
+  childIndex?: number;
+  totalChildren?: number;
 }
 
 export function ChildRow({
   child,
   onUpdate,
   onRemove,
+  childIndex,
+  totalChildren,
 }: ChildRowProps) {
   const { isMobile, isDesktop } = useResponsive();
 
@@ -61,6 +65,12 @@ export function ChildRow({
         isOverLimit && styles.containerError,
       ]}
     >
+      {/* Child count indicator */}
+      {childIndex !== undefined && totalChildren !== undefined && (
+        <Text style={styles.childCountText}>
+          Child {childIndex} of {totalChildren}
+        </Text>
+      )}
       <View style={styles.mainRow}>
         {/* Left side: Parent inputs */}
         <View style={styles.parentsSection}>
@@ -90,41 +100,51 @@ export function ChildRow({
 
         {/* Right side: Controls */}
         <View style={styles.controlsSection}>
-          {/* Age toggle */}
-          <View style={[styles.toggleGroup, styles.ageToggleGroup]}>
-            <Pressable
-              onPress={() => onUpdate({ age: "Under 13" })}
-              style={[styles.toggleButton, styles.toggleButtonLeft, child.age === "Under 13" && styles.toggleButtonActive, isWeb && webClickableStyles]}
-            >
-              <Text style={[styles.toggleButtonText, child.age === "Under 13" && styles.toggleButtonTextActive]}>{"<13"}</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => onUpdate({ age: "13+" })}
-              style={[styles.toggleButton, styles.toggleButtonRight, child.age === "13+" && styles.toggleButtonActive, isWeb && webClickableStyles]}
-            >
-              <Text style={[styles.toggleButtonText, child.age === "13+" && styles.toggleButtonTextActive]}>13+</Text>
-            </Pressable>
+          {/* Age toggle with heading */}
+          <View style={styles.toggleWithLabel}>
+            {isWeb && <Text style={styles.toggleLabel}>Age Range</Text>}
+            <View style={[styles.toggleGroup, !isWeb && styles.ageToggleGroup]}>
+              <Pressable
+                onPress={() => onUpdate({ age: "Under 13" })}
+                style={[styles.toggleButton, styles.toggleButtonLeft, child.age === "Under 13" && styles.toggleButtonActive, isWeb && webClickableStyles]}
+              >
+                <Text style={[styles.toggleButtonText, child.age === "Under 13" && styles.toggleButtonTextActive]}>{"<13"}</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => onUpdate({ age: "13+" })}
+                style={[styles.toggleButton, styles.toggleButtonRight, child.age === "13+" && styles.toggleButtonActive, isWeb && webClickableStyles]}
+              >
+                <Text style={[styles.toggleButtonText, child.age === "13+" && styles.toggleButtonTextActive]}>13+</Text>
+              </Pressable>
+            </View>
           </View>
 
-          {/* Period toggle */}
-          <View style={[styles.toggleGroup, styles.periodToggleGroup]}>
-            {(["week", "fortnight", "year"] as const).map((period, index) => (
-              <Pressable
-                key={period}
-                onPress={() => handlePeriodChange(period)}
-                style={[
-                  styles.toggleButton,
-                  index === 0 && styles.toggleButtonLeft,
-                  index === 2 && styles.toggleButtonRight,
-                  child.carePeriod === period && styles.toggleButtonActive,
-                  isWeb && webClickableStyles,
-                ]}
-              >
-                <Text style={[styles.toggleButtonText, child.carePeriod === period && styles.toggleButtonTextActive]}>
-                  {period === "week" ? "wk" : period === "fortnight" ? "fn" : "yr"}
-                </Text>
-              </Pressable>
-            ))}
+          {/* Period toggle with heading */}
+          <View style={styles.toggleWithLabel}>
+            {isWeb && <Text style={styles.toggleLabel}>Period</Text>}
+            <View style={[styles.toggleGroup, !isWeb && styles.periodToggleGroup]}>
+              {(["week", "fortnight", "year"] as const).map((period, index) => (
+                <Pressable
+                  key={period}
+                  onPress={() => handlePeriodChange(period)}
+                  style={[
+                    styles.toggleButton,
+                    isWeb && styles.toggleButtonWide,
+                    index === 0 && styles.toggleButtonLeft,
+                    index === 2 && styles.toggleButtonRight,
+                    child.carePeriod === period && styles.toggleButtonActive,
+                    isWeb && webClickableStyles,
+                  ]}
+                >
+                  <Text style={[styles.toggleButtonText, child.carePeriod === period && styles.toggleButtonTextActive]}>
+                    {isWeb
+                      ? (period === "week" ? "Week" : period === "fortnight" ? "Fortnight" : "Year")
+                      : (period === "week" ? "wk" : period === "fortnight" ? "fn" : "yr")
+                    }
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
           </View>
         </View>
 
@@ -158,6 +178,15 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     marginBottom: 8,
   },
+  childCountText: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: "#94a3b8", // slate-400
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: 8,
+    textAlign: "center",
+  },
   containerError: {
     borderColor: "#ef4444", // red-500
     backgroundColor: "rgba(239, 68, 68, 0.1)", // red-500 with opacity
@@ -165,13 +194,13 @@ const styles = StyleSheet.create({
   mainRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 24,
+    gap: 16,
+    flexWrap: "wrap",
     position: "relative",
   },
   parentsSection: {
     flexDirection: "row",
-    gap: 16,
-    flex: 1,
+    gap: 12,
   },
   parentColumn: {
     alignItems: "center",
@@ -204,8 +233,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#1e293b", // slate-800
   },
   controlsSection: {
-    gap: 6,
-    alignItems: "flex-end",
+    flexDirection: "row",
+    gap: 12,
+    alignItems: "flex-start",
+  },
+  toggleWithLabel: {
+    alignItems: "center",
+    gap: 4,
+  },
+  toggleLabel: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: "#64748b", // slate-500
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
   toggleGroup: {
     flexDirection: "row",
@@ -223,6 +264,10 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     alignItems: "center",
     backgroundColor: "#334155", // slate-700
+  },
+  toggleButtonWide: {
+    width: "auto",
+    paddingHorizontal: 10,
   },
   toggleButtonLeft: {
     borderTopLeftRadius: 6,

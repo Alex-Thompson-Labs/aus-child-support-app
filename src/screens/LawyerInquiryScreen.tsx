@@ -9,20 +9,23 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  View
+  View,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAnalytics } from '@/src/utils/analytics';
-import { getCoAReasonById, formatCoAReasonsForLead } from '@/src/utils/complexity-detection';
+import { formatCoAReasonsForLead } from '@/src/utils/complexity-detection';
 import type { ChangeOfAssessmentReason } from '@/src/utils/change-of-assessment-reasons';
-import { getCategoryDisplayInfo, formatOfficialCoAReasons } from '@/src/utils/change-of-assessment-reasons';
+import { getCoAReasonById, getCategoryDisplayInfo, formatOfficialCoAReasons } from '@/src/utils/change-of-assessment-reasons';
 import { useResponsive, MAX_FORM_WIDTH, isWeb, webInputStyles, webClickableStyles } from '@/src/utils/responsive';
+import { supabase, submitLead } from '@/src/utils/supabase';
 
 export function LawyerInquiryScreen() {
   const params = useLocalSearchParams();
@@ -35,14 +38,36 @@ export function LawyerInquiryScreen() {
   const incomeA = params.incomeA as string;
   const incomeB = params.incomeB as string;
   const children = params.children as string;
-  
+
+  // Parse complexityTriggers - auto-detected triggers from the calculator
+  const complexityTriggers: string[] = (() => {
+    try {
+      const rawParam = params.complexityTriggers;
+      if (!rawParam) return [];
+
+      if (typeof rawParam === 'string') {
+        try {
+          const parsed = JSON.parse(rawParam);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return rawParam.split(',').filter(id => id.trim());
+        }
+      }
+
+      return Array.isArray(rawParam) ? rawParam : [];
+    } catch (error) {
+      console.warn('[LawyerInquiryScreen] Failed to parse complexityTriggers:', error);
+      return [];
+    }
+  })();
+
   // Parse coaReasons - handle undefined/corrupted params gracefully
   // Note: Parameter comes from ChangeOfAssessmentPrompt as 'coaReasons'
   const selectedCoAReasons: string[] = (() => {
     try {
       const rawParam = params.coaReasons || params.selectedCoAReasons; // Support both names for backwards compat
       if (!rawParam) return [];
-      
+
       // Handle array (JSON stringified) or comma-separated string
       if (typeof rawParam === 'string') {
         // Try JSON parse first
@@ -54,7 +79,7 @@ export function LawyerInquiryScreen() {
           return rawParam.split(',').filter(id => id.trim());
         }
       }
-      
+
       return Array.isArray(rawParam) ? rawParam : [];
     } catch (error) {
       console.warn('[LawyerInquiryScreen] Failed to parse coaReasons:', error);
@@ -62,11 +87,16 @@ export function LawyerInquiryScreen() {
     }
   })();
 
+  // Combine complexity triggers with COA reasons for the final submission
+  const allComplexityReasons: string[] = [...new Set([...complexityTriggers, ...selectedCoAReasons])];
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [location, setLocation] = useState('');
   const [message, setMessage] = useState('');
   const [consent, setConsent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   // Capture mount timestamp for time_to_submit calculation
   const mountTimeRef = useRef<number>(Date.now());
@@ -77,18 +107,22 @@ export function LawyerInquiryScreen() {
 
     // Debug: Check if analytics is available
     console.log('[LawyerInquiryScreen] Analytics hook available:', !!analytics);
-    console.log('[LawyerInquiryScreen] Mounted with params:', { 
-      trigger, 
+    console.log('[LawyerInquiryScreen] Mounted with params:', {
+      trigger,
       liability,
+      complexityTriggersCount: complexityTriggers.length,
+      complexityTriggers: complexityTriggers,
       coaReasonsCount: selectedCoAReasons.length,
       coaReasons: selectedCoAReasons,
+      allComplexityReasonsCount: allComplexityReasons.length,
+      allComplexityReasons: allComplexityReasons,
       rawCoAParam: params.coaReasons || params.selectedCoAReasons
     });
-    
-    if (selectedCoAReasons.length > 0) {
-      console.log('[LawyerInquiryScreen] ✅ CoA reasons detected - card should display');
+
+    if (allComplexityReasons.length > 0) {
+      console.log('[LawyerInquiryScreen] ✅ Complexity reasons detected:', allComplexityReasons.join(', '));
     } else {
-      console.log('[LawyerInquiryScreen] ℹ️ No CoA reasons - card will not display');
+      console.log('[LawyerInquiryScreen] ℹ️ No complexity reasons');
     }
   }, []);
 
@@ -118,20 +152,17 @@ export function LawyerInquiryScreen() {
     alignSelf: 'center' as const,
   } : {};
 
-  // DEBUG: Test button to force-fire analytics event
-  const testAnalytics = () => {
-    console.log('[DEBUG] Test button clicked - firing test event');
-    analytics.track('inquiry_form_submitted', {
-      trigger_type: 'test',
-      annual_liability: 12345,
-      has_phone: true,
-      message_length: 100,
-      time_to_submit: 30,
-    });
-    console.log('[DEBUG] Test event fired');
+  const handlePrivacyPolicyPress = () => {
+    const privacyPolicyUrl = 'https://bespoke-gumption-e0c968.netlify.app';
+
+    if (Platform.OS === 'web') {
+      window.open(privacyPolicyUrl, '_blank');
+    } else {
+      Linking.openURL(privacyPolicyUrl);
+    }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // 1. Validate fields
     if (!name.trim()) {
       if (Platform.OS === 'web') {
@@ -169,6 +200,16 @@ export function LawyerInquiryScreen() {
       return;
     }
 
+    // Check consent
+    if (!consent) {
+      if (Platform.OS === 'web') {
+        alert('Consent Required\n\nYou must consent to sharing your information with legal practitioners.');
+      } else {
+        Alert.alert('Consent Required', 'You must consent to sharing your information with legal practitioners.');
+      }
+      return;
+    }
+
     // 2. Calculate time_to_submit (seconds from mount to submission)
     const timeToSubmit = Math.round((Date.now() - mountTimeRef.current) / 1000);
 
@@ -176,99 +217,109 @@ export function LawyerInquiryScreen() {
     const coaData = formatCoAReasonsForLead(selectedCoAReasons);
     const hasIncomeReasons = validCoAReasons.some(r => r.category === 'income');
 
-    // 4. Track analytics event AFTER validation but BEFORE async operations
+    // 4. Track analytics event
     const analyticsProperties = {
       trigger_type: trigger || 'unknown',
       annual_liability: liability ? parseFloat(liability) : 0,
       has_phone: phone.trim().length > 0,
+      has_location: location.trim().length > 0,
       message_length: message.trim().length,
       time_to_submit: timeToSubmit,
-      // Complexity trigger analytics
-      has_complexity_reasons: selectedCoAReasons.length > 0,
-      complexity_reason_count: selectedCoAReasons.length,
-      complexity_reason_ids: selectedCoAReasons.join(','), // Convert array to string for PostHog
+      // Track auto-detected triggers
+      auto_triggers_count: complexityTriggers.length,
+      auto_triggers: complexityTriggers.join(','),
+      // Track COA selections
+      coa_reason_count: selectedCoAReasons.length,
+      coa_reason_ids: selectedCoAReasons.join(','),
+      // Combined total
+      has_complexity_reasons: allComplexityReasons.length > 0,
+      total_complexity_count: allComplexityReasons.length,
+      all_complexity_reasons: allComplexityReasons.join(', '),
       has_income_reasons: hasIncomeReasons,
       most_important_category: mostImportantCategory,
     };
 
-    console.log('[LawyerInquiryScreen] Form submitted:', {
-      name,
-      email,
-      phone,
-      message,
-      ...analyticsProperties,
-    });
-
-    console.log('[LawyerInquiryScreen] About to track analytics event...');
-    console.log('[LawyerInquiryScreen] Analytics object:', analytics);
-    console.log('[LawyerInquiryScreen] Event properties:', analyticsProperties);
-
-    // Track analytics with error handling
+    console.log('[LawyerInquiryScreen] Form submitted - tracking analytics');
     try {
       analytics.track('inquiry_form_submitted', analyticsProperties);
-      console.log('[LawyerInquiryScreen] Analytics tracking call completed');
     } catch (error) {
       console.error('[LawyerInquiryScreen] Analytics tracking failed:', error);
-      // Continue with submission even if analytics fails
     }
 
-    // 5. Generate lead brief with calculation data and CoA reasons
-    const leadBrief = {
-      // Contact info
-      name: name.trim(),
-      email: email.trim(),
-      phone: phone.trim() || null,
-      message: message.trim(),
-      
-      // Calculation summary
-      annualLiability: liability ? parseFloat(liability) : 0,
-      triggerType: trigger || 'unknown',
-      incomeA: incomeA ? parseFloat(incomeA) : 0,
-      incomeB: incomeB ? parseFloat(incomeB) : 0,
-      numChildren: children ? parseInt(children) : 0,
-      
-      // Complexity triggers data
-      complexityTriggers: coaData ? {
-        count: coaData.count,
-        reasons: coaData.reasons,
-        formattedText: coaData.formattedText,
-        hasIncomeReasons: hasIncomeReasons,
-        mostImportantCategory: mostImportantCategory,
-      } : null,
-      
-      // Metadata
-      submittedAt: new Date().toISOString(),
-    };
+    // 5. Submit lead to Supabase
+    setSubmitting(true);
 
-    console.log('[LawyerInquiryScreen] Lead brief generated:', leadBrief);
+    try {
+      const leadData = {
+        parent_name: name.trim(),
+        parent_email: email.trim(),
+        parent_phone: phone.trim() || null,
+        location: location.trim() || null,
+        income_parent_a: incomeA ? parseFloat(incomeA) : 0,
+        income_parent_b: incomeB ? parseFloat(incomeB) : 0,
+        children_count: children ? parseInt(children) : 0,
+        annual_liability: liability ? parseFloat(liability) : 0,
+        care_data: null, // TODO: Add care arrangement data if needed
+        complexity_trigger: trigger || 'unknown',
+        // Combined complexity triggers and COA reasons
+        complexity_reasons: allComplexityReasons,
+        coa_reasons: coaData,
+        parent_message: message.trim(),
+        preferred_contact: phone.trim() ? 'phone' : 'email',
+        consent_given: consent,
+        status: 'new' as const,
+      };
 
-    // 6. TODO: Send email to yourself (Phase 1)
+      console.log('[LawyerInquiryScreen] Submitting lead to Supabase...');
+      const result = await submitLead(leadData);
 
-    // 7. Show success message
-    if (Platform.OS === 'web') {
-      alert('Inquiry Submitted\n\nThank you! A lawyer will review your case and contact you soon.');
-      if (router.canGoBack()) {
-        router.back();
-      } else {
-        router.replace('/');
+      if (!result.success) {
+        console.error('[LawyerInquiryScreen] Lead submission failed:', result.error);
+        if (Platform.OS === 'web') {
+          alert(`Submission Failed\n\n${result.error || 'Unknown error occurred'}`);
+        } else {
+          Alert.alert('Submission Failed', result.error || 'Unknown error occurred');
+        }
+        return;
       }
-    } else {
-      Alert.alert(
-        'Inquiry Submitted',
-        'Thank you! A lawyer will review your case and contact you soon.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              if (router.canGoBack()) {
-                router.back();
-              } else {
-                router.replace('/');
-              }
+
+      console.log('[LawyerInquiryScreen] Lead submitted successfully:', result.leadId);
+
+      // 6. Show success message
+      if (Platform.OS === 'web') {
+        alert('Inquiry Submitted\n\nThank you! A lawyer will review your case and contact you soon.');
+        if (router.canGoBack()) {
+          router.back();
+        } else {
+          router.replace('/');
+        }
+      } else {
+        Alert.alert(
+          'Inquiry Submitted',
+          'Thank you! A lawyer will review your case and contact you soon.',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                if (router.canGoBack()) {
+                  router.back();
+                } else {
+                  router.replace('/');
+                }
+              },
             },
-          },
-        ]
-      );
+          ]
+        );
+      }
+    } catch (error) {
+      console.error('[LawyerInquiryScreen] Unexpected error:', error);
+      if (Platform.OS === 'web') {
+        alert(`Error\n\n${error instanceof Error ? error.message : 'Unknown error occurred'}`);
+      } else {
+        Alert.alert('Error', error instanceof Error ? error.message : 'Unknown error occurred');
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -377,6 +428,14 @@ export function LawyerInquiryScreen() {
           />
 
           <TextInput
+            style={[styles.input, isWeb && webInputStyles]}
+            placeholder="Location (e.g. Sydney, NSW)"
+            placeholderTextColor="#64748b"
+            value={location}
+            onChangeText={setLocation}
+          />
+
+          <TextInput
             style={[styles.input, styles.textArea, isWeb && webInputStyles]}
             placeholder="What do you need help with?"
             placeholderTextColor="#64748b"
@@ -386,15 +445,42 @@ export function LawyerInquiryScreen() {
             numberOfLines={4}
           />
 
-          {/* TODO: Add consent checkbox */}
-
-          {/* DEBUG: Test analytics button - REMOVE BEFORE PRODUCTION */}
-          <Pressable style={[styles.button, { backgroundColor: '#dc2626' }, isWeb && webClickableStyles]} onPress={testAnalytics}>
-            <Text style={styles.buttonText}>🐛 TEST: Fire Analytics Event</Text>
+          {/* Consent Checkbox */}
+          <Pressable
+            style={[styles.consentContainer, isWeb && webClickableStyles]}
+            onPress={() => setConsent(!consent)}
+          >
+            <View style={[styles.checkbox, consent && styles.checkboxChecked]}>
+              {consent && <Text style={styles.checkmark}>✓</Text>}
+            </View>
+            <Text style={styles.consentText}>
+              I consent to my information being shared with legal practitioners for the purpose of consultation
+            </Text>
           </Pressable>
 
-          <Pressable style={[styles.button, isWeb && webClickableStyles, isWeb && styles.buttonWeb]} onPress={handleSubmit}>
-            <Text style={styles.buttonText}>Submit Inquiry</Text>
+          {/* Privacy Policy Link */}
+          <Pressable
+            style={[styles.privacyLinkContainer, isWeb && webClickableStyles]}
+            onPress={handlePrivacyPolicyPress}
+          >
+            <Text style={styles.privacyLinkText}>View Privacy Policy</Text>
+          </Pressable>
+
+          <Pressable 
+            style={[
+              styles.button, 
+              (!consent || submitting) && styles.buttonDisabled,
+              isWeb && webClickableStyles, 
+              isWeb && styles.buttonWeb
+            ]} 
+            onPress={handleSubmit}
+            disabled={!consent || submitting}
+          >
+            {submitting ? (
+              <ActivityIndicator color="#ffffff" />
+            ) : (
+              <Text style={styles.buttonText}>Submit Inquiry</Text>
+            )}
           </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -542,6 +628,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
+  buttonDisabled: {
+    opacity: 0.5,
+  },
   buttonWeb: {
     paddingVertical: 14,
     // Slight hover effect handled by webClickableStyles cursor
@@ -550,6 +639,49 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  consentContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: '#64748b',
+    backgroundColor: '#1e293b',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+    marginTop: 2,
+  },
+  checkboxChecked: {
+    backgroundColor: '#2563eb',
+    borderColor: '#2563eb',
+  },
+  checkmark: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  consentText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#94a3b8',
+    lineHeight: 20,
+  },
+  privacyLinkContainer: {
+    marginTop: 12,
+    marginBottom: 4,
+    alignItems: 'center',
+  },
+  privacyLinkText: {
+    fontSize: 14,
+    color: '#3b82f6', // blue-500
+    textDecorationLine: 'underline',
   },
 });
 

@@ -77,61 +77,157 @@
 
 ---
 
-#### Task 3: Design Lead Routing Workflow (1 hour - DECISION NEEDED)
-**Why:** Unclear how inquiries get from app → you → lawyers  
+#### Task 3: Implement Lead Management System (4-6 hours - CRITICAL)
+**Why:** Australian Privacy Act compliance + secure data handling + professional operation
 
-**Critical questions to answer:**
-1. When someone fills inquiry form, what happens?
-   - Does it email you?
-   - Store in database?
-   - Both?
-2. What data is collected/stored?
-3. How do you forward to lawyers?
-   - Manual copy/paste into Gmail?
-   - Semi-automated template system?
-   - Fully automated?
-4. Where does data live?
-   - Just in emails?
-   - Spreadsheet?
-   - Database?
-5. Privacy/compliance considerations?
-   - Storing sensitive data (names, emails, phone, financial info)
-   - How long do you keep it?
-   - Need privacy policy?
+**CRITICAL LEGAL UPDATE:** Based on legal consultation with Gemini AI, database is MANDATORY (not optional).
 
-**PROMPT FOR AI CONSULTATION:**
+**Why email-only won't work:**
+- ❌ Not compliant with Privacy Act 1988 (you're "trading in personal information")
+- ❌ No audit trail (can't prove to lawyers when lead was generated)
+- ❌ Can't handle deletion requests (Right to Erasure)
+- ❌ Insecure (sensitive data in plain text emails)
+- ❌ Unprofessional (lawyers won't trust email-only system)
+
+**DETAILED IMPLEMENTATION GUIDE:** `/guides/active/TASK_3_DETAILED.md`
+
+That file contains:
+- Complete Supabase setup instructions
+- Claude Code prompts for each phase
+- Privacy policy requirements
+- Secure handover method (password-protected PDFs)
+- Legal compliance checklist
+- Testing procedures
+
+**Quick Summary - 4 Phases:**
+
+**Phase 1: Database (1-2 hours)**
+- Set up Supabase project (free tier, Sydney region)
+- Create encrypted leads table
+- Update inquiry form with consent checkbox
+- Email notifications (teaser only, not full details)
+
+**Phase 2: Admin Dashboard (1-2 hours)**
+- Simple login (admin only)
+- List/filter/search leads
+- View full lead details
+- Generate "teaser email" template
+- Update status and notes
+
+**Phase 3: Privacy Policy (30 min)**
+- Purchase template from TermsFeed ($50)
+- Publish at auschildsupport.com/privacy
+- Link from inquiry form
+- Required for legal compliance + App Store
+
+**Phase 4: Secure Handover (15 min)**
+- Password-protected PDF method
+- After lawyer pays $50 → send secure PDF
+- Don't email parent contact details in plain text
+
+**Cost:** $50 (privacy policy)
+
+**See TASK_3_DETAILED.md for full step-by-step implementation with Claude Code prompts**
+
+**Done when:**
+- [ ] Supabase working
+- [ ] Inquiry form saves to database
+- [ ] Admin panel functional
+- [ ] Privacy policy published
+- [ ] Secure handover method ready
+- [ ] All legal compliance requirements met
+
+**Alternative: Firebase instead of Supabase**
+Same approach, just different platform. Supabase is simpler for SQL users.
+
+**TEASER EMAIL WORKFLOW (Important):**
+1. Lead comes in → saved to database
+2. You get email notification
+3. You review lead (30 sec quality check)
+4. You send TEASER email to lawyer (no parent contact details yet)
+5. Lawyer replies "YES"
+6. You charge them $50
+7. THEN you send full parent details (email/phone)
+
+**Why teaser approach:**
+- Lawyer can't contact parent for free
+- You maintain control
+- Lawyer sees value before committing
+- Professional appearance
+
+**LEGAL REQUIREMENTS CHECKLIST:**
+- [ ] Consent checkbox added to inquiry form (mandatory)
+- [ ] Privacy policy created and linked (see Task 3B below)
+- [ ] Data stored in encrypted database
+- [ ] Can permanently delete data on request
+- [ ] Audit trail (who accessed lead, when sent, to whom)
+
+**Done when:**
+- [ ] Supabase/Firebase project created
+- [ ] Leads table set up with proper columns
+- [ ] Inquiry form saves to database
+- [ ] Email notifications working
+- [ ] Simple admin screen to view/manage leads
+- [ ] "Send to Lawyer" generates teaser email
+- [ ] Consent checkbox implemented
+
+---
+
+#### Task 3B: Create Privacy Policy (1 hour - REQUIRED)
+**Why:** Legal requirement + App Store requirement
+
+**CRITICAL:** You are "trading in personal information" (selling leads), which means you likely DON'T qualify for the small business exemption from Privacy Act 1988. You must comply with Australian Privacy Principles.
+
+**What it must include:**
+1. What data you collect (income, custody details, contact info)
+2. How you use it (forwarding to family lawyers)
+3. That you share/sell this data to third parties (lawyers)
+4. How long you keep it
+5. Their rights (access, correction, deletion)
+6. How to contact you about privacy concerns
+7. Encryption and security measures
+
+**Options:**
+
+**Option A - Template (Recommended for MVP):**
+1. Buy template from LegalVision, LawPath, or similar (~$50-100)
+2. Customize for your business
+3. Have lawyer review (optional but recommended)
+
+**Option B - Generate with AI:**
+Use Claude/ChatGPT with this prompt:
 ```
-I'm building a lead generation business where parents fill out an inquiry form in my calculator app, and I need to route these leads to family lawyers.
+Generate an Australian Privacy Policy for a lead generation business that:
+- Collects parent data (names, income, family details, child support calculations)
+- Forwards this data to family law firms for consultation purposes
+- Charges lawyers per lead
+- Operates in Australia under Privacy Act 1988
+- Must comply with Australian Privacy Principles
 
-Current setup: React Native app with inquiry form that collects:
-- Name, email, phone
-- Calculation details (income, liability, complexity triggers)
-- Their message/questions
-- Change of Assessment reasons (if selected)
-
-Business model: I forward leads to lawyers via email and charge $50 per lead.
-
-Questions:
-1. What's the simplest way to implement this lead routing system?
-2. Should inquiries be stored in a database or just emailed to me?
-3. How should I forward leads to lawyers (manual vs automated)?
-4. What are the privacy/compliance considerations with storing parent data?
-5. Do I need a privacy policy on the website?
-6. What's the MVP approach vs the ideal long-term solution?
-
-Recommend an implementation approach that:
-- Gets me to revenue fastest (manual is OK initially)
-- Is legally compliant
-- Can scale to 50+ leads/month
-- Doesn't require complex infrastructure initially
+Include sections on:
+- What data we collect and why
+- How we use and share data
+- Third party disclosure (lawyers)
+- Data security measures
+- User rights (access, correction, deletion)
+- Contact information for privacy concerns
 ```
 
-**Tools to consult:**
-- Claude (via claude.ai)
-- ChatGPT
-- Or ask Claude Code for technical implementation
+**Option C - Lawyer (Most expensive, most thorough):**
+- Costs $500-1000
+- Best if you're risk-averse
+- Can wait until after first revenue
 
-**Done when:** You have a clear plan for how leads flow from app → you → lawyers
+**Where to display:**
+- Footer of website (link to privacy policy page)
+- Above consent checkbox in inquiry form ("I agree to the Privacy Policy")
+- In lawyer partnership agreement
+
+**Done when:**
+- [ ] Privacy policy document created
+- [ ] Added to website footer
+- [ ] Linked in inquiry form
+- [ ] Updated consent checkbox to reference it
 
 ---
 
@@ -457,11 +553,14 @@ Give me the legal requirements and recommended approach.
 
 ### Before You Can Start Outreach:
 - [x] Web app live at auschildsupport.com
-- [ ] Virtual phone number obtained
+- [ ] Lead database set up (Supabase/Firebase)
+- [ ] Privacy policy created and published
+- [ ] Consent checkbox added to inquiry form
+- [ ] Admin panel to view/manage leads
+- [ ] Virtual phone number (can wait 1 week)
 - [ ] Business docs up to date (BUSINESS_MODEL.md)
-- [ ] Lead routing workflow designed
 - [ ] Partnership agreement created
-- [ ] Email templates created
+- [ ] Email templates created (including teaser template)
 - [ ] Tracking spreadsheets created
 - [ ] Stripe account created (can be verifying)
 

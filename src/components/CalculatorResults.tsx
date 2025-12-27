@@ -10,10 +10,15 @@ import { LawyerAlert } from "./LawyerAlert";
 import { ResultsSimpleExplanation } from "./ResultsSimpleExplanation";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useResponsive, MAX_CONTENT_WIDTH, MAX_MODAL_WIDTH, isWeb, webClickableStyles } from "../utils/responsive";
+import { WebInquiryPanel } from "./WebInquiryPanel";
 
 interface CalculatorResultsProps {
   results: CalculationResults;
   formData?: ComplexityFormData;
+  displayMode?: 'modal' | 'inline';  // 'modal' = collapsed card + full-screen modal, 'inline' = always visible side panel
+  onRequestInquiry?: () => void;  // Callback for web inline inquiry panel
+  showInquiryPanel?: boolean;  // Whether to show inquiry panel in right column
+  onCloseInquiry?: () => void;  // Close the inquiry panel
 }
 
 // Helper to format currency
@@ -34,13 +39,22 @@ const formatCurrencyFull = (num: number | undefined | null): string => {
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-export function CalculatorResults({ results, formData }: CalculatorResultsProps) {
+export function CalculatorResults({
+  results,
+  formData,
+  displayMode = 'modal',
+  onRequestInquiry,
+  showInquiryPanel = false,
+  onCloseInquiry,
+}: CalculatorResultsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const analytics = useAnalytics();
   const { isMobile, isDesktop, width } = useResponsive();
+
+  const isInlineMode = displayMode === 'inline';
 
   const monthlyAmount = results.finalPaymentAmount / 12;
   const fortnightlyAmount = results.finalPaymentAmount / 26;
@@ -56,10 +70,30 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
   const flags = detectComplexity(results, formData ?? {});
   const alertConfig = getAlertConfig(flags, results);
 
+  // Check if calculation is "complete" enough to show complexity alerts
+  // Complete means: both parents have non-zero ATI AND at least one child with care set
+  const isCalculationComplete = (() => {
+    const hasParentAIncome = results.ATI_A > 0;
+    const hasParentBIncome = results.ATI_B > 0;
+    const hasChildrenWithCare = results.childResults &&
+      results.childResults.length > 0 &&
+      results.childResults.some(child =>
+        (child.roundedCareA !== undefined && child.roundedCareA >= 0) ||
+        (child.roundedCareB !== undefined && child.roundedCareB >= 0)
+      );
+
+    return hasParentAIncome && hasParentBIncome && hasChildrenWithCare;
+  })();
+
+  // Only show complexity alert when calculation is complete
+  const shouldShowComplexityAlert = alertConfig && isCalculationComplete;
+
   // Log for verification (Phase 1 - only in dev)
   if (__DEV__) {
     console.log('[CalculatorResults] Complexity flags:', flags);
     console.log('[CalculatorResults] Alert config:', alertConfig);
+    console.log('[CalculatorResults] Is calculation complete:', isCalculationComplete);
+    console.log('[CalculatorResults] Should show complexity alert:', shouldShowComplexityAlert);
   }
 
   // Track calculation_completed event
@@ -117,7 +151,7 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
     }
   }, [results, analytics]);
 
-  // Find the trigger that fired the alert
+  // Find the trigger that fired the alert (primary trigger for display)
   const getTrigger = useCallback((): string => {
     const flagKeys: Array<keyof ComplexityFlags> = ['courtDateUrgent', 'highValue', 'sharedCareDispute', 'specialCircumstances', 'highVariance', 'incomeSuspicion'];
     const triggeredFlag = flagKeys.find(k => flags[k]);
@@ -131,6 +165,20 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
       .replace(/([A-Z])/g, '_$1')
       .toLowerCase()
       .replace(/^_/, ''); // Remove leading underscore if any
+  }, [flags]);
+
+  // Get ALL triggered complexity flags as an array (for combining with COA reasons)
+  const getAllTriggers = useCallback((): string[] => {
+    const flagKeys: Array<keyof ComplexityFlags> = ['courtDateUrgent', 'highValue', 'sharedCareDispute', 'specialCircumstances', 'highVariance', 'incomeSuspicion'];
+
+    return flagKeys
+      .filter(k => flags[k])
+      .map(flag =>
+        flag
+          .replace(/([A-Z])/g, '_$1')
+          .toLowerCase()
+          .replace(/^_/, '')
+      );
   }, [flags]);
 
   // Navigate to lawyer inquiry form
@@ -161,12 +209,14 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
             params: {
               liability: results.finalPaymentAmount.toString(),
               trigger: getTrigger(),
+              // Pass all triggered complexity flags as array for combining with COA reasons
+              complexityTriggers: JSON.stringify(getAllTriggers()),
               incomeA: results.ATI_A.toString(),
               incomeB: results.ATI_B.toString(),
               children: (formData?.children?.length ?? 0).toString(),
               careData: JSON.stringify(careData),
               // Include CoA reasons if they were selected
-              ...(formData?.selectedCoAReasons && formData.selectedCoAReasons.length > 0 
+              ...(formData?.selectedCoAReasons && formData.selectedCoAReasons.length > 0
                 ? { coaReasons: JSON.stringify(formData.selectedCoAReasons) }
                 : {})
             }
@@ -291,8 +341,8 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
         </View>
       </LinearGradient>
 
-      {/* Lawyer Alert - shown when complexity flags are triggered */}
-      {alertConfig && (
+      {/* Lawyer Alert - only shown when calculation is complete AND complexity flags triggered */}
+      {shouldShowComplexityAlert && (
         <LawyerAlert
           title={alertConfig.title}
           message={alertConfig.message}
@@ -322,6 +372,112 @@ export function CalculatorResults({ results, formData }: CalculatorResultsProps)
     </ScrollView>
   );
 
+  // Handle inquiry button press - use callback if provided, otherwise navigate
+  const handleInquiryPress = useCallback(() => {
+    if (onRequestInquiry) {
+      onRequestInquiry();
+    } else {
+      navigateToInquiry();
+    }
+  }, [onRequestInquiry, navigateToInquiry]);
+
+  // Inline mode: render as two-column layout (desktop web)
+  if (isInlineMode) {
+    return (
+      <View style={styles.twoColumnLayout}>
+        {/* Left Column: Hero + COA */}
+        <View style={styles.leftColumn}>
+          {/* Hero Section */}
+          <LinearGradient
+            colors={getExpandedGradientColors(results.payer)}
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 1 }}
+            style={styles.inlineHeroSection}
+          >
+            <Text style={styles.expandedHeroLabel}>
+              {results.payer === "Neither" ? "No payment required" : `${results.payer} pays`}
+            </Text>
+            <Text style={styles.expandedHeroAmount}>{formatCurrency(results.finalPaymentAmount)}</Text>
+            <Text style={styles.expandedHeroSubtext}>per year</Text>
+            <View style={styles.expandedSecondaryAmounts}>
+              <View style={styles.expandedSecondaryItem}>
+                <Text style={styles.expandedSecondaryValue}>{formatCurrency(monthlyAmount)}</Text>
+                <Text style={styles.expandedSecondaryLabel}>/month</Text>
+              </View>
+              <View style={styles.expandedDivider} />
+              <View style={styles.expandedSecondaryItem}>
+                <Text style={styles.expandedSecondaryValue}>{formatCurrency(fortnightlyAmount)}</Text>
+                <Text style={styles.expandedSecondaryLabel}>/fortnight</Text>
+              </View>
+              <View style={styles.expandedDivider} />
+              <View style={styles.expandedSecondaryItem}>
+                <Text style={styles.expandedSecondaryValue}>{formatCurrency(dailyAmount)}</Text>
+                <Text style={styles.expandedSecondaryLabel}>/day</Text>
+              </View>
+            </View>
+          </LinearGradient>
+
+          {/* Change of Assessment Prompt - always shown in left column */}
+          <ChangeOfAssessmentPrompt
+            results={results}
+            formData={formData}
+            onNavigate={() => {}}  // No modal to close in inline mode
+          />
+        </View>
+
+        {/* Right Column: Complexity + Breakdown (or Inquiry Panel) */}
+        <ScrollView style={styles.rightColumn} contentContainerStyle={styles.rightColumnContent}>
+          {showInquiryPanel ? (
+            // Inline inquiry panel
+            <WebInquiryPanel
+              liability={results.finalPaymentAmount.toString()}
+              trigger={getTrigger()}
+              complexityTriggers={getAllTriggers()}
+              incomeA={results.ATI_A.toString()}
+              incomeB={results.ATI_B.toString()}
+              children={(formData?.children?.length ?? 0).toString()}
+              careData={formData?.children?.map((child, index) => ({
+                index,
+                careA: child.careAmountA,
+                careB: child.careAmountB,
+              })) || []}
+              coaReasons={formData?.selectedCoAReasons || null}
+              onClose={onCloseInquiry!}
+              onSuccess={() => {
+                // Stay on success screen - user can close manually
+              }}
+            />
+          ) : (
+            <>
+              {/* Lawyer Alert - only shown when calculation is complete AND complexity flags triggered */}
+              {shouldShowComplexityAlert && (
+                <LawyerAlert
+                  title={alertConfig.title}
+                  message={alertConfig.message}
+                  urgency={alertConfig.urgency}
+                  buttonText={alertConfig.buttonText}
+                  onPress={handleInquiryPress}
+                  triggerType={getTrigger()}
+                  annualLiability={results.finalPaymentAmount}
+                  tip={alertConfig.tip}
+                />
+              )}
+
+              <ResultsSimpleExplanation
+                results={results}
+                formState={{
+                  supportA: formData?.supportA ?? false,
+                  supportB: formData?.supportB ?? false
+                }}
+              />
+            </>
+          )}
+        </ScrollView>
+      </View>
+    );
+  }
+
+  // Modal mode: collapsed card + full-screen modal (mobile/tablet)
   return (
     <>
       {/* Fixed Bottom Payment Card (Collapsed) */}
@@ -870,6 +1026,83 @@ const styles = StyleSheet.create({
   },
   toggleButtonTextActive: {
     color: "#ffffff",
+  },
+
+  // Inline mode styles (desktop web side panel)
+  inlineContainer: {
+    flex: 1,
+    backgroundColor: "#0f172a", // slate-900
+  },
+  inlineContentContainer: {
+    padding: 20,
+    paddingBottom: 40,
+    gap: 16,
+  },
+  inlineHeroSection: {
+    alignItems: "center",
+    paddingVertical: 28,
+    borderRadius: 16,
+    marginBottom: 12,
+  },
+
+  // Two-column layout styles (new web layout)
+  twoColumnLayout: {
+    flexDirection: "row",
+    gap: 24,
+    alignItems: "flex-start",
+  },
+  leftColumn: {
+    flex: 1,
+    minWidth: 300,
+    maxWidth: 400,
+    gap: 16,
+  },
+  rightColumn: {
+    flex: 1.5,
+    minWidth: 350,
+  },
+  rightColumnContent: {
+    gap: 16,
+    paddingBottom: 24,
+  },
+
+  // Inquiry placeholder styles (temporary)
+  inquiryPlaceholder: {
+    backgroundColor: "#1e293b", // slate-800
+    borderRadius: 12,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "#334155", // slate-700
+  },
+  inquiryHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  inquiryTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#ffffff",
+  },
+  closeInquiryButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#334155", // slate-700
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  closeInquiryText: {
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "500",
+  },
+  inquiryPlaceholderText: {
+    color: "#94a3b8", // slate-400
+    fontSize: 14,
+    textAlign: "center",
+    paddingVertical: 40,
   },
 });
 

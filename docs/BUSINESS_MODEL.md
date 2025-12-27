@@ -1,29 +1,32 @@
 # Business Model (Current - December 2024)
 
-**Last Updated:** December 24, 2024  
-**Status:** Phase 1 95% complete, Phase 2 starts January 2025
+**Last Updated:** December 27, 2024  
+**Status:** Phase 1 COMPLETE, Phase 2 preparation in progress
 
 ---
 
 ## 🎯 THE MODEL
 
-**Product:** Free child support calculator for Australian parents → Generates leads for family lawyers
+**Product:** Free child support calculator (auschildsupport.com) → Generates leads for family lawyers
 
 **Revenue:** $50 per qualified lead (email-based, manual routing)
 
 **Target Market:** Family law firms in Australia (small businesses, 1-10 lawyers)
 
+**Platform:** Web app at auschildsupport.com (React Native Web + mobile apps coming later)
+
 ---
 
 ## 💰 HOW MONEY FLOWS
 
-1. **Parent uses calculator** (free, no signup required)
-2. **Complex case detected** → Alert shown ("High Value", "Court Date Urgent", etc.)
+1. **Parent uses calculator at auschildsupport.com** (free, no signup required)
+2. **Complex case detected** → Alert shown ("High Value", "Court Date Urgent", "Change of Assessment", etc.)
 3. **Parent clicks "Get Legal Help"** → Fills inquiry form
-4. **You review lead** (30 seconds - quality check)
-5. **You forward to lawyer via email** (with all case details)
-6. **Lawyer contacts parent** (schedules consultation themselves)
-7. **You bill lawyer $50** (at end of month via Stripe)
+4. **You receive lead via email** (with all case details)
+5. **You review lead** (30 seconds - quality check)
+6. **You forward to lawyer via email** (using template)
+7. **Lawyer contacts parent** (schedules consultation themselves)
+8. **You bill lawyer $50** (at end of month via Stripe)
 
 ---
 
@@ -50,30 +53,38 @@
 
 ### Phase 1: COMPLETE ✅
 **What's Done:**
-- ✅ Calculator built (Australian 2020-2025 formula)
+- ✅ Calculator built (Australian 2024-2025 formula)
 - ✅ Complexity detection (high value, court date, shared care)
+- ✅ Change of Assessment feature (10 official grounds)
 - ✅ Alert system (shows "Get Legal Help" buttons)
-- ✅ Inquiry form (collects parent details)
-- ✅ Analytics tracking (PostHog events)
-- ✅ **Web app live at auschildsupport.com**
+- ✅ Inquiry form (collects parent details + CoA reasons)
+- ✅ Analytics tracking (PostHog for mobile, web analytics TBD)
+- ✅ End-to-end testing complete
+- ✅ **Web app deployed at auschildsupport.com**
+- ✅ Historical year selection removed (current rates only)
 
-**Timeline:** Complete Dec 27, 2024
+**Completed:** Dec 27, 2024
 
-### Phase 2: READY TO START (Jan 2)
-**Plan:**
-- Onboard 8-12 lawyers via email outreach **with live demo**
+### Phase 2: IN PREPARATION (Starting late Dec/early Jan)
+**Business Setup Progress:**
+- ✅ Domain registered (auschildsupport.com)
+- ✅ Email setup (alex@auschildsupport.com)
+- ✅ LinkedIn profile created (Alex Thompson)
+- ✅ AI headshot created
+- ⏳ Virtual phone number (getting next week)
+- ⏳ Partnership agreement (to create)
+- ⏳ Email templates (to create)
+- ⏳ Tracking spreadsheets (to create)
+- ⏳ Stripe setup (to do)
+
+**Launch Plan:**
+- Onboard 8-12 lawyers via LinkedIn + email outreach
+- Lead with live web demo (auschildsupport.com)
 - Deliver 50+ qualified leads
 - Generate first revenue ($2-3K)
 - Validate $50/lead pricing
-- Build lawyer relationship management process
 
-**New Strategy:** Lead with working product
-- Email includes link to live calculator
-- Lawyers can test it themselves immediately
-- Demonstrates credibility and professionalism
-- Shortens sales cycle (proof over promises)
-
-**Timeline:** 6-8 weeks (Jan-Feb 2025)
+**Timeline:** Start outreach late Dec 2024, first revenue Jan-Feb 2025
 
 ---
 
@@ -99,15 +110,17 @@
 
 ## 📁 KEY DOCUMENTS
 
-### Implementation Guides
-- **Phase 1:** `/guides/phase1/CHECKLIST.md`
-- **Phase 2:** `/guides/phase2/CHECKLIST.md`
-- **Christmas Plan:** `/CHRISTMAS_BREAK_PLAN.md`
+### Active Tasks
+- **Current work:** `/guides/active/ACTIVE_TASKS.md` (what to do now)
+
+### Implementation Guides (Reference)
+- **Phase 1:** `/guides/reference/phase1/` (complete - archived)
+- **Phase 2:** `/guides/reference/phase2/` (reference for templates)
 
 ### Strategy Docs
+- **Web Deployment:** `/docs/WEB_DEPLOYMENT_GUIDE.md`
 - **Pricing Analysis:** `/docs/PRICING_ANALYSIS_MANUAL_LEADS.md`
 - **Design System:** `/docs/DESIGN_SYSTEM.md`
-- **Claude Guide:** `/docs/CLAUDE.md`
 
 ### Data
 - **Lawyer Contacts:** `/data/family_law_contacts_full.csv` (286 firms)
@@ -151,11 +164,11 @@
 
 ## 🚀 NEXT STEPS
 
-**Dec 24-27:** Finish Phase 1 (special circumstances, testing)  
-**Dec 28-31:** Prepare Phase 2 materials (agreements, templates, spreadsheets)  
-**Jan 1:** Rest  
-**Jan 2:** START Phase 2 (email first 50 lawyers)
+**Right now:** Complete Tier 1 tasks in `/guides/active/ACTIVE_TASKS.md`  
+**This week:** Finish business setup (phone, docs, spreadsheets)  
+**Next week:** Start lawyer outreach (LinkedIn + email)  
+**January:** First lawyer partnerships and leads
 
 ---
 
-**Questions? Check `/CHRISTMAS_BREAK_PLAN.md` for detailed action items.**
+**For current tasks, see:** `/guides/active/ACTIVE_TASKS.md`

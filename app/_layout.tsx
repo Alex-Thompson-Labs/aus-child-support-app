@@ -33,6 +33,28 @@ export default function RootLayout() {
             headerShown: true
           }}
         />
+        <Stack.Screen
+          name="admin/login"
+          options={{
+            presentation: 'modal',
+            title: 'Admin Login',
+            headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="admin/dashboard"
+          options={{
+            title: 'Admin Dashboard',
+            headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="admin/lead/[id]"
+          options={{
+            title: 'Lead Details',
+            headerShown: false
+          }}
+        />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
