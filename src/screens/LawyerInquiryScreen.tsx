@@ -132,12 +132,13 @@ export function LawyerInquiryScreen() {
     .filter((reason): reason is ChangeOfAssessmentReason => reason !== null);
 
   // Determine most important category (for card border styling)
-  // Priority: income > child > other
-  const mostImportantCategory = validCoAReasons.reduce<'income' | 'child' | 'other' | null>(
+  // Priority: urgent > income > child > other
+  const mostImportantCategory = validCoAReasons.reduce<'urgent' | 'income' | 'child' | 'other' | null>(
     (highest, reason) => {
       if (!highest) return reason.category;
-      if (reason.category === 'income') return 'income';
-      if (reason.category === 'child' && highest !== 'income') return 'child';
+      if (reason.category === 'urgent') return 'urgent';
+      if (reason.category === 'income' && highest !== 'urgent') return 'income';
+      if (reason.category === 'child' && highest !== 'urgent' && highest !== 'income') return 'child';
       return highest;
     },
     null

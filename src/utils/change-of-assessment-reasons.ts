@@ -11,7 +11,7 @@
 /**
  * Category of complexity trigger for UI grouping
  */
-export type ComplexityCategory = 'income' | 'child' | 'other';
+export type ComplexityCategory = 'urgent' | 'income' | 'child' | 'other';
 
 /**
  * Represents a complexity trigger that may warrant legal review
@@ -46,11 +46,19 @@ export interface ChangeOfAssessmentReason {
  */
 export const CHANGE_OF_ASSESSMENT_REASONS: readonly ChangeOfAssessmentReason[] = [
   {
+    id: 'court_date_upcoming',
+    label: "I have an upcoming court date for child support matters",
+    description: "Cases with upcoming court dates require urgent legal preparation. You need professional legal advice BEFORE your court appearance to ensure you're properly prepared and your rights are protected.",
+    category: 'urgent',
+    priority: 1,
+    officialCoAReasons: ['5.2.11'] as const,
+  },
+  {
     id: 'income_resources_not_reflected',
     label: "Income, property or financial resources not reflected in taxable income",
     description: "When someone's tax return doesn't reflect their true financial position—such as business income, trust distributions, investment property, or other assets—a lawyer can request a formal review. This requires specialized knowledge of income sources, business structures, and non-taxable resources.",
     category: 'income',
-    priority: 1,
+    priority: 2,
     officialCoAReasons: ['5.2.8'] as const,
   },
   {
@@ -58,7 +66,7 @@ export const CHANGE_OF_ASSESSMENT_REASONS: readonly ChangeOfAssessmentReason[] =
     label: "Taxable income below the other parent's earning capacity",
     description: "Earning capacity assessments are complex—lawyers know how to prove someone is deliberately underemployed or not working to their full potential. The Registrar needs specific evidence and legal arguments to adjust for earning capacity.",
     category: 'income',
-    priority: 2,
+    priority: 3,
     officialCoAReasons: ['5.2.9'] as const,
   },
   {
@@ -66,7 +74,7 @@ export const CHANGE_OF_ASSESSMENT_REASONS: readonly ChangeOfAssessmentReason[] =
     label: "Your child has special needs or high care costs",
     description: "Cases involving disability, medical conditions, or special educational needs require detailed documentation and legal expertise. Lawyers understand what evidence the Registrar requires and how to present care costs that exceed standard assumptions.",
     category: 'child',
-    priority: 3,
+    priority: 4,
     officialCoAReasons: ['5.2.2', '5.2.3'] as const,
   },
   {
@@ -74,7 +82,7 @@ export const CHANGE_OF_ASSESSMENT_REASONS: readonly ChangeOfAssessmentReason[] =
     label: "High costs of contact (travel for visitation)",
     description: "Significant travel costs for maintaining contact with children can be grounds for adjustment, but require proper documentation and legal presentation.",
     category: 'child',
-    priority: 4,
+    priority: 5,
     officialCoAReasons: ['5.2.1'] as const,
   },
   {
@@ -82,7 +90,7 @@ export const CHANGE_OF_ASSESSMENT_REASONS: readonly ChangeOfAssessmentReason[] =
     label: "Private school fees or educational costs",
     description: "Private school fees and special educational costs beyond standard assumptions require legal arguments for proper consideration in assessments.",
     category: 'child',
-    priority: 5,
+    priority: 6,
     officialCoAReasons: ['5.2.3'] as const,
   },
   {
@@ -90,7 +98,7 @@ export const CHANGE_OF_ASSESSMENT_REASONS: readonly ChangeOfAssessmentReason[] =
     label: "The child has income, property or financial resources",
     description: "When a child has their own income, assets, or financial resources, this can affect the fairness of the child support assessment. Lawyers understand how to present evidence of the child's resources and argue for appropriate adjustments.",
     category: 'other',
-    priority: 6,
+    priority: 7,
     officialCoAReasons: ['5.2.4'] as const,
   },
   {
@@ -98,7 +106,7 @@ export const CHANGE_OF_ASSESSMENT_REASONS: readonly ChangeOfAssessmentReason[] =
     label: "Necessary commitments to support another person or child",
     description: "If you have a legal duty to maintain another person or child, or have necessary expenses supporting them, this can significantly affect your capacity to pay child support. This includes costs of caring for another child, high contact costs with another child, or support obligations to another person.",
     category: 'other',
-    priority: 7,
+    priority: 8,
     officialCoAReasons: ['5.2.9', '5.2.10'] as const,
   },
 ] as const;
@@ -193,6 +201,7 @@ export function getCategoryDisplayInfo(category: ComplexityCategory): {
   accentColor: string;
 } {
   const displayInfo: Record<ComplexityCategory, { emoji: string; title: string; accentColor: string }> = {
+    urgent: { emoji: '⚖️', title: 'Urgent Matters', accentColor: '#ef4444' }, // red-500
     income: { emoji: '💰', title: 'Income Issues', accentColor: '#f59e0b' }, // amber-500
     child: { emoji: '👶', title: 'Child-Related', accentColor: '#10b981' }, // emerald-500
     other: { emoji: '🏡', title: 'Other Factors', accentColor: '#14b8a6' }, // teal-500

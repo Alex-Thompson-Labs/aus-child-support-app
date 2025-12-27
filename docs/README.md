@@ -2,74 +2,28 @@
 
 This folder contains all project documentation for the Child Support Calculator app.
 
-## 📋 ESSENTIAL FILES (Read These First)
+## 🎯 CURRENT PROJECT STATUS (December 27, 2024)
 
-### **MASTER_PLAN.md** 🎯 ⭐ START HERE
-**The complete implementation roadmap for the lawyer lead generation pivot.**
-- **What it is:** Comprehensive step-by-step plan for transforming the calculator from B2C to B2B lead gen
-- **What's inside:** 
-  - Brutal reality check on B2C model (why it fails)
-  - Complete pivot strategy to lawyer lead generation
-  - 4-phase implementation roadmap with timelines
-  - Code snippets ready to implement
-  - Revenue projections ($3K-300K/year)
-  - This week's action items
-- **Who needs it:** You (the developer), to execute the pivot
-- **Length:** 1,533 lines (comprehensive)
-
-### **BRUTAL_REALITY_CHECK.md** 💀
-**Harsh analysis of why the original B2C subscription model fails.**
-
-- Original projected revenue: $65,000/year
-- Realistic revenue: $700-1,000/year  
-- Problems: Single-use utility, no retention, free alternatives
-- Success probability: 15%
-- Read this to understand WHY we're pivoting
-
-### **LAWYER_STRATEGY_ANALYSIS.md** ✅
-**Detailed evaluation of the lawyer lead generation strategy.**
-- Why the pivot works (70% success vs 15%)
-- Unit economics breakdown
-- Revenue projections with three scenarios
-- Complexity triggers explained in detail
-- Critical analysis with recommendations
-
-### **BUSINESS_MODEL_CANVAS.md** 🎯 ⭐ STRATEGIC OVERVIEW
-**Complete business model visualization across 9 building blocks.**
-- **Customer Segments:** Family law firms (B2B paying), separated parents (B2C free users)
-- **Value Proposition:** "Pay $100 for confirmed bookings, not unverified leads. Save 15-30 min per case."
-- **Revenue Streams:** $100/booking (Phase 3) → $149/month + $50/booking (Phase 4 Hybrid)
-- **Unit Economics:** LTV $12,000 per firm, CAC $25-50, LTV:CAC ratio 240:1
-- **Growth Plan:** $48k (Year 1) → $155k (Year 2) → $300k+ (Year 3)
-- **Risks & Mitigation:** Regulatory change, low adoption, fraud/abuse strategies
-- **Length:** 850+ lines covering all strategic aspects
-- **Who needs it:** Investors, partners, strategic planning
-
-### **PRICING_STRATEGY_ANALYSIS.md** 💰 ⭐ CHOSEN MODEL
-**⭐ CHOSEN MODEL: Pay-Per-Consultation-Booked ($100). Comprehensive regulatory and financial analysis of 5 pricing options.**
-- **Decision:** Option 3 (Pay-Per-Consultation-Booked) selected after regulatory analysis
-- **Evolution:** Phase 3 at $100/booking → Phase 4 Hybrid ($149/month + $50/booking)
-- **Why this beats alternatives:**
-  - Regulatory compliance (ASCR Rule 12.4.3 safe)
-  - Fraud prevention (OTP verification, booking deposits)
-  - Lawyer value (no scheduling friction, 4:1 ROI minimum)
-- **Rejected models:**
-  - Option 4 (Pay-Per-Client): FATAL FLAW - fee-sharing prohibition
-  - Option 1 (Pay-Per-Lead): High fraud risk, "tyre-kicker" fatigue
-- **Length:** 428 lines of regulatory analysis, unit economics, technical requirements
-- **Who needs it:** Developer (implementation), lawyers (service agreement)
-
-### **Lawyer Lead Generation Strategy.md** 📊
-**Original strategy document outlining the pivot approach.**
-- Complexity triggers system
-- Pre-packaged brief format
-- Geo-fenced solicitor search
-- Binding Financial Agreement upsell
-- Fake door testing methodology
+**Phase 1 & 2 COMPLETE** ✅  
+**Live at:** auschildsupport.com  
+**Next:** Lawyer outreach starting
 
 ---
 
-## 📚 TECHNICAL DOCUMENTATION
+## 📋 ESSENTIAL FILES (Read These First)
+
+### **BUSINESS_MODEL.md** 🎯 ⭐ START HERE
+**The current business model and project status.**
+- **What it is:** Live documentation of the B2B lead generation model
+- **Current status:** Phase 1 & 2 complete, infrastructure ready
+- **Revenue model:** $50 per qualified lead to family lawyers
+- **What's inside:**
+  - How money flows (parent → lead → lawyer → payment)
+  - Revenue projections ($2-3K/month starting)
+  - What's built (web app, admin panel, Supabase integration)
+  - Next steps (lawyer outreach)
+- **Length:** 237 lines
+- **Who needs it:** Everyone - this is the current source of truth
 
 ### **DESIGN_SYSTEM.md** 🎨
 **Complete design system and architecture guide.**
@@ -80,6 +34,7 @@ This folder contains all project documentation for the Child Support Calculator 
 - Full 8-step Australian child support formula explained
 - Common abbreviations glossary
 - **Read this before making UI changes**
+- **Length:** 388 lines
 
 ### **CLAUDE.md** 🤖
 **AI assistant guidance for working with the codebase.**
@@ -87,73 +42,98 @@ This folder contains all project documentation for the Child Support Calculator 
 - Architecture overview
 - File structure
 - Key patterns
-- For AI tools like Claude Code
-
-### **IMPLEMENTATION_SUMMARY.md** 📝
-**Summary of recent results display redesign (Dec 2024).**
-- What was built (ResultsSimpleExplanation component)
-- Problem solved (users didn't understand calculations)
-- Design principles applied
-- File stats and achievements
-
-### **CHANGELOG.md** 📆
-**Change tracking with dates and reasoning.**
-- December 20, 2024: Pricing Model Finalized (Pay-Per-Consultation-Booked)
-- December 19, 2024: Phase 1 & 2 Strategic Planning
-- December 17, 2024: Results display redesign
-- Earlier implementation history
-- Documents all major changes
-
-### **PHASE_1_2_UPDATES.md** 📋
-**Summary of Phase 1 & 2 strategic changes and updated pricing model (Dec 2024).**
-- Lawyer recruitment moved to Phase 1
-- Full lead routing system built from day 1
-- **Updated pricing model:** Pay-Per-Consultation-Booked ($100) with evolution to Hybrid ($149/month + $50/booking)
-- Revenue projections: Conservative $48k/year → Optimistic $383k/year
-- Technical requirements: Calendar integration, Stripe, fraud prevention stack
-- Regulatory compliance summary
+- Supabase configuration
+- For AI tools like Claude
+- **Length:** 859 lines
 
 ---
 
-## 📖 REFERENCE DOCUMENTS
+## 📖 ACTIVE GUIDES
 
-### **PROJECT_SUMMARY.md** 📖
-**Comprehensive project overview (592 lines).**
-- What the app does
-- Current features
-- Tech stack
-- Project structure
-- Future roadmap (20 feature ideas)
-- Business viability analysis
-- Competitive landscape
-- **Note:** This was written before the pivot, so revenue projections are outdated
+### **guides/active/REMAINING_TASKS.md** 📋
+**Current task list and project status.**
+- What's completed (web app, admin panel, database)
+- What's in progress (testing, deployment)
+- What's next (privacy policy, lawyer outreach)
+- Priority order for remaining work
+- **Length:** 135 lines
+- **Updated:** Dec 27, 2024
 
-### **CALCULATOR-PORTING-GUIDE.md** ⚙️
-**Guide for porting calculator from Next.js to React Native.**
-- What's already done
-- Steps to complete
-- File structure
-- Common issues and solutions
-- Testing instructions
+### **guides/active/WEB_DEPLOYMENT_GUIDE.md** 🚀
+**Complete guide for deploying to web.**
+- Expo web setup
+- Local testing
+- Production build
+- Netlify deployment
+- Domain configuration
+- **Length:** 385 lines
+
+### **guides/active/LEAD_HANDOVER.md** 🔒
+**Secure methods for sending lead details to lawyers.**
+- Password-protected PDFs
+- Temporary secure links
+- Encrypted email options
+- Implementation guidance
+- **Length:** 66 lines
+
+---
+
+## 📧 TEMPLATES
+
+**Location:** `/docs/templates/`
+
+All email and legal templates for lawyer partnerships:
+
+1. **EMAIL_COLD_OUTREACH.md** (30 lines) - Initial lawyer outreach
+2. **EMAIL_LEAD_FORWARDING.md** (40 lines) - Sending lead teasers
+3. **EMAIL_MONTHLY_INVOICE.md** (30 lines) - Billing template
+4. **EMAIL_WEEKLY_CHECKIN.md** (22 lines) - Partner updates
+5. **EMAIL_WELCOME_NEW_PARTNER.md** (37 lines) - Onboarding
+6. **LAWYER_PARTNERSHIP_AGREEMENT.md** (128 lines) - Legal agreement
+
+**See:** `templates/README.md` for usage instructions
+
+---
+
+## 📚 ARCHIVED DOCUMENTATION
+
+**Location:** `/docs/guides/old/`
+
+Historical planning documents from the development phases:
+- Phase 1 & 2 checklists and status
+- Christmas break planning
+- Completed phases summary
+- Deployment guides
+- Troubleshooting notes
+- Alex Thompson lawyer setup
+
+**Note:** These are archived for reference but superseded by current active guides.
 
 ---
 
 ## 🎯 RECOMMENDED READING ORDER
 
-**If you're implementing the pivot (THIS WEEK):**
-1. MASTER_PLAN.md (start here, read completely)
-2. DESIGN_SYSTEM.md (understand the UI system)
-3. CLAUDE.md (quick technical reference)
+**If you're NEW to the project:**
+1. **BUSINESS_MODEL.md** - Understand what we're building
+2. **guides/active/REMAINING_TASKS.md** - See current status
+3. **DESIGN_SYSTEM.md** - Learn the UI system
+4. **CLAUDE.md** - Technical reference
 
-**If you're understanding the business context:**
-1. BRUTAL_REALITY_CHECK.md (why B2C fails)
-2. LAWYER_STRATEGY_ANALYSIS.md (why B2B works)
-3. MASTER_PLAN.md (how to execute)
+**If you're DEPLOYING the web app:**
+1. **guides/active/WEB_DEPLOYMENT_GUIDE.md** - Complete deployment steps
+2. **guides/active/REMAINING_TASKS.md** - Check deployment tasks
+3. **BUSINESS_MODEL.md** - Understand what features need to work
 
-**If you're making code changes:**
-1. DESIGN_SYSTEM.md (design patterns)
-2. CLAUDE.md (architecture)
-3. IMPLEMENTATION_SUMMARY.md (recent changes)
+**If you're REACHING OUT to lawyers:**
+1. **BUSINESS_MODEL.md** - Revenue model and value prop
+2. **templates/EMAIL_COLD_OUTREACH.md** - Outreach template
+3. **templates/LAWYER_PARTNERSHIP_AGREEMENT.md** - Legal agreement
+4. **guides/active/LEAD_HANDOVER.md** - How to securely send leads
+
+**If you're MAKING CODE CHANGES:**
+1. **DESIGN_SYSTEM.md** - Design patterns and formulas
+2. **CLAUDE.md** - Architecture and file structure
+3. **guides/active/REMAINING_TASKS.md** - See what's already done
 
 ---
 
@@ -161,39 +141,52 @@ This folder contains all project documentation for the Child Support Calculator 
 
 | Document | Lines | Purpose | Last Updated |
 |----------|-------|---------|--------------|
-| MASTER_PLAN.md | 1,626 | **Implementation roadmap** ⭐ | Dec 20, 2024 |
-| **BUSINESS_MODEL_CANVAS.md** | **850** | **Business model overview** 🎯 | **Dec 20, 2024** |
-| PROJECT_SUMMARY.md | 592 | Project overview | Dec 17, 2024 |
-| BRUTAL_REALITY_CHECK.md | 429 | B2C failure analysis | Dec 17, 2024 |
-| **PRICING_STRATEGY_ANALYSIS.md** | **428** | **Pricing model analysis** 💰 | **Dec 20, 2024** |
-| LAWYER_STRATEGY_ANALYSIS.md | 402 | B2B strategy eval | Dec 17, 2024 |
-| PHASE_1_2_UPDATES.md | 289 | Phase 1-2 updates & pricing | Dec 20, 2024 |
-| DESIGN_SYSTEM.md | 201 | Design guide | Dec 17, 2024 |
-| CALCULATOR-PORTING-GUIDE.md | 172 | Porting instructions | Dec 17, 2024 |
-| IMPLEMENTATION_SUMMARY.md | 149 | Recent work summary | Dec 17, 2024 |
-| CHANGELOG.md | 148 | Change tracking | Dec 20, 2024 |
-| Lawyer Lead Generation Strategy.md | 117 | Original pivot doc | Dec 17, 2024 |
-| CLAUDE.md | 114 | AI helper guide | Dec 20, 2024 |
+| **CLAUDE.md** | **859** | **Technical guide** | Dec 27, 2024 |
+| **DESIGN_SYSTEM.md** | **388** | **Design system** | Dec 27, 2024 |
+| **guides/active/WEB_DEPLOYMENT_GUIDE.md** | **385** | **Deployment** | Dec 27, 2024 |
+| **BUSINESS_MODEL.md** | **237** | **Business overview** ⭐ | Dec 27, 2024 |
+| **guides/active/REMAINING_TASKS.md** | **135** | **Current tasks** | Dec 27, 2024 |
+| **templates/LAWYER_PARTNERSHIP_AGREEMENT.md** | **128** | **Legal template** | Dec 27, 2024 |
+| **templates/README.md** | **103** | **Template guide** | Dec 27, 2024 |
+| **guides/active/LEAD_HANDOVER.md** | **66** | **Security guide** | Dec 27, 2024 |
+| **templates/EMAIL_LEAD_FORWARDING.md** | **40** | **Email template** | Dec 27, 2024 |
+| **templates/EMAIL_WELCOME_NEW_PARTNER.md** | **37** | **Email template** | Dec 27, 2024 |
+| **templates/EMAIL_COLD_OUTREACH.md** | **30** | **Email template** | Dec 27, 2024 |
+| **templates/EMAIL_MONTHLY_INVOICE.md** | **30** | **Email template** | Dec 27, 2024 |
+| **templates/EMAIL_WEEKLY_CHECKIN.md** | **22** | **Email template** | Dec 27, 2024 |
 
-**Total documentation: 5,517 lines**
-
----
-
-## 🚀 NEXT STEPS
-
-**THIS WEEK (December 18-24, 2024):**
-1. Open MASTER_PLAN.md
-2. Read sections: "PHASE 1: VALIDATION" and "THIS WEEK"
-3. Follow the day-by-day action items
-4. Implement complexity triggers and "Get Legal Help" button
-5. Launch fake door test by end of week
-
-**SUCCESS METRIC:**
-- Get 100+ users to test the calculator
-- Measure if >2% click "Get Legal Help"
-- If yes → proceed to lawyer recruitment
-- If no → iterate on triggers
+**Total active documentation: ~2,460 lines**  
+**Archived documentation:** See `/docs/guides/old/`
 
 ---
 
-**Questions?** All answers are in MASTER_PLAN.md. Start there.
+## 🚀 NEXT STEPS (This Week)
+
+**Phase 2 → Phase 3 Transition:**
+
+1. **Deploy to production** (if not done)
+   - Follow WEB_DEPLOYMENT_GUIDE.md
+   - Verify auschildsupport.com is live
+
+2. **Attach privacy policy** (15 min)
+   - Link privacy.html to inquiry form
+
+3. **Start lawyer outreach** 
+   - Use EMAIL_COLD_OUTREACH.md template
+   - Target 5-10 lawyers in Sydney/Melbourne
+   - Goal: 2-3 partnerships by end of week
+
+4. **Test lead handover process**
+   - Review LEAD_HANDOVER.md
+   - Choose secure method
+   - Test with first lawyer
+
+**SUCCESS METRICS:**
+- Web app live and functional ✅
+- 2-3 lawyer partnerships signed
+- First $50 lead sale completed
+- Lead handover process tested
+
+---
+
+**Questions?** Check BUSINESS_MODEL.md for current strategy and REMAINING_TASKS.md for specific next steps.

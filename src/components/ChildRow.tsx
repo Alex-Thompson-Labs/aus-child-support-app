@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import type { ChildInput } from "../types/calculator";
 import { CARE_PERIOD_DAYS } from "../utils/child-support-constants";
 import { useResponsive, isWeb, webInputStyles, webClickableStyles } from "../utils/responsive";
+import { PeriodPicker } from "./PeriodPicker";
 
 interface ChildRowProps {
   child: ChildInput;
@@ -19,7 +20,7 @@ export function ChildRow({
   childIndex,
   totalChildren,
 }: ChildRowProps) {
-  const { isMobile, isDesktop } = useResponsive();
+  const { isMobile } = useResponsive();
 
   const maxValue =
     child.carePeriod === "week"
@@ -27,9 +28,6 @@ export function ChildRow({
       : child.carePeriod === "fortnight"
         ? 14
         : 365;
-
-  // Responsive input width
-  const careInputWidth = isMobile ? 60 : isDesktop ? 80 : 70;
 
   // Calculate if total exceeds maximum
   const totalCare = child.careAmountA + child.careAmountB;
@@ -58,10 +56,12 @@ export function ChildRow({
     });
   };
 
+  // Single horizontal row layout (responsive)
   return (
     <View
       style={[
         styles.container,
+        !isMobile && styles.containerDesktop,
         isOverLimit && styles.containerError,
       ]}
     >
@@ -71,91 +71,70 @@ export function ChildRow({
           Child {childIndex} of {totalChildren}
         </Text>
       )}
-      <View style={styles.mainRow}>
-        {/* Left side: Parent inputs */}
-        <View style={styles.parentsSection}>
-          <View style={styles.parentColumn}>
-            <Text style={styles.headerLabelA}>PARENT A</Text>
-            <TextInput
-              style={[styles.careInput, { width: careInputWidth }, isWeb && webInputStyles]}
-              value={child.careAmountA.toString()}
-              onChangeText={handleCareAmountAChange}
-              keyboardType="numeric"
-              maxLength={5}
-              placeholderTextColor="#64748b"
-            />
-          </View>
-          <View style={styles.parentColumn}>
-            <Text style={styles.headerLabelB}>PARENT B</Text>
-            <TextInput
-              style={[styles.careInput, { width: careInputWidth }, isWeb && webInputStyles]}
-              value={child.careAmountB.toString()}
-              onChangeText={handleCareAmountBChange}
-              keyboardType="numeric"
-              maxLength={5}
-              placeholderTextColor="#64748b"
-            />
-          </View>
+
+      {/* Remove button - top right with better visibility */}
+      <Pressable
+        onPress={onRemove}
+        style={[styles.removeButton, isWeb && webClickableStyles]}
+        accessibilityLabel="Remove child"
+      >
+        <Text style={styles.removeButtonText}>×</Text>
+      </Pressable>
+
+      {/* Single horizontal row: Parent A → Parent B → Period → Age Toggle */}
+      <View style={styles.horizontalRow}>
+        {/* Parent A */}
+        <View style={[styles.itemWrapper, isMobile && styles.itemWrapperMobile]}>
+          <Text style={styles.headerLabelA}>PARENT A</Text>
+          <TextInput
+            style={[styles.careInput, styles.compactInput, isWeb && webInputStyles]}
+            value={child.careAmountA.toString()}
+            onChangeText={handleCareAmountAChange}
+            keyboardType="numeric"
+            maxLength={5}
+            placeholderTextColor="#64748b"
+          />
         </View>
 
-        {/* Right side: Controls */}
-        <View style={styles.controlsSection}>
-          {/* Age toggle with heading */}
-          <View style={styles.toggleWithLabel}>
-            {isWeb && <Text style={styles.toggleLabel}>Age Range</Text>}
-            <View style={[styles.toggleGroup, !isWeb && styles.ageToggleGroup]}>
-              <Pressable
-                onPress={() => onUpdate({ age: "Under 13" })}
-                style={[styles.toggleButton, styles.toggleButtonLeft, child.age === "Under 13" && styles.toggleButtonActive, isWeb && webClickableStyles]}
-              >
-                <Text style={[styles.toggleButtonText, child.age === "Under 13" && styles.toggleButtonTextActive]}>{"<13"}</Text>
-              </Pressable>
-              <Pressable
-                onPress={() => onUpdate({ age: "13+" })}
-                style={[styles.toggleButton, styles.toggleButtonRight, child.age === "13+" && styles.toggleButtonActive, isWeb && webClickableStyles]}
-              >
-                <Text style={[styles.toggleButtonText, child.age === "13+" && styles.toggleButtonTextActive]}>13+</Text>
-              </Pressable>
-            </View>
-          </View>
-
-          {/* Period toggle with heading */}
-          <View style={styles.toggleWithLabel}>
-            {isWeb && <Text style={styles.toggleLabel}>Period</Text>}
-            <View style={[styles.toggleGroup, !isWeb && styles.periodToggleGroup]}>
-              {(["week", "fortnight", "year"] as const).map((period, index) => (
-                <Pressable
-                  key={period}
-                  onPress={() => handlePeriodChange(period)}
-                  style={[
-                    styles.toggleButton,
-                    isWeb && styles.toggleButtonWide,
-                    index === 0 && styles.toggleButtonLeft,
-                    index === 2 && styles.toggleButtonRight,
-                    child.carePeriod === period && styles.toggleButtonActive,
-                    isWeb && webClickableStyles,
-                  ]}
-                >
-                  <Text style={[styles.toggleButtonText, child.carePeriod === period && styles.toggleButtonTextActive]}>
-                    {isWeb
-                      ? (period === "week" ? "Week" : period === "fortnight" ? "Fortnight" : "Year")
-                      : (period === "week" ? "wk" : period === "fortnight" ? "fn" : "yr")
-                    }
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
+        {/* Parent B */}
+        <View style={[styles.itemWrapper, isMobile && styles.itemWrapperMobile]}>
+          <Text style={styles.headerLabelB}>PARENT B</Text>
+          <TextInput
+            style={[styles.careInput, styles.compactInput, isWeb && webInputStyles]}
+            value={child.careAmountB.toString()}
+            onChangeText={handleCareAmountBChange}
+            keyboardType="numeric"
+            maxLength={5}
+            placeholderTextColor="#64748b"
+          />
         </View>
 
-        {/* Remove button - top right corner */}
-        <Pressable
-          onPress={onRemove}
-          style={[styles.removeButton, isWeb && webClickableStyles]}
-          accessibilityLabel="Remove child"
-        >
-          <Text style={styles.removeButtonText}>×</Text>
-        </Pressable>
+        {/* Period Picker */}
+        <View style={isMobile && styles.itemWrapperMobile}>
+          <PeriodPicker
+            value={child.carePeriod}
+            onChange={handlePeriodChange}
+          />
+        </View>
+
+        {/* Age Range Toggle */}
+        <View style={[styles.toggleWithLabel, isMobile && styles.itemWrapperMobile]}>
+          <Text style={styles.toggleLabel}>Age Range</Text>
+          <View style={styles.toggleGroup}>
+            <Pressable
+              onPress={() => onUpdate({ age: "Under 13" })}
+              style={[styles.toggleButton, styles.toggleButtonLeft, child.age === "Under 13" && styles.toggleButtonActive, isWeb && webClickableStyles]}
+            >
+              <Text style={[styles.toggleButtonText, child.age === "Under 13" && styles.toggleButtonTextActive]}>{"<13"}</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => onUpdate({ age: "13+" })}
+              style={[styles.toggleButton, styles.toggleButtonRight, child.age === "13+" && styles.toggleButtonActive, isWeb && webClickableStyles]}
+            >
+              <Text style={[styles.toggleButtonText, child.age === "13+" && styles.toggleButtonTextActive]}>13+</Text>
+            </Pressable>
+          </View>
+        </View>
       </View>
 
       {/* Warning when total exceeds maximum */}
@@ -177,6 +156,13 @@ const styles = StyleSheet.create({
     borderColor: "#475569", // slate-600
     backgroundColor: "transparent",
     marginBottom: 8,
+    position: "relative",
+    ...(isWeb ? {
+      scrollSnapAlign: "start",
+    } : {}),
+  } as any,
+  containerDesktop: {
+    padding: 16,
   },
   childCountText: {
     fontSize: 11,
@@ -191,20 +177,26 @@ const styles = StyleSheet.create({
     borderColor: "#ef4444", // red-500
     backgroundColor: "rgba(239, 68, 68, 0.1)", // red-500 with opacity
   },
-  mainRow: {
+  // Single horizontal row layout
+  horizontalRow: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-end",
     gap: 16,
+    backgroundColor: "#0f172a", // slate-900
+    padding: 12,
+    borderRadius: 8,
     flexWrap: "wrap",
-    position: "relative",
   },
-  parentsSection: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  parentColumn: {
+  itemWrapper: {
     alignItems: "center",
     gap: 6,
+  },
+  itemWrapperMobile: {
+    width: "48%",
+    marginBottom: 8,
+  },
+  compactInput: {
+    width: 70,
   },
   headerLabelA: {
     fontSize: 12,
@@ -221,7 +213,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   careInput: {
-    // Width is now set dynamically via inline style
     paddingHorizontal: 8,
     paddingVertical: 8,
     fontSize: 18,
@@ -231,11 +222,6 @@ const styles = StyleSheet.create({
     borderColor: "#475569", // slate-600
     borderRadius: 8,
     backgroundColor: "#1e293b", // slate-800
-  },
-  controlsSection: {
-    flexDirection: "row",
-    gap: 12,
-    alignItems: "flex-start",
   },
   toggleWithLabel: {
     alignItems: "center",
@@ -253,21 +239,11 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     overflow: "hidden",
   },
-  ageToggleGroup: {
-    marginRight: 32,
-  },
-  periodToggleGroup: {
-    marginRight: 16,
-  },
   toggleButton: {
     width: 32,
     paddingVertical: 4,
     alignItems: "center",
     backgroundColor: "#334155", // slate-700
-  },
-  toggleButtonWide: {
-    width: "auto",
-    paddingHorizontal: 10,
   },
   toggleButtonLeft: {
     borderTopLeftRadius: 6,
@@ -290,14 +266,30 @@ const styles = StyleSheet.create({
   },
   removeButton: {
     position: "absolute",
-    top: -4,
-    right: -4,
-    padding: 4,
-  },
+    top: 4,
+    right: 4,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: "#ef4444", // red-500
+    alignItems: "center",
+    justifyContent: "center",
+    ...(isWeb ? {
+      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)",
+    } : {
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 3,
+      elevation: 4,
+    }),
+  } as any,
   removeButtonText: {
-    color: "#64748b", // slate-500
-    fontSize: 18,
-    fontWeight: "600",
+    color: "#ffffff",
+    fontSize: 10,
+    fontWeight: "700",
+    lineHeight: 10,
+    marginTop: -1,
   },
   warning: {
     marginTop: 8,

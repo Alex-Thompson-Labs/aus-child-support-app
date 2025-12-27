@@ -23,15 +23,10 @@ export interface CalculatorFormState {
   children: ChildInput[];
   relDepA: RelevantDependents;
   relDepB: RelevantDependents;
-  courtDate?: string; // Optional court date in dd/mm/yyyy format
 }
 
-// On web, start with no children (blank state)
-// On mobile, start with one child pre-filled for better UX
+// Start with one child pre-filled for better UX on all platforms
 const getInitialChildren = (): ChildInput[] => {
-  if (isWeb) {
-    return [];
-  }
   return [
     {
       id: `child-${Date.now()}`,
@@ -51,7 +46,6 @@ const initialFormState: CalculatorFormState = {
   children: getInitialChildren(),
   relDepA: { u13: 0, plus13: 0 },
   relDepB: { u13: 0, plus13: 0 },
-  courtDate: "", // Empty string by default
 };
 
 export function useCalculator() {
@@ -449,7 +443,6 @@ export function useCalculator() {
       children: getInitialChildren(),
       relDepA: { u13: 0, plus13: 0 },
       relDepB: { u13: 0, plus13: 0 },
-      courtDate: "",
     });
     setResults(null);
     setErrors({});

@@ -47,6 +47,7 @@ export function ChangeOfAssessmentPrompt({
   }
 
   // Group reasons by category
+  const urgentReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.category === 'urgent');
   const incomeReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.category === 'income');
   const childReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.category === 'child');
   const otherReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.category === 'other');
@@ -57,11 +58,13 @@ export function ChangeOfAssessmentPrompt({
 
   const buttonStyle = buttonDisabled
     ? styles.coaButtonDisabled
-    : mostImportantReason?.category === 'income'
-      ? styles.coaButtonIncome
-      : mostImportantReason?.category === 'child'
-        ? styles.coaButtonChild
-        : styles.coaButtonOther;
+    : mostImportantReason?.category === 'urgent'
+      ? styles.coaButtonUrgent
+      : mostImportantReason?.category === 'income'
+        ? styles.coaButtonIncome
+        : mostImportantReason?.category === 'child'
+          ? styles.coaButtonChild
+          : styles.coaButtonOther;
 
   // Expand/collapse animation
   useEffect(() => {
@@ -295,6 +298,20 @@ export function ChangeOfAssessmentPrompt({
               }
             }}
           >
+          {/* Urgent Matters Group */}
+          {urgentReasons.length > 0 && (
+            <View style={styles.reasonGroup}>
+              <View style={styles.groupHeader}>
+                <Text style={[styles.groupTitle, { color: '#ef4444' }]}>
+                  {getCategoryDisplayInfo('urgent').emoji} {getCategoryDisplayInfo('urgent').title}
+                </Text>
+              </View>
+              <View style={[styles.categoryBorder, { borderLeftColor: '#ef4444' }]}>
+                {urgentReasons.map(renderCheckbox)}
+              </View>
+            </View>
+          )}
+
           {/* Income Issues Group */}
           {incomeReasons.length > 0 && (
             <View style={styles.reasonGroup}>
@@ -512,6 +529,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     alignItems: "center",
     width: "100%",
+  },
+  coaButtonUrgent: {
+    backgroundColor: "#ef4444", // red-500 (urgent category)
   },
   coaButtonIncome: {
     backgroundColor: "#f59e0b", // amber-500 (income category)

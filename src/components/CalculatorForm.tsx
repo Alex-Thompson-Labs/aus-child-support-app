@@ -1,9 +1,582 @@
-import React, { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
+import React, { useState, useRef, useEffect } from "react";
+import { Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View, Modal, Platform, Dimensions } from "react-native";
 import type { ChildInput, FormErrors } from "../types/calculator";
 import { ChildRow } from "./ChildRow";
 import { HelpTooltip } from "./HelpTooltip";
 import { useResponsive, MAX_CONTENT_WIDTH, MAX_TWO_COLUMN_WIDTH, isWeb, webInputStyles, webClickableStyles, webOnlyStyles } from "../utils/responsive";
+
+// ============================================================================
+// RelevantDependentsPopover - Compact button with popover for dependents
+// ============================================================================
+
+interface RelevantDependentsPopoverProps {
+  relDepA: { u13: number; plus13: number };
+  relDepB: { u13: number; plus13: number };
+  onRelDepAChange: (updates: Partial<{ u13: number; plus13: number }>) => void;
+  onRelDepBChange: (updates: Partial<{ u13: number; plus13: number }>) => void;
+  compact?: boolean; // For horizontal layout
+}
+
+function RelevantDependentsPopover({
+  relDepA,
+  relDepB,
+  onRelDepAChange,
+  onRelDepBChange,
+  compact = false,
+}: RelevantDependentsPopoverProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Calculate total dependents for badge
+  const totalDeps = relDepA.u13 + relDepA.plus13 + relDepB.u13 + relDepB.plus13;
+  const hasValues = totalDeps > 0;
+
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+  };
+
+  // Close drawer when clicking outside (for web)
+  useEffect(() => {
+    if (isWeb && isOpen) {
+      const handleClickOutside = (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        if (!target.closest('[data-drawer-content]') && !target.closest('[data-drawer-trigger]')) {
+          setIsOpen(false);
+        }
+      };
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isOpen]);
+
+  // For mobile: still use modal
+  if (!isWeb) {
+    return (
+      <View style={compact ? popoverStyles.containerCompact : popoverStyles.container}>
+        <Pressable
+          onPress={handleToggle}
+          style={[
+            compact ? popoverStyles.triggerButtonCompact : popoverStyles.triggerButton,
+            hasValues && popoverStyles.triggerButtonActive,
+          ]}
+        >
+          <Text style={[
+            compact ? popoverStyles.triggerTextCompact : popoverStyles.triggerText,
+            hasValues && popoverStyles.triggerTextActive,
+          ]}>
+            {hasValues ? `Dependents: ${totalDeps}` : 'Rel. Dependents'}
+          </Text>
+          {!hasValues && (
+            <Text style={popoverStyles.plusIcon}>+</Text>
+          )}
+        </Pressable>
+
+        <Modal
+          visible={isOpen}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setIsOpen(false)}
+        >
+          <Pressable
+            style={popoverStyles.modalOverlay}
+            onPress={() => setIsOpen(false)}
+          >
+            <Pressable onPress={(e) => e.stopPropagation()}>
+              <View style={popoverStyles.mobileContent}>
+                <View style={popoverStyles.mobileHeader}>
+                  <Text style={popoverStyles.title}>Relevant Dependents</Text>
+                  <HelpTooltip
+                    header="REDUCES ASSESSABLE INCOME"
+                    what="Number of children in the parents care from a different relationship and not a claimed for child in a separate case."
+                    why=""
+                    hideWhatLabel
+                  />
+                  <Pressable onPress={() => setIsOpen(false)} style={popoverStyles.closeButton}>
+                    <Text style={popoverStyles.closeButtonText}>×</Text>
+                  </Pressable>
+                </View>
+
+                <View style={popoverStyles.parentsRow}>
+                  <View style={popoverStyles.parentCol}>
+                    <Text style={popoverStyles.parentLabelA}>Parent A</Text>
+                    <View style={popoverStyles.inputsRow}>
+                      <View style={popoverStyles.inputGroup}>
+                        <Text style={popoverStyles.ageLabel}>&lt;13</Text>
+                        <TextInput
+                          style={popoverStyles.input}
+                          value={relDepA.u13.toString()}
+                          onChangeText={(text) =>
+                            onRelDepAChange({ u13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
+                          }
+                          keyboardType="numeric"
+                        />
+                      </View>
+                      <View style={popoverStyles.inputGroup}>
+                        <Text style={popoverStyles.ageLabel}>13+</Text>
+                        <TextInput
+                          style={popoverStyles.input}
+                          value={relDepA.plus13.toString()}
+                          onChangeText={(text) =>
+                            onRelDepAChange({ plus13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
+                          }
+                          keyboardType="numeric"
+                        />
+                      </View>
+                    </View>
+                  </View>
+
+                  <View style={popoverStyles.parentCol}>
+                    <Text style={popoverStyles.parentLabelB}>Parent B</Text>
+                    <View style={popoverStyles.inputsRow}>
+                      <View style={popoverStyles.inputGroup}>
+                        <Text style={popoverStyles.ageLabel}>&lt;13</Text>
+                        <TextInput
+                          style={popoverStyles.input}
+                          value={relDepB.u13.toString()}
+                          onChangeText={(text) =>
+                            onRelDepBChange({ u13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
+                          }
+                          keyboardType="numeric"
+                        />
+                      </View>
+                      <View style={popoverStyles.inputGroup}>
+                        <Text style={popoverStyles.ageLabel}>13+</Text>
+                        <TextInput
+                          style={popoverStyles.input}
+                          value={relDepB.plus13.toString()}
+                          onChangeText={(text) =>
+                            onRelDepBChange({ plus13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
+                          }
+                          keyboardType="numeric"
+                        />
+                      </View>
+                    </View>
+                  </View>
+                </View>
+
+                {hasValues && (
+                  <Pressable
+                    style={popoverStyles.clearButton}
+                    onPress={() => {
+                      onRelDepAChange({ u13: 0, plus13: 0 });
+                      onRelDepBChange({ u13: 0, plus13: 0 });
+                    }}
+                  >
+                    <Text style={popoverStyles.clearButtonText}>Clear All</Text>
+                  </Pressable>
+                )}
+              </View>
+            </Pressable>
+          </Pressable>
+        </Modal>
+      </View>
+    );
+  }
+
+  // For web: inline expanding drawer
+  return (
+    <View style={[
+      compact ? popoverStyles.drawerContainerCompact : popoverStyles.drawerContainer,
+      isWeb && { 
+        display: 'flex' as any, 
+        flexDirection: 'row' as any, 
+        alignItems: 'center' as any 
+      }
+    ]}>
+      {/* Trigger Button */}
+      <Pressable
+        onPress={handleToggle}
+        style={[
+          compact ? popoverStyles.triggerButtonCompact : popoverStyles.triggerButton,
+          hasValues && popoverStyles.triggerButtonActive,
+          webClickableStyles,
+          { flexShrink: 0 }
+        ]}
+        {...{ 'data-drawer-trigger': true } as any}
+      >
+        <Text style={[
+          compact ? popoverStyles.triggerTextCompact : popoverStyles.triggerText,
+          hasValues && popoverStyles.triggerTextActive,
+        ]}>
+          {hasValues ? `Dependents: ${totalDeps}` : 'Rel. Dependents'}
+        </Text>
+        {!hasValues && (
+          <Text style={popoverStyles.plusIcon}>+</Text>
+        )}
+      </Pressable>
+
+      {/* Inline Drawer - Expands to the right */}
+      <View 
+        style={[
+          popoverStyles.drawerContent,
+          isOpen && popoverStyles.drawerContentOpen,
+          isWeb && {
+            width: isOpen ? (compact ? '400px' : '450px') : '0px',
+            opacity: isOpen ? 1 : 0,
+            overflow: 'hidden' as any,
+            transition: 'width 0.3s ease-out, opacity 0.3s ease-out' as any,
+          }
+        ]}
+        {...(isWeb ? { 'data-drawer-content': true } as any : {})}
+      >
+        <View style={popoverStyles.drawerInner}>
+          {/* Compact header for inline drawer */}
+          <View style={popoverStyles.drawerHeader}>
+            <HelpTooltip
+              header="REDUCES ASSESSABLE INCOME"
+              what="Number of children in the parents care from a different relationship and not a claimed for child in a separate case."
+              why=""
+              hideWhatLabel
+            />
+          </View>
+
+          {/* Input fields in horizontal layout */}
+          <View style={popoverStyles.drawerInputsRow}>
+            {/* Parent A inputs */}
+            <View style={popoverStyles.drawerInputGroup}>
+              <Text style={popoverStyles.drawerParentLabel}>A</Text>
+              <View style={popoverStyles.drawerAgeInputs}>
+                <View style={popoverStyles.drawerAgeGroup}>
+                  <Text style={popoverStyles.drawerAgeLabel}>&lt;13</Text>
+                  <TextInput
+                    style={[popoverStyles.drawerInput, webInputStyles]}
+                    value={relDepA.u13.toString()}
+                    onChangeText={(text) =>
+                      onRelDepAChange({ u13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
+                    }
+                    keyboardType="numeric"
+                  />
+                </View>
+                <View style={popoverStyles.drawerAgeGroup}>
+                  <Text style={popoverStyles.drawerAgeLabel}>13+</Text>
+                  <TextInput
+                    style={[popoverStyles.drawerInput, webInputStyles]}
+                    value={relDepA.plus13.toString()}
+                    onChangeText={(text) =>
+                      onRelDepAChange({ plus13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
+                    }
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
+            </View>
+
+            {/* Separator */}
+            <View style={popoverStyles.drawerSeparator} />
+
+            {/* Parent B inputs */}
+            <View style={popoverStyles.drawerInputGroup}>
+              <Text style={popoverStyles.drawerParentLabel}>B</Text>
+              <View style={popoverStyles.drawerAgeInputs}>
+                <View style={popoverStyles.drawerAgeGroup}>
+                  <Text style={popoverStyles.drawerAgeLabel}>&lt;13</Text>
+                  <TextInput
+                    style={[popoverStyles.drawerInput, webInputStyles]}
+                    value={relDepB.u13.toString()}
+                    onChangeText={(text) =>
+                      onRelDepBChange({ u13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
+                    }
+                    keyboardType="numeric"
+                  />
+                </View>
+                <View style={popoverStyles.drawerAgeGroup}>
+                  <Text style={popoverStyles.drawerAgeLabel}>13+</Text>
+                  <TextInput
+                    style={[popoverStyles.drawerInput, webInputStyles]}
+                    value={relDepB.plus13.toString()}
+                    onChangeText={(text) =>
+                      onRelDepBChange({ plus13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
+                    }
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
+            </View>
+
+            {/* Clear button - compact inline version */}
+            {hasValues && (
+              <Pressable
+                style={[popoverStyles.drawerClearButton, webClickableStyles]}
+                onPress={() => {
+                  onRelDepAChange({ u13: 0, plus13: 0 });
+                  onRelDepBChange({ u13: 0, plus13: 0 });
+                }}
+              >
+                <Text style={popoverStyles.drawerClearButtonText}>×</Text>
+              </Pressable>
+            )}
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+const popoverStyles = StyleSheet.create({
+  container: {
+    position: 'relative',
+    zIndex: 100,
+  },
+  containerCompact: {
+    position: 'relative',
+    zIndex: 100,
+    alignSelf: 'flex-start',
+  },
+  // Web drawer container - flexbox row layout
+  drawerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  drawerContainerCompact: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  triggerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    backgroundColor: '#334155', // slate-700
+    borderWidth: 1,
+    borderColor: '#475569', // slate-600
+    borderRadius: 8,
+    borderStyle: 'dashed',
+  },
+  triggerButtonCompact: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    backgroundColor: '#334155', // slate-700
+    borderWidth: 1,
+    borderColor: '#475569', // slate-600
+    borderRadius: 6,
+    borderStyle: 'dashed',
+  },
+  triggerButtonActive: {
+    backgroundColor: 'rgba(245, 158, 11, 0.15)', // amber-500 with opacity
+    borderColor: '#f59e0b', // amber-500
+    borderStyle: 'solid',
+  },
+  triggerText: {
+    fontSize: 14,
+    color: '#94a3b8', // slate-400
+    fontWeight: '500',
+  },
+  triggerTextCompact: {
+    fontSize: 12,
+    color: '#94a3b8', // slate-400
+    fontWeight: '500',
+  },
+  triggerTextActive: {
+    color: '#f59e0b', // amber-500
+    fontWeight: '600',
+  },
+  plusIcon: {
+    fontSize: 16,
+    color: '#64748b', // slate-500
+    fontWeight: '600',
+  },
+  // Inline drawer content - expands to the right
+  drawerContent: {
+    overflow: 'hidden',
+    height: 40, // Match the height of income inputs
+  },
+  drawerContentOpen: {
+    // Width and opacity are set dynamically via inline styles with transition
+  },
+  drawerInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: '100%',
+    paddingLeft: 12,
+  },
+  drawerHeader: {
+    marginRight: 8,
+  },
+  drawerInputsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  drawerInputGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  drawerParentLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#10b981', // emerald-500
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  drawerAgeInputs: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  drawerAgeGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  drawerAgeLabel: {
+    fontSize: 10,
+    color: '#f59e0b', // amber-500
+    fontWeight: '600',
+    minWidth: 20,
+  },
+  drawerInput: {
+    width: 36,
+    paddingHorizontal: 4,
+    paddingVertical: 6,
+    fontSize: 14,
+    textAlign: 'center',
+    color: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#475569', // slate-600
+    borderRadius: 4,
+    backgroundColor: '#334155', // slate-700
+  },
+  drawerSeparator: {
+    width: 1,
+    height: 24,
+    backgroundColor: '#475569', // slate-600
+    marginHorizontal: 4,
+  },
+  drawerClearButton: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#334155', // slate-700
+    borderWidth: 1,
+    borderColor: '#475569', // slate-600
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 4,
+  },
+  drawerClearButtonText: {
+    fontSize: 16,
+    color: '#94a3b8', // slate-400
+    lineHeight: 18,
+    fontWeight: '400',
+  },
+  // Mobile modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  mobileContent: {
+    backgroundColor: '#1e293b', // slate-800
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#475569', // slate-600
+    padding: 16,
+    minWidth: 280,
+    gap: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  mobileHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#10b981', // emerald-500
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  closeButton: {
+    marginLeft: 'auto',
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#334155', // slate-700
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeButtonText: {
+    fontSize: 18,
+    color: '#94a3b8', // slate-400
+    lineHeight: 20,
+    fontWeight: '400',
+  },
+  parentsRow: {
+    flexDirection: 'row',
+    gap: 24,
+  },
+  parentCol: {
+    flex: 1,
+    gap: 8,
+  },
+  parentLabelA: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#3b82f6', // blue-500
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    textAlign: 'center',
+  },
+  parentLabelB: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#8b5cf6', // violet-500
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    textAlign: 'center',
+  },
+  inputsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  inputGroup: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  ageLabel: {
+    fontSize: 11,
+    color: '#f59e0b', // amber-500
+    fontWeight: '600',
+  },
+  input: {
+    width: 44,
+    paddingHorizontal: 4,
+    paddingVertical: 8,
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#475569', // slate-600
+    borderRadius: 6,
+    backgroundColor: '#334155', // slate-700
+  },
+  clearButton: {
+    alignSelf: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#334155', // slate-700
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#475569', // slate-600
+  },
+  clearButtonText: {
+    fontSize: 12,
+    color: '#94a3b8', // slate-400
+    fontWeight: '500',
+  },
+});
 
 interface CalculatorFormProps {
   incomeA: number;
@@ -13,7 +586,6 @@ interface CalculatorFormProps {
   childrenData: ChildInput[];
   relDepA: { u13: number; plus13: number };
   relDepB: { u13: number; plus13: number };
-  courtDate?: string;
   errors: FormErrors;
   incomePercA?: number;
   incomePercB?: number;
@@ -28,7 +600,6 @@ interface CalculatorFormProps {
   onUpdateChild: (childId: string, updates: Partial<ChildInput>) => void;
   onRelDepAChange: (updates: Partial<{ u13: number; plus13: number }>) => void;
   onRelDepBChange: (updates: Partial<{ u13: number; plus13: number }>) => void;
-  onCourtDateChange: (value: string) => void;
   onCalculate: () => void;
   onReset: () => void;
   isDesktopWeb?: boolean;  // Controls padding and width for two-column layout
@@ -42,7 +613,6 @@ export function CalculatorForm({
   childrenData,
   relDepA,
   relDepB,
-  courtDate,
   errors,
   incomePercA,
   incomePercB,
@@ -57,12 +627,10 @@ export function CalculatorForm({
   onUpdateChild,
   onRelDepAChange,
   onRelDepBChange,
-  onCourtDateChange,
   onCalculate,
   onReset,
   isDesktopWeb = false,
 }: CalculatorFormProps) {
-  const [showRelDeps, setShowRelDeps] = useState(false);
   const { isMobile, isDesktop, width } = useResponsive();
 
   // Web-specific container styles (only apply max-width when NOT in two-column mode)
@@ -174,6 +742,16 @@ export function CalculatorForm({
             <Text style={styles.errorText}>{errors.incomeB}</Text>
           )}
         </View>
+
+        {/* Relevant Dependents - Compact Button with Popover */}
+        <View style={[styles.inputGroup, { marginTop: 16 }]}>
+          <RelevantDependentsPopover
+            relDepA={relDepA}
+            relDepB={relDepB}
+            onRelDepAChange={onRelDepAChange}
+            onRelDepBChange={onRelDepBChange}
+          />
+        </View>
       </View>
 
       {/* Children Card */}
@@ -209,115 +787,6 @@ export function CalculatorForm({
         >
           <Text style={styles.addChildButtonText}>+ Add Child</Text>
         </Pressable>
-      </View>
-
-      {/* Relevant Dependents Card */}
-      <View style={styles.card}>
-        <View style={styles.relDepsHeader}>
-          <Text style={styles.sectionHeading}>Relevant Dependents</Text>
-          <HelpTooltip
-            header="REDUCES ASSESSABLE INCOME"
-            what="Number of children in the parents care from a different relationship and not a claimed for child in a separate case."
-            why=""
-            hideWhatLabel
-          />
-          <Switch
-            value={showRelDeps}
-            onValueChange={(checked) => {
-              setShowRelDeps(checked);
-              if (!checked) {
-                onRelDepAChange({ u13: 0, plus13: 0 });
-                onRelDepBChange({ u13: 0, plus13: 0 });
-              }
-            }}
-            trackColor={{ false: "#475569", true: "#f59e0b" }}
-            thumbColor="#ffffff"
-            style={[styles.smallSwitch, styles.relDepsSwitch]}
-          />
-        </View>
-
-        {showRelDeps && (
-          <View style={styles.relDepsRow}>
-            {/* Parent A Section */}
-            <View style={styles.relDepsParentSection}>
-              <Text style={styles.parentTitleA}>Parent A</Text>
-              <View style={styles.relDepsInputPair}>
-                <View style={styles.relDepsInputGroup}>
-                  <TextInput
-                    style={styles.relDepsInput}
-                    value={relDepA.u13.toString()}
-                    onChangeText={(text) =>
-                      onRelDepAChange({ u13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
-                    }
-                    keyboardType="numeric"
-                  />
-                  <Text style={[styles.relDepsAgeLabel, { color: '#f59e0b' }]}>&lt;13</Text>
-                </View>
-                <View style={styles.relDepsInputGroup}>
-                  <TextInput
-                    style={styles.relDepsInput}
-                    value={relDepA.plus13.toString()}
-                    onChangeText={(text) =>
-                      onRelDepAChange({ plus13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
-                    }
-                    keyboardType="numeric"
-                  />
-                  <Text style={[styles.relDepsAgeLabel, { color: '#f59e0b' }]}>13+</Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Parent B Section */}
-            <View style={styles.relDepsParentSection}>
-              <Text style={styles.parentTitleB}>Parent B</Text>
-              <View style={styles.relDepsInputPair}>
-                <View style={styles.relDepsInputGroup}>
-                  <TextInput
-                    style={styles.relDepsInput}
-                    value={relDepB.u13.toString()}
-                    onChangeText={(text) =>
-                      onRelDepBChange({ u13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
-                    }
-                    keyboardType="numeric"
-                  />
-                  <Text style={[styles.relDepsAgeLabel, { color: '#f59e0b' }]}>&lt;13</Text>
-                </View>
-                <View style={styles.relDepsInputGroup}>
-                  <TextInput
-                    style={styles.relDepsInput}
-                    value={relDepB.plus13.toString()}
-                    onChangeText={(text) =>
-                      onRelDepBChange({ plus13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
-                    }
-                    keyboardType="numeric"
-                  />
-                  <Text style={[styles.relDepsAgeLabel, { color: '#f59e0b' }]}>13+</Text>
-                </View>
-              </View>
-            </View>
-          </View>
-        )}
-      </View>
-
-      {/* Court Date Card */}
-      <View style={styles.card}>
-        <View style={[styles.labelRow, { gap: 8 }]}>
-          <Text style={[styles.sectionHeading, { marginBottom: 0 }]}>Court Date (Optional)</Text>
-          <HelpTooltip
-            header="PREPARATION IS KEY"
-            what="Cases with upcoming court dates may benefit from urgent legal advice."
-            why=""
-            hideWhatLabel
-          />
-        </View>
-        <TextInput
-          style={[styles.courtDateInput, isWeb && webInputStyles]}
-          value={courtDate || ""}
-          onChangeText={onCourtDateChange}
-          placeholder="dd/mm/yyyy"
-          placeholderTextColor="#64748b"
-          keyboardType="numbers-and-punctuation"
-        />
       </View>
 
       {/* Action Buttons */}
@@ -534,85 +1003,6 @@ const styles = StyleSheet.create({
     color: "#94a3b8", // slate-400
     fontSize: 14,
   },
-  relDepsHeader: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 8,
-  },
-  relDepsTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#94a3b8", // slate-400
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  relDepsSwitch: {
-    marginLeft: "auto",
-    transform: [{ scaleX: 0.75 }, { scaleY: 0.75 }],
-    marginTop: -5,
-  },
-  relDepsRow: {
-    marginTop: 8,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 24,
-    paddingBottom: 0,
-  },
-  relDepsParentSection: {
-    flex: 1,
-    flexDirection: "column",
-    alignItems: "center",
-    gap: 8,
-  },
-  relDepsInputPair: {
-    flexDirection: "row",
-    gap: 24,
-    justifyContent: "center",
-  },
-  relDepsInputGroup: {
-    flexDirection: "column",
-    alignItems: "center",
-    gap: 4,
-  },
-  relDepsLabel: {
-    fontSize: 14,
-    color: "#94a3b8", // slate-400
-  },
-  relDepsLabelB: {
-    marginLeft: 8,
-  },
-  relDepsAgeLabel: {
-    fontSize: 13,
-    color: "#64748b", // slate-500
-  },
-  relDepsInput: {
-    width: 40,
-    paddingHorizontal: 4,
-    paddingVertical: 6,
-    borderWidth: 1,
-    borderColor: "#475569", // slate-600
-    borderRadius: 4,
-    textAlign: "center",
-    color: "#ffffff",
-    backgroundColor: "#334155", // slate-700
-    fontSize: 14,
-  },
-  courtDateInput: {
-    backgroundColor: "#334155", // slate-700
-    borderWidth: 1,
-    borderColor: "#475569", // slate-600
-    borderRadius: 8,
-    padding: 12,
-    color: "#ffffff",
-    fontSize: 16,
-    marginTop: 8,
-  },
-  courtDateHint: {
-    fontSize: 12,
-    color: "#64748b", // slate-500
-    marginTop: 4,
-    fontStyle: "italic",
-  },
   actionButtons: {
     flexDirection: "row",
     gap: 12,
@@ -662,7 +1052,6 @@ export function WebHorizontalForm({
   childrenData,
   relDepA,
   relDepB,
-  courtDate,
   errors,
   onIncomeAChange,
   onIncomeBChange,
@@ -673,7 +1062,6 @@ export function WebHorizontalForm({
   onUpdateChild,
   onRelDepAChange,
   onRelDepBChange,
-  onCourtDateChange,
   onCalculate,
   onReset,
 }: WebHorizontalFormProps) {
@@ -683,93 +1071,98 @@ export function WebHorizontalForm({
   const inputWidth = 140;
 
   return (
-    <View style={[horizontalStyles.container, { maxWidth: MAX_TWO_COLUMN_WIDTH }, webOnlyStyles as any]}>
-      {/* Main horizontal row */}
-      <View style={horizontalStyles.mainRow}>
-        {/* Parent A Income */}
-        <View style={horizontalStyles.section}>
-          <Text style={horizontalStyles.sectionLabel}>Parent A Income</Text>
-          <View style={horizontalStyles.incomeRow}>
-            <View style={[horizontalStyles.currencyInputContainer, { width: inputWidth }]}>
-              <Text style={horizontalStyles.currencySymbol}>$</Text>
-              <TextInput
-                style={[horizontalStyles.currencyInput, { width: inputWidth }, errors.incomeA && styles.inputError, webInputStyles]}
-                value={incomeA ? incomeA.toString() : ""}
-                onChangeText={(text) => {
-                  const val = text.replace(/[^0-9]/g, "");
-                  onIncomeAChange(parseInt(val) || 0);
-                }}
-                keyboardType="numeric"
-                placeholder="0"
-                placeholderTextColor="#64748b"
-              />
+    <View style={[horizontalStyles.outerContainer, { maxWidth: MAX_TWO_COLUMN_WIDTH }, webOnlyStyles as any]}>
+      {/* Scrollable main content */}
+      <ScrollView style={horizontalStyles.mainContent} contentContainerStyle={horizontalStyles.mainContentContainer}>
+        <View style={horizontalStyles.container}>
+          {/* Main horizontal row */}
+          <View style={horizontalStyles.mainRow}>
+            {/* Parent A Income */}
+            <View style={horizontalStyles.section}>
+              <Text style={horizontalStyles.sectionLabel}>Parent A Income</Text>
+              <View style={horizontalStyles.incomeRow}>
+                <View style={[horizontalStyles.currencyInputContainer, { width: inputWidth }]}>
+                  <Text style={horizontalStyles.currencySymbol}>$</Text>
+                  <TextInput
+                    style={[horizontalStyles.currencyInput, { width: inputWidth }, errors.incomeA && styles.inputError, webInputStyles]}
+                    value={incomeA ? incomeA.toString() : ""}
+                    onChangeText={(text) => {
+                      const val = text.replace(/[^0-9]/g, "");
+                      onIncomeAChange(parseInt(val) || 0);
+                    }}
+                    keyboardType="numeric"
+                    placeholder="0"
+                    placeholderTextColor="#64748b"
+                  />
+                </View>
+                <View style={horizontalStyles.switchRow}>
+                  <Switch
+                    value={supportA}
+                    onValueChange={onSupportAChange}
+                    trackColor={{ false: "#475569", true: "#f59e0b" }}
+                    thumbColor="#ffffff"
+                    style={horizontalStyles.smallSwitch}
+                  />
+                  <Text style={horizontalStyles.switchLabel}>Inc. support</Text>
+                </View>
+              </View>
             </View>
-            <View style={horizontalStyles.switchRow}>
-              <Switch
-                value={supportA}
-                onValueChange={onSupportAChange}
-                trackColor={{ false: "#475569", true: "#f59e0b" }}
-                thumbColor="#ffffff"
-                style={horizontalStyles.smallSwitch}
+
+            {/* Parent B Income */}
+            <View style={horizontalStyles.section}>
+              <Text style={horizontalStyles.sectionLabel}>Parent B Income</Text>
+              <View style={horizontalStyles.incomeRow}>
+                <View style={[horizontalStyles.currencyInputContainer, { width: inputWidth }]}>
+                  <Text style={horizontalStyles.currencySymbol}>$</Text>
+                  <TextInput
+                    style={[horizontalStyles.currencyInput, { width: inputWidth }, errors.incomeB && styles.inputError, webInputStyles]}
+                    value={incomeB ? incomeB.toString() : ""}
+                    onChangeText={(text) => {
+                      const val = text.replace(/[^0-9]/g, "");
+                      onIncomeBChange(parseInt(val) || 0);
+                    }}
+                    keyboardType="numeric"
+                    placeholder="0"
+                    placeholderTextColor="#64748b"
+                  />
+                </View>
+                <View style={horizontalStyles.switchRow}>
+                  <Switch
+                    value={supportB}
+                    onValueChange={onSupportBChange}
+                    trackColor={{ false: "#475569", true: "#f59e0b" }}
+                    thumbColor="#ffffff"
+                    style={horizontalStyles.smallSwitch}
+                  />
+                  <Text style={horizontalStyles.switchLabel}>Inc. support</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Relevant Dependents - Compact Popover Button */}
+            <View style={horizontalStyles.section}>
+              <Text style={horizontalStyles.sectionLabel}>Other Dependents</Text>
+              <RelevantDependentsPopover
+                relDepA={relDepA}
+                relDepB={relDepB}
+                onRelDepAChange={onRelDepAChange}
+                onRelDepBChange={onRelDepBChange}
+                compact
               />
-              <Text style={horizontalStyles.switchLabel}>Inc. support</Text>
             </View>
           </View>
-        </View>
 
-        {/* Parent B Income */}
-        <View style={horizontalStyles.section}>
-          <Text style={horizontalStyles.sectionLabel}>Parent B Income</Text>
-          <View style={horizontalStyles.incomeRow}>
-            <View style={[horizontalStyles.currencyInputContainer, { width: inputWidth }]}>
-              <Text style={horizontalStyles.currencySymbol}>$</Text>
-              <TextInput
-                style={[horizontalStyles.currencyInput, { width: inputWidth }, errors.incomeB && styles.inputError, webInputStyles]}
-                value={incomeB ? incomeB.toString() : ""}
-                onChangeText={(text) => {
-                  const val = text.replace(/[^0-9]/g, "");
-                  onIncomeBChange(parseInt(val) || 0);
-                }}
-                keyboardType="numeric"
-                placeholder="0"
-                placeholderTextColor="#64748b"
-              />
-            </View>
-            <View style={horizontalStyles.switchRow}>
-              <Switch
-                value={supportB}
-                onValueChange={onSupportBChange}
-                trackColor={{ false: "#475569", true: "#f59e0b" }}
-                thumbColor="#ffffff"
-                style={horizontalStyles.smallSwitch}
-              />
-              <Text style={horizontalStyles.switchLabel}>Inc. support</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Children / Care */}
-        <View style={horizontalStyles.sectionWide}>
-          <View style={horizontalStyles.sectionHeader}>
+          {/* Children / Care - Horizontal scrolling Netflix-style */}
+          <View style={horizontalStyles.childrenSection}>
             <Text style={horizontalStyles.sectionLabel}>
               Children (Care Nights) {childrenData.length > 0 && `- ${childrenData.length} child${childrenData.length > 1 ? 'ren' : ''}`}
             </Text>
-            <Pressable
-              onPress={onAddChild}
-              style={[horizontalStyles.addButton, webClickableStyles]}
-            >
-              <Text style={horizontalStyles.addButtonText}>+ Add</Text>
-            </Pressable>
-          </View>
-          {childrenData.length === 0 ? (
-            <Text style={horizontalStyles.noChildrenText}>No children added</Text>
-          ) : (
-            <View style={horizontalStyles.childrenScrollContainer}>
+            <View style={horizontalStyles.scrollWrapper}>
               <ScrollView
                 horizontal
-                style={horizontalStyles.childrenScrollView}
-                contentContainerStyle={horizontalStyles.childrenScrollContent}
                 showsHorizontalScrollIndicator={true}
+                style={horizontalStyles.childrenScrollContainer}
+                contentContainerStyle={horizontalStyles.childrenScrollContent}
               >
                 {childrenData.map((child, index) => (
                   <View key={child.id} style={horizontalStyles.childCardWrapper}>
@@ -784,108 +1177,36 @@ export function WebHorizontalForm({
                 ))}
               </ScrollView>
             </View>
-          )}
-          {errors.children && (
-            <Text style={styles.errorText}>{errors.children}</Text>
-          )}
-        </View>
-
-        {/* Relevant Dependents - always visible inline */}
-        <View style={horizontalStyles.section}>
-          <Text style={horizontalStyles.sectionLabel}>Relevant Dependents</Text>
-          <View style={horizontalStyles.depsContainer}>
-            {/* Parent A deps */}
-            <View style={horizontalStyles.depsParent}>
-              <Text style={horizontalStyles.depsParentLabel}>A</Text>
-              <View style={horizontalStyles.depsInputGroup}>
-                <TextInput
-                  style={[horizontalStyles.depsInput, webInputStyles]}
-                  value={relDepA.u13.toString()}
-                  onChangeText={(text) =>
-                    onRelDepAChange({ u13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
-                  }
-                  keyboardType="numeric"
-                />
-                <Text style={horizontalStyles.depsAgeLabel}>&lt;13</Text>
-              </View>
-              <View style={horizontalStyles.depsInputGroup}>
-                <TextInput
-                  style={[horizontalStyles.depsInput, webInputStyles]}
-                  value={relDepA.plus13.toString()}
-                  onChangeText={(text) =>
-                    onRelDepAChange({ plus13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
-                  }
-                  keyboardType="numeric"
-                />
-                <Text style={horizontalStyles.depsAgeLabel}>13+</Text>
-              </View>
-            </View>
-            {/* Parent B deps */}
-            <View style={horizontalStyles.depsParent}>
-              <Text style={horizontalStyles.depsParentLabelB}>B</Text>
-              <View style={horizontalStyles.depsInputGroup}>
-                <TextInput
-                  style={[horizontalStyles.depsInput, webInputStyles]}
-                  value={relDepB.u13.toString()}
-                  onChangeText={(text) =>
-                    onRelDepBChange({ u13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
-                  }
-                  keyboardType="numeric"
-                />
-                <Text style={horizontalStyles.depsAgeLabel}>&lt;13</Text>
-              </View>
-              <View style={horizontalStyles.depsInputGroup}>
-                <TextInput
-                  style={[horizontalStyles.depsInput, webInputStyles]}
-                  value={relDepB.plus13.toString()}
-                  onChangeText={(text) =>
-                    onRelDepBChange({ plus13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })
-                  }
-                  keyboardType="numeric"
-                />
-                <Text style={horizontalStyles.depsAgeLabel}>13+</Text>
-              </View>
-            </View>
+            {errors.children && (
+              <Text style={styles.errorText}>{errors.children}</Text>
+            )}
+            <Pressable
+              onPress={onAddChild}
+              style={[horizontalStyles.addButton, webClickableStyles]}
+            >
+              <Text style={horizontalStyles.addButtonText}>+ Add Child</Text>
+            </Pressable>
           </View>
         </View>
-
-        {/* Court Date */}
-        <View style={horizontalStyles.section}>
-          <Text style={horizontalStyles.sectionLabel}>Court Date</Text>
-          <TextInput
-            style={[horizontalStyles.courtDateInput, webInputStyles]}
-            value={courtDate || ""}
-            onChangeText={onCourtDateChange}
-            placeholder="dd/mm/yyyy"
-            placeholderTextColor="#64748b"
-            keyboardType="numbers-and-punctuation"
-          />
-        </View>
-
-        {/* Action Buttons */}
-        <View style={horizontalStyles.buttonsSection}>
-          <Pressable
-            onPress={onCalculate}
-            style={[horizontalStyles.calculateButton, webClickableStyles]}
-          >
-            <Text style={horizontalStyles.calculateButtonText}>Calculate</Text>
-          </Pressable>
-          <Pressable
-            onPress={onReset}
-            style={[horizontalStyles.resetButton, webClickableStyles]}
-          >
-            <Text style={horizontalStyles.resetButtonText}>Reset</Text>
-          </Pressable>
-        </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
 
 const horizontalStyles = StyleSheet.create({
-  container: {
+  outerContainer: {
+    flex: 1,
     width: "100%",
     alignSelf: "center",
+  },
+  mainContent: {
+    flex: 1,
+  },
+  mainContentContainer: {
+    flexGrow: 1,
+  },
+  container: {
+    width: "100%",
     paddingHorizontal: 24,
     paddingVertical: 16,
     backgroundColor: "#1e293b", // slate-800
@@ -901,16 +1222,51 @@ const horizontalStyles = StyleSheet.create({
   section: {
     minWidth: 160,
   },
-  sectionWide: {
-    minWidth: 300,
-    maxWidth: 600,
-    flexShrink: 1,
+  // Children section - full width with horizontal scrolling
+  childrenSection: {
+    width: "100%",
+    marginTop: 16,
   },
-  sectionHeader: {
+  scrollWrapper: {
+    position: "relative",
+    width: "100%",
+  },
+  childrenScrollContainer: {
+    width: "100%",
+    ...(isWeb ? {
+      scrollSnapType: "x mandatory",
+      overflowX: "auto",
+      // Enhanced scrollbar styling for web
+      scrollbarWidth: "thin",
+      scrollbarColor: "#f59e0b #334155",
+    } : {}),
+  } as any,
+  childrenScrollContent: {
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 8,
+    alignItems: "flex-start",
+    gap: 12,
+    paddingRight: 12,
+    paddingBottom: 8,
+  },
+  scrollIndicator: {
+    position: "absolute",
+    bottom: -28,
+    right: 20,
+    backgroundColor: "rgba(15, 23, 42, 0.9)", // slate-900 with opacity
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#f59e0b", // amber-500
+  },
+  scrollIndicatorText: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: "#f59e0b", // amber-500
+    letterSpacing: 0.5,
+  },
+  footerSection: {
+    minWidth: 140,
   },
   sectionLabel: {
     fontSize: 11,
@@ -961,34 +1317,7 @@ const horizontalStyles = StyleSheet.create({
     fontSize: 11,
     color: "#94a3b8", // slate-400
   },
-  childrenContainer: {
-    gap: 8,
-  },
-  childrenScrollContainer: {
-    width: '100%',
-    ...(isWeb ? {
-      overflow: 'hidden',
-      flex: 0,
-    } : {}),
-  },
-  childrenScrollView: {
-    maxHeight: 200,
-    flexGrow: 0,
-    flexShrink: 1,
-    ...(isWeb ? {
-      width: '100%',
-      overflowX: 'auto',
-      overflowY: 'hidden',
-    } : {}),
-  },
-  childrenScrollContent: {
-    flexDirection: "row",
-    gap: 12,
-    paddingVertical: 4,
-    paddingHorizontal: 2,
-  },
   childCardWrapper: {
-    width: 280,
     flexShrink: 0,
   },
   noChildrenText: {
@@ -998,73 +1327,34 @@ const horizontalStyles = StyleSheet.create({
     paddingVertical: 8,
   },
   addButton: {
+    marginTop: 12,
+    width: 105,
     paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderWidth: 1,
-    borderColor: "#475569", // slate-600
-    borderRadius: 4,
-  },
-  addButtonText: {
-    fontSize: 12,
-    color: "#94a3b8", // slate-400
-  },
-  depsContainer: {
-    flexDirection: "row",
-    gap: 16,
-  },
-  depsParent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  depsParentLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#3b82f6", // blue-500
-    width: 16,
-  },
-  depsParentLabelB: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#8b5cf6", // violet-500
-    width: 16,
-  },
-  depsInputGroup: {
-    alignItems: "center",
-    gap: 2,
-  },
-  depsInput: {
-    width: 36,
-    paddingHorizontal: 4,
     paddingVertical: 6,
-    borderWidth: 1,
-    borderColor: "#475569", // slate-600
-    borderRadius: 4,
-    textAlign: "center",
-    color: "#ffffff",
-    backgroundColor: "#334155", // slate-700
-    fontSize: 14,
-  },
-  depsAgeLabel: {
-    fontSize: 10,
-    color: "#f59e0b", // amber-500
-  },
-  courtDateInput: {
-    width: 110,
-    backgroundColor: "#334155", // slate-700
-    borderWidth: 1,
-    borderColor: "#475569", // slate-600
+    backgroundColor: "#f59e0b", // amber-500
     borderRadius: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    color: "#ffffff",
-    fontSize: 14,
+    borderWidth: 0,
+    alignItems: "center",
+    alignSelf: "flex-start",
+    ...(isWeb ? {
+      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+    } : {
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 3,
+      elevation: 3,
+    }),
+  } as any,
+  addButtonText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#0f172a", // slate-900
   },
   buttonsSection: {
     flexDirection: "row",
     gap: 8,
-    alignItems: "flex-end",
-    paddingTop: 16,
+    alignItems: "center",
   },
   calculateButton: {
     backgroundColor: "#3b82f6", // blue-500

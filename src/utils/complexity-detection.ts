@@ -6,7 +6,6 @@
 
 import type { CalculationResults, ChildInput } from '../types/calculator';
 import { convertCareToPercentage } from './child-support-calculations';
-import { isWithinDays } from './date-utils';
 import { getHighestPriorityReason, getCoAReasonById, formatOfficialCoAReasons } from './change-of-assessment-reasons';
 
 /**
@@ -123,7 +122,6 @@ export interface AlertConfig {
  */
 export interface ComplexityFormData {
   children?: ChildInput[];
-  courtDate?: string;
   /**
    * Array of selected complexity trigger reason IDs
    * Used to detect situations requiring legal review
@@ -153,16 +151,17 @@ export function detectComplexity(
       (carePercB >= 35 && carePercB <= 65);
   }) ?? false;
 
-  // Check for urgent court date (within 30 days)
-  const hasCourtDateUrgent = formData.courtDate ? isWithinDays(formData.courtDate, 30) : false;
+  // Check for selected CoA reasons
+  const selectedReasons = formData.selectedCoAReasons ?? [];
+
+  // Check for urgent court date (via checkbox selection)
+  const hasCourtDateUrgent = selectedReasons.includes('court_date_upcoming');
 
   if (__DEV__) {
-    console.log('[detectComplexity] Court date:', formData.courtDate);
-    console.log('[detectComplexity] Is court date urgent (within 30 days):', hasCourtDateUrgent);
+    console.log('[detectComplexity] Court date checkbox selected:', hasCourtDateUrgent);
   }
 
   // Check for special circumstances via selected CoA reasons
-  const selectedReasons = formData.selectedCoAReasons ?? [];
   const hasSpecialCircumstances = selectedReasons.length > 0;
 
   if (__DEV__) {

@@ -58,10 +58,6 @@ export function CalculatorScreen() {
     }));
   };
 
-  const handleCourtDateChange = (value: string) => {
-    setFormState((prev) => ({ ...prev, courtDate: value }));
-  };
-
   // Handle calculate - show results on web
   const handleCalculate = () => {
     calculate();
@@ -102,7 +98,6 @@ export function CalculatorScreen() {
     childrenData: formState.children,
     relDepA: formState.relDepA,
     relDepB: formState.relDepB,
-    courtDate: formState.courtDate,
     errors: errors,
     incomePercA: results?.incomePercA,
     incomePercB: results?.incomePercB,
@@ -117,7 +112,6 @@ export function CalculatorScreen() {
     onUpdateChild: updateChild,
     onRelDepAChange: handleRelDepAChange,
     onRelDepBChange: handleRelDepBChange,
-    onCourtDateChange: handleCourtDateChange,
     onCalculate: handleCalculate,
     onReset: handleReset,
   };
@@ -130,13 +124,31 @@ export function CalculatorScreen() {
       >
         <View style={[styles.header, isWeb && styles.headerWeb]}>
           <View style={[styles.titleContainer, webWrapperStyle]}>
+            {/* Action Buttons - Left side */}
+            {isTabletOrDesktop && (
+              <View style={styles.headerButtonsContainer}>
+                <Pressable
+                  onPress={handleCalculate}
+                  style={[styles.headerCalculateButton, webOnlyStyles]}
+                >
+                  <Text style={styles.headerCalculateButtonText}>Calculate</Text>
+                </Pressable>
+                <Pressable
+                  onPress={handleReset}
+                  style={[styles.headerResetButton, webOnlyStyles]}
+                >
+                  <Text style={styles.headerResetButtonText}>Reset</Text>
+                </Pressable>
+              </View>
+            )}
+
             <Ionicons name="people" size={isDesktop ? 32 : 28} color="#f59e0b" />
             <Text style={[styles.title, isDesktop && styles.titleDesktop]}>
               Child Support Calculator
             </Text>
-            
+
             {/* TEMPORARY DEV BUTTON - REMOVE BEFORE PRODUCTION */}
-            <Pressable 
+            <Pressable
               style={styles.devAdminButton}
               onPress={() => router.push('/admin/login')}
             >
@@ -208,6 +220,42 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 12,
     flex: 1,
+    position: "relative",
+  },
+  headerButtonsContainer: {
+    position: "absolute",
+    left: 20,
+    flexDirection: "row",
+    gap: 8,
+    alignItems: "center",
+  },
+  headerCalculateButton: {
+    backgroundColor: "#3b82f6", // blue-500
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 6,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerCalculateButtonText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  headerResetButton: {
+    backgroundColor: "#334155", // slate-700
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#475569", // slate-600
+  },
+  headerResetButtonText: {
+    color: "#94a3b8", // slate-400
+    fontSize: 13,
+    fontWeight: "600",
   },
   title: {
     fontSize: 26,
