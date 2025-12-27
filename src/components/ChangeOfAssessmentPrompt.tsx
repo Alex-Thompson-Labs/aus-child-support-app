@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Alert, Animated, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useCallback, useState } from "react";
+import { Alert, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import type { CalculationResults } from "../types/calculator";
 import { useAnalytics } from "../utils/analytics";
 import {
@@ -13,6 +13,7 @@ import {
 } from "../utils/change-of-assessment-reasons";
 import type { ComplexityFormData } from "../utils/complexity-detection";
 import { HelpTooltip } from "./HelpTooltip";
+import { CategoryIcon } from "./CategoryIcon";
 import { isWeb, webClickableStyles } from "../utils/responsive";
 
 interface ChangeOfAssessmentPromptProps {
@@ -20,6 +21,7 @@ interface ChangeOfAssessmentPromptProps {
   formData?: ComplexityFormData;
   onNavigate: () => void; // Callback to close modal before navigation
   onRequestInquiry?: () => void; // Callback to show inline inquiry panel (web mode)
+  onCoAReasonsChange?: (reasons: string[]) => void; // Callback to notify parent of selected reasons
 }
 
 export function ChangeOfAssessmentPrompt({
@@ -27,16 +29,11 @@ export function ChangeOfAssessmentPrompt({
   formData,
   onNavigate,
   onRequestInquiry,
+  onCoAReasonsChange,
 }: ChangeOfAssessmentPromptProps) {
   // State management
-  const [isCoAExpanded, setIsCoAExpanded] = useState(false);
   const [selectedReasons, setSelectedReasons] = useState<Set<string>>(new Set());
   const [isNavigatingFromCoA, setIsNavigatingFromCoA] = useState(false);
-
-  // Animation
-  const coaHeightAnim = useRef(new Animated.Value(0)).current;
-  const coaContentHeight = useRef(0);
-  const incomeBorderPulse = useRef(new Animated.Value(1)).current;
 
   // Hooks
   const router = useRouter();
@@ -48,57 +45,13 @@ export function ChangeOfAssessmentPrompt({
     return null;
   }
 
-  // Group reasons by category
-  const urgentReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.category === 'urgent');
+  // Group reasons by category (excluding urgent - now handled separately)
   const incomeReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.category === 'income');
   const childReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.category === 'child');
   const otherReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.category === 'other');
 
-  // Determine button state and style based on most important selected category
-  const mostImportantReason = getHighestPriorityReason(Array.from(selectedReasons));
+  // Determine button state
   const buttonDisabled = selectedReasons.size === 0 || isNavigatingFromCoA;
-
-  const buttonStyle = buttonDisabled
-    ? styles.coaButtonDisabled
-    : mostImportantReason?.category === 'urgent'
-      ? styles.coaButtonUrgent
-      : mostImportantReason?.category === 'income'
-        ? styles.coaButtonIncome
-        : mostImportantReason?.category === 'child'
-          ? styles.coaButtonChild
-          : styles.coaButtonOther;
-
-  // Expand/collapse animation
-  useEffect(() => {
-    Animated.spring(coaHeightAnim, {
-      toValue: isCoAExpanded ? 1 : 0,
-      useNativeDriver: false, // Required for height animation
-      tension: 65, // Same as modal animation
-      friction: 11, // Same as modal animation
-    }).start();
-  }, [isCoAExpanded, coaHeightAnim]);
-
-  // Income border pulse animation (continuous when expanded)
-  useEffect(() => {
-    if (isCoAExpanded && incomeReasons.length > 0) {
-      const pulseAnimation = Animated.loop(
-        Animated.sequence([
-          Animated.timing(incomeBorderPulse, {
-            toValue: 1.3,
-            duration: 1200,
-            useNativeDriver: false,
-          }),
-          Animated.timing(incomeBorderPulse, {
-            toValue: 1,
-            duration: 1200,
-            useNativeDriver: false,
-          }),
-        ])
-      );
-      pulseAnimation.start();
-      return () => pulseAnimation.stop();
-    }
-  }, [isCoAExpanded, incomeBorderPulse, incomeReasons.length]);
 
   // Checkbox toggle handler
   const handleCheckboxToggle = useCallback(
@@ -113,6 +66,10 @@ export function ChangeOfAssessmentPrompt({
         } else {
           next.add(reasonId);
         }
+
+        // Notify parent of change
+        const reasonsArray = Array.from(next);
+        onCoAReasonsChange?.(reasonsArray);
 
         // Track analytics (debouncing handled by setTimeout)
         setTimeout(() => {
@@ -130,24 +87,8 @@ export function ChangeOfAssessmentPrompt({
         return next;
       });
     },
-    [analytics]
+    [analytics, onCoAReasonsChange]
   );
-
-  // Expand/collapse toggle handler
-  const handleToggleExpand = useCallback(() => {
-    const willExpand = !isCoAExpanded;
-    setIsCoAExpanded(willExpand);
-
-    // Track analytics
-    try {
-      analytics.track("coa_section_toggled", {
-        is_expanded: willExpand,
-        annual_liability: results.finalPaymentAmount,
-      });
-    } catch (error) {
-      console.error("[CoAPrompt] Analytics error:", error);
-    }
-  }, [isCoAExpanded, analytics, results.finalPaymentAmount]);
 
   // Navigation handler
   const handleNavigateToCoA = useCallback(() => {
@@ -267,103 +208,29 @@ export function ChangeOfAssessmentPrompt({
 
   return (
     <View style={styles.coaContainer}>
-      {/* Header - Always visible, tappable to expand */}
-      <Pressable
-        onPress={handleToggleExpand}
-        style={isWeb && webClickableStyles}
-        accessible={true}
-        accessibilityRole="button"
-        accessibilityLabel={`Complexity factors. ${
-          isCoAExpanded ? "Collapse" : "Expand"
-        }`}
-        accessibilityState={{ expanded: isCoAExpanded }}
-      >
-        <View style={styles.coaHeader}>
-          <View style={styles.coaHeaderLeft}>
-            <Text style={styles.coaTitle}>💭 Is this assessment result unfair?</Text>
-            <Text style={styles.coaExplainer}>
-              Some situations are too complex for the standard calculator.
-              If any of these apply, a lawyer can help you request adjustments.
-            </Text>
-          </View>
-          <Text style={styles.coaChevron}>{isCoAExpanded ? "▼" : "▶"}</Text>
-        </View>
-      </Pressable>
+      {/* Header - Always visible */}
+      <View style={styles.coaHeader}>
+        <Text style={styles.coaTitle}>Is this assessment result unfair?</Text>
+        <Text style={styles.coaDescription}>
+          Some situations are too complex for the standard calculator.
+          If any of these apply, a lawyer can help you request adjustments.
+        </Text>
+      </View>
 
-      {/* Expandable content */}
-      <View style={{ overflow: "hidden" }}>
-        <Animated.View
-          style={{
-            maxHeight: coaHeightAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, 2000], // Large enough to fit all content
-            }),
-            opacity: coaHeightAnim.interpolate({
-              inputRange: [0, 0.3, 1],
-              outputRange: [0, 0.5, 1],
-            }),
-          }}
-        >
-          <View
-            onLayout={(e) => {
-              if (coaContentHeight.current === 0) {
-                coaContentHeight.current = e.nativeEvent.layout.height;
-              }
-            }}
-          >
-          {/* Urgent Matters Group */}
-          {urgentReasons.length > 0 && (
-            <View style={styles.reasonGroup}>
-              <View style={styles.groupHeader}>
-                <Text style={[styles.groupTitle, { color: '#ef4444' }]}>
-                  {getCategoryDisplayInfo('urgent').emoji} {getCategoryDisplayInfo('urgent').title}
-                </Text>
-              </View>
-              <View style={[styles.categoryBorder, { borderLeftColor: '#ef4444' }]}>
-                {urgentReasons.map(renderCheckbox)}
-              </View>
-            </View>
-          )}
-
+      {/* Category sections */}
+      <View style={styles.categorySections}>
           {/* Income Issues Group */}
           {incomeReasons.length > 0 && (
             <View style={styles.reasonGroup}>
               <View style={styles.groupHeader}>
-                <Text style={[styles.groupTitle, { color: '#f59e0b' }]}>
-                  {getCategoryDisplayInfo('income').emoji} {getCategoryDisplayInfo('income').title}
+                <CategoryIcon category="income" />
+                <Text style={[styles.groupTitle, { color: getCategoryDisplayInfo('income').accentColor }]}>
+                  {getCategoryDisplayInfo('income').title}
                 </Text>
               </View>
-              <Animated.View
-                style={[
-                  styles.categoryBorder,
-                  {
-                    borderLeftColor: '#f59e0b',
-                    borderLeftWidth: incomeBorderPulse.interpolate({
-                      inputRange: [1, 1.3],
-                      outputRange: [3, 5],
-                    }),
-                  }
-                ]}
-              >
+              <View style={styles.checkboxList}>
                 {incomeReasons.map(renderCheckbox)}
-
-                {/* Forensic Accountant Value-Add Note */}
-                {(selectedReasons.has('income_resources_not_reflected') ||
-                  selectedReasons.has('earning_capacity')) && (
-                  <View style={styles.valueAddNote}>
-                    <Text style={styles.valueAddEmoji}>💼</Text>
-                    <View style={styles.valueAddTextContainer}>
-                      <Text style={styles.valueAddTitle}>Forensic Accountant</Text>
-                      <Text style={styles.valueAddDescription}>
-                        Forensic accountants specialize in uncovering hidden income, verifying actual earning capacity,
-                        and providing expert evidence for court proceedings. They can analyze business records, trust
-                        distributions, asset holdings, and other financial structures to reveal a parent's true financial
-                        position beyond what appears in tax returns.
-                      </Text>
-                    </View>
-                  </View>
-                )}
-              </Animated.View>
+              </View>
             </View>
           )}
 
@@ -371,11 +238,12 @@ export function ChangeOfAssessmentPrompt({
           {childReasons.length > 0 && (
             <View style={styles.reasonGroup}>
               <View style={styles.groupHeader}>
-                <Text style={[styles.groupTitle, { color: '#8b5cf6' }]}>
-                  {getCategoryDisplayInfo('child').emoji} {getCategoryDisplayInfo('child').title}
+                <CategoryIcon category="child" />
+                <Text style={[styles.groupTitle, { color: getCategoryDisplayInfo('child').accentColor }]}>
+                  {getCategoryDisplayInfo('child').title}
                 </Text>
               </View>
-              <View style={[styles.categoryBorder, { borderLeftColor: '#8b5cf6' }]}>
+              <View style={styles.checkboxList}>
                 {childReasons.map(renderCheckbox)}
               </View>
             </View>
@@ -385,133 +253,125 @@ export function ChangeOfAssessmentPrompt({
           {otherReasons.length > 0 && (
             <View style={styles.reasonGroup}>
               <View style={styles.groupHeader}>
-                <Text style={[styles.groupTitle, { color: '#3b82f6' }]}>
-                  {getCategoryDisplayInfo('other').emoji} {getCategoryDisplayInfo('other').title}
+                <CategoryIcon category="other" />
+                <Text style={[styles.groupTitle, { color: getCategoryDisplayInfo('other').accentColor }]}>
+                  {getCategoryDisplayInfo('other').title}
                 </Text>
               </View>
-              <View style={[styles.categoryBorder, { borderLeftColor: '#3b82f6' }]}>
+              <View style={styles.checkboxList}>
                 {otherReasons.map(renderCheckbox)}
               </View>
             </View>
           )}
 
-          {/* Bottom section with count and button */}
-          <View style={styles.coaFooter}>
-            <Text style={styles.selectedCount}>
-              {selectedReasons.size} reason
-              {selectedReasons.size === 1 ? "" : "s"} selected
-            </Text>
-            <Pressable
-              style={[styles.coaButton, buttonStyle, isWeb && !buttonDisabled && webClickableStyles]}
-              onPress={handleNavigateToCoA}
-              disabled={buttonDisabled}
-              accessible={true}
-              accessibilityRole="button"
-              accessibilityLabel="Talk to a Lawyer About This"
-              accessibilityHint={`${selectedReasons.size} reason${
-                selectedReasons.size === 1 ? "" : "s"
-              } selected`}
-              accessibilityState={{ disabled: buttonDisabled }}
-            >
-              <Text style={styles.coaButtonText}>Talk to a Lawyer About This</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Animated.View>
+      </View>
+
+      {/* Bottom section with button */}
+      <View style={styles.coaFooter}>
+        <Pressable
+          style={[styles.coaButton, buttonDisabled && styles.coaButtonDisabled, isWeb && !buttonDisabled && webClickableStyles]}
+          onPress={handleNavigateToCoA}
+          disabled={buttonDisabled}
+          accessible={true}
+          accessibilityRole="button"
+          accessibilityLabel="Talk to a Lawyer About This"
+          accessibilityHint={`${selectedReasons.size} reason${
+            selectedReasons.size === 1 ? "" : "s"
+          } selected`}
+          accessibilityState={{ disabled: buttonDisabled }}
+        >
+          <Text style={styles.coaButtonText}>Talk to a Lawyer About This</Text>
+        </Pressable>
+        {selectedReasons.size > 0 && (
+          <Text style={styles.selectedCount}>
+            {selectedReasons.size} reason{selectedReasons.size === 1 ? "" : "s"} selected
+          </Text>
+        )}
+      </View>
     </View>
-  </View>
   );
 }
 
 const styles = StyleSheet.create({
   // Container
   coaContainer: {
-    backgroundColor: "#1e293b", // slate-800
+    backgroundColor: "#ffffff", // white
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#334155", // slate-700
-    padding: 20,
+    borderColor: "#e5e7eb", // grey-200
+    padding: 24,
     marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 3,
   },
 
   // Header
   coaHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  coaHeaderLeft: {
-    flex: 1,
+    marginBottom: 20,
   },
   coaTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#f59e0b",
-    marginBottom: 4,
+    color: "#1a202c", // near-black
+    marginBottom: 8,
   },
-  coaSubtitle: {
+  coaDescription: {
     fontSize: 14,
-    color: "#94a3b8", // slate-400
-    marginTop: 2,
+    color: "#6b7280", // grey-500
+    lineHeight: 21, // 1.5 line height
   },
-  coaExplainer: {
-    fontSize: 13,
-    color: "#64748b", // slate-500
-    marginTop: 8,
-    lineHeight: 18,
-  },
-  coaChevron: {
-    fontSize: 14,
-    color: "#94a3b8", // slate-400
-    marginLeft: 12,
+
+  // Category sections
+  categorySections: {
+    gap: 16,
   },
 
   // Groups
   reasonGroup: {
-    marginTop: 16,
-    marginBottom: 8,
+    marginBottom: 16,
   },
   groupHeader: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 12,
+    gap: 12,
   },
   groupTitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "600",
-    color: "#cbd5e1", // slate-300 (overridden by inline styles)
   },
-  categoryBorder: {
-    borderLeftWidth: 3,
-    paddingLeft: 12,
-    // borderLeftColor set inline per category
+
+  // Checkbox list
+  checkboxList: {
+    gap: 8,
   },
 
   // Checkboxes
   checkboxRow: {
     flexDirection: "row",
     alignItems: "flex-start",
-    marginBottom: 12,
+    marginBottom: 8,
   },
   checkbox: {
-    width: 24,
-    height: 24,
+    width: 20,
+    height: 20,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: "#334155", // slate-700
-    backgroundColor: "#1e293b", // slate-800
+    borderColor: "#d1d5db", // grey-300
+    backgroundColor: "#ffffff", // white
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 2,
     marginRight: 12,
   },
   checkboxChecked: {
-    backgroundColor: "#f59e0b", // amber-500
-    borderColor: "#f59e0b",
+    backgroundColor: "#3b82f6", // blue-600
+    borderColor: "#3b82f6",
   },
   checkboxCheck: {
     color: "#ffffff",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "700",
   },
   checkboxLabelContainer: {
@@ -521,82 +381,35 @@ const styles = StyleSheet.create({
   },
   checkboxLabel: {
     fontSize: 14,
-    color: "#cbd5e1", // slate-300
+    color: "#1a202c", // near-black
     lineHeight: 20,
     flex: 1,
   },
 
   // Footer
   coaFooter: {
-    marginTop: 16,
-    alignItems: "center",
-  },
-  selectedCount: {
-    fontSize: 14,
-    color: "#94a3b8", // slate-400
-    marginBottom: 12,
+    marginTop: 20,
+    gap: 12,
   },
   coaButton: {
+    backgroundColor: "#3b82f6", // blue-600
     borderRadius: 8,
     paddingVertical: 14,
     paddingHorizontal: 24,
     alignItems: "center",
     width: "100%",
   },
-  coaButtonUrgent: {
-    backgroundColor: "#ef4444", // red-500 (urgent category)
-  },
-  coaButtonIncome: {
-    backgroundColor: "#f59e0b", // amber-500 (income category)
-  },
-  coaButtonChild: {
-    backgroundColor: "#8b5cf6", // violet-500 (child category - Parent B color)
-  },
-  coaButtonOther: {
-    backgroundColor: "#3b82f6", // blue-500 (other category - Parent A color)
-  },
   coaButtonDisabled: {
-    backgroundColor: "#64748b", // slate-500
-    opacity: 0.6,
+    backgroundColor: "#93c5fd", // blue-300
   },
   coaButtonText: {
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "600",
   },
-  coaDisclaimer: {
-    fontSize: 12,
-    color: "#64748b", // slate-500
-    marginTop: 8,
-  },
-
-  // Value-Add Note
-  valueAddNote: {
-    flexDirection: "row",
-    backgroundColor: "#0f172a", // slate-900 (darker than container)
-    borderRadius: 8,
-    padding: 12,
-    marginTop: 12,
-    borderWidth: 1,
-    borderColor: "#334155", // slate-700
-  },
-  valueAddEmoji: {
-    fontSize: 20,
-    marginRight: 12,
-    marginTop: 2,
-  },
-  valueAddTextContainer: {
-    flex: 1,
-  },
-  valueAddTitle: {
+  selectedCount: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#f59e0b", // amber-500 (matches income category)
-    marginBottom: 4,
-  },
-  valueAddDescription: {
-    fontSize: 13,
-    color: "#94a3b8", // slate-400
-    lineHeight: 18,
+    color: "#6b7280", // grey-500
+    textAlign: "center",
   },
 });

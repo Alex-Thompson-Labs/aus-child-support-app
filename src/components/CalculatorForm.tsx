@@ -336,9 +336,9 @@ const popoverStyles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    backgroundColor: '#334155', // slate-700
-    borderWidth: 1,
-    borderColor: '#475569', // slate-600
+    backgroundColor: '#ffffff', // white
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0', // subtle border
     borderRadius: 8,
     borderStyle: 'dashed',
   },
@@ -348,9 +348,9 @@ const popoverStyles = StyleSheet.create({
     gap: 4,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    backgroundColor: '#334155', // slate-700
-    borderWidth: 1,
-    borderColor: '#475569', // slate-600
+    backgroundColor: '#ffffff', // white
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0', // subtle border
     borderRadius: 6,
     borderStyle: 'dashed',
   },
@@ -361,12 +361,12 @@ const popoverStyles = StyleSheet.create({
   },
   triggerText: {
     fontSize: 14,
-    color: '#94a3b8', // slate-400
+    color: '#718096', // medium grey
     fontWeight: '500',
   },
   triggerTextCompact: {
     fontSize: 12,
-    color: '#94a3b8', // slate-400
+    color: '#718096', // medium grey
     fontWeight: '500',
   },
   triggerTextActive: {
@@ -375,7 +375,7 @@ const popoverStyles = StyleSheet.create({
   },
   plusIcon: {
     fontSize: 16,
-    color: '#64748b', // slate-500
+    color: '#a0aec0', // disabled grey
     fontWeight: '600',
   },
   // Inline drawer content - expands to the right
@@ -434,32 +434,32 @@ const popoverStyles = StyleSheet.create({
     paddingVertical: 6,
     fontSize: 14,
     textAlign: 'center',
-    color: '#ffffff',
-    borderWidth: 1,
-    borderColor: '#475569', // slate-600
+    color: '#1a202c', // near black
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0', // subtle border
     borderRadius: 4,
-    backgroundColor: '#334155', // slate-700
+    backgroundColor: '#ffffff', // white
   },
   drawerSeparator: {
     width: 1,
     height: 24,
-    backgroundColor: '#475569', // slate-600
+    backgroundColor: '#e2e8f0', // subtle divider
     marginHorizontal: 4,
   },
   drawerClearButton: {
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#334155', // slate-700
-    borderWidth: 1,
-    borderColor: '#475569', // slate-600
+    backgroundColor: '#ffffff', // white
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0', // subtle border
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 4,
   },
   drawerClearButtonText: {
     fontSize: 16,
-    color: '#94a3b8', // slate-400
+    color: '#718096', // medium grey
     lineHeight: 18,
     fontWeight: '400',
   },
@@ -472,16 +472,16 @@ const popoverStyles = StyleSheet.create({
     padding: 20,
   },
   mobileContent: {
-    backgroundColor: '#1e293b', // slate-800
+    backgroundColor: '#ffffff', // white
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#475569', // slate-600
+    borderColor: '#e2e8f0', // subtle border
     padding: 16,
     minWidth: 280,
     gap: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 10,
   },
@@ -502,13 +502,13 @@ const popoverStyles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#334155', // slate-700
+    backgroundColor: '#f7fafc', // very light grey
     alignItems: 'center',
     justifyContent: 'center',
   },
   closeButtonText: {
     fontSize: 18,
-    color: '#94a3b8', // slate-400
+    color: '#4a5568', // dark grey
     lineHeight: 20,
     fontWeight: '400',
   },
@@ -556,24 +556,24 @@ const popoverStyles = StyleSheet.create({
     paddingVertical: 8,
     fontSize: 16,
     textAlign: 'center',
-    color: '#ffffff',
-    borderWidth: 1,
-    borderColor: '#475569', // slate-600
+    color: '#1a202c', // near black
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0', // subtle border
     borderRadius: 6,
-    backgroundColor: '#334155', // slate-700
+    backgroundColor: '#ffffff', // white
   },
   clearButton: {
     alignSelf: 'center',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    backgroundColor: '#334155', // slate-700
+    backgroundColor: '#ffffff', // white
     borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#475569', // slate-600
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0', // subtle border
   },
   clearButtonText: {
     fontSize: 12,
-    color: '#94a3b8', // slate-400
+    color: '#718096', // medium grey
     fontWeight: '500',
   },
 });
@@ -818,23 +818,23 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   card: {
-    backgroundColor: "#1e293b", // slate-800
+    backgroundColor: "#ffffff", // pure white for content
     borderRadius: 12,
     padding: 20,
     borderWidth: 1,
-    borderColor: "#334155", // slate-700
+    borderColor: "#e2e8f0", // subtle but visible border
     // Web shadow for better depth perception
     ...(isWeb ? {
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
+      shadowOpacity: 0.08,
       shadowRadius: 4,
     } : {}),
   },
   cardTitle: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#94a3b8", // slate-400
+    color: "#718096", // medium grey, WCAG AA compliant
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 12,
@@ -842,14 +842,14 @@ const styles = StyleSheet.create({
   sectionHeading: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#10b981", // emerald-500
+    color: "#10b981", // emerald-500 - keeping accent color
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 8,
   },
   cardSubtitle: {
     fontSize: 12,
-    color: "#64748b", // slate-500
+    color: "#718096", // medium grey
     marginTop: 2,
   },
   parentsGrid: {
@@ -894,7 +894,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#cbd5e1", // slate-300
+    color: "#4a5568", // dark grey for labels
   },
   inputRow: {
     flexDirection: "row",
@@ -914,7 +914,7 @@ const styles = StyleSheet.create({
   currencySymbol: {
     position: "absolute",
     left: 12,
-    color: "#94a3b8", // slate-400
+    color: "#718096", // medium grey
     fontSize: 18,
     fontWeight: "500",
     zIndex: 1,
@@ -925,11 +925,11 @@ const styles = StyleSheet.create({
     paddingRight: 12,
     paddingVertical: 10,
     fontSize: 18,
-    color: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#475569", // slate-600
+    color: "#1a202c", // near black, high contrast
+    borderWidth: 1.5,
+    borderColor: "#e2e8f0", // subtle border
     borderRadius: 8,
-    backgroundColor: "#334155", // slate-700
+    backgroundColor: "#ffffff", // white input background
   },
   inputError: {
     borderColor: "#ef4444", // red-500
@@ -980,11 +980,11 @@ const styles = StyleSheet.create({
   },
   switchLabelSmall: {
     fontSize: 12,
-    color: "#94a3b8", // slate-400
+    color: "#718096", // medium grey, WCAG AA compliant
   },
   switchLabel: {
     fontSize: 14,
-    color: "#cbd5e1", // slate-300
+    color: "#4a5568", // dark grey
   },
   childrenList: {
     gap: 12,
@@ -994,13 +994,13 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderWidth: 2,
     borderStyle: "dashed",
-    borderColor: "#475569", // slate-600
+    borderColor: "#e2e8f0", // subtle border
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
   },
   addChildButtonText: {
-    color: "#94a3b8", // slate-400
+    color: "#718096", // medium grey
     fontSize: 14,
   },
   actionButtons: {
@@ -1023,365 +1023,17 @@ const styles = StyleSheet.create({
   },
   resetButton: {
     flex: 1,
-    backgroundColor: "#334155", // slate-700
+    backgroundColor: "#ffffff", // white background
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "#475569", // slate-600
+    borderWidth: 1.5,
+    borderColor: "#e2e8f0", // subtle border
   },
   resetButtonText: {
-    color: "#94a3b8", // slate-400
+    color: "#4a5568", // medium grey
     fontSize: 16,
-    fontWeight: "600",
-  },
-});
-
-// ============================================================================
-// WebHorizontalForm - Horizontal layout for tablet/desktop web (≥768px)
-// ============================================================================
-
-interface WebHorizontalFormProps extends CalculatorFormProps {}
-
-export function WebHorizontalForm({
-  incomeA,
-  incomeB,
-  supportA,
-  supportB,
-  childrenData,
-  relDepA,
-  relDepB,
-  errors,
-  onIncomeAChange,
-  onIncomeBChange,
-  onSupportAChange,
-  onSupportBChange,
-  onAddChild,
-  onRemoveChild,
-  onUpdateChild,
-  onRelDepAChange,
-  onRelDepBChange,
-  onCalculate,
-  onReset,
-}: WebHorizontalFormProps) {
-  const { width } = useResponsive();
-
-  // Compact input width for horizontal layout
-  const inputWidth = 140;
-
-  return (
-    <View style={[horizontalStyles.outerContainer, { maxWidth: MAX_TWO_COLUMN_WIDTH }, webOnlyStyles as any]}>
-      {/* Scrollable main content */}
-      <ScrollView style={horizontalStyles.mainContent} contentContainerStyle={horizontalStyles.mainContentContainer}>
-        <View style={horizontalStyles.container}>
-          {/* Main horizontal row */}
-          <View style={horizontalStyles.mainRow}>
-            {/* Parent A Income */}
-            <View style={horizontalStyles.section}>
-              <Text style={horizontalStyles.sectionLabel}>Parent A Income</Text>
-              <View style={horizontalStyles.incomeRow}>
-                <View style={[horizontalStyles.currencyInputContainer, { width: inputWidth }]}>
-                  <Text style={horizontalStyles.currencySymbol}>$</Text>
-                  <TextInput
-                    style={[horizontalStyles.currencyInput, { width: inputWidth }, errors.incomeA && styles.inputError, webInputStyles]}
-                    value={incomeA ? incomeA.toString() : ""}
-                    onChangeText={(text) => {
-                      const val = text.replace(/[^0-9]/g, "");
-                      onIncomeAChange(parseInt(val) || 0);
-                    }}
-                    keyboardType="numeric"
-                    placeholder="0"
-                    placeholderTextColor="#64748b"
-                  />
-                </View>
-                <View style={horizontalStyles.switchRow}>
-                  <Switch
-                    value={supportA}
-                    onValueChange={onSupportAChange}
-                    trackColor={{ false: "#475569", true: "#f59e0b" }}
-                    thumbColor="#ffffff"
-                    style={horizontalStyles.smallSwitch}
-                  />
-                  <Text style={horizontalStyles.switchLabel}>Inc. support</Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Parent B Income */}
-            <View style={horizontalStyles.section}>
-              <Text style={horizontalStyles.sectionLabel}>Parent B Income</Text>
-              <View style={horizontalStyles.incomeRow}>
-                <View style={[horizontalStyles.currencyInputContainer, { width: inputWidth }]}>
-                  <Text style={horizontalStyles.currencySymbol}>$</Text>
-                  <TextInput
-                    style={[horizontalStyles.currencyInput, { width: inputWidth }, errors.incomeB && styles.inputError, webInputStyles]}
-                    value={incomeB ? incomeB.toString() : ""}
-                    onChangeText={(text) => {
-                      const val = text.replace(/[^0-9]/g, "");
-                      onIncomeBChange(parseInt(val) || 0);
-                    }}
-                    keyboardType="numeric"
-                    placeholder="0"
-                    placeholderTextColor="#64748b"
-                  />
-                </View>
-                <View style={horizontalStyles.switchRow}>
-                  <Switch
-                    value={supportB}
-                    onValueChange={onSupportBChange}
-                    trackColor={{ false: "#475569", true: "#f59e0b" }}
-                    thumbColor="#ffffff"
-                    style={horizontalStyles.smallSwitch}
-                  />
-                  <Text style={horizontalStyles.switchLabel}>Inc. support</Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Relevant Dependents - Compact Popover Button */}
-            <View style={horizontalStyles.section}>
-              <Text style={horizontalStyles.sectionLabel}>Other Dependents</Text>
-              <RelevantDependentsPopover
-                relDepA={relDepA}
-                relDepB={relDepB}
-                onRelDepAChange={onRelDepAChange}
-                onRelDepBChange={onRelDepBChange}
-                compact
-              />
-            </View>
-          </View>
-
-          {/* Children / Care - Horizontal scrolling Netflix-style */}
-          <View style={horizontalStyles.childrenSection}>
-            <Text style={horizontalStyles.sectionLabel}>
-              Children (Care Nights) {childrenData.length > 0 && `- ${childrenData.length} child${childrenData.length > 1 ? 'ren' : ''}`}
-            </Text>
-            <View style={horizontalStyles.scrollWrapper}>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={true}
-                style={horizontalStyles.childrenScrollContainer}
-                contentContainerStyle={horizontalStyles.childrenScrollContent}
-              >
-                {childrenData.map((child, index) => (
-                  <View key={child.id} style={horizontalStyles.childCardWrapper}>
-                    <ChildRow
-                      child={child}
-                      onUpdate={(updates) => onUpdateChild(child.id, updates)}
-                      onRemove={() => onRemoveChild(child.id)}
-                      childIndex={index + 1}
-                      totalChildren={childrenData.length}
-                    />
-                  </View>
-                ))}
-              </ScrollView>
-            </View>
-            {errors.children && (
-              <Text style={styles.errorText}>{errors.children}</Text>
-            )}
-            <Pressable
-              onPress={onAddChild}
-              style={[horizontalStyles.addButton, webClickableStyles]}
-            >
-              <Text style={horizontalStyles.addButtonText}>+ Add Child</Text>
-            </Pressable>
-          </View>
-        </View>
-      </ScrollView>
-    </View>
-  );
-}
-
-const horizontalStyles = StyleSheet.create({
-  outerContainer: {
-    flex: 1,
-    width: "100%",
-    alignSelf: "center",
-  },
-  mainContent: {
-    flex: 1,
-  },
-  mainContentContainer: {
-    flexGrow: 1,
-  },
-  container: {
-    width: "100%",
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    backgroundColor: "#1e293b", // slate-800
-    borderBottomWidth: 1,
-    borderBottomColor: "#334155", // slate-700
-  },
-  mainRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    flexWrap: "wrap",
-    gap: 20,
-  },
-  section: {
-    minWidth: 160,
-  },
-  // Children section - full width with horizontal scrolling
-  childrenSection: {
-    width: "100%",
-    marginTop: 16,
-  },
-  scrollWrapper: {
-    position: "relative",
-    width: "100%",
-  },
-  childrenScrollContainer: {
-    width: "100%",
-    ...(isWeb ? {
-      scrollSnapType: "x mandatory",
-      overflowX: "auto",
-      // Enhanced scrollbar styling for web
-      scrollbarWidth: "thin",
-      scrollbarColor: "#f59e0b #334155",
-    } : {}),
-  } as any,
-  childrenScrollContent: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 12,
-    paddingRight: 12,
-    paddingBottom: 8,
-  },
-  scrollIndicator: {
-    position: "absolute",
-    bottom: -28,
-    right: 20,
-    backgroundColor: "rgba(15, 23, 42, 0.9)", // slate-900 with opacity
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#f59e0b", // amber-500
-  },
-  scrollIndicatorText: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: "#f59e0b", // amber-500
-    letterSpacing: 0.5,
-  },
-  footerSection: {
-    minWidth: 140,
-  },
-  sectionLabel: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: "#10b981", // emerald-500
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    marginBottom: 8,
-  },
-  incomeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  currencyInputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    position: "relative",
-  },
-  currencySymbol: {
-    position: "absolute",
-    left: 10,
-    color: "#94a3b8", // slate-400
-    fontSize: 16,
-    fontWeight: "500",
-    zIndex: 1,
-  },
-  currencyInput: {
-    paddingLeft: 28,
-    paddingRight: 10,
-    paddingVertical: 8,
-    fontSize: 16,
-    color: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#475569", // slate-600
-    borderRadius: 6,
-    backgroundColor: "#334155", // slate-700
-  },
-  switchRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  smallSwitch: {
-    transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
-  },
-  switchLabel: {
-    fontSize: 11,
-    color: "#94a3b8", // slate-400
-  },
-  childCardWrapper: {
-    flexShrink: 0,
-  },
-  noChildrenText: {
-    fontSize: 13,
-    color: "#64748b", // slate-500
-    fontStyle: "italic",
-    paddingVertical: 8,
-  },
-  addButton: {
-    marginTop: 12,
-    width: 105,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    backgroundColor: "#f59e0b", // amber-500
-    borderRadius: 6,
-    borderWidth: 0,
-    alignItems: "center",
-    alignSelf: "flex-start",
-    ...(isWeb ? {
-      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
-    } : {
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 3,
-      elevation: 3,
-    }),
-  } as any,
-  addButtonText: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#0f172a", // slate-900
-  },
-  buttonsSection: {
-    flexDirection: "row",
-    gap: 8,
-    alignItems: "center",
-  },
-  calculateButton: {
-    backgroundColor: "#3b82f6", // blue-500
-    paddingVertical: 10,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  calculateButtonText: {
-    color: "#ffffff",
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  resetButton: {
-    backgroundColor: "#334155", // slate-700
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "#475569", // slate-600
-  },
-  resetButtonText: {
-    color: "#94a3b8", // slate-400
-    fontSize: 14,
     fontWeight: "600",
   },
 });

@@ -1,9 +1,9 @@
-import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { CalculationResults } from "../types/calculator";
-import { HelpTooltip } from "./HelpTooltip";
+import { webClickableStyles } from "../utils/responsive";
 import { detectZeroPaymentScenario, isFarLimitReached } from "../utils/zero-payment-detection";
+import { HelpTooltip } from "./HelpTooltip";
 
 interface ResultsSimpleExplanationProps {
   results: CalculationResults;
@@ -44,6 +44,9 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
     specialRate: false, // Special Rate notice - collapsed
   });
 
+  // Urgent matters state
+  const [urgentMattersChecked, setUrgentMattersChecked] = useState(false);
+
   // Calculate payment periods
   const monthlyAmount = results.finalPaymentAmount / 12;
   const fortnightlyAmount = results.finalPaymentAmount / 26;
@@ -55,11 +58,62 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
 
   return (
     <View style={styles.container}>
+      {/* Urgent Matters Section - Above Step 1 */}
+      {!urgentMattersChecked ? (
+        <Pressable
+          onPress={() => setUrgentMattersChecked(true)}
+          style={[styles.urgentMattersCheckbox, webClickableStyles]}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: false }}
+          accessibilityLabel="I have an upcoming court date for child support matters"
+        >
+          <View style={styles.urgentMattersHeader}>
+            <View style={styles.urgentIcon}>
+              <Text style={styles.urgentIconText}>!</Text>
+            </View>
+            <Text style={styles.urgentMattersTitle}>Urgent Matters</Text>
+          </View>
+          <View style={styles.urgentCheckboxRow}>
+            <View style={styles.checkbox} />
+            <Text style={styles.urgentCheckboxLabel}>
+              I have an upcoming court date for child support matters
+            </Text>
+            <View style={styles.helpIconPlaceholder}>
+              <Text style={styles.helpIcon}>?</Text>
+            </View>
+          </View>
+        </Pressable>
+      ) : (
+        <View style={styles.urgentLegalReviewCard}>
+          <View style={styles.urgentMattersHeader}>
+            <View style={styles.urgentIcon}>
+              <Text style={styles.urgentIconText}>!</Text>
+            </View>
+            <Text style={styles.urgentMattersTitle}>Urgent Matters</Text>
+          </View>
+          <Text style={styles.urgentLegalReviewText}>
+            Court dates require immediate legal preparation. A family lawyer can review your case, prepare documents, and represent you.
+          </Text>
+          <Pressable style={[styles.legalReviewButton, webClickableStyles]}>
+            <Text style={styles.legalReviewButtonText}>Request Urgent Legal Review</Text>
+          </Pressable>
+          <Pressable 
+            onPress={() => setUrgentMattersChecked(false)}
+            style={[styles.undoButton, webClickableStyles]}
+          >
+            <Text style={styles.undoButtonText}>↶ Undo</Text>
+          </Pressable>
+        </View>
+      )}
+
       {/* Step 1: Income Split */}
       <View style={styles.step}>
         <Pressable
           onPress={() => setExpandedSteps(prev => ({...prev, step1: !prev.step1}))}
           style={styles.stepHeader}
+          accessibilityRole="button"
+          accessibilityLabel={`Step 1: Income Percentages. ${expandedSteps.step1 ? 'Expanded' : 'Collapsed'}. Tap to ${expandedSteps.step1 ? 'collapse' : 'expand'}.`}
+          accessibilityState={{ expanded: expandedSteps.step1 }}
         >
           <View style={styles.stepNumber}>
             <Text style={styles.stepNumberText}>1</Text>
@@ -162,6 +216,9 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
           <Pressable
             onPress={() => setExpandedSteps(prev => ({...prev, step2: !prev.step2}))}
             style={styles.stepHeader}
+            accessibilityRole="button"
+            accessibilityLabel={`Step 2${results.childResults.length > 1 ? String.fromCharCode(97 + index) : ''}: Care and Cost Percentages${results.childResults.length > 1 ? ` for Child ${index + 1}` : ''}. ${expandedSteps.step2 ? 'Expanded' : 'Collapsed'}. Tap to ${expandedSteps.step2 ? 'collapse' : 'expand'}.`}
+            accessibilityState={{ expanded: expandedSteps.step2 }}
           >
             <View style={styles.stepNumber}>
               <Text style={styles.stepNumberText}>
@@ -284,6 +341,9 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
           <Pressable
             onPress={() => setExpandedSteps(prev => ({...prev, step3: !prev.step3}))}
             style={styles.stepHeader}
+            accessibilityRole="button"
+            accessibilityLabel={`Step 3${results.childResults.length > 1 ? String.fromCharCode(97 + index) : ''}: Child Support Percentages${results.childResults.length > 1 ? ` for Child ${index + 1}` : ''}. ${expandedSteps.step3 ? 'Expanded' : 'Collapsed'}. Tap to ${expandedSteps.step3 ? 'collapse' : 'expand'}.`}
+            accessibilityState={{ expanded: expandedSteps.step3 }}
           >
             <View style={styles.stepNumber}>
               <Text style={styles.stepNumberText}>
@@ -391,6 +451,9 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
         <Pressable
           onPress={() => setExpandedSteps(prev => ({...prev, step4: !prev.step4}))}
           style={styles.stepHeader}
+          accessibilityRole="button"
+          accessibilityLabel={`Step 4: Cost of Children. ${expandedSteps.step4 ? 'Expanded' : 'Collapsed'}. Tap to ${expandedSteps.step4 ? 'collapse' : 'expand'}.`}
+          accessibilityState={{ expanded: expandedSteps.step4 }}
         >
           <View style={styles.stepNumber}>
             <Text style={styles.stepNumberText}>4</Text>
@@ -451,6 +514,9 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
         <Pressable
           onPress={() => setExpandedSteps(prev => ({...prev, step5: !prev.step5}))}
           style={styles.stepHeader}
+          accessibilityRole="button"
+          accessibilityLabel={`Step 5: Assessment Result. ${expandedSteps.step5 ? 'Expanded' : 'Collapsed'}. Tap to ${expandedSteps.step5 ? 'collapse' : 'expand'}.`}
+          accessibilityState={{ expanded: expandedSteps.step5 }}
         >
           <View style={styles.stepNumber}>
             <Text style={styles.stepNumberText}>5</Text>
@@ -596,6 +662,9 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
             <Pressable
               onPress={() => setExpandedSteps(prev => ({...prev, specialRate: !prev.specialRate}))}
               style={styles.specialNoticeHeader}
+              accessibilityRole="button"
+              accessibilityLabel={`${results.rateApplied.includes("FAR") ? "What is the Fixed Annual Rate?" : "What is the Minimum Annual Rate?"} ${expandedSteps.specialRate ? 'Expanded' : 'Collapsed'}. Tap to ${expandedSteps.specialRate ? 'collapse' : 'expand'}.`}
+              accessibilityState={{ expanded: expandedSteps.specialRate }}
             >
               <Text style={styles.specialNoticeTitle}>
                 {results.rateApplied.includes("FAR") ? "What is the Fixed Annual Rate?" : "What is the Minimum Annual Rate?"}
@@ -1320,5 +1389,121 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: "#cbd5e1", // slate-300 (primary text)
     lineHeight: 18,
+  },
+
+  // Urgent Matters Section
+  urgentMattersCheckbox: {
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: "#fbbf24", // amber-400
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+  },
+  urgentMattersHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 12,
+  },
+  urgentIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: "#ef4444", // red-500
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  urgentIconText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  urgentMattersTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#dc2626", // red-600
+  },
+  urgentCheckboxRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: "#d1d5db", // grey-300
+    backgroundColor: "#ffffff",
+  },
+  urgentCheckboxLabel: {
+    flex: 1,
+    fontSize: 14,
+    color: "#1a202c",
+    lineHeight: 20,
+  },
+  helpIconPlaceholder: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: "#f3f4f6", // grey-100
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  helpIcon: {
+    fontSize: 12,
+    color: "#6b7280", // grey-500
+    fontWeight: "600",
+  },
+  
+  // Urgent Legal Review Card
+  urgentLegalReviewCard: {
+    backgroundColor: "#fef2f2", // red-50
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: "#ef4444", // red-500
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+  },
+  urgentLegalReviewText: {
+    fontSize: 14,
+    color: "#4b5563", // grey-600
+    lineHeight: 21,
+    marginBottom: 16,
+  },
+  legalReviewButton: {
+    backgroundColor: "#ef4444", // red-500
+    borderRadius: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    alignItems: "center",
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  legalReviewButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  undoButton: {
+    alignItems: "center",
+    paddingVertical: 8,
+  },
+  undoButtonText: {
+    fontSize: 14,
+    color: "#6b7280", // grey-500
+    fontWeight: "500",
   },
 });

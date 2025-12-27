@@ -63,8 +63,16 @@ export function CalculatorResults({
   // Track whether navigation is in progress to prevent duplicate navigation
   const [isNavigating, setIsNavigating] = useState(false);
 
+  // Store selected COA reasons from the prompt
+  const [selectedCoAReasons, setSelectedCoAReasons] = useState<string[]>([]);
+
   // Track if we've already fired analytics for this calculation (prevents duplicates)
   const trackedResultsRef = useRef<string | null>(null);
+
+  // Handle COA reasons selection changes
+  const handleCoAReasonsChange = useCallback((reasons: string[]) => {
+    setSelectedCoAReasons(reasons);
+  }, []);
 
   // Detect complexity and get alert configuration
   const flags = detectComplexity(results, formData ?? {});
@@ -269,24 +277,9 @@ export function CalculatorResults({
     setIsExpanded(willExpand);
   };
 
-  // Get gradient colors for collapsed bottom card
-  const getCollapsedGradientColors = (payer: string): readonly [string, string] => {
-    if (payer === 'Neither') {
-      return ['#475569', '#334155'] as const; // Slate gradient for "no payment" (matches breakdown)
-    }
-    return payer === 'Parent A'
-      ? ['#3b82f6', '#8b5cf6'] as const  // A → B: blue → purple
-      : ['#8b5cf6', '#3b82f6'] as const; // B → A: purple → blue
-  };
-
-  // Get gradient colors for expanded hero section
-  const getExpandedGradientColors = (payer: string): readonly [string, string, string] => {
-    if (payer === 'Neither') {
-      return ['#475569', '#475569', '#334155'] as const; // Slate gradient for "no payment" (matches breakdown)
-    }
-    return payer === 'Parent A'
-      ? ['#3b82f6', '#1e3a8a', '#8b5cf6'] as const  // A → B with darker middle
-      : ['#8b5cf6', '#5b21b6', '#3b82f6'] as const; // B → A with darker middle
+  // Background color for professional fintech aesthetic - light mode
+  const getSolidBackgroundColor = (_payer: string): string => {
+    return '#3b82f6'; // Professional blue for result card
   };
 
   // Web-specific container styles for modal content
@@ -312,11 +305,8 @@ export function CalculatorResults({
       showsVerticalScrollIndicator={true}
     >
       {/* Hero Section in Expanded View */}
-      <LinearGradient
-        colors={getExpandedGradientColors(results.payer)}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={styles.expandedHeroSection}
+      <View
+        style={[styles.expandedHeroSection, { backgroundColor: getSolidBackgroundColor(results.payer) }]}
       >
         <Text style={styles.expandedHeroLabel}>
           {results.payer === "Neither" ? "No payment required" : `${results.payer} pays`}
@@ -339,7 +329,7 @@ export function CalculatorResults({
             <Text style={styles.expandedSecondaryLabel}>/day</Text>
           </View>
         </View>
-      </LinearGradient>
+      </View>
 
       {/* Lawyer Alert - only shown when calculation is complete AND complexity flags triggered */}
       {shouldShowComplexityAlert && (
@@ -360,6 +350,7 @@ export function CalculatorResults({
         results={results}
         formData={formData}
         onNavigate={() => setIsExpanded(false)}
+        onCoAReasonsChange={handleCoAReasonsChange}
       />
 
       <ResultsSimpleExplanation
@@ -388,11 +379,8 @@ export function CalculatorResults({
         {/* Left Column: Hero + COA */}
         <View style={styles.leftColumn}>
           {/* Hero Section */}
-          <LinearGradient
-            colors={getExpandedGradientColors(results.payer)}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            style={styles.inlineHeroSection}
+          <View
+            style={[styles.inlineHeroSection, { backgroundColor: getSolidBackgroundColor(results.payer) }]}
           >
             <Text style={styles.expandedHeroLabel}>
               {results.payer === "Neither" ? "No payment required" : `${results.payer} pays`}
@@ -415,7 +403,7 @@ export function CalculatorResults({
                 <Text style={styles.expandedSecondaryLabel}>/day</Text>
               </View>
             </View>
-          </LinearGradient>
+          </View>
 
           {/* Change of Assessment Prompt - always shown in left column */}
           <ChangeOfAssessmentPrompt
@@ -423,6 +411,7 @@ export function CalculatorResults({
             formData={formData}
             onNavigate={() => {}}  // No modal to close in inline mode
             onRequestInquiry={handleInquiryPress}
+            onCoAReasonsChange={handleCoAReasonsChange}
           />
         </View>
 
@@ -442,7 +431,7 @@ export function CalculatorResults({
                 careA: child.careAmountA,
                 careB: child.careAmountB,
               })) || []}
-              coaReasons={formData?.selectedCoAReasons || null}
+              coaReasons={selectedCoAReasons.length > 0 ? selectedCoAReasons : null}
               onClose={onCloseInquiry!}
               onSuccess={() => {
                 // Stay on success screen - user can close manually
@@ -491,11 +480,8 @@ export function CalculatorResults({
             isWeb && styles.fixedBottomCardWebWrapper,
           ]}
         >
-          <LinearGradient
-            colors={getCollapsedGradientColors(results.payer)}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            style={[styles.fixedBottomCard, isWeb && styles.fixedBottomCardWeb]}
+          <View
+            style={[styles.fixedBottomCard, isWeb && styles.fixedBottomCardWeb, { backgroundColor: getSolidBackgroundColor(results.payer) }]}
           >
             {/* Drag Handle */}
             <View style={styles.dragHandleContainer}>
@@ -530,7 +516,7 @@ export function CalculatorResults({
               <Text style={styles.expandHintText}>Tap to see full breakdown</Text>
               <Text style={styles.expandChevron}>▲</Text>
             </View>
-          </LinearGradient>
+          </View>
         </Pressable>
       )}
 
@@ -577,8 +563,8 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
     elevation: 10,
   },
   fixedBottomCardWebWrapper: {
@@ -612,20 +598,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   collapsedLabel: {
-    color: "#dbeafe", // blue-100
-    fontSize: 12,
+    color: "#ffffff", // white
+    fontSize: 14,
     fontWeight: "500",
-    marginBottom: 2,
+    marginBottom: 4,
   },
   collapsedAmount: {
-    fontSize: 32,
+    fontSize: 48,
     fontWeight: "700",
-    color: "#fbbf24",
-    letterSpacing: -0.5,
+    color: "#FFFFFF",
+    letterSpacing: -1,
   },
   collapsedSubtext: {
-    color: "#dbeafe", // blue-100
-    fontSize: 12,
+    color: "#ffffff", // white
+    fontSize: 14,
   },
   collapsedRight: {
     gap: 4,
@@ -639,11 +625,11 @@ const styles = StyleSheet.create({
   collapsedSecondaryValue: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#fbbf24", // amber-400
+    color: "#ffffff", // white
   },
   collapsedSecondaryLabel: {
-    fontSize: 10,
-    color: "#dbeafe", // blue-100
+    fontSize: 12,
+    color: "#ffffff", // white
   },
   expandHint: {
     flexDirection: "row",
@@ -654,19 +640,19 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
   },
   expandHintText: {
-    color: "#dbeafe", // blue-100
-    fontSize: 11,
+    color: "#ffffff", // white
+    fontSize: 12,
     fontWeight: "500",
   },
   expandChevron: {
-    color: "#dbeafe", // blue-100
-    fontSize: 10,
+    color: "#ffffff", // white
+    fontSize: 12,
   },
 
   // Expanded modal styles
   expandedContainer: {
     flex: 1,
-    backgroundColor: "#0f172a", // slate-900
+    backgroundColor: "#f8f9fa", // soft warm grey
   },
   expandedContainerWeb: {
     // Add subtle padding on web for breathing room
@@ -678,7 +664,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#1e293b", // slate-800
+    borderBottomColor: "#e2e8f0", // subtle border
+    backgroundColor: "#ffffff", // white header
   },
   expandedHeaderWeb: {
     paddingVertical: 16,
@@ -692,18 +679,18 @@ const styles = StyleSheet.create({
   expandedHeaderTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#ffffff",
+    color: "#1a202c", // near black
   },
   closeButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#334155", // slate-700
+    backgroundColor: "#f7fafc", // very light grey
     alignItems: "center",
     justifyContent: "center",
   },
   closeButtonText: {
-    color: "#ffffff",
+    color: "#4a5568", // dark grey
     fontSize: 16,
     fontWeight: "500",
   },
@@ -716,12 +703,16 @@ const styles = StyleSheet.create({
   },
   expandedHeroSection: {
     alignItems: "center",
-    paddingVertical: 24,
-    borderRadius: 16,
-    marginBottom: 8,
+    paddingVertical: 32,
+    borderRadius: 12,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
   },
   expandedHeroLabel: {
-    color: "#e0e7ff", // indigo-100
+    color: "#ffffff", // white
     fontSize: 14,
     fontWeight: "500",
     marginBottom: 4,
@@ -729,11 +720,11 @@ const styles = StyleSheet.create({
   expandedHeroAmount: {
     fontSize: 48,
     fontWeight: "700",
-    color: "#fbbf24",
+    color: "#1a202c", // near black for maximum contrast on blue
     letterSpacing: -1,
   },
   expandedHeroSubtext: {
-    color: "#e0e7ff", // indigo-100
+    color: "#ffffff", // white
     fontSize: 14,
     marginBottom: 16,
   },
@@ -748,16 +739,16 @@ const styles = StyleSheet.create({
   expandedSecondaryValue: {
     fontSize: 20,
     fontWeight: "600",
-    color: "#fbbf24", // amber-400
+    color: "#2d3748", // dark grey on white card
   },
   expandedSecondaryLabel: {
     fontSize: 12,
-    color: "#e0e7ff", // indigo-100
+    color: "#718096", // medium grey
   },
   expandedDivider: {
     width: 1,
     height: 30,
-    backgroundColor: "rgba(255,255,255,0.2)",
+    backgroundColor: "#e2e8f0", // subtle divider
   },
 
   // Existing styles (kept for compatibility)
@@ -817,16 +808,20 @@ const styles = StyleSheet.create({
     color: "#bfdbfe", // blue-200
   },
   card: {
-    backgroundColor: "#1e293b", // slate-800
+    backgroundColor: "#ffffff", // white
     borderRadius: 12,
     padding: 20,
     borderWidth: 1,
-    borderColor: "#334155", // slate-700
+    borderColor: "#e2e8f0", // subtle border
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
   },
   cardTitle: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#f59e0b", // amber-500
+    color: "#f59e0b", // amber-500 - keeping accent
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 16,
@@ -1032,7 +1027,7 @@ const styles = StyleSheet.create({
   // Inline mode styles (desktop web side panel)
   inlineContainer: {
     flex: 1,
-    backgroundColor: "#0f172a", // slate-900
+    backgroundColor: "#f8f9fa", // soft warm grey
   },
   inlineContentContainer: {
     padding: 20,
@@ -1041,9 +1036,13 @@ const styles = StyleSheet.create({
   },
   inlineHeroSection: {
     alignItems: "center",
-    paddingVertical: 28,
-    borderRadius: 16,
-    marginBottom: 12,
+    paddingVertical: 32,
+    borderRadius: 12,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
   },
 
   // Two-column layout styles (new web layout)
@@ -1069,11 +1068,11 @@ const styles = StyleSheet.create({
 
   // Inquiry placeholder styles (temporary)
   inquiryPlaceholder: {
-    backgroundColor: "#1e293b", // slate-800
+    backgroundColor: "#ffffff", // white
     borderRadius: 12,
     padding: 20,
     borderWidth: 1,
-    borderColor: "#334155", // slate-700
+    borderColor: "#e2e8f0", // subtle border
   },
   inquiryHeader: {
     flexDirection: "row",
@@ -1084,23 +1083,23 @@ const styles = StyleSheet.create({
   inquiryTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#ffffff",
+    color: "#1a202c", // near black
   },
   closeInquiryButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#334155", // slate-700
+    backgroundColor: "#f7fafc", // very light grey
     alignItems: "center",
     justifyContent: "center",
   },
   closeInquiryText: {
-    color: "#ffffff",
+    color: "#4a5568", // dark grey
     fontSize: 18,
     fontWeight: "500",
   },
   inquiryPlaceholderText: {
-    color: "#94a3b8", // slate-400
+    color: "#718096", // medium grey
     fontSize: 14,
     textAlign: "center",
     paddingVertical: 40,

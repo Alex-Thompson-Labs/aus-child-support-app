@@ -73,14 +73,14 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: "#475569", // slate-600
+    backgroundColor: "transparent",
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 6,
   },
   buttonText: {
-    color: "#cbd5e1", // slate-300
-    fontSize: 12,
+    color: "#9ca3af", // grey-400
+    fontSize: 16,
     fontWeight: "600",
   },
   modalOverlay: {
@@ -90,41 +90,39 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   tooltip: {
-    width: 256,
-    backgroundColor: "#0f172a", // slate-900
+    width: 280,
+    backgroundColor: "#ffffff", // white
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#334155", // slate-700
+    borderColor: "#e5e7eb", // grey-200
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
   },
   content: {
-    padding: 12,
+    padding: 16,
   },
   section: {
-    marginBottom: 8,
+    marginBottom: 12,
   },
   sectionHeader: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#f59e0b", // amber-500
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
+    color: "#1a202c", // near-black
     marginBottom: 8,
   },
   sectionLabel: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#60a5fa", // blue-400
+    color: "#6b7280", // grey-500
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    marginBottom: 2,
+    marginBottom: 4,
   },
   sectionText: {
-    color: "#e2e8f0", // slate-200
+    color: "#374151", // grey-700
     fontSize: 14,
     lineHeight: 20,
     marginTop: 2,
@@ -132,13 +130,13 @@ const styles = StyleSheet.create({
   sectionLabelWhy: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#34d399", // emerald-400
+    color: "#6b7280", // grey-500
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    marginBottom: 2,
+    marginBottom: 4,
   },
   sectionTextWhy: {
-    color: "#cbd5e1", // slate-300
+    color: "#374151", // grey-700
     fontSize: 14,
     lineHeight: 20,
     marginTop: 2,

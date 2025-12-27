@@ -193,18 +193,17 @@ export function getAllCoAReasonIds(): readonly string[] {
  * Gets the display info for a complexity category
  *
  * @param category - The complexity category
- * @returns Display emoji, title, and accent color for the category
+ * @returns Display title and accent color for the category
  */
 export function getCategoryDisplayInfo(category: ComplexityCategory): {
-  emoji: string;
   title: string;
   accentColor: string;
 } {
-  const displayInfo: Record<ComplexityCategory, { emoji: string; title: string; accentColor: string }> = {
-    urgent: { emoji: '⚖️', title: 'Urgent Matters', accentColor: '#ef4444' }, // red-500
-    income: { emoji: '💰', title: 'Income Issues', accentColor: '#f59e0b' }, // amber-500
-    child: { emoji: '👶', title: 'Child-Related', accentColor: '#10b981' }, // emerald-500
-    other: { emoji: '🏡', title: 'Other Factors', accentColor: '#14b8a6' }, // teal-500
+  const displayInfo: Record<ComplexityCategory, { title: string; accentColor: string }> = {
+    urgent: { title: 'Urgent Matters', accentColor: '#dc2626' }, // red-600
+    income: { title: 'Income Issues', accentColor: '#d97706' }, // amber-600
+    child: { title: 'Child-Related', accentColor: '#7c3aed' }, // violet-600
+    other: { title: 'Other Factors', accentColor: '#0891b2' }, // cyan-600
   };
 
   return displayInfo[category];

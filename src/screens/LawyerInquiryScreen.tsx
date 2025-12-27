@@ -26,6 +26,7 @@ import type { ChangeOfAssessmentReason } from '@/src/utils/change-of-assessment-
 import { getCoAReasonById, getCategoryDisplayInfo, formatOfficialCoAReasons } from '@/src/utils/change-of-assessment-reasons';
 import { useResponsive, MAX_FORM_WIDTH, isWeb, webInputStyles, webClickableStyles } from '@/src/utils/responsive';
 import { supabase, submitLead } from '@/src/utils/supabase';
+import { CategoryIcon } from '@/src/components/CategoryIcon';
 
 export function LawyerInquiryScreen() {
   const params = useLocalSearchParams();
@@ -345,19 +346,13 @@ export function LawyerInquiryScreen() {
               <Text style={styles.coaTitle}>💭 COMPLEXITY TRIGGERS SELECTED</Text>
 
               {validCoAReasons.map((reason, index) => {
-                const categoryInfo = getCategoryDisplayInfo(reason.category);
                 return (
                   <View key={reason.id} style={[
                     styles.coaReasonContainer,
                     index < validCoAReasons.length - 1 && styles.coaReasonBorder
                   ]}>
                     <View style={styles.coaReasonHeader}>
-                      <Text style={[
-                        styles.coaReasonIcon,
-                        { color: categoryInfo.accentColor }
-                      ]}>
-                        {categoryInfo.emoji}
-                      </Text>
+                      <CategoryIcon category={reason.category} size={20} circleSize={32} />
                       <Text style={styles.coaReasonLabel} numberOfLines={2}>
                         {reason.label}
                       </Text>
@@ -404,46 +399,54 @@ export function LawyerInquiryScreen() {
           <TextInput
             style={[styles.input, isWeb && webInputStyles]}
             placeholder="Your Name"
-            placeholderTextColor="#64748b"
+            placeholderTextColor="#9ca3af" // grey-400 for better contrast
             value={name}
             onChangeText={setName}
+            accessibilityLabel="Your name"
+            accessibilityRequired={true}
           />
 
           <TextInput
             style={[styles.input, isWeb && webInputStyles]}
             placeholder="Email"
-            placeholderTextColor="#64748b"
+            placeholderTextColor="#9ca3af"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
+            accessibilityLabel="Email address"
+            accessibilityRequired={true}
           />
 
           <TextInput
             style={[styles.input, isWeb && webInputStyles]}
             placeholder="Phone (optional)"
-            placeholderTextColor="#64748b"
+            placeholderTextColor="#9ca3af"
             value={phone}
             onChangeText={setPhone}
             keyboardType="phone-pad"
+            accessibilityLabel="Phone number (optional)"
           />
 
           <TextInput
             style={[styles.input, isWeb && webInputStyles]}
             placeholder="Location (e.g. Sydney, NSW)"
-            placeholderTextColor="#64748b"
+            placeholderTextColor="#9ca3af"
             value={location}
             onChangeText={setLocation}
+            accessibilityLabel="Location"
           />
 
           <TextInput
             style={[styles.input, styles.textArea, isWeb && webInputStyles]}
             placeholder="What do you need help with?"
-            placeholderTextColor="#64748b"
+            placeholderTextColor="#9ca3af"
             value={message}
             onChangeText={setMessage}
             multiline
             numberOfLines={4}
+            accessibilityLabel="Message describing what you need help with"
+            accessibilityRequired={true}
           />
 
           {/* Consent Checkbox */}
@@ -492,7 +495,7 @@ export function LawyerInquiryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f172a', // slate-900
+    backgroundColor: '#f8f9fa', // soft warm grey background
   },
   keyboardView: {
     flex: 1,
@@ -506,28 +509,33 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#ffffff',
-    marginBottom: 20,
+    color: '#1a202c', // near black for professional look
+    marginBottom: 8,
   },
   titleDesktop: {
-    fontSize: 28,
-    marginBottom: 24,
+    fontSize: 32,
+    marginBottom: 12,
   },
   // Complexity triggers card styles
   coaCard: {
-    backgroundColor: '#1e293b', // slate-800
+    backgroundColor: '#ffffff', // white for light mode
     borderRadius: 12,
-    padding: 16,
+    padding: 20,
     marginBottom: 20,
     borderWidth: 2,
-    borderColor: '#334155', // slate-700 (default, overridden inline by category color)
+    borderColor: '#e5e7eb', // light grey (default, overridden inline by category color)
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
   },
   coaTitle: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
-    color: '#94a3b8', // slate-400
+    color: '#6b7280', // grey-500
     letterSpacing: 0.5,
     marginBottom: 16,
+    textTransform: 'uppercase',
   },
   coaReasonContainer: {
     marginBottom: 12,
@@ -535,106 +543,122 @@ const styles = StyleSheet.create({
   coaReasonBorder: {
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#334155', // slate-700
+    borderBottomColor: '#e5e7eb', // light grey
   },
   coaReasonHeader: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     marginBottom: 6,
   },
-  coaReasonIcon: {
-    fontSize: 16,
-    marginRight: 8,
-    marginTop: 2,
-    // color set inline based on category
-  },
   coaReasonLabel: {
     flex: 1,
     fontSize: 15,
     fontWeight: '600',
-    color: '#ffffff',
+    color: '#1a202c', // near black
     lineHeight: 20,
   },
   coaReasonDescription: {
     fontSize: 13,
-    color: '#94a3b8', // slate-400
+    color: '#4b5563', // grey-600
     lineHeight: 18,
     marginLeft: 24, // Align with label (icon width + margin)
   },
   coaOfficialReasons: {
     fontSize: 11,
-    color: '#64748b', // slate-500
+    color: '#6b7280', // grey-500
     fontStyle: 'italic',
     marginTop: 4,
     marginLeft: 24, // Align with description
     lineHeight: 16,
   },
   summaryCard: {
-    backgroundColor: '#1e293b', // slate-800
+    backgroundColor: '#f9fafb', // very light grey
     borderRadius: 12,
-    padding: 16,
+    padding: 20,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: '#334155', // slate-700
+    borderColor: '#e5e7eb', // light grey
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
   },
   summaryTitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#ffffff',
-    marginBottom: 12,
+    color: '#1a202c', // near black
+    marginBottom: 16,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   summaryLabel: {
     fontSize: 14,
-    color: '#94a3b8', // slate-400
+    color: '#6b7280', // grey-500
   },
   summaryAmount: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#2563eb', // blue-600
+    color: '#3b82f6', // blue-500
   },
   summaryValue: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#ffffff',
+    color: '#1a202c', // near black
   },
   formTitle: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#ffffff',
+    color: '#1a202c', // near black
+    marginTop: 8,
     marginBottom: 16,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   input: {
-    backgroundColor: '#1e293b', // slate-800
-    color: '#ffffff',
+    backgroundColor: '#ffffff', // white
+    color: '#1a202c', // near black
+    fontSize: 16, // minimum 16px to prevent iOS zoom
     borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#334155', // slate-700
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    marginBottom: 16,
+    borderWidth: 1.5,
+    borderColor: '#e5e7eb', // light grey
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
   },
   textArea: {
-    height: 100,
+    height: 120,
     textAlignVertical: 'top',
+    paddingTop: 14, // Ensure consistent padding
   },
   button: {
-    backgroundColor: '#2563eb', // blue-600
+    backgroundColor: '#3b82f6', // blue-500
     borderRadius: 8,
     paddingVertical: 16,
     alignItems: 'center',
-    marginTop: 20,
+    justifyContent: 'center',
+    marginTop: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   buttonDisabled: {
-    opacity: 0.5,
+    backgroundColor: '#9ca3af', // grey-400
+    opacity: 0.6,
   },
   buttonWeb: {
     paddingVertical: 14,
-    // Slight hover effect handled by webClickableStyles cursor
+    // Hover effect handled by webClickableStyles cursor
   },
   buttonText: {
     color: '#ffffff',
@@ -644,24 +668,28 @@ const styles = StyleSheet.create({
   consentContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginTop: 16,
-    marginBottom: 8,
+    marginTop: 24,
+    marginBottom: 16,
   },
   checkbox: {
     width: 24,
     height: 24,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: '#64748b',
-    backgroundColor: '#1e293b',
+    borderColor: '#9ca3af', // grey-400
+    backgroundColor: '#ffffff', // white
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
     marginTop: 2,
+    // Larger hit area for better accessibility
+    minWidth: 44,
+    minHeight: 44,
+    padding: 10,
   },
   checkboxChecked: {
-    backgroundColor: '#2563eb',
-    borderColor: '#2563eb',
+    backgroundColor: '#3b82f6', // blue-500
+    borderColor: '#3b82f6', // blue-500
   },
   checkmark: {
     color: '#ffffff',
@@ -671,12 +699,12 @@ const styles = StyleSheet.create({
   consentText: {
     flex: 1,
     fontSize: 14,
-    color: '#94a3b8',
+    color: '#4b5563', // grey-600
     lineHeight: 20,
   },
   privacyLinkContainer: {
     marginTop: 12,
-    marginBottom: 4,
+    marginBottom: 8,
     alignItems: 'center',
   },
   privacyLinkText: {

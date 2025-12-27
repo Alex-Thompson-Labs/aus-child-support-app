@@ -29,7 +29,7 @@ Parents get instant calculations. Lawyers get ready-to-convert clients. We conne
 
 **1. Free Calculator (auschildsupport.com)**
 - Implements official Australian 2024-2025 child support formula
-- Detects complex cases: high income ($150K+), urgent court dates, Change of Assessment grounds
+- Detects complex cases: high payment obligations ($15K+/year), disputed care arrangements (35-65%), urgent court dates, Change of Assessment grounds
 - Shows instant results - builds trust before asking for contact info
 
 **2. Smart Lead Detection**
@@ -62,7 +62,7 @@ Parents get instant calculations. Lawyers get ready-to-convert clients. We conne
 
 **Completed (Dec 2024):**
 - ✅ Calculator built and tested (Australian 2024-2025 formula)
-- ✅ Complexity detection (10+ high-value triggers)
+- ✅ Complexity detection (high payments, care disputes, income issues, urgent deadlines)
 - ✅ Admin dashboard (lead management, status tracking)
 - ✅ Database infrastructure (Supabase - encrypted, compliant)
 - ✅ Privacy policy published

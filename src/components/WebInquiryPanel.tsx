@@ -421,11 +421,15 @@ export function WebInquiryPanel({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#1e293b', // slate-800
+    backgroundColor: '#ffffff', // white
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#334155', // slate-700
+    borderColor: '#e2e8f0', // subtle border
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
   },
   header: {
     flexDirection: 'row',
@@ -433,23 +437,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#334155',
+    borderBottomColor: '#e2e8f0',
   },
   title: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#ffffff',
+    color: '#1a202c', // near black
   },
   closeButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#334155',
+    backgroundColor: '#f7fafc', // very light grey
     alignItems: 'center',
     justifyContent: 'center',
   },
   closeButtonText: {
-    color: '#ffffff',
+    color: '#4a5568', // dark grey
     fontSize: 20,
     fontWeight: '500',
   },
@@ -461,7 +465,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   coaCard: {
-    backgroundColor: '#0f172a', // slate-900
+    backgroundColor: '#fffbeb', // amber-50, very light amber tint
     borderRadius: 8,
     padding: 12,
     borderWidth: 1,
@@ -470,7 +474,7 @@ const styles = StyleSheet.create({
   coaTitle: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#f59e0b',
+    color: '#4a5568', // dark grey
     letterSpacing: 0.5,
     marginBottom: 8,
   },
@@ -485,7 +489,7 @@ const styles = StyleSheet.create({
   },
   coaReasonText: {
     fontSize: 13,
-    color: '#e2e8f0', // slate-200
+    color: '#2d3748', // dark grey
   },
   formColumns: {
     flexDirection: 'row',
@@ -502,7 +506,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#10b981', // emerald-500
+    color: '#4a5568', // dark grey
     letterSpacing: 0.5,
   },
   field: {
@@ -515,28 +519,28 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 13,
-    color: '#94a3b8', // slate-400
+    color: '#4a5568', // dark grey
   },
   charCount: {
     fontSize: 11,
-    color: '#64748b', // slate-500
+    color: '#718096', // medium grey
   },
   input: {
-    backgroundColor: '#334155', // slate-700
-    borderWidth: 1,
-    borderColor: '#475569', // slate-600
+    backgroundColor: '#ffffff', // white
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0', // subtle border
     borderRadius: 6,
     padding: 10,
-    color: '#ffffff',
+    color: '#1a202c', // near black
     fontSize: 14,
   },
   textArea: {
-    backgroundColor: '#334155',
-    borderWidth: 1,
-    borderColor: '#475569',
+    backgroundColor: '#ffffff',
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0',
     borderRadius: 6,
     padding: 10,
-    color: '#ffffff',
+    color: '#1a202c',
     fontSize: 14,
     minHeight: 80,
     textAlignVertical: 'top',
@@ -546,13 +550,15 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 12,
-    color: '#f87171', // red-400
+    color: '#ef4444', // red-500 for better contrast
   },
   summaryCard: {
-    backgroundColor: '#0f172a',
+    backgroundColor: '#f7fafc', // very light grey
     borderRadius: 8,
     padding: 12,
     gap: 8,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   summaryRow: {
     flexDirection: 'row',
@@ -561,17 +567,17 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontSize: 13,
-    color: '#94a3b8',
+    color: '#718096', // medium grey
   },
   summaryValue: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#ffffff',
+    color: '#1a202c', // near black
   },
   summaryValueLarge: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#f59e0b', // amber-500
+    color: '#1a202c', // near black
   },
   consentRow: {
     flexDirection: 'row',
@@ -583,11 +589,11 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderWidth: 2,
-    borderColor: '#475569',
+    borderColor: '#e2e8f0',
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#334155',
+    backgroundColor: '#ffffff',
   },
   checkboxChecked: {
     backgroundColor: '#3b82f6', // blue-500
@@ -601,7 +607,7 @@ const styles = StyleSheet.create({
   consentText: {
     flex: 1,
     fontSize: 12,
-    color: '#94a3b8',
+    color: '#4a5568', // dark grey for readability
     lineHeight: 18,
   },
   privacyLink: {
@@ -645,7 +651,7 @@ const styles = StyleSheet.create({
   },
   successText: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: '#718096', // medium grey
     textAlign: 'center',
     lineHeight: 20,
   },

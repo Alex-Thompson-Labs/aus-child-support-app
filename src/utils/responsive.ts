@@ -157,6 +157,54 @@ export const webInputStyles: any = isWeb ? {
   outlineStyle: 'none',
   // Allow text selection in inputs
   userSelect: 'text',
+  // Add smooth transitions for focus states
+  transition: 'border-color 150ms ease-in-out, box-shadow 150ms ease-in-out',
+} : {};
+
+/**
+ * Transition styles for interactive elements (web only)
+ * Apply to buttons, cards, and other clickable elements for smooth state changes
+ */
+export const webTransitionStyles: any = isWeb ? {
+  transition: 'all 150ms ease-in-out',
+} : {};
+
+/**
+ * Focus ring styles for accessibility (web only)
+ * Provides visible focus indicator for keyboard navigation
+ */
+export const webFocusStyles: any = isWeb ? {
+  ':focus': {
+    outlineWidth: '3px',
+    outlineStyle: 'solid',
+    outlineColor: 'rgba(59, 130, 246, 0.5)', // blue-500 with opacity
+    outlineOffset: '2px',
+  },
+  ':focus-visible': {
+    outlineWidth: '3px',
+    outlineStyle: 'solid',
+    outlineColor: 'rgba(59, 130, 246, 0.5)',
+    outlineOffset: '2px',
+  },
+} : {};
+
+/**
+ * Hover styles for buttons and interactive cards (web only)
+ */
+export const webHoverButtonStyles: any = isWeb ? {
+  ':hover': {
+    transform: 'translateY(-1px)',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  },
+  ':active': {
+    transform: 'translateY(0)',
+  },
+} : {};
+
+export const webHoverCardStyles: any = isWeb ? {
+  ':hover': {
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
+  },
 } : {};
 
 /**
