@@ -100,56 +100,148 @@ Marcus divorced three years ago and shares custody of his daughter. He wants to 
 
 ---
 
-## Persona 3: Jennifer - The Family Lawyer
+## Persona 3: David - The Validation Lawyer (Phase 3A)
+
+### Demographics
+- **Age**: 42
+- **Location**: Melbourne or Sydney metro area
+- **Occupation**: Family law partner
+- **Income**: $140,000/year
+- **Education**: Law degree
+- **Practice**: Small firm, 3-10 lawyers, 12+ years experience
+- **Tech Savvy**: Moderate (uses case management software, comfortable with digital tools)
+
+### Background
+David is a partner at a small family law firm that's actively seeking new clients. He's open to trying new lead generation methods but is skeptical of unproven services. He's willing to provide feedback on lead quality in exchange for free leads during a validation period.
+
+### Goals (Phase 3A)
+- Evaluate lead quality before committing to paid service
+- Provide honest feedback on what makes a lead valuable
+- Understand conversion rates and ROI potential
+- Test if this lead source is better than current methods
+- Help shape the service to meet lawyer needs
+
+### Pain Points
+- Wastes time on tire-kicker consultations that don't convert
+- Hard to assess lead quality before committing
+- Skeptical of lead generation services (been burned before)
+- Needs to see proof before paying
+- Wants to understand what information is most valuable
+
+### Behaviors
+- Cautious about new lead sources
+- Willing to try free offers to evaluate quality
+- Provides detailed feedback when asked
+- Tracks conversion rates carefully
+- Values transparency and honesty
+
+### Needs from CSC (Phase 3A)
+- Free leads in exchange for feedback
+- Clear explanation of what information is included
+- Understanding of conversion expectations
+- No pressure to commit to paid service
+- Appreciation for honest feedback
+
+### Quote
+"I'll try free leads, but I need to see they're actually worth my time before I'll pay for them. Show me the data."
+
+---
+
+## Persona 4: Michael - The Exclusive Partner Firm Owner (Phase 3A)
+
+### Demographics
+- **Age**: 45
+- **Location**: Melbourne, Sydney, or Brisbane metro area
+- **Occupation**: Family law firm owner/partner
+- **Income**: $180,000/year
+- **Education**: Law degree, MBA
+- **Practice**: Small firm, 3-10 lawyers, already running Google Ads
+- **Tech Savvy**: High (manages digital marketing, understands ROI)
+
+### Background
+Michael owns a small family law firm that's already investing in Google Ads ($500-1000/month). He's looking for more efficient ways to generate leads and is open to innovative partnerships. He's willing to fund a pilot program if it offers exclusivity and low risk.
+
+### Goals (Phase 3A)
+- Test new lead generation channel with minimal risk
+- Get exclusive access to leads in his geographic area
+- Increase brand visibility through co-branded calculator
+- Prove concept before committing to ongoing fees
+- Control marketing spend (funds ads himself, controls account)
+
+### Pain Points
+- Google Ads are expensive ($200-300 per click)
+- Competitors get same leads from generic marketing
+- Hard to differentiate from other family lawyers
+- Wants to test new channels but can't afford to waste budget
+- Needs proof of concept before scaling
+
+### Behaviors
+- Already running Google Ads (proves willingness to invest)
+- Makes data-driven decisions
+- Values exclusivity and competitive advantage
+- Willing to fund pilot programs if risk is low
+- Prefers to control marketing spend directly
+
+### Needs from CSC (Phase 3A)
+- Exclusive partnership (all leads in his city go to him)
+- Co-branded calculator ("Powered by [Firm Name]")
+- Low risk (funds $500 ads he'd spend anyway)
+- Control over Google Ads account (he manages, we optimize)
+- Proof of concept before ongoing fees
+
+### Quote
+"I'm already spending $500/month on Google Ads. If you can prove this works better, I'll fund the pilot. But I need exclusivity and control."
+
+---
+
+## Persona 5: Jennifer - The Paying Lawyer (Phase 3B+)
 
 ### Demographics
 - **Age**: 38
-- **Location**: Regional city
+- **Location**: Major metro areas (Sydney, Melbourne, Brisbane)
 - **Occupation**: Family law attorney
 - **Income**: $120,000/year
 - **Education**: Law degree
-- **Practice**: Small firm, 15+ years experience
+- **Practice**: Small firm, 3-10 lawyers, 10+ years experience
 - **Tech Savvy**: Moderate (uses legal software, comfortable with online tools)
 
 ### Background
-Jennifer runs a small family law practice and handles numerous child support cases. She's looking for tools to help her clients understand their situations before initial consultations and to quickly verify calculations during case preparation.
+Jennifer runs a small family law practice and is actively seeking new clients. She's been pitched the service after seeing proof of lead quality (Phase 3A validation results). She's willing to pay $50 per lead if the quality is proven and the ROI makes sense.
 
-### Goals
-- Pre-screen potential clients
-- Educate clients about realistic expectations
-- Save time on basic calculations
-- Provide quick estimates during consultations
-- Refer clients to reliable resources
-- Streamline case preparation
+### Goals (Phase 3B+)
+- Acquire pre-qualified family law clients consistently
+- Reduce time wasted on unqualified consultations
+- Improve cost-per-acquisition vs Google Ads
+- Build predictable client pipeline
+- Focus on high-value cases
 
 ### Pain Points
 - Spends too much time on basic calculation questions
+- Google Ads are expensive with low conversion
 - Clients come with unrealistic expectations
 - Needs to justify fees for straightforward cases
 - Wants to focus on complex legal strategy, not basic math
-- Limited time for client education
 
 ### Behaviors
-- Refers clients to trusted resources
-- Values professional reputation
-- Needs tools that are legally accurate
-- Appreciates time-saving solutions
-- Willing to recommend tools that help clients
-- May refer overflow or out-of-area cases
+- Reviews proof package before signing up
+- Tracks ROI carefully
+- Provides feedback on lead quality
+- Values professional relationships
+- Willing to pay for quality if proven
 
-### Needs from CSC
-- Accurate calculations aligned with legal standards
-- Professional presentation for client sharing
-- Easy referral process for clients who need full representation
-- Disclaimer that protects against liability
-- Potential for two-way referral relationship
+### Needs from CSC (Phase 3B+)
+- Pre-qualified leads ($50 each)
+- Complete case information before first contact
+- Teaser email workflow (review before paying)
+- Proof of lead quality (case studies, testimonials)
+- Consistent lead flow
 
 ### Quote
 "If clients can understand the basics before they come to me, we can spend our time on what really matters - the strategy and negotiation."
 
 ---
 
-## Persona 4: Alex - The Mediator
+## Persona 6: Alex - The Mediator
 
 ### Demographics
 - **Age**: 52
@@ -196,7 +288,7 @@ Alex helps separating couples reach agreements without going to court. They need
 
 ---
 
-## Persona 5: Priya - The Young Parent-to-Be
+## Persona 7: Priya - The Young Parent-to-Be
 
 ### Demographics
 - **Age**: 26
@@ -246,25 +338,37 @@ Priya is pregnant and not in a relationship with the baby's father. They've agre
 
 ## Summary Matrix
 
-| Persona | Primary Goal | Key Pain Point | Success Metric |
-|---------|-------------|----------------|----------------|
-| Sarah | Understand entitlements | Legal costs & uncertainty | Confident in mediation |
-| Marcus | Verify fairness | Complex calculations | Accurate modification request |
-| Jennifer | Save time | Basic calculation questions | Faster client onboarding |
-| Alex | Facilitate agreement | Conflicting expectations | Successful mediations |
-| Priya | Plan for future | Lack of knowledge | Informed conversation |
+| Persona | Primary Goal | Key Pain Point | Success Metric | Phase |
+|---------|-------------|----------------|----------------|-------|
+| Sarah | Understand entitlements | Legal costs & uncertainty | Confident in mediation | All |
+| Marcus | Verify fairness | Complex calculations | Accurate modification request | All |
+| David (Validation) | Evaluate lead quality | Skeptical of unproven services | Honest feedback on lead value | 3A |
+| Michael (Exclusive Partner) | Test new channel with low risk | Expensive Google Ads, no exclusivity | Exclusive leads, proven ROI | 3A |
+| Jennifer (Paying) | Acquire pre-qualified clients | Time wasted on tire-kickers | Consistent quality leads | 3B+ |
+| Alex | Facilitate agreement | Conflicting expectations | Successful mediations | Future |
+| Priya | Plan for future | Lack of knowledge | Informed conversation | All |
 
 ---
 
 ## Usage Priorities
 
-### Primary Personas (Build for these first)
-1. **Sarah** - The newly separated parent seeking clarity
-2. **Marcus** - The analytical non-custodial parent
+### Phase 3A (Validation - January 2025)
+**Primary Focus:**
+1. **David** - The validation lawyer (receiving free leads for feedback)
+2. **Michael** - The Exclusive Partner firm owner (client-funded ads model)
 
-### Secondary Personas (Support these needs)
-3. **Priya** - The young, first-time user
-4. **Jennifer** - The legal professional
+**Supporting:**
+3. **Sarah** - The newly separated parent (generates leads)
+4. **Marcus** - The analytical non-custodial parent (generates leads)
 
-### Tertiary Personas (Nice to have)
+### Phase 3B+ (Revenue - February 2025+)
+**Primary Focus:**
+1. **Jennifer** - The paying lawyer (using proof package to sign up)
+2. **Sarah** - The newly separated parent (generates leads)
+3. **Marcus** - The analytical non-custodial parent (generates leads)
+
+**Supporting:**
+4. **Priya** - The young, first-time user (generates leads)
+
+### Future Personas (Nice to have)
 5. **Alex** - The mediator/professional facilitator

@@ -13,8 +13,10 @@
 **Strategic Pillars:**
 1. **User Value First** - Free, accurate calculator that genuinely helps parents
 2. **Quality Over Volume** - Focus on qualified, high-value leads lawyers actually want
-3. **Operational Excellence** - Efficient manual processes before expensive automation
-4. **Sustainable Growth** - Prove model at small scale, then expand methodically
+3. **Proof Before Pitch** - Validate lead quality with free leads before asking lawyers to pay
+4. **Operational Excellence** - Efficient manual processes before expensive automation
+5. **Sustainable Growth** - Prove model at small scale, then expand methodically
+6. **Zero Financial Risk** - Pursue Exclusive Partner track to fund ads testing with client money
 
 ---
 
@@ -33,11 +35,12 @@
 
 ### Key Metrics (Baseline)
 - **Users:** 0 (just launched)
-- **Leads/month:** 0 (not yet generating)
-- **Lawyer Partners:** 0 (outreach starting)
-- **Monthly Revenue:** $0
-- **Lead Quality:** TBD
-- **Refund Rate:** TBD
+- **Leads/month:** 0 (validation phase - not yet generating)
+- **Lawyer Partners:** 0 (validation phase - seeking 2-3 validation lawyers + 1 Exclusive Partner)
+- **Monthly Revenue:** $0 (validation phase - learning over revenue)
+- **Lead Quality:** TBD (will validate with free leads first)
+- **Refund Rate:** TBD (validation phase - no paying lawyers yet)
+- **Current Phase:** Phase 3A - Proof Before Pitch (January 2025)
 
 ---
 
@@ -45,20 +48,405 @@
 
 ---
 
-## Phase 3: FIRST REVENUE (January - February 2025)
+## Phase 3A: PROOF BEFORE PITCH (January 2025)
 
-**Goal:** Validate business model with first paying lawyers and real leads
+**Goal:** Validate lead quality with free leads before asking lawyers to pay
 
-**Timeline:** 6-8 weeks  
-**Success Criteria:** 8+ lawyers, 50+ leads, $2,000+ monthly revenue
+**Timeline:** 6-8 weeks (Weeks 1-8)  
+**Success Criteria:** 15%+ consultation rate, 2 testimonials, proof package, OR 1 Exclusive Partner signed  
+**Revenue Target:** $0 (validation phase - learning over revenue)
 
-### 3.1 Lawyer Acquisition (Week 1-2)
-**Objective:** Sign first 8-12 lawyer partners
+**Philosophy:** This phase prioritizes learning and proof-building before lawyer outreach. Generate real parent inquiries, validate lead quality with 2-3 lawyers, and potentially secure one "Exclusive Partner" to fund Google Ads testing—all while spending $0 of your own money.
+
+---
+
+### 3A.1 Dual Launch: Organic Traffic + Exclusive Partner Outreach (Week 1-2)
+
+**CRITICAL: Start both tracks immediately. No reason to wait.**
+
+#### Track A: Generate Initial Organic Traffic (6-8 hours)
+
+**Content Creation (3-4 hours):**
+- [ ] Write 3 targeted blog posts on auschildsupport.com:
+  - "Child Support Calculator Australia: Estimate Your Payments in 60 Seconds"
+  - "8 Situations Where Child Support Gets Complicated (And You Need Legal Help)"
+  - "Child Support Formula Explained: Income, Care %, and Special Circumstances"
+- [ ] Answer 10-15 existing questions on:
+  - Reddit: r/AusLegal, r/AusFinance (search "child support")
+  - Whirlpool Forums: Relationships & Family Law section
+  - Facebook: Join 3-5 Australian single parent groups
+
+**Distribution Strategy (2-3 hours):**
+- [ ] Post calculator link on Reddit r/AusLegal: "I built a free child support calculator - does this match your Services Australia estimate?" (Not promotional, genuinely asking for validation)
+- [ ] Answer Whirlpool threads from past 30 days mentioning child support calculations
+- [ ] In Facebook groups: Respond helpfully to posts asking about child support with calculator mention in comments
+
+**SEO Quick Wins (1-2 hours):**
+- [ ] Submit sitemap to Google Search Console
+- [ ] Add Schema markup for Calculator (SoftwareApplication)
+- [ ] Create Google Business Profile for "Australian Child Support Calculator"
+- [ ] Get listed on Australian legal resource directories (free listings):
+  - Lawpath resources section
+  - LawAccess NSW community resources
+  - Family Relationships Online
+
+**Success Metrics:**
+- 50-100 calculator sessions
+- 5-10 inquiry completions
+- Traffic costs: $0 (organic only)
+
+#### Track B: Exclusive Partner Outreach (6-8 hours)
+
+**PRIORITY TASK: This could eliminate need for your own ad spend entirely**
+
+**Target Profile:**
+- Family law firms with 3-10 lawyers
+- Already running Google Ads (search "family lawyer [Melbourne/Sydney/Brisbane]" - note who's advertising)
+- Located in major metro areas (Melbourne, Sydney, Brisbane)
+- NOT premium CBD firms (they don't need help with leads)
+
+**Research firms (2-3 hours):**
+- [ ] Google Search: "family lawyer Melbourne" → Identify 10-15 firms running ads
+- [ ] Visit their websites → Find partner or senior associate name
+- [ ] LinkedIn search: Confirm they're decision-makers
+- [ ] Document: Firm name, contact name, email, practice focus
+
+**Send outreach emails (1 hour):**
+- [ ] Email 10-15 firms with Exclusive Partner pitch:
+  - Subject: "Exclusive pilot: Pre-qualified child support leads for [Firm Name]"
+  - Deal: Firm funds $500 in Google Ads (they control account, you manage campaigns)
+  - You rebrand calculator as "Powered by [Firm Name]" for their region
+  - All qualified child support leads in their city go exclusively to them for 4 weeks
+  - You manage system for free during pilot
+  - If it works, discuss ongoing fees. If not, they've spent ad budget they'd spend anyway
+
+**Demo calls (3-4 hours over 2 weeks):**
+- [ ] Schedule 15-min Zoom calls with responding firms
+- [ ] Screen share calculator - show complexity detection
+- [ ] Explain CoA reasons = pre-qualification
+- [ ] Walk through lead flow: Calculator → Complex → Inquiry → Goes to them
+- [ ] Show they'd control Google Ads account (you just manage campaigns)
+- [ ] Ask: "Would you be willing to try this for 4 weeks with $500 of your ad budget?"
+
+**Success Metrics:**
+- 2-4 demo calls scheduled
+- 1 firm interested in pilot by end of Week 2
+- At least one path (A or B) showing traction
+
+**Failure Signals:**
+- Track A: Zero traffic after 2 weeks = content not reaching audience
+- Track B: Zero responses to outreach = pitch wrong or targeting wrong firms
+- Both tracks dead = need to rethink approach entirely
+
+---
+
+### 3A.2 Execute Partner Pilot OR Refine Validation Path (Week 3-4)
+
+**Decision point: This week's actions depend on Week 1-2 Exclusive Partner results**
+
+#### If Exclusive Partner Signed (Priority Path)
+
+**Setup co-branded experience (3-4 hours):**
+- [ ] Create region-specific landing page variation:
+  - Add "[Firm Name] Partner" badge to calculator header
+  - Update inquiry form: "This referral goes to [Firm Name]"
+  - Add firm's logo (get from their website or request)
+- [ ] Configure Google Ads with partner:
+  - Help them create Google Ads account OR get added to existing account
+  - Set daily budget: $15-20/day ($500 total / 30 days)
+  - Create 3-5 ad variations targeting "child support calculator australia"
+  - Set up conversion tracking (inquiry form submissions)
+  - Geographic targeting: 20km radius around their office
+- [ ] Test end-to-end flow:
+  - Run test searches
+  - Complete test inquiry
+  - Verify firm receives email notification
+
+**Ongoing management (2-3 hours/week):**
+- [ ] Monitor ad performance daily
+- [ ] Send weekly report to partner: spend, clicks, leads generated
+- [ ] Forward all leads within 24 hours with context (CoA reasons, income bracket, urgency)
+- [ ] Track their feedback on lead quality
+
+**Continue organic traffic efforts (4-5 hours):**
+- [ ] Keep answering Reddit/forum questions
+- [ ] Monitor early organic leads
+- [ ] Use any organic leads for validation lawyers (if found in Week 1-2)
+
+**Success metric:** Partner ads running by end of Week 3, first leads flowing by Week 4
+
+#### If No Exclusive Partner Yet (Validation Path)
+
+**Add property settlement wealth signal (1 hour):**
+- [ ] Update `/src/utils/change-of-assessment-reasons.ts`:
+  - Add property settlement CoA reason at priority 5
+  - ID: `property_settlement`
+  - Label: "Property settlement from separation is pending or recently finalized"
+  - Official CoA Reasons: ['5.2.5', '5.2.11']
+  - Why: Signals wealth, active legal matter, urgency
+
+**Find validation lawyers (8-10 hours):**
+- [ ] Target: 2-3 lawyers willing to receive free leads for feedback
+- [ ] Where to find:
+  - Google "family lawyer [Melbourne/Sydney]" → firms running ads
+  - LinkedIn: Search those firms → Find partners or senior associates
+  - Law Society directories: Cross-reference firm size (3-10 lawyers)
+- [ ] Send outreach email to 15-20 lawyers:
+  - Subject: "Quick feedback on child support lead quality?"
+  - Pitch: Willing to receive 3-5 inquiries over next few weeks (completely free) and give honest feedback
+  - No strings attached - pure learning mode
+- [ ] Expect: 2-4 responses, need 2-3 to commit
+
+**Continue Exclusive Partner outreach (2-3 hours):**
+- [ ] Send 5-10 more pitches to new firms
+- [ ] Follow up with firms from Week 1-2 who didn't respond
+- [ ] Goal: Still trying to land a partner even while validating organically
+
+**Success Metrics:**
+- Property settlement CoA reason deployed and visible in calculator
+- 2-3 validation lawyers agree to receive free leads
+- 15-20 inquiry form completions from organic traffic (cumulative from Week 1-4)
+- 1+ Exclusive Partner demo call scheduled (still pursuing this path)
+
+**Failure Signals:**
+- <10 inquiries total after 4 weeks = organic won't scale, need paid ads
+- Zero validation lawyers respond = pitch needs work
+- Zero Exclusive Partner interest after 20+ outreach emails = wrong firms or offer not compelling
+
+---
+
+### 3A.3 Scale Whichever Path Is Working (Week 5-6)
+
+**By now you know which experiment is working. Double down on that.**
+
+#### If Exclusive Partner Ads Running (Best Case Scenario)
+
+**Optimize campaign performance (3-4 hours/week):**
+- [ ] Review ad metrics: CTR, cost-per-click, conversion rate
+- [ ] Pause underperforming ads, scale winners
+- [ ] Adjust targeting if leads coming from wrong geography
+- [ ] A/B test ad copy variations
+
+**Lead quality management (2-3 hours/week):**
+- [ ] Forward all leads to partner within 24 hours
+- [ ] Track which CoA reasons correlate with partner's feedback
+- [ ] Weekly check-in call: "Which leads converted? What made them good/bad?"
+- [ ] Refine complexity detection based on partner's conversion patterns
+
+**Document everything for proof package:**
+- [ ] Leads generated per week
+- [ ] Partner's consultation booking rate
+- [ ] Partner's feedback quotes
+- [ ] Cost per lead from their ads
+
+**Continue organic traffic (2 hours/week):**
+- [ ] Answer new Reddit/forum posts
+- [ ] Any organic leads still go to partner (exclusivity agreement)
+
+**Success metric:** Partner books 2+ consultations from ads, wants to continue in February
+
+#### If Validation Lawyer Path (No Partner Yet)
+
+**Place free leads with validation lawyers (2-3 hours/week):**
+- [ ] Each high-quality lead comes in → send within 24 hours with:
+  - Contact details, location, income bracket
+  - Complexity factors (list CoA reasons, highlight property settlement if checked)
+  - Situation description, urgency level
+  - Why flagged as complex (1-sentence assessment)
+- [ ] Track in spreadsheet:
+  - Date sent, lawyer name, lead details, lawyer feedback, consultation booked, client retained
+- [ ] Follow-up sequence per lead:
+  - Day 3: "Did you contact [Lead Name]? Initial feedback on quality?"
+  - Day 10: "Did this convert to a consultation? If not, what was the issue?"
+  - Day 30: "If they consulted, did they retain you?"
+- [ ] After each lawyer receives 3-5 leads, schedule 15-min call:
+  - "Of the [X] leads I sent, how many were worth your time?"
+  - "What separated the good ones from bad ones?"
+  - "What information was missing that you needed?"
+  - "If paying $50/lead, what would make them worth it?"
+  - "What conversion rate would you need to justify buying leads?"
+  - "Would you pay for leads like [specific good example]?"
+
+**Continue Exclusive Partner pursuit (2-3 hours/week):**
+- [ ] Send 5 more pitches to new firms
+- [ ] Follow up with previous demo calls
+- [ ] If any firm shows interest, prioritize setup
+
+**Success Metrics:**
+- 10+ leads sent to validation lawyers
+- 15%+ consultation rate (2-3 consultations from 10-15 leads)
+- 1+ consultation converts to retained client
+- Detailed feedback from 2-3 lawyers
+- OR: Exclusive Partner finally signs (switch to that path)
+
+**Failure Signals:**
+- <5% consultation rate = leads are garbage, complexity filter broken
+- Lawyers stop responding after first lead = quality worse than expected
+- Lawyers say "fine but wouldn't pay" = business model fundamentally flawed
+- Still zero Exclusive Partner interest = that path is dead
+
+---
+
+### 3A.4 Document Results + Execute Winning Path (Week 7-8)
+
+#### If Exclusive Partner Landed (Client-Funded Path)
+
+**Execute client-funded pilot:**
+- [ ] Set up co-branded calculator landing page (2-3 hours)
+- [ ] Configure Google Ads with their budget ($500 cap)
+- [ ] Send all leads exclusively to partner firm
+- [ ] Track conversion weekly with partner
+
+**Build proof package from pilot results (4-5 hours):**
+- [ ] Document lead volume generated
+- [ ] Track consultation and retention rates
+- [ ] Collect testimonial from partner firm
+- [ ] Use data to pitch additional firms in February
+
+**This path = zero financial risk, real market validation**
+
+#### If No Exclusive Partner (Validation-Only Path)
+
+**Data Analysis (3-4 hours):**
+- [ ] Calculate metrics:
+  - Lead→Consultation rate: [X] consultations ÷ [Y] leads sent = Z%
+  - Consultation→Retained rate: [X] retained ÷ [Y] consultations = Z%
+  - Lead→Retained rate: [X] retained ÷ [Y] leads sent = Z%
+  - Average time to contact lead (from lawyer feedback)
+  - Most common CoA factors in converted leads
+  - Income correlation (do higher income leads convert better?)
+- [ ] Identify patterns:
+  - Which types of cases converted best?
+  - What information was most valuable to lawyers?
+  - What red flags predict non-conversion?
+
+**Build Proof Package (4-5 hours):**
+- [ ] Create one-page case study PDF:
+  - Title: "Child Support Calculator Lead Quality Report: 6-Week Trial Results"
+  - Contents: Number of leads generated, conversion metrics, sample lead profile, direct lawyer quotes, cost comparison
+- [ ] Get testimonial quotes from validation lawyers:
+  - Email: "Thanks for being part of the trial. Would you be comfortable with me using a quote from you when I approach other lawyers?"
+  - Aim for 1-2 solid testimonials
+
+**Refine Lead Quality Criteria (2-3 hours):**
+- [ ] Update CoA prompt emphasis based on conversion patterns
+- [ ] Document "ideal lead profile" for future filtering
+- [ ] Identify which CoA reasons correlate with lawyer conversion
+
+**Create Lawyer Pitch Deck (3-4 hours):**
+- [ ] Only create this if validation succeeded (15%+ consultation rate)
+- [ ] Slides: Problem, Solution, How it works, Trial results, Testimonials, Pricing, Guarantee
+
+**Success Metrics:**
+- **If Exclusive Partner:** Ads running, leads flowing, partner satisfied
+- **If Validation Only:** 15%+ lead→consultation rate, 2 testimonials, clear ideal customer profile
+- Understanding of whether $50/lead pricing is viable or needs adjustment
+
+**Failure Signals:**
+- <10% consultation rate = model doesn't work, leads too cold
+- No lawyers willing to provide testimonial = they didn't find value
+- Wide variance in conversion between lawyers = quality inconsistent
+
+---
+
+### 3A.5 Traffic Reality Check
+
+**Realistic organic traffic (zero budget):**
+- Week 1-2: 30-80 sessions
+- Week 3-4: 80-150 sessions (Reddit/forum posts gaining traction)
+- Week 5-6: 100-200 sessions (SEO starting to kick in)
+- Week 7-8: 150-250 sessions
+- **Total 6-week traffic: 500-800 sessions**
+
+**Conversion to inquiry form: 2-4%**
+- Low end: 500 × 2% = 10 inquiries
+- High end: 800 × 4% = 32 inquiries
+
+**Quality filter pass rate (CoA complexity): 40-60%**
+- Low end: 10 × 40% = 4 qualified leads
+- High end: 32 × 60% = 19 qualified leads
+
+**Realistic outcome: 8-15 qualified leads to distribute**
+
+This is enough to validate if you get 2-3 lawyers on board. Each receives 3-5 leads. If conversion is good, you have proof.
+
+**If Exclusive Partner lands:** Their $500 ads budget generates additional 4-6 leads for them specifically.
+
+---
+
+### 3A.6 When to Spend Your $1000-1500 Budget
+
+**DO NOT spend on Google Ads in Weeks 1-8.**
+
+**Only spend budget if:**
+1. Week 8 results show 15%+ consultation rate from organic leads
+2. You have 1-2 lawyer testimonials
+3. You've identified clear "qualified lead" criteria
+4. No Exclusive Partner materialized (otherwise they're funding ads)
+
+**Then allocate in February:**
+- $800-1000: Google Ads targeting "child support calculator Australia"
+- $200-300: Freelance writer for 3-5 additional SEO blog posts
+- $100-200: Paid listings on legal directories
+
+**If Exclusive Partner works:** Don't spend your budget at all. Use their pilot data to sign more partners in February.
+
+---
+
+### 3A.7 Viability Thresholds
+
+**Minimum conversion rates to justify business:**
+
+**Lawyer's math:**
+- Pays $50 per lead
+- Needs 1 retained client per 5 leads to break even (assuming $3,000 avg case value, 50% profit margin)
+- Therefore: 20% lead→retained rate required
+
+**Your math:**
+- Lead→consultation: 15% minimum (industry standard)
+- Consultation→retained: 50% minimum (typical for family law)
+- Combined: 15% × 50% = 7.5% lead→retained rate
+
+**This doesn't work at $50/lead.** Lawyer needs 20%, you're delivering 7.5%.
+
+**To hit viability:**
+- Need 40% lead→consultation rate (very high, requires excellent CoA filtering) + 50% retained rate = 20% end-to-end
+- Or lower pricing to $25-35 per lead to match 7.5% economics
+
+**Be prepared to discover:**
+- $50/lead is too expensive for the conversion rate you achieve
+- You need to charge $25-35 to make economics work for lawyers
+- Or you need performance pricing (only charge for consultations booked, not leads sent)
+
+---
+
+## Phase 3B: FIRST REVENUE (February 2025)
+
+**Goal:** Sign first paying lawyers using proof package from Phase 3A
+
+**Timeline:** 4 weeks  
+**Success Criteria:** 8+ lawyers, 50+ leads, $2,000+ monthly revenue  
+**Prerequisite:** Phase 3A validation succeeded (15%+ consultation rate OR Exclusive Partner signed)
+
+**Only proceed to Phase 3B if Phase 3A validation succeeded. If validation failed, pivot strategy.**
+
+---
+
+### 3B.1 Lawyer Acquisition with Proof (Week 1-2)
+
+**Objective:** Sign first 8-12 paying lawyer partners using proof package
 
 **Deliverables:**
-- [ ] Complete Tier 2 setup (virtual phone, Stripe account)
+- [ ] Complete Tier 2 setup (virtual phone, Stripe account) - if not done in Phase 3A
+- [ ] Prepare proof package:
+  - Case study PDF from Phase 3A
+  - Lawyer testimonials
+  - Conversion metrics
+  - Sample lead profile (anonymized)
 - [ ] LinkedIn outreach to 50 family lawyers (Sydney/Melbourne)
-- [ ] Email outreach using templates
+- [ ] Email outreach using proof package:
+  - Subject: "Proven child support leads: [X]% consultation rate"
+  - Include case study, testimonials, conversion data
 - [ ] Demo web app to interested lawyers
 - [ ] Sign 8-12 partnership agreements
 - [ ] Set up billing in Stripe
@@ -70,36 +458,36 @@
 - Average time-to-sign: <7 days
 
 **Risks & Mitigation:**
-- **Risk:** Low response rate → Adjust messaging, add social proof
-- **Risk:** Price resistance → Offer trial period (first lead free)
-- **Risk:** Lawyer skepticism → Show live demo, explain quality controls
+- **Risk:** Low response rate → Adjust messaging, emphasize proof package
+- **Risk:** Price resistance → Show ROI math from Phase 3A data
+- **Risk:** Lawyer skepticism → Show live demo, share validation lawyer testimonials
 
 ---
 
-### 3.2 Traffic Generation (Week 1-4)
-**Objective:** Get first users to generate leads
+### 3B.2 Traffic Generation (Week 1-4)
+
+**Objective:** Scale traffic to support paying lawyer demand
 
 **Deliverables:**
-- [ ] SEO optimization (meta tags, descriptions, sitemap)
-- [ ] Google Business Profile setup
-- [ ] Post in 10-15 parent forums/Facebook groups
-- [ ] Share in r/AusLegal, r/AusFinance
-- [ ] Create basic content marketing (blog posts)
-- [ ] Track traffic sources (Google Analytics or similar)
+- [ ] Continue organic traffic efforts (Reddit, forums, Facebook groups)
+- [ ] If no Exclusive Partner: Launch Google Ads with $800-1000 budget
+  - Target: "child support calculator Australia"
+  - Daily budget: $25-35/day
+  - Geographic targeting: Sydney, Melbourne, Brisbane
+- [ ] Hire freelance writer for 3-5 additional SEO blog posts ($200-300)
+- [ ] Paid listings on legal directories ($100-200)
+- [ ] Track traffic sources (Google Analytics)
 
 **Success Metrics:**
-- 500+ unique visitors/month (organic + social)
-- 10-15% inquiry form completion rate (50-75 leads)
-- Traffic costs: $0 (organic only)
-
-**Content Ideas:**
-- "How Much Child Support Should I Pay? Australian 2024-2025 Guide"
-- "What is a Change of Assessment?"
-- "Do I Need a Lawyer for Child Support?"
+- 1,000+ unique visitors/month (organic + paid)
+- 10-15% inquiry form completion rate (100-150 leads)
+- Cost per lead: <$10 (if using paid ads)
+- Organic vs paid traffic: 60/40 split (if using paid ads)
 
 ---
 
-### 3.3 Lead Operations (Week 1-8)
+### 3B.3 Lead Operations (Week 1-4)
+
 **Objective:** Deliver quality leads and get paid
 
 **Deliverables:**
@@ -124,13 +512,14 @@
 
 ---
 
-### 3.4 Learning & Iteration (Week 4-8)
+### 3B.4 Learning & Iteration (Week 3-4)
+
 **Objective:** Understand what's working and what needs improvement
 
 **Key Questions:**
 - Which complexity triggers generate best leads?
 - What's the ideal lead-to-lawyer ratio?
-- Are lawyers getting value for $50?
+- Are lawyers getting value for $50? (Or should we adjust to $25-35 based on Phase 3A learnings?)
 - Which traffic sources convert best?
 - What parent questions indicate higher-value cases?
 
@@ -139,10 +528,10 @@
 - [ ] Lawyer feedback surveys (NPS)
 - [ ] Lead quality scoring system
 - [ ] Traffic source analysis
-- [ ] Pricing validation
+- [ ] Pricing validation (adjust if Phase 3A showed $50 too high)
 
 **Decision Points:**
-- Should we increase/decrease price?
+- Should we increase/decrease price? (Based on Phase 3A learnings)
 - Should we tighten/loosen complexity thresholds?
 - Should we focus on specific case types?
 - Should we expand to more lawyers or focus on existing ones?
@@ -441,8 +830,18 @@
 
 ## 🎯 SUCCESS MILESTONES
 
-### Phase 3 (Q1 2025)
-- [ ] First 10 lawyer partnerships signed
+### Phase 3A: Proof Before Pitch (January 2025)
+- [ ] 50-100 calculator sessions from organic traffic
+- [ ] 8-15 qualified leads generated
+- [ ] 2-3 validation lawyers receiving free leads
+- [ ] 15%+ consultation rate OR 1 Exclusive Partner signed
+- [ ] 2 lawyer testimonials collected
+- [ ] Proof package created (case study + conversion metrics)
+- [ ] Property settlement CoA reason deployed
+- [ ] Revenue: $0 (validation phase)
+
+### Phase 3B: First Revenue (February 2025)
+- [ ] First 8-12 paying lawyer partnerships signed
 - [ ] First $1,000 revenue month
 - [ ] 50+ qualified leads delivered
 - [ ] <20% refund rate
@@ -658,31 +1057,54 @@
 
 ## 🎯 IMMEDIATE NEXT STEPS
 
-**This Week (Dec 28 - Jan 3):**
-1. ✅ Complete web deployment (done)
-2. [ ] Attach privacy policy to web app
-3. [ ] Set up virtual phone number
-4. [ ] Complete Stripe setup
-5. [ ] Start lawyer outreach (5-10 contacts)
+**Week 1-2 (Jan 1-14): Dual Launch**
+**Track A: Organic Traffic (6-8 hours)**
+1. [ ] Write 3 blog posts for auschildsupport.com
+2. [ ] Answer 10-15 questions on Reddit/Whirlpool/Facebook
+3. [ ] Post calculator on r/AusLegal for validation
+4. [ ] Submit sitemap to Google Search Console
+5. [ ] Add Schema markup for Calculator
+6. [ ] Create Google Business Profile
+7. [ ] Get listed on free legal resource directories
 
-**Next Week (Jan 4-10):**
-1. [ ] Continue lawyer outreach (target 20 total contacts)
-2. [ ] Sign first 3-5 partnerships
-3. [ ] Post in 5 parent forums
-4. [ ] Set up Google Analytics
-5. [ ] Monitor first leads
+**Track B: Exclusive Partner Outreach (6-8 hours)**
+1. [ ] Research 10-15 family law firms running Google Ads (Melbourne/Sydney/Brisbane)
+2. [ ] Find decision-maker contacts (LinkedIn, websites)
+3. [ ] Send Exclusive Partner pitch emails to 10-15 firms
+4. [ ] Schedule 2-4 demo calls with responding firms
+5. [ ] Goal: 1 firm interested in pilot by end of Week 2
 
-**First Month (January):**
-1. [ ] 8-12 lawyer partnerships
-2. [ ] 20-30 leads generated
-3. [ ] First revenue ($500-1,000)
-4. [ ] Quality feedback loop established
-5. [ ] Weekly lawyer check-ins
+**Week 3-4 (Jan 15-28): Execute Path**
+**If Exclusive Partner Signed:**
+1. [ ] Setup co-branded calculator landing page
+2. [ ] Configure Google Ads with partner's $500 budget
+3. [ ] Test end-to-end lead flow
+4. [ ] Begin monitoring ad performance
+
+**If No Exclusive Partner:**
+1. [ ] Add property settlement CoA reason to calculator
+2. [ ] Find 2-3 validation lawyers (send 15-20 outreach emails)
+3. [ ] Continue Exclusive Partner pursuit (5-10 more pitches)
+4. [ ] Begin sending free leads to validation lawyers
+
+**Week 5-8 (Jan 29 - Feb 25): Scale & Document**
+1. [ ] Continue whichever path is working (Partner OR Validation)
+2. [ ] Track all conversion metrics
+3. [ ] Collect lawyer testimonials
+4. [ ] Build proof package (case study PDF)
+5. [ ] Analyze data: consultation rates, conversion patterns
+6. [ ] Create lawyer pitch deck (if validation succeeded)
+
+**February (Phase 3B - Only if validation succeeded):**
+1. [ ] Use proof package to sign 8-12 paying lawyers
+2. [ ] Launch Google Ads (if no Exclusive Partner) OR continue partner pilot
+3. [ ] Generate first revenue ($1,000+ target)
+4. [ ] Deliver 50+ leads to paying lawyers
 
 ---
 
 **Document Status:** Living document, updated monthly  
 **Next Review:** January 31, 2025  
 **Owner:** Founder/Product Lead  
-**Version:** 1.0 (December 28, 2024)
+**Version:** 2.0 (December 28, 2024) - Updated to reflect validation-first approach
 

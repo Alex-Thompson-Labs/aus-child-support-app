@@ -1,7 +1,7 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Platform } from 'react-native';
+import { Platform, Pressable, Text, StyleSheet } from 'react-native';
 import { PostHogProvider } from 'posthog-react-native';
 import 'react-native-reanimated';
 import { useEffect } from 'react';
@@ -12,6 +12,36 @@ import { initPerformanceMonitoring } from '@/src/utils/web-vitals';
 export const unstable_settings = {
   anchor: '(tabs)',
 };
+
+// Close button component that matches the breakdown modal pattern
+function CloseButton({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={headerStyles.closeButton}
+    >
+      <Text style={headerStyles.closeButtonText}>✕</Text>
+    </Pressable>
+  );
+}
+
+// Header styles matching the breakdown modal (CalculatorResults.tsx lines 686-698)
+const headerStyles = StyleSheet.create({
+  closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#f7fafc', // very light grey
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  closeButtonText: {
+    color: '#4a5568', // dark grey
+    fontSize: 16,
+    fontWeight: '500',
+  },
+});
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -36,11 +66,13 @@ export default function RootLayout() {
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         <Stack.Screen
           name="lawyer-inquiry"
-          options={{
+          options={({ navigation }) => ({
             presentation: 'modal',
-            title: 'Get Legal Help',
-            headerShown: true
-          }}
+            title: 'Request Legal Help',
+            headerShown: true,
+            headerLeft: () => null, // Remove back arrow
+            headerRight: () => <CloseButton onPress={() => navigation.goBack()} />,
+          })}
         />
         <Stack.Screen
           name="admin/login"

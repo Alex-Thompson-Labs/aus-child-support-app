@@ -13,7 +13,6 @@ import {
 } from "../utils/change-of-assessment-reasons";
 import type { ComplexityFormData } from "../utils/complexity-detection";
 import { HelpTooltip } from "./HelpTooltip";
-import { CategoryIcon } from "./CategoryIcon";
 import { isWeb, webClickableStyles } from "../utils/responsive";
 
 interface ChangeOfAssessmentPromptProps {
@@ -223,7 +222,6 @@ export function ChangeOfAssessmentPrompt({
           {incomeReasons.length > 0 && (
             <View style={styles.reasonGroup}>
               <View style={styles.groupHeader}>
-                <CategoryIcon category="income" />
                 <Text style={[styles.groupTitle, { color: getCategoryDisplayInfo('income').accentColor }]}>
                   {getCategoryDisplayInfo('income').title}
                 </Text>
@@ -238,7 +236,6 @@ export function ChangeOfAssessmentPrompt({
           {childReasons.length > 0 && (
             <View style={styles.reasonGroup}>
               <View style={styles.groupHeader}>
-                <CategoryIcon category="child" />
                 <Text style={[styles.groupTitle, { color: getCategoryDisplayInfo('child').accentColor }]}>
                   {getCategoryDisplayInfo('child').title}
                 </Text>
@@ -253,7 +250,6 @@ export function ChangeOfAssessmentPrompt({
           {otherReasons.length > 0 && (
             <View style={styles.reasonGroup}>
               <View style={styles.groupHeader}>
-                <CategoryIcon category="other" />
                 <Text style={[styles.groupTitle, { color: getCategoryDisplayInfo('other').accentColor }]}>
                   {getCategoryDisplayInfo('other').title}
                 </Text>

@@ -31,13 +31,22 @@ function RelevantDependentsPopover({
   const hasValues = totalDeps > 0;
 
   const handleToggle = () => {
+    // If currently open and trying to close, only allow if no values exist
+    if (isOpen && hasValues) {
+      return; // Don't close if values exist
+    }
     setIsOpen(!isOpen);
   };
 
   // Close drawer when clicking outside (for web)
+  // Only allow closing if there are no values entered
   useEffect(() => {
     if (isWeb && isOpen) {
       const handleClickOutside = (e: MouseEvent) => {
+        // Don't close if there are any values entered
+        if (hasValues) {
+          return;
+        }
         const target = e.target as HTMLElement;
         if (!target.closest('[data-drawer-content]') && !target.closest('[data-drawer-trigger]')) {
           setIsOpen(false);
@@ -46,7 +55,7 @@ function RelevantDependentsPopover({
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [isOpen]);
+  }, [isOpen, hasValues]);
 
   // For mobile: still use modal
   if (!isWeb) {

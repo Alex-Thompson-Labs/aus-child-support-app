@@ -3,7 +3,7 @@
 ## Australian Child Support Calculator (CSC)
 
 **Last Updated:** December 28, 2024  
-**Current Status:** Phase 2 - Ready for lawyer outreach  
+**Current Status:** Phase 3A - Proof Before Pitch (Validation Phase)  
 **Website:** auschildsupport.com
 
 ---
@@ -208,6 +208,55 @@ This Value Proposition Canvas maps our product's value proposition to two distin
 - Calculation breakdown saves consultation time
 - CoA reasons save research and case prep time
 - Database ensures no leads lost or forgotten
+
+---
+
+## Value Proposition (For Exclusive Partner Firms - Phase 3A)
+
+### Products & Services
+**Core Offering (Client-Funded Model):**
+- Firm funds $500 Google Ads (they control account, we manage campaigns)
+- Co-branded calculator: "Powered by [Firm Name]" for their region
+- All qualified child support leads in their city go exclusively to them for 4 weeks
+- We manage the system for free during pilot
+- If it works, discuss ongoing fees. If not, they've spent ad budget they'd spend anyway
+
+### Pain Relievers
+**Zero Financial Risk:**
+- Spend ad budget you'd spend anyway (not additional cost) ✅
+- If it doesn't work, you've only spent normal marketing budget ✅
+- No upfront fees or commitments beyond ad spend ✅
+
+**Exclusivity Advantage:**
+- All qualified leads in your city go exclusively to you ✅
+- Competitors don't get the same leads ✅
+- Co-branded calculator increases your brand visibility ✅
+
+**Proven Concept:**
+- Test with $500 (manageable risk) ✅
+- If successful, discuss ongoing partnership ✅
+- If unsuccessful, no further obligation ✅
+
+### Gain Creators
+**Custom Pre-Qualification Tool:**
+- Get a custom lead qualification system without building it ✅
+- Calculator identifies complex cases requiring legal help ✅
+- Pre-qualified leads (parent already knows they need help) ✅
+
+**Marketing Efficiency:**
+- We manage Google Ads campaigns (you control account) ✅
+- Geographic targeting: 20km radius around your office ✅
+- Conversion tracking: Inquiry form submissions tracked ✅
+
+**Proof of Concept:**
+- Test lead quality before committing to ongoing fees ✅
+- See actual conversion rates from your ad spend ✅
+- Use pilot data to decide if partnership makes sense ✅
+
+**Unexpected Value:**
+- Co-branded calculator builds your brand awareness ✅
+- Parents see your firm name before contacting you ✅
+- Professional appearance (not just another ad) ✅
 
 ---
 
@@ -420,9 +469,11 @@ This Value Proposition Canvas maps our product's value proposition to two distin
 ✅ **Compliance** - Privacy Act 1988 compliant  
 
 ### Areas for Validation:
-⚠️ **Lead volume** - Need to prove sufficient traffic generation  
-⚠️ **Lead quality** - Must maintain <20% refund rate  
-⚠️ **Conversion rates** - Lawyers need to see positive ROI  
+⚠️ **Lead volume** - Need to prove sufficient traffic generation (Phase 3A: 8-15 leads from organic)  
+⚠️ **Lead quality** - Must maintain <20% refund rate (Phase 3B validation)  
+⚠️ **Conversion rates** - Lawyers need to see positive ROI (Phase 3A: 15%+ consultation rate target)  
+⚠️ **Pricing viability** - Validate $50/lead or adjust based on Phase 3A conversion data  
+⚠️ **Exclusive Partner model** - Test client-funded ads approach (zero financial risk)  
 
 ### Competitive Advantages:
 1. Change of Assessment feature (saves lawyer research time)
@@ -578,7 +629,16 @@ This Value Proposition Canvas maps our product's value proposition to two distin
 # VALIDATION METRICS
 
 ## Lawyer Value Prop Success Indicators:
-- ✅ **8+ lawyers sign up** (Phase 2 target)
+
+### Phase 3A (Validation - January 2025):
+- ✅ **1 Exclusive Partner signed** OR **2-3 validation lawyers receiving free leads**
+- ✅ **15%+ consultation rate** (from validation leads)
+- ✅ **2 lawyer testimonials** collected
+- ✅ **Proof package created** (case study, conversion metrics)
+- ✅ **8-15 qualified leads generated** (organic traffic)
+
+### Phase 3B (First Revenue - February 2025):
+- ✅ **8+ paying lawyers sign up** (using proof package)
 - ✅ **<20% refund rate** (lead quality validation)
 - ✅ **Lawyers request more leads** (demand validation)
 - ✅ **Lawyers refer other lawyers** (NPS validation)
@@ -595,15 +655,40 @@ This Value Proposition Canvas maps our product's value proposition to two distin
 
 # NEXT STEPS FOR VALIDATION
 
-## Phase 2 (Jan-Feb 2025):
-1. **Onboard 8-12 lawyers** - Test lawyer value proposition
-2. **Deliver 50+ leads** - Test lead quality and volume
+## Phase 3A - Proof Before Pitch (January 2025):
+
+**Dual Launch (Week 1-2):**
+1. **Track A: Organic Traffic** - Generate 50-100 calculator sessions, 5-10 inquiry completions
+2. **Track B: Exclusive Partner Outreach** - Pitch 10-15 firms, secure 1 partner OR find 2-3 validation lawyers
+
+**Execute Path (Week 3-4):**
+3. **If Exclusive Partner:** Setup co-branded calculator, configure their Google Ads ($500 budget)
+4. **If No Partner:** Add property settlement CoA reason, place free leads with validation lawyers
+
+**Scale & Document (Week 5-8):**
+5. **Track conversion metrics** - Lead→Consultation rate, Consultation→Retained rate
+6. **Collect testimonials** - Get 2 lawyer quotes confirming lead quality
+7. **Build proof package** - Case study PDF with conversion data
+8. **Validate pricing** - Determine if $50/lead is viable or needs adjustment
+
+## Key Questions to Answer (Phase 3A):
+- **Will leads convert to consultations?** (Target: 15%+ consultation rate)
+- **Are leads worth lawyer's time?** (Validation lawyer feedback)
+- **What makes a lead "qualified"?** (Identify conversion patterns)
+- **Is $50/lead viable?** (Or need $25-35 pricing based on conversion data)
+- **Should we pursue Exclusive Partner or validation path?** (Which works better?)
+
+## Phase 3B - First Revenue (February 2025):
+*Only proceed if Phase 3A validation succeeded (15%+ consultation rate OR Exclusive Partner signed)*
+
+1. **Onboard 8-12 paying lawyers** - Use proof package to pitch
+2. **Deliver 50+ leads** - Test lead quality and volume at scale
 3. **Gather feedback** - Weekly check-ins with lawyers
 4. **Measure conversion** - Track inquiry rate from parents
 5. **Monitor refunds** - Validate lead quality claims
 
-## Key Questions to Answer:
-- Will lawyers pay $50 per lead consistently?
+## Key Questions to Answer (Phase 3B):
+- Will lawyers pay $50 per lead consistently? (Or adjusted price from Phase 3A)
 - Is lead quality sufficient (<20% refund rate)?
 - Do parents trust the calculator and inquire?
 - Are complexity detection thresholds calibrated correctly?
