@@ -573,17 +573,30 @@ export default function LawyerInquiryScreen() {
     }
 
     return (
-        <SafeAreaView style={styles.container} edges={['bottom']}>
+        <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.keyboardView}
             >
+                {/* Header with close button - matches Full Breakdown modal pattern */}
+                <View style={styles.header}>
+                    <Text style={styles.headerTitle}>Request Legal Help</Text>
+                    <Pressable
+                        style={styles.closeButton}
+                        onPress={() => router.back()}
+                        accessible={true}
+                        accessibilityRole="button"
+                        accessibilityLabel="Close form"
+                    >
+                        <Text style={styles.closeButtonText}>✕</Text>
+                    </Pressable>
+                </View>
+
                 <ScrollView
                     style={styles.scrollView}
                     contentContainerStyle={[styles.scrollContent, webContainerStyle]}
                     keyboardShouldPersistTaps="handled"
                 >
-                    <Text style={styles.title}>Request Legal Help</Text>
 
                     {/* Change of Assessment Reasons Card - Show only if reasons exist */}
                     {validCoAReasons.length > 0 && (
@@ -857,6 +870,37 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f8f9fa', // soft warm grey background
     },
+    // Header styles - matches Full Breakdown modal pattern
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+        backgroundColor: '#ffffff', // white
+        borderBottomWidth: 1,
+        borderBottomColor: '#e5e7eb', // light grey
+    },
+    headerTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#1a202c', // near black
+        flex: 1,
+    },
+    closeButton: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
+    },
+    closeButtonText: {
+        color: '#6b7280', // medium grey
+        fontSize: 24,
+        fontWeight: '400',
+        lineHeight: 32,
+    },
     keyboardView: {
         flex: 1,
     },
@@ -866,12 +910,6 @@ const styles = StyleSheet.create({
     scrollContent: {
         padding: 20,
         paddingBottom: 40,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: '700',
-        color: '#1a202c', // near black
-        marginBottom: 20,
     },
     // Change of Assessment section styles
     coaSection: {

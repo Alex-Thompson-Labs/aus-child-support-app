@@ -66,13 +66,10 @@ export default function RootLayout() {
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         <Stack.Screen
           name="lawyer-inquiry"
-          options={({ navigation }) => ({
+          options={{
             presentation: 'modal',
-            title: 'Request Legal Help',
-            headerShown: true,
-            headerLeft: () => null, // Remove back arrow
-            headerRight: () => <CloseButton onPress={() => navigation.goBack()} />,
-          })}
+            headerShown: false, // Hide navigation header, use in-content header instead
+          }}
         />
         <Stack.Screen
           name="admin/login"
