@@ -1,9 +1,13 @@
-// Analytics wrapper for Posthog
+// Analytics wrapper
+// - Web: Google Analytics (gtag.js)
+// - Mobile (iOS/Android): PostHog
+//
 // Usage in components:
 // import { useAnalytics } from '@/src/utils/analytics';
 // const analytics = useAnalytics();
 // analytics.track('event_name', { property: 'value' });
 
+import { Platform } from 'react-native';
 import { usePostHog } from 'posthog-react-native';
 
 /**
@@ -18,40 +22,97 @@ export type AnalyticsProperties = Record<string, AnalyticsPropertyValue>;
  */
 export type UserTraits = Record<string, AnalyticsPropertyValue>;
 
-// Flag to prevent console.warn spam when PostHog not initialized
+// Flag to prevent console.warn spam when analytics not initialized
 let hasWarnedNotInitialized = false;
 
 /**
- * Log a warning once when PostHog is not initialized
+ * Log a warning once when analytics is not initialized
  */
 function warnNotInitialized(): void {
   if (!hasWarnedNotInitialized) {
-    console.warn('[Analytics] PostHog not initialized - events will only be logged to console');
+    console.warn('[Analytics] Not initialized - events will only be logged to console');
     hasWarnedNotInitialized = true;
   }
 }
 
-// Static Analytics object for use without hooks (Phase 1)
+// Check if we're on web platform
+const isWeb = Platform.OS === 'web';
+
+/**
+ * Get the gtag function for Google Analytics (web only)
+ */
+function getGtag(): ((...args: unknown[]) => void) | null {
+  if (isWeb && typeof window !== 'undefined' && 'gtag' in window) {
+    return (window as unknown as { gtag: (...args: unknown[]) => void }).gtag;
+  }
+  return null;
+}
+
+/**
+ * Track event with Google Analytics
+ */
+function trackWithGA(event: string, properties?: AnalyticsProperties): void {
+  const gtag = getGtag();
+  if (gtag) {
+    gtag('event', event, properties || {});
+  } else {
+    warnNotInitialized();
+  }
+}
+
+/**
+ * Set user ID with Google Analytics
+ */
+function identifyWithGA(userId: string): void {
+  const gtag = getGtag();
+  if (gtag) {
+    gtag('set', { user_id: userId });
+  }
+}
+
+/**
+ * Track page view with Google Analytics
+ */
+function screenWithGA(name: string, properties?: AnalyticsProperties): void {
+  const gtag = getGtag();
+  if (gtag) {
+    gtag('event', 'page_view', {
+      page_title: name,
+      ...properties,
+    });
+  }
+}
+
+// Static Analytics object for use without hooks
 export const Analytics = {
   track: (event: string, properties?: AnalyticsProperties): void => {
     if (__DEV__) {
       console.log('[Analytics] Track event:', event, properties);
     }
-    // TODO: Wire up to PostHog in Phase 2
+    if (isWeb) {
+      trackWithGA(event, properties);
+    }
+    // Mobile: PostHog handled via useAnalytics hook
   },
 
   identify: (userId: string, traits?: UserTraits): void => {
     if (__DEV__) {
       console.log('[Analytics] Identify user:', userId, traits);
     }
-    // TODO: Wire up to PostHog in Phase 2
+    if (isWeb) {
+      identifyWithGA(userId);
+    }
+    // Mobile: PostHog handled via useAnalytics hook
   },
 
   screen: (name: string, properties?: AnalyticsProperties): void => {
     if (__DEV__) {
       console.log('[Analytics] Screen view:', name, properties);
     }
-    // TODO: Wire up to PostHog in Phase 2
+    if (isWeb) {
+      screenWithGA(name, properties);
+    }
+    // Mobile: PostHog handled via useAnalytics hook
   }
 };
 
@@ -63,16 +124,19 @@ export function useAnalytics() {
     track: (event: string, properties?: AnalyticsProperties): void => {
       if (__DEV__) {
         console.log('[Analytics] Track event:', event, properties);
-        console.log('[Analytics] PostHog instance:', posthog ? 'AVAILABLE' : 'NULL');
       }
-      if (posthog) {
-        console.log('[Analytics] Calling posthog.capture()...');
-        posthog.capture(event, properties);
-        // Flush immediately to ensure event is sent (especially important for form submissions)
-        posthog.flush();
-        console.log('[Analytics] posthog.capture() and flush() called successfully');
+
+      if (isWeb) {
+        // Web: Use Google Analytics
+        trackWithGA(event, properties);
       } else {
-        warnNotInitialized();
+        // Mobile: Use PostHog
+        if (posthog) {
+          posthog.capture(event, properties);
+          posthog.flush();
+        } else {
+          warnNotInitialized();
+        }
       }
     },
 
@@ -80,10 +144,15 @@ export function useAnalytics() {
       if (__DEV__) {
         console.log('[Analytics] Identify user:', userId, traits);
       }
-      if (posthog) {
-        posthog.identify(userId, traits);
+
+      if (isWeb) {
+        identifyWithGA(userId);
       } else {
-        warnNotInitialized();
+        if (posthog) {
+          posthog.identify(userId, traits);
+        } else {
+          warnNotInitialized();
+        }
       }
     },
 
@@ -91,10 +160,15 @@ export function useAnalytics() {
       if (__DEV__) {
         console.log('[Analytics] Screen view:', name, properties);
       }
-      if (posthog) {
-        posthog.screen(name, properties);
+
+      if (isWeb) {
+        screenWithGA(name, properties);
       } else {
-        warnNotInitialized();
+        if (posthog) {
+          posthog.screen(name, properties);
+        } else {
+          warnNotInitialized();
+        }
       }
     }
   };

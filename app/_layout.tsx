@@ -4,8 +4,10 @@ import { StatusBar } from 'expo-status-bar';
 import { Platform } from 'react-native';
 import { PostHogProvider } from 'posthog-react-native';
 import 'react-native-reanimated';
+import { useEffect } from 'react';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { initPerformanceMonitoring } from '@/src/utils/web-vitals';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -13,6 +15,13 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+
+  // Initialize web performance monitoring (web only)
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      initPerformanceMonitoring();
+    }
+  }, []);
 
   // Get PostHog configuration from environment variables
   // TODO: Move to EXPO_PUBLIC_ prefixed env vars for production

@@ -397,7 +397,7 @@ export function WebInquiryPanel({
 
             {/* Privacy link */}
             <Pressable
-              onPress={() => Linking.openURL('https://bespoke-gumption-e0c968.netlify.app/')}
+              onPress={() => Linking.openURL('https://auschildsupport.com/privacy-policy.html')}
               style={[styles.privacyLink, webClickableStyles]}
             >
               <Text style={styles.privacyLinkText}>View Privacy Policy</Text>

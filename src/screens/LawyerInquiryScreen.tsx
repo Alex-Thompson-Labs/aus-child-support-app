@@ -141,7 +141,7 @@ export function LawyerInquiryScreen() {
   } : {};
 
   const handlePrivacyPolicyPress = () => {
-    const privacyPolicyUrl = 'https://bespoke-gumption-e0c968.netlify.app';
+    const privacyPolicyUrl = 'https://auschildsupport.com/privacy-policy.html';
 
     if (Platform.OS === 'web') {
       window.open(privacyPolicyUrl, '_blank');
