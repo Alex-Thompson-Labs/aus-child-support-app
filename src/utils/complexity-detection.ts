@@ -200,7 +200,7 @@ export function getAlertConfig(
   // Priority 1: Urgent court date
   if (flags.courtDateUrgent) {
     return {
-      title: "⚖️ URGENT: Court Date Soon",
+      title: "URGENT: Court Date Soon",
       message: "You need legal advice BEFORE your court appearance.",
       urgency: 'high',
       buttonText: "Get Emergency Consultation"
@@ -301,7 +301,7 @@ export function getAlertConfig(
   // Priority 3: Shared care dispute
   if (flags.sharedCareDispute) {
     return {
-      title: "⚖️ Care Arrangement in Dispute Zone",
+      title: "Care Arrangement in Dispute Zone",
       message: "Shared care between 35-65% is often contested. Consider professional advice.",
       urgency: 'medium',
       buttonText: "Get Guidance"

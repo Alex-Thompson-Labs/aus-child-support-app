@@ -200,7 +200,7 @@ export function ChangeOfAssessmentPrompt({
         </View>
         <View style={styles.checkboxLabelContainer}>
           <Text style={styles.checkboxLabel}>{reason.label}</Text>
-          <HelpTooltip what={reason.description} why={reason.description} />
+          <HelpTooltip what={reason.description} why="" hideWhatLabel />
         </View>
       </Pressable>
     );

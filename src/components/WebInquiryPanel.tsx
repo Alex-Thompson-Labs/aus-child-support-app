@@ -266,14 +266,17 @@ export function WebInquiryPanel({
       <ScrollView style={styles.scrollContent} contentContainerStyle={styles.scrollContentContainer}>
         {/* COA Reasons Card */}
         {validCoAReasons.length > 0 && (
-          <View style={styles.coaCard}>
-            <Text style={styles.coaTitle}>CHANGE OF ASSESSMENT GROUNDS</Text>
+          <View style={styles.coaSection}>
+            <Text style={styles.coaSectionTitle}>CHANGE OF ASSESSMENT GROUNDS SELECTED</Text>
             {validCoAReasons.map((reason, index) => (
-              <View key={reason.id || index} style={styles.coaReason}>
-                <Text style={styles.coaReasonIcon}>
-                  {reason.urgency === 'URGENT' ? '⚠️' : '📋'}
-                </Text>
-                <Text style={styles.coaReasonText}>{reason.label}</Text>
+              <View key={reason.id || index} style={styles.coaReasonCard}>
+                <View style={styles.coaReasonHeader}>
+                  <Text style={styles.coaReasonIcon}>⚠</Text>
+                  <View style={styles.coaReasonTextContainer}>
+                    <Text style={styles.coaReasonTitle}>{reason.label}</Text>
+                    <Text style={styles.coaReasonDescription}>{reason.description}</Text>
+                  </View>
+                </View>
               </View>
             ))}
           </View>
@@ -326,12 +329,12 @@ export function WebInquiryPanel({
             </View>
 
             <View style={styles.field}>
-              <Text style={styles.label}>Location</Text>
+              <Text style={styles.label}>Postcode *</Text>
               <TextInput
                 style={[styles.input, webInputStyles]}
                 value={location}
                 onChangeText={setLocation}
-                placeholder="e.g. Sydney, NSW"
+                placeholder="e.g. 2000"
                 placeholderTextColor="#64748b"
               />
             </View>
@@ -464,32 +467,50 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 16,
   },
-  coaCard: {
-    backgroundColor: '#fffbeb', // amber-50, very light amber tint
-    borderRadius: 8,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#f59e0b', // amber-500
+  coaSection: {
+    marginBottom: 16,
   },
-  coaTitle: {
-    fontSize: 11,
-    fontWeight: '600',
+  coaSectionTitle: {
+    fontSize: 14,
+    fontWeight: '700',
     color: '#4a5568', // dark grey
+    textTransform: 'uppercase',
     letterSpacing: 0.5,
-    marginBottom: 8,
+    marginBottom: 12,
   },
-  coaReason: {
+  coaReasonCard: {
+    backgroundColor: '#eff6ff', // Blue-50 - very light blue
+    borderWidth: 1,
+    borderLeftWidth: 4,
+    borderColor: '#3b82f6', // Blue-500 - left accent border
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 12,
+  },
+  coaReasonHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: 8,
-    paddingVertical: 4,
   },
   coaReasonIcon: {
-    fontSize: 14,
+    fontSize: 16,
+    color: '#3b82f6', // Blue-500
+    marginTop: 2,
   },
-  coaReasonText: {
+  coaReasonTextContainer: {
+    flex: 1,
+    gap: 4,
+  },
+  coaReasonTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1e40af', // Blue-800 - dark blue
+    lineHeight: 18,
+  },
+  coaReasonDescription: {
     fontSize: 13,
-    color: '#2d3748', // dark grey
+    color: '#475569', // Slate-600 - medium grey
+    lineHeight: 18,
   },
   formColumns: {
     flexDirection: 'row',
@@ -542,7 +563,7 @@ const styles = StyleSheet.create({
     padding: 10,
     color: '#1a202c',
     fontSize: 14,
-    minHeight: 80,
+    minHeight: 160,
     textAlignVertical: 'top',
   },
   inputError: {
@@ -647,7 +668,7 @@ const styles = StyleSheet.create({
   successTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#ffffff',
+    color: '#1a202c', // near black
   },
   successText: {
     fontSize: 14,

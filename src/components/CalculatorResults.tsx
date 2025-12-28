@@ -305,9 +305,7 @@ export function CalculatorResults({
       showsVerticalScrollIndicator={true}
     >
       {/* Hero Section in Expanded View */}
-      <View
-        style={[styles.expandedHeroSection, { backgroundColor: getSolidBackgroundColor(results.payer) }]}
-      >
+      <View style={styles.expandedHeroSection}>
         <Text style={styles.expandedHeroLabel}>
           {results.payer === "Neither" ? "No payment required" : `${results.payer} pays`}
         </Text>
@@ -379,9 +377,7 @@ export function CalculatorResults({
         {/* Left Column: Hero + COA */}
         <View style={styles.leftColumn}>
           {/* Hero Section */}
-          <View
-            style={[styles.inlineHeroSection, { backgroundColor: getSolidBackgroundColor(results.payer) }]}
-          >
+          <View style={styles.inlineHeroSection}>
             <Text style={styles.expandedHeroLabel}>
               {results.payer === "Neither" ? "No payment required" : `${results.payer} pays`}
             </Text>
@@ -475,6 +471,7 @@ export function CalculatorResults({
         <Pressable
           onPress={toggleExpand}
           style={[
+            styles.fixedBottomCardWrapper,
             { paddingBottom: Math.max(insets.bottom, 16) },
             isWeb && webClickableStyles,
             isWeb && styles.fixedBottomCardWebWrapper,
@@ -551,12 +548,22 @@ export function CalculatorResults({
 }
 
 const styles = StyleSheet.create({
-  // Fixed bottom card styles (collapsed state)
-  fixedBottomCard: {
+  // Fixed bottom card wrapper (for positioning)
+  fixedBottomCardWrapper: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
+    alignItems: 'center', // Center the card horizontally
+    justifyContent: 'flex-end',
+    pointerEvents: 'box-none', // Allow taps to pass through wrapper to buttons below
+  },
+  fixedBottomCardWebWrapper: {
+    // Additional web-specific wrapper styles if needed
+  },
+  // Fixed bottom card styles (collapsed state)
+  fixedBottomCard: {
+    width: '100%', // Full width on mobile
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingHorizontal: 20,
@@ -567,14 +574,9 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 10,
   },
-  fixedBottomCardWebWrapper: {
-    // Center the card on web
-  },
   fixedBottomCardWeb: {
     maxWidth: MAX_CONTENT_WIDTH,
     marginHorizontal: 'auto',
-    left: 'auto',
-    right: 'auto',
     borderRadius: 16,
     marginBottom: 16,
   },
@@ -703,43 +705,53 @@ const styles = StyleSheet.create({
   },
   expandedHeroSection: {
     alignItems: "center",
-    paddingVertical: 32,
+    paddingVertical: 24,
+    paddingHorizontal: 24,
     borderRadius: 12,
-    marginBottom: 16,
+    marginBottom: 24,
+    backgroundColor: "#ffffff", // White background - no blue
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 4,
   },
   expandedHeroLabel: {
-    color: "#ffffff", // white
-    fontSize: 14,
+    color: "#718096", // Medium grey
+    fontSize: 16,
     fontWeight: "500",
-    marginBottom: 4,
+    marginBottom: 8,
   },
   expandedHeroAmount: {
-    fontSize: 48,
+    fontSize: 56, // LARGE - most important element
     fontWeight: "700",
-    color: "#1a202c", // near black for maximum contrast on blue
+    color: "#1a202c", // Near black - highest contrast
     letterSpacing: -1,
+    marginBottom: 4,
   },
   expandedHeroSubtext: {
-    color: "#ffffff", // white
-    fontSize: 14,
-    marginBottom: 16,
+    color: "#718096", // Medium grey
+    fontSize: 16,
+    fontWeight: "400",
+    marginBottom: 20,
   },
   expandedSecondaryAmounts: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-around",
+    width: "100%",
     gap: 16,
   },
   expandedSecondaryItem: {
     alignItems: "center",
+    flex: 1,
   },
   expandedSecondaryValue: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#2d3748", // dark grey on white card
+    fontSize: 18, // Larger than current
+    fontWeight: "600", // Semi-bold
+    color: "#4a5568", // Dark grey
   },
   expandedSecondaryLabel: {
     fontSize: 12,
@@ -1036,13 +1048,18 @@ const styles = StyleSheet.create({
   },
   inlineHeroSection: {
     alignItems: "center",
-    paddingVertical: 32,
+    paddingVertical: 24,
+    paddingHorizontal: 24,
     borderRadius: 12,
-    marginBottom: 16,
+    marginBottom: 24,
+    backgroundColor: "#ffffff", // White background - no blue
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 4,
   },
 
   // Two-column layout styles (new web layout)

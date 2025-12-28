@@ -19,6 +19,7 @@ import { getCoAReasonById } from '../src/utils/change-of-assessment-reasons';
 import type { ChangeOfAssessmentReason } from '../src/utils/change-of-assessment-reasons';
 import { submitLead } from '../src/utils/supabase';
 import type { LeadSubmission } from '../src/utils/supabase';
+import { MAX_FORM_WIDTH, isWeb } from '../src/utils/responsive';
 
 // ============================================================================
 // Types
@@ -28,6 +29,7 @@ interface FormErrors {
     name?: string;
     email?: string;
     phone?: string;
+    postcode?: string;
     message?: string;
     consent?: string;
 }
@@ -36,6 +38,7 @@ interface FormTouched {
     name: boolean;
     email: boolean;
     phone: boolean;
+    postcode: boolean;
     message: boolean;
     consent: boolean;
 }
@@ -138,6 +141,24 @@ function validatePhone(phone: string): string | undefined {
 }
 
 /**
+ * Validate postcode field (required)
+ */
+function validatePostcode(postcode: string): string | undefined {
+    const sanitized = postcode.trim();
+
+    if (!sanitized) {
+        return 'Postcode is required';
+    }
+
+    // Basic validation: 3-10 characters (covers various postcode formats)
+    if (sanitized.length < 3 || sanitized.length > 10) {
+        return 'Please enter a valid postcode';
+    }
+
+    return undefined;
+}
+
+/**
  * Validate message field
  */
 function validateMessage(message: string): string | undefined {
@@ -204,6 +225,7 @@ export default function LawyerInquiryScreen() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
+    const [postcode, setPostcode] = useState('');
     const [message, setMessage] = useState('');
     const [consent, setConsent] = useState(false);
 
@@ -213,6 +235,7 @@ export default function LawyerInquiryScreen() {
         name: false,
         email: false,
         phone: false,
+        postcode: false,
         message: false,
         consent: false
     });
@@ -271,6 +294,8 @@ export default function LawyerInquiryScreen() {
                 return validateEmail(value as string);
             case 'phone':
                 return validatePhone(value as string);
+            case 'postcode':
+                return validatePostcode(value as string);
             case 'message':
                 return validateMessage(value as string);
             case 'consent':
@@ -288,6 +313,7 @@ export default function LawyerInquiryScreen() {
             name: validateName(name),
             email: validateEmail(email),
             phone: validatePhone(phone),
+            postcode: validatePostcode(postcode),
             message: validateMessage(message),
             consent: validateConsent(consent)
         };
@@ -299,13 +325,14 @@ export default function LawyerInquiryScreen() {
             name: true,
             email: true,
             phone: true,
+            postcode: true,
             message: true,
             consent: true
         });
 
         // Check if any errors exist
         return !Object.values(newErrors).some(error => error !== undefined);
-    }, [name, email, phone, message, consent]);
+    }, [name, email, phone, postcode, message, consent]);
 
     /**
      * Handle field blur - validate and show error
@@ -317,11 +344,12 @@ export default function LawyerInquiryScreen() {
             field === 'name' ? name :
                 field === 'email' ? email :
                     field === 'phone' ? phone :
-                        message;
+                        field === 'postcode' ? postcode :
+                            message;
 
         const error = validateField(field, value);
         setErrors(prev => ({ ...prev, [field]: error }));
-    }, [name, email, phone, message, consent, validateField]);
+    }, [name, email, phone, postcode, message, consent, validateField]);
 
     /**
      * Handle text change - clear error when user starts typing
@@ -425,7 +453,7 @@ export default function LawyerInquiryScreen() {
                 parent_name: sanitizeString(name),
                 parent_email: sanitizeEmail(email),
                 parent_phone: sanitizePhone(phone) || null,
-                location: null, // We don't collect location yet
+                location: postcode.trim() || null,
                 
                 // Calculation data
                 income_parent_a: parseFloat(incomeA) || 0,
@@ -521,6 +549,13 @@ export default function LawyerInquiryScreen() {
         return `$${Math.round(num).toLocaleString()}`;
     };
 
+    // Web-specific container styles
+    const webContainerStyle = isWeb ? {
+        maxWidth: MAX_FORM_WIDTH,
+        width: '100%' as const,
+        alignSelf: 'center' as const,
+    } : {};
+
     // Success overlay
     if (showSuccess) {
         return (
@@ -545,38 +580,29 @@ export default function LawyerInquiryScreen() {
             >
                 <ScrollView
                     style={styles.scrollView}
-                    contentContainerStyle={styles.scrollContent}
+                    contentContainerStyle={[styles.scrollContent, webContainerStyle]}
                     keyboardShouldPersistTaps="handled"
                 >
                     <Text style={styles.title}>Request Legal Help</Text>
 
                     {/* Change of Assessment Reasons Card - Show only if reasons exist */}
                     {validCoAReasons.length > 0 && (
-                        <View style={[
-                            styles.coaCard,
-                            hasUrgentReasonsForDisplay && styles.coaCardUrgent
-                        ]}>
-                            <Text style={styles.coaTitle}>📋 CHANGE OF ASSESSMENT GROUNDS SELECTED</Text>
-                            
+                        <View style={styles.coaSection}>
+                            <Text style={styles.coaSectionTitle}>CHANGE OF ASSESSMENT GROUNDS SELECTED</Text>
+
                             {validCoAReasons.map((reason, index) => (
-                                <View key={reason.id} style={[
-                                    styles.coaReasonContainer,
-                                    index < validCoAReasons.length - 1 && styles.coaReasonBorder
-                                ]}>
+                                <View key={reason.id} style={styles.coaReasonCard}>
                                     <View style={styles.coaReasonHeader}>
-                                        <Text style={[
-                                            styles.coaReasonIcon,
-                                            reason.urgency === 'URGENT' ? styles.coaIconUrgent : styles.coaIconNormal
-                                        ]}>
-                                            {reason.urgency === 'URGENT' ? '⚠️' : '📋'}
-                                        </Text>
-                                        <Text style={styles.coaReasonLabel}>
-                                            {reason.label}
-                                        </Text>
+                                        <Text style={styles.coaReasonIcon}>⚠</Text>
+                                        <View style={styles.coaReasonTextContainer}>
+                                            <Text style={styles.coaReasonTitle}>
+                                                {reason.label}
+                                            </Text>
+                                            <Text style={styles.coaReasonDescription}>
+                                                {reason.description}
+                                            </Text>
+                                        </View>
                                     </View>
-                                    <Text style={styles.coaReasonDescription}>
-                                        {reason.description}
-                                    </Text>
                                 </View>
                             ))}
                         </View>
@@ -702,6 +728,27 @@ export default function LawyerInquiryScreen() {
                         )}
                     </View>
 
+                    {/* Postcode Input */}
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            style={[styles.input, touched.postcode && errors.postcode && styles.inputError]}
+                            placeholder="Postcode *"
+                            placeholderTextColor="#64748b"
+                            value={postcode}
+                            onChangeText={(value) => handleTextChange('postcode', value, setPostcode)}
+                            onBlur={() => handleBlur('postcode')}
+                            returnKeyType="next"
+                            onSubmitEditing={() => messageRef.current?.focus()}
+                            maxLength={10}
+                            editable={!isSubmitting}
+                            accessibilityLabel="Postcode"
+                            accessibilityHint="Enter your postcode"
+                        />
+                        {touched.postcode && errors.postcode && (
+                            <Text style={styles.errorText}>{errors.postcode}</Text>
+                        )}
+                    </View>
+
                     {/* Message Input */}
                     <View style={styles.inputContainer}>
                         <TextInput
@@ -808,7 +855,7 @@ export default function LawyerInquiryScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0f172a', // slate-900
+        backgroundColor: '#f8f9fa', // soft warm grey background
     },
     keyboardView: {
         flex: 1,
@@ -823,78 +870,70 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         fontWeight: '700',
-        color: '#ffffff',
+        color: '#1a202c', // near black
         marginBottom: 20,
     },
-    // Change of Assessment card styles
-    coaCard: {
-        backgroundColor: '#1e293b', // slate-800
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 20,
-        borderWidth: 2,
-        borderColor: '#334155', // slate-700 (normal)
+    // Change of Assessment section styles
+    coaSection: {
+        marginBottom: 24,
     },
-    coaCardUrgent: {
-        borderColor: '#ef4444', // red-500 (urgent)
-    },
-    coaTitle: {
-        fontSize: 13,
+    coaSectionTitle: {
+        fontSize: 14,
         fontWeight: '700',
-        color: '#94a3b8', // slate-400
+        color: '#4a5568', // dark grey
+        textTransform: 'uppercase',
         letterSpacing: 0.5,
-        marginBottom: 16,
-    },
-    coaReasonContainer: {
         marginBottom: 12,
     },
-    coaReasonBorder: {
-        paddingBottom: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: '#334155', // slate-700
+    coaReasonCard: {
+        backgroundColor: '#eff6ff', // Blue-50 - very light blue
+        borderWidth: 1,
+        borderLeftWidth: 4,
+        borderColor: '#3b82f6', // Blue-500 - left accent border
+        borderRadius: 8,
+        padding: 16,
+        marginBottom: 12,
     },
     coaReasonHeader: {
         flexDirection: 'row',
         alignItems: 'flex-start',
-        marginBottom: 6,
+        gap: 8,
     },
     coaReasonIcon: {
         fontSize: 16,
-        marginRight: 8,
+        color: '#3b82f6', // Blue-500
         marginTop: 2,
     },
-    coaIconUrgent: {
-        color: '#ef4444', // red-500
-    },
-    coaIconNormal: {
-        color: '#3b82f6', // blue-500
-    },
-    coaReasonLabel: {
+    coaReasonTextContainer: {
         flex: 1,
-        fontSize: 15,
+        gap: 4,
+    },
+    coaReasonTitle: {
+        fontSize: 14,
         fontWeight: '600',
-        color: '#ffffff',
-        lineHeight: 20,
+        color: '#1e40af', // Blue-800 - dark blue
+        lineHeight: 18,
     },
     coaReasonDescription: {
         fontSize: 13,
-        color: '#94a3b8', // slate-400
+        color: '#475569', // Slate-600 - medium grey
         lineHeight: 18,
-        marginLeft: 24, // Align with label (icon width + margin)
     },
     summaryCard: {
-        backgroundColor: '#1e293b', // slate-800
+        backgroundColor: '#f9fafb', // very light grey
         borderRadius: 12,
         padding: 16,
         marginBottom: 24,
         borderWidth: 1,
-        borderColor: '#334155', // slate-700
+        borderColor: '#e5e7eb', // light grey
     },
     summaryTitle: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#ffffff',
-        marginBottom: 12,
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#4a5568', // dark grey
+        marginBottom: 16,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
     },
     summaryRow: {
         flexDirection: 'row',
@@ -904,27 +943,27 @@ const styles = StyleSheet.create({
     },
     summaryLabel: {
         fontSize: 14,
-        color: '#94a3b8', // slate-400
+        color: '#6b7280', // grey-500
     },
     summaryAmount: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#2563eb', // blue-600
+        color: '#3b82f6', // blue-500
     },
     summaryValue: {
         fontSize: 14,
         fontWeight: '500',
-        color: '#ffffff',
+        color: '#1a202c', // near black
     },
     summarySeparator: {
         height: 1,
-        backgroundColor: '#334155', // slate-700
+        backgroundColor: '#e5e7eb', // light grey
         marginVertical: 12,
     },
     summarySubtitle: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#cbd5e1', // slate-300
+        color: '#4a5568', // dark grey
         marginBottom: 8,
     },
     careRow: {
@@ -932,7 +971,7 @@ const styles = StyleSheet.create({
     },
     careChildLabel: {
         fontSize: 13,
-        color: '#94a3b8', // slate-400
+        color: '#6b7280', // grey-500
         marginBottom: 4,
     },
     carePercentages: {
@@ -943,41 +982,43 @@ const styles = StyleSheet.create({
     careValue: {
         fontSize: 13,
         fontWeight: '500',
-        color: '#e2e8f0', // slate-200
+        color: '#1a202c', // near black
     },
     careSeparator: {
         fontSize: 13,
-        color: '#64748b', // slate-500
+        color: '#9ca3af', // grey-400
     },
     formTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#ffffff',
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#4a5568', // dark grey
         marginBottom: 16,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
     },
     inputContainer: {
         marginBottom: 12,
     },
     input: {
-        backgroundColor: '#1e293b', // slate-800
-        color: '#ffffff',
+        backgroundColor: '#ffffff', // white
+        color: '#1a202c', // near black
         borderRadius: 8,
         padding: 12,
-        borderWidth: 1,
-        borderColor: '#334155', // slate-700
+        borderWidth: 1.5,
+        borderColor: '#e2e8f0', // light grey
         fontSize: 16,
     },
     inputError: {
         borderColor: '#ef4444', // red-500
     },
     textArea: {
-        height: 100,
+        height: 200,
         textAlignVertical: 'top',
         paddingTop: 12,
     },
     charCount: {
         fontSize: 12,
-        color: '#64748b', // slate-500
+        color: '#9ca3af', // grey-400
         textAlign: 'right',
         marginTop: 4,
     },
@@ -997,16 +1038,16 @@ const styles = StyleSheet.create({
         height: 24,
         borderRadius: 4,
         borderWidth: 2,
-        borderColor: '#334155', // slate-700
-        backgroundColor: '#1e293b', // slate-800
+        borderColor: '#9ca3af', // grey-400
+        backgroundColor: '#ffffff', // white
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 12,
         marginTop: 2,
     },
     checkboxChecked: {
-        backgroundColor: '#f59e0b', // amber-500
-        borderColor: '#f59e0b',
+        backgroundColor: '#3b82f6', // blue-500
+        borderColor: '#3b82f6',
     },
     checkboxError: {
         borderColor: '#ef4444', // red-500
@@ -1021,7 +1062,7 @@ const styles = StyleSheet.create({
     },
     checkboxLabel: {
         fontSize: 14,
-        color: '#cbd5e1', // slate-300
+        color: '#4b5563', // grey-600
         lineHeight: 20,
     },
     checkboxErrorText: {
@@ -1038,17 +1079,18 @@ const styles = StyleSheet.create({
         textDecorationLine: 'underline',
     },
     button: {
-        backgroundColor: '#2563eb', // blue-600
+        backgroundColor: '#3b82f6', // blue-500
         borderRadius: 8,
         paddingVertical: 16,
         alignItems: 'center',
         marginTop: 20,
     },
     buttonPressed: {
-        backgroundColor: '#1d4ed8', // blue-700
+        backgroundColor: '#2563eb', // blue-600
     },
     buttonDisabled: {
-        backgroundColor: '#64748b', // slate-500
+        backgroundColor: '#9ca3af', // grey-400
+        opacity: 0.6,
     },
     buttonContent: {
         flexDirection: 'row',
@@ -1063,7 +1105,7 @@ const styles = StyleSheet.create({
     // Success screen styles
     successContainer: {
         flex: 1,
-        backgroundColor: '#0f172a', // slate-900
+        backgroundColor: '#f8f9fa', // soft warm grey
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -1073,18 +1115,18 @@ const styles = StyleSheet.create({
     },
     successIcon: {
         fontSize: 64,
-        color: '#22c55e', // green-500
+        color: '#10b981', // emerald-500
         marginBottom: 24,
     },
     successTitle: {
         fontSize: 28,
         fontWeight: '700',
-        color: '#ffffff',
+        color: '#1a202c', // near black
         marginBottom: 16,
     },
     successMessage: {
         fontSize: 16,
-        color: '#94a3b8', // slate-400
+        color: '#6b7280', // grey-500
         textAlign: 'center',
         lineHeight: 24,
     },

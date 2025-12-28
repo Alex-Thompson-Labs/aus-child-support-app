@@ -23,10 +23,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAnalytics } from '@/src/utils/analytics';
 import { formatCoAReasonsForLead } from '@/src/utils/complexity-detection';
 import type { ChangeOfAssessmentReason } from '@/src/utils/change-of-assessment-reasons';
-import { getCoAReasonById, getCategoryDisplayInfo, formatOfficialCoAReasons } from '@/src/utils/change-of-assessment-reasons';
+import { getCoAReasonById, formatOfficialCoAReasons } from '@/src/utils/change-of-assessment-reasons';
 import { useResponsive, MAX_FORM_WIDTH, isWeb, webInputStyles, webClickableStyles } from '@/src/utils/responsive';
 import { supabase, submitLead } from '@/src/utils/supabase';
-import { CategoryIcon } from '@/src/components/CategoryIcon';
 
 export function LawyerInquiryScreen() {
   const params = useLocalSearchParams();
@@ -131,19 +130,6 @@ export function LawyerInquiryScreen() {
   const validCoAReasons: ChangeOfAssessmentReason[] = selectedCoAReasons
     .map(id => getCoAReasonById(id))
     .filter((reason): reason is ChangeOfAssessmentReason => reason !== null);
-
-  // Determine most important category (for card border styling)
-  // Priority: urgent > income > child > other
-  const mostImportantCategory = validCoAReasons.reduce<'urgent' | 'income' | 'child' | 'other' | null>(
-    (highest, reason) => {
-      if (!highest) return reason.category;
-      if (reason.category === 'urgent') return 'urgent';
-      if (reason.category === 'income' && highest !== 'urgent') return 'income';
-      if (reason.category === 'child' && highest !== 'urgent' && highest !== 'income') return 'child';
-      return highest;
-    },
-    null
-  );
 
   const { isMobile, isDesktop } = useResponsive();
 
@@ -336,33 +322,26 @@ export function LawyerInquiryScreen() {
 
           {/* Complexity Triggers Card - Show only if reasons exist */}
           {validCoAReasons.length > 0 && (
-            <View style={[
-              styles.coaCard,
-              mostImportantCategory && {
-                borderColor: getCategoryDisplayInfo(mostImportantCategory).accentColor,
-                borderWidth: 2,
-              }
-            ]}>
-              <Text style={styles.coaTitle}>💭 COMPLEXITY TRIGGERS SELECTED</Text>
+            <View style={styles.coaSection}>
+              <Text style={styles.coaSectionTitle}>CHANGE OF ASSESSMENT GROUNDS SELECTED</Text>
 
               {validCoAReasons.map((reason, index) => {
                 return (
-                  <View key={reason.id} style={[
-                    styles.coaReasonContainer,
-                    index < validCoAReasons.length - 1 && styles.coaReasonBorder
-                  ]}>
+                  <View key={reason.id} style={styles.coaReasonCard}>
                     <View style={styles.coaReasonHeader}>
-                      <CategoryIcon category={reason.category} size={20} circleSize={32} />
+                      <Text style={styles.coaReasonIcon}>⚠</Text>
                       <Text style={styles.coaReasonLabel} numberOfLines={2}>
                         {reason.label}
                       </Text>
                     </View>
-                    <Text style={styles.coaReasonDescription} numberOfLines={3}>
+                    <Text style={styles.coaReasonDescription}>
                       {reason.description}
                     </Text>
-                    <Text style={styles.coaOfficialReasons}>
-                      Official grounds: {formatOfficialCoAReasons(reason)}
-                    </Text>
+                    {reason.officialCoAReasons && reason.officialCoAReasons.length > 0 && (
+                      <Text style={styles.coaOfficialReasons}>
+                        Official grounds: {formatOfficialCoAReasons(reason)}
+                      </Text>
+                    )}
                   </View>
                 );
               })}
@@ -430,11 +409,12 @@ export function LawyerInquiryScreen() {
 
           <TextInput
             style={[styles.input, isWeb && webInputStyles]}
-            placeholder="Location (e.g. Sydney, NSW)"
+            placeholder="Postcode"
             placeholderTextColor="#9ca3af"
             value={location}
             onChangeText={setLocation}
-            accessibilityLabel="Location"
+            accessibilityLabel="Postcode"
+            accessibilityRequired={true}
           />
 
           <TextInput
@@ -516,56 +496,54 @@ const styles = StyleSheet.create({
     fontSize: 32,
     marginBottom: 12,
   },
-  // Complexity triggers card styles
-  coaCard: {
-    backgroundColor: '#ffffff', // white for light mode
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 20,
-    borderWidth: 2,
-    borderColor: '#e5e7eb', // light grey (default, overridden inline by category color)
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
+  // Complexity triggers section styles
+  coaSection: {
+    marginBottom: 24,
   },
-  coaTitle: {
-    fontSize: 12,
+  coaSectionTitle: {
+    fontSize: 14,
     fontWeight: '700',
-    color: '#6b7280', // grey-500
-    letterSpacing: 0.5,
-    marginBottom: 16,
+    color: '#4a5568', // dark grey
     textTransform: 'uppercase',
-  },
-  coaReasonContainer: {
+    letterSpacing: 0.5,
     marginBottom: 12,
   },
-  coaReasonBorder: {
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb', // light grey
+  coaReasonCard: {
+    backgroundColor: '#eff6ff', // Blue-50 - very light blue
+    borderWidth: 1,
+    borderLeftWidth: 4,
+    borderColor: '#3b82f6', // Blue-500 - left accent border
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 12,
   },
   coaReasonHeader: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 6,
+    marginBottom: 4,
+  },
+  coaReasonIcon: {
+    fontSize: 16,
+    color: '#3b82f6', // Blue-500
+    marginRight: 8,
+    marginTop: 2,
   },
   coaReasonLabel: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#1a202c', // near black
-    lineHeight: 20,
+    color: '#1e40af', // Blue-800 - dark blue
+    lineHeight: 18,
   },
   coaReasonDescription: {
     fontSize: 13,
-    color: '#4b5563', // grey-600
+    color: '#475569', // Slate-600 - medium grey
     lineHeight: 18,
     marginLeft: 24, // Align with label (icon width + margin)
   },
   coaOfficialReasons: {
     fontSize: 11,
-    color: '#6b7280', // grey-500
+    color: '#64748b', // Slate-500
     fontStyle: 'italic',
     marginTop: 4,
     marginLeft: 24, // Align with description
@@ -585,8 +563,8 @@ const styles = StyleSheet.create({
   },
   summaryTitle: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#1a202c', // near black
+    fontWeight: '700',
+    color: '#4a5568', // dark grey
     marginBottom: 16,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -613,8 +591,8 @@ const styles = StyleSheet.create({
   },
   formTitle: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#1a202c', // near black
+    fontWeight: '700',
+    color: '#4a5568', // dark grey
     marginTop: 8,
     marginBottom: 16,
     textTransform: 'uppercase',
@@ -626,17 +604,17 @@ const styles = StyleSheet.create({
     fontSize: 16, // minimum 16px to prevent iOS zoom
     borderRadius: 8,
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 12,
     marginBottom: 16,
     borderWidth: 1.5,
-    borderColor: '#e5e7eb', // light grey
+    borderColor: '#e2e8f0', // light grey
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
   },
   textArea: {
-    height: 120,
+    height: 240,
     textAlignVertical: 'top',
     paddingTop: 14, // Ensure consistent padding
   },

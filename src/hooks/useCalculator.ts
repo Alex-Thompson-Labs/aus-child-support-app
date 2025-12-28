@@ -25,17 +25,9 @@ export interface CalculatorFormState {
   relDepB: RelevantDependents;
 }
 
-// Start with one child pre-filled for better UX on all platforms
+// Start with no children - user must click "Add Child" to begin
 const getInitialChildren = (): ChildInput[] => {
-  return [
-    {
-      id: `child-${Date.now()}`,
-      age: "Under 13",
-      careAmountA: 8,
-      careAmountB: 6,
-      carePeriod: "fortnight",
-    },
-  ];
+  return [];
 };
 
 const initialFormState: CalculatorFormState = {

@@ -523,7 +523,7 @@ const popoverStyles = StyleSheet.create({
   parentLabelA: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#3b82f6', // blue-500
+    color: '#4a5568', // dark grey - consistent
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     textAlign: 'center',
@@ -531,7 +531,7 @@ const popoverStyles = StyleSheet.create({
   parentLabelB: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#8b5cf6', // violet-500
+    color: '#4a5568', // dark grey - consistent
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     textAlign: 'center',
@@ -640,8 +640,9 @@ export function CalculatorForm({
     alignSelf: 'center' as const,
   } : {};
 
-  // Adjust bottom padding: smaller padding now that we have Calculate button (no floating card until results)
-  const contentPaddingBottom = isDesktopWeb ? 40 : 40;
+  // Adjust bottom padding: larger padding on mobile to ensure buttons stay above results card
+  // Increased to 250 to accommodate the blue results footer at the bottom (approx 200px height)
+  const contentPaddingBottom = isDesktopWeb ? 40 : 250;
 
   // Responsive input width - sized for 8 digits (up to $99,999,999)
   const inputWidth = isMobile ? 160 : isDesktop ? 200 : 180;
@@ -872,14 +873,14 @@ const styles = StyleSheet.create({
   parentTitleA: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#3b82f6", // blue-500
+    color: "#4a5568", // dark grey - consistent with Parent B
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   parentTitleB: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#8b5cf6", // violet-500
+    color: "#4a5568", // dark grey - consistent with Parent A
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },

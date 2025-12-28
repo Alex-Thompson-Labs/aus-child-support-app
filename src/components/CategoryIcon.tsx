@@ -22,23 +22,18 @@ interface CategoryIconProps {
  * with 10% opacity background of the same color.
  */
 export function CategoryIcon({ category, size = 20, circleSize = 32 }: CategoryIconProps) {
-  // Icon and color mapping
-  const iconConfig: Record<ComplexityCategory, { Icon: React.ComponentType<any>; color: string }> = {
-    urgent: { Icon: AlertCircle, color: '#dc2626' }, // red-600
-    income: { Icon: DollarSign, color: '#d97706' }, // amber-600
-    child: { Icon: Users, color: '#7c3aed' }, // violet-600
-    other: { Icon: Info, color: '#0891b2' }, // cyan-600
+  // Icon mapping - ALL icons use same grey color for consistency
+  const iconConfig: Record<ComplexityCategory, { Icon: React.ComponentType<any> }> = {
+    urgent: { Icon: AlertCircle },
+    income: { Icon: DollarSign },
+    child: { Icon: Users },
+    other: { Icon: Info },
   };
 
-  const { Icon, color } = iconConfig[category];
+  const { Icon } = iconConfig[category];
 
-  // Convert hex to rgba with 10% opacity for background
-  const hexToRgba = (hex: string, alpha: number): string => {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  };
+  // Consistent grey color for all category icons
+  const iconColor = '#718096'; // medium grey
 
   return (
     <View
@@ -48,13 +43,13 @@ export function CategoryIcon({ category, size = 20, circleSize = 32 }: CategoryI
           width: circleSize,
           height: circleSize,
           borderRadius: circleSize / 2,
-          backgroundColor: hexToRgba(color, 0.1) // 10% opacity
+          backgroundColor: '#f1f5f9' // light grey background
         }
       ]}
     >
       <Icon
         size={size}
-        color={color}
+        color={iconColor}
         strokeWidth={2}
       />
     </View>

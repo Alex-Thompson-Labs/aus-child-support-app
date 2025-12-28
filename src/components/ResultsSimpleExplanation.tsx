@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { CalculationResults } from "../types/calculator";
-import { webClickableStyles } from "../utils/responsive";
+import { isWeb, webClickableStyles } from "../utils/responsive";
 import { detectZeroPaymentScenario, isFarLimitReached } from "../utils/zero-payment-detection";
 import { HelpTooltip } from "./HelpTooltip";
 
@@ -20,17 +20,45 @@ const formatPercent = (num: number): string => {
   return `${Math.round(num)}%`;
 };
 
-// Helper to get gradient colors based on payer
-const getGradientColors = (payer: string) => {
-  if (payer === "Neither") {
-    return ['#475569', '#475569', '#334155'] as const; // slate gradient for no payment
-  }
+// Minimal Color System - Professional Legal/Financial Calculator
+const COLORS = {
+  // Backgrounds
+  bg: {
+    primary: '#ffffff',      // Main background
+    card: '#ffffff',         // Card backgrounds
+    input: '#ffffff',        // Input fields
+    subtle: '#f8f9fa',       // Subtle backgrounds for sections
+  },
 
-  if (payer === "Parent A") {
-    return ['#3b82f6', '#1e40af', '#8b5cf6'] as const; // blue → dark blue → purple
-  }
+  // Borders
+  border: {
+    default: '#e2e8f0',      // Default borders
+    focus: '#3b82f6',        // Focus state
+    subtle: '#f1f5f9',       // Very subtle dividers
+  },
 
-  return ['#8b5cf6', '#5b21b6', '#3b82f6'] as const; // purple → dark purple → blue
+  // Text
+  text: {
+    primary: '#1a202c',      // Main text, headings - near black
+    secondary: '#4a5568',    // Subheadings, labels - dark grey
+    tertiary: '#718096',     // Helper text - medium grey
+    disabled: '#a0aec0',     // Disabled text - light grey
+  },
+
+  // Accent Colors - ONLY use where specified
+  accent: {
+    primary: '#3b82f6',      // Primary actions, links - blue
+    warning: '#d97706',      // Warnings only - amber
+    danger: '#dc2626',       // Errors, destructive actions - red
+    success: '#059669',      // Success states - green
+  },
+
+  // Results Display
+  result: {
+    amount: '#1a202c',       // The dollar amount - highest contrast
+    label: '#718096',        // "Parent B pays" label
+    breakdown: '#4a5568',    // Monthly/fortnightly amounts
+  },
 };
 
 export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleExplanationProps) {
@@ -132,7 +160,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
         <View style={styles.deductionCards}>
           {/* Parent A breakdown */}
           <View style={styles.deductionCard}>
-            <Text style={[styles.deductionCardTitle, { color: '#3b82f6' }]}>PARENT A</Text>
+            <Text style={styles.deductionCardTitle}>PARENT A</Text>
             <View style={styles.deductionRow}>
               <Text style={styles.deductionLabel}>Adjusted taxable income</Text>
               <Text style={styles.deductionValue}>{formatCurrency(results.ATI_A)}</Text>
@@ -150,13 +178,13 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
             <View style={styles.deductionDivider} />
             <View style={styles.deductionRow}>
               <Text style={styles.deductionTotalLabel}>Child Support Income</Text>
-              <Text style={[styles.deductionTotalValue, { color: '#3b82f6' }]}>{formatCurrency(Math.max(0, results.CSI_A))}</Text>
+              <Text style={styles.deductionTotalValue}>{formatCurrency(Math.max(0, results.CSI_A))}</Text>
             </View>
           </View>
 
           {/* Parent B breakdown */}
           <View style={styles.deductionCard}>
-            <Text style={[styles.deductionCardTitle, { color: '#8b5cf6' }]}>PARENT B</Text>
+            <Text style={styles.deductionCardTitle}>PARENT B</Text>
             <View style={styles.deductionRow}>
               <Text style={styles.deductionLabel}>Adjusted taxable income</Text>
               <Text style={styles.deductionValue}>{formatCurrency(results.ATI_B)}</Text>
@@ -174,7 +202,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
             <View style={styles.deductionDivider} />
             <View style={styles.deductionRow}>
               <Text style={styles.deductionTotalLabel}>Child Support Income</Text>
-              <Text style={[styles.deductionTotalValue, { color: '#8b5cf6' }]}>{formatCurrency(Math.max(0, results.CSI_B))}</Text>
+              <Text style={styles.deductionTotalValue}>{formatCurrency(Math.max(0, results.CSI_B))}</Text>
             </View>
           </View>
         </View>
@@ -193,7 +221,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
 
         <View style={styles.incomeComparison}>
           <Text style={styles.careHeaderLabel}>
-            <Text style={{ color: '#3b82f6' }}>PARENT A</Text> - <Text style={{ color: '#3b82f6' }}>{formatPercent(results.incomePercA)}</Text>
+            <Text style={{ color: '#4a5568' }}>PARENT A</Text> - <Text style={{ color: '#4a5568' }}>{formatPercent(results.incomePercA)}</Text>
           </Text>
 
           {/* Visual bar */}
@@ -203,7 +231,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
           </View>
 
           <Text style={[styles.careHeaderLabel, { textAlign: 'right' }]}>
-            <Text style={{ color: '#8b5cf6' }}>PARENT B</Text> - <Text style={{ color: '#8b5cf6' }}>{formatPercent(results.incomePercB)}</Text>
+            <Text style={{ color: '#4a5568' }}>PARENT B</Text> - <Text style={{ color: '#4a5568' }}>{formatPercent(results.incomePercB)}</Text>
           </Text>
         </View>
           </>
@@ -235,7 +263,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
             <>
               {index === 0 && (
             <Text style={[styles.stepExplanation, { lineHeight: 22 }]}>
-              Each parent's nights of care for the child is converted to a <Text style={{ fontWeight: '600', color: '#06b6d4' }}>CARE PERCENTAGE</Text>
+              Each parent's nights of care for the child is converted to a <Text style={{ fontWeight: '600', color: '#3b82f6' }}>CARE PERCENTAGE</Text>
               <View style={{ transform: [{ scale: 0.85 }, { translateY: 3 }], marginLeft: 6 }}>
                 <HelpTooltip
                   header="CARE ROUNDING RULES"
@@ -249,7 +277,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
 
           <View style={styles.careComparison}>
             <Text style={styles.careHeaderLabel}>
-              <Text style={{ color: '#3b82f6' }}>PARENT A</Text> - <Text style={{ color: '#3b82f6' }}>{formatPercent(child.roundedCareA)}</Text>
+              <Text style={{ color: '#4a5568' }}>PARENT A</Text> - <Text style={{ color: '#4a5568' }}>{formatPercent(child.roundedCareA)}</Text>
             </Text>
 
             {/* Visual bar for care */}
@@ -259,7 +287,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
             </View>
 
              <Text style={[styles.careHeaderLabel, { textAlign: 'right' }]}>
-               <Text style={{ color: '#8b5cf6' }}>PARENT B</Text> - <Text style={{ color: '#8b5cf6' }}>{formatPercent(child.roundedCareB)}</Text>
+               <Text style={{ color: '#4a5568' }}>PARENT B</Text> - <Text style={{ color: '#4a5568' }}>{formatPercent(child.roundedCareB)}</Text>
              </Text>
 
             {index === 0 && (
@@ -267,19 +295,19 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                 <View style={{ height: 1, backgroundColor: '#334155', marginVertical: 8 }} />
 
                 <Text style={[styles.stepExplanation, { lineHeight: 22 }]}>
-                  A formula is then used to convert each parent's care percentage into what is used in the child support formula to reflect the costs of a child the parent is meeting through their own care - this is called a <Text style={{ fontWeight: '600', color: '#06b6d4' }}>COST PERCENTAGE</Text>
+                  A formula is then used to convert each parent's care percentage into what is used in the child support formula to reflect the costs of a child the parent is meeting through their own care - this is called a <Text style={{ fontWeight: '600', color: '#3b82f6' }}>COST PERCENTAGE</Text>
                   <View style={{ transform: [{ scale: 0.85 }, { translateY: 3 }], marginLeft: 6 }}>
                     <HelpTooltip
                       header="CARE TO COST CONVERSION"
                       what={
                         <Text style={{ color: '#e2e8f0', fontSize: 14, lineHeight: 20 }}>
-                          0 to less than 14%: <Text style={{ color: '#06b6d4' }}>Nil</Text>{'\n\n'}
-                          14% to less than 35%: <Text style={{ color: '#06b6d4' }}>24%</Text>{'\n\n'}
-                          35% to less than 48%: <Text style={{ color: '#06b6d4' }}>25% plus 2% for each percentage point over 35%</Text>{'\n\n'}
-                          48% to 52%: <Text style={{ color: '#06b6d4' }}>50%</Text>{'\n\n'}
-                          More than 52% to 65%: <Text style={{ color: '#06b6d4' }}>51% plus 2% for each percentage point over 53%</Text>{'\n\n'}
-                          More than 65% to 86%: <Text style={{ color: '#06b6d4' }}>76%</Text>{'\n\n'}
-                          More than 86% to 100%: <Text style={{ color: '#06b6d4' }}>100%</Text>
+                          0 to less than 14%: <Text style={{ color: '#3b82f6' }}>Nil</Text>{'\n\n'}
+                          14% to less than 35%: <Text style={{ color: '#3b82f6' }}>24%</Text>{'\n\n'}
+                          35% to less than 48%: <Text style={{ color: '#3b82f6' }}>25% plus 2% for each percentage point over 35%</Text>{'\n\n'}
+                          48% to 52%: <Text style={{ color: '#3b82f6' }}>50%</Text>{'\n\n'}
+                          More than 52% to 65%: <Text style={{ color: '#3b82f6' }}>51% plus 2% for each percentage point over 53%</Text>{'\n\n'}
+                          More than 65% to 86%: <Text style={{ color: '#3b82f6' }}>76%</Text>{'\n\n'}
+                          More than 86% to 100%: <Text style={{ color: '#3b82f6' }}>100%</Text>
                         </Text>
                       }
                       why=""
@@ -300,7 +328,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
           <View style={[styles.careConversion, { marginTop: index === 0 ? 3 : 16, padding: 12 }]}>
             <View style={styles.conversionCards}>
               <View style={styles.conversionCard}>
-                <Text style={[styles.conversionCardLabel, { color: '#3b82f6', fontSize: 12 }]}>PARENT A</Text>
+                <Text style={[styles.conversionCardLabel, { fontSize: 12 }]}>PARENT A</Text>
                 <View style={styles.conversionRow}>
                   <View style={{ alignItems: 'center' }}>
                     <Text style={styles.conversionValue}>{formatPercent(child.roundedCareA)}</Text>
@@ -308,14 +336,14 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                   </View>
                   <Text style={styles.conversionArrow}>→</Text>
                   <View style={{ alignItems: 'center' }}>
-                    <Text style={[styles.conversionResult, { color: '#3b82f6' }]}>{formatPercent(child.costPercA)}</Text>
+                    <Text style={styles.conversionResult}>{formatPercent(child.costPercA)}</Text>
                     <Text style={styles.conversionSubLabel}>cost</Text>
                   </View>
                 </View>
               </View>
 
               <View style={styles.conversionCard}>
-                <Text style={[styles.conversionCardLabel, { color: '#8b5cf6', fontSize: 12 }]}>PARENT B</Text>
+                <Text style={[styles.conversionCardLabel, { fontSize: 12 }]}>PARENT B</Text>
                 <View style={styles.conversionRow}>
                   <View style={{ alignItems: 'center' }}>
                     <Text style={styles.conversionValue}>{formatPercent(child.roundedCareB)}</Text>
@@ -323,7 +351,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                   </View>
                   <Text style={styles.conversionArrow}>→</Text>
                   <View style={{ alignItems: 'center' }}>
-                    <Text style={[styles.conversionResult, { color: '#8b5cf6' }]}>{formatPercent(child.costPercB)}</Text>
+                    <Text style={styles.conversionResult}>{formatPercent(child.costPercB)}</Text>
                     <Text style={styles.conversionSubLabel}>cost</Text>
                   </View>
                 </View>
@@ -360,7 +388,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
             <>
               {index === 0 && (
             <Text style={styles.stepExplanation}>
-              A parent is liable to pay child support when their income percentage exceeds their cost percentage. The difference between these two values is the <Text style={{ fontWeight: '600', color: '#06b6d4' }}>CHILD SUPPORT PERCENTAGE</Text>, which is the formula then uses to help determine the liability amount for the child.
+              A parent is liable to pay child support when their income percentage exceeds their cost percentage. The difference between these two values is the <Text style={{ fontWeight: '600', color: '#3b82f6' }}>CHILD SUPPORT PERCENTAGE</Text>, which is the formula then uses to help determine the liability amount for the child.
             </Text>
           )}
 
@@ -368,7 +396,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
             <View style={styles.gapCards}>
               {/* Parent A Card */}
               <View style={styles.gapCard}>
-                <Text style={[styles.gapCardTitle, { color: '#3b82f6' }]}>PARENT A</Text>
+                <Text style={styles.gapCardTitle}>PARENT A</Text>
 
                 {!child.farAppliedA && !child.marAppliedA ? (
                   <>
@@ -378,7 +406,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                     </View>
                     <View style={styles.gapCardRow}>
                       <Text style={styles.gapCardLabel}>Cost %</Text>
-                      <Text style={[styles.gapCardValue, { color: '#f87171' }]}>({formatPercent(child.costPercA)})</Text>
+                      <Text style={[styles.gapCardValue, { color: '#dc2626' }]}>({formatPercent(child.costPercA)})</Text>
                     </View>
                     <View style={styles.gapCardDivider} />
                     <View style={styles.gapCardRow}>
@@ -405,7 +433,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
 
               {/* Parent B Card */}
               <View style={styles.gapCard}>
-                <Text style={[styles.gapCardTitle, { color: '#8b5cf6' }]}>PARENT B</Text>
+                <Text style={styles.gapCardTitle}>PARENT B</Text>
 
                 {!child.farAppliedB && !child.marAppliedB ? (
                   <>
@@ -415,7 +443,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                     </View>
                     <View style={styles.gapCardRow}>
                       <Text style={styles.gapCardLabel}>Cost %</Text>
-                      <Text style={[styles.gapCardValue, { color: '#f87171' }]}>({formatPercent(child.costPercB)})</Text>
+                      <Text style={[styles.gapCardValue, { color: '#dc2626' }]}>({formatPercent(child.costPercB)})</Text>
                     </View>
                     <View style={styles.gapCardDivider} />
                     <View style={styles.gapCardRow}>
@@ -528,7 +556,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
         {expandedSteps.step5 && (
           <>
             <Text style={styles.stepExplanation}>
-          Each child's liability rate is calculated by multiplying their child support percentage <Text style={{ color: '#06b6d4' }}>(</Text><Text style={{ fontWeight: '600', color: '#06b6d4' }}>STEP 3</Text><Text style={{ color: '#06b6d4' }}>)</Text> by their cost <Text style={{ color: '#06b6d4' }}>(</Text><Text style={{ fontWeight: '600', color: '#06b6d4' }}>STEP 4</Text><Text style={{ color: '#06b6d4' }}>)</Text>.
+          Each child's liability rate is calculated by multiplying their child support percentage <Text style={{ color: '#3b82f6' }}>(</Text><Text style={{ fontWeight: '600', color: '#3b82f6' }}>STEP 3</Text><Text style={{ color: '#3b82f6' }}>)</Text> by their cost <Text style={{ color: '#3b82f6' }}>(</Text><Text style={{ fontWeight: '600', color: '#3b82f6' }}>STEP 4</Text><Text style={{ color: '#3b82f6' }}>)</Text>.
         </Text>
 
         {/* Per-child payment breakdown */}
@@ -758,26 +786,36 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "600",
-    color: "#ffffff",
+    color: "#0f172a", // slate-900
     lineHeight: 28,
   },
   
   // Step container
   step: {
-    backgroundColor: "#1e293b", // slate-800
+    backgroundColor: "#ffffff", // white background
     borderRadius: 10,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#334155", // slate-700
-  },
+    borderColor: "#e5e7eb", // gray-200 - subtle border
+    ...(isWeb ? {
+      boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.05)",
+    } : {
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 3,
+      elevation: 1,
+    }),
+  } as any,
   keyInsightStep: {
-    backgroundColor: "#1e3a5f", // Darker blue tint
-    borderColor: "#2563eb", // blue-600
+    backgroundColor: "#f0f9ff", // blue-50 - very light blue tint
+    borderColor: "#3b82f6", // blue-500
     borderWidth: 2,
   },
   finalStep: {
-    backgroundColor: "#2563eb", // blue-600
-    borderColor: "#3b82f6", // blue-500
+    backgroundColor: "#eff6ff", // blue-50
+    borderColor: "#2563eb", // blue-600
+    borderWidth: 2,
   },
   
   stepHeader: {
@@ -790,32 +828,35 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: "transparent",
-    borderWidth: 2,
-    borderColor: "#10b981", // emerald-500
+    backgroundColor: "#3b82f6", // accent.primary
+    borderWidth: 0,
     alignItems: "center",
     justifyContent: "center",
   },
   keyStepNumber: {
-    backgroundColor: "#2563eb", // blue-600
+    backgroundColor: "#3b82f6", // accent.primary
+    borderColor: "#3b82f6",
   },
   finalStepNumber: {
-    backgroundColor: "#1e40af", // blue-800
+    backgroundColor: "#3b82f6", // accent.primary
+    borderColor: "#3b82f6",
   },
   stepNumberText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#10b981", // emerald-500
+    color: "#ffffff", // white text on blue background
   },
   stepTitle: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#10b981", // emerald-500
+    color: "#1a202c", // text.primary - near black
     flex: 1,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
   chevron: {
     fontSize: 16,
-    color: "#94a3b8", // slate-400
+    color: "#9ca3af", // gray-400
     marginLeft: "auto",
   },
   keyBadge: {
@@ -831,7 +872,7 @@ const styles = StyleSheet.create({
   },
   stepExplanation: {
     fontSize: 14,
-    color: "#cbd5e1", // slate-300
+    color: "#475569", // slate-600 - readable gray
     lineHeight: 20,
     marginBottom: 12,
   },
@@ -839,15 +880,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: "#334155", // slate-700
+    borderTopColor: "#e5e7eb", // gray-200
   },
   conclusionText: {
     fontSize: 14,
-    color: "#94a3b8", // slate-400
+    color: "#64748b", // slate-500
     lineHeight: 20,
   },
   highlightText: {
-    color: "#60a5fa", // blue-400
+    color: "#2563eb", // blue-600 - strong blue for emphasis
     fontWeight: "600",
   },
 
@@ -857,15 +898,17 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   deductionCard: {
-    backgroundColor: "#0f172a", // slate-900
+    backgroundColor: "#f9fafb", // gray-50
     borderRadius: 8,
     padding: 10,
     gap: 6,
+    borderWidth: 1,
+    borderColor: "#e5e7eb", // gray-200
   },
   deductionCardTitle: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#94a3b8", // slate-400
+    color: "#4a5568", // text.secondary
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 4,
@@ -877,47 +920,49 @@ const styles = StyleSheet.create({
   },
   deductionLabel: {
     fontSize: 13,
-    color: "#94a3b8", // slate-400
+    color: "#64748b", // slate-500
   },
   deductionValue: {
     fontSize: 13,
     fontWeight: "500",
-    color: "#cbd5e1", // slate-300
+    color: "#0f172a", // slate-900 - dark for readability
   },
   deductionValueNegative: {
     fontSize: 13,
     fontWeight: "500",
-    color: "#f87171", // red-400
+    color: "#dc2626", // red-600
   },
   deductionDivider: {
     height: 1,
-    backgroundColor: "#334155", // slate-700
+    backgroundColor: "#e5e7eb", // gray-200
     marginVertical: 4,
   },
   deductionTotalLabel: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#ffffff",
+    color: "#0f172a", // slate-900
   },
   deductionTotalValue: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#f59e0b", // amber-500
+    color: "#3b82f6", // accent.primary - important calculated value
   },
 
   // Combined CS Income bar
   combinedCSIncomeBar: {
     height: 32,
     borderRadius: 6,
-    backgroundColor: "#334155", // slate-700
+    backgroundColor: "#e0f2fe", // sky-100 - light blue
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#7dd3fc", // sky-300
   },
   combinedCSIncomeLabel: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#06b6d4", // cyan-500
+    color: "#0369a1", // sky-700 - dark for contrast
     letterSpacing: 0.5,
     textTransform: "uppercase",
   },
@@ -929,7 +974,7 @@ const styles = StyleSheet.create({
   incomeSplitTitle: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#94a3b8", // slate-400
+    color: "#64748b", // slate-500
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
@@ -945,43 +990,45 @@ const styles = StyleSheet.create({
   },
   incomeLabel: {
     fontSize: 14,
-    color: "#cbd5e1", // slate-300
+    color: "#475569", // slate-600
     flex: 1,
   },
   incomeValue: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#ffffff",
+    color: "#0f172a", // slate-900
     minWidth: 80,
     textAlign: "right",
   },
   percentBadge: {
-    backgroundColor: "#334155", // slate-700
+    backgroundColor: "#e0f2fe", // sky-100
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
     minWidth: 56,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#7dd3fc", // sky-300
   },
   percentBadgeText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#60a5fa", // blue-400
+    color: "#0369a1", // sky-700
   },
 
   // Visual bar
   visualBar: {
     flexDirection: "row",
-    height: 10,
-    borderRadius: 5,
+    height: 8,
+    borderRadius: 4,
     overflow: "hidden",
-    backgroundColor: "#334155", // slate-700
+    backgroundColor: "#e5e7eb", // gray-200 - unfilled portion
   },
   barSegmentA: {
-    backgroundColor: "#3b82f6", // blue-500
+    backgroundColor: "#3b82f6", // blue - Parent A portion
   },
   barSegmentB: {
-    backgroundColor: "#8b5cf6", // violet-500
+    backgroundColor: "#e5e7eb", // light grey - Parent B portion (two-tone visualization)
   },
 
   // Care comparison
@@ -991,7 +1038,7 @@ const styles = StyleSheet.create({
   careHeaderLabel: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#cbd5e1", // slate-300
+    color: "#475569", // slate-600
     letterSpacing: 0.5,
     textTransform: "uppercase",
   },
@@ -1002,33 +1049,35 @@ const styles = StyleSheet.create({
   },
   careLabel: {
     fontSize: 14,
-    color: "#cbd5e1", // slate-300
+    color: "#64748b", // slate-500
     flex: 1,
   },
   carePercent: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#ffffff",
+    color: "#0f172a", // slate-900
     minWidth: 60,
     textAlign: "right",
   },
   careSubtext: {
     fontSize: 12,
-    color: "#94a3b8", // slate-400
+    color: "#6b7280", // gray-500
     minWidth: 72,
   },
 
   // Care to Cost conversion
   careConversion: {
     marginTop: 8,
-    backgroundColor: "#0f172a", // slate-900
+    backgroundColor: "#f9fafb", // gray-50
     borderRadius: 8,
     padding: 10,
+    borderWidth: 1,
+    borderColor: "#e5e7eb", // gray-200
   },
   careConversionTitle: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#94a3b8", // slate-400
+    color: "#475569", // slate-600
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 4,
@@ -1045,15 +1094,17 @@ const styles = StyleSheet.create({
   },
   conversionCard: {
     flex: 1,
-    backgroundColor: "#1e293b", // slate-800
+    backgroundColor: "#ffffff", // white
     borderRadius: 6,
     padding: 10,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#e5e7eb", // gray-200
   },
   conversionCardLabel: {
     fontSize: 10,
     fontWeight: "600",
-    color: "#64748b", // slate-500
+    color: "#4a5568", // text.secondary
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 6,
@@ -1066,16 +1117,16 @@ const styles = StyleSheet.create({
   conversionValue: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#cbd5e1", // slate-300
+    color: "#374151", // gray-700
   },
   conversionArrow: {
     fontSize: 14,
-    color: "#64748b", // slate-500
+    color: "#9ca3af", // gray-400
   },
   conversionResult: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#60a5fa", // blue-400
+    color: "#3b82f6", // accent.primary - important calculated value
   },
   conversionLabels: {
     flexDirection: "row",
@@ -1086,16 +1137,18 @@ const styles = StyleSheet.create({
   },
   conversionSubLabel: {
     fontSize: 9,
-    color: "#64748b", // slate-500
+    color: "#6b7280", // gray-500
     textTransform: "uppercase",
   },
 
   // Gap calculation (THE KEY INSIGHT)
   gapCalculation: {
-    backgroundColor: "#0f172a", // slate-900 (darker)
+    backgroundColor: "#f9fafb", // gray-50
     borderRadius: 8,
     padding: 16,
     gap: 8,
+    borderWidth: 1,
+    borderColor: "#e5e7eb", // gray-200
   },
   // Step 3: Gap calculation cards (side-by-side)
   gapCards: {
@@ -1104,9 +1157,11 @@ const styles = StyleSheet.create({
   },
   gapCard: {
     flex: 1,
-    backgroundColor: "#1e293b", // slate-800 (matches Step 2)
+    backgroundColor: "#f9fafb", // gray-50
     borderRadius: 8,
     padding: 10,
+    borderWidth: 1,
+    borderColor: "#e5e7eb", // gray-200
   },
   gapCardTitle: {
     fontSize: 11,
@@ -1114,6 +1169,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 10,
+    color: "#4a5568", // text.secondary
   },
   gapCardRow: {
     flexDirection: "row",
@@ -1123,28 +1179,28 @@ const styles = StyleSheet.create({
   },
   gapCardLabel: {
     fontSize: 12,
-    color: "#94a3b8", // slate-400
+    color: "#64748b", // slate-500
     flex: 1,
     paddingRight: 4,
   },
   gapCardLabelBold: {
     fontWeight: "600",
-    color: "#ffffff",
+    color: "#0f172a", // slate-900
   },
   gapCardValue: {
     fontSize: 13,
     fontWeight: "500",
-    color: "#cbd5e1", // slate-300
+    color: "#374151", // gray-700
     textAlign: "right",
   },
   gapCardValueHighlight: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#fbbf24", // amber-400
+    color: "#3b82f6", // accent.primary - important CS %
   },
   gapCardDivider: {
     height: 1,
-    backgroundColor: "#334155", // slate-700
+    backgroundColor: "#e5e7eb", // gray-200
     marginVertical: 6,
   },
   gapCardSpecialRate: {
@@ -1152,7 +1208,7 @@ const styles = StyleSheet.create({
   },
   gapCardSpecialRateText: {
     fontSize: 11,
-    color: "#94a3b8", // slate-400
+    color: "#6b7280", // gray-500
     lineHeight: 15,
   },
 
@@ -1165,24 +1221,26 @@ const styles = StyleSheet.create({
   },
   costInputLabel: {
     fontSize: 13,
-    color: "#94a3b8", // slate-400
+    color: "#64748b", // slate-500
   },
   costInputValue: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#ffffff",
+    color: "#0f172a", // slate-900
   },
 
   // Bracket calculation
   bracketCalculation: {
-    backgroundColor: "#0f172a", // slate-900
+    backgroundColor: "#f9fafb", // gray-50
     borderRadius: 8,
     padding: 10,
+    borderWidth: 1,
+    borderColor: "#e5e7eb", // gray-200
   },
   bracketTitle: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#94a3b8", // slate-400
+    color: "#475569", // slate-600
     marginBottom: 12,
   },
   bracketFormula: {
@@ -1195,59 +1253,63 @@ const styles = StyleSheet.create({
   },
   bracketLabel: {
     fontSize: 13,
-    color: "#94a3b8", // slate-400
+    color: "#64748b", // slate-500
   },
   bracketValue: {
     fontSize: 13,
     fontWeight: "500",
-    color: "#fbbf24", // amber-400
+    color: "#1a202c", // text.primary
   },
   bracketDivider: {
     height: 1,
-    backgroundColor: "#334155", // slate-700
+    backgroundColor: "#e5e7eb", // gray-200
     marginVertical: 4,
   },
   bracketTotalLabel: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#ffffff",
+    color: "#0f172a", // slate-900
   },
   bracketTotalValue: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#60a5fa", // blue-400
+    color: "#3b82f6", // accent.primary - important value
   },
 
   // Total cost box (legacy - keeping for reference)
   totalCostBox: {
-    backgroundColor: "#0f172a", // slate-900
+    backgroundColor: "#f9fafb", // gray-50
     borderRadius: 8,
     padding: 16,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#e5e7eb", // gray-200
   },
   totalCostLabel: {
     fontSize: 12,
-    color: "#94a3b8", // slate-400
+    color: "#64748b", // slate-500
     marginBottom: 4,
   },
   totalCostValue: {
     fontSize: 28,
     fontWeight: "700",
-    color: "#ffffff",
+    color: "#0f172a", // slate-900
   },
 
   // Per-child cost breakdown
   perChildCostBreakdown: {
-    backgroundColor: "#0f172a", // slate-900
+    backgroundColor: "#f9fafb", // gray-50
     borderRadius: 8,
     padding: 12,
     marginTop: 12,
     gap: 8,
+    borderWidth: 1,
+    borderColor: "#e5e7eb", // gray-200
   },
   perChildCostTitle: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#94a3b8", // slate-400
+    color: "#475569", // slate-600
     marginBottom: 4,
   },
   perChildCostRow: {
@@ -1257,21 +1319,23 @@ const styles = StyleSheet.create({
   },
   perChildCostLabel: {
     fontSize: 13,
-    color: "#94a3b8", // slate-400
+    color: "#64748b", // slate-500
   },
   perChildCostValue: {
     fontSize: 13,
     fontWeight: "500",
-    color: "#cbd5e1", // slate-300
+    color: "#374151", // gray-700
   },
 
   // Per-child gap breakdown
   perChildGapBreakdown: {
-    backgroundColor: "#0f172a", // slate-900
+    backgroundColor: "#f9fafb", // gray-50
     borderRadius: 8,
     padding: 10,
     marginBottom: 12,
     gap: 8,
+    borderWidth: 1,
+    borderColor: "#e5e7eb", // gray-200
   },
   perChildGapRow: {
     flexDirection: "row",
@@ -1280,16 +1344,16 @@ const styles = StyleSheet.create({
   },
   perChildGapLabel: {
     fontSize: 13,
-    color: "#94a3b8", // slate-400
+    color: "#64748b", // slate-500
   },
   perChildGapValue: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#cbd5e1", // slate-300
+    color: "#374151", // gray-700
   },
   perChildGapDivider: {
     height: 1,
-    backgroundColor: "#334155", // slate-700
+    backgroundColor: "#e5e7eb", // gray-200
     marginTop: 4,
   },
 
@@ -1302,7 +1366,7 @@ const styles = StyleSheet.create({
   },
   finalLabel: {
     fontSize: 16,
-    color: "#cbd5e1", // slate-300
+    color: "#475569", // slate-600
     fontWeight: "500",
   },
   finalResultGradient: {
@@ -1310,24 +1374,36 @@ const styles = StyleSheet.create({
     padding: 24,
     alignItems: "center",
     marginTop: 12,
-  },
+    backgroundColor: "#ffffff", // white background
+    borderWidth: 2,
+    borderColor: "#e5e7eb", // gray-200
+    ...(isWeb ? {
+      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+    } : {
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.1,
+      shadowRadius: 6,
+      elevation: 4,
+    }),
+  } as any,
   finalResultLabel: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#e2e8f0", // slate-200
+    color: "#475569", // slate-600
     marginBottom: 8,
     textAlign: "center",
   },
   finalResultValue: {
     fontSize: 40,
     fontWeight: "700",
-    color: "#fbbf24", // amber-400
+    color: "#f59e0b", // amber-500 - keep the accent
     textAlign: "center",
     marginBottom: 4,
   },
   finalResultPeriod: {
     fontSize: 16,
-    color: "#cbd5e1", // slate-300
+    color: "#64748b", // slate-500
     textAlign: "center",
     marginBottom: 16,
   },
@@ -1345,26 +1421,28 @@ const styles = StyleSheet.create({
   expandedSecondaryValue: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#fbbf24", // amber-400
+    color: "#f59e0b", // amber-500
     marginBottom: 4,
   },
   expandedSecondaryLabel: {
     fontSize: 12,
-    color: "#cbd5e1", // slate-300
+    color: "#e2e8f0", // slate-200 - lighter for visibility on blue background
   },
   expandedDivider: {
     width: 1,
     height: 32,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: "#e5e7eb", // gray-200
   },
 
   // Special notice
   specialNotice: {
-    backgroundColor: "#1e293b", // slate-800 (matches main cards)
+    backgroundColor: "#f0f9ff", // blue-50
     borderRadius: 8,
     padding: 16,
     borderLeftWidth: 4,
-    borderLeftColor: "#06b6d4", // cyan-500 (info highlight)
+    borderLeftColor: "#0ea5e9", // sky-500
+    borderWidth: 1,
+    borderColor: "#bae6fd", // sky-200
   },
   specialNoticeHeader: {
     flexDirection: "row",
@@ -1374,12 +1452,12 @@ const styles = StyleSheet.create({
   specialNoticeTitle: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#06b6d4", // cyan-500 (matches border)
+    color: "#0369a1", // sky-700
     flex: 1,
   },
   specialNoticeChevron: {
     fontSize: 14,
-    color: "#94a3b8", // slate-400 (subtle)
+    color: "#64748b", // slate-500
     marginLeft: 8,
   },
   specialNoticeContent: {
@@ -1387,7 +1465,7 @@ const styles = StyleSheet.create({
   },
   specialNoticeText: {
     fontSize: 13,
-    color: "#cbd5e1", // slate-300 (primary text)
+    color: "#475569", // slate-600
     lineHeight: 18,
   },
 

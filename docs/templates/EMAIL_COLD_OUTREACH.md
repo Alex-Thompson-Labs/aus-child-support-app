@@ -17,9 +17,10 @@ Try the calculator yourself: auschildsupport.com
 How it works:
 ✓ Parent uses calculator (free, no signup)
 ✓ Complex case detected → they click "Get Legal Help"
-✓ I email you their details with full case summary
+✓ I email you a case summary (no contact details yet)
+✓ You confirm interest → I send full parent details
 ✓ You contact them directly to schedule consultation
-✓ $50 per lead, billed monthly via Stripe
+✓ $50 per confirmed lead, billed monthly via Stripe
 
 Interested in receiving leads from [City/Region]? Reply and I'll send you the partnership agreement.
 
@@ -27,4 +28,3 @@ Best,
 Alex Thompson
 auschildsupport.com
 [Phone]
-

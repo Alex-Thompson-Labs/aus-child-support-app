@@ -153,13 +153,20 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#475569", // slate-600
-    backgroundColor: "transparent",
+    borderColor: "#e2e8f0", // slate-200 - subtle border
+    backgroundColor: "#ffffff", // white background
     marginBottom: 8,
     position: "relative",
     ...(isWeb ? {
       scrollSnapAlign: "start",
-    } : {}),
+      boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.05)", // subtle shadow
+    } : {
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 3,
+      elevation: 1,
+    }),
   } as any,
   containerDesktop: {
     padding: 16,
@@ -167,7 +174,7 @@ const styles = StyleSheet.create({
   childCountText: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#94a3b8", // slate-400
+    color: "#64748b", // slate-500 - neutral label
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 8,
@@ -175,17 +182,19 @@ const styles = StyleSheet.create({
   },
   containerError: {
     borderColor: "#ef4444", // red-500
-    backgroundColor: "rgba(239, 68, 68, 0.1)", // red-500 with opacity
+    backgroundColor: "#fef2f2", // red-50 - very light red bg
   },
   // Single horizontal row layout
   horizontalRow: {
     flexDirection: "row",
     alignItems: "flex-end",
     gap: 16,
-    backgroundColor: "#0f172a", // slate-900
+    backgroundColor: "#f9fafb", // gray-50 - very light gray
     padding: 12,
     borderRadius: 8,
     flexWrap: "wrap",
+    borderWidth: 1,
+    borderColor: "#e5e7eb", // gray-200
   },
   itemWrapper: {
     alignItems: "center",
@@ -201,14 +210,14 @@ const styles = StyleSheet.create({
   headerLabelA: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#3b82f6", // blue-500
+    color: "#4a5568", // dark grey - consistent
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   headerLabelB: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#8b5cf6", // violet-500
+    color: "#4a5568", // dark grey - consistent
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
@@ -217,11 +226,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     fontSize: 18,
     textAlign: "center",
-    color: "#ffffff",
+    color: "#0f172a", // slate-900 - dark text
     borderWidth: 1,
-    borderColor: "#475569", // slate-600
+    borderColor: "#cbd5e1", // slate-300
     borderRadius: 8,
-    backgroundColor: "#1e293b", // slate-800
+    backgroundColor: "#ffffff", // white input
   },
   toggleWithLabel: {
     alignItems: "center",
@@ -243,7 +252,9 @@ const styles = StyleSheet.create({
     width: 32,
     paddingVertical: 4,
     alignItems: "center",
-    backgroundColor: "#334155", // slate-700
+    backgroundColor: "#e2e8f0", // slate-200 - light inactive
+    borderWidth: 1,
+    borderColor: "#cbd5e1", // slate-300
   },
   toggleButtonLeft: {
     borderTopLeftRadius: 6,
@@ -254,15 +265,16 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 6,
   },
   toggleButtonActive: {
-    backgroundColor: "#f59e0b", // amber-500
+    backgroundColor: "#f59e0b", // amber-500 - keep the accent
+    borderColor: "#f59e0b",
   },
   toggleButtonText: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#94a3b8", // slate-400
+    color: "#64748b", // slate-500
   },
   toggleButtonTextActive: {
-    color: "#0f172a", // slate-900
+    color: "#ffffff", // white on amber
   },
   removeButton: {
     position: "absolute",
@@ -275,11 +287,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     ...(isWeb ? {
-      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)",
+      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
     } : {
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.3,
+      shadowOpacity: 0.1,
       shadowRadius: 3,
       elevation: 4,
     }),
@@ -294,7 +306,8 @@ const styles = StyleSheet.create({
   warning: {
     marginTop: 8,
     fontSize: 11,
-    color: "#f87171", // red-400
+    color: "#dc2626", // red-600 - darker for readability
+    fontWeight: "500",
   },
 });
 
