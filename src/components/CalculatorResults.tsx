@@ -79,7 +79,7 @@ export function CalculatorResults({
   const alertConfig = getAlertConfig(flags, results);
 
   // Check if calculation is "complete" enough to show complexity alerts
-  // Complete means: both parents have non-zero ATI AND at least one child with care set
+  // Complete means: at least one parent has non-zero ATI AND at least one child with care set
   const isCalculationComplete = (() => {
     const hasParentAIncome = results.ATI_A > 0;
     const hasParentBIncome = results.ATI_B > 0;
@@ -90,7 +90,7 @@ export function CalculatorResults({
         (child.roundedCareB !== undefined && child.roundedCareB >= 0)
       );
 
-    return hasParentAIncome && hasParentBIncome && hasChildrenWithCare;
+    return (hasParentAIncome || hasParentBIncome) && hasChildrenWithCare;
   })();
 
   // Only show complexity alert when calculation is complete
