@@ -1,15 +1,13 @@
 import React from "react";
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import { CalculatorForm } from "../components/CalculatorForm";
 import { CalculatorResults } from "../components/CalculatorResults";
 import { useCalculator } from "../hooks/useCalculator";
 import { useResponsive } from "../utils/responsive";
 
 export function CalculatorScreen() {
-  const router = useRouter();
   const {
     formState,
     setFormState,
@@ -93,14 +91,6 @@ export function CalculatorScreen() {
             <Text style={[styles.title, isDesktop && styles.titleDesktop]}>
               Child Support Calculator
             </Text>
-
-            {/* TEMPORARY DEV BUTTON - REMOVE BEFORE PRODUCTION */}
-            <Pressable
-              style={styles.devAdminButton}
-              onPress={() => router.push('/admin/login')}
-            >
-              <Text style={styles.devAdminButtonText}>🔧 Admin</Text>
-            </Pressable>
           </View>
         </View>
 
@@ -152,21 +142,6 @@ const styles = StyleSheet.create({
   },
   titleDesktop: {
     fontSize: 28,
-  },
-  // DEV ADMIN BUTTON - REMOVE BEFORE PRODUCTION
-  devAdminButton: {
-    position: "absolute",
-    right: 20,
-    backgroundColor: "#e2e8f0", // light grey
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 6,
-    opacity: 0.8,
-  },
-  devAdminButtonText: {
-    color: "#4a5568",
-    fontSize: 13,
-    fontWeight: "500",
   },
   content: {
     flex: 1,
