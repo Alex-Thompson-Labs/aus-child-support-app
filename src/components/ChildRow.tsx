@@ -2,7 +2,7 @@ import React from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import type { ChildInput } from "../types/calculator";
 import { CARE_PERIOD_DAYS } from "../utils/child-support-constants";
-import { useResponsive, isWeb, webInputStyles, webClickableStyles } from "../utils/responsive";
+import { isWeb, useResponsive, webClickableStyles, webInputStyles } from "../utils/responsive";
 import { PeriodPicker } from "./PeriodPicker";
 
 interface ChildRowProps {
@@ -81,58 +81,64 @@ export function ChildRow({
         <Text style={styles.removeButtonText}>×</Text>
       </Pressable>
 
-      {/* Single horizontal row: Parent A → Parent B → Period → Age Toggle */}
+      {/* Care arrangement inputs - 2x2 grid on mobile */}
       <View style={styles.horizontalRow}>
-        {/* Parent A */}
-        <View style={[styles.itemWrapper, isMobile && styles.itemWrapperMobile]}>
-          <Text style={styles.headerLabelA}>PARENT A</Text>
-          <TextInput
-            style={[styles.careInput, styles.compactInput, isWeb && webInputStyles]}
-            value={child.careAmountA.toString()}
-            onChangeText={handleCareAmountAChange}
-            keyboardType="numeric"
-            maxLength={5}
-            placeholderTextColor="#64748b"
-          />
+        {/* Row 1: Parent A and Parent B - forced side-by-side */}
+        <View style={[styles.parentsRow, isMobile && styles.parentsRowMobile]}>
+          {/* Parent A */}
+          <View style={[styles.itemWrapper, isMobile && styles.parentItemMobile]}>
+            <Text style={styles.headerLabelA}>PARENT A</Text>
+            <TextInput
+              style={[styles.careInput, styles.compactInput, isWeb && webInputStyles]}
+              value={child.careAmountA.toString()}
+              onChangeText={handleCareAmountAChange}
+              keyboardType="numeric"
+              maxLength={5}
+              placeholderTextColor="#64748b"
+            />
+          </View>
+
+          {/* Parent B */}
+          <View style={[styles.itemWrapper, isMobile && styles.parentItemMobile]}>
+            <Text style={styles.headerLabelB}>PARENT B</Text>
+            <TextInput
+              style={[styles.careInput, styles.compactInput, isWeb && webInputStyles]}
+              value={child.careAmountB.toString()}
+              onChangeText={handleCareAmountBChange}
+              keyboardType="numeric"
+              maxLength={5}
+              placeholderTextColor="#64748b"
+            />
+          </View>
         </View>
 
-        {/* Parent B */}
-        <View style={[styles.itemWrapper, isMobile && styles.itemWrapperMobile]}>
-          <Text style={styles.headerLabelB}>PARENT B</Text>
-          <TextInput
-            style={[styles.careInput, styles.compactInput, isWeb && webInputStyles]}
-            value={child.careAmountB.toString()}
-            onChangeText={handleCareAmountBChange}
-            keyboardType="numeric"
-            maxLength={5}
-            placeholderTextColor="#64748b"
-          />
-        </View>
+        {/* Row 2: Period and Age Range - on desktop inline, on mobile second row */}
+        <View style={[styles.optionsRow, isMobile && styles.optionsRowMobile]}>
+          {/* Period Picker */}
+          <View style={isMobile && styles.optionItemMobile}>
+            <PeriodPicker
+              value={child.carePeriod}
+              onChange={handlePeriodChange}
+            />
+          </View>
 
-        {/* Period Picker */}
-        <View style={isMobile && styles.itemWrapperMobile}>
-          <PeriodPicker
-            value={child.carePeriod}
-            onChange={handlePeriodChange}
-          />
-        </View>
-
-        {/* Age Range Toggle */}
-        <View style={[styles.toggleWithLabel, isMobile && styles.itemWrapperMobile]}>
-          <Text style={styles.toggleLabel}>Age Range</Text>
-          <View style={styles.toggleGroup}>
-            <Pressable
-              onPress={() => onUpdate({ age: "Under 13" })}
-              style={[styles.toggleButton, styles.toggleButtonLeft, child.age === "Under 13" && styles.toggleButtonActive, isWeb && webClickableStyles]}
-            >
-              <Text style={[styles.toggleButtonText, child.age === "Under 13" && styles.toggleButtonTextActive]}>{"<13"}</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => onUpdate({ age: "13+" })}
-              style={[styles.toggleButton, styles.toggleButtonRight, child.age === "13+" && styles.toggleButtonActive, isWeb && webClickableStyles]}
-            >
-              <Text style={[styles.toggleButtonText, child.age === "13+" && styles.toggleButtonTextActive]}>13+</Text>
-            </Pressable>
+          {/* Age Range Toggle */}
+          <View style={[styles.toggleWithLabel, isMobile && styles.optionItemMobile]}>
+            <Text style={styles.toggleLabel}>Age Range</Text>
+            <View style={styles.toggleGroup}>
+              <Pressable
+                onPress={() => onUpdate({ age: "Under 13" })}
+                style={[styles.toggleButton, styles.toggleButtonLeft, child.age === "Under 13" && styles.toggleButtonActive, isWeb && webClickableStyles]}
+              >
+                <Text style={[styles.toggleButtonText, child.age === "Under 13" && styles.toggleButtonTextActive]}>{"<13"}</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => onUpdate({ age: "13+" })}
+                style={[styles.toggleButton, styles.toggleButtonRight, child.age === "13+" && styles.toggleButtonActive, isWeb && webClickableStyles]}
+              >
+                <Text style={[styles.toggleButtonText, child.age === "13+" && styles.toggleButtonTextActive]}>13+</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </View>
@@ -200,9 +206,36 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 6,
   },
-  itemWrapperMobile: {
-    width: "48%",
-    marginBottom: 8,
+  // Styles for 2x2 grid layout on mobile
+  parentsRow: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 16,
+  },
+  parentsRowMobile: {
+    width: "100%",
+    flexWrap: "nowrap",
+    justifyContent: "space-between",
+    gap: 8,
+    marginBottom: 12,
+  },
+  parentItemMobile: {
+    flex: 1,
+    minWidth: 0,
+  },
+  optionsRow: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 16,
+  },
+  optionsRowMobile: {
+    width: "100%",
+    justifyContent: "space-between",
+    gap: 8,
+  },
+  optionItemMobile: {
+    flex: 1,
+    alignItems: "center",
   },
   compactInput: {
     width: 70,
