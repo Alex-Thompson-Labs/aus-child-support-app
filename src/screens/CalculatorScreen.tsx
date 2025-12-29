@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
     gap: 12, // Add gap between elements
-    flexWrap: 'wrap', // Allow wrapping on very small screens
+    flexWrap: 'nowrap', // Keep items on same line
   },
   desktopConstraint: {
     width: '100%',

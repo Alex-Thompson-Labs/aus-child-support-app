@@ -7,8 +7,7 @@ import { ScrollViewStyleReset } from 'expo-router/html';
 // The contents of this function only run in Node.js environments and
 // do not have access to the DOM or browser APIs.
 export default function Root({ children }: { children: React.ReactNode }) {
-  const gaMeasurementId = process.env.EXPO_PUBLIC_GA_MEASUREMENT_ID;
-
+  const gaMeasurementId = process.env.EXPO_PUBLIC_GA_MEASUREMENT_ID || "G-53139BKGD7";
   // SEO Configuration
   const siteTitle = 'Child Support Calculator | Free Ontario CS Calculator';
   const siteDescription = 'Free child support calculator for Ontario, Canada. Calculate federal child support payments based on income, custody arrangements, and special expenses. Get instant results and connect with family law lawyers.';
