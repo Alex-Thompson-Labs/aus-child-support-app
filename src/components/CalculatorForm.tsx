@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 import type { ChildInput, FormErrors } from "../types/calculator";
 import { MAX_CONTENT_WIDTH, isWeb, useResponsive, webClickableStyles, webInputStyles } from "../utils/responsive";
@@ -28,28 +28,41 @@ function RelevantDependentsPopover({
 }: RelevantDependentsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { isMobile } = useResponsive(); // Use the existing hook
+  const drawerRef = useRef<View>(null);
+  const triggerRef = useRef<View>(null);
 
   const totalDeps = relDepA.u13 + relDepA.plus13 + relDepB.u13 + relDepB.plus13;
   const hasValues = totalDeps > 0;
 
   const handleToggle = () => {
-    if (isOpen && hasValues) return;
     setIsOpen(!isOpen);
   };
 
   useEffect(() => {
     if (isWeb && isOpen) {
       const handleClickOutside = (e: MouseEvent) => {
-        if (hasValues) return;
-        const target = e.target as HTMLElement;
-        if (!target.closest('[data-drawer-content]') && !target.closest('[data-drawer-trigger]')) {
-          setIsOpen(false);
+        const target = e.target as Node;
+
+        // Get the actual DOM nodes from the refs
+        const drawerNode = drawerRef.current as unknown as HTMLElement | null;
+        const triggerNode = triggerRef.current as unknown as HTMLElement | null;
+
+        // Check if click is inside drawer content
+        if (drawerNode && drawerNode.contains(target)) {
+          return;
         }
+
+        // Check if click is on the trigger button
+        if (triggerNode && triggerNode.contains(target)) {
+          return;
+        }
+
+        setIsOpen(false);
       };
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [isOpen, hasValues]);
+  }, [isOpen]);
 
   // Mobile Native App (remains the same)
   if (!isWeb) {
@@ -67,26 +80,27 @@ function RelevantDependentsPopover({
         width: '100%'
       }
     ]}>
-      <Pressable
-        onPress={handleToggle}
-        style={[
-          compact ? popoverStyles.triggerButtonCompact : popoverStyles.triggerButton,
-          hasValues && popoverStyles.triggerButtonActive,
-          webClickableStyles,
-          { flexShrink: 0 }
-        ]}
-        {...{ 'data-drawer-trigger': true } as any}
-      >
-        <Text style={[
-          compact ? popoverStyles.triggerTextCompact : popoverStyles.triggerText,
-          hasValues && popoverStyles.triggerTextActive,
-        ]}>
-          {hasValues ? `Dependents: ${totalDeps}` : 'Rel. Dependents'}
-        </Text>
-        {!hasValues && <Text style={popoverStyles.plusIcon}>+</Text>}
-      </Pressable>
+      <View ref={triggerRef} style={{ flexShrink: 0 }}>
+        <Pressable
+          onPress={handleToggle}
+          style={[
+            compact ? popoverStyles.triggerButtonCompact : popoverStyles.triggerButton,
+            hasValues && popoverStyles.triggerButtonActive,
+            webClickableStyles,
+          ]}
+        >
+          <Text style={[
+            compact ? popoverStyles.triggerTextCompact : popoverStyles.triggerText,
+            hasValues && popoverStyles.triggerTextActive,
+          ]}>
+            {hasValues ? `Dependents: ${totalDeps}` : 'Rel. Dependents'}
+          </Text>
+          {!hasValues && <Text style={popoverStyles.plusIcon}>+</Text>}
+        </Pressable>
+      </View>
 
       <View
+        ref={drawerRef}
         style={[
           popoverStyles.drawerContent,
           isOpen && popoverStyles.drawerContentOpen,
@@ -98,9 +112,8 @@ function RelevantDependentsPopover({
             overflow: 'hidden' as any,
             transition: 'width 0.3s ease-out, opacity 0.3s ease-out, height 0.3s' as any,
             marginTop: isMobile && isOpen ? 8 : 0, // Gap when stacked
-          }
+          } as any
         ]}
-        {...(isWeb ? { 'data-drawer-content': true } as any : {})}
       >
         <View style={[popoverStyles.drawerInner, isMobile && { paddingLeft: 0 }]}>
           <View style={popoverStyles.drawerHeader}>
@@ -113,7 +126,7 @@ function RelevantDependentsPopover({
           </View>
 
           <View style={[
-            popoverStyles.drawerInputsRow, 
+            popoverStyles.drawerInputsRow,
             isMobile && { flexWrap: 'wrap', gap: 16 } // Wrap inputs on mobile
           ]}>
             {/* Parent A */}
@@ -258,7 +271,7 @@ const popoverStyles = StyleSheet.create({
   drawerContent: {
     overflow: 'hidden',
     // height: 40, <-- REMOVE THIS so it can grow if inputs wrap
-    minHeight: 40, 
+    minHeight: 40,
   },
   drawerContentOpen: {
     // Width and opacity are set dynamically via inline styles with transition

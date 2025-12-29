@@ -4,9 +4,12 @@
  * Uses Supabase Auth with RLS policies
  */
 
+import { MAX_FORM_WIDTH, isWeb, useResponsive, webClickableStyles, webInputStyles } from '@/src/utils/responsive';
+import { supabase } from '@/src/utils/supabase';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -16,11 +19,8 @@ import {
   Text,
   TextInput,
   View,
-  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { supabase } from '@/src/utils/supabase';
-import { useResponsive, MAX_FORM_WIDTH, isWeb, webInputStyles, webClickableStyles } from '@/src/utils/responsive';
 
 export default function AdminLoginScreen() {
   const router = useRouter();
@@ -259,8 +259,3 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
 });
-
-
-
-
-

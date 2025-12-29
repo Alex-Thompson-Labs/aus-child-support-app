@@ -4,23 +4,23 @@
  * Mobile-optimized for use on phone
  */
 
+import { isWeb, useResponsive, webClickableStyles, webInputStyles } from '@/src/utils/responsive';
+import { supabase, type LeadSubmission } from '@/src/utils/supabase';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Platform,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
-  ActivityIndicator,
-  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { supabase, type LeadSubmission } from '@/src/utils/supabase';
-import { useResponsive, isWeb, webInputStyles, webClickableStyles } from '@/src/utils/responsive';
 
 type LeadStatus = 'new' | 'reviewing' | 'sent' | 'converted' | 'lost';
 
@@ -539,8 +539,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-
-
-
-
-
