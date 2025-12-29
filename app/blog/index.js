@@ -1,13 +1,14 @@
-import { Stack } from 'expo-router'; // Import Expo Router tools
+import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function Blog() {
+export default function BlogList() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter(); // 👈 Use the router hook
 
   useEffect(() => {
-    // 👇 Your actual free WordPress API endpoint
+    // Your WordPress API URL
     const API_URL = 'https://public-api.wordpress.com/wp/v2/sites/auschildsupportbackend.wordpress.com/posts';
     
     fetch(API_URL)
@@ -22,7 +23,7 @@ export default function Blog() {
       });
   }, []);
 
-  // Helper to remove HTML tags (like <p>) for the preview
+  // Helper to remove HTML tags for the preview text
   const stripHtml = (html) => {
     if (!html) return '';
     return html.replace(/<[^>]+>/g, '').replace('&nbsp;', ' ');
@@ -47,28 +48,25 @@ export default function Blog() {
         {stripHtml(item.excerpt.rendered)}
       </Text>
 
-      {/* Button to open full article in browser */}
+      {/* 👇 CHANGED: Now links to your internal Reader page */}
       <TouchableOpacity 
-        onPress={() => Linking.openURL(item.link)} 
+        onPress={() => router.push(`/blog/${item.id}`)} 
         style={styles.button}
       >
-        <Text style={styles.buttonText}>Read Full Article</Text>
+        <Text style={styles.buttonText}>Read Article</Text>
       </TouchableOpacity>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      {/* 👇 This sets the header title automatically */}
       <Stack.Screen options={{ title: 'Latest News' }} />
 
       <FlatList
         data={posts}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
-        // 👇 LAYOUT FIX 1: Constrain the width and center the list
         style={styles.listStyle}
-        // 👇 LAYOUT FIX 2: Add padding inside the list, not the container
         contentContainerStyle={styles.listContent}
       />
     </View>
@@ -79,16 +77,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
-    alignItems: 'center', // 👈 CENTERS the content on Desktop
+    alignItems: 'center', // Centers content on Desktop
     width: '100%',
   },
   listStyle: {
     width: '100%',
-    maxWidth: 800,        // 👈 STOPS it from stretching too wide on Desktop
+    maxWidth: 800,        // Stops stretching on Desktop
     flex: 1,
   },
   listContent: {
-    padding: 15,          // 👈 Adds the breathing room edges
+    padding: 15,
     paddingBottom: 20,
   },
   center: {
@@ -121,6 +119,10 @@ const styles = StyleSheet.create({
   },
   button: {
     alignSelf: 'flex-start',
+    backgroundColor: '#F0F7FF', // Light blue background for button
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
   },
   buttonText: {
     color: '#007AFF',
