@@ -66,7 +66,10 @@ export default function Blog() {
         data={posts}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        // 👇 LAYOUT FIX 1: Constrain the width and center the list
+        style={styles.listStyle}
+        // 👇 LAYOUT FIX 2: Add padding inside the list, not the container
+        contentContainerStyle={styles.listContent}
       />
     </View>
   );
@@ -75,8 +78,18 @@ export default function Blog() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 15,
-    backgroundColor: '#f5f5f5', 
+    backgroundColor: '#f5f5f5',
+    alignItems: 'center', // 👈 CENTERS the content on Desktop
+    width: '100%',
+  },
+  listStyle: {
+    width: '100%',
+    maxWidth: 800,        // 👈 STOPS it from stretching too wide on Desktop
+    flex: 1,
+  },
+  listContent: {
+    padding: 15,          // 👈 Adds the breathing room edges
+    paddingBottom: 20,
   },
   center: {
     flex: 1,
