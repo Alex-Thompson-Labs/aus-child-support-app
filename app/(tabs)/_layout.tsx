@@ -4,7 +4,6 @@ import { Platform, StyleSheet } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 const isWeb = Platform.OS === 'web';
@@ -20,9 +19,7 @@ export default function TabLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         // Web-specific tab bar styling
-        tabBarStyle: isWeb ? styles.tabBarWeb : undefined,
-        tabBarLabelStyle: isWeb ? styles.tabBarLabelWeb : undefined,
-        tabBarIconStyle: isWeb ? styles.tabBarIconWeb : undefined,
+        tabBarStyle: { display: 'none' },
       }}>
       <Tabs.Screen
         name="index"

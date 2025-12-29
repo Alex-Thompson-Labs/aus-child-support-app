@@ -1,10 +1,11 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack, useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Platform, Pressable, Text, StyleSheet } from 'react-native';
 import { PostHogProvider } from 'posthog-react-native';
-import 'react-native-reanimated';
 import { useEffect } from 'react';
+import ReactGA from "react-ga4"; // Added for Web Analytics
+import { Platform, Pressable, StyleSheet, Text } from 'react-native';
+import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { initPerformanceMonitoring } from '@/src/utils/web-vitals';
@@ -25,19 +26,18 @@ function CloseButton({ onPress }: { onPress: () => void }) {
   );
 }
 
-// Header styles matching the breakdown modal (CalculatorResults.tsx lines 686-698)
 const headerStyles = StyleSheet.create({
   closeButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#f7fafc', // very light grey
+    backgroundColor: '#f7fafc',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 8,
   },
   closeButtonText: {
-    color: '#4a5568', // dark grey
+    color: '#4a5568',
     fontSize: 16,
     fontWeight: '500',
   },
@@ -46,15 +46,19 @@ const headerStyles = StyleSheet.create({
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
-  // Initialize web performance monitoring (web only)
+  // Initialize Web-specific monitoring and Analytics
   useEffect(() => {
     if (Platform.OS === 'web') {
       initPerformanceMonitoring();
+      
+      // Initialize Google Analytics 4 with your Measurement ID
+      ReactGA.initialize("G-53139BKGD7");
+      
+      // Track the initial page load
+      ReactGA.send({ hitType: "pageview", page: window.location.pathname });
     }
   }, []);
 
-  // Get PostHog configuration from environment variables
-  // TODO: Move to EXPO_PUBLIC_ prefixed env vars for production
   const posthogApiKey = process.env.EXPO_PUBLIC_POSTHOG_API_KEY || 'phc_HsAJl0DQIvAd64OQn37pPPAIG1Yo1WRu7QQGBo0Bv9j';
   const posthogHost = process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com';
   const enableAnalytics = process.env.EXPO_PUBLIC_ENABLE_ANALYTICS !== 'false';
@@ -68,7 +72,7 @@ export default function RootLayout() {
           name="lawyer-inquiry"
           options={{
             presentation: 'modal',
-            headerShown: false, // Hide navigation header, use in-content header instead
+            headerShown: false,
           }}
         />
         <Stack.Screen
@@ -98,8 +102,6 @@ export default function RootLayout() {
     </ThemeProvider>
   );
 
-  // Only enable PostHog if API key is provided and analytics is enabled
-  // PostHog doesn't work on web without additional configuration, so we disable it for web
   if (enableAnalytics && posthogApiKey && Platform.OS !== 'web') {
     return (
       <PostHogProvider

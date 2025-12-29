@@ -127,6 +127,16 @@ export interface ComplexityFormData {
    * Used to detect situations requiring legal review
    */
   selectedCoAReasons?: string[];
+  /**
+   * Whether Parent A receives income support payments
+   * Used for MAR/FAR calculations and zero payment detection
+   */
+  supportA?: boolean;
+  /**
+   * Whether Parent B receives income support payments
+   * Used for MAR/FAR calculations and zero payment detection
+   */
+  supportB?: boolean;
 }
 
 export function detectComplexity(
