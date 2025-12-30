@@ -60,31 +60,44 @@ export function trackWebVitals(onReport: (vitals: Partial<WebVitals>) => void) {
   }
 
   // Dynamic import to avoid bundling on mobile
-  import('web-vitals')
-    .then(({ onLCP, onFID, onCLS, onFCP, onTTFB }) => {
-      onLCP((metric) => {
-        onReport({ lcp: metric.value });
-      });
+  // Wrapped in try-catch for better error handling during SSR/hydration
+  try {
+    import('web-vitals')
+      .then((webVitalsModule) => {
+        // Safely destructure the module
+        const { onLCP, onFID, onCLS, onFCP, onTTFB } = webVitalsModule;
+        
+        if (typeof onLCP !== 'function') {
+          console.warn('[Web Vitals] Invalid module import');
+          return;
+        }
 
-      onFID((metric) => {
-        onReport({ fid: metric.value });
-      });
+        onLCP((metric) => {
+          onReport({ lcp: metric.value });
+        });
 
-      onCLS((metric) => {
-        onReport({ cls: metric.value });
-      });
+        onFID((metric) => {
+          onReport({ fid: metric.value });
+        });
 
-      onFCP((metric) => {
-        onReport({ fcp: metric.value });
-      });
+        onCLS((metric) => {
+          onReport({ cls: metric.value });
+        });
 
-      onTTFB((metric) => {
-        onReport({ ttfb: metric.value });
+        onFCP((metric) => {
+          onReport({ fcp: metric.value });
+        });
+
+        onTTFB((metric) => {
+          onReport({ ttfb: metric.value });
+        });
+      })
+      .catch((error) => {
+        console.warn('[Web Vitals] Library not available:', error);
       });
-    })
-    .catch((error) => {
-      console.warn('[Web Vitals] Library not available:', error);
-    });
+  } catch (error) {
+    console.warn('[Web Vitals] Failed to import:', error);
+  }
 }
 
 /**
@@ -282,9 +295,16 @@ export function logMemoryUsage() {
 
 /**
  * Initialize all performance monitoring (call in root layout)
+ * Only runs on client-side (browser) after hydration
  */
 export function initPerformanceMonitoring() {
-  if (!isWeb) {
+  // Critical: Only run on web platform with window available (prevents SSR errors)
+  if (!isWeb || typeof window === 'undefined') {
+    return;
+  }
+
+  // Additional safety: Check if document is ready
+  if (typeof document === 'undefined') {
     return;
   }
 

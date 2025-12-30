@@ -8,6 +8,7 @@ import { Platform, Pressable, StyleSheet, Text } from 'react-native';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useClientOnly } from '@/src/hooks/useClientOnly';
 import { initPerformanceMonitoring } from '@/src/utils/web-vitals';
 
 export const unstable_settings = {
@@ -45,19 +46,21 @@ const headerStyles = StyleSheet.create({
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const isClient = useClientOnly();
 
-  // Initialize Web-specific monitoring and Analytics
+  // Initialize Web-specific monitoring and Analytics (client-side only)
   useEffect(() => {
-    if (Platform.OS === 'web') {
+    if (Platform.OS === 'web' && isClient && typeof window !== 'undefined') {
+      // Initialize Performance Monitoring
       initPerformanceMonitoring();
       
       // Initialize Google Analytics 4 with your Measurement ID
       ReactGA.initialize("G-53139BKGD7");
       
-      // Track the initial page load
+      // Track the initial page load - safe to access window now
       ReactGA.send({ hitType: "pageview", page: window.location.pathname });
     }
-  }, []);
+  }, [isClient]);
 
   const posthogApiKey = process.env.EXPO_PUBLIC_POSTHOG_API_KEY || 'phc_HsAJl0DQIvAd64OQn37pPPAIG1Yo1WRu7QQGBo0Bv9j';
   const posthogHost = process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com';
