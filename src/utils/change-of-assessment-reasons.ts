@@ -210,8 +210,8 @@ export function getCategoryDisplayInfo(category: ComplexityCategory): {
   const displayInfo: Record<ComplexityCategory, { title: string; accentColor: string }> = {
     urgent: { title: 'Urgent Matters', accentColor: '#dc2626' }, // red-600
     income: { title: 'Income Issues', accentColor: '#d97706' }, // amber-600
-    child: { title: 'High Costs & Financial Obligations', accentColor: '#7c3aed' }, // violet-600
-    other: { title: 'Other Factors', accentColor: '#0891b2' }, // cyan-600
+    child: { title: 'Costs & Other Factors', accentColor: '#7c3aed' }, // violet-600
+    other: { title: 'Costs & Other Factors', accentColor: '#7c3aed' }, // violet-600
   };
 
   return displayInfo[category];

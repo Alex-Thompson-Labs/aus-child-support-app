@@ -28,7 +28,7 @@ type LeadStatus = 'new' | 'reviewing' | 'sent' | 'converted' | 'lost';
 export default function LeadDetailScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
-  const { isMobile } = useResponsive();
+  // const { isMobile } = useResponsive();
 
   const leadId = params.id as string;
 
@@ -432,7 +432,7 @@ auschildsupport.com`;
 
         {/* Parent's Message */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Parent's Message</Text>
+          <Text style={styles.sectionTitle}>Parent&apos;s Message</Text>
           <Text style={styles.messageText}>{lead.parent_message}</Text>
         </View>
 

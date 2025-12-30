@@ -66,24 +66,24 @@ export interface LeadSubmission {
   annual_liability: number;
 
   // Care arrangement data
-  care_data: Array<{
+  care_data: {
     index: number;
     careA: number;
     careB: number;
-  }> | null;
+  }[] | null;
 
   // Complexity data
   complexity_trigger: string;
   complexity_reasons: string[];
   coa_reasons: {
     count: number;
-    reasons: Array<{
+    reasons: {
       label: string;
       description: string;
       category: string;
       urgency: 'URGENT' | 'Normal';
       officialCoAReasons: string;
-    }>;
+    }[];
   } | null;
   court_date?: string | null;
   financial_tags?: string[] | null;

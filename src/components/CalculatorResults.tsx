@@ -4,13 +4,13 @@ import ReactGA from "react-ga4"; // Integrated for web lead tracking
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { CalculationResults } from "../types/calculator";
-import { detectComplexity, getAlertConfig, type ComplexityFlags, type ComplexityFormData } from "../utils/complexity-detection";
+import { detectComplexity, type ComplexityFlags, type ComplexityFormData } from "../utils/complexity-detection";
 import { formatCurrency } from "../utils/formatters";
 import { MAX_MODAL_WIDTH, useResponsive } from "../utils/responsive";
 import { shadowPresets } from "../utils/shadow-styles";
 import { ChangeOfAssessmentPrompt } from "./ChangeOfAssessmentPrompt";
-import { LawyerAlert } from "./LawyerAlert";
 import { ResultsSimpleExplanation } from "./ResultsSimpleExplanation";
+import { SmartConversionFooter } from "./SmartConversionFooter";
 
 interface CalculatorResultsProps {
   results: CalculationResults;
@@ -88,33 +88,24 @@ export function CalculatorResults({
     supportB: formData?.supportB,
   };
   const flags = detectComplexity(results, complexityFormData);
-  const alertConfig = getAlertConfig(flags, results, complexityFormData);
-
-  const isCalculationComplete = (() => {
-    const hasIncome = results.ATI_A > 0 || results.ATI_B > 0;
-    const hasChildrenWithCare = results.childResults?.some(child =>
-      (child.roundedCareA !== undefined && child.roundedCareA >= 0)
-    );
-    return hasIncome && hasChildrenWithCare;
-  })();
 
   // Check if any children exist in the calculation
   const hasChildren = formData?.children && formData.children.length > 0;
 
-  const shouldShowComplexityAlert = alertConfig && isCalculationComplete;
-
   const getTrigger = useCallback((): string => {
-    const flagKeys: Array<keyof ComplexityFlags> = ['highValue', 'sharedCareDispute', 'specialCircumstances', 'highVariance', 'incomeSuspicion'];
+    const flagKeys: (keyof ComplexityFlags)[] = ['highValue', 'sharedCareDispute', 'specialCircumstances', 'highVariance', 'incomeSuspicion'];
     const triggeredFlag = flagKeys.find(k => flags[k]);
     return triggeredFlag ? triggeredFlag.replace(/([A-Z])/g, '_$1').toLowerCase() : 'unknown';
   }, [flags]);
 
   const getAllTriggers = useCallback((): string[] => {
-    const flagKeys: Array<keyof ComplexityFlags> = ['highValue', 'sharedCareDispute', 'specialCircumstances', 'highVariance', 'incomeSuspicion'];
+    const flagKeys: (keyof ComplexityFlags)[] = ['highValue', 'sharedCareDispute', 'specialCircumstances', 'highVariance', 'incomeSuspicion'];
     return flagKeys.filter(k => flags[k]).map(flag => flag.replace(/([A-Z])/g, '_$1').toLowerCase());
   }, [flags]);
 
   // Unified Navigation & Analytics Handler
+  // Note: This function is defined but currently not directly used in the component
+  // It may be used by parent components or is kept for future feature implementation
   const navigateToInquiry = useCallback(() => {
     if (isNavigating) return;
     setIsNavigating(true);
@@ -188,16 +179,6 @@ export function CalculatorResults({
         </View>
       </View>
 
-      {shouldShowComplexityAlert && (
-        <LawyerAlert
-          title={alertConfig.title}
-          message={alertConfig.message}
-          urgency={alertConfig.urgency}
-          buttonText={alertConfig.buttonText}
-          onPress={navigateToInquiry} // Triggers analytics event
-        />
-      )}
-
       <ChangeOfAssessmentPrompt
         key={`${results.finalPaymentAmount}-${results.payer}-${results.childResults.map(c => `${c.roundedCareA}-${c.roundedCareB}`).join('-')}-${results.ATI_A}-${results.ATI_B}`}
         results={results}
@@ -211,6 +192,14 @@ export function CalculatorResults({
         }}
       />
       <ResultsSimpleExplanation results={results} formState={{ supportA: formData?.supportA ?? false, supportB: formData?.supportB ?? false }} />
+      
+      {/* Smart Conversion Footer - Always show at bottom of results */}
+      <SmartConversionFooter
+        results={results}
+        carePercentages={results.childResults.map(child => child.roundedCareA)}
+        formData={formData}
+        onBeforeNavigate={() => setIsExpanded(false)}
+      />
     </ScrollView>
   );
 

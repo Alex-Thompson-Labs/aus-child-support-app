@@ -18,11 +18,11 @@ export interface CalculatorInputs {
   ATI_B: number;
   supportA: boolean;
   supportB: boolean;
-  children: Array<{
+  children: {
     age: 'Under 13' | '13+';
     careA: number;
     careB: number;
-  }>;
+  }[];
   relDepA: RelevantDependents;
   relDepB: RelevantDependents;
 }

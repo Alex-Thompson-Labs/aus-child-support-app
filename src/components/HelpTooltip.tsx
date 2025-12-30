@@ -7,18 +7,33 @@ interface HelpTooltipProps {
   why: string;
   hideWhatLabel?: boolean;
   header?: string;
+  iconColor?: string;
+  iconBorderColor?: string;
+  iconBackgroundColor?: string;
 }
 
-export function HelpTooltip({ what, why, hideWhatLabel, header }: HelpTooltipProps) {
+export function HelpTooltip({
+  what,
+  why,
+  hideWhatLabel,
+  header,
+  iconColor,
+  iconBorderColor,
+  iconBackgroundColor,
+}: HelpTooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   return (
     <View style={styles.container}>
       <Pressable
         onPress={() => setIsVisible(!isVisible)}
-        style={styles.button}
+        style={[
+          styles.button,
+          iconBackgroundColor && { backgroundColor: iconBackgroundColor },
+          iconBorderColor && { borderColor: iconBorderColor },
+        ]}
       >
-        <Text style={styles.buttonText}>?</Text>
+        <Text style={[styles.buttonText, iconColor && { color: iconColor }]}>?</Text>
       </Pressable>
 
       <Modal

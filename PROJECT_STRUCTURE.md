@@ -48,7 +48,7 @@ csc/
 │   │   ├── ChangeOfAssessmentPrompt.tsx
 │   │   ├── ChildRow.tsx
 │   │   ├── HelpTooltip.tsx
-│   │   ├── LawyerAlert.tsx
+│   │   ├── SmartConversionFooter.tsx
 │   │   ├── PeriodPicker.tsx
 │   │   ├── ResultsSimpleExplanation.tsx
 │   │   └── WebInquiryPanel.tsx

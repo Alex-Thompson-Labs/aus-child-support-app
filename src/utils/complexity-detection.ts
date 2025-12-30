@@ -5,9 +5,8 @@
 // that should trigger "Get Legal Help" prompts
 
 import type { CalculationResults, ChildInput } from '../types/calculator';
+import { formatOfficialCoAReasons, getCoAReasonById, getHighestPriorityReason } from './change-of-assessment-reasons';
 import { convertCareToPercentage } from './child-support-calculations';
-import { getHighestPriorityReason, getCoAReasonById, formatOfficialCoAReasons } from './change-of-assessment-reasons';
-import { parseAustralianDate } from './date-utils';
 
 /**
  * Flags indicating different types of complexity detected in child support calculations
@@ -347,13 +346,13 @@ export interface CoALeadData {
   /** Number of valid reasons selected */
   count: number;
   /** Array of reason details for lawyer review */
-  reasons: Array<{
+  reasons: {
     label: string;
     description: string;
     category: string;
     urgency: 'URGENT' | 'Normal';
     officialCoAReasons: string;
-  }>;
+  }[];
   /** Pre-formatted text block for email templates */
   formattedText: string;
 }

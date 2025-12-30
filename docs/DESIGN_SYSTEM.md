@@ -37,14 +37,14 @@ Child Support Calculator - React Native/Expo app following Australian Government
 
 ## Component Patterns
 
-### Lawyer Alert Cards (LawyerAlert.tsx)
-High-urgency alerts that appear when complexity is detected:
-- Dynamic border color based on urgency (`#ef4444` for high, `#f59e0b` for medium/low)
-- Dynamic button color matching urgency level
-- "Get Legal Help" primary action button
-- Optional educational tip section for context
-- Accessibility: Proper ARIA roles, disabled state management, prevents double-tap
-- Analytics tracking: Alert shown and button clicked events
+### Smart Conversion Footer (SmartConversionFooter.tsx)
+Single conversion card at bottom of results based on priority logic:
+- **Priority 1**: Dispute Risk - Care percentage between 35-65% (amber card)
+- **Priority 2**: High Value - Annual liability > $15,000 (blue card)
+- **Priority 3**: Binding Agreement - Default fallback (gray card)
+- Each card pre-fills inquiry form with specific complexity trigger
+- Accessibility: Proper button roles, loading states, prevents double-tap
+- Analytics tracking: Card variant and button clicks
 
 ### Change of Assessment Prompt (ChangeOfAssessmentPrompt.tsx)
 Interactive expandable section for users to identify complexity factors:
@@ -151,7 +151,7 @@ The app is designed to convert parents into qualified leads for lawyers:
 
 **Qualification Phase:**
 4. Complexity detection runs automatically on every calculation
-5. If triggers detected, show LawyerAlert with appropriate urgency
+5. SmartConversionFooter displays single priority card (dispute risk, high value, or binding agreement)
 6. Change of Assessment Prompt allows self-identification of complex factors
 
 **Conversion Phase:**
@@ -216,8 +216,8 @@ For users who want to verify:
 - **CalculatorForm.tsx** - Input form with validations (includes WebHorizontalForm variant)
 - **CalculatorResults.tsx** - Results display (orchestrator)
 - **ResultsSimpleExplanation.tsx** - Narrative explanation view
-- **ChangeOfAssessmentPrompt.tsx** - NEW: Interactive CoA reason selector with categories
-- **LawyerAlert.tsx** - NEW: Complexity alert component with urgency levels
+- **ChangeOfAssessmentPrompt.tsx** - Interactive CoA reason selector with categories
+- **SmartConversionFooter.tsx** - Single conversion card with priority-based variants
 - **WebInquiryPanel.tsx** - NEW: Inline inquiry form for web platform
 - **ChildRow.tsx** - Individual child input row with care arrangement picker
 - **PeriodPicker.tsx** - NEW: Care period selector (week/fortnight/year)

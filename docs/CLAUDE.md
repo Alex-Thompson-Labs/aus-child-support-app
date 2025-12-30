@@ -75,7 +75,7 @@ csc/
 │   ├── components/           # React components
 │   │   ├── CalculatorForm.tsx
 │   │   ├── CalculatorResults.tsx
-│   │   ├── LawyerAlert.tsx
+│   │   ├── SmartConversionFooter.tsx
 │   │   └── WebInquiryPanel.tsx
 │   ├── screens/              # Screen components
 │   │   ├── CalculatorScreen.tsx

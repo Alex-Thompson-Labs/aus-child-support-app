@@ -162,11 +162,11 @@ export function useCalculator() {
 
     // Step 1: Create virtual children for relevant dependents
     // Virtual children have 0% care since they're only used for cost calculation
-    const relDepChildrenA: Array<{ age: "Under 13" | "13+"; careA: number; careB: number }> = [
+    const relDepChildrenA: { age: "Under 13" | "13+"; careA: number; careB: number }[] = [
       ...Array(relDepA.u13).fill({ age: "Under 13" as const, careA: 0, careB: 0 }),
       ...Array(relDepA.plus13).fill({ age: "13+" as const, careA: 0, careB: 0 }),
     ];
-    const relDepChildrenB: Array<{ age: "Under 13" | "13+"; careA: number; careB: number }> = [
+    const relDepChildrenB: { age: "Under 13" | "13+"; careA: number; careB: number }[] = [
       ...Array(relDepB.u13).fill({ age: "Under 13" as const, careA: 0, careB: 0 }),
       ...Array(relDepB.plus13).fill({ age: "13+" as const, careA: 0, careB: 0 }),
     ];

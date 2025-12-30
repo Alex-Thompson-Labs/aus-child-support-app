@@ -4,73 +4,86 @@ import type { CalculationResults } from "../types/calculator";
 import { formatCurrency } from "../utils/formatters";
 import { createShadow } from "../utils/shadow-styles";
 import { detectZeroPaymentScenario, isFarLimitReached } from "../utils/zero-payment-detection";
-import { HelpTooltip } from "./HelpTooltip";
+import { BreakdownStepCard } from "./BreakdownStepCard";
 
 interface ResultsSimpleExplanationProps {
   results: CalculationResults;
   formState: { supportA: boolean; supportB: boolean };
 }
 
-// Helper to format percentage
-const formatPercent = (num: number): string => {
-  return `${Math.round(num)}%`;
+// Helper to format percentage (currently unused but kept for future use)
+// const formatPercent = (num: number): string => {
+//   return `${Math.round(num)}%`;
+// };
+
+// Helper to format percentage with 2 decimal places
+const formatPercent2dp = (num: number): string => {
+  return `${num.toFixed(2)}%`;
 };
 
-// Minimal Color System - Professional Legal/Financial Calculator
-const COLORS = {
-  // Backgrounds
-  bg: {
-    primary: '#ffffff',      // Main background
-    card: '#ffffff',         // Card backgrounds
-    input: '#ffffff',        // Input fields
-    subtle: '#f8f9fa',       // Subtle backgrounds for sections
-  },
-
-  // Borders
-  border: {
-    default: '#e2e8f0',      // Default borders
-    focus: '#3b82f6',        // Focus state
-    subtle: '#f1f5f9',       // Very subtle dividers
-  },
-
-  // Text
-  text: {
-    primary: '#1a202c',      // Main text, headings - near black
-    secondary: '#4a5568',    // Subheadings, labels - dark grey
-    tertiary: '#718096',     // Helper text - medium grey
-    disabled: '#a0aec0',     // Disabled text - light grey
-  },
-
-  // Accent Colors - ONLY use where specified
-  accent: {
-    primary: '#3b82f6',      // Primary actions, links - blue
-    warning: '#d97706',      // Warnings only - amber
-    danger: '#dc2626',       // Errors, destructive actions - red
-    success: '#059669',      // Success states - green
-  },
-
-  // Results Display
-  result: {
-    amount: '#1a202c',       // The dollar amount - highest contrast
-    label: '#718096',        // "Parent B pays" label
-    breakdown: '#4a5568',    // Monthly/fortnightly amounts
-  },
+// Helper to format currency with 2 decimal places
+const formatCurrency2dp = (num: number): string => {
+  return `$${num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 };
+
+// Minimal Color System - Professional Legal/Financial Calculator (currently unused)
+// const COLORS = {
+//   // Backgrounds
+//   bg: {
+//     primary: '#ffffff',      // Main background
+//     card: '#ffffff',         // Card backgrounds
+//     input: '#ffffff',        // Input fields
+//     subtle: '#f8f9fa',       // Subtle backgrounds for sections
+//   },
+
+//   // Borders
+//   border: {
+//     default: '#e2e8f0',      // Default borders
+//     focus: '#3b82f6',        // Focus state
+//     subtle: '#f1f5f9',       // Very subtle dividers
+//   },
+//
+//   // Text
+//   text: {
+//     primary: '#1a202c',      // Main text, headings - near black
+//     secondary: '#4a5568',    // Subheadings, labels - dark grey
+//     tertiary: '#718096',     // Helper text - medium grey
+//     disabled: '#a0aec0',     // Disabled text - light grey
+//   },
+//
+//   // Accent Colors - ONLY use where specified
+//   accent: {
+//     primary: '#3b82f6',      // Primary actions, links - blue
+//     warning: '#d97706',      // Warnings only - amber
+//     danger: '#dc2626',       // Errors, destructive actions - red
+//     success: '#059669',      // Success states - green
+//   },
+//
+//   // Results Display
+//   result: {
+//     amount: '#1a202c',       // The dollar amount - highest contrast
+//     label: '#718096',        // "Parent B pays" label
+//     breakdown: '#4a5568',    // Monthly/fortnightly amounts
+//   },
+// };
 
 export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleExplanationProps) {
-  // Collapsible state management
+  // Collapsible state management - 8-Step Formula
   const [expandedSteps, setExpandedSteps] = useState({
-    step1: false,  // Income Percentages - collapsed
-    step2: false,  // Care/Cost Percentage - collapsed
-    step3: true,   // Child Support % - EXPANDED
-    step4: false,  // Cost of Children - collapsed
-    step5: true,   // Assessment Result - EXPANDED
+    step1: false,  // Child Support Income - collapsed
+    step2: false,  // Combined Income - collapsed
+    step3: false,  // Income Percentage - collapsed
+    step4: false,  // Care Percentage - collapsed
+    step5: false,  // Cost Percentage - collapsed
+    step6: true,   // Child Support Percentage - EXPANDED
+    step7: false,  // Cost of Children - collapsed
+    step8: true,   // Annual Rate - EXPANDED
     specialRate: false, // Special Rate notice - collapsed
   });
 
-  // Calculate payment periods
-  const monthlyAmount = results.finalPaymentAmount / 12;
-  const fortnightlyAmount = results.finalPaymentAmount / 26;
+  // Calculate payment periods (currently unused but kept for potential display)
+  // const monthlyAmount = results.finalPaymentAmount / 12;
+  // const fortnightlyAmount = results.finalPaymentAmount / 26;
   const dailyAmount = results.finalPaymentAmount / 365;
 
   // Determine who pays based on final liabilities (not gap calculation)
@@ -79,295 +92,293 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
 
   return (
     <View style={styles.container}>
-      {/* Step 1: Income Split */}
-      <View style={styles.step}>
-        <Pressable
-          onPress={() => setExpandedSteps(prev => ({...prev, step1: !prev.step1}))}
-          style={styles.stepHeader}
-          accessibilityRole="button"
-          accessibilityLabel={`Step 1: Child Support Income. ${expandedSteps.step1 ? 'Expanded' : 'Collapsed'}. Tap to ${expandedSteps.step1 ? 'collapse' : 'expand'}.`}
-          accessibilityState={{ expanded: expandedSteps.step1 }}
-        >
-          <View style={styles.stepNumber}>
-            <Text style={styles.stepNumberText}>1</Text>
-          </View>
-          <Text style={styles.stepTitle}>Child Support Income</Text>
-          <Text style={styles.chevron}>{expandedSteps.step1 ? '▼' : '▶'}</Text>
-        </Pressable>
-
-        {expandedSteps.step1 && (
-          <>
-            <Text style={styles.stepExplanation}>
-          Child support income is a parent's income after deducting an amount for their own living costs and for any other children they support outside the child support case.
-        </Text>
-
-        {/* Deduction breakdown for each parent */}
-        <View style={styles.deductionCards}>
-          {/* Parent A breakdown */}
-          <View style={styles.deductionCard}>
-            <Text style={styles.deductionCardTitle}>PARENT A</Text>
-            <View style={styles.deductionRow}>
-              <Text style={styles.deductionLabel}>Adjusted taxable income</Text>
-              <Text style={styles.deductionValue}>{formatCurrency(results.ATI_A)}</Text>
-            </View>
-            <View style={styles.deductionRow}>
-              <Text style={styles.deductionLabel}>Self-support amount</Text>
-              <Text style={styles.deductionValueNegative}>({formatCurrency(results.SSA)})</Text>
-            </View>
-            {results.relDepDeductibleA > 0 && (
-              <View style={styles.deductionRow}>
-                <Text style={styles.deductionLabel}>Rel dep allowance</Text>
-                <Text style={styles.deductionValueNegative}>({formatCurrency(results.relDepDeductibleA)})</Text>
-              </View>
-            )}
-            <View style={styles.deductionDivider} />
-            <View style={styles.deductionRow}>
-              <Text style={styles.deductionTotalLabel}>Child Support Income</Text>
-              <Text style={styles.deductionTotalValue}>{formatCurrency(Math.max(0, results.CSI_A))}</Text>
-            </View>
-          </View>
-
-          {/* Parent B breakdown */}
-          <View style={styles.deductionCard}>
-            <Text style={styles.deductionCardTitle}>PARENT B</Text>
-            <View style={styles.deductionRow}>
-              <Text style={styles.deductionLabel}>Adjusted taxable income</Text>
-              <Text style={styles.deductionValue}>{formatCurrency(results.ATI_B)}</Text>
-            </View>
-            <View style={styles.deductionRow}>
-              <Text style={styles.deductionLabel}>Self-support amount</Text>
-              <Text style={styles.deductionValueNegative}>({formatCurrency(results.SSA)})</Text>
-            </View>
-            {results.relDepDeductibleB > 0 && (
-              <View style={styles.deductionRow}>
-                <Text style={styles.deductionLabel}>Rel dep allowance</Text>
-                <Text style={styles.deductionValueNegative}>({formatCurrency(results.relDepDeductibleB)})</Text>
-              </View>
-            )}
-            <View style={styles.deductionDivider} />
-            <View style={styles.deductionRow}>
-              <Text style={styles.deductionTotalLabel}>Child Support Income</Text>
-              <Text style={styles.deductionTotalValue}>{formatCurrency(Math.max(0, results.CSI_B))}</Text>
-            </View>
-          </View>
-        </View>
-
-         {/* Combined child support income - text without container */}
-         <Text style={[styles.combinedCSIncomeLabel, { marginTop: 2, marginBottom: 8, fontSize: 14, textAlign: 'center' }]}>
-           COMBINED CS INCOME - {formatCurrency(results.CCSI)}
-         </Text>
-
-         {/* Divider line */}
-         <View style={{ height: 1, backgroundColor: '#334155', marginBottom: 12 }} />
-
-        <Text style={styles.stepExplanation}>
-          Each parent's child support income is then shown as a percentage of the combined total.
-        </Text>
-
-        <View style={styles.incomeComparison}>
-          <Text style={styles.careHeaderLabel}>
-            <Text style={{ color: '#4a5568' }}>PARENT A</Text> - <Text style={{ color: '#4a5568' }}>{formatPercent(results.incomePercA)}</Text>
+      {/* Step 1: Child Support Income */}
+      <BreakdownStepCard
+        stepNumber={1}
+        title="CHILD SUPPORT INCOME"
+        isExpanded={expandedSteps.step1}
+        onToggle={() => setExpandedSteps(prev => ({...prev, step1: !prev.step1}))}
+      >
+        <>
+          <Text style={styles.stepExplanation}>
+            Child support income is a parent&apos;s income after deducting an amount for their own living costs and for any other children they support outside the child support case.
           </Text>
 
-          {/* Visual bar */}
-          <View style={styles.visualBar}>
-            <View style={[styles.barSegmentA, { flex: results.incomePercA }]} />
-            <View style={[styles.barSegmentB, { flex: results.incomePercB }]} />
+          {/* Deduction breakdown for each parent */}
+          <View style={styles.deductionCards}>
+            {/* Parent A breakdown */}
+            <View style={styles.deductionCard}>
+              <Text style={styles.deductionCardTitle}>PARENT A</Text>
+              <View style={styles.deductionRow}>
+                <Text style={styles.deductionLabel}>Adjusted taxable income</Text>
+                <Text style={styles.deductionValue}>{formatCurrency(results.ATI_A)}</Text>
+              </View>
+              <View style={styles.deductionRow}>
+                <Text style={styles.deductionLabel}>Self-support amount</Text>
+                <Text style={styles.deductionValueNegative}>({formatCurrency(results.SSA)})</Text>
+              </View>
+              {results.relDepDeductibleA > 0 && (
+                <View style={styles.deductionRow}>
+                  <Text style={styles.deductionLabel}>Rel dep allowance</Text>
+                  <Text style={styles.deductionValueNegative}>({formatCurrency(results.relDepDeductibleA)})</Text>
+                </View>
+              )}
+              <View style={styles.deductionDivider} />
+              <View style={styles.deductionRow}>
+                <Text style={styles.deductionTotalLabel}>Child Support Income</Text>
+                <Text style={styles.deductionTotalValue}>{formatCurrency(Math.max(0, results.CSI_A))}</Text>
+              </View>
+            </View>
+
+            {/* Parent B breakdown */}
+            <View style={styles.deductionCard}>
+              <Text style={styles.deductionCardTitle}>PARENT B</Text>
+              <View style={styles.deductionRow}>
+                <Text style={styles.deductionLabel}>Adjusted taxable income</Text>
+                <Text style={styles.deductionValue}>{formatCurrency(results.ATI_B)}</Text>
+              </View>
+              <View style={styles.deductionRow}>
+                <Text style={styles.deductionLabel}>Self-support amount</Text>
+                <Text style={styles.deductionValueNegative}>({formatCurrency(results.SSA)})</Text>
+              </View>
+              {results.relDepDeductibleB > 0 && (
+                <View style={styles.deductionRow}>
+                  <Text style={styles.deductionLabel}>Rel dep allowance</Text>
+                  <Text style={styles.deductionValueNegative}>({formatCurrency(results.relDepDeductibleB)})</Text>
+                </View>
+              )}
+              <View style={styles.deductionDivider} />
+              <View style={styles.deductionRow}>
+                <Text style={styles.deductionTotalLabel}>Child Support Income</Text>
+                <Text style={styles.deductionTotalValue}>{formatCurrency(Math.max(0, results.CSI_B))}</Text>
+              </View>
+            </View>
           </View>
+        </>
+      </BreakdownStepCard>
 
-          <Text style={[styles.careHeaderLabel, { textAlign: 'right' }]}>
-            <Text style={{ color: '#4a5568' }}>PARENT B</Text> - <Text style={{ color: '#4a5568' }}>{formatPercent(results.incomePercB)}</Text>
+      {/* Step 2: Combined Income */}
+      <BreakdownStepCard
+        stepNumber={2}
+        title="COMBINED CHILD SUPPORT INCOME"
+        isExpanded={expandedSteps.step2}
+        onToggle={() => setExpandedSteps(prev => ({...prev, step2: !prev.step2}))}
+      >
+        <>
+          <Text style={styles.stepExplanation}>
+            The combined child support income is the total of both parents&apos; child support incomes. This combined figure is used to calculate each parent&apos;s income percentage and to determine the cost of the children.
           </Text>
-        </View>
-          </>
-        )}
-      </View>
 
-      {/* Step 2: Care Split - Per Child */}
-      {results.childResults.map((child, index) => (
-        <View key={index} style={styles.step}>
-          <Pressable
-            onPress={() => setExpandedSteps(prev => ({...prev, step2: !prev.step2}))}
-            style={styles.stepHeader}
-            accessibilityRole="button"
-            accessibilityLabel={`Step 2${results.childResults.length > 1 ? String.fromCharCode(97 + index) : ''}: Care and Cost Percentages${results.childResults.length > 1 ? ` for Child ${index + 1}` : ''}. ${expandedSteps.step2 ? 'Expanded' : 'Collapsed'}. Tap to ${expandedSteps.step2 ? 'collapse' : 'expand'}.`}
-            accessibilityState={{ expanded: expandedSteps.step2 }}
-          >
-            <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>
-                2{results.childResults.length > 1 ? String.fromCharCode(97 + index) : ''}
+          <View style={styles.combinedIncomeCalculation}>
+            <View style={styles.combinedIncomeRow}>
+              <Text style={styles.combinedIncomeLabel}>Parent A CS Income</Text>
+              <Text style={styles.combinedIncomeValue}>{formatCurrency(Math.max(0, results.CSI_A))}</Text>
+            </View>
+            <View style={styles.combinedIncomeRow}>
+              <Text style={styles.combinedIncomeLabel}>Parent B CS Income</Text>
+              <Text style={styles.combinedIncomeValue}>{formatCurrency(Math.max(0, results.CSI_B))}</Text>
+            </View>
+            <View style={styles.combinedIncomeDivider} />
+            <View style={styles.combinedIncomeRow}>
+              <Text style={styles.combinedIncomeTotalLabel}>Combined CS Income</Text>
+              <Text style={styles.combinedIncomeTotalValue}>{formatCurrency(results.CCSI)}</Text>
+            </View>
+          </View>
+        </>
+      </BreakdownStepCard>
+
+      {/* Step 3: Income Percentage */}
+      <BreakdownStepCard
+        stepNumber={3}
+        title="INCOME PERCENTAGE"
+        isExpanded={expandedSteps.step3}
+        onToggle={() => setExpandedSteps(prev => ({...prev, step3: !prev.step3}))}
+      >
+        <>
+          <Text style={styles.stepExplanation}>
+            Each parent&apos;s child support income is shown as a percentage of the combined total. This percentage represents each parent&apos;s share of the total income available for child support.
+          </Text>
+
+          <View style={styles.incomePercentageCalculation}>
+            <View style={styles.incomePercentageCard}>
+              <Text style={styles.incomePercentageCardTitle}>PARENT A</Text>
+              <Text style={styles.incomePercentageFormula}>
+                {formatCurrency(Math.max(0, results.CSI_A))} ÷ {formatCurrency(results.CCSI)} = {formatPercent2dp(results.incomePercA)}
               </Text>
             </View>
-            <Text style={styles.stepTitle}>
-              CARE/COST PERCENTAGES{results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''}
-            </Text>
-            <Text style={styles.chevron}>{expandedSteps.step2 ? '▼' : '▶'}</Text>
-          </Pressable>
+            <View style={styles.incomePercentageCard}>
+              <Text style={styles.incomePercentageCardTitle}>PARENT B</Text>
+              <Text style={styles.incomePercentageFormula}>
+                {formatCurrency(Math.max(0, results.CSI_B))} ÷ {formatCurrency(results.CCSI)} = {formatPercent2dp(results.incomePercB)}
+              </Text>
+            </View>
+          </View>
 
-          {expandedSteps.step2 && (
-            <>
-              {index === 0 && (
-            <Text style={[styles.stepExplanation, { lineHeight: 22 }]}>
-              The number of nights each parent cares for the child over a year is converted into a <Text style={{ fontWeight: '600', color: '#3b82f6' }}>CARE PERCENTAGE</Text>
-              <View style={{ transform: [{ scale: 0.85 }, { translateY: 3 }], marginLeft: 6 }}>
-                <HelpTooltip
-                  what="Special rounding rules apply. Regardless of the decimal value, percentages below 50% are rounded down to the nearest whole number with ones above being always rounded up."
-                  why=""
-                  hideWhatLabel
-                />
-              </View>.
-            </Text>
-          )}
-
-          <View style={styles.careComparison}>
+          <View style={styles.incomeComparison}>
             <Text style={styles.careHeaderLabel}>
-              <Text style={{ color: '#4a5568' }}>PARENT A</Text> - <Text style={{ color: '#4a5568' }}>{formatPercent(child.roundedCareA)}</Text>
+              <Text style={{ color: '#4a5568' }}>PARENT A</Text> - <Text style={{ color: '#4a5568' }}>{formatPercent2dp(results.incomePercA)}</Text>
             </Text>
 
-            {/* Visual bar for care */}
+            {/* Visual bar */}
             <View style={styles.visualBar}>
-              <View style={[styles.barSegmentA, { flex: child.roundedCareA }]} />
-              <View style={[styles.barSegmentB, { flex: child.roundedCareB }]} />
+              <View style={[styles.barSegmentA, { flex: results.incomePercA }]} />
+              <View style={[styles.barSegmentB, { flex: results.incomePercB }]} />
             </View>
 
-             <Text style={[styles.careHeaderLabel, { textAlign: 'right' }]}>
-               <Text style={{ color: '#4a5568' }}>PARENT B</Text> - <Text style={{ color: '#4a5568' }}>{formatPercent(child.roundedCareB)}</Text>
-             </Text>
+            <Text style={[styles.careHeaderLabel, { textAlign: 'right' }]}>
+              <Text style={{ color: '#4a5568' }}>PARENT B</Text> - <Text style={{ color: '#4a5568' }}>{formatPercent2dp(results.incomePercB)}</Text>
+            </Text>
+          </View>
+        </>
+      </BreakdownStepCard>
 
+      {/* Step 4: Care Percentage - Per Child */}
+      {results.childResults.map((child, index) => (
+        <BreakdownStepCard
+          key={index}
+          stepNumber={`4${results.childResults.length > 1 ? String.fromCharCode(97 + index) : ''}`}
+          title={`CARE PERCENTAGE${results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''}`}
+          description={results.childResults.length > 1 ? `for Child ${index + 1}` : undefined}
+          tooltip="Special rounding rules apply. Regardless of the decimal value, percentages below 50% are rounded down to the nearest whole number with ones above being always rounded up."
+          isExpanded={expandedSteps.step4}
+          onToggle={() => setExpandedSteps(prev => ({...prev, step4: !prev.step4}))}
+        >
+          <>
             {index === 0 && (
-              <>
-                <View style={{ height: 1, backgroundColor: '#334155', marginVertical: 8 }} />
-
-                <Text style={[styles.stepExplanation, { lineHeight: 22 }]}>
-                  This care percentage is then converted via a formula into a <Text style={{ fontWeight: '600', color: '#3b82f6' }}>COST PERCENTAGE</Text>
-                  <View style={{ transform: [{ scale: 0.85 }, { translateY: 3 }], marginLeft: 6 }}>
-                    <HelpTooltip
-                      header=""
-                      what={
-                        <View style={{ paddingVertical: 8 }}>
-                          <Text style={{ color: '#1a202c', fontSize: 13, fontWeight: '600', marginBottom: 12, textAlign: 'center' }}>
-                            Care Percentage → Cost Percentage
-                          </Text>
-                          
-                          <View style={{ gap: 10 }}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
-                              <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>0% - 13%</Text>
-                              <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>Nil</Text>
-                            </View>
-                            
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
-                              <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>14% - 34%</Text>
-                              <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>24%</Text>
-                            </View>
-                            
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
-                              <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>35% - 47%</Text>
-                              <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>25% + 2% per point over 35%</Text>
-                            </View>
-                            
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
-                              <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>48% - 52%</Text>
-                              <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>50%</Text>
-                            </View>
-                            
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
-                              <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>53% - 65%</Text>
-                              <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>51% + 2% per point over 53%</Text>
-                            </View>
-                            
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
-                              <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>66% - 86%</Text>
-                              <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>76%</Text>
-                            </View>
-                            
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6 }}>
-                              <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>87% - 100%</Text>
-                              <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>100%</Text>
-                            </View>
-                          </View>
-                        </View>
-                      }
-                      why=""
-                      hideWhatLabel
-                    />
-                  </View>. This figure reflects the share of the child's living costs that the parent covers directly while providing care.
-                </Text>
-              </>
+              <Text style={[styles.stepExplanation, { lineHeight: 22 }]}>
+                The number of nights each parent cares for the child over a year is converted into a care percentage.
+              </Text>
             )}
 
-            {/* Divider line for additional children */}
-            {index > 0 && (
-              <View style={{ height: 1, backgroundColor: '#334155', marginTop: 16 }} />
-            )}
-          </View>
+            <View style={styles.careComparison}>
+              <Text style={styles.careHeaderLabel}>
+                <Text style={{ color: '#4a5568' }}>PARENT A</Text> - <Text style={{ color: '#4a5568' }}>{formatPercent2dp(child.roundedCareA)}</Text>
+              </Text>
 
-          {/* Care to Cost conversion */}
-          <View style={[styles.careConversion, { marginTop: index === 0 ? 3 : 16, padding: 12 }]}>
-            <View style={styles.conversionCards}>
-              <View style={styles.conversionCard}>
-                <Text style={[styles.conversionCardLabel, { fontSize: 12 }]}>PARENT A</Text>
-                <View style={styles.conversionRow}>
-                  <View style={{ alignItems: 'center' }}>
-                    <Text style={styles.conversionValue}>{formatPercent(child.roundedCareA)}</Text>
-                    <Text style={styles.conversionSubLabel}>care</Text>
-                  </View>
-                  <Text style={styles.conversionArrow}>→</Text>
-                  <View style={{ alignItems: 'center' }}>
-                    <Text style={styles.conversionResult}>{formatPercent(child.costPercA)}</Text>
-                    <Text style={styles.conversionSubLabel}>cost</Text>
-                  </View>
-                </View>
+              {/* Visual bar for care */}
+              <View style={styles.visualBar}>
+                <View style={[styles.barSegmentA, { flex: child.roundedCareA }]} />
+                <View style={[styles.barSegmentB, { flex: child.roundedCareB }]} />
               </View>
 
-              <View style={styles.conversionCard}>
-                <Text style={[styles.conversionCardLabel, { fontSize: 12 }]}>PARENT B</Text>
-                <View style={styles.conversionRow}>
-                  <View style={{ alignItems: 'center' }}>
-                    <Text style={styles.conversionValue}>{formatPercent(child.roundedCareB)}</Text>
-                    <Text style={styles.conversionSubLabel}>care</Text>
-                  </View>
-                  <Text style={styles.conversionArrow}>→</Text>
-                  <View style={{ alignItems: 'center' }}>
-                    <Text style={styles.conversionResult}>{formatPercent(child.costPercB)}</Text>
-                    <Text style={styles.conversionSubLabel}>cost</Text>
-                  </View>
-                </View>
-              </View>
+              <Text style={[styles.careHeaderLabel, { textAlign: 'right' }]}>
+                <Text style={{ color: '#4a5568' }}>PARENT B</Text> - <Text style={{ color: '#4a5568' }}>{formatPercent2dp(child.roundedCareB)}</Text>
+              </Text>
+
+              {/* Divider line for additional children */}
+              {index > 0 && (
+                <View style={{ height: 1, backgroundColor: '#334155', marginTop: 16 }} />
+              )}
             </View>
-          </View>
-            </>
-          )}
-        </View>
+          </>
+        </BreakdownStepCard>
       ))}
 
-      {/* Step 3: The Gap - Per Child */}
+      {/* Step 5: Cost Percentage - Per Child */}
       {results.childResults.map((child, index) => (
-        <View key={index} style={styles.step}>
-          <Pressable
-            onPress={() => setExpandedSteps(prev => ({...prev, step3: !prev.step3}))}
-            style={styles.stepHeader}
-            accessibilityRole="button"
-            accessibilityLabel={`Step 3${results.childResults.length > 1 ? String.fromCharCode(97 + index) : ''}: Child Support Percentages${results.childResults.length > 1 ? ` for Child ${index + 1}` : ''}. ${expandedSteps.step3 ? 'Expanded' : 'Collapsed'}. Tap to ${expandedSteps.step3 ? 'collapse' : 'expand'}.`}
-            accessibilityState={{ expanded: expandedSteps.step3 }}
-          >
-            <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>
-                3{results.childResults.length > 1 ? String.fromCharCode(97 + index) : ''}
+        <BreakdownStepCard
+          key={index}
+          stepNumber={`5${results.childResults.length > 1 ? String.fromCharCode(97 + index) : ''}`}
+          title={`COST PERCENTAGE${results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''}`}
+          description={results.childResults.length > 1 ? `for Child ${index + 1}` : undefined}
+          tooltip={
+            <View style={{ paddingVertical: 8 }}>
+              <Text style={{ color: '#1a202c', fontSize: 13, fontWeight: '600', marginBottom: 12, textAlign: 'center' }}>
+                Care Percentage → Cost Percentage
               </Text>
-            </View>
-            <Text style={styles.stepTitle}>
-              CHILD SUPPORT PERCENTAGES{results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''}
-            </Text>
-            <Text style={styles.chevron}>{expandedSteps.step3 ? '▼' : '▶'}</Text>
-          </Pressable>
 
-          {expandedSteps.step3 && (
-            <>
-              {index === 0 && (
-            <Text style={styles.stepExplanation}>
-              A parent must pay child support when their share of income is higher than their share of costs. The difference between these two shares is called the <Text style={{ fontWeight: '600', color: '#3b82f6' }}>CHILD SUPPORT PERCENTAGE</Text>, which is then used in the formula to calculate the child support amount.
-            </Text>
-          )}
+              <View style={{ gap: 10 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
+                  <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>0% - 13%</Text>
+                  <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>Nil</Text>
+                </View>
+
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
+                  <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>14% - 34%</Text>
+                  <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>24%</Text>
+                </View>
+
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
+                  <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>35% - 47%</Text>
+                  <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>25% + 2% per point over 35%</Text>
+                </View>
+
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
+                  <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>48% - 52%</Text>
+                  <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>50%</Text>
+                </View>
+
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
+                  <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>53% - 65%</Text>
+                  <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>51% + 2% per point over 53%</Text>
+                </View>
+              </View>
+            </View>
+          }
+          isExpanded={expandedSteps.step5}
+          onToggle={() => setExpandedSteps(prev => ({...prev, step5: !prev.step5}))}
+        >
+          <>
+            {index === 0 && (
+              <Text style={[styles.stepExplanation, { lineHeight: 22 }]}>
+                The care percentage is converted via a formula into a cost percentage. This figure reflects the share of the child's living costs that the parent covers directly while providing care.
+              </Text>
+            )}
+
+            {/* Care to Cost conversion */}
+            <View style={[styles.careConversion, { marginTop: index === 0 ? 12 : 16, padding: 12 }]}>
+              <View style={styles.conversionCards}>
+                <View style={styles.conversionCard}>
+                  <Text style={[styles.conversionCardLabel, { fontSize: 12 }]}>PARENT A</Text>
+                  <View style={styles.conversionRow}>
+                    <View style={{ alignItems: 'center' }}>
+                      <Text style={styles.conversionValue}>{formatPercent2dp(child.roundedCareA)}</Text>
+                      <Text style={styles.conversionSubLabel}>care</Text>
+                    </View>
+                    <Text style={styles.conversionArrow}>→</Text>
+                    <View style={{ alignItems: 'center' }}>
+                      <Text style={styles.conversionResult}>{formatPercent2dp(child.costPercA)}</Text>
+                      <Text style={styles.conversionSubLabel}>cost</Text>
+                    </View>
+                  </View>
+                </View>
+
+                <View style={styles.conversionCard}>
+                  <Text style={[styles.conversionCardLabel, { fontSize: 12 }]}>PARENT B</Text>
+                  <View style={styles.conversionRow}>
+                    <View style={{ alignItems: 'center' }}>
+                      <Text style={styles.conversionValue}>{formatPercent2dp(child.roundedCareB)}</Text>
+                      <Text style={styles.conversionSubLabel}>care</Text>
+                    </View>
+                    <Text style={styles.conversionArrow}>→</Text>
+                    <View style={{ alignItems: 'center' }}>
+                      <Text style={styles.conversionResult}>{formatPercent2dp(child.costPercB)}</Text>
+                      <Text style={styles.conversionSubLabel}>cost</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </>
+        </BreakdownStepCard>
+      ))}
+
+      {/* Step 6: Child Support Percentage - Per Child */}
+      {results.childResults.map((child, index) => (
+        <BreakdownStepCard
+          key={index}
+          stepNumber={`6${results.childResults.length > 1 ? String.fromCharCode(97 + index) : ''}`}
+          title={`CHILD SUPPORT PERCENTAGE${results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''}`}
+          description={results.childResults.length > 1 ? `for Child ${index + 1}` : undefined}
+          isExpanded={expandedSteps.step6}
+          onToggle={() => setExpandedSteps(prev => ({...prev, step6: !prev.step6}))}
+        >
+          <>
+            {index === 0 && (
+              <Text style={styles.stepExplanation}>
+                A parent must pay child support when their share of income is higher than their share of costs. The difference between these two shares is called the <Text style={{ fontWeight: '600', color: '#3b82f6' }}>CHILD SUPPORT PERCENTAGE</Text>, which is then used in the formula to calculate the child support amount.
+              </Text>
+            )}
 
           <View style={styles.gapCalculation}>
             <View style={styles.gapCards}>
@@ -379,11 +390,11 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                   <>
                     <View style={styles.gapCardRow}>
                       <Text style={styles.gapCardLabel}>Income %</Text>
-                      <Text style={styles.gapCardValue}>{formatPercent(results.incomePercA)}</Text>
+                      <Text style={styles.gapCardValue}>{formatPercent2dp(results.incomePercA)}</Text>
                     </View>
                     <View style={styles.gapCardRow}>
                       <Text style={styles.gapCardLabel}>Cost %</Text>
-                      <Text style={[styles.gapCardValue, { color: '#dc2626' }]}>({formatPercent(child.costPercA)})</Text>
+                      <Text style={[styles.gapCardValue, { color: '#dc2626' }]}>({formatPercent2dp(child.costPercA)})</Text>
                     </View>
                     <View style={styles.gapCardDivider} />
                     <View style={styles.gapCardRow}>
@@ -392,7 +403,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                         styles.gapCardValue,
                         child.childSupportPercA > 0 && !child.farAppliedB && !child.marAppliedB && styles.gapCardValueHighlight
                       ]}>
-                        {(child.farAppliedB || child.marAppliedB) ? '—' : (child.childSupportPercA > 0 ? formatPercent(child.childSupportPercA) : '—')}
+                        {(child.farAppliedB || child.marAppliedB) ? '—' : (child.childSupportPercA > 0 ? formatPercent2dp(child.childSupportPercA) : '—')}
                       </Text>
                     </View>
                   </>
@@ -416,11 +427,11 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                   <>
                     <View style={styles.gapCardRow}>
                       <Text style={styles.gapCardLabel}>Income %</Text>
-                      <Text style={styles.gapCardValue}>{formatPercent(results.incomePercB)}</Text>
+                      <Text style={styles.gapCardValue}>{formatPercent2dp(results.incomePercB)}</Text>
                     </View>
                     <View style={styles.gapCardRow}>
                       <Text style={styles.gapCardLabel}>Cost %</Text>
-                      <Text style={[styles.gapCardValue, { color: '#dc2626' }]}>({formatPercent(child.costPercB)})</Text>
+                      <Text style={[styles.gapCardValue, { color: '#dc2626' }]}>({formatPercent2dp(child.costPercB)})</Text>
                     </View>
                     <View style={styles.gapCardDivider} />
                     <View style={styles.gapCardRow}>
@@ -429,7 +440,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                         styles.gapCardValue,
                         child.childSupportPercB > 0 && !child.farAppliedA && !child.marAppliedA && styles.gapCardValueHighlight
                       ]}>
-                        {(child.farAppliedA || child.marAppliedA) ? '—' : (child.childSupportPercB > 0 ? formatPercent(child.childSupportPercB) : '—')}
+                        {(child.farAppliedA || child.marAppliedA) ? '—' : (child.childSupportPercB > 0 ? formatPercent2dp(child.childSupportPercB) : '—')}
                       </Text>
                     </View>
                   </>
@@ -446,30 +457,19 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
               </View>
             </View>
           </View>
-            </>
-          )}
-        </View>
+          </>
+        </BreakdownStepCard>
       ))}
 
-      {/* Step 4: Total Costs */}
-      <View style={styles.step}>
-        <Pressable
-          onPress={() => setExpandedSteps(prev => ({...prev, step4: !prev.step4}))}
-          style={styles.stepHeader}
-          accessibilityRole="button"
-          accessibilityLabel={`Step 4: Cost of Children. ${expandedSteps.step4 ? 'Expanded' : 'Collapsed'}. Tap to ${expandedSteps.step4 ? 'collapse' : 'expand'}.`}
-          accessibilityState={{ expanded: expandedSteps.step4 }}
-        >
-          <View style={styles.stepNumber}>
-            <Text style={styles.stepNumberText}>4</Text>
-          </View>
-          <Text style={styles.stepTitle}>COST OF CHILDREN</Text>
-          <Text style={styles.chevron}>{expandedSteps.step4 ? '▼' : '▶'}</Text>
-        </Pressable>
-
-        {expandedSteps.step4 && (
-          <>
-            <Text style={styles.stepExplanation}>
+      {/* Step 7: Cost of Children */}
+      <BreakdownStepCard
+        stepNumber={7}
+        title="COST OF CHILDREN"
+        isExpanded={expandedSteps.step7}
+        onToggle={() => setExpandedSteps(prev => ({...prev, step7: !prev.step7}))}
+      >
+        <>
+          <Text style={styles.stepExplanation}>
           The total cost of children for an assessment is calculated using income brackets set by the Department of Social Services. Each bracket has a base cost plus a percentage applied to income within that bracket.
         </Text>
 
@@ -492,49 +492,38 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
               </View>
               {results.costBracketInfo.rate > 0 && (
                 <View style={styles.bracketRow}>
-                  <Text style={styles.bracketLabel}>+ {Math.round(results.costBracketInfo.rate * 100)}% × {formatCurrency(results.costBracketInfo.incomeInBracket)}</Text>
-                  <Text style={styles.bracketValue}>+{formatCurrency(results.costBracketInfo.rate * results.costBracketInfo.incomeInBracket)}</Text>
+                  <Text style={styles.bracketLabel}>+ {(results.costBracketInfo.rate * 100).toFixed(2)}% × {formatCurrency(results.costBracketInfo.incomeInBracket)}</Text>
+                  <Text style={styles.bracketValue}>+{formatCurrency2dp(results.costBracketInfo.rate * results.costBracketInfo.incomeInBracket)}</Text>
                 </View>
               )}
               <View style={styles.bracketDivider} />
               <View style={styles.bracketRow}>
                 <Text style={styles.bracketTotalLabel}>Total cost of children</Text>
-                <Text style={styles.bracketTotalValue}>{formatCurrency(results.totalCost)}</Text>
+                <Text style={styles.bracketTotalValue}>{formatCurrency2dp(results.totalCost)}</Text>
               </View>
               {results.childResults.length > 0 && (
                 <View style={styles.bracketRow}>
                   <Text style={styles.bracketLabel}>Cost per child ({results.childResults.length})</Text>
-                  <Text style={styles.bracketValue}>{formatCurrency(results.totalCost / results.childResults.length)}</Text>
+                  <Text style={styles.bracketValue}>{formatCurrency2dp(results.totalCost / results.childResults.length)}</Text>
                 </View>
               )}
             </View>
           </View>
         )}
-          </>
-        )}
-      </View>
+        </>
+      </BreakdownStepCard>
 
-      {/* Step 5: Your Payment */}
-      <View style={styles.step}>
-        <Pressable
-          onPress={() => setExpandedSteps(prev => ({...prev, step5: !prev.step5}))}
-          style={styles.stepHeader}
-          accessibilityRole="button"
-          accessibilityLabel={`Step 5: Assessment Result. ${expandedSteps.step5 ? 'Expanded' : 'Collapsed'}. Tap to ${expandedSteps.step5 ? 'collapse' : 'expand'}.`}
-          accessibilityState={{ expanded: expandedSteps.step5 }}
-        >
-          <View style={styles.stepNumber}>
-            <Text style={styles.stepNumberText}>5</Text>
-          </View>
-          <Text style={styles.stepTitle}>ASSESSMENT RESULT</Text>
-          <Text style={styles.chevron}>{expandedSteps.step5 ? '▼' : '▶'}</Text>
-        </Pressable>
-
-        {expandedSteps.step5 && (
-          <>
-            <Text style={styles.stepExplanation}>
-          The final annual liability is calculated by multiplying the Child Support Percentage <Text style={{ color: '#3b82f6' }}>(</Text><Text style={{ fontWeight: '600', color: '#3b82f6' }}>STEP 3</Text><Text style={{ color: '#3b82f6' }}>)</Text> by the total Cost of the Child <Text style={{ color: '#3b82f6' }}>(</Text><Text style={{ fontWeight: '600', color: '#3b82f6' }}>STEP 4</Text><Text style={{ color: '#3b82f6' }}>)</Text>.
-        </Text>
+      {/* Step 8: Annual Rate */}
+      <BreakdownStepCard
+        stepNumber={8}
+        title="ANNUAL RATE"
+        isExpanded={expandedSteps.step8}
+        onToggle={() => setExpandedSteps(prev => ({...prev, step8: !prev.step8}))}
+      >
+        <>
+          <Text style={styles.stepExplanation}>
+            The final annual liability is calculated by multiplying the Child Support Percentage <Text style={{ color: '#3b82f6' }}>(</Text><Text style={{ fontWeight: '600', color: '#3b82f6' }}>STEP 6</Text><Text style={{ color: '#3b82f6' }}>)</Text> by the total Cost of the Child <Text style={{ color: '#3b82f6' }}>(</Text><Text style={{ fontWeight: '600', color: '#3b82f6' }}>STEP 7</Text><Text style={{ color: '#3b82f6' }}>)</Text>.
+          </Text>
 
         {/* Per-child payment breakdown */}
         {results.childResults.length > 0 && (() => {
@@ -545,7 +534,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
 
           // If MAR is applied, show a single consolidated line
           if (hasAnyMar) {
-            const payingParentColor = hasMarA ? '#3b82f6' : '#8b5cf6';
+            const payingParentColor = '#475569'; // slate-600 - neutral for all parents
             const totalMarAmount = results.finalPaymentAmount;
 
             return (
@@ -620,7 +609,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
 
                 // Determine color and values based on who actually pays (use final liability as source of truth)
                 const showForParentA = parentAOwesForChild;
-                const payingParentColor = showForParentA ? '#3b82f6' : '#8b5cf6';
+                const payingParentColor = '#475569'; // slate-600 - neutral for all parents
                 const farApplied = showForParentA ? child.farAppliedA : child.farAppliedB;
                 const gapPercentage = showForParentA
                   ? Math.max(0, child.childSupportPercA)
@@ -634,12 +623,12 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                         <>Child {index + 1} - <Text style={{ color: payingParentColor }}>Fixed annual rate</Text></>
                       ) : (
                         <>
-                          Child {index + 1} - <Text style={{ color: payingParentColor }}>({formatPercent(gapPercentage)})</Text> × {formatCurrency(child.costPerChild)}
+                          Child {index + 1} - <Text style={{ color: payingParentColor }}>({formatPercent2dp(gapPercentage)})</Text> × {formatCurrency2dp(child.costPerChild)}
                         </>
                       )}
                     </Text>
                     <Text style={[styles.perChildGapValue, { color: payingParentColor }]}>
-                      {formatCurrency(liability)}
+                      {formatCurrency2dp(liability)}
                     </Text>
                   </View>
                 );
@@ -652,7 +641,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                   Total Annual Liability
                 </Text>
                 <Text style={[styles.perChildGapValue, { fontWeight: '700', fontSize: 18 }]}>
-                  {formatCurrency(results.finalPaymentAmount)}
+                  {formatCurrency2dp(results.finalPaymentAmount)}
                 </Text>
               </View>
             </View>
@@ -710,23 +699,23 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                 {results.rateApplied.includes("FAR") ? (
                   <>
                     <Text style={styles.specialNoticeText}>
-                      The FAR is for low-income parents whose income doesn't reflect their capacity to pay. It is a way to prevent parents from reducing their payments by minimising their income. It is a rate paid per child (maximum 3) and requires three eligibility criteria be met:
+                      The FAR is for low-income parents whose income doesn&apos;t reflect their capacity to pay. It is a way to prevent parents from reducing their payments by minimising their income. It is a rate paid per child (maximum 3) and requires three eligibility criteria be met:
                     </Text>
                     <Text style={styles.specialNoticeText}>
                       {'\n'}1. The parent must have less than 35% care of the child.
-                      {'\n\n'}2. The income used in the assessment must be less than the pension Parenting Payment (single) maximum basic amount ($26,195)(2025).
+                      {'\n\n'}2. The income used in the assessment must be less than the pension Parenting Payment (single) maximum basic amount - $26,195 (2025)
                       {'\n\n'}3. The parent did not receive an income support payment in the ATI.
                     </Text>
                   </>
                 ) : (
                   <>
                     <Text style={styles.specialNoticeText}>
-                      The MAR is paid per case and is put in place for parents who wouldn't be able to afford a higher amount. It requires three eligibility criteria be met:
+                      The MAR is paid per case and is put in place for parents who wouldn&apos;t be able to afford a higher amount. It requires three eligibility criteria be met:
                     </Text>
                     <Text style={styles.specialNoticeText}>
                       {'\n'}1. The parent must have received at least one income support payment in their ATI.
                       {'\n\n'}2. The parent has less than 14% care of all children.
-                      {'\n\n'}3. The parent's ATI must be below the self-support amount.
+                      {'\n\n'}3. The parent&apos;s ATI must be below the self-support amount.
                     </Text>
                   </>
                 )}
@@ -734,9 +723,8 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
             )}
           </View>
         )}
-          </>
-        )}
-      </View>
+        </>
+      </BreakdownStepCard>
 
       {/* Notice for $0 payment when low income but has care */}
       {results.finalPaymentAmount === 0 && results.rateApplied === "None" && (() => {
@@ -754,7 +742,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
               <View style={styles.specialNotice}>
                 <Text style={styles.specialNoticeTitle}>ℹ️ No Payment Required</Text>
                 <Text style={styles.specialNoticeText}>
-                  Parent A's income ({formatCurrency(results.ATI_A)}) is below the self-support amount ({formatCurrency(results.SSA)}), so they have no income-based obligation. Their care time ({formatPercent(avgCareA)}) means they're already contributing by covering costs directly during care.
+                  Parent A&apos;s income ({formatCurrency(results.ATI_A)}) is below the self-support amount ({formatCurrency(results.SSA)}), so they have no income-based obligation. Their care time ({formatPercent2dp(avgCareA)}) means they&apos;re already contributing by covering costs directly during care.
                 </Text>
               </View>
             )}
@@ -762,7 +750,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
               <View style={styles.specialNotice}>
                 <Text style={styles.specialNoticeTitle}>ℹ️ No Payment Required</Text>
                 <Text style={styles.specialNoticeText}>
-                  Parent B's income ({formatCurrency(results.ATI_B)}) is below the self-support amount ({formatCurrency(results.SSA)}), so they have no income-based obligation. Their care time ({formatPercent(avgCareB)}) means they're already contributing by covering costs directly during care.
+                  Parent B&apos;s income ({formatCurrency(results.ATI_B)}) is below the self-support amount ({formatCurrency(results.SSA)}), so they have no income-based obligation. Their care time ({formatPercent2dp(avgCareB)}) means they&apos;re already contributing by covering costs directly during care.
                 </Text>
               </View>
             )}
@@ -949,6 +937,74 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "700",
     color: "#3b82f6", // accent.primary - important calculated value
+  },
+
+  // Step 2: Combined Income Calculation
+  combinedIncomeCalculation: {
+    backgroundColor: "#f9fafb", // gray-50
+    borderRadius: 8,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#e5e7eb", // gray-200
+    marginTop: 4,
+  },
+  combinedIncomeRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 6,
+  },
+  combinedIncomeLabel: {
+    fontSize: 13,
+    color: "#64748b", // slate-500
+  },
+  combinedIncomeValue: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: "#0f172a", // slate-900
+  },
+  combinedIncomeDivider: {
+    height: 1,
+    backgroundColor: "#e5e7eb", // gray-200
+    marginVertical: 6,
+  },
+  combinedIncomeTotalLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#0f172a", // slate-900
+  },
+  combinedIncomeTotalValue: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#3b82f6", // accent.primary
+  },
+
+  // Step 3: Income Percentage Calculation
+  incomePercentageCalculation: {
+    gap: 10,
+    marginTop: 4,
+    marginBottom: 12,
+  },
+  incomePercentageCard: {
+    backgroundColor: "#f9fafb", // gray-50
+    borderRadius: 8,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#e5e7eb", // gray-200
+  },
+  incomePercentageCardTitle: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#4a5568", // text.secondary
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: 6,
+  },
+  incomePercentageFormula: {
+    fontSize: 13,
+    color: "#0f172a", // slate-900
+    fontWeight: "500",
+    textAlign: "center",
   },
 
   // Combined CS Income bar

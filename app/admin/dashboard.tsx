@@ -26,7 +26,7 @@ type LeadStatus = 'new' | 'reviewing' | 'sent' | 'converted' | 'lost';
 
 export default function AdminDashboardScreen() {
   const router = useRouter();
-  const { isMobile } = useResponsive();
+  // const { isMobile } = useResponsive();
 
   const [leads, setLeads] = useState<LeadSubmission[]>([]);
   const [filteredLeads, setFilteredLeads] = useState<LeadSubmission[]>([]);

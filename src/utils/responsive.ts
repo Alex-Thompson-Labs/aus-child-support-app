@@ -159,6 +159,18 @@ export const webInputStyles: any = isWeb ? {
   userSelect: 'text',
   // Add smooth transitions for focus states
   transition: 'border-color 150ms ease-in-out, box-shadow 150ms ease-in-out',
+  // Hide spinner arrows on numeric inputs for cleaner UI
+  // WebKit browsers (Chrome, Safari, Edge)
+  '::-webkit-outer-spin-button': {
+    WebkitAppearance: 'none',
+    margin: 0,
+  },
+  '::-webkit-inner-spin-button': {
+    WebkitAppearance: 'none',
+    margin: 0,
+  },
+  // Firefox
+  MozAppearance: 'textfield',
 } : {};
 
 /**

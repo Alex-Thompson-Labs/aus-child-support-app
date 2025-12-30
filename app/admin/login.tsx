@@ -24,7 +24,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AdminLoginScreen() {
   const router = useRouter();
-  const { isMobile, isDesktop } = useResponsive();
+  const { isDesktop } = useResponsive();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

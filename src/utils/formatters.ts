@@ -5,19 +5,19 @@
  */
 
 /**
- * Format a number as currency (Australian Dollar)
+ * Format a number as currency (Australian Dollar) with 2 decimal places
  * 
  * @param value - The numeric value to format (can be number, undefined, or null)
- * @returns Formatted currency string (e.g., "$1,234" or "$0" for invalid values)
+ * @returns Formatted currency string (e.g., "$1,234.56" or "$0.00" for invalid values)
  * 
  * @example
- * formatCurrency(1234.56) // "$1,235"
- * formatCurrency(null) // "$0"
- * formatCurrency(undefined) // "$0"
+ * formatCurrency(1234.56) // "$1,234.56"
+ * formatCurrency(null) // "$0.00"
+ * formatCurrency(undefined) // "$0.00"
  */
 export function formatCurrency(value: number | undefined | null): string {
   if (value === undefined || value === null || isNaN(value)) {
-    return "$0";
+    return "$0.00";
   }
-  return `$${Math.round(value).toLocaleString()}`;
+  return `$${value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 }

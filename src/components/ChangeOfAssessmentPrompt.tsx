@@ -1,20 +1,17 @@
 import { useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { Alert, Platform, Pressable, StyleSheet, Text, View } from "react-native";
-import { createShadow } from "../utils/shadow-styles";
 import type { CalculationResults } from "../types/calculator";
 import { useAnalytics } from "../utils/analytics";
 import {
   CHANGE_OF_ASSESSMENT_REASONS,
-  getCoAReasonById,
   getHighestPriorityReason,
-  getCategoryDisplayInfo,
   type ChangeOfAssessmentReason,
-  type ComplexityCategory,
 } from "../utils/change-of-assessment-reasons";
 import type { ComplexityFormData } from "../utils/complexity-detection";
-import { HelpTooltip } from "./HelpTooltip";
 import { isWeb, webClickableStyles } from "../utils/responsive";
+import { createShadow } from "../utils/shadow-styles";
+import { HelpTooltip } from "./HelpTooltip";
 
 interface ChangeOfAssessmentPromptProps {
   results: CalculationResults;
@@ -58,12 +55,6 @@ export function ChangeOfAssessmentPrompt({
     setHasCourtDate(reasons.includes('court_date_upcoming'));
     setHasPropertySettlement(reasons.includes('property_settlement'));
   }, [formData?.selectedCoAReasons]);
-
-  // Guard against empty reasons array
-  if (CHANGE_OF_ASSESSMENT_REASONS.length === 0) {
-    console.warn("[CoAPrompt] No CoA reasons available");
-    return null;
-  }
 
   // Group reasons by category (excluding urgent and new high-priority items - now handled separately)
   const incomeReasons = CHANGE_OF_ASSESSMENT_REASONS.filter(
@@ -271,7 +262,7 @@ export function ChangeOfAssessmentPrompt({
           {/* Legal Section */}
           <View style={styles.legalDeadlinesSection}>
             <View style={styles.groupHeader}>
-              <Text style={[styles.groupTitle, { color: '#dc2626' }]}>Legal</Text>
+              <Text style={[styles.groupTitle, { color: '#1e3a8a' }]}>Legal</Text>
             </View>
             <View style={styles.checkboxList}>
               {/* Court Date Checkbox */}
@@ -300,10 +291,10 @@ export function ChangeOfAssessmentPrompt({
                   </View>
                   <View style={styles.checkboxLabelContainer}>
                     <Text style={styles.checkboxLabel}>Do you have an upcoming court date?</Text>
-                    <HelpTooltip 
-                      what="Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance." 
-                      why="" 
-                      hideWhatLabel 
+                    <HelpTooltip
+                      what="Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance."
+                      why=""
+                      hideWhatLabel
                     />
                   </View>
                 </Pressable>
@@ -312,7 +303,7 @@ export function ChangeOfAssessmentPrompt({
                 {hasCourtDate && (
                   <View style={styles.inlineWarning}>
                     <Text style={styles.inlineWarningText}>
-                      ⚠️ Tip: Court appearances require significant preparation. We strongly recommend organizing legal representation well in advance.
+                      Tip: Court appearances require significant preparation. We strongly recommend organizing legal representation well in advance.
                     </Text>
                   </View>
                 )}
@@ -334,20 +325,23 @@ export function ChangeOfAssessmentPrompt({
                 </View>
                 <View style={styles.checkboxLabelContainer}>
                   <Text style={styles.checkboxLabel}>Is there a property settlement to come?</Text>
-                  <HelpTooltip 
-                    what="Pending property settlements can significantly affect child support obligations. A lawyer can help ensure the settlement is properly considered in your assessment." 
-                    why="" 
-                    hideWhatLabel 
+                  <HelpTooltip
+                    what="Pending property settlements can significantly affect child support obligations. A lawyer can help ensure the settlement is properly considered in your assessment."
+                    why=""
+                    hideWhatLabel
                   />
                 </View>
               </Pressable>
             </View>
           </View>
 
+          {/* Section Divider */}
+          <View style={styles.sectionDivider} />
+
           {/* Income Issues Group */}
           <View style={styles.reasonGroup}>
             <View style={styles.groupHeader}>
-              <Text style={[styles.groupTitle, { color: '#ea580c' }]}>The Other Parent's Financials</Text>
+              <Text style={[styles.groupTitle, { color: '#1e3a8a' }]}>The Other Parent&apos;s Financials</Text>
             </View>
             <View style={styles.checkboxList}>
               {/* Income Reasons */}
@@ -355,28 +349,22 @@ export function ChangeOfAssessmentPrompt({
             </View>
           </View>
 
-          {/* High Costs & Financial Obligations Group */}
-          {childReasons.length > 0 && (
-            <View style={styles.reasonGroup}>
-              <View style={styles.groupHeader}>
-                <Text style={[styles.groupTitle, { color: '#7c3aed' }]}>High Costs & Financial Obligations</Text>
-              </View>
-              <View style={styles.checkboxList}>
-                {childReasons.map(renderCheckbox)}
-              </View>
-            </View>
-          )}
+          {/* Costs & Other Factors Group */}
+          {(childReasons.length > 0 || otherReasons.length > 0) && (
+            <>
+              {/* Section Divider */}
+              <View style={styles.sectionDivider} />
 
-          {/* Other Factors Group */}
-          {otherReasons.length > 0 && (
-            <View style={styles.reasonGroup}>
-              <View style={styles.groupHeader}>
-                <Text style={[styles.groupTitle, { color: '#0891b2' }]}>Other Factors</Text>
+              <View style={styles.reasonGroup}>
+                <View style={styles.groupHeader}>
+                  <Text style={[styles.groupTitle, { color: '#1e3a8a' }]}>Costs & Other Factors</Text>
+                </View>
+                <View style={styles.checkboxList}>
+                  {childReasons.map(renderCheckbox)}
+                  {otherReasons.map(renderCheckbox)}
+                </View>
               </View>
-              <View style={styles.checkboxList}>
-                {otherReasons.map(renderCheckbox)}
-              </View>
-            </View>
+            </>
           )}
         </View>
       )}
@@ -386,8 +374,8 @@ export function ChangeOfAssessmentPrompt({
         <View style={styles.coaFooter}>
           <Pressable
             style={[
-              styles.coaButton, 
-              buttonDisabled && styles.coaButtonDisabled, 
+              styles.coaButton,
+              buttonDisabled && styles.coaButtonDisabled,
               isWeb && !buttonDisabled && webClickableStyles
             ]}
             onPress={handleNavigateToCoA}
@@ -395,9 +383,8 @@ export function ChangeOfAssessmentPrompt({
             accessible={true}
             accessibilityRole="button"
             accessibilityLabel="Talk to a Lawyer About This"
-            accessibilityHint={`${selectedReasons.size} reason${
-              selectedReasons.size === 1 ? "" : "s"
-            } selected`}
+            accessibilityHint={`${selectedReasons.size} reason${selectedReasons.size === 1 ? "" : "s"
+              } selected`}
             accessibilityState={{ disabled: buttonDisabled }}
           >
             <Text style={styles.coaButtonText}>Talk to a Lawyer About This</Text>
@@ -414,12 +401,12 @@ export function ChangeOfAssessmentPrompt({
 }
 
 const styles = StyleSheet.create({
-  // Container
+  // Container - Blueprint / Inverse Blue Style
   coaContainer: {
-    backgroundColor: "#ffffff", // white
+    backgroundColor: "#eff6ff", // blue-50
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#e5e7eb", // grey-200
+    borderWidth: 2,
+    borderColor: "#bfdbfe", // blue-200
     padding: 24,
     marginBottom: 16,
     ...createShadow({
@@ -452,17 +439,17 @@ const styles = StyleSheet.create({
   coaTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#1a202c", // near-black
+    color: "#1e3a8a", // blue-900 (Dark Brand Blue)
     flex: 1,
   },
   coaDescription: {
     fontSize: 14,
-    color: "#6b7280", // grey-500
+    color: "#475569", // slate-600 (dark blue-grey)
     lineHeight: 21, // 1.5 line height
   },
   chevron: {
     fontSize: 24,
-    color: "#6b7280", // grey-500
+    color: "#2563eb", // blue-600 (Brand Blue)
     fontWeight: "600",
     transform: [{ rotate: "90deg" }],
     marginLeft: 4,
@@ -490,7 +477,7 @@ const styles = StyleSheet.create({
 
   // Groups
   reasonGroup: {
-    marginBottom: 16,
+    marginBottom: 0,
   },
   groupHeader: {
     flexDirection: "row",
@@ -510,10 +497,14 @@ const styles = StyleSheet.create({
 
   // Legal Deadlines Section
   legalDeadlinesSection: {
-    marginBottom: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#fee2e2', // red-100
+    marginBottom: 0,
+  },
+
+  // Section Divider
+  sectionDivider: {
+    height: 1,
+    backgroundColor: '#e2e8f0', // slate-200 (light grey)
+    marginVertical: 6, // minimal gap for tight, cohesive layout
   },
   inlineWarning: {
     marginLeft: 32,
@@ -521,14 +512,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    backgroundColor: '#fef3c7', // amber-100
-    borderLeftWidth: 3,
-    borderLeftColor: '#f59e0b', // amber-500
+    backgroundColor: '#fffbeb', // amber-50 (lightest amber)
+    borderLeftWidth: 4,
+    borderLeftColor: '#f59e0b', // amber-500 (left accent)
     borderRadius: 6,
   },
   inlineWarningText: {
     fontSize: 13,
-    color: '#92400e', // amber-900
+    color: '#78350f', // amber-950 (darker for better contrast)
     lineHeight: 18,
   },
 
@@ -550,8 +541,8 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   checkboxChecked: {
-    backgroundColor: "#3b82f6", // blue-600
-    borderColor: "#3b82f6",
+    backgroundColor: "#2563EB", // blue-600 (Brand Blue)
+    borderColor: "#2563EB",
   },
   checkboxCheck: {
     color: "#ffffff",
@@ -576,7 +567,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   coaButton: {
-    backgroundColor: "#3b82f6", // blue-600
+    backgroundColor: "#2563EB", // blue-600 (Brand Blue)
     borderRadius: 8,
     paddingVertical: 14,
     paddingHorizontal: 24,

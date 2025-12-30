@@ -9,7 +9,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 const isWeb = Platform.OS === 'web';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  // const colorScheme = useColorScheme();
 
   return (
     <Tabs
@@ -39,20 +39,21 @@ export default function TabLayout() {
   );
 }
 
-const styles = StyleSheet.create({
-  tabBarWeb: {
-    height: 56,
-    paddingBottom: 8,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#334155', // slate-700
-    backgroundColor: '#0f172a', // slate-900
-  },
-  tabBarLabelWeb: {
-    fontSize: 13,
-    fontWeight: '500',
-  },
-  tabBarIconWeb: {
-    marginBottom: 2,
-  },
-});
+// Unused styles - kept for potential future use
+// const styles = StyleSheet.create({
+//   tabBarWeb: {
+//     height: 56,
+//     paddingBottom: 8,
+//     paddingTop: 8,
+//     borderTopWidth: 1,
+//     borderTopColor: '#334155', // slate-700
+//     backgroundColor: '#0f172a', // slate-900
+//   },
+//   tabBarLabelWeb: {
+//     fontSize: 13,
+//     fontWeight: '500',
+//   },
+//   tabBarIconWeb: {
+//     marginBottom: 2,
+//   },
+// });

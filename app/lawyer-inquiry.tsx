@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -152,32 +152,36 @@ function validatePostcode(postcode: string): string | undefined {
         return 'Postcode is required';
     }
 
-    // Basic validation: 3-10 characters (covers various postcode formats)
-    if (sanitized.length < 3 || sanitized.length > 10) {
-        return 'Please enter a valid postcode';
+    // Australian postcode validation: exactly 4 digits
+    if (!/^\d{4}$/.test(sanitized)) {
+        return 'Please enter a valid 4-digit Australian postcode';
     }
 
     return undefined;
 }
 
 /**
- * Validate message field
+ * Validate message field (conditionally required based on financialTags)
  */
-function validateMessage(message: string): string | undefined {
+function validateMessage(message: string, financialTags: string[]): string | undefined {
     const sanitized = sanitizeString(message);
 
-    if (!sanitized) {
-        return 'Please tell us what you need help with';
+    // If "Other" is selected in financial tags, message becomes required
+    if (financialTags.includes('Other')) {
+        if (!sanitized) {
+            return 'Please provide details about the "Other" financial issue';
+        }
+        if (sanitized.length < VALIDATION.MESSAGE_MIN_LENGTH) {
+            return `Details must be at least ${VALIDATION.MESSAGE_MIN_LENGTH} characters`;
+        }
     }
 
-    if (sanitized.length < VALIDATION.MESSAGE_MIN_LENGTH) {
-        return `Please provide at least ${VALIDATION.MESSAGE_MIN_LENGTH} characters`;
-    }
-
+    // Check max length regardless of whether it's required
     if (sanitized.length > VALIDATION.MESSAGE_MAX_LENGTH) {
         return `Message must be less than ${VALIDATION.MESSAGE_MAX_LENGTH} characters`;
     }
 
+    // Otherwise, message is optional - no validation needed
     return undefined;
 }
 
@@ -229,10 +233,13 @@ export default function LawyerInquiryScreen() {
     const incomeA = typeof params.incomeA === 'string' ? params.incomeA : '0';
     const incomeB = typeof params.incomeB === 'string' ? params.incomeB : '0';
     const children = typeof params.children === 'string' ? params.children : '0';
+    
+    // Parse pre-fill message from Smart Conversion Footer
+    const preFillMessage = typeof params.preFillMessage === 'string' ? params.preFillMessage : '';
 
     // Parse care arrangement data
     const careData = typeof params.careData === 'string'
-        ? JSON.parse(params.careData) as Array<{ index: number; careA: number; careB: number }>
+        ? JSON.parse(params.careData) as { index: number; careA: number; careB: number }[]
         : [];
 
     // Parse CoA reasons data with error handling
@@ -251,7 +258,7 @@ export default function LawyerInquiryScreen() {
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [postcode, setPostcode] = useState('');
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState(preFillMessage); // Pre-fill from Smart Conversion Footer
     const [consent, setConsent] = useState(false);
 
     // Dynamic field state
@@ -283,7 +290,7 @@ export default function LawyerInquiryScreen() {
     const mountTimeRef = useRef<number>(Date.now());
 
     // Get valid CoA reasons for display, sorted by priority (order they appear in CoA section)
-    const validCoAReasons: Array<ChangeOfAssessmentReason & { urgency: 'URGENT' | 'NORMAL' }> =
+    const validCoAReasons: (ChangeOfAssessmentReason & { urgency: 'URGENT' | 'NORMAL' })[] =
         (coaReasons || [])
             .map(id => {
                 const reason = getCoAReasonById(id);
@@ -297,8 +304,6 @@ export default function LawyerInquiryScreen() {
             .filter((reason): reason is ChangeOfAssessmentReason & { urgency: 'URGENT' | 'NORMAL' } => reason !== null)
             .sort((a, b) => a.priority - b.priority); // Sort by priority to match CoA section order
 
-    // Determine if any urgent reasons exist (for card border styling)
-    const hasUrgentReasonsForDisplay = validCoAReasons.some(r => r.urgency === 'URGENT');
 
     // Determine if conditional fields should be shown
     const shouldShowCourtDate = (coaReasons || []).includes('court_date_upcoming');
@@ -306,21 +311,7 @@ export default function LawyerInquiryScreen() {
         id === 'income_resources_not_reflected' || id === 'earning_capacity'
     );
 
-    // Pre-fill message when CoA reasons are present (only on mount, not on every change)
-    const hasPrefilledMessage = useRef(false);
-    useEffect(() => {
-        if (coaReasons && coaReasons.length > 0 && !hasPrefilledMessage.current) {
-            const reasonLabels = coaReasons
-                .map(id => getCoAReasonById(id)?.label)
-                .filter(Boolean)
-                .join('\n- ');
-
-            const prefillMessage = `I would like help with regard to the special circumstances of my assessment for the following reasons:\n\n- ${reasonLabels}\n\nPlease contact me to discuss my situation.`;
-
-            setMessage(prefillMessage);
-            hasPrefilledMessage.current = true; // Mark as prefilled to prevent overwriting user edits
-        }
-    }, [coaReasons]);
+    // No pre-fill for message field - keep it empty for clean UX
 
     /**
      * Validate a single field
@@ -336,7 +327,7 @@ export default function LawyerInquiryScreen() {
             case 'postcode':
                 return validatePostcode(value as string);
             case 'message':
-                return validateMessage(value as string);
+                return validateMessage(value as string, financialTags);
             case 'consent':
                 return validateConsent(value as boolean);
             case 'courtDate':
@@ -344,7 +335,7 @@ export default function LawyerInquiryScreen() {
             default:
                 return undefined;
         }
-    }, [shouldShowCourtDate]);
+    }, [shouldShowCourtDate, financialTags]);
 
     /**
      * Validate all fields and return true if form is valid
@@ -355,7 +346,7 @@ export default function LawyerInquiryScreen() {
             email: validateEmail(email),
             phone: validatePhone(phone),
             postcode: validatePostcode(postcode),
-            message: validateMessage(message),
+            message: validateMessage(message, financialTags),
             consent: validateConsent(consent),
             courtDate: validateCourtDate(courtDate, shouldShowCourtDate)
         };
@@ -375,7 +366,7 @@ export default function LawyerInquiryScreen() {
 
         // Check if any errors exist
         return !Object.values(newErrors).some(error => error !== undefined);
-    }, [name, email, phone, postcode, message, consent, courtDate, shouldShowCourtDate]);
+    }, [name, email, phone, postcode, message, consent, courtDate, shouldShowCourtDate, financialTags]);
 
     /**
      * Handle field blur - validate and show error
@@ -517,19 +508,44 @@ export default function LawyerInquiryScreen() {
                 court_date: courtDate.trim() || null,
                 financial_tags: financialTags.length > 0 ? financialTags : null,
 
-                // Message (enhanced with dynamic data)
+                // Message (compiled from CoA reasons, financial tags, court date, and user notes)
                 parent_message: (() => {
-                    let enhancedMessage = sanitizeString(message);
+                    const compiledParts: string[] = [];
 
+                    // 1. Mapped Statements: Convert CoA reasons to first-person sentences
+                    if (validCoAReasons.length > 0) {
+                        compiledParts.push('SITUATION:');
+                        validCoAReasons.forEach(reason => {
+                            compiledParts.push(`- ${reason.label}`);
+                        });
+                    }
+
+                    // 2. High-Value Data: Court Date and Financial Tags
+                    const highValueData: string[] = [];
+                    
                     if (courtDate.trim()) {
-                        enhancedMessage += `\n\nCOURT DATE: ${courtDate.trim()}`;
+                        highValueData.push(`Court Date: ${courtDate.trim()}`);
                     }
 
                     if (financialTags.length > 0) {
-                        enhancedMessage += `\n\nFINANCIAL TAGS: ${financialTags.join(', ')}`;
+                        highValueData.push(`Financial Issues: ${financialTags.join(', ')}`);
                     }
 
-                    return enhancedMessage;
+                    if (highValueData.length > 0) {
+                        if (compiledParts.length > 0) compiledParts.push('');
+                        compiledParts.push('KEY DETAILS:');
+                        highValueData.forEach(item => compiledParts.push(`- ${item}`));
+                    }
+
+                    // 3. User Notes: Append manual text from Additional Details field
+                    const userNotes = sanitizeString(message);
+                    if (userNotes) {
+                        if (compiledParts.length > 0) compiledParts.push('');
+                        compiledParts.push('ADDITIONAL DETAILS:');
+                        compiledParts.push(userNotes);
+                    }
+
+                    return compiledParts.length > 0 ? compiledParts.join('\n') : '';
                 })(),
                 preferred_contact: null, // Could add this as a field later
 
@@ -598,7 +614,7 @@ export default function LawyerInquiryScreen() {
                 );
             }
         }
-    }, [isSubmitting, validateAllFields, name, email, phone, message, liability, trigger, incomeA, incomeB, children, router, analytics]);
+    }, [isSubmitting, validateAllFields, name, email, phone, message, liability, trigger, incomeA, incomeB, children, router, analytics, validCoAReasons, courtDate, financialTags, careData, coaReasons, postcode, consent]);
 
     /**
      * Format currency for display
@@ -863,12 +879,14 @@ export default function LawyerInquiryScreen() {
                             value={postcode}
                             onChangeText={(value) => handleTextChange('postcode', value, setPostcode)}
                             onBlur={() => handleBlur('postcode')}
+                            keyboardType="number-pad"
                             returnKeyType="next"
                             onSubmitEditing={() => messageRef.current?.focus()}
-                            maxLength={10}
+                            maxLength={4}
                             editable={!isSubmitting}
                             accessibilityLabel="Postcode"
-                            accessibilityHint="Enter your postcode"
+                            accessibilityHint="Enter your 4-digit Australian postcode"
+                            {...(isWeb && { inputMode: 'numeric' as any })}
                         />
                         {touched.postcode && errors.postcode && (
                             <Text style={styles.errorText}>{errors.postcode}</Text>
@@ -877,6 +895,10 @@ export default function LawyerInquiryScreen() {
 
                     {/* Message Input */}
                     <View style={styles.inputContainer}>
+                        <Text style={styles.fieldLabel}>
+                            Additional Details {financialTags.includes('Other') && '*'}
+                            {!financialTags.includes('Other') && '(Optional)'}
+                        </Text>
                         <TextInput
                             ref={messageRef}
                             style={[
@@ -884,7 +906,7 @@ export default function LawyerInquiryScreen() {
                                 styles.textArea,
                                 touched.message && errors.message && styles.inputError
                             ]}
-                            placeholder="What do you need help with? *"
+                            placeholder="Is there anything specific you want the lawyer to know?..."
                             placeholderTextColor="#64748b"
                             value={message}
                             onChangeText={(value) => handleTextChange('message', value, setMessage)}
@@ -893,8 +915,8 @@ export default function LawyerInquiryScreen() {
                             numberOfLines={4}
                             maxLength={VALIDATION.MESSAGE_MAX_LENGTH}
                             editable={!isSubmitting}
-                            accessibilityLabel="Message"
-                            accessibilityHint="Describe your situation and what help you need"
+                            accessibilityLabel="Additional details"
+                            accessibilityHint="Enter any additional information you want to share"
                         />
                         <Text style={styles.charCount}>
                             {message.length}/{VALIDATION.MESSAGE_MAX_LENGTH}

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { BrandSwitch } from "./ui/BrandSwitch";
 import { createShadow } from "../utils/shadow-styles";
 import type { ChildInput, FormErrors } from "../types/calculator";
 import { MAX_CONTENT_WIDTH, isWeb, useResponsive, webClickableStyles, webInputStyles } from "../utils/responsive";
@@ -27,6 +28,7 @@ function RelevantDependentsPopover({
   onRelDepBChange,
   compact = false,
 }: RelevantDependentsPopoverProps) {
+  const [isHovered, setIsHovered] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { isMobile } = useResponsive(); // Use the existing hook
   const drawerRef = useRef<View>(null);
@@ -84,9 +86,12 @@ function RelevantDependentsPopover({
       <View ref={triggerRef} style={{ flexShrink: 0, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
         <Pressable
           onPress={handleToggle}
+          onHoverIn={() => setIsHovered(true)}
+          onHoverOut={() => setIsHovered(false)}
           style={[
             compact ? popoverStyles.triggerButtonCompact : popoverStyles.triggerButton,
             hasValues && popoverStyles.triggerButtonActive,
+            isHovered && popoverStyles.triggerButtonHover,
             webClickableStyles,
           ]}
         >
@@ -99,9 +104,13 @@ function RelevantDependentsPopover({
           {!hasValues && <Text style={popoverStyles.plusIcon}>+</Text>}
         </Pressable>
         <HelpTooltip
-          what="A Relevant Dependent Child is a child not covered by the current assessment but who lives with the parent, allowing a deduction for their financial responsibility to them."
+          header="REDUCES ASSESSABLE INCOME"
+          what="Number of children in the parents care from a different relationship..."
           why=""
           hideWhatLabel
+          iconColor="#60a5fa" // blue-400
+          iconBorderColor="#bfdbfe" // blue-200
+          iconBackgroundColor="#eff6ff" // blue-50
         />
         {hasValues && (
           <Pressable
@@ -221,11 +230,14 @@ const popoverStyles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    backgroundColor: '#ffffff', // white
+    backgroundColor: '#eff6ff', // blue-50
     borderWidth: 1.5,
-    borderColor: '#e2e8f0', // subtle border
+    borderColor: '#bfdbfe', // blue-200
     borderRadius: 8,
     borderStyle: 'dashed',
+  },
+  triggerButtonHover: {
+    ...(isWeb ? ({ backgroundColor: '#dbeafe' } as any) : {}), // blue-100
   },
   triggerButtonCompact: {
     flexDirection: 'row',
@@ -233,35 +245,35 @@ const popoverStyles = StyleSheet.create({
     gap: 4,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    backgroundColor: '#ffffff', // white
+    backgroundColor: '#eff6ff', // blue-50
     borderWidth: 1.5,
-    borderColor: '#e2e8f0', // subtle border
+    borderColor: '#bfdbfe', // blue-200
     borderRadius: 6,
     borderStyle: 'dashed',
   },
   triggerButtonActive: {
-    backgroundColor: 'rgba(245, 158, 11, 0.15)', // amber-500 with opacity
-    borderColor: '#f59e0b', // amber-500
+    backgroundColor: '#eff6ff', // blue-50 - Ghost Blue
+    borderColor: '#2563EB', // Brand Blue (blue-600)
     borderStyle: 'solid',
   },
   triggerText: {
     fontSize: 14,
-    color: '#718096', // medium grey
-    fontWeight: '500',
+    color: '#2563EB', // blue-600 (Brand Blue)
+    fontWeight: '600',
   },
   triggerTextCompact: {
     fontSize: 12,
-    color: '#718096', // medium grey
-    fontWeight: '500',
+    color: '#2563EB', // blue-600 (Brand Blue)
+    fontWeight: '600',
   },
   triggerTextActive: {
-    color: '#f59e0b', // amber-500
+    color: '#2563EB', // Brand Blue (blue-600)
     fontWeight: '600',
   },
   plusIcon: {
     fontSize: 16,
-    color: '#a0aec0', // disabled grey
-    fontWeight: '600',
+    color: '#2563EB', // blue-600 (Brand Blue)
+    fontWeight: '700',
   },
   // Inline drawer content - expands to the right
   drawerContent: {
@@ -295,7 +307,7 @@ const popoverStyles = StyleSheet.create({
   drawerParentLabel: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#10b981', // emerald-500
+    color: '#64748b', // slate-500
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -311,7 +323,7 @@ const popoverStyles = StyleSheet.create({
   },
   drawerAgeLabel: {
     fontSize: 10,
-    color: '#f59e0b', // amber-500
+    color: '#64748b', // slate-500
     fontWeight: '600',
     minWidth: 20,
   },
@@ -383,7 +395,7 @@ const popoverStyles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#10b981', // emerald-500
+    color: '#64748b', // slate-500
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -437,7 +449,7 @@ const popoverStyles = StyleSheet.create({
   },
   ageLabel: {
     fontSize: 11,
-    color: '#f59e0b', // amber-500
+    color: '#64748b', // slate-500
     fontWeight: '600',
   },
   input: {
@@ -541,7 +553,12 @@ export function CalculatorForm({
     <ScrollView style={styles.container} contentContainerStyle={[styles.contentContainer, { paddingBottom: contentPaddingBottom }, webContainerStyle]}>
       {/* Combined Parents Card */}
       <View style={styles.card}>
-        <Text style={styles.sectionHeading}>Income</Text>
+        <View style={styles.sectionHeaderRow}>
+          <View style={styles.stepBadge}>
+            <Text style={styles.stepBadgeText}>1</Text>
+          </View>
+          <Text style={styles.sectionHeading}>INCOME</Text>
+        </View>
 
         {/* Parent A */}
         <View style={styles.inputGroup}>
@@ -551,8 +568,8 @@ export function CalculatorForm({
               <Text> - Adjusted Taxable Income</Text>
             </Text>
             <HelpTooltip
-              what="A parent's ATI is the total of the following components:
-- Taxable income
+              header="What's Included in ATI?"
+              what="- Taxable income
 - Reportable fringe benefits
 - Target foreign income
 - Total net investment loss
@@ -578,15 +595,14 @@ export function CalculatorForm({
               />
             </View>
             <View style={styles.switchRow}>
-              <Switch
+              <BrandSwitch
                 value={supportA}
                 onValueChange={onSupportAChange}
-                trackColor={{ false: "#475569", true: "#f59e0b" }}
-                thumbColor="#ffffff"
                 style={styles.smallSwitch}
               />
               <Text style={styles.switchLabelSmall}>Inc. support</Text>
               <HelpTooltip
+                header="MINIMUM ANNUAL RATE / FIXED ANNUAL RATE"
                 what="Whether or not a parent received an income support payment in their taxable income can move the assessment away from using the formula to a fixed or minimum rate under certain conditions"
                 why=""
                 hideWhatLabel
@@ -622,11 +638,9 @@ export function CalculatorForm({
               />
             </View>
             <View style={styles.switchRow}>
-              <Switch
+              <BrandSwitch
                 value={supportB}
                 onValueChange={onSupportBChange}
-                trackColor={{ false: "#475569", true: "#f59e0b" }}
-                thumbColor="#ffffff"
                 style={styles.smallSwitch}
               />
               <Text style={styles.switchLabelSmall}>Inc. support</Text>
@@ -651,9 +665,15 @@ export function CalculatorForm({
       {/* Children Card */}
       <View style={styles.card}>
         <View style={[styles.labelRow, { gap: 8, marginBottom: 8 }]}>
-          <Text style={[styles.sectionHeading, { marginBottom: 0 }]}>CARE</Text>
+          <View style={styles.sectionHeaderRow}>
+            <View style={styles.stepBadge}>
+              <Text style={styles.stepBadgeText}>2</Text>
+            </View>
+            <Text style={[styles.sectionHeading, { marginBottom: 0 }]}>CARE</Text>
+          </View>
           <HelpTooltip
-            what="Care is measured by the number of nights the child stays with each parent over a year, based on an annualised care pattern. For children aged 13 and over, the child support formula assumes higher living costs."
+            header="CARE = OVERNIGHT"
+            what="Enter the number of nights each parent has care of the child per week, fortnight, or year and if the child is over or under 13 years of age."
             why=""
             hideWhatLabel
           />
@@ -733,13 +753,31 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     marginBottom: 12,
   },
+  sectionHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 8,
+  },
+  stepBadge: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: "#2563EB", // Brand Blue (blue-600)
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  stepBadgeText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#ffffff", // white text
+  },
   sectionHeading: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#10b981", // emerald-500 - keeping accent color
+    fontWeight: "800", // extra bold
+    color: "#0f172a", // slate-900 - dark slate
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    marginBottom: 8,
   },
   cardSubtitle: {
     fontSize: 12,
@@ -886,16 +924,18 @@ const styles = StyleSheet.create({
   addChildButton: {
     marginTop: 12,
     paddingVertical: 8,
-    borderWidth: 2,
-    borderStyle: "dashed",
-    borderColor: "#e2e8f0", // subtle border
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "#bfdbfe", // blue-200 - solid border
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#eff6ff", // blue-50 - Ghost Blue background
   },
   addChildButtonText: {
-    color: "#718096", // medium grey
+    color: "#2563EB", // blue-600 - Brand Blue text
     fontSize: 14,
+    fontWeight: "600",
   },
   actionButtons: {
     flexDirection: "row",
@@ -904,7 +944,7 @@ const styles = StyleSheet.create({
   },
   calculateButton: {
     flex: 2,
-    backgroundColor: "#3b82f6", // blue-500
+    backgroundColor: "#2563EB", // Brand Blue (blue-600)
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: "center",

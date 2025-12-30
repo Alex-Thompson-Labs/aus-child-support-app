@@ -90,7 +90,7 @@ export function CalculatorScreen() {
         {/* Responsive Header */}
         <View style={styles.header}>
           <View style={isDesktop ? styles.desktopConstraint : styles.mobileHeaderRow}>
-            <Ionicons name="people" size={isDesktop ? 32 : 24} color="#f59e0b" />
+            <Ionicons name="people" size={isDesktop ? 32 : 24} color="#2563eb" />
             <Text 
               style={[styles.title, isDesktop && styles.titleDesktop]}
               numberOfLines={1} 

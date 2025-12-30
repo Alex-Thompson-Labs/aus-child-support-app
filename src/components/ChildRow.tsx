@@ -1,9 +1,9 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { createShadow } from "../utils/shadow-styles";
 import type { ChildInput } from "../types/calculator";
 import { CARE_PERIOD_DAYS } from "../utils/child-support-constants";
 import { isWeb, useResponsive, webClickableStyles, webInputStyles } from "../utils/responsive";
+import { createShadow } from "../utils/shadow-styles";
 import { PeriodPicker } from "./PeriodPicker";
 
 interface ChildRowProps {
@@ -93,9 +93,12 @@ export function ChildRow({
               style={[styles.careInput, styles.compactInput, isWeb && webInputStyles]}
               value={child.careAmountA.toString()}
               onChangeText={handleCareAmountAChange}
-              keyboardType="numeric"
+              keyboardType="number-pad"
               maxLength={5}
               placeholderTextColor="#64748b"
+              accessibilityLabel="Parent A nights of care"
+              accessibilityHint="Enter number of nights child stays with Parent A"
+              {...(isWeb && { inputMode: 'numeric' as any })}
             />
           </View>
 
@@ -106,9 +109,12 @@ export function ChildRow({
               style={[styles.careInput, styles.compactInput, isWeb && webInputStyles]}
               value={child.careAmountB.toString()}
               onChangeText={handleCareAmountBChange}
-              keyboardType="numeric"
+              keyboardType="number-pad"
               maxLength={5}
               placeholderTextColor="#64748b"
+              accessibilityLabel="Parent B nights of care"
+              accessibilityHint="Enter number of nights child stays with Parent B"
+              {...(isWeb && { inputMode: 'numeric' as any })}
             />
           </View>
         </View>
@@ -286,7 +292,7 @@ const styles = StyleSheet.create({
     width: 32,
     paddingVertical: 4,
     alignItems: "center",
-    backgroundColor: "#e2e8f0", // slate-200 - light inactive
+    backgroundColor: "#f1f5f9", // slate-100 - light inactive
     borderWidth: 1,
     borderColor: "#cbd5e1", // slate-300
   },
@@ -299,12 +305,12 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 6,
   },
   toggleButtonActive: {
-    backgroundColor: "#f59e0b", // amber-500 - for <13
-    borderColor: "#f59e0b",
+    backgroundColor: "#2563EB", // Brand Blue (blue-600)
+    borderColor: "#2563EB",
   },
   toggleButtonActive13Plus: {
-    backgroundColor: "#f59e0b", // amber-500 - for 13+ (matching <13)
-    borderColor: "#f59e0b",
+    backgroundColor: "#2563EB", // Brand Blue (blue-600) - matching <13
+    borderColor: "#2563EB",
   },
   toggleButtonText: {
     fontSize: 12,
@@ -312,7 +318,7 @@ const styles = StyleSheet.create({
     color: "#64748b", // slate-500
   },
   toggleButtonTextActive: {
-    color: "#ffffff", // white on amber
+    color: "#ffffff", // white on blue
   },
   removeButton: {
     position: "absolute",
