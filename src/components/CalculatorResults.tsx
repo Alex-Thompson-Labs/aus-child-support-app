@@ -5,6 +5,7 @@ import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-nati
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { CalculationResults } from "../types/calculator";
 import { detectComplexity, getAlertConfig, type ComplexityFlags, type ComplexityFormData } from "../utils/complexity-detection";
+import { formatCurrency } from "../utils/formatters";
 import { MAX_MODAL_WIDTH, useResponsive } from "../utils/responsive";
 import { shadowPresets } from "../utils/shadow-styles";
 import { ChangeOfAssessmentPrompt } from "./ChangeOfAssessmentPrompt";
@@ -19,11 +20,6 @@ interface CalculatorResultsProps {
   showInquiryPanel?: boolean;
   onCloseInquiry?: () => void;
 }
-
-const formatCurrency = (num: number | undefined | null): string => {
-  if (num === undefined || num === null || isNaN(num)) return "$0";
-  return `$${Math.round(num).toLocaleString()}`;
-};
 
 export function CalculatorResults({
   results,

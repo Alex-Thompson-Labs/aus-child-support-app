@@ -9,7 +9,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
-  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -19,11 +18,16 @@ import {
   View,
   ActivityIndicator,
 } from 'react-native';
+import { ConsentCheckbox } from '../components/ConsentCheckbox';
+import { PrivacyPolicyLink } from '../components/PrivacyPolicyLink';
+import { CalculationSummaryCard } from '../components/CalculationSummaryCard';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAnalytics } from '@/src/utils/analytics';
 import { formatCoAReasonsForLead } from '@/src/utils/complexity-detection';
 import type { ChangeOfAssessmentReason } from '@/src/utils/change-of-assessment-reasons';
 import { getCoAReasonById, formatOfficialCoAReasons } from '@/src/utils/change-of-assessment-reasons';
+import { formatCurrency } from '@/src/utils/formatters';
+import { validateEmailSimple } from '@/src/utils/form-validation';
 import { useResponsive, MAX_FORM_WIDTH, isWeb, webInputStyles, webClickableStyles } from '@/src/utils/responsive';
 import { supabase, submitLead } from '@/src/utils/supabase';
 import { createShadow } from '@/src/utils/shadow-styles';
@@ -141,15 +145,6 @@ export function LawyerInquiryScreen() {
     alignSelf: 'center' as const,
   } : {};
 
-  const handlePrivacyPolicyPress = () => {
-    const privacyPolicyUrl = 'https://auschildsupport.com/privacy-policy.html';
-
-    if (Platform.OS === 'web') {
-      window.open(privacyPolicyUrl, '_blank');
-    } else {
-      Linking.openURL(privacyPolicyUrl);
-    }
-  };
 
   const handleSubmit = async () => {
     // 1. Validate fields
@@ -178,9 +173,9 @@ export function LawyerInquiryScreen() {
       return;
     }
 
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    // Email validation using shared utility
+    const emailError = validateEmailSimple(email);
+    if (emailError) {
       if (Platform.OS === 'web') {
         alert('Invalid Email\n\nPlease enter a valid email address.');
       } else {
@@ -350,29 +345,15 @@ export function LawyerInquiryScreen() {
           )}
 
           {/* Calculation Summary (read-only) */}
-          <View style={styles.summaryCard}>
-            <Text style={styles.summaryTitle}>Your Calculation Summary</Text>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Annual Liability:</Text>
-              <Text style={styles.summaryAmount}>${liability ? parseFloat(liability).toLocaleString() : '0'}/year</Text>
-            </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Complexity Trigger:</Text>
-              <Text style={styles.summaryValue}>{trigger || 'unknown'}</Text>
-            </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Parent A Income:</Text>
-              <Text style={styles.summaryValue}>${incomeA ? parseFloat(incomeA).toLocaleString() : '0'}</Text>
-            </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Parent B Income:</Text>
-              <Text style={styles.summaryValue}>${incomeB ? parseFloat(incomeB).toLocaleString() : '0'}</Text>
-            </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Number of Children:</Text>
-              <Text style={styles.summaryValue}>{children || '0'}</Text>
-            </View>
-          </View>
+          <CalculationSummaryCard
+            liability={liability || '0'}
+            incomeA={incomeA || '0'}
+            incomeB={incomeB || '0'}
+            children={children || '0'}
+            trigger={trigger || 'unknown'}
+            title="Your Calculation Summary"
+            variant="detailed"
+          />
 
           <Text style={styles.formTitle}>Your Information</Text>
 
@@ -431,25 +412,15 @@ export function LawyerInquiryScreen() {
           />
 
           {/* Consent Checkbox */}
-          <Pressable
-            style={[styles.consentContainer, isWeb && webClickableStyles]}
-            onPress={() => setConsent(!consent)}
-          >
-            <View style={[styles.checkbox, consent && styles.checkboxChecked]}>
-              {consent && <Text style={styles.checkmark}>✓</Text>}
-            </View>
-            <Text style={styles.consentText}>
-              I consent to my information being shared with legal practitioners for the purpose of consultation
-            </Text>
-          </Pressable>
+          <ConsentCheckbox
+            checked={consent}
+            onCheckedChange={setConsent}
+            consentText="I consent to my information being shared with legal practitioners for the purpose of consultation"
+            containerStyle={{ marginTop: 24, marginBottom: 8 }}
+          />
 
           {/* Privacy Policy Link */}
-          <Pressable
-            style={[styles.privacyLinkContainer, isWeb && webClickableStyles]}
-            onPress={handlePrivacyPolicyPress}
-          >
-            <Text style={styles.privacyLinkText}>View Privacy Policy</Text>
-          </Pressable>
+          <PrivacyPolicyLink />
 
           <Pressable 
             style={[
@@ -550,49 +521,6 @@ const styles = StyleSheet.create({
     marginLeft: 24, // Align with description
     lineHeight: 16,
   },
-  summaryCard: {
-    backgroundColor: '#f9fafb', // very light grey
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: '#e5e7eb', // light grey
-    ...createShadow({
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.05,
-      shadowRadius: 4,
-      elevation: 2,
-    }),
-  },
-  summaryTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#4a5568', // dark grey
-    marginBottom: 16,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  summaryLabel: {
-    fontSize: 14,
-    color: '#6b7280', // grey-500
-  },
-  summaryAmount: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#3b82f6', // blue-500
-  },
-  summaryValue: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#1a202c', // near black
-  },
   formTitle: {
     fontSize: 14,
     fontWeight: '700',
@@ -652,53 +580,6 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
-  },
-  consentContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginTop: 24,
-    marginBottom: 16,
-  },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 4,
-    borderWidth: 2,
-    borderColor: '#9ca3af', // grey-400
-    backgroundColor: '#ffffff', // white
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-    marginTop: 2,
-    // Larger hit area for better accessibility
-    minWidth: 44,
-    minHeight: 44,
-    padding: 10,
-  },
-  checkboxChecked: {
-    backgroundColor: '#3b82f6', // blue-500
-    borderColor: '#3b82f6', // blue-500
-  },
-  checkmark: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  consentText: {
-    flex: 1,
-    fontSize: 14,
-    color: '#4b5563', // grey-600
-    lineHeight: 20,
-  },
-  privacyLinkContainer: {
-    marginTop: 12,
-    marginBottom: 8,
-    alignItems: 'center',
-  },
-  privacyLinkText: {
-    fontSize: 14,
-    color: '#3b82f6', // blue-500
-    textDecorationLine: 'underline',
   },
 });
 

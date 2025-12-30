@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react';
 import {
   ActivityIndicator,
-  Linking,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -12,10 +11,24 @@ import {
 import { useAnalytics } from '../utils/analytics';
 import { getCoAReasonById } from '../utils/change-of-assessment-reasons';
 import type { ChangeOfAssessmentReason } from '../utils/change-of-assessment-reasons';
+import { formatCurrency } from '../utils/formatters';
+import {
+  sanitizeString,
+  sanitizeEmail,
+  sanitizePhone,
+  validateName,
+  validateEmail,
+  validatePhone,
+  validateMessage,
+  validateConsent,
+} from '../utils/form-validation';
 import { submitLead } from '../utils/supabase';
 import type { LeadSubmission } from '../utils/supabase';
 import { isWeb, webInputStyles, webClickableStyles } from '../utils/responsive';
 import { createShadow } from '../utils/shadow-styles';
+import { ConsentCheckbox } from './ConsentCheckbox';
+import { PrivacyPolicyLink } from './PrivacyPolicyLink';
+import { CalculationSummaryCard } from './CalculationSummaryCard';
 
 // ============================================================================
 // Types
@@ -42,64 +55,6 @@ interface FormErrors {
   consent?: string;
 }
 
-// ============================================================================
-// Validation Constants & Helpers
-// ============================================================================
-
-const VALIDATION = {
-  NAME_MIN_LENGTH: 2,
-  NAME_MAX_LENGTH: 100,
-  MESSAGE_MIN_LENGTH: 10,
-  MESSAGE_MAX_LENGTH: 500,
-  PHONE_REGEX: /^[\d\s\-+()]{8,20}$/,
-  EMAIL_REGEX: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/
-} as const;
-
-function sanitizeString(value: string): string {
-  return value.trim().replace(/\s+/g, ' ');
-}
-
-function sanitizeEmail(email: string): string {
-  return email.trim().toLowerCase();
-}
-
-function sanitizePhone(phone: string): string {
-  const trimmed = phone.trim();
-  if (!trimmed) return '';
-  const hasPlus = trimmed.startsWith('+');
-  const digitsOnly = trimmed.replace(/\D/g, '');
-  return hasPlus ? `+${digitsOnly}` : digitsOnly;
-}
-
-function validateName(name: string): string | undefined {
-  const sanitized = sanitizeString(name);
-  if (!sanitized) return 'Name is required';
-  if (sanitized.length < VALIDATION.NAME_MIN_LENGTH) return `Name must be at least ${VALIDATION.NAME_MIN_LENGTH} characters`;
-  if (sanitized.length > VALIDATION.NAME_MAX_LENGTH) return `Name must be less than ${VALIDATION.NAME_MAX_LENGTH} characters`;
-  return undefined;
-}
-
-function validateEmail(email: string): string | undefined {
-  const sanitized = sanitizeEmail(email);
-  if (!sanitized) return 'Email is required';
-  if (!VALIDATION.EMAIL_REGEX.test(sanitized)) return 'Please enter a valid email address';
-  return undefined;
-}
-
-function validatePhone(phone: string): string | undefined {
-  const trimmed = phone.trim();
-  if (!trimmed) return undefined; // Optional
-  if (!VALIDATION.PHONE_REGEX.test(trimmed)) return 'Please enter a valid phone number';
-  return undefined;
-}
-
-function validateMessage(message: string): string | undefined {
-  const sanitized = sanitizeString(message);
-  if (!sanitized) return 'Message is required';
-  if (sanitized.length < VALIDATION.MESSAGE_MIN_LENGTH) return `Message must be at least ${VALIDATION.MESSAGE_MIN_LENGTH} characters`;
-  if (sanitized.length > VALIDATION.MESSAGE_MAX_LENGTH) return `Message must be less than ${VALIDATION.MESSAGE_MAX_LENGTH} characters`;
-  return undefined;
-}
 
 // ============================================================================
 // Component
@@ -149,7 +104,7 @@ export function WebInquiryPanel({
       email: validateEmail(email),
       phone: validatePhone(phone),
       message: validateMessage(message),
-      consent: !consent ? 'You must consent to continue' : undefined,
+      consent: validateConsent(consent),
     };
     setErrors(newErrors);
     return !Object.values(newErrors).some(Boolean);
@@ -361,48 +316,23 @@ export function WebInquiryPanel({
 
           {/* Right: Summary + Submit */}
           <View style={styles.summaryColumn}>
-            <Text style={styles.sectionTitle}>CALCULATION SUMMARY</Text>
-
-            <View style={styles.summaryCard}>
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Annual Liability</Text>
-                <Text style={styles.summaryValueLarge}>${Math.round(parseFloat(liability) || 0).toLocaleString()}</Text>
-              </View>
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Parent A Income</Text>
-                <Text style={styles.summaryValue}>${Math.round(parseFloat(incomeA) || 0).toLocaleString()}</Text>
-              </View>
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Parent B Income</Text>
-                <Text style={styles.summaryValue}>${Math.round(parseFloat(incomeB) || 0).toLocaleString()}</Text>
-              </View>
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Children</Text>
-                <Text style={styles.summaryValue}>{children || '0'}</Text>
-              </View>
-            </View>
+            <CalculationSummaryCard
+              liability={liability}
+              incomeA={incomeA}
+              incomeB={incomeB}
+              children={children}
+              variant="compact"
+            />
 
             {/* Consent */}
-            <Pressable
-              onPress={() => setConsent(!consent)}
-              style={[styles.consentRow, webClickableStyles]}
-            >
-              <View style={[styles.checkbox, consent && styles.checkboxChecked]}>
-                {consent && <Text style={styles.checkmark}>✓</Text>}
-              </View>
-              <Text style={styles.consentText}>
-                I consent to my information being shared with legal practitioners for the purpose of providing me with legal advice.
-              </Text>
-            </Pressable>
-            {errors.consent && <Text style={styles.errorText}>{errors.consent}</Text>}
+            <ConsentCheckbox
+              checked={consent}
+              onCheckedChange={setConsent}
+              error={errors.consent}
+            />
 
             {/* Privacy link */}
-            <Pressable
-              onPress={() => Linking.openURL('https://auschildsupport.com/privacy-policy.html')}
-              style={[styles.privacyLink, webClickableStyles]}
-            >
-              <Text style={styles.privacyLinkText}>View Privacy Policy</Text>
-            </Pressable>
+            <PrivacyPolicyLink />
 
             {/* Submit button */}
             <Pressable
@@ -576,72 +506,6 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 12,
     color: '#ef4444', // red-500 for better contrast
-  },
-  summaryCard: {
-    backgroundColor: '#f7fafc', // very light grey
-    borderRadius: 8,
-    padding: 12,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  summaryLabel: {
-    fontSize: 13,
-    color: '#718096', // medium grey
-  },
-  summaryValue: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#1a202c', // near black
-  },
-  summaryValueLarge: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1a202c', // near black
-  },
-  consentRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 10,
-    marginTop: 8,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderWidth: 2,
-    borderColor: '#e2e8f0',
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ffffff',
-  },
-  checkboxChecked: {
-    backgroundColor: '#3b82f6', // blue-500
-    borderColor: '#3b82f6',
-  },
-  checkmark: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  consentText: {
-    flex: 1,
-    fontSize: 12,
-    color: '#4a5568', // dark grey for readability
-    lineHeight: 18,
-  },
-  privacyLink: {
-    alignSelf: 'flex-start',
-  },
-  privacyLinkText: {
-    fontSize: 12,
-    color: '#3b82f6', // blue-500
-    textDecorationLine: 'underline',
   },
   submitButton: {
     backgroundColor: '#3b82f6',

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { createShadow } from "../utils/shadow-styles";
 import type { CalculationResults } from "../types/calculator";
+import { formatCurrency } from "../utils/formatters";
 import { isWeb, webClickableStyles } from "../utils/responsive";
 import { detectZeroPaymentScenario, isFarLimitReached } from "../utils/zero-payment-detection";
 import { HelpTooltip } from "./HelpTooltip";
@@ -10,11 +11,6 @@ interface ResultsSimpleExplanationProps {
   results: CalculationResults;
   formState: { supportA: boolean; supportB: boolean };
 }
-
-// Helper to format currency
-const formatCurrency = (num: number): string => {
-  return `$${Math.round(num).toLocaleString()}`;
-};
 
 // Helper to format percentage
 const formatPercent = (num: number): string => {

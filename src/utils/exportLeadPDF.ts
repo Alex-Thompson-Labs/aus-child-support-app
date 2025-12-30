@@ -10,6 +10,7 @@ import * as Sharing from 'expo-sharing';
 import { Platform } from 'react-native';
 import type { LeadSubmission } from './supabase';
 import type { ChangeOfAssessmentReason } from './change-of-assessment-reasons';
+import { formatCurrency } from './formatters';
 
 /**
  * Format date for display
@@ -24,13 +25,6 @@ function formatDate(dateString?: string): string {
     hour: '2-digit',
     minute: '2-digit'
   });
-}
-
-/**
- * Format currency
- */
-function formatCurrency(value: number): string {
-  return `$${Math.round(value).toLocaleString('en-AU')}`;
 }
 
 /**
