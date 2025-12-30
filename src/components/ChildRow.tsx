@@ -135,7 +135,7 @@ export function ChildRow({
               </Pressable>
               <Pressable
                 onPress={() => onUpdate({ age: "13+" })}
-                style={[styles.toggleButton, styles.toggleButtonRight, child.age === "13+" && styles.toggleButtonActive, isWeb && webClickableStyles]}
+                style={[styles.toggleButton, styles.toggleButtonRight, child.age === "13+" && styles.toggleButtonActive13Plus, isWeb && webClickableStyles]}
               >
                 <Text style={[styles.toggleButtonText, child.age === "13+" && styles.toggleButtonTextActive]}>13+</Text>
               </Pressable>
@@ -299,7 +299,11 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 6,
   },
   toggleButtonActive: {
-    backgroundColor: "#f59e0b", // amber-500 - keep the accent
+    backgroundColor: "#f59e0b", // amber-500 - for <13
+    borderColor: "#f59e0b",
+  },
+  toggleButtonActive13Plus: {
+    backgroundColor: "#f59e0b", // amber-500 - for 13+ (matching <13)
     borderColor: "#f59e0b",
   },
   toggleButtonText: {

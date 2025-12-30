@@ -204,7 +204,6 @@ export default function LawyerInquiryScreen() {
     const incomeA = typeof params.incomeA === 'string' ? params.incomeA : '0';
     const incomeB = typeof params.incomeB === 'string' ? params.incomeB : '0';
     const children = typeof params.children === 'string' ? params.children : '0';
-    const courtDate = typeof params.courtDate === 'string' ? params.courtDate : null;
 
     // Parse care arrangement data
     const careData = typeof params.careData === 'string'
@@ -253,7 +252,7 @@ export default function LawyerInquiryScreen() {
     // Capture mount timestamp for time_to_submit calculation
     const mountTimeRef = useRef<number>(Date.now());
 
-    // Get valid CoA reasons for display
+    // Get valid CoA reasons for display, sorted by priority (order they appear in CoA section)
     const validCoAReasons: Array<ChangeOfAssessmentReason & { urgency: 'URGENT' | 'NORMAL' }> =
         (coaReasons || [])
             .map(id => {
@@ -265,14 +264,16 @@ export default function LawyerInquiryScreen() {
 
                 return { ...reason, urgency };
             })
-            .filter((reason): reason is ChangeOfAssessmentReason & { urgency: 'URGENT' | 'NORMAL' } => reason !== null);
+            .filter((reason): reason is ChangeOfAssessmentReason & { urgency: 'URGENT' | 'NORMAL' } => reason !== null)
+            .sort((a, b) => a.priority - b.priority); // Sort by priority to match CoA section order
 
     // Determine if any urgent reasons exist (for card border styling)
     const hasUrgentReasonsForDisplay = validCoAReasons.some(r => r.urgency === 'URGENT');
 
-    // Pre-fill message when CoA reasons are present
+    // Pre-fill message when CoA reasons are present (only on mount, not on every change)
+    const hasPrefilledMessage = useRef(false);
     useEffect(() => {
-        if (coaReasons && coaReasons.length > 0) {
+        if (coaReasons && coaReasons.length > 0 && !hasPrefilledMessage.current) {
             const reasonLabels = coaReasons
                 .map(id => getCoAReasonById(id)?.label)
                 .filter(Boolean)
@@ -281,6 +282,7 @@ export default function LawyerInquiryScreen() {
             const prefillMessage = `I would like help with regard to the special circumstances of my assessment for the following reasons:\n\n- ${reasonLabels}\n\nPlease contact me to discuss my situation.`;
 
             setMessage(prefillMessage);
+            hasPrefilledMessage.current = true; // Mark as prefilled to prevent overwriting user edits
         }
     }, [coaReasons]);
 
@@ -455,29 +457,28 @@ export default function LawyerInquiryScreen() {
                 parent_email: sanitizeEmail(email),
                 parent_phone: sanitizePhone(phone) || null,
                 location: postcode.trim() || null,
-                
+
                 // Calculation data
                 income_parent_a: parseFloat(incomeA) || 0,
                 income_parent_b: parseFloat(incomeB) || 0,
                 children_count: parseInt(children) || 0,
                 annual_liability: parseFloat(liability) || 0,
-                
+
                 // Care arrangement
                 care_data: careData.length > 0 ? careData : null,
-                
+
                 // Complexity data
                 complexity_trigger: trigger || 'unknown',
                 complexity_reasons: coaReasons || [],
                 coa_reasons: coaReasonsData,
-                court_date: courtDate || null,
-                
+
                 // Message
                 parent_message: sanitizeString(message),
                 preferred_contact: null, // Could add this as a field later
-                
+
                 // Privacy compliance
                 consent_given: consent,
-                
+
                 // Initial status
                 status: 'new',
             };
@@ -490,9 +491,9 @@ export default function LawyerInquiryScreen() {
             if (!result.success) {
                 // Handle submission error
                 console.error('[LawyerInquiry] Submission failed:', result.error);
-                
+
                 setIsSubmitting(false);
-                
+
                 if (Platform.OS === 'web') {
                     alert('Submission Failed\n\nThere was an error submitting your inquiry. Please try again or contact us directly.');
                 } else {
@@ -528,9 +529,9 @@ export default function LawyerInquiryScreen() {
             }, 2500);
         } catch (error) {
             console.error('[LawyerInquiry] Unexpected error:', error);
-            
+
             setIsSubmitting(false);
-            
+
             if (Platform.OS === 'web') {
                 alert('Unexpected Error\n\nAn unexpected error occurred. Please try again.');
             } else {
@@ -603,14 +604,6 @@ export default function LawyerInquiryScreen() {
                     {/* Change of Assessment Reasons Card - Show only if reasons exist */}
                     {validCoAReasons.length > 0 && (
                         <View style={styles.coaSection}>
-                            {/* Court Date Display - Show at the top if present */}
-                            {courtDate && (
-                                <View style={styles.courtDateCard}>
-                                    <Text style={styles.courtDateLabel}>Court Date:</Text>
-                                    <Text style={styles.courtDateValue}>{courtDate}</Text>
-                                </View>
-                            )}
-                            
                             {validCoAReasons.map((reason, index) => (
                                 <View key={reason.id} style={styles.coaReasonCard}>
                                     <View style={styles.coaReasonHeader}>
@@ -822,7 +815,7 @@ export default function LawyerInquiryScreen() {
                     {touched.consent && errors.consent && (
                         <Text style={[styles.errorText, styles.checkboxErrorText]}>{errors.consent}</Text>
                     )}
-                    
+
                     {/* Privacy Policy Link */}
                     <Pressable
                         style={styles.privacyLinkContainer}
@@ -870,6 +863,8 @@ export default function LawyerInquiryScreen() {
 // Styles
 // ============================================================================
 
+// Using 'as any' to suppress TypeScript errors for web-specific CSS properties
+// (cursor, userSelect, outlineStyle, etc.) which are valid for React Native Web
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -957,32 +952,17 @@ const styles = StyleSheet.create({
         color: '#1e40af', // Blue-800 - dark blue
         lineHeight: 18,
     },
+    coaReasonCourtDate: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#1e40af', // Blue-800 - dark blue
+        marginTop: 4,
+        lineHeight: 18,
+    },
     coaReasonDescription: {
         fontSize: 13,
         color: '#475569', // Slate-600 - medium grey
         lineHeight: 18,
-    },
-    courtDateCard: {
-        backgroundColor: '#fef2f2', // Red-50 - very light red for urgency
-        borderWidth: 1,
-        borderLeftWidth: 4,
-        borderColor: '#dc2626', // Red-600 - left accent border for urgency
-        borderRadius: 8,
-        padding: 16,
-        marginBottom: 12,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-    },
-    courtDateLabel: {
-        fontSize: 14,
-        fontWeight: '700',
-        color: '#991b1b', // Red-800 - dark red
-    },
-    courtDateValue: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#dc2626', // Red-600
     },
     summaryCard: {
         backgroundColor: '#f9fafb', // very light grey
@@ -1080,10 +1060,6 @@ const styles = StyleSheet.create({
         height: 200,
         textAlignVertical: 'top',
         paddingTop: 12,
-        ...(Platform.OS === 'web' && {
-            outlineStyle: 'none',
-            cursor: 'text',
-        }),
     },
     charCount: {
         fontSize: 12,
@@ -1199,4 +1175,4 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         lineHeight: 24,
     },
-});
+}) as any;

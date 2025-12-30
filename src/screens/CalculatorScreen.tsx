@@ -22,6 +22,7 @@ export function CalculatorScreen() {
     updateChild,
     calculate,
     reset,
+    resetTimestamp,
   } = useCalculator();
 
   const { isDesktop } = useResponsive();
@@ -129,6 +130,7 @@ export function CalculatorScreen() {
                 formData={formState} 
                 displayMode="modal"
                 isStale={isStale}
+                resetTimestamp={resetTimestamp}
               />
             </View>
           </View>
@@ -158,9 +160,10 @@ const styles = StyleSheet.create({
   mobileHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     width: '100%',
-    gap: 12, // Add gap between elements
+    paddingHorizontal: 12,
+    gap: 8, // Reduced gap for more space
     flexWrap: 'nowrap', // Keep items on same line
   },
   desktopConstraint: {
@@ -173,11 +176,12 @@ const styles = StyleSheet.create({
     gap: 16, // Add gap between elements
   },
   title: {
-    fontSize: 20, // Increased from 18 for better visibility
+    fontSize: 18, // Optimized for mobile screens
     fontWeight: "800",
     color: "#0f172a",
-    marginLeft: 10,
-    flexShrink: 1, // Prevents text from forcing vertical stack
+    flex: 1, // Take available space
+    flexShrink: 1, // Allow shrinking if needed
+    textAlign: 'center',
   },
   titleDesktop: {
     fontSize: 28,
@@ -187,8 +191,9 @@ const styles = StyleSheet.create({
   blogButton: {
     backgroundColor: '#007AFF',
     paddingVertical: 8,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     borderRadius: 20,
+    flexShrink: 0, // Prevent button from shrinking
     ...shadowPresets.small,
   },
   blogButtonText: {

@@ -99,8 +99,7 @@ function RelevantDependentsPopover({
           {!hasValues && <Text style={popoverStyles.plusIcon}>+</Text>}
         </Pressable>
         <HelpTooltip
-          header="REDUCES ASSESSABLE INCOME"
-          what="Number of children in the parents care from a different relationship..."
+          what="A Relevant Dependent Child is a child not covered by the current assessment but who lives with the parent, allowing a deduction for their financial responsibility to them."
           why=""
           hideWhatLabel
         />
@@ -552,8 +551,8 @@ export function CalculatorForm({
               <Text> - Adjusted Taxable Income</Text>
             </Text>
             <HelpTooltip
-              header="What's Included in ATI?"
-              what="- Taxable income
+              what="A parent's ATI is the total of the following components:
+- Taxable income
 - Reportable fringe benefits
 - Target foreign income
 - Total net investment loss
@@ -588,7 +587,6 @@ export function CalculatorForm({
               />
               <Text style={styles.switchLabelSmall}>Inc. support</Text>
               <HelpTooltip
-                header="MINIMUM ANNUAL RATE / FIXED ANNUAL RATE"
                 what="Whether or not a parent received an income support payment in their taxable income can move the assessment away from using the formula to a fixed or minimum rate under certain conditions"
                 why=""
                 hideWhatLabel
@@ -655,8 +653,7 @@ export function CalculatorForm({
         <View style={[styles.labelRow, { gap: 8, marginBottom: 8 }]}>
           <Text style={[styles.sectionHeading, { marginBottom: 0 }]}>CARE</Text>
           <HelpTooltip
-            header="CARE = OVERNIGHT"
-            what="Enter the number of nights each parent has care of the child per week, fortnight, or year and if the child is over or under 13 years of age."
+            what="Care is measured by the number of nights the child stays with each parent over a year, based on an annualised care pattern. For children aged 13 and over, the child support formula assumes higher living costs."
             why=""
             hideWhatLabel
           />

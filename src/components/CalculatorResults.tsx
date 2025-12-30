@@ -20,6 +20,7 @@ interface CalculatorResultsProps {
   showInquiryPanel?: boolean;
   onCloseInquiry?: () => void;
   isStale?: boolean;
+  resetTimestamp?: number;
 }
 
 export function CalculatorResults({
@@ -30,6 +31,7 @@ export function CalculatorResults({
   showInquiryPanel = false,
   onCloseInquiry,
   isStale = false,
+  resetTimestamp = 0,
 }: CalculatorResultsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const insets = useSafeAreaInsets();
@@ -38,50 +40,77 @@ export function CalculatorResults({
 
   const isInlineMode = displayMode === 'inline';
   const [isNavigating, setIsNavigating] = useState(false);
-  
-  // Track local form data updates (selected CoA reasons and court date)
-  // Reset localFormData whenever results change (new calculation)
-  const [localFormData, setLocalFormData] = useState<ComplexityFormData>(formData ?? {});
+
+  // Track local form data updates (selected CoA reasons)
+  // Preserve CoA reasons across navigation - only update children/support from props
+  const [localFormData, setLocalFormData] = useState<ComplexityFormData>(() => ({
+    ...formData,
+    selectedCoAReasons: formData?.selectedCoAReasons ?? [],
+  }));
   const [lastResultsKey, setLastResultsKey] = useState('');
-  
+
   // Generate a unique key for the current results
   const currentResultsKey = `${results.finalPaymentAmount}-${results.payer}-${results.childResults.map(c => `${c.roundedCareA}-${c.roundedCareB}`).join('-')}-${results.ATI_A}-${results.ATI_B}`;
-  
-  // Reset localFormData when results change
+
+  // Update formData when results change, but preserve selected CoA reasons
   React.useEffect(() => {
     if (currentResultsKey !== lastResultsKey) {
-      setLocalFormData(formData ?? {});
+      setLocalFormData(prev => ({
+        ...formData,
+        // Preserve selected CoA reasons from previous state
+        selectedCoAReasons: prev.selectedCoAReasons ?? formData?.selectedCoAReasons ?? [],
+      }));
       setLastResultsKey(currentResultsKey);
     }
   }, [currentResultsKey, lastResultsKey, formData]);
+
+  // Clear CoA reasons when reset is explicitly called
+  React.useEffect(() => {
+    if (resetTimestamp > 0) {
+      setLocalFormData(prev => ({
+        ...prev,
+        selectedCoAReasons: [],
+      }));
+    }
+  }, [resetTimestamp]);
 
   // Calculate payment amounts
   const monthlyAmount = results.finalPaymentAmount / 12;
   const fortnightlyAmount = results.finalPaymentAmount / 26;
   const dailyAmount = results.finalPaymentAmount / 365;
 
-  // Complexity Logic - use local form data that includes court date
-  const flags = detectComplexity(results, localFormData);
-  const alertConfig = getAlertConfig(flags, results, localFormData);
+  // Complexity Logic - merge fresh formData.children with local form data (court date, CoA reasons)
+  // This ensures sharedCareDispute is always calculated with current care values from props
+  const complexityFormData: ComplexityFormData = {
+    ...localFormData,
+    children: formData?.children, // Always use fresh children data from props
+    supportA: formData?.supportA,
+    supportB: formData?.supportB,
+  };
+  const flags = detectComplexity(results, complexityFormData);
+  const alertConfig = getAlertConfig(flags, results, complexityFormData);
 
   const isCalculationComplete = (() => {
     const hasIncome = results.ATI_A > 0 || results.ATI_B > 0;
-    const hasChildrenWithCare = results.childResults?.some(child => 
+    const hasChildrenWithCare = results.childResults?.some(child =>
       (child.roundedCareA !== undefined && child.roundedCareA >= 0)
     );
     return hasIncome && hasChildrenWithCare;
   })();
 
+  // Check if any children exist in the calculation
+  const hasChildren = formData?.children && formData.children.length > 0;
+
   const shouldShowComplexityAlert = alertConfig && isCalculationComplete;
 
   const getTrigger = useCallback((): string => {
-    const flagKeys: Array<keyof ComplexityFlags> = ['courtDateUrgent', 'highValue', 'sharedCareDispute', 'specialCircumstances', 'highVariance', 'incomeSuspicion'];
+    const flagKeys: Array<keyof ComplexityFlags> = ['highValue', 'sharedCareDispute', 'specialCircumstances', 'highVariance', 'incomeSuspicion'];
     const triggeredFlag = flagKeys.find(k => flags[k]);
     return triggeredFlag ? triggeredFlag.replace(/([A-Z])/g, '_$1').toLowerCase() : 'unknown';
   }, [flags]);
 
   const getAllTriggers = useCallback((): string[] => {
-    const flagKeys: Array<keyof ComplexityFlags> = ['courtDateUrgent', 'highValue', 'sharedCareDispute', 'specialCircumstances', 'highVariance', 'incomeSuspicion'];
+    const flagKeys: Array<keyof ComplexityFlags> = ['highValue', 'sharedCareDispute', 'specialCircumstances', 'highVariance', 'incomeSuspicion'];
     return flagKeys.filter(k => flags[k]).map(flag => flag.replace(/([A-Z])/g, '_$1').toLowerCase());
   }, [flags]);
 
@@ -117,8 +146,7 @@ export function CalculatorResults({
           incomeB: results.ATI_B.toString(),
           children: (formData?.children?.length ?? 0).toString(),
           careData: JSON.stringify(careData),
-          ...(localFormData?.selectedCoAReasons?.length ? { coaReasons: JSON.stringify(localFormData.selectedCoAReasons) } : {}),
-          ...(localFormData?.courtDate ? { courtDate: localFormData.courtDate } : {})
+          ...(localFormData?.selectedCoAReasons?.length ? { coaReasons: JSON.stringify(localFormData.selectedCoAReasons) } : {})
         }
       });
       setTimeout(() => setIsNavigating(false), 500);
@@ -170,16 +198,15 @@ export function CalculatorResults({
         />
       )}
 
-      <ChangeOfAssessmentPrompt 
+      <ChangeOfAssessmentPrompt
         key={`${results.finalPaymentAmount}-${results.payer}-${results.childResults.map(c => `${c.roundedCareA}-${c.roundedCareB}`).join('-')}-${results.ATI_A}-${results.ATI_B}`}
-        results={results} 
-        formData={localFormData} 
-        onNavigate={() => setIsExpanded(false)} 
-        onCoAReasonsChange={(reasons, courtDate) => {
+        results={results}
+        formData={localFormData}
+        onNavigate={() => setIsExpanded(false)}
+        onCoAReasonsChange={(reasons) => {
           setLocalFormData(prev => ({
             ...prev,
             selectedCoAReasons: reasons,
-            courtDate: courtDate,
           }));
         }}
       />
@@ -199,6 +226,11 @@ export function CalculatorResults({
         <ScrollView style={styles.rightColumn}>{renderBreakdownContent()}</ScrollView>
       </View>
     );
+  }
+
+  // Don't render modal at all if no children exist
+  if (!hasChildren) {
+    return null;
   }
 
   return (

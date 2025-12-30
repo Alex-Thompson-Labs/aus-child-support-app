@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { createShadow } from "../utils/shadow-styles";
 import type { CalculationResults } from "../types/calculator";
 import { formatCurrency } from "../utils/formatters";
-import { isWeb, webClickableStyles } from "../utils/responsive";
+import { createShadow } from "../utils/shadow-styles";
 import { detectZeroPaymentScenario, isFarLimitReached } from "../utils/zero-payment-detection";
 import { HelpTooltip } from "./HelpTooltip";
 
@@ -86,20 +85,20 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
           onPress={() => setExpandedSteps(prev => ({...prev, step1: !prev.step1}))}
           style={styles.stepHeader}
           accessibilityRole="button"
-          accessibilityLabel={`Step 1: Income Percentages. ${expandedSteps.step1 ? 'Expanded' : 'Collapsed'}. Tap to ${expandedSteps.step1 ? 'collapse' : 'expand'}.`}
+          accessibilityLabel={`Step 1: Child Support Income. ${expandedSteps.step1 ? 'Expanded' : 'Collapsed'}. Tap to ${expandedSteps.step1 ? 'collapse' : 'expand'}.`}
           accessibilityState={{ expanded: expandedSteps.step1 }}
         >
           <View style={styles.stepNumber}>
             <Text style={styles.stepNumberText}>1</Text>
           </View>
-          <Text style={styles.stepTitle}>INCOME PERCENTAGES</Text>
+          <Text style={styles.stepTitle}>Child Support Income</Text>
           <Text style={styles.chevron}>{expandedSteps.step1 ? '▼' : '▶'}</Text>
         </Pressable>
 
         {expandedSteps.step1 && (
           <>
             <Text style={styles.stepExplanation}>
-          By deducting income to reflect the income required to support themselves as well as any children they may care for outside of Child Support.
+          Child support income is a parent's income after deducting an amount for their own living costs and for any other children they support outside the child support case.
         </Text>
 
         {/* Deduction breakdown for each parent */}
@@ -162,7 +161,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
          <View style={{ height: 1, backgroundColor: '#334155', marginBottom: 12 }} />
 
         <Text style={styles.stepExplanation}>
-          Each parent's CS income is then expressed as a percentage of the combined total.
+          Each parent's child support income is then shown as a percentage of the combined total.
         </Text>
 
         <View style={styles.incomeComparison}>
@@ -209,11 +208,10 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
             <>
               {index === 0 && (
             <Text style={[styles.stepExplanation, { lineHeight: 22 }]}>
-              Each parent's nights of care for the child is converted to a <Text style={{ fontWeight: '600', color: '#3b82f6' }}>CARE PERCENTAGE</Text>
+              The number of nights each parent cares for the child over a year is converted into a <Text style={{ fontWeight: '600', color: '#3b82f6' }}>CARE PERCENTAGE</Text>
               <View style={{ transform: [{ scale: 0.85 }, { translateY: 3 }], marginLeft: 6 }}>
                 <HelpTooltip
-                  header="CARE ROUNDING RULES"
-                  what="Special rules apply. Regardless of the decimal value, percentages below 50% are rounded down to the nearest whole number with ones above being always rounded up."
+                  what="Special rounding rules apply. Regardless of the decimal value, percentages below 50% are rounded down to the nearest whole number with ones above being always rounded up."
                   why=""
                   hideWhatLabel
                 />
@@ -241,25 +239,58 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                 <View style={{ height: 1, backgroundColor: '#334155', marginVertical: 8 }} />
 
                 <Text style={[styles.stepExplanation, { lineHeight: 22 }]}>
-                  A formula is then used to convert each parent's care percentage into what is used in the child support formula to reflect the costs of a child the parent is meeting through their own care - this is called a <Text style={{ fontWeight: '600', color: '#3b82f6' }}>COST PERCENTAGE</Text>
+                  This care percentage is then converted via a formula into a <Text style={{ fontWeight: '600', color: '#3b82f6' }}>COST PERCENTAGE</Text>
                   <View style={{ transform: [{ scale: 0.85 }, { translateY: 3 }], marginLeft: 6 }}>
                     <HelpTooltip
-                      header="CARE TO COST CONVERSION"
+                      header=""
                       what={
-                        <Text style={{ color: '#e2e8f0', fontSize: 14, lineHeight: 20 }}>
-                          0 to less than 14%: <Text style={{ color: '#3b82f6' }}>Nil</Text>{'\n\n'}
-                          14% to less than 35%: <Text style={{ color: '#3b82f6' }}>24%</Text>{'\n\n'}
-                          35% to less than 48%: <Text style={{ color: '#3b82f6' }}>25% plus 2% for each percentage point over 35%</Text>{'\n\n'}
-                          48% to 52%: <Text style={{ color: '#3b82f6' }}>50%</Text>{'\n\n'}
-                          More than 52% to 65%: <Text style={{ color: '#3b82f6' }}>51% plus 2% for each percentage point over 53%</Text>{'\n\n'}
-                          More than 65% to 86%: <Text style={{ color: '#3b82f6' }}>76%</Text>{'\n\n'}
-                          More than 86% to 100%: <Text style={{ color: '#3b82f6' }}>100%</Text>
-                        </Text>
+                        <View style={{ paddingVertical: 8 }}>
+                          <Text style={{ color: '#1a202c', fontSize: 13, fontWeight: '600', marginBottom: 12, textAlign: 'center' }}>
+                            Care Percentage → Cost Percentage
+                          </Text>
+                          
+                          <View style={{ gap: 10 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
+                              <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>0% - 13%</Text>
+                              <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>Nil</Text>
+                            </View>
+                            
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
+                              <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>14% - 34%</Text>
+                              <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>24%</Text>
+                            </View>
+                            
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
+                              <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>35% - 47%</Text>
+                              <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>25% + 2% per point over 35%</Text>
+                            </View>
+                            
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
+                              <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>48% - 52%</Text>
+                              <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>50%</Text>
+                            </View>
+                            
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
+                              <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>53% - 65%</Text>
+                              <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>51% + 2% per point over 53%</Text>
+                            </View>
+                            
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
+                              <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>66% - 86%</Text>
+                              <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>76%</Text>
+                            </View>
+                            
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6 }}>
+                              <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>87% - 100%</Text>
+                              <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>100%</Text>
+                            </View>
+                          </View>
+                        </View>
                       }
                       why=""
                       hideWhatLabel
                     />
-                  </View>.
+                  </View>. This figure reflects the share of the child's living costs that the parent covers directly while providing care.
                 </Text>
               </>
             )}
@@ -334,7 +365,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
             <>
               {index === 0 && (
             <Text style={styles.stepExplanation}>
-              A parent is liable to pay child support when their income percentage exceeds their cost percentage. The difference between these two values is the <Text style={{ fontWeight: '600', color: '#3b82f6' }}>CHILD SUPPORT PERCENTAGE</Text>, which is the formula then uses to help determine the liability amount for the child.
+              A parent must pay child support when their share of income is higher than their share of costs. The difference between these two shares is called the <Text style={{ fontWeight: '600', color: '#3b82f6' }}>CHILD SUPPORT PERCENTAGE</Text>, which is then used in the formula to calculate the child support amount.
             </Text>
           )}
 
@@ -442,14 +473,14 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
           The total cost of children for an assessment is calculated using income brackets set by the Department of Social Services. Each bracket has a base cost plus a percentage applied to income within that bracket.
         </Text>
 
-        {/* Combined income */}
-        <Text style={[styles.combinedCSIncomeLabel, { marginTop: 12, marginBottom: 12, fontSize: 14, textAlign: 'center' }]}>
-          COMBINED CS INCOME - {formatCurrency(results.CCSI)}
-        </Text>
-
         {/* Bracket calculation */}
         {results.costBracketInfo && (
           <View style={styles.bracketCalculation}>
+            {/* Combined income - moved inside box */}
+            <Text style={[styles.combinedCSIncomeLabel, { marginBottom: 12, fontSize: 12, textAlign: 'left' }]}>
+              COMBINED CS INCOME - {formatCurrency(results.CCSI)}
+            </Text>
+            
             <Text style={styles.bracketTitle}>
               Your bracket: {formatCurrency(results.costBracketInfo.minIncome)} – {results.costBracketInfo.maxIncome ? formatCurrency(results.costBracketInfo.maxIncome) : "unlimited"}
             </Text>
@@ -467,7 +498,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
               )}
               <View style={styles.bracketDivider} />
               <View style={styles.bracketRow}>
-                <Text style={styles.bracketTotalLabel}>Annual child cost</Text>
+                <Text style={styles.bracketTotalLabel}>Total cost of children</Text>
                 <Text style={styles.bracketTotalValue}>{formatCurrency(results.totalCost)}</Text>
               </View>
               {results.childResults.length > 0 && (
@@ -502,7 +533,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
         {expandedSteps.step5 && (
           <>
             <Text style={styles.stepExplanation}>
-          Each child's liability rate is calculated by multiplying their child support percentage <Text style={{ color: '#3b82f6' }}>(</Text><Text style={{ fontWeight: '600', color: '#3b82f6' }}>STEP 3</Text><Text style={{ color: '#3b82f6' }}>)</Text> by their cost <Text style={{ color: '#3b82f6' }}>(</Text><Text style={{ fontWeight: '600', color: '#3b82f6' }}>STEP 4</Text><Text style={{ color: '#3b82f6' }}>)</Text>.
+          The final annual liability is calculated by multiplying the Child Support Percentage <Text style={{ color: '#3b82f6' }}>(</Text><Text style={{ fontWeight: '600', color: '#3b82f6' }}>STEP 3</Text><Text style={{ color: '#3b82f6' }}>)</Text> by the total Cost of the Child <Text style={{ color: '#3b82f6' }}>(</Text><Text style={{ fontWeight: '600', color: '#3b82f6' }}>STEP 4</Text><Text style={{ color: '#3b82f6' }}>)</Text>.
         </Text>
 
         {/* Per-child payment breakdown */}
@@ -525,6 +556,34 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                   </Text>
                   <Text style={[styles.perChildGapValue, { color: payingParentColor }]}>
                     {formatCurrency(totalMarAmount)}
+                  </Text>
+                </View>
+                <View style={styles.perChildGapDivider} />
+              </View>
+            );
+          }
+
+          // Check if all children have no payment required
+          const allChildrenNoPayment = results.childResults.every(child => 
+            child.finalLiabilityA === 0 && child.finalLiabilityB === 0
+          );
+
+          // If all children have no payment, show consolidated line
+          if (allChildrenNoPayment) {
+            // Check if any child is due to FAR limit being reached
+            const hasFarLimit = results.childResults.some((child, index) => 
+              isFarLimitReached(index, results, formState)
+            );
+            const displayText = hasFarLimit ? 'FAR limit reached' : 'No payment required';
+
+            return (
+              <View style={styles.perChildGapBreakdown}>
+                <View style={styles.perChildGapRow}>
+                  <Text style={styles.perChildGapLabel}>
+                    All children - <Text style={{ color: '#64748b' }}>{displayText}</Text>
+                  </Text>
+                  <Text style={[styles.perChildGapValue, { color: '#64748b' }]}>
+                    $0
                   </Text>
                 </View>
                 <View style={styles.perChildGapDivider} />
@@ -655,17 +714,17 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                     </Text>
                     <Text style={styles.specialNoticeText}>
                       {'\n'}1. The parent must have less than 35% care of the child.
-                      {'\n\n'}2. The income used in the assessment must be less than the pension Parenting Payment (single) maximum basic amount.
+                      {'\n\n'}2. The income used in the assessment must be less than the pension Parenting Payment (single) maximum basic amount ($26,195)(2025).
                       {'\n\n'}3. The parent did not receive an income support payment in the ATI.
                     </Text>
                   </>
                 ) : (
                   <>
                     <Text style={styles.specialNoticeText}>
-                      The MAR is paid per case (up to a maximum of three cases) and is put in place for low income parents who wouldn't be able to afford a higher amount. It requires three eligibility criteria be met:
+                      The MAR is paid per case and is put in place for parents who wouldn't be able to afford a higher amount. It requires three eligibility criteria be met:
                     </Text>
                     <Text style={styles.specialNoticeText}>
-                      {'\n'}1. The parent must have received an income support payment in their ATI.
+                      {'\n'}1. The parent must have received at least one income support payment in their ATI.
                       {'\n\n'}2. The parent has less than 14% care of all children.
                       {'\n\n'}3. The parent's ATI must be below the self-support amount.
                     </Text>
@@ -906,7 +965,7 @@ const styles = StyleSheet.create({
   combinedCSIncomeLabel: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#0369a1", // sky-700 - dark for contrast
+    color: "#3b82f6", // accent.primary - matches Child Support Income blue
     letterSpacing: 0.5,
     textTransform: "uppercase",
   },

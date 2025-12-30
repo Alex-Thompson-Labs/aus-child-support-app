@@ -85,7 +85,7 @@ export interface LeadSubmission {
       officialCoAReasons: string;
     }>;
   } | null;
-  court_date: string | null;
+  court_date?: string | null;
   
   // Message
   parent_message: string;

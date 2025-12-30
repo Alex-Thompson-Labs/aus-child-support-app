@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
-import { Alert, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { createShadow } from "../utils/shadow-styles";
 import type { CalculationResults } from "../types/calculator";
 import { useAnalytics } from "../utils/analytics";
@@ -21,7 +21,7 @@ interface ChangeOfAssessmentPromptProps {
   formData?: ComplexityFormData;
   onNavigate: () => void; // Callback to close modal before navigation
   onRequestInquiry?: () => void; // Callback to show inline inquiry panel (web mode)
-  onCoAReasonsChange?: (reasons: string[], courtDate?: string) => void; // Callback to notify parent of selected reasons and court date
+  onCoAReasonsChange?: (reasons: string[]) => void; // Callback to notify parent of selected reasons
 }
 
 export function ChangeOfAssessmentPrompt({
@@ -32,16 +32,32 @@ export function ChangeOfAssessmentPrompt({
   onCoAReasonsChange,
 }: ChangeOfAssessmentPromptProps) {
   // State management
-  const [selectedReasons, setSelectedReasons] = useState<Set<string>>(new Set());
+  const [selectedReasons, setSelectedReasons] = useState<Set<string>>(() => {
+    // Initialize from formData if available
+    return new Set(formData?.selectedCoAReasons ?? []);
+  });
   const [isNavigatingFromCoA, setIsNavigatingFromCoA] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [hasCourtDate, setHasCourtDate] = useState(false);
-  const [courtDate, setCourtDate] = useState('');
-  const [hasPropertySettlement, setHasPropertySettlement] = useState(false);
+  const [hasCourtDate, setHasCourtDate] = useState(() => {
+    // Initialize from formData
+    return formData?.selectedCoAReasons?.includes('court_date_upcoming') ?? false;
+  });
+  const [hasPropertySettlement, setHasPropertySettlement] = useState(() => {
+    // Initialize from formData
+    return formData?.selectedCoAReasons?.includes('property_settlement') ?? false;
+  });
 
   // Hooks
   const router = useRouter();
   const analytics = useAnalytics();
+
+  // Sync state with formData prop when it changes
+  React.useEffect(() => {
+    const reasons = formData?.selectedCoAReasons ?? [];
+    setSelectedReasons(new Set(reasons));
+    setHasCourtDate(reasons.includes('court_date_upcoming'));
+    setHasPropertySettlement(reasons.includes('property_settlement'));
+  }, [formData?.selectedCoAReasons]);
 
   // Guard against empty reasons array
   if (CHANGE_OF_ASSESSMENT_REASONS.length === 0) {
@@ -58,8 +74,9 @@ export function ChangeOfAssessmentPrompt({
     (r) => r.category === 'other' && r.id !== 'property_settlement'
   );
 
-  // Determine button state - require court date if checkbox is checked
-  const buttonDisabled = selectedReasons.size === 0 || isNavigatingFromCoA || (hasCourtDate && !courtDate.trim());
+  // Determine button state - disabled if no reasons selected or navigating
+  // Note: Court date validation now happens in the input handler, so we don't need to check it here
+  const buttonDisabled = selectedReasons.size === 0 || isNavigatingFromCoA;
 
   // Checkbox toggle handler
   const handleCheckboxToggle = useCallback(
@@ -75,10 +92,9 @@ export function ChangeOfAssessmentPrompt({
           next.add(reasonId);
         }
 
-        // Notify parent of change - pass court date if this is the court date reason
+        // Notify parent of change
         const reasonsArray = Array.from(next);
-        const currentCourtDate = (reasonId === 'court_date_upcoming' && !wasChecked) ? courtDate : courtDate;
-        onCoAReasonsChange?.(reasonsArray, currentCourtDate || undefined);
+        onCoAReasonsChange?.(reasonsArray);
 
         // Track analytics (debouncing handled by setTimeout)
         setTimeout(() => {
@@ -96,7 +112,7 @@ export function ChangeOfAssessmentPrompt({
         return next;
       });
     },
-    [analytics, onCoAReasonsChange, courtDate]
+    [analytics, onCoAReasonsChange]
   );
 
   // Navigation handler
@@ -159,7 +175,6 @@ export function ChangeOfAssessmentPrompt({
               coaReasons: JSON.stringify(Array.from(selectedReasons)),
               coaHighestPriority:
                 getHighestPriorityReason(Array.from(selectedReasons))?.id ?? "",
-              ...(courtDate ? { courtDate } : {}),
             },
           });
         } catch (error) {
@@ -260,55 +275,48 @@ export function ChangeOfAssessmentPrompt({
             </View>
             <View style={styles.checkboxList}>
               {/* Court Date Checkbox */}
-              <Pressable
-                style={[styles.checkboxRow, isWeb && webClickableStyles]}
-                onPress={() => {
-                  setHasCourtDate(!hasCourtDate);
-                  if (!hasCourtDate) {
-                    handleCheckboxToggle('court_date_upcoming');
-                  } else {
-                    handleCheckboxToggle('court_date_upcoming');
-                    setCourtDate('');
-                  }
-                }}
-                accessible={true}
-                accessibilityRole="checkbox"
-                accessibilityState={{ checked: hasCourtDate }}
-              >
-                <View style={[styles.checkbox, hasCourtDate && styles.checkboxChecked]}>
-                  {hasCourtDate && <Text style={styles.checkboxCheck}>✓</Text>}
-                </View>
-                <View style={styles.checkboxLabelContainer}>
-                  <Text style={styles.checkboxLabel}>Do you have an upcoming court date?</Text>
-                  <HelpTooltip 
-                    what="Cases with upcoming court dates require urgent legal preparation. You need professional legal advice BEFORE your court appearance." 
-                    why="" 
-                    hideWhatLabel 
-                  />
-                </View>
-              </Pressable>
-
-              {/* Court Date Input - Shows when checked */}
-              {hasCourtDate && (
-                <View style={styles.courtDateInputContainer}>
-                  <Text style={styles.inputLabel}>Court Date:</Text>
-                  <TextInput
-                    style={styles.dateInput}
-                    value={courtDate}
-                    onChangeText={(text) => {
-                      setCourtDate(text);
-                      // Notify parent of court date change
+              <View>
+                <Pressable
+                  style={[styles.checkboxRow, isWeb && webClickableStyles]}
+                  onPress={() => {
+                    const newHasCourtDate = !hasCourtDate;
+                    setHasCourtDate(newHasCourtDate);
+                    if (newHasCourtDate) {
+                      // Checking - add the reason
+                      handleCheckboxToggle('court_date_upcoming');
+                    } else {
+                      // Unchecking - remove the reason
                       if (selectedReasons.has('court_date_upcoming')) {
-                        onCoAReasonsChange?.(Array.from(selectedReasons), text || undefined);
+                        handleCheckboxToggle('court_date_upcoming');
                       }
-                    }}
-                    placeholder="DD/MM/YYYY"
-                    placeholderTextColor="#9ca3af"
-                    accessible={true}
-                    accessibilityLabel="Court date input"
-                  />
-                </View>
-              )}
+                    }
+                  }}
+                  accessible={true}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: hasCourtDate }}
+                >
+                  <View style={[styles.checkbox, hasCourtDate && styles.checkboxChecked]}>
+                    {hasCourtDate && <Text style={styles.checkboxCheck}>✓</Text>}
+                  </View>
+                  <View style={styles.checkboxLabelContainer}>
+                    <Text style={styles.checkboxLabel}>Do you have an upcoming court date?</Text>
+                    <HelpTooltip 
+                      what="Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance." 
+                      why="" 
+                      hideWhatLabel 
+                    />
+                  </View>
+                </Pressable>
+
+                {/* Inline Warning - Shows when checked */}
+                {hasCourtDate && (
+                  <View style={styles.inlineWarning}>
+                    <Text style={styles.inlineWarningText}>
+                      ⚠️ Tip: Court appearances require significant preparation. We strongly recommend organizing legal representation well in advance.
+                    </Text>
+                  </View>
+                )}
+              </View>
 
               {/* Property Settlement Checkbox */}
               <Pressable
@@ -339,7 +347,7 @@ export function ChangeOfAssessmentPrompt({
           {/* Income Issues Group */}
           <View style={styles.reasonGroup}>
             <View style={styles.groupHeader}>
-              <Text style={[styles.groupTitle, { color: '#ea580c' }]}>Income Issues</Text>
+              <Text style={[styles.groupTitle, { color: '#ea580c' }]}>The Other Parent's Financials</Text>
             </View>
             <View style={styles.checkboxList}>
               {/* Income Reasons */}
@@ -347,11 +355,11 @@ export function ChangeOfAssessmentPrompt({
             </View>
           </View>
 
-          {/* Child-Related Group */}
+          {/* High Costs & Financial Obligations Group */}
           {childReasons.length > 0 && (
             <View style={styles.reasonGroup}>
               <View style={styles.groupHeader}>
-                <Text style={[styles.groupTitle, { color: '#7c3aed' }]}>Child-Related</Text>
+                <Text style={[styles.groupTitle, { color: '#7c3aed' }]}>High Costs & Financial Obligations</Text>
               </View>
               <View style={styles.checkboxList}>
                 {childReasons.map(renderCheckbox)}
@@ -507,28 +515,21 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#fee2e2', // red-100
   },
-  courtDateInputContainer: {
+  inlineWarning: {
     marginLeft: 32,
     marginTop: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  inputLabel: {
-    fontSize: 14,
-    color: '#374151', // gray-700
-    fontWeight: '500',
-  },
-  dateInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#d1d5db', // gray-300
-    borderRadius: 6,
-    paddingVertical: 8,
+    marginBottom: 12,
+    paddingVertical: 10,
     paddingHorizontal: 12,
-    fontSize: 14,
-    color: '#1a202c',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fef3c7', // amber-100
+    borderLeftWidth: 3,
+    borderLeftColor: '#f59e0b', // amber-500
+    borderRadius: 6,
+  },
+  inlineWarningText: {
+    fontSize: 13,
+    color: '#92400e', // amber-900
+    lineHeight: 18,
   },
 
   // Checkboxes

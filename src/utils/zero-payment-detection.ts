@@ -83,7 +83,7 @@ export function detectZeroPaymentScenario(
     return {
       type: "mar_prevented_by_care",
       title: "Why No Payment?",
-      explanation: `${parent} has very low income and receives income support, but because they have 14% or more care of at least one child, the Minimum Annual Rate doesn't apply. Their care time means they're already contributing by covering costs directly during care, and their income is too low to require additional payment.`,
+      explanation: `${parent} is exempt from the Minimum Annual Rate because they provide at least 14% care for a child. As their income is below the self-support threshold, their direct care is deemed a sufficient contribution, resulting in a $0 liability.`,
       details: marPreventedA
         ? { parentADetails: careDetails }
         : { parentBDetails: careDetails },

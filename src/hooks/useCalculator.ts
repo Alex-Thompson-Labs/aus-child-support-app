@@ -46,6 +46,7 @@ export function useCalculator() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [results, setResults] = useState<CalculationResults | null>(null);
   const [isStale, setIsStale] = useState(false);
+  const [resetTimestamp, setResetTimestamp] = useState<number>(0);
 
   const addChild = useCallback(() => {
     setFormState((prev) => ({
@@ -444,6 +445,7 @@ export function useCalculator() {
     setResults(null);
     setErrors({});
     setIsStale(false);
+    setResetTimestamp(Date.now()); // Signal that reset occurred
   }, []);
 
   const getInputsForSave = useCallback((): CalculatorInputs => {
@@ -477,6 +479,7 @@ export function useCalculator() {
     validateForm,
     calculate,
     reset,
+    resetTimestamp,
     getInputsForSave,
   };
 }

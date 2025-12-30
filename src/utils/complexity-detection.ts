@@ -37,11 +37,6 @@ export interface ComplexityFlags {
    */
   incomeSuspicion: boolean;
 
-  /**
-   * Indicates urgent court date approaching
-   * Triggers when court appearance is scheduled within 30 days
-   */
-  courtDateUrgent: boolean;
 
   /**
    * Indicates shared care arrangement in common dispute zone
@@ -132,7 +127,6 @@ export interface ComplexityFormData {
    * Court date string in DD/MM/YYYY format
    * Used to determine if court date is within 60 days (urgent)
    */
-  courtDate?: string;
   /**
    * Whether Parent A receives income support payments
    * Used for MAR/FAR calculations and zero payment detection
@@ -170,36 +164,11 @@ export function detectComplexity(
   // Check for selected CoA reasons
   const selectedReasons = formData.selectedCoAReasons ?? [];
 
-  // Check for urgent court date (via checkbox selection AND date within 60 days)
+  // Check if court date reason is selected (now just a flag, no date validation)
   const hasCourtDateSelected = selectedReasons.includes('court_date_upcoming');
-  let hasCourtDateUrgent = false;
   
-  if (hasCourtDateSelected && formData.courtDate) {
-    const courtDate = parseAustralianDate(formData.courtDate);
-    
-    if (courtDate) {
-      const today = new Date();
-      const diffTime = courtDate.getTime() - today.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
-      // Court date is urgent if within 60 days
-      hasCourtDateUrgent = diffDays >= 0 && diffDays <= 60;
-      
-      if (__DEV__) {
-        console.log('[detectComplexity] Court date:', formData.courtDate);
-        console.log('[detectComplexity] Days until court date:', diffDays);
-        console.log('[detectComplexity] Court date urgent (within 60 days):', hasCourtDateUrgent);
-      }
-    } else {
-      if (__DEV__) {
-        console.log('[detectComplexity] Invalid court date format:', formData.courtDate);
-      }
-    }
-  } else if (hasCourtDateSelected) {
-    // If checkbox is selected but no date provided, assume it's not urgent
-    if (__DEV__) {
-      console.log('[detectComplexity] Court date checkbox selected but no date provided');
-    }
+  if (__DEV__ && hasCourtDateSelected) {
+    console.log('[detectComplexity] Court date reason selected');
   }
 
   // Check for special circumstances via selected CoA reasons
@@ -215,7 +184,6 @@ export function detectComplexity(
     highValue: isHighValue,
     specialCircumstances: hasSpecialCircumstances,
     incomeSuspicion: false, // TODO: Check formData flags
-    courtDateUrgent: hasCourtDateUrgent,
     sharedCareDispute: hasSharedCareDispute,
   };
 }
@@ -238,13 +206,14 @@ export function getAlertConfig(
   results: CalculationResults,
   formData?: ComplexityFormData
 ): AlertConfig | null {
-  // Priority 1: Urgent court date
-  if (flags.courtDateUrgent) {
+  // Priority 1: Court date selected (no longer checking urgency/date)
+  const hasCourtDateSelected = formData?.selectedCoAReasons?.includes('court_date_upcoming');
+  if (hasCourtDateSelected) {
     return {
-      title: "URGENT: Court Date Soon",
-      message: "You need legal advice BEFORE your court appearance.",
+      title: "Court Date Approaching",
+      message: "Professional legal preparation is strongly recommended before your court appearance.",
       urgency: 'high',
-      buttonText: "Get Emergency Consultation"
+      buttonText: "Get Legal Consultation"
     };
   }
 
