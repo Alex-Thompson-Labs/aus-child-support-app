@@ -107,13 +107,13 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#1a202c", // near-black
+    color: "#ea580c", // orange-600
     marginBottom: 8,
   },
   sectionLabel: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#6b7280", // grey-500
+    color: "#ea580c", // orange-600
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 4,
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   sectionLabelWhy: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#6b7280", // grey-500
+    color: "#ea580c", // orange-600
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 4,

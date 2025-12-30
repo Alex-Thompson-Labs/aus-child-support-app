@@ -54,19 +54,11 @@ export const CHANGE_OF_ASSESSMENT_REASONS: readonly ChangeOfAssessmentReason[] =
     officialCoAReasons: ['5.2.11'] as const,
   },
   {
-    id: 'hiding_income',
-    label: "Is the other parent hiding income or assets?",
-    description: "If you suspect the other parent is concealing income, operating cash businesses, or hiding assets, a lawyer can help investigate and present evidence to the court.",
+    id: 'income_resources_not_reflected',
+    label: "Is the other parent hiding any income, property or financial resources that are not reflected in their taxable income",
+    description: "When someone's tax return doesn't reflect their true financial position—such as hidden income, cash businesses, trust distributions, investment property, or other assets—a lawyer can help investigate and present evidence to the court. This requires specialized knowledge of income sources, business structures, and non-taxable resources.",
     category: 'income',
     priority: 2,
-    officialCoAReasons: ['5.2.8'] as const,
-  },
-  {
-    id: 'income_resources_not_reflected',
-    label: "Income, property or financial resources not reflected in taxable income",
-    description: "When someone's tax return doesn't reflect their true financial position—such as business income, trust distributions, investment property, or other assets—a lawyer can request a formal review. This requires specialized knowledge of income sources, business structures, and non-taxable resources.",
-    category: 'income',
-    priority: 3,
     officialCoAReasons: ['5.2.8'] as const,
   },
   {

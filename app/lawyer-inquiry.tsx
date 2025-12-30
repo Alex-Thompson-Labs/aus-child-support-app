@@ -277,7 +277,7 @@ export default function LawyerInquiryScreen() {
                 .filter(Boolean)
                 .join('\n- ');
 
-            const prefillMessage = `I would like help requesting a Change of Assessment for the following reasons:\n\n- ${reasonLabels}\n\nPlease contact me to discuss my situation.`;
+            const prefillMessage = `I would like help with regard to the special circumstances of my assessment for the following reasons:\n\n- ${reasonLabels}\n\nPlease contact me to discuss my situation.`;
 
             setMessage(prefillMessage);
         }
@@ -601,8 +601,6 @@ export default function LawyerInquiryScreen() {
                     {/* Change of Assessment Reasons Card - Show only if reasons exist */}
                     {validCoAReasons.length > 0 && (
                         <View style={styles.coaSection}>
-                            <Text style={styles.coaSectionTitle}>CHANGE OF ASSESSMENT GROUNDS SELECTED</Text>
-
                             {validCoAReasons.map((reason, index) => (
                                 <View key={reason.id} style={styles.coaReasonCard}>
                                     <View style={styles.coaReasonHeader}>
@@ -610,9 +608,6 @@ export default function LawyerInquiryScreen() {
                                         <View style={styles.coaReasonTextContainer}>
                                             <Text style={styles.coaReasonTitle}>
                                                 {reason.label}
-                                            </Text>
-                                            <Text style={styles.coaReasonDescription}>
-                                                {reason.description}
                                             </Text>
                                         </View>
                                     </View>

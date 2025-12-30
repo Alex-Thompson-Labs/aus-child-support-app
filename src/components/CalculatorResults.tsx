@@ -36,15 +36,18 @@ export function CalculatorResults({
 
   const isInlineMode = displayMode === 'inline';
   const [isNavigating, setIsNavigating] = useState(false);
+  
+  // Track local form data updates (selected CoA reasons and court date)
+  const [localFormData, setLocalFormData] = useState<ComplexityFormData>(formData ?? {});
 
   // Calculate payment amounts
   const monthlyAmount = results.finalPaymentAmount / 12;
   const fortnightlyAmount = results.finalPaymentAmount / 26;
   const dailyAmount = results.finalPaymentAmount / 365;
 
-  // Complexity Logic
-  const flags = detectComplexity(results, formData ?? {});
-  const alertConfig = getAlertConfig(flags, results);
+  // Complexity Logic - use local form data that includes court date
+  const flags = detectComplexity(results, localFormData);
+  const alertConfig = getAlertConfig(flags, results, localFormData);
 
   const isCalculationComplete = (() => {
     const hasIncome = results.ATI_A > 0 || results.ATI_B > 0;
@@ -99,12 +102,13 @@ export function CalculatorResults({
           incomeB: results.ATI_B.toString(),
           children: (formData?.children?.length ?? 0).toString(),
           careData: JSON.stringify(careData),
-          ...(formData?.selectedCoAReasons?.length ? { coaReasons: JSON.stringify(formData.selectedCoAReasons) } : {})
+          ...(localFormData?.selectedCoAReasons?.length ? { coaReasons: JSON.stringify(localFormData.selectedCoAReasons) } : {}),
+          ...(localFormData?.courtDate ? { courtDate: localFormData.courtDate } : {})
         }
       });
       setTimeout(() => setIsNavigating(false), 500);
     });
-  }, [isNavigating, router, results, formData, getTrigger, getAllTriggers, isWeb]);
+  }, [isNavigating, router, results, formData, localFormData, getTrigger, getAllTriggers, isWeb]);
 
   const toggleExpand = () => setIsExpanded(!isExpanded);
 
@@ -151,7 +155,18 @@ export function CalculatorResults({
         />
       )}
 
-      <ChangeOfAssessmentPrompt results={results} formData={formData} onNavigate={() => setIsExpanded(false)} />
+      <ChangeOfAssessmentPrompt 
+        results={results} 
+        formData={localFormData} 
+        onNavigate={() => setIsExpanded(false)} 
+        onCoAReasonsChange={(reasons, courtDate) => {
+          setLocalFormData(prev => ({
+            ...prev,
+            selectedCoAReasons: reasons,
+            courtDate: courtDate,
+          }));
+        }}
+      />
       <ResultsSimpleExplanation results={results} formState={{ supportA: formData?.supportA ?? false, supportB: formData?.supportB ?? false }} />
     </ScrollView>
   );

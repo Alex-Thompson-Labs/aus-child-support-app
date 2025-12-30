@@ -7,6 +7,7 @@
 import type { CalculationResults, ChildInput } from '../types/calculator';
 import { convertCareToPercentage } from './child-support-calculations';
 import { getHighestPriorityReason, getCoAReasonById, formatOfficialCoAReasons } from './change-of-assessment-reasons';
+import { parseAustralianDate } from './date-utils';
 
 /**
  * Flags indicating different types of complexity detected in child support calculations
@@ -128,6 +129,11 @@ export interface ComplexityFormData {
    */
   selectedCoAReasons?: string[];
   /**
+   * Court date string in DD/MM/YYYY format
+   * Used to determine if court date is within 60 days (urgent)
+   */
+  courtDate?: string;
+  /**
    * Whether Parent A receives income support payments
    * Used for MAR/FAR calculations and zero payment detection
    */
@@ -164,11 +170,36 @@ export function detectComplexity(
   // Check for selected CoA reasons
   const selectedReasons = formData.selectedCoAReasons ?? [];
 
-  // Check for urgent court date (via checkbox selection)
-  const hasCourtDateUrgent = selectedReasons.includes('court_date_upcoming');
-
-  if (__DEV__) {
-    console.log('[detectComplexity] Court date checkbox selected:', hasCourtDateUrgent);
+  // Check for urgent court date (via checkbox selection AND date within 60 days)
+  const hasCourtDateSelected = selectedReasons.includes('court_date_upcoming');
+  let hasCourtDateUrgent = false;
+  
+  if (hasCourtDateSelected && formData.courtDate) {
+    const courtDate = parseAustralianDate(formData.courtDate);
+    
+    if (courtDate) {
+      const today = new Date();
+      const diffTime = courtDate.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      // Court date is urgent if within 60 days
+      hasCourtDateUrgent = diffDays >= 0 && diffDays <= 60;
+      
+      if (__DEV__) {
+        console.log('[detectComplexity] Court date:', formData.courtDate);
+        console.log('[detectComplexity] Days until court date:', diffDays);
+        console.log('[detectComplexity] Court date urgent (within 60 days):', hasCourtDateUrgent);
+      }
+    } else {
+      if (__DEV__) {
+        console.log('[detectComplexity] Invalid court date format:', formData.courtDate);
+      }
+    }
+  } else if (hasCourtDateSelected) {
+    // If checkbox is selected but no date provided, assume it's not urgent
+    if (__DEV__) {
+      console.log('[detectComplexity] Court date checkbox selected but no date provided');
+    }
   }
 
   // Check for special circumstances via selected CoA reasons

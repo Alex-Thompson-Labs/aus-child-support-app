@@ -21,7 +21,7 @@ interface ChangeOfAssessmentPromptProps {
   formData?: ComplexityFormData;
   onNavigate: () => void; // Callback to close modal before navigation
   onRequestInquiry?: () => void; // Callback to show inline inquiry panel (web mode)
-  onCoAReasonsChange?: (reasons: string[]) => void; // Callback to notify parent of selected reasons
+  onCoAReasonsChange?: (reasons: string[], courtDate?: string) => void; // Callback to notify parent of selected reasons and court date
 }
 
 export function ChangeOfAssessmentPrompt({
@@ -37,7 +37,6 @@ export function ChangeOfAssessmentPrompt({
   const [isExpanded, setIsExpanded] = useState(false);
   const [hasCourtDate, setHasCourtDate] = useState(false);
   const [courtDate, setCourtDate] = useState('');
-  const [isHidingIncome, setIsHidingIncome] = useState(false);
   const [hasPropertySettlement, setHasPropertySettlement] = useState(false);
 
   // Hooks
@@ -76,9 +75,10 @@ export function ChangeOfAssessmentPrompt({
           next.add(reasonId);
         }
 
-        // Notify parent of change
+        // Notify parent of change - pass court date if this is the court date reason
         const reasonsArray = Array.from(next);
-        onCoAReasonsChange?.(reasonsArray);
+        const currentCourtDate = (reasonId === 'court_date_upcoming' && !wasChecked) ? courtDate : courtDate;
+        onCoAReasonsChange?.(reasonsArray, currentCourtDate || undefined);
 
         // Track analytics (debouncing handled by setTimeout)
         setTimeout(() => {
@@ -96,7 +96,7 @@ export function ChangeOfAssessmentPrompt({
         return next;
       });
     },
-    [analytics, onCoAReasonsChange]
+    [analytics, onCoAReasonsChange, courtDate]
   );
 
   // Navigation handler
@@ -294,8 +294,14 @@ export function ChangeOfAssessmentPrompt({
                   <TextInput
                     style={styles.dateInput}
                     value={courtDate}
-                    onChangeText={setCourtDate}
-                    placeholder="YYYY-MM-DD"
+                    onChangeText={(text) => {
+                      setCourtDate(text);
+                      // Notify parent of court date change
+                      if (selectedReasons.has('court_date_upcoming')) {
+                        onCoAReasonsChange?.(Array.from(selectedReasons), text || undefined);
+                      }
+                    }}
+                    placeholder="DD/MM/YYYY"
                     placeholderTextColor="#9ca3af"
                     accessible={true}
                     accessibilityLabel="Court date input"
@@ -335,31 +341,7 @@ export function ChangeOfAssessmentPrompt({
               <Text style={[styles.groupTitle, { color: '#ea580c' }]}>Income Issues</Text>
             </View>
             <View style={styles.checkboxList}>
-              {/* NEW: Hiding Income - High Priority */}
-              <Pressable
-                style={[styles.checkboxRow, isWeb && webClickableStyles]}
-                onPress={() => {
-                  setIsHidingIncome(!isHidingIncome);
-                  handleCheckboxToggle('hiding_income');
-                }}
-                accessible={true}
-                accessibilityRole="checkbox"
-                accessibilityState={{ checked: isHidingIncome }}
-              >
-                <View style={[styles.checkbox, isHidingIncome && styles.checkboxChecked]}>
-                  {isHidingIncome && <Text style={styles.checkboxCheck}>✓</Text>}
-                </View>
-                <View style={styles.checkboxLabelContainer}>
-                  <Text style={styles.checkboxLabel}>Is the other parent hiding income or assets?</Text>
-                  <HelpTooltip 
-                    what="If you suspect the other parent is concealing income, operating cash businesses, or hiding assets, a lawyer can help investigate and present evidence to the court." 
-                    why="" 
-                    hideWhatLabel 
-                  />
-                </View>
-              </Pressable>
-
-              {/* Existing Income Reasons */}
+              {/* Income Reasons */}
               {incomeReasons.map(renderCheckbox)}
             </View>
           </View>
