@@ -10,10 +10,10 @@ export default function Root({ children }: { children: React.ReactNode }) {
   const gaMeasurementId = process.env.EXPO_PUBLIC_GA_MEASUREMENT_ID || "G-53139BKGD7";
   // SEO Configuration - Utility-First Strategy
   // Focus: High-volume calculation & formula queries, not lawyer keywords
-  const siteTitle = 'Child Support Calculator Australia | Free CS Calculator 2024';
-  const siteDescription = 'Free child support calculator using the official Services Australia formula. Calculate payments instantly based on income, care percentage, and number of children. Accurate results for shared care, split care, and multiple families. Updated for 2024-2025 financial year.';
+  const siteTitle = 'Child Support Calculator Australia 2025-2026 | Free Services Australia Formula';
+  const siteDescription = 'Free child support calculator for Australia (2025-2026). Calculate payments using the official Services Australia formula based on income, care levels, and nights per fortnight. Accurate estimates for shared care and multiple family assessments.';
   const siteUrl = process.env.EXPO_PUBLIC_SITE_URL || 'https://auschildsupport.com';
-  const siteKeywords = 'child support calculator Australia, child support formula, how to calculate child support, child support payment calculator, Services Australia child support, child support formula Australia, child support rates 2024, shared care calculator, child support estimator, calculate child support payments, child support amount calculator, Australian child support calculation';
+  const siteKeywords = 'child support calculator Australia, child support care levels, how to calculate child support, child support payment calculator, Services Australia child support, child support formula Australia, child support rates 2025-2026, shared care calculator, child support estimator, calculate child support payments, child support amount calculator, Australian child support calculation, nights to care percentage, hild support income test 2025, CS calculator Australia';
   return (
     <html lang="en_AU">
       <head>
