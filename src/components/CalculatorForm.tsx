@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
+import { createShadow } from "../utils/shadow-styles";
 import type { ChildInput, FormErrors } from "../types/calculator";
 import { MAX_CONTENT_WIDTH, isWeb, useResponsive, webClickableStyles, webInputStyles } from "../utils/responsive";
 import { ChildRow } from "./ChildRow";
@@ -371,11 +372,13 @@ const popoverStyles = StyleSheet.create({
     minWidth: 280,
     maxWidth: 340,
     gap: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 10,
+    ...createShadow({
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.15,
+      shadowRadius: 8,
+      elevation: 10,
+    }),
   },
   mobileHeader: {
     flexDirection: 'row',
@@ -720,13 +723,14 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: 1,
     borderColor: "#e2e8f0", // subtle but visible border
-    // Web shadow for better depth perception
-    ...(isWeb ? {
+    // Cross-platform shadow for better depth perception
+    ...createShadow({
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.08,
       shadowRadius: 4,
-    } : {}),
+      elevation: 2,
+    }),
   },
   cardTitle: {
     fontSize: 14,

@@ -54,7 +54,7 @@ export function PeriodPicker({ value, onChange }: PeriodPickerProps) {
               </option>
             ))}
           </select>
-          <View style={styles.chevron}>
+          <View style={[styles.chevron, { pointerEvents: 'none' } as any]}>
             <Text style={styles.chevronText}>▼</Text>
           </View>
         </View>
@@ -127,8 +127,7 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     justifyContent: "center",
-    pointerEvents: "none",
-  },
+  } as any,
   chevronText: {
     fontSize: 8,
     color: "#64748b", // slate-500

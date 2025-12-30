@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { createShadow } from "../utils/shadow-styles";
 import type { CalculationResults } from "../types/calculator";
 import { isWeb, webClickableStyles } from "../utils/responsive";
 import { detectZeroPaymentScenario, isFarLimitReached } from "../utils/zero-payment-detection";
@@ -797,9 +798,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: "#e5e7eb", // gray-200 - subtle border
-    ...(isWeb ? {
-      boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.05)",
-    } : {
+    ...createShadow({
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.05,
@@ -1377,9 +1376,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff", // white background
     borderWidth: 2,
     borderColor: "#e5e7eb", // gray-200
-    ...(isWeb ? {
-      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-    } : {
+    ...createShadow({
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.1,
@@ -1477,10 +1474,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 2,
     borderColor: "#fbbf24", // amber-400
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
+    ...createShadow({
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 4,
+      elevation: 2,
+    }),
   },
   urgentMattersHeader: {
     flexDirection: "row",
@@ -1547,10 +1547,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 2,
     borderColor: "#ef4444", // red-500
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
+    ...createShadow({
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 4,
+      elevation: 2,
+    }),
   },
   urgentLegalReviewText: {
     fontSize: 14,
@@ -1565,10 +1568,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignItems: "center",
     marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    ...createShadow({
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2,
+    }),
   },
   legalReviewButtonText: {
     color: "#ffffff",

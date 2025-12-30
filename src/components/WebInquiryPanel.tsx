@@ -15,6 +15,7 @@ import type { ChangeOfAssessmentReason } from '../utils/change-of-assessment-rea
 import { submitLead } from '../utils/supabase';
 import type { LeadSubmission } from '../utils/supabase';
 import { isWeb, webInputStyles, webClickableStyles } from '../utils/responsive';
+import { createShadow } from '../utils/shadow-styles';
 
 // ============================================================================
 // Types
@@ -429,10 +430,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e2e8f0', // subtle border
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    ...createShadow({
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 8,
+      elevation: 3,
+    }),
   },
   header: {
     flexDirection: 'row',

@@ -1,5 +1,6 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { createShadow } from "../utils/shadow-styles";
 import type { ChildInput } from "../types/calculator";
 import { CARE_PERIOD_DAYS } from "../utils/child-support-constants";
 import { isWeb, useResponsive, webClickableStyles, webInputStyles } from "../utils/responsive";
@@ -163,16 +164,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff", // white background
     marginBottom: 8,
     position: "relative",
-    ...(isWeb ? {
-      scrollSnapAlign: "start",
-      boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.05)", // subtle shadow
-    } : {
+    ...createShadow({
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.05,
       shadowRadius: 3,
       elevation: 1,
     }),
+    ...(isWeb ? {
+      scrollSnapAlign: "start",
+    } : {}),
   } as any,
   containerDesktop: {
     padding: 16,
@@ -321,7 +322,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     ...(isWeb ? {
       boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-    } : {
+    } : {}),
+    ...createShadow({
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,

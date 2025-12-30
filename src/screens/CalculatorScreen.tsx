@@ -7,6 +7,7 @@ import { CalculatorForm } from "../components/CalculatorForm";
 import { CalculatorResults } from "../components/CalculatorResults";
 import { useCalculator } from "../hooks/useCalculator";
 import { useResponsive } from "../utils/responsive";
+import { shadowPresets } from "../utils/shadow-styles";
 
 export function CalculatorScreen() {
   const {
@@ -171,11 +172,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 20,
     borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
+    ...shadowPresets.small,
   },
   blogButtonText: {
     color: 'white',

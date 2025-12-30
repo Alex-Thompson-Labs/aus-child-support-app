@@ -1,6 +1,7 @@
 import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { createShadow } from '@/src/utils/shadow-styles';
 
 export default function BlogList() {
   const [posts, setPosts] = useState([]);
@@ -99,11 +100,13 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 15,
     borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    ...createShadow({
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    }),
   },
   title: {
     fontSize: 20,

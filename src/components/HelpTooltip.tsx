@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, Modal, StyleSheet } from "react-native";
+import { shadowPresets } from "../utils/shadow-styles";
 
 interface HelpTooltipProps {
   what: string | React.ReactNode;
@@ -95,11 +96,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#e5e7eb", // grey-200
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
+    ...shadowPresets.medium,
   },
   content: {
     padding: 16,

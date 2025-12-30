@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { Alert, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { createShadow } from "../utils/shadow-styles";
 import type { CalculationResults } from "../types/calculator";
 import { useAnalytics } from "../utils/analytics";
 import {
@@ -33,6 +34,7 @@ export function ChangeOfAssessmentPrompt({
   // State management
   const [selectedReasons, setSelectedReasons] = useState<Set<string>>(new Set());
   const [isNavigatingFromCoA, setIsNavigatingFromCoA] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Hooks
   const router = useRouter();
@@ -207,17 +209,41 @@ export function ChangeOfAssessmentPrompt({
 
   return (
     <View style={styles.coaContainer}>
-      {/* Header - Always visible */}
-      <View style={styles.coaHeader}>
-        <Text style={styles.coaTitle}>Is this assessment result unfair?</Text>
-        <Text style={styles.coaDescription}>
-          Some situations are too complex for the standard calculator.
-          If any of these apply, a lawyer can help you request adjustments.
-        </Text>
-      </View>
+      {/* Header - Always visible, now collapsible */}
+      <Pressable
+        style={[styles.coaHeader, isWeb && webClickableStyles]}
+        onPress={() => setIsExpanded(!isExpanded)}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel={`Is this assessment result unfair? ${isExpanded ? 'Collapse' : 'Expand'} section`}
+        accessibilityHint={selectedReasons.size > 0 ? `${selectedReasons.size} issue${selectedReasons.size === 1 ? '' : 's'} selected` : undefined}
+      >
+        <View style={styles.headerContent}>
+          <View style={styles.titleRow}>
+            <Text style={styles.coaTitle}>Is this assessment result unfair?</Text>
+            <View style={styles.headerRight}>
+              {!isExpanded && selectedReasons.size > 0 && (
+                <View style={styles.selectionBadge}>
+                  <Text style={styles.selectionBadgeText}>
+                    {selectedReasons.size} issue{selectedReasons.size === 1 ? '' : 's'} selected
+                  </Text>
+                </View>
+              )}
+              <Text style={[styles.chevron, isExpanded && styles.chevronExpanded]}>
+                ›
+              </Text>
+            </View>
+          </View>
+          <Text style={styles.coaDescription}>
+            Some situations are too complex for the standard calculator.
+            If any of these apply, a lawyer can help you request adjustments.
+          </Text>
+        </View>
+      </Pressable>
 
-      {/* Category sections */}
-      <View style={styles.categorySections}>
+      {/* Category sections - Only shown when expanded */}
+      {isExpanded && (
+        <View style={styles.categorySections}>
           {/* Income Issues Group */}
           {incomeReasons.length > 0 && (
             <View style={styles.reasonGroup}>
@@ -260,10 +286,12 @@ export function ChangeOfAssessmentPrompt({
             </View>
           )}
 
-      </View>
+        </View>
+      )}
 
-      {/* Bottom section with button */}
-      <View style={styles.coaFooter}>
+      {/* Bottom section with button - Only shown when expanded */}
+      {isExpanded && (
+        <View style={styles.coaFooter}>
         <Pressable
           style={[styles.coaButton, buttonDisabled && styles.coaButtonDisabled, isWeb && !buttonDisabled && webClickableStyles]}
           onPress={handleNavigateToCoA}
@@ -283,7 +311,8 @@ export function ChangeOfAssessmentPrompt({
             {selectedReasons.size} reason{selectedReasons.size === 1 ? "" : "s"} selected
           </Text>
         )}
-      </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -297,31 +326,70 @@ const styles = StyleSheet.create({
     borderColor: "#e5e7eb", // grey-200
     padding: 24,
     marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 3,
+    ...createShadow({
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.06,
+      shadowRadius: 3,
+      elevation: 2,
+    }),
   },
 
   // Header
   coaHeader: {
-    marginBottom: 20,
+    marginBottom: 0,
+  },
+  headerContent: {
+    width: '100%',
+  },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
   coaTitle: {
     fontSize: 18,
     fontWeight: "600",
     color: "#1a202c", // near-black
-    marginBottom: 8,
+    flex: 1,
   },
   coaDescription: {
     fontSize: 14,
     color: "#6b7280", // grey-500
     lineHeight: 21, // 1.5 line height
   },
+  chevron: {
+    fontSize: 24,
+    color: "#6b7280", // grey-500
+    fontWeight: "600",
+    transform: [{ rotate: "90deg" }],
+    marginLeft: 4,
+  },
+  chevronExpanded: {
+    transform: [{ rotate: "270deg" }],
+  },
+  selectionBadge: {
+    backgroundColor: "#dbeafe", // blue-100
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  selectionBadgeText: {
+    fontSize: 12,
+    color: "#1e40af", // blue-800
+    fontWeight: "600",
+  },
 
   // Category sections
   categorySections: {
     gap: 16,
+    marginTop: 20,
   },
 
   // Groups

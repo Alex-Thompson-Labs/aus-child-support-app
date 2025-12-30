@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { CalculationResults } from "../types/calculator";
 import { detectComplexity, getAlertConfig, type ComplexityFlags, type ComplexityFormData } from "../utils/complexity-detection";
 import { MAX_MODAL_WIDTH, useResponsive } from "../utils/responsive";
+import { shadowPresets } from "../utils/shadow-styles";
 import { ChangeOfAssessmentPrompt } from "./ChangeOfAssessmentPrompt";
 import { LawyerAlert } from "./LawyerAlert";
 import { ResultsSimpleExplanation } from "./ResultsSimpleExplanation";
@@ -231,10 +232,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingBottom: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 10,
+    ...shadowPresets.modal,
     alignSelf: 'center', // Ensures it stays centered within its wrapper
   },
   collapsedContent: {
@@ -279,11 +277,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#3b82f6",
     borderWidth: 1,
     borderColor: "#3b82f6",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 4,
+    ...shadowPresets.large,
   },
   expandedHeroLabel: {
     color: "#ffffff",

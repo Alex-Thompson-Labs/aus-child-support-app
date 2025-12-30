@@ -15,8 +15,8 @@ const isWeb = Platform.OS === 'web';
 export interface WebVitals {
   /** Largest Contentful Paint (LCP) - Loading performance */
   lcp: number | null;
-  /** First Input Delay (FID) - Interactivity */
-  fid: number | null;
+  /** Interaction to Next Paint (INP) - Interactivity (replaces FID) */
+  inp: number | null;
   /** Cumulative Layout Shift (CLS) - Visual stability */
   cls: number | null;
   /** First Contentful Paint (FCP) - Loading performance */
@@ -31,7 +31,7 @@ export interface WebVitals {
  */
 export const WEB_VITALS_THRESHOLDS = {
   LCP: { good: 2500, poor: 4000 }, // ms
-  FID: { good: 100, poor: 300 },   // ms
+  INP: { good: 200, poor: 500 },   // ms (replaces FID)
   CLS: { good: 0.1, poor: 0.25 },  // score
   FCP: { good: 1800, poor: 3000 }, // ms
   TTFB: { good: 800, poor: 1800 }, // ms
@@ -64,8 +64,8 @@ export function trackWebVitals(onReport: (vitals: Partial<WebVitals>) => void) {
   try {
     import('web-vitals')
       .then((webVitalsModule) => {
-        // Safely destructure the module
-        const { onLCP, onFID, onCLS, onFCP, onTTFB } = webVitalsModule;
+        // Safely destructure the module (using INP instead of deprecated FID)
+        const { onLCP, onINP, onCLS, onFCP, onTTFB } = webVitalsModule;
         
         if (typeof onLCP !== 'function') {
           console.warn('[Web Vitals] Invalid module import');
@@ -76,8 +76,8 @@ export function trackWebVitals(onReport: (vitals: Partial<WebVitals>) => void) {
           onReport({ lcp: metric.value });
         });
 
-        onFID((metric) => {
-          onReport({ fid: metric.value });
+        onINP((metric) => {
+          onReport({ inp: metric.value });
         });
 
         onCLS((metric) => {
@@ -117,8 +117,8 @@ export function logWebVitals() {
       LCP: vitals.lcp
         ? `${vitals.lcp.toFixed(0)}ms (${getRating(vitals.lcp, WEB_VITALS_THRESHOLDS.LCP)})`
         : 'N/A',
-      FID: vitals.fid
-        ? `${vitals.fid.toFixed(0)}ms (${getRating(vitals.fid, WEB_VITALS_THRESHOLDS.FID)})`
+      INP: vitals.inp
+        ? `${vitals.inp.toFixed(0)}ms (${getRating(vitals.inp, WEB_VITALS_THRESHOLDS.INP)})`
         : 'N/A',
       CLS: vitals.cls
         ? `${vitals.cls.toFixed(3)} (${getRating(vitals.cls, WEB_VITALS_THRESHOLDS.CLS)})`
@@ -160,12 +160,12 @@ export function sendWebVitalsToGA() {
       });
     }
 
-    if (vitals.fid !== undefined && vitals.fid !== null) {
+    if (vitals.inp !== undefined && vitals.inp !== null) {
       gtag('event', 'web_vitals', {
         event_category: 'Web Vitals',
-        event_label: 'FID',
-        value: Math.round(vitals.fid),
-        metric_rating: getRating(vitals.fid, WEB_VITALS_THRESHOLDS.FID),
+        event_label: 'INP',
+        value: Math.round(vitals.inp),
+        metric_rating: getRating(vitals.inp, WEB_VITALS_THRESHOLDS.INP),
         non_interaction: true,
       });
     }

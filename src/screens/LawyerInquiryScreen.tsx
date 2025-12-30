@@ -26,6 +26,7 @@ import type { ChangeOfAssessmentReason } from '@/src/utils/change-of-assessment-
 import { getCoAReasonById, formatOfficialCoAReasons } from '@/src/utils/change-of-assessment-reasons';
 import { useResponsive, MAX_FORM_WIDTH, isWeb, webInputStyles, webClickableStyles } from '@/src/utils/responsive';
 import { supabase, submitLead } from '@/src/utils/supabase';
+import { createShadow } from '@/src/utils/shadow-styles';
 
 export function LawyerInquiryScreen() {
   const params = useLocalSearchParams();
@@ -556,10 +557,13 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     borderWidth: 1,
     borderColor: '#e5e7eb', // light grey
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    ...createShadow({
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.05,
+      shadowRadius: 4,
+      elevation: 2,
+    }),
   },
   summaryTitle: {
     fontSize: 14,
@@ -608,10 +612,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderWidth: 1.5,
     borderColor: '#e2e8f0', // light grey
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
+    ...createShadow({
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+      elevation: 1,
+    }),
   },
   textArea: {
     height: 240,
@@ -625,10 +632,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    ...createShadow({
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2,
+    }),
   },
   buttonDisabled: {
     backgroundColor: '#9ca3af', // grey-400
