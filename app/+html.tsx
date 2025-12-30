@@ -9,11 +9,10 @@ import { ScrollViewStyleReset } from 'expo-router/html';
 export default function Root({ children }: { children: React.ReactNode }) {
   const gaMeasurementId = process.env.EXPO_PUBLIC_GA_MEASUREMENT_ID || "G-53139BKGD7";
   // SEO Configuration
-  const siteTitle = 'Child Support Calculator | Free Ontario CS Calculator';
-  const siteDescription = 'Free child support calculator for Ontario, Canada. Calculate federal child support payments based on income, custody arrangements, and special expenses. Get instant results and connect with family law lawyers.';
-  const siteUrl = process.env.EXPO_PUBLIC_SITE_URL || 'https://childsupportcalc.app';
-  const siteKeywords = 'child support calculator, Ontario child support, Canada child support, federal child support guidelines, CS calculator, family law, child support payments, custody arrangements';
-
+  const siteTitle = 'Child Support Calculator | Free Child Support Calculator';
+  const siteDescription = 'Free child support calculator for Australia. Calculate child support payments based on income, care arrangements, and special circumstances using the official Services Australia formula. Get instant results and connect with family law lawyers.';
+  const siteUrl = process.env.EXPO_PUBLIC_SITE_URL || 'https://auschildsupport.com';
+  const siteKeywords = 'child support calculator, Australian child support, Australia child support, Services Australia, CS calculator, family law, child support payments, care arrangements, child support formula Australia';
   return (
     <html lang="en">
       <head>
@@ -32,8 +31,8 @@ export default function Root({ children }: { children: React.ReactNode }) {
         <meta name="revisit-after" content="7 days" />
 
         {/* Geo Tags */}
-        <meta name="geo.region" content="CA-ON" />
-        <meta name="geo.placename" content="Ontario" />
+        <meta name="geo.region" content="AU" />
+        <meta name="geo.placename" content="Australia" />
 
         {/* Theme Color */}
         <meta name="theme-color" content="#3b82f6" />
@@ -44,7 +43,7 @@ export default function Root({ children }: { children: React.ReactNode }) {
         <meta property="og:url" content={siteUrl} />
         <meta property="og:title" content={siteTitle} />
         <meta property="og:description" content={siteDescription} />
-        <meta property="og:locale" content="en_CA" />
+        <meta property="og:locale" content="en_AU" />
         <meta property="og:site_name" content="Child Support Calculator" />
 
         {/* Twitter Card */}

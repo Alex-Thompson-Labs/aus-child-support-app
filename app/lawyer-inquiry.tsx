@@ -15,11 +15,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAnalytics } from '../src/utils/analytics';
-import { getCoAReasonById } from '../src/utils/change-of-assessment-reasons';
 import type { ChangeOfAssessmentReason } from '../src/utils/change-of-assessment-reasons';
-import { submitLead } from '../src/utils/supabase';
-import type { LeadSubmission } from '../src/utils/supabase';
+import { formatOfficialCoAReasons, getCoAReasonById } from '../src/utils/change-of-assessment-reasons';
 import { MAX_FORM_WIDTH, isWeb } from '../src/utils/responsive';
+import type { LeadSubmission } from '../src/utils/supabase';
+import { submitLead } from '../src/utils/supabase';
 
 // ============================================================================
 // Types
@@ -439,11 +439,11 @@ export default function LawyerInquiryScreen() {
             const coaReasonsData = validCoAReasons.length > 0 ? {
                 count: validCoAReasons.length,
                 reasons: validCoAReasons.map(r => ({
-                    id: r.id,
                     label: r.label,
                     description: r.description,
                     category: r.category,
-                    priority: r.priority,
+                    urgency: r.urgency === 'URGENT' ? 'URGENT' as const : 'Normal' as const,
+                    officialCoAReasons: formatOfficialCoAReasons(r),
                 }))
             } : null;
 

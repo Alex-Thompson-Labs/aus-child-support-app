@@ -114,11 +114,36 @@ export function CalculatorResults({
       contentContainerStyle={[styles.expandedContentContainer, { paddingBottom: insets.bottom + 20 }, webModalContainerStyle]}
     >
       <View style={styles.expandedHeroSection}>
-        <Text style={styles.expandedHeroLabel}>
-          {results.payer === "Neither" ? "No payment required" : `${results.payer} pays`}
-        </Text>
-        <Text style={styles.expandedHeroAmount}>{formatCurrency(results.finalPaymentAmount)}</Text>
-        <Text style={styles.expandedHeroSubtext}>per year</Text>
+        <View style={styles.ratesContainer}>
+          {/* Left side - payer label */}
+          <View style={styles.leftLabelContainer}>
+            <Text style={styles.expandedHeroLabel}>
+              {results.payer === "Neither" ? "No payment required" : `${results.payer} pays`}
+            </Text>
+          </View>
+          
+          {/* Center - main annual amount */}
+          <View style={styles.mainRateContainer}>
+            <Text style={styles.expandedHeroAmount}>{formatCurrency(results.finalPaymentAmount)}</Text>
+            <Text style={styles.expandedHeroSubtext}>per year</Text>
+          </View>
+          
+          {/* Right side - all smaller rates stacked vertically */}
+          <View style={styles.smallRatesColumn}>
+            <View style={styles.smallRateItem}>
+              <Text style={styles.smallRateAmount}>{formatCurrency(results.finalPaymentAmount / 365)}</Text>
+              <Text style={styles.smallRateLabel}>daily</Text>
+            </View>
+            <View style={styles.smallRateItem}>
+              <Text style={styles.smallRateAmount}>{formatCurrency(results.finalPaymentAmount / 26)}</Text>
+              <Text style={styles.smallRateLabel}>fortnightly</Text>
+            </View>
+            <View style={styles.smallRateItem}>
+              <Text style={styles.smallRateAmount}>{formatCurrency(results.finalPaymentAmount / 12)}</Text>
+              <Text style={styles.smallRateLabel}>monthly</Text>
+            </View>
+          </View>
+        </View>
       </View>
 
       {shouldShowComplexityAlert && (
@@ -251,6 +276,13 @@ const styles = StyleSheet.create({
   expandedHeroAmount: { fontSize: 48, fontWeight: "800", color: "#1a202c" },
   expandedHeroLabel: { fontSize: 16, color: "#718096" },
   expandedHeroSubtext: { fontSize: 14, color: "#a0aec0" },
+  ratesContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 24, width: '100%' },
+  leftLabelContainer: { alignItems: 'flex-end', justifyContent: 'center', minWidth: 100 },
+  smallRatesColumn: { flexDirection: 'column', gap: 12, alignItems: 'flex-start', minWidth: 100 },
+  smallRateItem: { alignItems: 'flex-start' },
+  smallRateAmount: { fontSize: 18, fontWeight: "600", color: "#4a5568" },
+  smallRateLabel: { fontSize: 12, color: "#a0aec0", marginTop: 2 },
+  mainRateContainer: { alignItems: 'center', paddingHorizontal: 16 },
   twoColumnLayout: { flexDirection: "row", gap: 20 },
   leftColumn: { flex: 1 },
   rightColumn: { flex: 1.5 },
