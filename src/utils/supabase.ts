@@ -52,26 +52,26 @@ console.log('[Supabase] Client initialized with:', {
 export interface LeadSubmission {
   id?: string;
   created_at?: string;
-  
+
   // Parent contact
   parent_name: string;
   parent_email: string;
   parent_phone: string | null;
   location: string | null;
-  
+
   // Calculation data
   income_parent_a: number;
   income_parent_b: number;
   children_count: number;
   annual_liability: number;
-  
+
   // Care arrangement data
   care_data: Array<{
     index: number;
     careA: number;
     careB: number;
   }> | null;
-  
+
   // Complexity data
   complexity_trigger: string;
   complexity_reasons: string[];
@@ -86,14 +86,15 @@ export interface LeadSubmission {
     }>;
   } | null;
   court_date?: string | null;
-  
+  financial_tags?: string[] | null;
+
   // Message
   parent_message: string;
   preferred_contact: string | null;
-  
+
   // Privacy compliance
   consent_given: boolean;
-  
+
   // Lead management (set by admin)
   assigned_lawyer_id?: string | null;
   status?: 'new' | 'reviewing' | 'sent' | 'converted' | 'lost';
@@ -101,7 +102,7 @@ export interface LeadSubmission {
   lawyer_response_at?: string | null;
   notes?: string | null;
   deleted_at?: string | null;
-  
+
   // Metadata
   submitted_at?: string;
 }
@@ -195,7 +196,7 @@ export async function checkSupabaseConnection(): Promise<boolean> {
   try {
     // Try a simple query to test connection
     const { error } = await supabase.from('leads').select('id').limit(1);
-    
+
     if (error) {
       console.error('[Supabase] Connection test failed:', error);
       return false;

@@ -32,6 +32,7 @@ interface FormErrors {
     postcode?: string;
     message?: string;
     consent?: string;
+    courtDate?: string;
 }
 
 interface FormTouched {
@@ -41,6 +42,7 @@ interface FormTouched {
     postcode: boolean;
     message: boolean;
     consent: boolean;
+    courtDate: boolean;
 }
 
 // ============================================================================
@@ -189,6 +191,29 @@ function validateConsent(consent: boolean): string | undefined {
     return undefined;
 }
 
+/**
+ * Validate court date field (required if visible)
+ */
+function validateCourtDate(courtDate: string, isRequired: boolean): string | undefined {
+    const sanitized = courtDate.trim();
+
+    if (!isRequired) {
+        return undefined;
+    }
+
+    if (!sanitized) {
+        return 'Court date is required';
+    }
+
+    // Basic date validation - check if it's a valid date string
+    const date = new Date(sanitized);
+    if (isNaN(date.getTime())) {
+        return 'Please enter a valid date';
+    }
+
+    return undefined;
+}
+
 // ============================================================================
 // Component
 // ============================================================================
@@ -229,6 +254,10 @@ export default function LawyerInquiryScreen() {
     const [message, setMessage] = useState('');
     const [consent, setConsent] = useState(false);
 
+    // Dynamic field state
+    const [courtDate, setCourtDate] = useState('');
+    const [financialTags, setFinancialTags] = useState<string[]>([]);
+
     // Validation state
     const [errors, setErrors] = useState<FormErrors>({});
     const [touched, setTouched] = useState<FormTouched>({
@@ -237,7 +266,8 @@ export default function LawyerInquiryScreen() {
         phone: false,
         postcode: false,
         message: false,
-        consent: false
+        consent: false,
+        courtDate: false
     });
 
     // Submission state
@@ -269,6 +299,12 @@ export default function LawyerInquiryScreen() {
 
     // Determine if any urgent reasons exist (for card border styling)
     const hasUrgentReasonsForDisplay = validCoAReasons.some(r => r.urgency === 'URGENT');
+
+    // Determine if conditional fields should be shown
+    const shouldShowCourtDate = (coaReasons || []).includes('court_date_upcoming');
+    const shouldShowFinancialTags = (coaReasons || []).some(id =>
+        id === 'income_resources_not_reflected' || id === 'earning_capacity'
+    );
 
     // Pre-fill message when CoA reasons are present (only on mount, not on every change)
     const hasPrefilledMessage = useRef(false);
@@ -303,10 +339,12 @@ export default function LawyerInquiryScreen() {
                 return validateMessage(value as string);
             case 'consent':
                 return validateConsent(value as boolean);
+            case 'courtDate':
+                return validateCourtDate(value as string, shouldShowCourtDate);
             default:
                 return undefined;
         }
-    }, []);
+    }, [shouldShowCourtDate]);
 
     /**
      * Validate all fields and return true if form is valid
@@ -318,7 +356,8 @@ export default function LawyerInquiryScreen() {
             phone: validatePhone(phone),
             postcode: validatePostcode(postcode),
             message: validateMessage(message),
-            consent: validateConsent(consent)
+            consent: validateConsent(consent),
+            courtDate: validateCourtDate(courtDate, shouldShowCourtDate)
         };
 
         setErrors(newErrors);
@@ -330,12 +369,13 @@ export default function LawyerInquiryScreen() {
             phone: true,
             postcode: true,
             message: true,
-            consent: true
+            consent: true,
+            courtDate: true
         });
 
         // Check if any errors exist
         return !Object.values(newErrors).some(error => error !== undefined);
-    }, [name, email, phone, postcode, message, consent]);
+    }, [name, email, phone, postcode, message, consent, courtDate, shouldShowCourtDate]);
 
     /**
      * Handle field blur - validate and show error
@@ -348,11 +388,12 @@ export default function LawyerInquiryScreen() {
                 field === 'email' ? email :
                     field === 'phone' ? phone :
                         field === 'postcode' ? postcode :
-                            message;
+                            field === 'courtDate' ? courtDate :
+                                message;
 
         const error = validateField(field, value);
         setErrors(prev => ({ ...prev, [field]: error }));
-    }, [name, email, phone, postcode, message, consent, validateField]);
+    }, [name, email, phone, postcode, message, consent, courtDate, validateField]);
 
     /**
      * Handle text change - clear error when user starts typing
@@ -472,8 +513,24 @@ export default function LawyerInquiryScreen() {
                 complexity_reasons: coaReasons || [],
                 coa_reasons: coaReasonsData,
 
-                // Message
-                parent_message: sanitizeString(message),
+                // Dynamic lead data
+                court_date: courtDate.trim() || null,
+                financial_tags: financialTags.length > 0 ? financialTags : null,
+
+                // Message (enhanced with dynamic data)
+                parent_message: (() => {
+                    let enhancedMessage = sanitizeString(message);
+
+                    if (courtDate.trim()) {
+                        enhancedMessage += `\n\nCOURT DATE: ${courtDate.trim()}`;
+                    }
+
+                    if (financialTags.length > 0) {
+                        enhancedMessage += `\n\nFINANCIAL TAGS: ${financialTags.join(', ')}`;
+                    }
+
+                    return enhancedMessage;
+                })(),
                 preferred_contact: null, // Could add this as a field later
 
                 // Privacy compliance
@@ -664,7 +721,30 @@ export default function LawyerInquiryScreen() {
 
                     <Text style={styles.formTitle}>Your Information</Text>
 
+                    {/* Court Date Input - Conditional */}
+                    {shouldShowCourtDate && (
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.fieldLabel}>When is your court date? *</Text>
+                            <TextInput
+                                style={[styles.input, touched.courtDate && errors.courtDate && styles.inputError]}
+                                placeholder="YYYY-MM-DD"
+                                placeholderTextColor="#64748b"
+                                value={courtDate}
+                                onChangeText={(value) => handleTextChange('courtDate', value, setCourtDate)}
+                                onBlur={() => handleBlur('courtDate')}
+                                returnKeyType="next"
+                                editable={!isSubmitting}
+                                accessibilityLabel="Court date"
+                                accessibilityHint="Enter your upcoming court date"
+                            />
+                            {touched.courtDate && errors.courtDate && (
+                                <Text style={styles.errorText}>{errors.courtDate}</Text>
+                            )}
+                        </View>
+                    )}
+
                     {/* Name Input */}
+
                     <View style={styles.inputContainer}>
                         <TextInput
                             style={[styles.input, touched.name && errors.name && styles.inputError]}
@@ -739,7 +819,42 @@ export default function LawyerInquiryScreen() {
                         )}
                     </View>
 
+                    {/* Financial Tags - Conditional */}
+                    {shouldShowFinancialTags && (
+                        <View style={styles.financialSection}>
+                            <Text style={styles.fieldLabel}>What type of financial issue? (Select all that apply)</Text>
+                            <View style={styles.chipsContainer}>
+                                {['Cash Business', 'Refusing to Work', 'Hidden Assets', 'Family Trusts', 'Other'].map((tag) => {
+                                    const isSelected = financialTags.includes(tag);
+                                    return (
+                                        <Pressable
+                                            key={tag}
+                                            style={[styles.chip, isSelected && styles.chipActive]}
+                                            onPress={() => {
+                                                if (isSelected) {
+                                                    setFinancialTags(prev => prev.filter(t => t !== tag));
+                                                } else {
+                                                    setFinancialTags(prev => [...prev, tag]);
+                                                }
+                                            }}
+                                            disabled={isSubmitting}
+                                            accessible={true}
+                                            accessibilityRole="button"
+                                            accessibilityState={{ selected: isSelected }}
+                                            accessibilityLabel={`${tag} financial issue`}
+                                        >
+                                            <Text style={[styles.chipText, isSelected && styles.chipTextActive]}>
+                                                {tag}
+                                            </Text>
+                                        </Pressable>
+                                    );
+                                })}
+                            </View>
+                        </View>
+                    )}
+
                     {/* Postcode Input */}
+
                     <View style={styles.inputContainer}>
                         <TextInput
                             style={[styles.input, touched.postcode && errors.postcode && styles.inputError]}
@@ -1175,4 +1290,42 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         lineHeight: 24,
     },
+    // Field label styles
+    fieldLabel: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#4a5568', // dark grey
+        marginBottom: 8,
+    },
+    // Financial tags section
+    financialSection: {
+        marginBottom: 16,
+    },
+    chipsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+        marginTop: 4,
+    },
+    chip: {
+        backgroundColor: '#f3f4f6', // grey-100
+        borderRadius: 16,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderWidth: 1,
+        borderColor: '#d1d5db', // grey-300
+    },
+    chipActive: {
+        backgroundColor: '#3b82f6', // blue-500
+        borderColor: '#3b82f6',
+    },
+    chipText: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#4b5563', // grey-700
+    },
+    chipTextActive: {
+        color: '#ffffff',
+    },
 }) as any;
+
