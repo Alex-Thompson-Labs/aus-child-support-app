@@ -81,7 +81,7 @@ function RelevantDependentsPopover({
         width: '100%'
       }
     ]}>
-      <View ref={triggerRef} style={{ flexShrink: 0 }}>
+      <View ref={triggerRef} style={{ flexShrink: 0, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
         <Pressable
           onPress={handleToggle}
           style={[
@@ -98,6 +98,23 @@ function RelevantDependentsPopover({
           </Text>
           {!hasValues && <Text style={popoverStyles.plusIcon}>+</Text>}
         </Pressable>
+        <HelpTooltip
+          header="REDUCES ASSESSABLE INCOME"
+          what="Number of children in the parents care from a different relationship..."
+          why=""
+          hideWhatLabel
+        />
+        {hasValues && (
+          <Pressable
+            style={[popoverStyles.drawerClearButton, webClickableStyles]}
+            onPress={() => {
+              onRelDepAChange({ u13: 0, plus13: 0 });
+              onRelDepBChange({ u13: 0, plus13: 0 });
+            }}
+          >
+            <Text style={popoverStyles.drawerClearButtonText}>×</Text>
+          </Pressable>
+        )}
       </View>
 
       <View
@@ -117,15 +134,6 @@ function RelevantDependentsPopover({
         ]}
       >
         <View style={[popoverStyles.drawerInner, isMobile && { paddingLeft: 0 }]}>
-          <View style={popoverStyles.drawerHeader}>
-            <HelpTooltip
-              header="REDUCES ASSESSABLE INCOME"
-              what="Number of children in the parents care from a different relationship..."
-              why=""
-              hideWhatLabel
-            />
-          </View>
-
           <View style={[
             popoverStyles.drawerInputsRow,
             isMobile && { flexWrap: 'wrap', gap: 16 } // Wrap inputs on mobile
@@ -182,18 +190,6 @@ function RelevantDependentsPopover({
                 </View>
               </View>
             </View>
-
-            {hasValues && (
-              <Pressable
-                style={[popoverStyles.drawerClearButton, webClickableStyles]}
-                onPress={() => {
-                  onRelDepAChange({ u13: 0, plus13: 0 });
-                  onRelDepBChange({ u13: 0, plus13: 0 });
-                }}
-              >
-                <Text style={popoverStyles.drawerClearButtonText}>×</Text>
-              </Pressable>
-            )}
           </View>
         </View>
       </View>

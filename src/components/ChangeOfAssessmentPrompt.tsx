@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
-import { Alert, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { createShadow } from "../utils/shadow-styles";
 import type { CalculationResults } from "../types/calculator";
 import { useAnalytics } from "../utils/analytics";
@@ -35,6 +35,10 @@ export function ChangeOfAssessmentPrompt({
   const [selectedReasons, setSelectedReasons] = useState<Set<string>>(new Set());
   const [isNavigatingFromCoA, setIsNavigatingFromCoA] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [hasCourtDate, setHasCourtDate] = useState(false);
+  const [courtDate, setCourtDate] = useState('');
+  const [isHidingIncome, setIsHidingIncome] = useState(false);
+  const [hasPropertySettlement, setHasPropertySettlement] = useState(false);
 
   // Hooks
   const router = useRouter();
@@ -46,10 +50,14 @@ export function ChangeOfAssessmentPrompt({
     return null;
   }
 
-  // Group reasons by category (excluding urgent - now handled separately)
-  const incomeReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.category === 'income');
+  // Group reasons by category (excluding urgent and new high-priority items - now handled separately)
+  const incomeReasons = CHANGE_OF_ASSESSMENT_REASONS.filter(
+    (r) => r.category === 'income' && r.id !== 'hiding_income'
+  );
   const childReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.category === 'child');
-  const otherReasons = CHANGE_OF_ASSESSMENT_REASONS.filter((r) => r.category === 'other');
+  const otherReasons = CHANGE_OF_ASSESSMENT_REASONS.filter(
+    (r) => r.category === 'other' && r.id !== 'property_settlement'
+  );
 
   // Determine button state
   const buttonDisabled = selectedReasons.size === 0 || isNavigatingFromCoA;
@@ -209,23 +217,23 @@ export function ChangeOfAssessmentPrompt({
 
   return (
     <View style={styles.coaContainer}>
-      {/* Header - Always visible, now collapsible */}
+      {/* Header - Collapsible */}
       <Pressable
         style={[styles.coaHeader, isWeb && webClickableStyles]}
         onPress={() => setIsExpanded(!isExpanded)}
         accessible={true}
         accessibilityRole="button"
-        accessibilityLabel={`Is this assessment result unfair? ${isExpanded ? 'Collapse' : 'Expand'} section`}
-        accessibilityHint={selectedReasons.size > 0 ? `${selectedReasons.size} issue${selectedReasons.size === 1 ? '' : 's'} selected` : undefined}
+        accessibilityLabel={`Do special circumstances exist? ${isExpanded ? 'Collapse' : 'Expand'} section`}
+        accessibilityHint={selectedReasons.size > 0 ? `${selectedReasons.size} selected` : undefined}
       >
         <View style={styles.headerContent}>
           <View style={styles.titleRow}>
-            <Text style={styles.coaTitle}>Is this assessment result unfair?</Text>
+            <Text style={styles.coaTitle}>Do special circumstances exist?</Text>
             <View style={styles.headerRight}>
               {!isExpanded && selectedReasons.size > 0 && (
                 <View style={styles.selectionBadge}>
                   <Text style={styles.selectionBadgeText}>
-                    {selectedReasons.size} issue{selectedReasons.size === 1 ? '' : 's'} selected
+                    {selectedReasons.size} selected
                   </Text>
                 </View>
               )}
@@ -241,30 +249,126 @@ export function ChangeOfAssessmentPrompt({
         </View>
       </Pressable>
 
-      {/* Category sections - Only shown when expanded */}
+      {/* Expanded Content */}
       {isExpanded && (
         <View style={styles.categorySections}>
-          {/* Income Issues Group */}
-          {incomeReasons.length > 0 && (
-            <View style={styles.reasonGroup}>
-              <View style={styles.groupHeader}>
-                <Text style={[styles.groupTitle, { color: getCategoryDisplayInfo('income').accentColor }]}>
-                  {getCategoryDisplayInfo('income').title}
-                </Text>
-              </View>
-              <View style={styles.checkboxList}>
-                {incomeReasons.map(renderCheckbox)}
-              </View>
+          {/* Legal Section */}
+          <View style={styles.legalDeadlinesSection}>
+            <View style={styles.groupHeader}>
+              <Text style={[styles.groupTitle, { color: '#dc2626' }]}>Legal</Text>
             </View>
-          )}
+            <View style={styles.checkboxList}>
+              {/* Court Date Checkbox */}
+              <Pressable
+                style={[styles.checkboxRow, isWeb && webClickableStyles]}
+                onPress={() => {
+                  setHasCourtDate(!hasCourtDate);
+                  if (!hasCourtDate) {
+                    handleCheckboxToggle('court_date_upcoming');
+                  } else {
+                    handleCheckboxToggle('court_date_upcoming');
+                    setCourtDate('');
+                  }
+                }}
+                accessible={true}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: hasCourtDate }}
+              >
+                <View style={[styles.checkbox, hasCourtDate && styles.checkboxChecked]}>
+                  {hasCourtDate && <Text style={styles.checkboxCheck}>✓</Text>}
+                </View>
+                <View style={styles.checkboxLabelContainer}>
+                  <Text style={styles.checkboxLabel}>Do you have an upcoming court date?</Text>
+                  <HelpTooltip 
+                    what="Cases with upcoming court dates require urgent legal preparation. You need professional legal advice BEFORE your court appearance." 
+                    why="" 
+                    hideWhatLabel 
+                  />
+                </View>
+              </Pressable>
+
+              {/* Court Date Input - Shows when checked */}
+              {hasCourtDate && (
+                <View style={styles.courtDateInputContainer}>
+                  <Text style={styles.inputLabel}>Court Date:</Text>
+                  <TextInput
+                    style={styles.dateInput}
+                    value={courtDate}
+                    onChangeText={setCourtDate}
+                    placeholder="YYYY-MM-DD"
+                    placeholderTextColor="#9ca3af"
+                    accessible={true}
+                    accessibilityLabel="Court date input"
+                  />
+                </View>
+              )}
+
+              {/* Property Settlement Checkbox */}
+              <Pressable
+                style={[styles.checkboxRow, isWeb && webClickableStyles]}
+                onPress={() => {
+                  setHasPropertySettlement(!hasPropertySettlement);
+                  handleCheckboxToggle('property_settlement');
+                }}
+                accessible={true}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: hasPropertySettlement }}
+              >
+                <View style={[styles.checkbox, hasPropertySettlement && styles.checkboxChecked]}>
+                  {hasPropertySettlement && <Text style={styles.checkboxCheck}>✓</Text>}
+                </View>
+                <View style={styles.checkboxLabelContainer}>
+                  <Text style={styles.checkboxLabel}>Is there a property settlement to come?</Text>
+                  <HelpTooltip 
+                    what="Pending property settlements can significantly affect child support obligations. A lawyer can help ensure the settlement is properly considered in your assessment." 
+                    why="" 
+                    hideWhatLabel 
+                  />
+                </View>
+              </Pressable>
+            </View>
+          </View>
+
+          {/* Income Issues Group */}
+          <View style={styles.reasonGroup}>
+            <View style={styles.groupHeader}>
+              <Text style={[styles.groupTitle, { color: '#ea580c' }]}>Income Issues</Text>
+            </View>
+            <View style={styles.checkboxList}>
+              {/* NEW: Hiding Income - High Priority */}
+              <Pressable
+                style={[styles.checkboxRow, isWeb && webClickableStyles]}
+                onPress={() => {
+                  setIsHidingIncome(!isHidingIncome);
+                  handleCheckboxToggle('hiding_income');
+                }}
+                accessible={true}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: isHidingIncome }}
+              >
+                <View style={[styles.checkbox, isHidingIncome && styles.checkboxChecked]}>
+                  {isHidingIncome && <Text style={styles.checkboxCheck}>✓</Text>}
+                </View>
+                <View style={styles.checkboxLabelContainer}>
+                  <Text style={styles.checkboxLabel}>Is the other parent hiding income or assets?</Text>
+                  <HelpTooltip 
+                    what="If you suspect the other parent is concealing income, operating cash businesses, or hiding assets, a lawyer can help investigate and present evidence to the court." 
+                    why="" 
+                    hideWhatLabel 
+                  />
+                </View>
+              </Pressable>
+
+              {/* Existing Income Reasons */}
+              {incomeReasons.map(renderCheckbox)}
+            </View>
+          </View>
 
           {/* Child-Related Group */}
           {childReasons.length > 0 && (
             <View style={styles.reasonGroup}>
               <View style={styles.groupHeader}>
-                <Text style={[styles.groupTitle, { color: getCategoryDisplayInfo('child').accentColor }]}>
-                  {getCategoryDisplayInfo('child').title}
-                </Text>
+                <Text style={[styles.groupTitle, { color: '#7c3aed' }]}>Child-Related</Text>
               </View>
               <View style={styles.checkboxList}>
                 {childReasons.map(renderCheckbox)}
@@ -276,41 +380,42 @@ export function ChangeOfAssessmentPrompt({
           {otherReasons.length > 0 && (
             <View style={styles.reasonGroup}>
               <View style={styles.groupHeader}>
-                <Text style={[styles.groupTitle, { color: getCategoryDisplayInfo('other').accentColor }]}>
-                  {getCategoryDisplayInfo('other').title}
-                </Text>
+                <Text style={[styles.groupTitle, { color: '#0891b2' }]}>Other Factors</Text>
               </View>
               <View style={styles.checkboxList}>
                 {otherReasons.map(renderCheckbox)}
               </View>
             </View>
           )}
-
         </View>
       )}
 
       {/* Bottom section with button - Only shown when expanded */}
       {isExpanded && (
         <View style={styles.coaFooter}>
-        <Pressable
-          style={[styles.coaButton, buttonDisabled && styles.coaButtonDisabled, isWeb && !buttonDisabled && webClickableStyles]}
-          onPress={handleNavigateToCoA}
-          disabled={buttonDisabled}
-          accessible={true}
-          accessibilityRole="button"
-          accessibilityLabel="Talk to a Lawyer About This"
-          accessibilityHint={`${selectedReasons.size} reason${
-            selectedReasons.size === 1 ? "" : "s"
-          } selected`}
-          accessibilityState={{ disabled: buttonDisabled }}
-        >
-          <Text style={styles.coaButtonText}>Talk to a Lawyer About This</Text>
-        </Pressable>
-        {selectedReasons.size > 0 && (
-          <Text style={styles.selectedCount}>
-            {selectedReasons.size} reason{selectedReasons.size === 1 ? "" : "s"} selected
-          </Text>
-        )}
+          <Pressable
+            style={[
+              styles.coaButton, 
+              buttonDisabled && styles.coaButtonDisabled, 
+              isWeb && !buttonDisabled && webClickableStyles
+            ]}
+            onPress={handleNavigateToCoA}
+            disabled={buttonDisabled}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Talk to a Lawyer About This"
+            accessibilityHint={`${selectedReasons.size} reason${
+              selectedReasons.size === 1 ? "" : "s"
+            } selected`}
+            accessibilityState={{ disabled: buttonDisabled }}
+          >
+            <Text style={styles.coaButtonText}>Talk to a Lawyer About This</Text>
+          </Pressable>
+          {selectedReasons.size > 0 && (
+            <Text style={styles.selectedCount}>
+              {selectedReasons.size} reason{selectedReasons.size === 1 ? "" : "s"} selected
+            </Text>
+          )}
         </View>
       )}
     </View>
@@ -410,6 +515,37 @@ const styles = StyleSheet.create({
   // Checkbox list
   checkboxList: {
     gap: 8,
+  },
+
+  // Legal Deadlines Section
+  legalDeadlinesSection: {
+    marginBottom: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#fee2e2', // red-100
+  },
+  courtDateInputContainer: {
+    marginLeft: 32,
+    marginTop: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  inputLabel: {
+    fontSize: 14,
+    color: '#374151', // gray-700
+    fontWeight: '500',
+  },
+  dateInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#d1d5db', // gray-300
+    borderRadius: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    fontSize: 14,
+    color: '#1a202c',
+    backgroundColor: '#ffffff',
   },
 
   // Checkboxes

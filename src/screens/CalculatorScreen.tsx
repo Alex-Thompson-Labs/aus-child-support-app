@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     gap: 16, // Add gap between elements
   },
   title: {
-    fontSize: 18, // Mobile-friendly size
+    fontSize: 20, // Increased from 18 for better visibility
     fontWeight: "800",
     color: "#0f172a",
     marginLeft: 10,
