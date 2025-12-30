@@ -13,7 +13,7 @@ export const VALIDATION = {
   NAME_MIN_LENGTH: 2,
   NAME_MAX_LENGTH: 100,
   MESSAGE_MIN_LENGTH: 10,
-  MESSAGE_MAX_LENGTH: 500,
+  MESSAGE_MAX_LENGTH: 1000,
   PHONE_REGEX: /^[\d\s\-+()]{8,20}$/,
   EMAIL_REGEX: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/,
   // Simple email regex for basic validation (used in LawyerInquiryScreen)

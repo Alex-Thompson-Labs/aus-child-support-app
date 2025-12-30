@@ -71,18 +71,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   button: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: "transparent",
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: "#f3f4f6", // grey-100
+    borderWidth: 1.5,
+    borderColor: "#9ca3af", // grey-400
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 6,
   },
   buttonText: {
-    color: "#9ca3af", // grey-400
-    fontSize: 16,
-    fontWeight: "600",
+    color: "#6b7280", // grey-500
+    fontSize: 13,
+    fontWeight: "700",
   },
   modalOverlay: {
     flex: 1,

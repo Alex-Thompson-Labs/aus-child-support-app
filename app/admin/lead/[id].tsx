@@ -423,7 +423,6 @@ auschildsupport.com`;
             {lead.coa_reasons.reasons.map((reason, index) => (
               <View key={index} style={styles.coaReasonCard}>
                 <Text style={styles.coaReasonLabel}>{reason.label}</Text>
-                <Text style={styles.coaReasonDescription}>{reason.description}</Text>
                 <Text style={styles.coaReasonCategory}>Category: {reason.category}</Text>
                 <Text style={styles.coaReasonCategory}>Urgency: {reason.urgency}</Text>
               </View>

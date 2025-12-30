@@ -45,6 +45,7 @@ export function useCalculator() {
     useState<CalculatorFormState>(initialFormState);
   const [errors, setErrors] = useState<FormErrors>({});
   const [results, setResults] = useState<CalculationResults | null>(null);
+  const [isStale, setIsStale] = useState(false);
 
   const addChild = useCallback(() => {
     setFormState((prev) => ({
@@ -61,6 +62,7 @@ export function useCalculator() {
       ],
     }));
     setErrors({});
+    setIsStale(true);
   }, []);
 
   const removeChild = useCallback((childId: string) => {
@@ -69,6 +71,7 @@ export function useCalculator() {
       children: prev.children.filter((c) => c.id !== childId),
     }));
     setErrors({});
+    setIsStale(true);
   }, []);
 
   const updateChild = useCallback(
@@ -79,6 +82,7 @@ export function useCalculator() {
           c.id === childId ? { ...c, ...updates } : c
         ),
       }));
+      setIsStale(true);
     },
     []
   );
@@ -423,6 +427,7 @@ export function useCalculator() {
     const calculationResults = performCalculation();
     if (calculationResults) {
       setResults(calculationResults);
+      setIsStale(false);
     }
   }, [performCalculation]);
 
@@ -438,6 +443,7 @@ export function useCalculator() {
     });
     setResults(null);
     setErrors({});
+    setIsStale(false);
   }, []);
 
   const getInputsForSave = useCallback((): CalculatorInputs => {
@@ -463,6 +469,8 @@ export function useCalculator() {
     setFormState,
     errors,
     results,
+    isStale,
+    setIsStale,
     addChild,
     removeChild,
     updateChild,

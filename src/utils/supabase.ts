@@ -85,6 +85,7 @@ export interface LeadSubmission {
       officialCoAReasons: string;
     }>;
   } | null;
+  court_date: string | null;
   
   // Message
   parent_message: string;
@@ -148,12 +149,10 @@ export async function submitLead(lead: LeadSubmission): Promise<{
       has_coa_reasons: !!lead.coa_reasons,
     });
 
-    // Insert lead into database
-    const { data, error } = await supabase
+    // Insert lead into database (fire and forget - no select needed)
+    const { error } = await supabase
       .from('leads')
-      .insert([lead])
-      .select('id')
-      .single();
+      .insert([lead]);
 
     if (error) {
       console.error('[Supabase] Error inserting lead:', error);
@@ -169,18 +168,11 @@ export async function submitLead(lead: LeadSubmission): Promise<{
       };
     }
 
-    if (!data) {
-      return {
-        success: false,
-        error: 'No data returned from database',
-      };
-    }
-
-    console.log('[Supabase] Lead submitted successfully:', data.id);
+    console.log('[Supabase] Lead submitted successfully');
 
     return {
       success: true,
-      leadId: data.id,
+      leadId: undefined, // ID not returned since we don't select
     };
   } catch (error) {
     console.error('[Supabase] Unexpected error submitting lead:', error);

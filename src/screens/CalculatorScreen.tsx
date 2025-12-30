@@ -15,6 +15,8 @@ export function CalculatorScreen() {
     setFormState,
     errors,
     results,
+    isStale,
+    setIsStale,
     addChild,
     removeChild,
     updateChild,
@@ -25,17 +27,31 @@ export function CalculatorScreen() {
   const { isDesktop } = useResponsive();
 
   // Handlers
-  const handleIncomeAChange = (value: number) => setFormState((prev) => ({ ...prev, incomeA: value }));
-  const handleIncomeBChange = (value: number) => setFormState((prev) => ({ ...prev, incomeB: value }));
-  const handleSupportAChange = (checked: boolean) => setFormState((prev) => ({ ...prev, supportA: checked }));
-  const handleSupportBChange = (checked: boolean) => setFormState((prev) => ({ ...prev, supportB: checked }));
+  const handleIncomeAChange = (value: number) => {
+    setFormState((prev) => ({ ...prev, incomeA: value }));
+    setIsStale(true);
+  };
+  const handleIncomeBChange = (value: number) => {
+    setFormState((prev) => ({ ...prev, incomeB: value }));
+    setIsStale(true);
+  };
+  const handleSupportAChange = (checked: boolean) => {
+    setFormState((prev) => ({ ...prev, supportA: checked }));
+    setIsStale(true);
+  };
+  const handleSupportBChange = (checked: boolean) => {
+    setFormState((prev) => ({ ...prev, supportB: checked }));
+    setIsStale(true);
+  };
 
   const handleRelDepAChange = (updates: Partial<{ u13: number; plus13: number }>) => {
     setFormState((prev) => ({ ...prev, relDepA: { ...prev.relDepA, ...updates } }));
+    setIsStale(true);
   };
 
   const handleRelDepBChange = (updates: Partial<{ u13: number; plus13: number }>) => {
     setFormState((prev) => ({ ...prev, relDepB: { ...prev.relDepB, ...updates } }));
+    setIsStale(true);
   };
 
   const formProps = {
@@ -111,7 +127,8 @@ export function CalculatorScreen() {
               <CalculatorResults 
                 results={results} 
                 formData={formState} 
-                displayMode="modal" 
+                displayMode="modal"
+                isStale={isStale}
               />
             </View>
           </View>

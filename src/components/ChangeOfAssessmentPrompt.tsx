@@ -58,8 +58,8 @@ export function ChangeOfAssessmentPrompt({
     (r) => r.category === 'other' && r.id !== 'property_settlement'
   );
 
-  // Determine button state
-  const buttonDisabled = selectedReasons.size === 0 || isNavigatingFromCoA;
+  // Determine button state - require court date if checkbox is checked
+  const buttonDisabled = selectedReasons.size === 0 || isNavigatingFromCoA || (hasCourtDate && !courtDate.trim());
 
   // Checkbox toggle handler
   const handleCheckboxToggle = useCallback(
@@ -159,6 +159,7 @@ export function ChangeOfAssessmentPrompt({
               coaReasons: JSON.stringify(Array.from(selectedReasons)),
               coaHighestPriority:
                 getHighestPriorityReason(Array.from(selectedReasons))?.id ?? "",
+              ...(courtDate ? { courtDate } : {}),
             },
           });
         } catch (error) {

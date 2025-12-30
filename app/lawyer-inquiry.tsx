@@ -51,7 +51,7 @@ const VALIDATION = {
     NAME_MIN_LENGTH: 2,
     NAME_MAX_LENGTH: 100,
     MESSAGE_MIN_LENGTH: 10,
-    MESSAGE_MAX_LENGTH: 500,
+    MESSAGE_MAX_LENGTH: 1000,
     PHONE_REGEX: /^[\d\s\-+()]{8,20}$/,
     // Comprehensive email regex that handles most valid emails
     EMAIL_REGEX: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/
@@ -204,6 +204,7 @@ export default function LawyerInquiryScreen() {
     const incomeA = typeof params.incomeA === 'string' ? params.incomeA : '0';
     const incomeB = typeof params.incomeB === 'string' ? params.incomeB : '0';
     const children = typeof params.children === 'string' ? params.children : '0';
+    const courtDate = typeof params.courtDate === 'string' ? params.courtDate : null;
 
     // Parse care arrangement data
     const careData = typeof params.careData === 'string'
@@ -468,6 +469,7 @@ export default function LawyerInquiryScreen() {
                 complexity_trigger: trigger || 'unknown',
                 complexity_reasons: coaReasons || [],
                 coa_reasons: coaReasonsData,
+                court_date: courtDate || null,
                 
                 // Message
                 parent_message: sanitizeString(message),
@@ -601,6 +603,14 @@ export default function LawyerInquiryScreen() {
                     {/* Change of Assessment Reasons Card - Show only if reasons exist */}
                     {validCoAReasons.length > 0 && (
                         <View style={styles.coaSection}>
+                            {/* Court Date Display - Show at the top if present */}
+                            {courtDate && (
+                                <View style={styles.courtDateCard}>
+                                    <Text style={styles.courtDateLabel}>Court Date:</Text>
+                                    <Text style={styles.courtDateValue}>{courtDate}</Text>
+                                </View>
+                            )}
+                            
                             {validCoAReasons.map((reason, index) => (
                                 <View key={reason.id} style={styles.coaReasonCard}>
                                     <View style={styles.coaReasonHeader}>
@@ -952,6 +962,28 @@ const styles = StyleSheet.create({
         color: '#475569', // Slate-600 - medium grey
         lineHeight: 18,
     },
+    courtDateCard: {
+        backgroundColor: '#fef2f2', // Red-50 - very light red for urgency
+        borderWidth: 1,
+        borderLeftWidth: 4,
+        borderColor: '#dc2626', // Red-600 - left accent border for urgency
+        borderRadius: 8,
+        padding: 16,
+        marginBottom: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    courtDateLabel: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#991b1b', // Red-800 - dark red
+    },
+    courtDateValue: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#dc2626', // Red-600
+    },
     summaryCard: {
         backgroundColor: '#f9fafb', // very light grey
         borderRadius: 12,
@@ -1048,6 +1080,10 @@ const styles = StyleSheet.create({
         height: 200,
         textAlignVertical: 'top',
         paddingTop: 12,
+        ...(Platform.OS === 'web' && {
+            outlineStyle: 'none',
+            cursor: 'text',
+        }),
     },
     charCount: {
         fontSize: 12,

@@ -19,6 +19,7 @@ interface CalculatorResultsProps {
   onRequestInquiry?: () => void;
   showInquiryPanel?: boolean;
   onCloseInquiry?: () => void;
+  isStale?: boolean;
 }
 
 export function CalculatorResults({
@@ -28,6 +29,7 @@ export function CalculatorResults({
   onRequestInquiry,
   showInquiryPanel = false,
   onCloseInquiry,
+  isStale = false,
 }: CalculatorResultsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const insets = useSafeAreaInsets();
@@ -38,7 +40,20 @@ export function CalculatorResults({
   const [isNavigating, setIsNavigating] = useState(false);
   
   // Track local form data updates (selected CoA reasons and court date)
+  // Reset localFormData whenever results change (new calculation)
   const [localFormData, setLocalFormData] = useState<ComplexityFormData>(formData ?? {});
+  const [lastResultsKey, setLastResultsKey] = useState('');
+  
+  // Generate a unique key for the current results
+  const currentResultsKey = `${results.finalPaymentAmount}-${results.payer}-${results.childResults.map(c => `${c.roundedCareA}-${c.roundedCareB}`).join('-')}-${results.ATI_A}-${results.ATI_B}`;
+  
+  // Reset localFormData when results change
+  React.useEffect(() => {
+    if (currentResultsKey !== lastResultsKey) {
+      setLocalFormData(formData ?? {});
+      setLastResultsKey(currentResultsKey);
+    }
+  }, [currentResultsKey, lastResultsKey, formData]);
 
   // Calculate payment amounts
   const monthlyAmount = results.finalPaymentAmount / 12;
@@ -125,21 +140,21 @@ export function CalculatorResults({
         <Text style={styles.expandedHeroLabel}>
           {results.payer === "Neither" ? "No payment required" : `${results.payer} pays`}
         </Text>
-        <Text style={styles.expandedHeroAmount}>{formatCurrency(results.finalPaymentAmount)}</Text>
+        <Text style={[styles.expandedHeroAmount, isStale && styles.staleAmount]}>{formatCurrency(results.finalPaymentAmount)}</Text>
         <Text style={styles.expandedHeroSubtext}>per year</Text>
         <View style={styles.expandedSecondaryAmounts}>
           <View style={styles.expandedSecondaryItem}>
-            <Text style={styles.expandedSecondaryValue}>{formatCurrency(monthlyAmount)}</Text>
+            <Text style={[styles.expandedSecondaryValue, isStale && styles.staleAmount]}>{formatCurrency(monthlyAmount)}</Text>
             <Text style={styles.expandedSecondaryLabel}>/month</Text>
           </View>
           <View style={styles.expandedDivider} />
           <View style={styles.expandedSecondaryItem}>
-            <Text style={styles.expandedSecondaryValue}>{formatCurrency(fortnightlyAmount)}</Text>
+            <Text style={[styles.expandedSecondaryValue, isStale && styles.staleAmount]}>{formatCurrency(fortnightlyAmount)}</Text>
             <Text style={styles.expandedSecondaryLabel}>/fortnight</Text>
           </View>
           <View style={styles.expandedDivider} />
           <View style={styles.expandedSecondaryItem}>
-            <Text style={styles.expandedSecondaryValue}>{formatCurrency(dailyAmount)}</Text>
+            <Text style={[styles.expandedSecondaryValue, isStale && styles.staleAmount]}>{formatCurrency(dailyAmount)}</Text>
             <Text style={styles.expandedSecondaryLabel}>/day</Text>
           </View>
         </View>
@@ -156,6 +171,7 @@ export function CalculatorResults({
       )}
 
       <ChangeOfAssessmentPrompt 
+        key={`${results.finalPaymentAmount}-${results.payer}-${results.childResults.map(c => `${c.roundedCareA}-${c.roundedCareB}`).join('-')}-${results.ATI_A}-${results.ATI_B}`}
         results={results} 
         formData={localFormData} 
         onNavigate={() => setIsExpanded(false)} 
@@ -176,7 +192,7 @@ export function CalculatorResults({
       <View style={styles.twoColumnLayout}>
         <View style={styles.leftColumn}>
           <View style={styles.inlineHeroSection}>
-            <Text style={styles.expandedHeroAmount}>{formatCurrency(results.finalPaymentAmount)}</Text>
+            <Text style={[styles.expandedHeroAmount, isStale && styles.staleAmount]}>{formatCurrency(results.finalPaymentAmount)}</Text>
             <Text style={styles.expandedHeroLabel}>per year</Text>
           </View>
         </View>
@@ -199,7 +215,7 @@ export function CalculatorResults({
                 <Text style={styles.collapsedLabel}>
                   {results.payer === "Neither" ? "No payment" : `${results.payer} pays `}
                 </Text>
-                <Text style={styles.collapsedAmountCondensed}>
+                <Text style={[styles.collapsedAmountCondensed, isStale && styles.staleAmount]}>
                   {formatCurrency(results.finalPaymentAmount)}
                 </Text>
               </View>
@@ -333,6 +349,12 @@ const styles = StyleSheet.create({
     width: 1,
     height: 30,
     backgroundColor: "rgba(255, 255, 255, 0.3)",
+  },
+  staleAmount: {
+    textDecorationLine: "line-through",
+    textDecorationColor: "#ef4444",
+    textDecorationStyle: "solid",
+    opacity: 0.7,
   },
   twoColumnLayout: { flexDirection: "row", gap: 20 },
   leftColumn: { flex: 1 },
