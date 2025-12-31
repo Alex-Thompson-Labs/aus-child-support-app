@@ -3,7 +3,7 @@
  * Provides breakpoints, responsive hooks, and platform-aware styling
  */
 
-import { Platform, Dimensions, useWindowDimensions } from 'react-native';
+import { Platform, useWindowDimensions } from 'react-native';
 
 // Breakpoints (inspired by Tailwind CSS)
 export const BREAKPOINTS = {
@@ -139,16 +139,16 @@ export function getFontSize(base: number, width: number): number {
  */
 export const webOnlyStyles = isWeb
   ? {
-      // Improve text rendering on web
-      WebkitFontSmoothing: 'antialiased' as const,
-      MozOsxFontSmoothing: 'grayscale' as const,
+    // Improve text rendering on web
+    WebkitFontSmoothing: 'antialiased' as const,
+    MozOsxFontSmoothing: 'grayscale' as const,
 
-      // Better cursor for interactive elements
-      cursor: 'default' as const,
+    // Better cursor for interactive elements
+    cursor: 'default' as const,
 
-      // Disable text selection on UI elements
-      userSelect: 'none' as const,
-    }
+    // Disable text selection on UI elements
+    userSelect: 'none' as const,
+  }
   : {};
 
 /**
@@ -156,8 +156,8 @@ export const webOnlyStyles = isWeb
  */
 export const webClickableStyles = isWeb
   ? {
-      cursor: 'pointer' as const,
-    }
+    cursor: 'pointer' as const,
+  }
   : {};
 
 /**
@@ -166,25 +166,25 @@ export const webClickableStyles = isWeb
  */
 export const webInputStyles: any = isWeb
   ? {
-      outlineStyle: 'none',
-      // Allow text selection in inputs
-      userSelect: 'text',
-      // Add smooth transitions for focus states
-      transition:
-        'border-color 150ms ease-in-out, box-shadow 150ms ease-in-out',
-      // Hide spinner arrows on numeric inputs for cleaner UI
-      // WebKit browsers (Chrome, Safari, Edge)
-      '::-webkit-outer-spin-button': {
-        WebkitAppearance: 'none',
-        margin: 0,
-      },
-      '::-webkit-inner-spin-button': {
-        WebkitAppearance: 'none',
-        margin: 0,
-      },
-      // Firefox
-      MozAppearance: 'textfield',
-    }
+    outlineStyle: 'none',
+    // Allow text selection in inputs
+    userSelect: 'text',
+    // Add smooth transitions for focus states
+    transition:
+      'border-color 150ms ease-in-out, box-shadow 150ms ease-in-out',
+    // Hide spinner arrows on numeric inputs for cleaner UI
+    // WebKit browsers (Chrome, Safari, Edge)
+    '::-webkit-outer-spin-button': {
+      WebkitAppearance: 'none',
+      margin: 0,
+    },
+    '::-webkit-inner-spin-button': {
+      WebkitAppearance: 'none',
+      margin: 0,
+    },
+    // Firefox
+    MozAppearance: 'textfield',
+  }
   : {};
 
 /**
@@ -193,8 +193,8 @@ export const webInputStyles: any = isWeb
  */
 export const webTransitionStyles: any = isWeb
   ? {
-      transition: 'all 150ms ease-in-out',
-    }
+    transition: 'all 150ms ease-in-out',
+  }
   : {};
 
 /**
@@ -203,19 +203,19 @@ export const webTransitionStyles: any = isWeb
  */
 export const webFocusStyles: any = isWeb
   ? {
-      ':focus': {
-        outlineWidth: '3px',
-        outlineStyle: 'solid',
-        outlineColor: 'rgba(59, 130, 246, 0.5)', // blue-500 with opacity
-        outlineOffset: '2px',
-      },
-      ':focus-visible': {
-        outlineWidth: '3px',
-        outlineStyle: 'solid',
-        outlineColor: 'rgba(59, 130, 246, 0.5)',
-        outlineOffset: '2px',
-      },
-    }
+    ':focus': {
+      outlineWidth: '3px',
+      outlineStyle: 'solid',
+      outlineColor: 'rgba(59, 130, 246, 0.5)', // blue-500 with opacity
+      outlineOffset: '2px',
+    },
+    ':focus-visible': {
+      outlineWidth: '3px',
+      outlineStyle: 'solid',
+      outlineColor: 'rgba(59, 130, 246, 0.5)',
+      outlineOffset: '2px',
+    },
+  }
   : {};
 
 /**
@@ -223,30 +223,21 @@ export const webFocusStyles: any = isWeb
  */
 export const webHoverButtonStyles: any = isWeb
   ? {
-      ':hover': {
-        transform: 'translateY(-1px)',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      },
-      ':active': {
-        transform: 'translateY(0)',
-      },
-    }
+    ':hover': {
+      transform: 'translateY(-1px)',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    },
+    ':active': {
+      transform: 'translateY(0)',
+    },
+  }
   : {};
 
 export const webHoverCardStyles: any = isWeb
   ? {
-      ':hover': {
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
-      },
-    }
+    ':hover': {
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
+    },
+  }
   : {};
 
-/**
- * Get responsive input width
- * Returns a percentage on mobile, fixed width on larger screens
- */
-export function getInputWidth(width: number): number | string {
-  if (width < BREAKPOINTS.sm) return '100%' as unknown as number;
-  if (width < BREAKPOINTS.md) return 180;
-  return 200;
-}

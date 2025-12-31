@@ -203,14 +203,6 @@ export function isValidSpecialCircumstanceId(id: unknown): id is string {
   return typeof id === 'string' && getSpecialCircumstanceById(id) !== null;
 }
 
-/**
- * Gets all reason IDs as a typed array
- *
- * @returns Array of all valid reason IDs
- */
-export function getAllSpecialCircumstanceIds(): readonly string[] {
-  return SPECIAL_CIRCUMSTANCES.map((r) => r.id);
-}
 
 /**
  * Gets the display info for a complexity category

@@ -48,31 +48,4 @@ export function parseAustralianDate(dateStr: string): Date | null {
   return date;
 }
 
-/**
- * Check if a date string is within the next N days
- * @param dateStr - Date string in dd/mm/yyyy format
- * @param days - Number of days to check (default: 30)
- * @returns true if date is within the specified days, false otherwise
- */
-export function isWithinDays(dateStr: string, days: number = 30): boolean {
-  const date = parseAustralianDate(dateStr);
 
-  if (!date) {
-    return false;
-  }
-
-  const now = new Date();
-  const futureDate = new Date();
-  futureDate.setDate(now.getDate() + days);
-
-  return date >= now && date <= futureDate;
-}
-
-/**
- * Validate Australian date format
- * @param dateStr - Date string to validate
- * @returns true if valid dd/mm/yyyy format, false otherwise
- */
-export function isValidAustralianDate(dateStr: string): boolean {
-  return parseAustralianDate(dateStr) !== null;
-}
