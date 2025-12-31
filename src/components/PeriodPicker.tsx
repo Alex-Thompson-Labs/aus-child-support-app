@@ -30,6 +30,7 @@ export function PeriodPicker({ value, onChange }: PeriodPickerProps) {
           <select
             value={value}
             onChange={(e) => onChange(e.target.value as Period)}
+            aria-label="Care period"
             style={{
               width: "100%",
               height: 32,
@@ -70,6 +71,9 @@ export function PeriodPicker({ value, onChange }: PeriodPickerProps) {
         <Pressable
           onPress={() => setIsOpen(!isOpen)}
           style={[styles.dropdownButton, webClickableStyles]}
+          accessibilityRole="button"
+          accessibilityLabel={`Period: ${selectedLabel}. Tap to change.`}
+          accessibilityState={{ expanded: isOpen }}
         >
           <Text style={styles.dropdownButtonText}>{selectedLabel}</Text>
           <Text style={styles.chevronText}>▼</Text>
@@ -88,6 +92,9 @@ export function PeriodPicker({ value, onChange }: PeriodPickerProps) {
                   styles.dropdownItem,
                   option.value === value && styles.dropdownItemActive,
                 ]}
+                accessibilityRole="button"
+                accessibilityLabel={option.label}
+                accessibilityState={{ selected: option.value === value }}
               >
                 <Text
                   style={[

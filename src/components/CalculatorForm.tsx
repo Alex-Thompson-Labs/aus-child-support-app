@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
-import { BrandSwitch } from "./ui/BrandSwitch";
-import { createShadow } from "../utils/shadow-styles";
 import type { ChildInput, FormErrors } from "../types/calculator";
 import { MAX_CONTENT_WIDTH, isWeb, useResponsive, webClickableStyles, webInputStyles } from "../utils/responsive";
+import { createShadow } from "../utils/shadow-styles";
 import { ChildRow } from "./ChildRow";
 import { HelpTooltip } from "./HelpTooltip";
+import { BrandSwitch } from "./ui/BrandSwitch";
 
 // ============================================================================
 // RelevantDependentsPopover - Compact button with popover for dependents
@@ -94,6 +94,9 @@ function RelevantDependentsPopover({
             isHovered && popoverStyles.triggerButtonHover,
             webClickableStyles,
           ]}
+          accessibilityRole="button"
+          accessibilityLabel={hasValues ? `Relevant Dependents: ${totalDeps} total` : 'Add relevant dependents'}
+          accessibilityHint="Tap to add dependent children from other relationships"
         >
           <Text style={[
             compact ? popoverStyles.triggerTextCompact : popoverStyles.triggerText,
@@ -119,6 +122,8 @@ function RelevantDependentsPopover({
               onRelDepAChange({ u13: 0, plus13: 0 });
               onRelDepBChange({ u13: 0, plus13: 0 });
             }}
+            accessibilityRole="button"
+            accessibilityLabel="Clear all dependents"
           >
             <Text style={popoverStyles.drawerClearButtonText}>×</Text>
           </Pressable>
@@ -697,6 +702,8 @@ export function CalculatorForm({
         <Pressable
           onPress={onAddChild}
           style={[styles.addChildButton, isWeb && webClickableStyles]}
+          accessibilityRole="button"
+          accessibilityLabel="Add another child to the calculation"
         >
           <Text style={styles.addChildButtonText}>+ Add Child</Text>
         </Pressable>
@@ -707,12 +714,16 @@ export function CalculatorForm({
         <Pressable
           onPress={onCalculate}
           style={[styles.calculateButton, isWeb && webClickableStyles]}
+          accessibilityRole="button"
+          accessibilityLabel="Calculate child support"
         >
           <Text style={styles.calculateButtonText}>Calculate</Text>
         </Pressable>
         <Pressable
           onPress={onReset}
           style={[styles.resetButton, isWeb && webClickableStyles]}
+          accessibilityRole="button"
+          accessibilityLabel="Reset form to default values"
         >
           <Text style={styles.resetButtonText}>Reset</Text>
         </Pressable>

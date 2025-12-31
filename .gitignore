@@ -82,8 +82,7 @@ lawyer-emails.csv
 lawyer-emails.txt
 outreach-lists/
 
-# PostHog/Analytics local data
-posthog-data/
+# Analytics local data
 analytics-exports/
 
 # build artifacts

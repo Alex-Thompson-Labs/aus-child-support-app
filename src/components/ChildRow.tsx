@@ -65,6 +65,8 @@ export function ChildRow({
         !isMobile && styles.containerDesktop,
         isOverLimit && styles.containerError,
       ]}
+      accessible={true}
+      accessibilityLabel={`Child ${childIndex} of ${totalChildren}. Care arrangement: Parent A ${child.careAmountA} nights, Parent B ${child.careAmountB} nights per ${child.carePeriod}`}
     >
       {/* Child count indicator */}
       {childIndex !== undefined && totalChildren !== undefined && (
@@ -77,7 +79,9 @@ export function ChildRow({
       <Pressable
         onPress={onRemove}
         style={[styles.removeButton, isWeb && webClickableStyles]}
+        accessibilityRole="button"
         accessibilityLabel="Remove child"
+        accessibilityHint="Removes this child from the calculation"
       >
         <Text style={styles.removeButtonText}>×</Text>
       </Pressable>
@@ -136,12 +140,18 @@ export function ChildRow({
               <Pressable
                 onPress={() => onUpdate({ age: "Under 13" })}
                 style={[styles.toggleButton, styles.toggleButtonLeft, child.age === "Under 13" && styles.toggleButtonActive, isWeb && webClickableStyles]}
+                accessibilityRole="button"
+                accessibilityLabel="Select age under 13"
+                accessibilityState={{ selected: child.age === "Under 13" }}
               >
                 <Text style={[styles.toggleButtonText, child.age === "Under 13" && styles.toggleButtonTextActive]}>{"<13"}</Text>
               </Pressable>
               <Pressable
                 onPress={() => onUpdate({ age: "13+" })}
                 style={[styles.toggleButton, styles.toggleButtonRight, child.age === "13+" && styles.toggleButtonActive13Plus, isWeb && webClickableStyles]}
+                accessibilityRole="button"
+                accessibilityLabel="Select age 13 and over"
+                accessibilityState={{ selected: child.age === "13+" }}
               >
                 <Text style={[styles.toggleButtonText, child.age === "13+" && styles.toggleButtonTextActive]}>13+</Text>
               </Pressable>

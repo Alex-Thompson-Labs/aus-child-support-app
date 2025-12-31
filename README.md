@@ -27,8 +27,8 @@ npm install
 # Copy environment template
 cp .env.example .env
 
-# Add your Posthog API key (sign up at https://posthog.com)
-# Edit .env and add: POSTHOG_API_KEY=your_key_here
+# Add your Google Analytics ID (sign up at https://analytics.google.com)
+# Edit .env and add: EXPO_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 ```
 
 ### 3. Start Development
@@ -78,7 +78,7 @@ csc/
 
 ### This Week's Tasks:
 1. ✅ Environment setup (.env created)
-2. ⏳ Add Posthog analytics
+2. ✅ Analytics setup (Google Analytics)
 3. ⏳ Implement complexity triggers
 4. ⏳ Build lawyer alert UI
 5. ⏳ Create inquiry form
@@ -140,7 +140,7 @@ Before recruiting users:
 - **Navigation:** Expo Router (file-based)
 - **Language:** TypeScript 5.9
 - **Styling:** React Native StyleSheet (slate/blue theme)
-- **Analytics:** Posthog (Phase 1+)
+- **Analytics:** Google Analytics (Phase 1+)
 - **Payments:** Stripe (Phase 3+)
 
 ---
@@ -148,7 +148,7 @@ Before recruiting users:
 ## 🚀 Next Steps
 
 1. Read [guides/phase1/CHECKLIST.md](guides/phase1/CHECKLIST.md)
-2. Sign up for Posthog and add API key to `.env`
+2. Sign up for Google Analytics and add measurement ID to `.env`
 3. Follow Day 1-2 tasks (analytics + triggers)
 4. Test with [guides/phase1/TESTING.md](guides/phase1/TESTING.md)
 5. Launch to 100+ test users by end of week

@@ -1,6 +1,6 @@
 // Analytics wrapper
 // - Web: Google Analytics (gtag.js)
-// - Mobile (iOS/Android): PostHog
+// - Mobile (iOS/Android): Google Analytics (same as web)
 //
 // Usage in components:
 // import { useAnalytics } from '@/src/utils/analytics';
@@ -8,11 +8,10 @@
 // analytics.track('event_name', { property: 'value' });
 
 import { Platform } from 'react-native';
-import { usePostHog } from 'posthog-react-native';
 
 /**
  * Type for analytics event properties
- * Allows string, number, boolean, or null values (matches PostHog's JsonType)
+ * Allows string, number, boolean, or null values
  */
 export type AnalyticsPropertyValue = string | number | boolean | null;
 export type AnalyticsProperties = Record<string, AnalyticsPropertyValue>;
@@ -89,87 +88,46 @@ export const Analytics = {
     if (__DEV__) {
       console.log('[Analytics] Track event:', event, properties);
     }
-    if (isWeb) {
-      trackWithGA(event, properties);
-    }
-    // Mobile: PostHog handled via useAnalytics hook
+    trackWithGA(event, properties);
   },
 
   identify: (userId: string, traits?: UserTraits): void => {
     if (__DEV__) {
       console.log('[Analytics] Identify user:', userId, traits);
     }
-    if (isWeb) {
-      identifyWithGA(userId);
-    }
-    // Mobile: PostHog handled via useAnalytics hook
+    identifyWithGA(userId);
   },
 
   screen: (name: string, properties?: AnalyticsProperties): void => {
     if (__DEV__) {
       console.log('[Analytics] Screen view:', name, properties);
     }
-    if (isWeb) {
-      screenWithGA(name, properties);
-    }
-    // Mobile: PostHog handled via useAnalytics hook
+    screenWithGA(name, properties);
   }
 };
 
 // Hook for use in components
 export function useAnalytics() {
-  const posthog = usePostHog();
-
   return {
     track: (event: string, properties?: AnalyticsProperties): void => {
       if (__DEV__) {
         console.log('[Analytics] Track event:', event, properties);
       }
-
-      if (isWeb) {
-        // Web: Use Google Analytics
-        trackWithGA(event, properties);
-      } else {
-        // Mobile: Use PostHog
-        if (posthog) {
-          posthog.capture(event, properties);
-          posthog.flush();
-        } else {
-          warnNotInitialized();
-        }
-      }
+      trackWithGA(event, properties);
     },
 
     identify: (userId: string, traits?: UserTraits): void => {
       if (__DEV__) {
         console.log('[Analytics] Identify user:', userId, traits);
       }
-
-      if (isWeb) {
-        identifyWithGA(userId);
-      } else {
-        if (posthog) {
-          posthog.identify(userId, traits);
-        } else {
-          warnNotInitialized();
-        }
-      }
+      identifyWithGA(userId);
     },
 
     screen: (name: string, properties?: AnalyticsProperties): void => {
       if (__DEV__) {
         console.log('[Analytics] Screen view:', name, properties);
       }
-
-      if (isWeb) {
-        screenWithGA(name, properties);
-      } else {
-        if (posthog) {
-          posthog.screen(name, properties);
-        } else {
-          warnNotInitialized();
-        }
-      }
+      screenWithGA(name, properties);
     }
   };
 }

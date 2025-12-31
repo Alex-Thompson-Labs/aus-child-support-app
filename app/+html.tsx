@@ -2,14 +2,13 @@
 import { ScrollViewStyleReset } from 'expo-router/html';
 
 export default function Root({ children }: { children: React.ReactNode }) {
-  const gaMeasurementId = process.env.EXPO_PUBLIC_GA_MEASUREMENT_ID || "G-53139BKGD7";
+  // Note: We don't need gaMeasurementId here anymore, it's handled in _layout.tsx
   const siteUrl = process.env.EXPO_PUBLIC_SITE_URL || 'https://auschildsupport.com';
 
   // SEO Content Strategy: "Problem Aware"
-  // Captures users in the "Research" phase before they seek legal counsel.
   const siteTitle = 'Child Support Calculator Australia 2025 | Services Australia Formula';
   const siteDescription = 'Accurate Child Support Calculator for Australia (2025-2026). Estimate payments instantly using the official Services Australia formula. Supports 50/50 care, split care, and multiple family assessments. Free & anonymous.';
-  const shareImage = `${siteUrl}/share-preview.png`; // Ensure this image exists in your public folder
+  const shareImage = `${siteUrl}/share-preview.png`; 
 
   return (
     <html lang="en-AU">
@@ -20,7 +19,8 @@ export default function Root({ children }: { children: React.ReactNode }) {
         {/* Viewport: interactive-widget handles mobile keyboards better for calculators */}
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, interactive-widget=resizes-content" />
 
-        {/* Performance: Preconnect to Google Analytics */}
+        {/* Performance: Preconnect to Google Analytics (This is GOOD, keep it!) */}
+        {/* This speeds up the connection for when _layout.tsx eventually loads the script */}
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
@@ -42,7 +42,7 @@ export default function Root({ children }: { children: React.ReactNode }) {
         <meta name="apple-mobile-web-app-title" content="CS Calculator" />
         <meta name="theme-color" content="#3b82f6" />
 
-        {/* Open Graph / Facebook (Uses underscores for locale) */}
+        {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content={siteUrl} />
         <meta property="og:title" content={siteTitle} />
@@ -61,7 +61,7 @@ export default function Root({ children }: { children: React.ReactNode }) {
         <meta name="twitter:description" content={siteDescription} />
         <meta name="twitter:image" content={shareImage} />
 
-        {/* Canonical URL - Important: If you add sub-pages later, move this to the specific page Layouts */}
+        {/* Canonical URL */}
         <link rel="canonical" href={siteUrl} />
 
         {/* JSON-LD: Software Application Schema */}
@@ -102,7 +102,7 @@ export default function Root({ children }: { children: React.ReactNode }) {
           })
         }} />
 
-        {/* JSON-LD: FAQ Schema (Great for 'People Also Ask' snippets) */}
+        {/* JSON-LD: FAQ Schema */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
@@ -129,29 +129,11 @@ export default function Root({ children }: { children: React.ReactNode }) {
         }} />
 
         <ScrollViewStyleReset />
+        
+        {/* REMOVED: The manual Google Analytics script tags. 
+            Reason: These are now handled in app/_layout.tsx to prevent duplication. 
+        */}
 
-        {/* Google Analytics */}
-        {gaMeasurementId && (
-          <>
-            <script
-              async
-              src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
-            />
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${gaMeasurementId}', { 
-                    'anonymize_ip': true,
-                    'send_page_view': true 
-                  });
-                `,
-              }}
-            />
-          </>
-        )}
       </head>
       <body>{children}</body>
     </html>

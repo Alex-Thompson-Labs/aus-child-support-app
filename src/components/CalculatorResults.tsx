@@ -192,7 +192,7 @@ export function CalculatorResults({
         }}
       />
       <ResultsSimpleExplanation results={results} formState={{ supportA: formData?.supportA ?? false, supportB: formData?.supportB ?? false }} />
-      
+
       {/* Smart Conversion Footer - Always show at bottom of results */}
       <SmartConversionFooter
         results={results}
@@ -228,6 +228,9 @@ export function CalculatorResults({
         <Pressable
           onPress={toggleExpand}
           style={[styles.fixedBottomCardWrapper, { paddingBottom: Math.max(insets.bottom, 12) }]}
+          accessibilityRole="button"
+          accessibilityLabel={`${results.payer === "Neither" ? "No payment required" : `${results.payer} pays ${formatCurrency(results.finalPaymentAmount)} per year`}. Tap to view full breakdown`}
+          accessibilityHint="Opens detailed calculation breakdown"
         >
           <View style={[styles.fixedBottomCard, { backgroundColor: '#3b82f6' }]}>
             <View style={styles.dragHandleContainer}><View style={styles.dragHandle} /></View>
@@ -253,7 +256,12 @@ export function CalculatorResults({
           <View style={styles.expandedHeader}>
             <View style={[styles.expandedHeaderContent, webModalContainerStyle]}>
               <Text style={styles.expandedHeaderTitle}>Full Breakdown</Text>
-              <Pressable onPress={toggleExpand} style={styles.closeButton}>
+              <Pressable
+                onPress={toggleExpand}
+                style={styles.closeButton}
+                accessibilityRole="button"
+                accessibilityLabel="Close breakdown"
+              >
                 <Text style={styles.closeIcon}>✕</Text>
               </Pressable>
             </View>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, Modal, StyleSheet } from "react-native";
+import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { shadowPresets } from "../utils/shadow-styles";
 
 interface HelpTooltipProps {
@@ -32,6 +32,9 @@ export function HelpTooltip({
           iconBackgroundColor && { backgroundColor: iconBackgroundColor },
           iconBorderColor && { borderColor: iconBorderColor },
         ]}
+        accessibilityRole="button"
+        accessibilityLabel="Help"
+        accessibilityHint="Tap to see more information"
       >
         <Text style={[styles.buttonText, iconColor && { color: iconColor }]}>?</Text>
       </Pressable>
@@ -45,8 +48,10 @@ export function HelpTooltip({
         <Pressable
           style={styles.modalOverlay}
           onPress={() => setIsVisible(false)}
+          accessibilityRole="button"
+          accessibilityLabel="Close help dialog"
         >
-          <Pressable style={styles.tooltip} onPress={(e) => e.stopPropagation()}>
+          <Pressable style={styles.tooltip} onPress={(e) => e.stopPropagation()} accessible={true}>
             <View style={styles.content}>
               {header && (
                 <View style={styles.section}>
