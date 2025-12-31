@@ -1,6 +1,6 @@
 /**
  * Shadow Style Utilities
- * 
+ *
  * Provides cross-platform shadow styles that work on both native and web.
  * On web, consolidates shadow properties into boxShadow to avoid deprecation warnings.
  */
@@ -34,11 +34,14 @@ export function createShadow(config: ShadowConfig): ViewStyle {
     const { width: offsetX, height: offsetY } = shadowOffset;
     const alpha = shadowOpacity;
     const blur = shadowRadius;
-    
+
     // Convert hex color to rgba
-    const color = shadowColor === '#000' || shadowColor === '#000000'
-      ? `rgba(0, 0, 0, ${alpha})`
-      : `${shadowColor}${Math.round(alpha * 255).toString(16).padStart(2, '0')}`;
+    const color =
+      shadowColor === '#000' || shadowColor === '#000000'
+        ? `rgba(0, 0, 0, ${alpha})`
+        : `${shadowColor}${Math.round(alpha * 255)
+            .toString(16)
+            .padStart(2, '0')}`;
 
     return {
       // @ts-ignore - boxShadow is valid on web

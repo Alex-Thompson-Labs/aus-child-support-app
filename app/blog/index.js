@@ -1,6 +1,13 @@
 import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { createShadow } from '@/src/utils/shadow-styles';
 
 export default function BlogList() {
@@ -10,15 +17,16 @@ export default function BlogList() {
 
   useEffect(() => {
     // Your WordPress API URL
-    const API_URL = 'https://public-api.wordpress.com/wp/v2/sites/auschildsupportbackend.wordpress.com/posts';
-    
+    const API_URL =
+      'https://public-api.wordpress.com/wp/v2/sites/auschildsupportbackend.wordpress.com/posts';
+
     fetch(API_URL)
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         setPosts(data);
         setLoading(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error fetching posts:', error);
         setLoading(false);
       });
@@ -43,15 +51,15 @@ export default function BlogList() {
     <View style={styles.card}>
       {/* Title */}
       <Text style={styles.title}>{stripHtml(item.title.rendered)}</Text>
-      
+
       {/* Excerpt (Preview) */}
       <Text style={styles.excerpt} numberOfLines={3}>
         {stripHtml(item.excerpt.rendered)}
       </Text>
 
       {/* 👇 CHANGED: Now links to your internal Reader page */}
-      <TouchableOpacity 
-        onPress={() => router.push(`/blog/${item.id}`)} 
+      <TouchableOpacity
+        onPress={() => router.push(`/blog/${item.id}`)}
         style={styles.button}
       >
         <Text style={styles.buttonText}>Read Article</Text>
@@ -83,7 +91,7 @@ const styles = StyleSheet.create({
   },
   listStyle: {
     width: '100%',
-    maxWidth: 800,        // Stops stretching on Desktop
+    maxWidth: 800, // Stops stretching on Desktop
     flex: 1,
   },
   listContent: {

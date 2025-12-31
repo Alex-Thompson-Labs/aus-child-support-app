@@ -1,19 +1,19 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState } from 'react';
 import type {
-    CalculationResults,
-    CalculatorInputs,
-    ChildInput,
-    FormErrors,
-    RelevantDependents,
-} from "../types/calculator";
+  CalculationResults,
+  CalculatorInputs,
+  ChildInput,
+  FormErrors,
+  RelevantDependents,
+} from '../types/calculator';
 import {
-    convertCareToPercentage,
-    getChildCost,
-    mapCareToCostPercent,
-    roundCarePercentage,
-} from "../utils/child-support-calculations";
-import { FAR, MAR, MAX_PPS, SSA } from "../utils/child-support-constants";
-import { isWeb } from "../utils/responsive";
+  convertCareToPercentage,
+  getChildCost,
+  mapCareToCostPercent,
+  roundCarePercentage,
+} from '../utils/child-support-calculations';
+import { FAR, MAR, MAX_PPS, SSA } from '../utils/child-support-constants';
+import { isWeb } from '../utils/responsive';
 
 export interface CalculatorFormState {
   incomeA: number;
@@ -55,10 +55,10 @@ export function useCalculator() {
         ...prev.children,
         {
           id: `child-${Date.now()}-${Math.random()}`,
-          age: "Under 13",
+          age: 'Under 13',
           careAmountA: 8,
           careAmountB: 6,
-          carePeriod: "fortnight",
+          carePeriod: 'fortnight',
         },
       ],
     }));
@@ -93,10 +93,10 @@ export function useCalculator() {
 
     // Validate incomes
     if (formState.incomeA < 0) {
-      newErrors.incomeA = "Income must be $0 or more.";
+      newErrors.incomeA = 'Income must be $0 or more.';
     }
     if (formState.incomeB < 0) {
-      newErrors.incomeB = "Income must be $0 or more.";
+      newErrors.incomeB = 'Income must be $0 or more.';
     }
 
     // Children validation removed - allow $0 results with no children
@@ -104,22 +104,22 @@ export function useCalculator() {
     // Validate each child
     formState.children.forEach((child) => {
       const maxNights =
-        child.carePeriod === "week"
+        child.carePeriod === 'week'
           ? 7
-          : child.carePeriod === "fortnight"
+          : child.carePeriod === 'fortnight'
             ? 14
-            : child.carePeriod === "year"
+            : child.carePeriod === 'year'
               ? 365
               : 14;
 
       if (child.careAmountA < 0) {
-        newErrors[child.id] = "Parent A nights must be 0 or more.";
+        newErrors[child.id] = 'Parent A nights must be 0 or more.';
       } else if (child.careAmountA > maxNights) {
         newErrors[child.id] =
           `Parent A nights cannot exceed ${maxNights} for ${child.carePeriod}.`;
       }
       if (child.careAmountB < 0) {
-        newErrors[child.id] = "Parent B nights must be 0 or more.";
+        newErrors[child.id] = 'Parent B nights must be 0 or more.';
       } else if (child.careAmountB > maxNights) {
         newErrors[child.id] =
           `Parent B nights cannot exceed ${maxNights} for ${child.carePeriod}.`;
@@ -127,16 +127,17 @@ export function useCalculator() {
       // Validate sum of nights
       const totalNights = child.careAmountA + child.careAmountB;
       if (totalNights > maxNights) {
-        newErrors[child.id] = `Total nights cannot exceed ${maxNights} per ${child.carePeriod}. Currently: ${totalNights}`;
+        newErrors[child.id] =
+          `Total nights cannot exceed ${maxNights} per ${child.carePeriod}. Currently: ${totalNights}`;
       }
     });
 
     // Validate dependents
     if (formState.relDepA.u13 < 0 || formState.relDepA.plus13 < 0) {
-      newErrors.relDepA = "Dependent count cannot be negative.";
+      newErrors.relDepA = 'Dependent count cannot be negative.';
     }
     if (formState.relDepB.u13 < 0 || formState.relDepB.plus13 < 0) {
-      newErrors.relDepB = "Dependent count cannot be negative.";
+      newErrors.relDepB = 'Dependent count cannot be negative.';
     }
 
     setErrors(newErrors);
@@ -148,37 +149,62 @@ export function useCalculator() {
       return null;
     }
 
-    const { incomeA, incomeB, supportA, supportB, relDepA, relDepB } = formState;
+    const { incomeA, incomeB, supportA, supportB, relDepA, relDepB } =
+      formState;
     const ATI_A = incomeA;
     const ATI_B = incomeB;
     // Using 2025 rates - current calendar year
 
     // Convert children to calculation format
     const children = formState.children.map((c) => ({
-      age: c.age as "Under 13" | "13+",
+      age: c.age as 'Under 13' | '13+',
       careA: convertCareToPercentage(c.careAmountA, c.carePeriod),
       careB: convertCareToPercentage(c.careAmountB, c.carePeriod),
     }));
 
     // Step 1: Create virtual children for relevant dependents
     // Virtual children have 0% care since they're only used for cost calculation
-    const relDepChildrenA: { age: "Under 13" | "13+"; careA: number; careB: number }[] = [
-      ...Array(relDepA.u13).fill({ age: "Under 13" as const, careA: 0, careB: 0 }),
-      ...Array(relDepA.plus13).fill({ age: "13+" as const, careA: 0, careB: 0 }),
+    const relDepChildrenA: {
+      age: 'Under 13' | '13+';
+      careA: number;
+      careB: number;
+    }[] = [
+      ...Array(relDepA.u13).fill({
+        age: 'Under 13' as const,
+        careA: 0,
+        careB: 0,
+      }),
+      ...Array(relDepA.plus13).fill({
+        age: '13+' as const,
+        careA: 0,
+        careB: 0,
+      }),
     ];
-    const relDepChildrenB: { age: "Under 13" | "13+"; careA: number; careB: number }[] = [
-      ...Array(relDepB.u13).fill({ age: "Under 13" as const, careA: 0, careB: 0 }),
-      ...Array(relDepB.plus13).fill({ age: "13+" as const, careA: 0, careB: 0 }),
+    const relDepChildrenB: {
+      age: 'Under 13' | '13+';
+      careA: number;
+      careB: number;
+    }[] = [
+      ...Array(relDepB.u13).fill({
+        age: 'Under 13' as const,
+        careA: 0,
+        careB: 0,
+      }),
+      ...Array(relDepB.plus13).fill({
+        age: '13+' as const,
+        careA: 0,
+        careB: 0,
+      }),
     ];
 
     // Step 2-4: Calculate Child Support Income (CSI)
     const relDepDeductibleA = getChildCost(
-      "2025",
+      '2025',
       relDepChildrenA,
       Math.max(0, ATI_A - SSA)
     ).cost;
     const relDepDeductibleB = getChildCost(
-      "2025",
+      '2025',
       relDepChildrenB,
       Math.max(0, ATI_B - SSA)
     ).cost;
@@ -193,7 +219,11 @@ export function useCalculator() {
     const incomePercB = CCSI > 0 ? (CSI_B / CCSI) * 100 : 0;
 
     // Step 5: Calculate Total Cost of Children
-    const { cost: totalCost, bracketInfo: costBracketInfo } = getChildCost("2025", children, CCSI);
+    const { cost: totalCost, bracketInfo: costBracketInfo } = getChildCost(
+      '2025',
+      children,
+      CCSI
+    );
     const costPerChild = children.length > 0 ? totalCost / children.length : 0;
 
     // Step 6–8: Calculate individual liabilities
@@ -258,7 +288,7 @@ export function useCalculator() {
       MAR_B = 0;
     let finalLiabilityA = 0;
     let finalLiabilityB = 0;
-    let rateApplied = "None";
+    let rateApplied = 'None';
     const appliedRates: string[] = [];
 
     // Check if MAR applies at case level (once per case, not per child)
@@ -266,16 +296,18 @@ export function useCalculator() {
     // 1. Parent received income support payment
     // 2. Parent has less than 14% care of ALL children
     // 3. Parent's ATI is below the self-support amount
-    const marAppliesA = ATI_A < SSA && supportA && childResults.every(c => c.roundedCareA < 14);
-    const marAppliesB = ATI_B < SSA && supportB && childResults.every(c => c.roundedCareB < 14);
+    const marAppliesA =
+      ATI_A < SSA && supportA && childResults.every((c) => c.roundedCareA < 14);
+    const marAppliesB =
+      ATI_B < SSA && supportB && childResults.every((c) => c.roundedCareB < 14);
 
     if (marAppliesA) {
       MAR_A = MAR; // Set once for the entire case
-      appliedRates.push("MAR (Parent A)");
+      appliedRates.push('MAR (Parent A)');
     }
     if (marAppliesB) {
       MAR_B = MAR; // Set once for the entire case
-      appliedRates.push("MAR (Parent B)");
+      appliedRates.push('MAR (Parent B)');
     }
 
     childResults.forEach((child, index) => {
@@ -344,52 +376,52 @@ export function useCalculator() {
     // Determine rate applied string
     if (appliedRates.length > 0) {
       const farA = appliedRates.filter((r) =>
-        r.startsWith("FAR (Parent A")
+        r.startsWith('FAR (Parent A')
       ).length;
       const farB = appliedRates.filter((r) =>
-        r.startsWith("FAR (Parent B")
+        r.startsWith('FAR (Parent B')
       ).length;
-      const hasMarA = appliedRates.some((r) => r.startsWith("MAR (Parent A"));
-      const hasMarB = appliedRates.some((r) => r.startsWith("MAR (Parent B"));
+      const hasMarA = appliedRates.some((r) => r.startsWith('MAR (Parent A'));
+      const hasMarB = appliedRates.some((r) => r.startsWith('MAR (Parent B'));
 
       if (farA > 0 && farB > 0) {
-        rateApplied = "FAR (Both Parents)";
+        rateApplied = 'FAR (Both Parents)';
       } else if (farA > 0) {
-        rateApplied = `FAR (Parent A, ${farA} child${farA > 1 ? "ren" : ""})`;
+        rateApplied = `FAR (Parent A, ${farA} child${farA > 1 ? 'ren' : ''})`;
       } else if (farB > 0) {
-        rateApplied = `FAR (Parent B, ${farB} child${farB > 1 ? "ren" : ""})`;
+        rateApplied = `FAR (Parent B, ${farB} child${farB > 1 ? 'ren' : ''})`;
       } else if (hasMarA && hasMarB) {
-        rateApplied = "MAR (Both Parents)";
+        rateApplied = 'MAR (Both Parents)';
       } else if (hasMarA) {
-        rateApplied = "MAR (Parent A)";
+        rateApplied = 'MAR (Parent A)';
       } else if (hasMarB) {
-        rateApplied = "MAR (Parent B)";
+        rateApplied = 'MAR (Parent B)';
       }
     }
 
     // Final Payment Calculation
     let finalPayment = finalLiabilityA - finalLiabilityB;
-    let payer = finalPayment > 0 ? "Parent A" : "Parent B";
-    let receiver = finalPayment > 0 ? "Parent B" : "Parent A";
+    let payer = finalPayment > 0 ? 'Parent A' : 'Parent B';
+    let receiver = finalPayment > 0 ? 'Parent B' : 'Parent A';
     let finalPaymentAmount = Math.abs(finalPayment);
 
-    if (rateApplied.startsWith("FAR") && FAR_A > 0 && FAR_B > 0) {
+    if (rateApplied.startsWith('FAR') && FAR_A > 0 && FAR_B > 0) {
       finalPayment = FAR_A - FAR_B;
-      payer = finalPayment > 0 ? "Parent A" : "Parent B";
-      receiver = finalPayment > 0 ? "Parent B" : "Parent A";
+      payer = finalPayment > 0 ? 'Parent A' : 'Parent B';
+      receiver = finalPayment > 0 ? 'Parent B' : 'Parent A';
       finalPaymentAmount = Math.abs(finalPayment);
-      rateApplied = "FAR (Both)";
-    } else if (rateApplied.startsWith("MAR") && MAR_A > 0 && MAR_B > 0) {
+      rateApplied = 'FAR (Both)';
+    } else if (rateApplied.startsWith('MAR') && MAR_A > 0 && MAR_B > 0) {
       finalPayment = MAR_A - MAR_B;
-      payer = "N/A";
-      receiver = "N/A";
+      payer = 'N/A';
+      receiver = 'N/A';
       finalPaymentAmount = 0;
-      rateApplied = "MAR (Both)";
+      rateApplied = 'MAR (Both)';
     }
 
     if (finalPaymentAmount === 0) {
-      payer = "Neither";
-      receiver = "Neither";
+      payer = 'Neither';
+      receiver = 'Neither';
     }
 
     return {
@@ -450,7 +482,7 @@ export function useCalculator() {
 
   const getInputsForSave = useCallback((): CalculatorInputs => {
     const children = formState.children.map((c) => ({
-      age: c.age as "Under 13" | "13+",
+      age: c.age as 'Under 13' | '13+',
       careA: convertCareToPercentage(c.careAmountA, c.carePeriod),
       careB: convertCareToPercentage(c.careAmountB, c.carePeriod),
     }));
@@ -483,4 +515,3 @@ export function useCalculator() {
     getInputsForSave,
   };
 }
-

@@ -1,25 +1,38 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
-import type { ChildInput, FormErrors } from "../types/calculator";
-import { MAX_CONTENT_WIDTH, isWeb, useResponsive, webClickableStyles, webInputStyles } from "../utils/responsive";
-import { createShadow } from "../utils/shadow-styles";
-import { ChildRow } from "./ChildRow";
-import { HelpTooltip } from "./HelpTooltip";
-import { BrandSwitch } from "./ui/BrandSwitch";
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import type { ChildInput, FormErrors } from '../types/calculator';
+import {
+  MAX_CONTENT_WIDTH,
+  isWeb,
+  useResponsive,
+  webClickableStyles,
+  webInputStyles,
+} from '../utils/responsive';
+import { createShadow } from '../utils/shadow-styles';
+import { ChildRow } from './ChildRow';
+import { HelpTooltip } from './HelpTooltip';
+import { BrandSwitch } from './ui/BrandSwitch';
 
 // ============================================================================
 // Component Documentation
 // ============================================================================
 /**
  * CalculatorForm Component
- * 
+ *
  * Main form component for child support calculator input fields.
  * Handles income inputs, care arrangements, relevant dependents, and form actions.
- * 
+ *
  * Parent Component:
  * - src/screens/CalculatorScreen.tsx (line 148) - Main calculator screen
  *   Passes props from useCalculator() hook state and handlers
- * 
+ *
  * Props Interface (CalculatorFormProps):
  * - incomeA: number - Parent A's adjusted taxable income
  * - incomeB: number - Parent B's adjusted taxable income
@@ -45,29 +58,29 @@ import { BrandSwitch } from "./ui/BrandSwitch";
  * - onCalculate: () => void - Handler to trigger calculation
  * - onReset: () => void - Handler to reset form to initial state
  * - isDesktopWeb?: boolean - Controls two-column layout and padding (default: false)
- * 
+ *
  * Data Flow:
  * - State managed by useCalculator() hook in CalculatorScreen
  * - Form changes trigger setIsStale(true) in parent handlers
  * - Calculation results passed back via useCalculator().results
  * - Results displayed in CalculatorResults component overlay
- * 
+ *
  * Child Components:
  * - ChildRow - Individual child care arrangement input row
  * - RelevantDependentsPopover - Compact popover for relevant dependents
  * - BrandSwitch - Custom branded toggle switch component
  * - HelpTooltip - Contextual help tooltips
- * 
+ *
  * Layout Behavior:
  * - Mobile: Single column, full width, bottom padding for results overlay
  * - Desktop (isDesktopWeb=true): Two-column layout, constrained width, reduced padding
  * - Responsive input widths: 160px (mobile), 180px (tablet), 200px (desktop)
- * 
+ *
  * Form Sections:
  * 1. Income Card - Parent A/B income inputs, income support toggles, relevant dependents
  * 2. Care Card - Child care arrangement inputs (nights per period, age groups)
  * 3. Action Buttons - Calculate and Reset buttons
- * 
+ *
  * Validation:
  * - Errors passed via errors prop from useCalculator() hook
  * - Displayed inline below relevant input fields
@@ -130,7 +143,8 @@ function RelevantDependentsPopover({
         setIsOpen(false);
       };
       document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      return () =>
+        document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [isOpen]);
 
@@ -141,34 +155,56 @@ function RelevantDependentsPopover({
 
   // FIXED Web/Mobile Browser Drawer
   return (
-    <View style={[
-      compact ? popoverStyles.drawerContainerCompact : popoverStyles.drawerContainer,
-      isWeb && {
-        display: 'flex' as any,
-        flexDirection: isMobile ? 'column' as any : 'row' as any, // Stack trigger on mobile
-        alignItems: isMobile ? 'flex-start' as any : 'center' as any,
-        width: '100%'
-      }
-    ]}>
-      <View ref={triggerRef} style={{ flexShrink: 0, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+    <View
+      style={[
+        compact
+          ? popoverStyles.drawerContainerCompact
+          : popoverStyles.drawerContainer,
+        isWeb && {
+          display: 'flex' as any,
+          flexDirection: isMobile ? ('column' as any) : ('row' as any), // Stack trigger on mobile
+          alignItems: isMobile ? ('flex-start' as any) : ('center' as any),
+          width: '100%',
+        },
+      ]}
+    >
+      <View
+        ref={triggerRef}
+        style={{
+          flexShrink: 0,
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 8,
+        }}
+      >
         <Pressable
           onPress={handleToggle}
           onHoverIn={() => setIsHovered(true)}
           onHoverOut={() => setIsHovered(false)}
           style={[
-            compact ? popoverStyles.triggerButtonCompact : popoverStyles.triggerButton,
+            compact
+              ? popoverStyles.triggerButtonCompact
+              : popoverStyles.triggerButton,
             hasValues && popoverStyles.triggerButtonActive,
             isHovered && popoverStyles.triggerButtonHover,
             webClickableStyles,
           ]}
           accessibilityRole="button"
-          accessibilityLabel={hasValues ? `Relevant Dependents: ${totalDeps} total` : 'Add relevant dependents'}
+          accessibilityLabel={
+            hasValues
+              ? `Relevant Dependents: ${totalDeps} total`
+              : 'Add relevant dependents'
+          }
           accessibilityHint="Tap to add dependent children from other relationships"
         >
-          <Text style={[
-            compact ? popoverStyles.triggerTextCompact : popoverStyles.triggerText,
-            hasValues && popoverStyles.triggerTextActive,
-          ]}>
+          <Text
+            style={[
+              compact
+                ? popoverStyles.triggerTextCompact
+                : popoverStyles.triggerText,
+              hasValues && popoverStyles.triggerTextActive,
+            ]}
+          >
             {hasValues ? `Dependents: ${totalDeps}` : 'Rel. Dependents'}
           </Text>
           {!hasValues && <Text style={popoverStyles.plusIcon}>+</Text>}
@@ -201,22 +237,34 @@ function RelevantDependentsPopover({
         style={[
           popoverStyles.drawerContent,
           isOpen && popoverStyles.drawerContentOpen,
-          isWeb && {
-            // Dynamic width: Full width on mobile, fixed on desktop
-            width: isOpen ? (isMobile ? '100%' : (compact ? '400px' : '450px')) : '0px',
-            height: isOpen ? 'auto' : '0px', // Allow vertical expansion
-            opacity: isOpen ? 1 : 0,
-            overflow: 'hidden' as any,
-            transition: 'width 0.3s ease-out, opacity 0.3s ease-out, height 0.3s' as any,
-            marginTop: isMobile && isOpen ? 8 : 0, // Gap when stacked
-          } as any
+          isWeb &&
+            ({
+              // Dynamic width: Full width on mobile, fixed on desktop
+              width: isOpen
+                ? isMobile
+                  ? '100%'
+                  : compact
+                    ? '400px'
+                    : '450px'
+                : '0px',
+              height: isOpen ? 'auto' : '0px', // Allow vertical expansion
+              opacity: isOpen ? 1 : 0,
+              overflow: 'hidden' as any,
+              transition:
+                'width 0.3s ease-out, opacity 0.3s ease-out, height 0.3s' as any,
+              marginTop: isMobile && isOpen ? 8 : 0, // Gap when stacked
+            } as any),
         ]}
       >
-        <View style={[popoverStyles.drawerInner, isMobile && { paddingLeft: 0 }]}>
-          <View style={[
-            popoverStyles.drawerInputsRow,
-            isMobile && { flexWrap: 'wrap', gap: 16 } // Wrap inputs on mobile
-          ]}>
+        <View
+          style={[popoverStyles.drawerInner, isMobile && { paddingLeft: 0 }]}
+        >
+          <View
+            style={[
+              popoverStyles.drawerInputsRow,
+              isMobile && { flexWrap: 'wrap', gap: 16 }, // Wrap inputs on mobile
+            ]}
+          >
             {/* Parent A */}
             <View style={popoverStyles.drawerInputGroup}>
               <Text style={popoverStyles.drawerParentLabel}>A</Text>
@@ -226,7 +274,11 @@ function RelevantDependentsPopover({
                   <TextInput
                     style={[popoverStyles.drawerInput, webInputStyles]}
                     value={relDepA.u13.toString()}
-                    onChangeText={(text) => onRelDepAChange({ u13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })}
+                    onChangeText={(text) =>
+                      onRelDepAChange({
+                        u13: parseInt(text.replace(/[^0-9]/g, '')) || 0,
+                      })
+                    }
                     keyboardType="numeric"
                     accessibilityLabel="Parent A dependents under 13"
                     accessibilityHint="Number of relevant dependent children under 13 for Parent A"
@@ -237,7 +289,11 @@ function RelevantDependentsPopover({
                   <TextInput
                     style={[popoverStyles.drawerInput, webInputStyles]}
                     value={relDepA.plus13.toString()}
-                    onChangeText={(text) => onRelDepAChange({ plus13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })}
+                    onChangeText={(text) =>
+                      onRelDepAChange({
+                        plus13: parseInt(text.replace(/[^0-9]/g, '')) || 0,
+                      })
+                    }
                     keyboardType="numeric"
                     accessibilityLabel="Parent A dependents 13 and over"
                     accessibilityHint="Number of relevant dependent children 13 and over for Parent A"
@@ -258,7 +314,11 @@ function RelevantDependentsPopover({
                   <TextInput
                     style={[popoverStyles.drawerInput, webInputStyles]}
                     value={relDepB.u13.toString()}
-                    onChangeText={(text) => onRelDepBChange({ u13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })}
+                    onChangeText={(text) =>
+                      onRelDepBChange({
+                        u13: parseInt(text.replace(/[^0-9]/g, '')) || 0,
+                      })
+                    }
                     keyboardType="numeric"
                     accessibilityLabel="Parent B dependents under 13"
                     accessibilityHint="Number of relevant dependent children under 13 for Parent B"
@@ -269,7 +329,11 @@ function RelevantDependentsPopover({
                   <TextInput
                     style={[popoverStyles.drawerInput, webInputStyles]}
                     value={relDepB.plus13.toString()}
-                    onChangeText={(text) => onRelDepBChange({ plus13: parseInt(text.replace(/[^0-9]/g, "")) || 0 })}
+                    onChangeText={(text) =>
+                      onRelDepBChange({
+                        plus13: parseInt(text.replace(/[^0-9]/g, '')) || 0,
+                      })
+                    }
                     keyboardType="numeric"
                     accessibilityLabel="Parent B dependents 13 and over"
                     accessibilityHint="Number of relevant dependent children 13 and over for Parent B"
@@ -494,7 +558,7 @@ const popoverStyles = StyleSheet.create({
     fontWeight: '400',
   },
   parentsRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 24,
   },
   parentCol: {
@@ -583,7 +647,7 @@ interface CalculatorFormProps {
   onRelDepBChange: (updates: Partial<{ u13: number; plus13: number }>) => void;
   onCalculate: () => void;
   onReset: () => void;
-  isDesktopWeb?: boolean;  // Controls padding and width for two-column layout
+  isDesktopWeb?: boolean; // Controls padding and width for two-column layout
 }
 
 export function CalculatorForm({
@@ -615,11 +679,14 @@ export function CalculatorForm({
   const { isMobile, isDesktop, width } = useResponsive();
 
   // Web-specific container styles (only apply max-width when NOT in two-column mode)
-  const webContainerStyle = isWeb && !isDesktopWeb ? {
-    maxWidth: MAX_CONTENT_WIDTH,
-    width: '100%' as const,
-    alignSelf: 'center' as const,
-  } : {};
+  const webContainerStyle =
+    isWeb && !isDesktopWeb
+      ? {
+          maxWidth: MAX_CONTENT_WIDTH,
+          width: '100%' as const,
+          alignSelf: 'center' as const,
+        }
+      : {};
 
   // Adjust bottom padding: larger padding on mobile to ensure buttons stay above results card
   // Increased to 250 to accommodate the blue results footer at the bottom (approx 200px height)
@@ -629,7 +696,14 @@ export function CalculatorForm({
   const inputWidth = isMobile ? 160 : isDesktop ? 200 : 180;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={[styles.contentContainer, { paddingBottom: contentPaddingBottom }, webContainerStyle]}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[
+        styles.contentContainer,
+        { paddingBottom: contentPaddingBottom },
+        webContainerStyle,
+      ]}
+    >
       {/* Combined Parents Card */}
       <View style={styles.card}>
         <View style={styles.sectionHeaderRow}>
@@ -659,20 +733,30 @@ export function CalculatorForm({
             />
           </View>
           <View style={styles.inputRow}>
-            <View style={[styles.currencyInputContainer, { width: inputWidth, minWidth: inputWidth }]}>
+            <View
+              style={[
+                styles.currencyInputContainer,
+                { width: inputWidth, minWidth: inputWidth },
+              ]}
+            >
               <Text style={styles.currencySymbol}>$</Text>
               <TextInput
-                style={[styles.currencyInput, { width: inputWidth, minWidth: inputWidth }, errors.incomeA && styles.inputError, isWeb && webInputStyles]}
-                value={incomeA ? incomeA.toString() : ""}
+                style={[
+                  styles.currencyInput,
+                  { width: inputWidth, minWidth: inputWidth },
+                  errors.incomeA && styles.inputError,
+                  isWeb && webInputStyles,
+                ]}
+                value={incomeA ? incomeA.toString() : ''}
                 onChangeText={(text) => {
-                  const val = text.replace(/[^0-9]/g, "");
+                  const val = text.replace(/[^0-9]/g, '');
                   onIncomeAChange(parseInt(val) || 0);
                 }}
                 keyboardType="numeric"
                 placeholder="0"
                 placeholderTextColor="#64748b"
                 accessibilityLabel="Parent A adjusted taxable income"
-                accessibilityHint="Enter Parent A's annual income in dollars"              
+                accessibilityHint="Enter Parent A's annual income in dollars"
               />
             </View>
             <View style={styles.switchRow}>
@@ -707,13 +791,23 @@ export function CalculatorForm({
             </Text>
           </View>
           <View style={styles.inputRow}>
-            <View style={[styles.currencyInputContainer, { width: inputWidth, minWidth: inputWidth }]}>
+            <View
+              style={[
+                styles.currencyInputContainer,
+                { width: inputWidth, minWidth: inputWidth },
+              ]}
+            >
               <Text style={styles.currencySymbol}>$</Text>
               <TextInput
-                style={[styles.currencyInput, { width: inputWidth, minWidth: inputWidth }, errors.incomeB && styles.inputError, isWeb && webInputStyles]}
-                value={incomeB ? incomeB.toString() : ""}
+                style={[
+                  styles.currencyInput,
+                  { width: inputWidth, minWidth: inputWidth },
+                  errors.incomeB && styles.inputError,
+                  isWeb && webInputStyles,
+                ]}
+                value={incomeB ? incomeB.toString() : ''}
                 onChangeText={(text) => {
-                  const val = text.replace(/[^0-9]/g, "");
+                  const val = text.replace(/[^0-9]/g, '');
                   onIncomeBChange(parseInt(val) || 0);
                 }}
                 keyboardType="numeric"
@@ -759,7 +853,9 @@ export function CalculatorForm({
             <View style={styles.stepBadge}>
               <Text style={styles.stepBadgeText}>2</Text>
             </View>
-            <Text style={[styles.sectionHeading, { marginBottom: 0 }]}>CARE</Text>
+            <Text style={[styles.sectionHeading, { marginBottom: 0 }]}>
+              CARE
+            </Text>
           </View>
           <HelpTooltip
             what="Enter the number of nights each parent has care of the child per week, fortnight, or year and if the child is over or under 13 years of age."
@@ -826,14 +922,14 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   card: {
-    backgroundColor: "#ffffff", // pure white for content
+    backgroundColor: '#ffffff', // pure white for content
     borderRadius: 12,
     padding: 20,
     borderWidth: 1,
-    borderColor: "#e2e8f0", // subtle but visible border
+    borderColor: '#e2e8f0', // subtle but visible border
     // Cross-platform shadow for better depth perception
     ...createShadow({
-      shadowColor: "#000",
+      shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.08,
       shadowRadius: 4,
@@ -842,15 +938,15 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#5a6570", // dark grey - WCAG AA compliant (7.0:1)
-    textTransform: "uppercase",
+    fontWeight: '600',
+    color: '#5a6570', // dark grey - WCAG AA compliant (7.0:1)
+    textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 12,
   },
   sectionHeaderRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
     marginBottom: 8,
   },
@@ -858,31 +954,31 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: "#2563EB", // Brand Blue (blue-600)
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#2563EB', // Brand Blue (blue-600)
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   stepBadgeText: {
     fontSize: 14,
-    fontWeight: "700",
-    color: "#ffffff", // white text
+    fontWeight: '700',
+    color: '#ffffff', // white text
   },
   sectionHeading: {
     fontSize: 14,
-    fontWeight: "800", // extra bold
-    color: "#0f172a", // slate-900 - dark slate
-    textTransform: "uppercase",
+    fontWeight: '800', // extra bold
+    color: '#0f172a', // slate-900 - dark slate
+    textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   cardSubtitle: {
     fontSize: 12,
-    color: "#5a6570", // dark grey - WCAG AA compliant (7.0:1)
+    color: '#5a6570', // dark grey - WCAG AA compliant (7.0:1)
     marginTop: 2,
   },
   parentsGrid: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 24,
-    flexWrap: "wrap",
+    flexWrap: 'wrap',
   },
   parentSection: {
     flex: 1,
@@ -891,59 +987,59 @@ const styles = StyleSheet.create({
   },
   parentTitle: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#64748b", // slate-500 - improved contrast (4.61:1)
-    textTransform: "uppercase",
+    fontWeight: '600',
+    color: '#64748b', // slate-500 - improved contrast (4.61:1)
+    textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   parentTitleA: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#4a5568", // dark grey - consistent with Parent B
-    textTransform: "uppercase",
+    fontWeight: '600',
+    color: '#4a5568', // dark grey - consistent with Parent B
+    textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   parentTitleB: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#4a5568", // dark grey - consistent with Parent A
-    textTransform: "uppercase",
+    fontWeight: '600',
+    color: '#4a5568', // dark grey - consistent with Parent A
+    textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   inputGroup: {
     gap: 4,
   },
   labelRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 4,
   },
   label: {
     fontSize: 14,
-    fontWeight: "500",
-    color: "#4a5568", // dark grey for labels
+    fontWeight: '500',
+    color: '#4a5568', // dark grey for labels
   },
   inputRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
-    flexWrap: "nowrap",
+    flexWrap: 'nowrap',
   },
   currencyInputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    position: "relative",
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'relative',
     // Width is now set dynamically via inline style
     flex: 0,
     flexShrink: 0,
     zIndex: 2,
   },
   currencySymbol: {
-    position: "absolute",
+    position: 'absolute',
     left: 12,
-    color: "#5a6570", // dark grey - WCAG AA compliant (7.0:1)
+    color: '#5a6570', // dark grey - WCAG AA compliant (7.0:1)
     fontSize: 18,
-    fontWeight: "500",
+    fontWeight: '500',
     zIndex: 1,
   },
   currencyInput: {
@@ -952,54 +1048,54 @@ const styles = StyleSheet.create({
     paddingRight: 12,
     paddingVertical: 10,
     fontSize: 18,
-    color: "#1a202c", // near black, high contrast
+    color: '#1a202c', // near black, high contrast
     borderWidth: 1.5,
-    borderColor: "#e2e8f0", // subtle border
+    borderColor: '#e2e8f0', // subtle border
     borderRadius: 8,
-    backgroundColor: "#ffffff", // white input background
+    backgroundColor: '#ffffff', // white input background
   },
   inputError: {
-    borderColor: "#ef4444", // red-500
-    backgroundColor: "rgba(239, 68, 68, 0.1)", // red-500 with opacity
+    borderColor: '#ef4444', // red-500
+    backgroundColor: 'rgba(239, 68, 68, 0.1)', // red-500 with opacity
   },
   errorText: {
     fontSize: 14,
-    color: "#f87171", // red-400
+    color: '#f87171', // red-400
     marginTop: 4,
   },
   incomeBarContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
     marginTop: 8,
   },
   incomeBar: {
     flex: 1,
     height: 8,
-    backgroundColor: "#334155", // slate-700
+    backgroundColor: '#334155', // slate-700
     borderRadius: 4,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   incomeBarFill: {
-    height: "100%",
+    height: '100%',
     borderRadius: 4,
   },
   incomePercText: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#3b82f6", // blue-500
+    fontWeight: '600',
+    color: '#3b82f6', // blue-500
     width: 40,
-    textAlign: "right",
+    textAlign: 'right',
   },
   csiText: {
     fontSize: 12,
-    color: "#64748b", // slate-500 - improved contrast (4.61:1)
+    color: '#64748b', // slate-500 - improved contrast (4.61:1)
     marginLeft: 8,
-    fontWeight: "500", // Added weight for better visibility
+    fontWeight: '500', // Added weight for better visibility
   },
   switchRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
     flexShrink: 0,
   },
@@ -1008,12 +1104,12 @@ const styles = StyleSheet.create({
   },
   switchLabelSmall: {
     fontSize: 13, // Increased from 12 for better readability
-    color: "#4a5568", // dark grey - better contrast (7.7:1)
-    fontWeight: "500", // Added weight for better visibility
+    color: '#4a5568', // dark grey - better contrast (7.7:1)
+    fontWeight: '500', // Added weight for better visibility
   },
   switchLabel: {
     fontSize: 14,
-    color: "#4a5568", // dark grey
+    color: '#4a5568', // dark grey
   },
   childrenList: {
     gap: 12,
@@ -1022,49 +1118,49 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingVertical: 8,
     borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: "#bfdbfe", // blue-200 - solid border
+    borderStyle: 'solid',
+    borderColor: '#bfdbfe', // blue-200 - solid border
     borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#eff6ff", // blue-50 - Ghost Blue background
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#eff6ff', // blue-50 - Ghost Blue background
   },
   addChildButtonText: {
-    color: "#2563EB", // blue-600 - Brand Blue text
+    color: '#2563EB', // blue-600 - Brand Blue text
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   actionButtons: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 12,
     marginTop: 8,
   },
   calculateButton: {
     flex: 2,
-    backgroundColor: "#0056b3", // Darker blue for better contrast (WCAG AA compliant)
+    backgroundColor: '#0056b3', // Darker blue for better contrast (WCAG AA compliant)
     paddingVertical: 16,
     borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   calculateButtonText: {
-    color: "#ffffff",
+    color: '#ffffff',
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: '700',
   },
   resetButton: {
     flex: 1,
-    backgroundColor: "#ffffff", // white background
+    backgroundColor: '#ffffff', // white background
     paddingVertical: 16,
     borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: "#e2e8f0", // subtle border
+    borderColor: '#e2e8f0', // subtle border
   },
   resetButtonText: {
-    color: "#4a5568", // medium grey
+    color: '#4a5568', // medium grey
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });

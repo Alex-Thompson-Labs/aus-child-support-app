@@ -20,7 +20,7 @@ export interface ConsentCheckboxProps {
 
 /**
  * ConsentCheckbox - Reusable consent checkbox component
- * 
+ *
  * Displays a checkbox with consent text for legal information sharing.
  * Used in lawyer inquiry forms across the application.
  */
@@ -35,10 +35,12 @@ export function ConsentCheckbox({
 }: ConsentCheckboxProps) {
   const isWeb = Platform.OS === 'web';
 
-  const webClickableStyles = isWeb ? {
-    cursor: 'pointer' as const,
-    userSelect: 'none' as const,
-  } : {};
+  const webClickableStyles = isWeb
+    ? {
+        cursor: 'pointer' as const,
+        userSelect: 'none' as const,
+      }
+    : {};
 
   return (
     <View>
@@ -49,12 +51,16 @@ export function ConsentCheckbox({
         accessibilityState={{ checked }}
         accessibilityLabel={consentText}
       >
-        <View style={[styles.checkbox, checked && styles.checkboxChecked, checkboxStyle]}>
+        <View
+          style={[
+            styles.checkbox,
+            checked && styles.checkboxChecked,
+            checkboxStyle,
+          ]}
+        >
           {checked && <Text style={styles.checkmark}>✓</Text>}
         </View>
-        <Text style={[styles.consentText, textStyle]}>
-          {consentText}
-        </Text>
+        <Text style={[styles.consentText, textStyle]}>{consentText}</Text>
       </Pressable>
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>

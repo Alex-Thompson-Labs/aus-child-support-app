@@ -3,6 +3,7 @@
 ## Current State Analysis
 
 **Build Output (Initial):**
+
 - Main bundle: **4.8 MB** 🔴
 - Static routes: 11 pages
 - Build time: ~1.8s
@@ -16,6 +17,7 @@
 ### What's in the 4.8 MB Bundle?
 
 **Large Dependencies (Estimated):**
+
 1. **React Native Web** (~1.2 MB) - Core framework
 2. **Expo Router** (~300 KB) - Navigation
 3. **Supabase Client** (~500 KB) - Database
@@ -41,6 +43,7 @@
 **Lazy Load Admin Routes:**
 
 Create `src/components/LazyAdmin.tsx`:
+
 ```tsx
 import { lazy, Suspense } from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
@@ -86,11 +89,14 @@ const styles = StyleSheet.create({
 **Lazy Load Inquiry Form:**
 
 Create `src/components/LazyInquiryForm.tsx`:
+
 ```tsx
 import { lazy, Suspense } from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 
-const LawyerInquiryScreen = lazy(() => import('@/src/screens/LawyerInquiryScreen'));
+const LawyerInquiryScreen = lazy(
+  () => import('@/src/screens/LawyerInquiryScreen')
+);
 
 function LoadingFallback() {
   return (
@@ -129,6 +135,7 @@ const styles = StyleSheet.create({
 **Solutions:**
 
 1. **Compress existing images:**
+
 ```bash
 # Install imagemin CLI
 npm install -g imagemin-cli imagemin-pngquant imagemin-mozjpeg
@@ -141,12 +148,14 @@ imagemin assets/images/*.jpg --out-dir=assets/images/optimized --plugin=mozjpeg
 ```
 
 2. **Use WebP format** (50% smaller than PNG):
+
 ```bash
 # Convert to WebP
 npx @squoosh/cli --webp auto assets/images/*.png -d assets/images/webp/
 ```
 
 3. **Lazy load images:**
+
 ```tsx
 import { Image } from 'expo-image';
 
@@ -156,8 +165,8 @@ import { Image } from 'expo-image';
   style={styles.logo}
   contentFit="contain"
   transition={200}
-  placeholder={blurhash}  // Optional: show blur while loading
-/>
+  placeholder={blurhash} // Optional: show blur while loading
+/>;
 ```
 
 **Expected Savings:** ~200-400 KB
@@ -169,13 +178,17 @@ import { Image } from 'expo-image';
 **Use system fonts on web** (0 KB download):
 
 Update `app/_layout.tsx`:
+
 ```tsx
 import { Platform } from 'react-native';
 
 // Only load custom fonts on mobile
-const customFonts = Platform.OS !== 'web' ? {
-  // Your custom fonts here
-} : {};
+const customFonts =
+  Platform.OS !== 'web'
+    ? {
+        // Your custom fonts here
+      }
+    : {};
 
 export default function RootLayout() {
   // Skip font loading on web
@@ -195,12 +208,13 @@ export default function RootLayout() {
 ```
 
 Update global styles:
+
 ```css
 /* In app/+html.tsx or global CSS */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
-               'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
-               'Helvetica Neue', sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Helvetica Neue', sans-serif;
 }
 ```
 
@@ -213,16 +227,19 @@ body {
 **Optimize imports** (import only what you need):
 
 **Bad:**
+
 ```tsx
-import * as Icons from 'lucide-react-native';  // Imports ALL icons
+import * as Icons from 'lucide-react-native'; // Imports ALL icons
 ```
 
 **Good:**
+
 ```tsx
-import { Calculator, AlertCircle, HelpCircle } from 'lucide-react-native';  // Only imports 3
+import { Calculator, AlertCircle, HelpCircle } from 'lucide-react-native'; // Only imports 3
 ```
 
 **Audit current imports:**
+
 ```bash
 # Find wildcard imports
 grep -r "import \* as" src/
@@ -237,6 +254,7 @@ grep -r "import \* as" src/
 **Add `netlify.toml` for production optimizations:**
 
 Create `/Users/sammcdougal/d/csc/netlify.toml`:
+
 ```toml
 [build]
   publish = "dist"
@@ -298,6 +316,7 @@ Create `/Users/sammcdougal/d/csc/netlify.toml`:
 **Memoize expensive calculations:**
 
 Update `src/hooks/useCalculator.ts`:
+
 ```tsx
 import { useMemo, useCallback } from 'react';
 
@@ -350,6 +369,7 @@ export const CalculatorResults = memo(function CalculatorResults({ results }) {
 ### 7. Service Worker for Offline Support
 
 **Create `public/sw.js`:**
+
 ```javascript
 const CACHE_NAME = 'cs-calc-v1';
 const urlsToCache = [
@@ -362,15 +382,15 @@ const urlsToCache = [
 // Install service worker
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(urlsToCache))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache))
   );
 });
 
 // Fetch from cache first, network fallback
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request)
+    caches
+      .match(event.request)
       .then((response) => response || fetch(event.request))
   );
 });
@@ -392,11 +412,13 @@ self.addEventListener('activate', (event) => {
 ```
 
 **Register in `app/+html.tsx`:**
+
 ```tsx
-{isWeb && (
-  <script
-    dangerouslySetInnerHTML={{
-      __html: `
+{
+  isWeb && (
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', () => {
             navigator.serviceWorker.register('/sw.js')
@@ -405,9 +427,10 @@ self.addEventListener('activate', (event) => {
           });
         }
       `,
-    }}
-  />
-)}
+      }}
+    />
+  );
+}
 ```
 
 **Expected Impact:** Instant repeat visits, offline support
@@ -419,6 +442,7 @@ self.addEventListener('activate', (event) => {
 ### 1. Web Vitals Tracking
 
 Create `src/utils/web-vitals.ts`:
+
 ```typescript
 import { Platform } from 'react-native';
 
@@ -455,34 +479,36 @@ export function trackWebVitals(onReport: (vitals: WebVitals) => void) {
   };
 
   // Use web-vitals library if available
-  import('web-vitals').then(({ onLCP, onFID, onCLS, onFCP, onTTFB }) => {
-    onLCP((metric) => {
-      vitals.lcp = metric.value;
-      onReport({ ...vitals });
-    });
+  import('web-vitals')
+    .then(({ onLCP, onFID, onCLS, onFCP, onTTFB }) => {
+      onLCP((metric) => {
+        vitals.lcp = metric.value;
+        onReport({ ...vitals });
+      });
 
-    onFID((metric) => {
-      vitals.fid = metric.value;
-      onReport({ ...vitals });
-    });
+      onFID((metric) => {
+        vitals.fid = metric.value;
+        onReport({ ...vitals });
+      });
 
-    onCLS((metric) => {
-      vitals.cls = metric.value;
-      onReport({ ...vitals });
-    });
+      onCLS((metric) => {
+        vitals.cls = metric.value;
+        onReport({ ...vitals });
+      });
 
-    onFCP((metric) => {
-      vitals.fcp = metric.value;
-      onReport({ ...vitals });
-    });
+      onFCP((metric) => {
+        vitals.fcp = metric.value;
+        onReport({ ...vitals });
+      });
 
-    onTTFB((metric) => {
-      vitals.ttfb = metric.value;
-      onReport({ ...vitals });
+      onTTFB((metric) => {
+        vitals.ttfb = metric.value;
+        onReport({ ...vitals });
+      });
+    })
+    .catch(() => {
+      console.warn('[Web Vitals] Library not available');
     });
-  }).catch(() => {
-    console.warn('[Web Vitals] Library not available');
-  });
 }
 
 /**
@@ -542,11 +568,13 @@ export function sendWebVitalsToGA() {
 ```
 
 **Install web-vitals:**
+
 ```bash
 npm install web-vitals
 ```
 
 **Use in `app/_layout.tsx`:**
+
 ```tsx
 import { logWebVitals, sendWebVitalsToGA } from '@/src/utils/web-vitals';
 
@@ -566,6 +594,7 @@ export default function RootLayout() {
 ### 2. Bundle Size Tracking
 
 Add to `package.json`:
+
 ```json
 {
   "scripts": {
@@ -580,11 +609,13 @@ Add to `package.json`:
 ```
 
 **Run bundle analysis:**
+
 ```bash
 npm run build:analyze
 ```
 
 This will show you:
+
 - Which dependencies are taking up the most space
 - Opportunities for tree-shaking
 - Duplicate code across chunks
@@ -596,6 +627,7 @@ This will show you:
 ### Run Lighthouse Audit
 
 **Option 1: Chrome DevTools (GUI)**
+
 1. Build web app: `npm run build:web`
 2. Serve locally: `npx serve dist -p 8080`
 3. Open in Chrome: `http://localhost:8080`
@@ -604,6 +636,7 @@ This will show you:
 6. Click "Analyze page load"
 
 **Option 2: Lighthouse CLI (Automated)**
+
 ```bash
 # Install Lighthouse
 npm install -g lighthouse
@@ -624,6 +657,7 @@ killall serve
 
 **Option 3: PageSpeed Insights (Production)**
 https://pagespeed.web.dev/
+
 - Test live site: `auschildsupport.com`
 - Get mobile + desktop scores
 - See real-world performance data
@@ -633,12 +667,14 @@ https://pagespeed.web.dev/
 ### Target Scores
 
 **Minimum (Launch):**
+
 - Performance: **80+** 🟡
 - Accessibility: **95+** 🟢
 - Best Practices: **90+** 🟢
 - SEO: **95+** 🟢
 
 **Ideal (Post-Optimization):**
+
 - Performance: **90+** 🟢
 - Accessibility: **100** 🟢
 - Best Practices: **100** 🟢
@@ -677,15 +713,15 @@ https://pagespeed.web.dev/
 
 ## Quick Wins Summary
 
-| Optimization | Effort | Impact | Savings |
-|--------------|--------|--------|---------|
-| Compress images | Low | High | 200-400 KB |
-| System fonts on web | Low | Medium | 100-300 KB |
-| Lazy load admin | Medium | High | 400-500 KB |
-| Optimize imports | Low | Medium | 100-200 KB |
-| Netlify compression | Low | High | 60-70% reduction |
-| React.memo | Medium | Medium | Better UX |
-| Service worker | High | Medium | Offline support |
+| Optimization        | Effort | Impact | Savings          |
+| ------------------- | ------ | ------ | ---------------- |
+| Compress images     | Low    | High   | 200-400 KB       |
+| System fonts on web | Low    | Medium | 100-300 KB       |
+| Lazy load admin     | Medium | High   | 400-500 KB       |
+| Optimize imports    | Low    | Medium | 100-200 KB       |
+| Netlify compression | Low    | High   | 60-70% reduction |
+| React.memo          | Medium | Medium | Better UX        |
+| Service worker      | High   | Medium | Offline support  |
 
 **Total Potential Savings:** ~1-1.5 MB + 60-70% compression = **Final bundle ~1-1.5 MB**
 
@@ -694,17 +730,20 @@ https://pagespeed.web.dev/
 ## Monitoring & Maintenance
 
 ### Weekly Checks
+
 - Monitor Lighthouse scores
 - Check Core Web Vitals in Google Analytics
 - Review bundle size trends
 
 ### Monthly Audits
+
 - Run full Lighthouse audit
 - Check for dependency updates
 - Review user performance metrics
 - Optimize newly added features
 
 ### Tools
+
 - Lighthouse CI for automated testing
 - Bundle analyzer for size tracking
 - Google Analytics for real user metrics
@@ -715,12 +754,14 @@ https://pagespeed.web.dev/
 ## Resources
 
 ### Documentation
+
 - [Web Vitals](https://web.dev/vitals/)
 - [Lighthouse](https://developers.google.com/web/tools/lighthouse)
 - [React Performance](https://react.dev/learn/render-and-commit#optimizing-performance)
 - [Expo Web Performance](https://docs.expo.dev/guides/web-performance/)
 
 ### Tools
+
 - [PageSpeed Insights](https://pagespeed.web.dev/)
 - [WebPageTest](https://www.webpagetest.org/)
 - [Bundle Analyzer](https://www.npmjs.com/package/source-map-explorer)

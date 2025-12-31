@@ -1,18 +1,31 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { Link, useLocalSearchParams, useRouter } from "expo-router";
-import React, { Suspense, lazy } from "react";
-import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useCalculator } from "../hooks/useCalculator";
-import { useResponsive } from "../utils/responsive";
-import { shadowPresets } from "../utils/shadow-styles";
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Link, useLocalSearchParams, useRouter } from 'expo-router';
+import React, { Suspense, lazy } from 'react';
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useCalculator } from '../hooks/useCalculator';
+import { useResponsive } from '../utils/responsive';
+import { shadowPresets } from '../utils/shadow-styles';
 
 // Code-split heavy components for better LCP
 const CalculatorForm = lazy(() =>
-  import("../components/CalculatorForm").then(module => ({ default: module.CalculatorForm }))
+  import('../components/CalculatorForm').then((module) => ({
+    default: module.CalculatorForm,
+  }))
 );
 const CalculatorResults = lazy(() =>
-  import("../components/CalculatorResults").then(module => ({ default: module.CalculatorResults }))
+  import('../components/CalculatorResults').then((module) => ({
+    default: module.CalculatorResults,
+  }))
 );
 
 // Lightweight skeleton loaders
@@ -80,13 +93,23 @@ export function CalculatorScreen() {
     setIsStale(true);
   };
 
-  const handleRelDepAChange = (updates: Partial<{ u13: number; plus13: number }>) => {
-    setFormState((prev) => ({ ...prev, relDepA: { ...prev.relDepA, ...updates } }));
+  const handleRelDepAChange = (
+    updates: Partial<{ u13: number; plus13: number }>
+  ) => {
+    setFormState((prev) => ({
+      ...prev,
+      relDepA: { ...prev.relDepA, ...updates },
+    }));
     setIsStale(true);
   };
 
-  const handleRelDepBChange = (updates: Partial<{ u13: number; plus13: number }>) => {
-    setFormState((prev) => ({ ...prev, relDepB: { ...prev.relDepB, ...updates } }));
+  const handleRelDepBChange = (
+    updates: Partial<{ u13: number; plus13: number }>
+  ) => {
+    setFormState((prev) => ({
+      ...prev,
+      relDepB: { ...prev.relDepB, ...updates },
+    }));
     setIsStale(true);
   };
 
@@ -117,15 +140,23 @@ export function CalculatorScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
         {/* Responsive Header */}
         <View style={styles.header}>
-          <View style={isDesktop ? styles.desktopConstraint : styles.mobileHeaderRow}>
-            <Ionicons name="people" size={isDesktop ? 32 : 24} color="#2563eb" />
+          <View
+            style={
+              isDesktop ? styles.desktopConstraint : styles.mobileHeaderRow
+            }
+          >
+            <Ionicons
+              name="people"
+              size={isDesktop ? 32 : 24}
+              color="#2563eb"
+            />
             <Text
               style={[styles.title, isDesktop && styles.titleDesktop]}
               numberOfLines={1}
@@ -134,7 +165,7 @@ export function CalculatorScreen() {
             >
               Child Support Calculator
             </Text>
-            <Link href={"/blog" as any} asChild>
+            <Link href={'/blog' as any} asChild>
               <Pressable
                 style={styles.blogButton}
                 accessibilityRole="button"
@@ -166,7 +197,9 @@ export function CalculatorScreen() {
         {/* Results Card Overlay */}
         {results && (
           <View style={styles.resultsOverlay}>
-            <View style={isDesktop ? styles.desktopConstraint : styles.fullWidth}>
+            <View
+              style={isDesktop ? styles.desktopConstraint : styles.fullWidth}
+            >
               <Suspense fallback={<ResultsSkeleton />}>
                 <CalculatorResults
                   results={results}
@@ -187,7 +220,7 @@ export function CalculatorScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: '#ffffff',
   },
   keyboardView: {
     flex: 1,
@@ -196,8 +229,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#f1f5f9",
-    backgroundColor: "#ffffff",
+    borderBottomColor: '#f1f5f9',
+    backgroundColor: '#ffffff',
     width: '100%',
     alignItems: 'center', // Center the content
   },
@@ -221,8 +254,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18, // Optimized for mobile screens
-    fontWeight: "800",
-    color: "#0f172a",
+    fontWeight: '800',
+    color: '#0f172a',
     flex: 1, // Take available space
     flexShrink: 1, // Allow shrinking if needed
     textAlign: 'center',
@@ -263,7 +296,7 @@ const styles = StyleSheet.create({
   },
   fullWidth: {
     width: '100%',
-  }
+  },
 });
 
 const skeletonStyles = StyleSheet.create({

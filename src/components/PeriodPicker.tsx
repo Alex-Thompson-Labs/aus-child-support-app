@@ -1,8 +1,8 @@
-import React from "react";
-import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
-import { webClickableStyles } from "../utils/responsive";
+import React from 'react';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { webClickableStyles } from '../utils/responsive';
 
-type Period = "week" | "fortnight" | "year";
+type Period = 'week' | 'fortnight' | 'year';
 
 interface PeriodPickerProps {
   value: Period;
@@ -10,16 +10,17 @@ interface PeriodPickerProps {
 }
 
 const PERIOD_OPTIONS: { value: Period; label: string }[] = [
-  { value: "week", label: "Week" },
-  { value: "fortnight", label: "Fortnight" },
-  { value: "year", label: "Year" },
+  { value: 'week', label: 'Week' },
+  { value: 'fortnight', label: 'Fortnight' },
+  { value: 'year', label: 'Year' },
 ];
 
 export function PeriodPicker({ value, onChange }: PeriodPickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
-  const isWeb = Platform.OS === "web";
+  const isWeb = Platform.OS === 'web';
 
-  const selectedLabel = PERIOD_OPTIONS.find((opt) => opt.value === value)?.label || "Week";
+  const selectedLabel =
+    PERIOD_OPTIONS.find((opt) => opt.value === value)?.label || 'Week';
 
   // For web, use native select for better UX
   if (isWeb) {
@@ -32,21 +33,21 @@ export function PeriodPicker({ value, onChange }: PeriodPickerProps) {
             onChange={(e) => onChange(e.target.value as Period)}
             aria-label="Care period"
             style={{
-              width: "100%",
+              width: '100%',
               height: 32,
-              backgroundColor: "#ffffff", // white
-              color: "#0f172a", // slate-900
-              border: "1px solid #cbd5e1", // slate-300
+              backgroundColor: '#ffffff', // white
+              color: '#0f172a', // slate-900
+              border: '1px solid #cbd5e1', // slate-300
               borderRadius: 6,
               paddingLeft: 10,
               paddingRight: 28,
               fontSize: 13,
               fontWeight: 500,
-              cursor: "pointer",
-              appearance: "none",
-              WebkitAppearance: "none",
-              MozAppearance: "none",
-              outline: "none",
+              cursor: 'pointer',
+              appearance: 'none',
+              WebkitAppearance: 'none',
+              MozAppearance: 'none',
+              outline: 'none',
             }}
           >
             {PERIOD_OPTIONS.map((option) => (
@@ -119,37 +120,37 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 10,
-    fontWeight: "700", // Increased from 600 for better visibility
-    color: "#475569", // slate-600 - better contrast (6.7:1)
-    textTransform: "uppercase",
+    fontWeight: '700', // Increased from 600 for better visibility
+    color: '#475569', // slate-600 - better contrast (6.7:1)
+    textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   selectWrapper: {
-    position: "relative",
+    position: 'relative',
     width: 100,
   },
   chevron: {
-    position: "absolute",
+    position: 'absolute',
     right: 8,
     top: 0,
     bottom: 0,
-    justifyContent: "center",
+    justifyContent: 'center',
   } as any,
   chevronText: {
     fontSize: 8,
-    color: "#64748b", // slate-500
+    color: '#64748b', // slate-500
   },
   dropdownContainer: {
-    position: "relative",
+    position: 'relative',
     zIndex: 10,
   },
   dropdownButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#ffffff", // white
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#ffffff', // white
     borderWidth: 1,
-    borderColor: "#cbd5e1", // slate-300
+    borderColor: '#cbd5e1', // slate-300
     borderRadius: 6,
     paddingHorizontal: 10,
     paddingVertical: 6,
@@ -158,20 +159,20 @@ const styles = StyleSheet.create({
   },
   dropdownButtonText: {
     fontSize: 13,
-    fontWeight: "500",
-    color: "#0f172a", // slate-900
+    fontWeight: '500',
+    color: '#0f172a', // slate-900
   },
   dropdownMenu: {
-    position: "absolute",
-    top: "100%",
+    position: 'absolute',
+    top: '100%',
     left: 0,
     right: 0,
-    backgroundColor: "#ffffff", // white
+    backgroundColor: '#ffffff', // white
     borderWidth: 1,
-    borderColor: "#cbd5e1", // slate-300
+    borderColor: '#cbd5e1', // slate-300
     borderRadius: 6,
     marginTop: 4,
-    overflow: "hidden",
+    overflow: 'hidden',
     zIndex: 20,
   },
   dropdownItem: {
@@ -179,14 +180,14 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   dropdownItemActive: {
-    backgroundColor: "#f59e0b", // amber-500
+    backgroundColor: '#f59e0b', // amber-500
   },
   dropdownItemText: {
     fontSize: 13,
-    color: "#0f172a", // slate-900
+    color: '#0f172a', // slate-900
   },
   dropdownItemTextActive: {
-    color: "#ffffff", // white on amber
-    fontWeight: "600",
+    color: '#ffffff', // white on amber
+    fontWeight: '600',
   },
 });

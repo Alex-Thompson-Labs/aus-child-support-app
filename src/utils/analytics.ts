@@ -29,7 +29,9 @@ let hasWarnedNotInitialized = false;
  */
 function warnNotInitialized(): void {
   if (!hasWarnedNotInitialized) {
-    console.warn('[Analytics] Not initialized - events will only be logged to console');
+    console.warn(
+      '[Analytics] Not initialized - events will only be logged to console'
+    );
     hasWarnedNotInitialized = true;
   }
 }
@@ -103,7 +105,7 @@ export const Analytics = {
       console.log('[Analytics] Screen view:', name, properties);
     }
     screenWithGA(name, properties);
-  }
+  },
 };
 
 // Hook for use in components
@@ -128,7 +130,7 @@ export function useAnalytics() {
         console.log('[Analytics] Screen view:', name, properties);
       }
       screenWithGA(name, properties);
-    }
+    },
   };
 }
 

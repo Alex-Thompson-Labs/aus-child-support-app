@@ -1,6 +1,7 @@
 # Design System & Architecture
 
 ## Overview
+
 Child Support Calculator - React Native/Expo app following Australian Government Services Australia formula.
 
 **Business Model:** B2B lead generation platform connecting parents with family law practitioners. Parents use free calculator, complexity triggers identify high-value cases, and lawyers pay per booked consultation ($100/lead target).
@@ -10,6 +11,7 @@ Child Support Calculator - React Native/Expo app following Australian Government
 ## Color Palette
 
 ### Core Colors
+
 - **Primary Background**: `#0f172a` (slate-900) - Main app background
 - **Card Background**: `#1e293b` (slate-800) - Content cards
 - **Accent**: `#2563eb` (blue-600) - Primary actions, hero sections
@@ -19,6 +21,7 @@ Child Support Calculator - React Native/Expo app following Australian Government
 - **Text Tertiary**: `#64748b` (slate-500) - Metadata
 
 ### Urgency & Status Colors
+
 - **High Urgency**: `#ef4444` (red-500) - Critical alerts, court dates
 - **Medium Urgency**: `#f59e0b` (amber-500) - Important notifications, Change of Assessment
 - **Low Urgency**: `#3b82f6` (blue-500) - General information
@@ -27,6 +30,7 @@ Child Support Calculator - React Native/Expo app following Australian Government
 - **Error**: `#f87171` (red-400) - Form validation errors
 
 ## Typography Scale
+
 - **Hero**: 48px, weight 700 - Main payment amounts
 - **Title**: 32px, weight 700 - Section headers
 - **Heading**: 20px, weight 600 - Card titles
@@ -38,7 +42,9 @@ Child Support Calculator - React Native/Expo app following Australian Government
 ## Component Patterns
 
 ### Smart Conversion Footer (SmartConversionFooter.tsx)
+
 Single conversion card at bottom of results based on priority logic:
+
 - **Priority 1**: Dispute Risk - Care percentage between 35-65% (amber card)
 - **Priority 2**: High Value - Annual liability > $15,000 (blue card)
 - **Priority 3**: Binding Agreement - Default fallback (gray card)
@@ -47,10 +53,12 @@ Single conversion card at bottom of results based on priority logic:
 - Analytics tracking: Card variant and button clicks
 
 ### Change of Assessment Prompt (ChangeOfAssessmentPrompt.tsx)
+
 Interactive expandable section for users to identify complexity factors:
+
 - **Header**: Always visible, tappable to expand/collapse
 - **Categorized Checkboxes**: Grouped by urgency, income, child-related, and other factors
-- **Visual Hierarchy**: 
+- **Visual Hierarchy**:
   - Urgent matters: Red (`#ef4444`)
   - Income issues: Amber (`#f59e0b`) with pulsing border animation
   - Child-related: Violet (`#8b5cf6`)
@@ -61,7 +69,9 @@ Interactive expandable section for users to identify complexity factors:
 - Analytics: Section toggle, checkbox selections, button clicks with reason counts
 
 ### Web Inquiry Panel (WebInquiryPanel.tsx)
+
 Inline form for web platform (replaces full-screen mobile modal):
+
 - **Two-Column Layout**: Form fields on left, calculation summary on right
 - **COA Reasons Card**: Displays selected Change of Assessment grounds with emoji indicators
 - **Calculation Summary**: Shows annual liability, incomes, children count
@@ -71,22 +81,26 @@ Inline form for web platform (replaces full-screen mobile modal):
 - **Production-Ready**: Sanitization, error handling, loading states, accessibility labels
 
 ### Payment Cards
+
 - Use blue gradient (`#2563eb`) for primary payment display
 - Show annual amount prominently, secondary periods (monthly, fortnightly, daily) smaller
 - Include clear payer → receiver relationship
 
 ### Data Tables
+
 - Header row with `#94a3b8` text
 - Alternating subtle backgrounds for readability
 - Right-align numeric values
 - Include help tooltips for technical terms
 
 ### Help Tooltips
+
 - **What**: Brief definition of the term
 - **Why**: Explanation of why it matters for the calculation
 - Keep under 2 sentences each
 
 ## Spacing System
+
 - **Micro**: 4px - Tight groups
 - **Small**: 8px - Related items
 - **Medium**: 12px - Card internal padding
@@ -95,6 +109,7 @@ Inline form for web platform (replaces full-screen mobile modal):
 - **XL**: 24px - Section separation
 
 ## Border Radius
+
 - **Small**: 4px - Buttons, inputs
 - **Medium**: 12px - Cards
 - **Large**: 16px - Hero sections
@@ -103,18 +118,23 @@ Inline form for web platform (replaces full-screen mobile modal):
 ## Animation Patterns
 
 ### Spring Animations
+
 Used for natural, physics-based motion:
+
 - **Modal Expand/Collapse**: tension: 65, friction: 11
 - **CoA Section Expand**: Same spring values for visual consistency
 - **Use Case**: Any expand/collapse interaction, slide-in panels
 
 ### Timing Animations
+
 Used for continuous effects:
+
 - **Border Pulse**: 1200ms duration per cycle (in → out → repeat)
 - **Opacity Fade**: 300ms standard fade duration
 - **Use Case**: Drawing attention, loading states
 
 ### Animation Best Practices
+
 - Use `useNativeDriver: true` for transform and opacity (better performance)
 - Use `useNativeDriver: false` for height, width, borderWidth (layout properties)
 - Always clean up animations in useEffect return function
@@ -123,18 +143,21 @@ Used for continuous effects:
 ## Responsive Design
 
 ### Platform Detection (`responsive.ts`)
+
 - **isWeb**: Platform.OS === 'web'
 - **isMobile**: Mobile breakpoint check
 - **isDesktop**: Desktop breakpoint check
 - **Breakpoints**: mobile < 768px, desktop >= 768px
 
 ### Web-Specific Patterns
+
 - **Clickable Elements**: Apply `webClickableStyles` for proper cursor behavior
 - **Input Styling**: Apply `webInputStyles` for native-like appearance
 - **Layout Variants**: CalculatorForm has WebHorizontalForm variant for desktop
 - **Inline Panels**: WebInquiryPanel replaces full-screen mobile modals
 
 ### Platform-Specific UI
+
 - **Mobile**: Full-screen modals, vertical stacking, touch-optimized spacing
 - **Web**: Inline panels, horizontal layouts where appropriate, hover states
 - **Shared**: Same color system, typography scale, component logic
@@ -142,41 +165,42 @@ Used for continuous effects:
 ## User Experience Principles
 
 ### Lead Generation Flow
+
 The app is designed to convert parents into qualified leads for lawyers:
 
 **Discovery Phase:**
+
 1. Parent enters calculation details (incomes, children, care arrangements)
 2. Live calculation provides instant results (debounced 300ms)
 3. Results displayed with simple explanation and technical breakdown toggle
 
-**Qualification Phase:**
-4. Complexity detection runs automatically on every calculation
-5. SmartConversionFooter displays single priority card (dispute risk, high value, or binding agreement)
-6. Change of Assessment Prompt allows self-identification of complex factors
+**Qualification Phase:** 4. Complexity detection runs automatically on every calculation 5. SmartConversionFooter displays single priority card (dispute risk, high value, or binding agreement) 6. Change of Assessment Prompt allows self-identification of complex factors
 
-**Conversion Phase:**
-7. "Get Legal Help" button opens inquiry form (full-screen mobile, inline web)
-8. Form pre-populated with calculation data and complexity reasons
-9. Lead saved to Supabase with all context for lawyer handover
+**Conversion Phase:** 7. "Get Legal Help" button opens inquiry form (full-screen mobile, inline web) 8. Form pre-populated with calculation data and complexity reasons 9. Lead saved to Supabase with all context for lawyer handover
 
 ### Clarity Over Completeness
+
 - Show simple explanation by default
 - Hide technical details behind "View breakdown" option
 - Use plain English before jargon
 
 ### Progressive Disclosure
+
 - Start with "what you pay/receive"
 - Then "why" (the story)
 - Finally "how" (the math)
 
 ### Context Before Data
+
 - Explain what a number means before showing it
 - Example: "You earn 65% of combined income" NOT "Income %: 65"
 
 ## Calculation Display Strategy
 
 ### Problem with Current Approach
+
 Users see technical metrics (CSI, ATI, SSA, Cost %, CS %) without understanding:
+
 1. What they mean
 2. Why they matter
 3. How they connect to the final payment
@@ -184,27 +208,33 @@ Users see technical metrics (CSI, ATI, SSA, Cost %, CS %) without understanding:
 ### Solution: Narrative Flow
 
 **Step 1: Income Split**
+
 - Show each parent's income in dollars
 - Show percentage of total
 - Use visual bar to compare
 
-**Step 2: Care Split**  
+**Step 2: Care Split**
+
 - Show nights per fortnight (most intuitive for users)
 - Convert to percentage
 - Explain how this becomes "cost coverage"
 
 **Step 3: The Gap**
+
 - Highlight: Income % - Cost % = Payment %
 - This is the KEY insight users need
 - Make it visual (not just numbers)
 
 **Step 4: Apply to Total Costs**
+
 - Show the annual cost of children
 - Apply the gap percentage
 - Result = final payment
 
 ### Technical Breakdown (Expandable)
+
 For users who want to verify:
+
 - Full 8-step formula breakdown
 - All intermediate calculations
 - Reference values (SSA, FAR, MAR)
@@ -213,6 +243,7 @@ For users who want to verify:
 ## File Organization
 
 ### `/src/components`
+
 - **CalculatorForm.tsx** - Input form with validations (includes WebHorizontalForm variant)
 - **CalculatorResults.tsx** - Results display (orchestrator)
 - **ResultsSimpleExplanation.tsx** - Narrative explanation view
@@ -224,6 +255,7 @@ For users who want to verify:
 - **HelpTooltip.tsx** - Reusable tooltip component
 
 ### `/src/utils`
+
 - **child-support-calculations.ts** - Core calculation logic
 - **child-support-constants.ts** - Government rates by year
 - **cost-of-children-tables.ts** - Official cost tables
@@ -236,11 +268,14 @@ For users who want to verify:
 - **responsive.ts** - NEW: Platform detection and responsive utilities
 
 ### `/src/types`
+
 - **calculator.ts** - TypeScript interfaces
 
 ### `/app`
+
 Expo Router file-based routing:
-- **_layout.tsx** - Root layout
+
+- **\_layout.tsx** - Root layout
 - **(tabs)/** - Tab navigation group
   - **index.tsx** - Home/calculator screen
 - **admin/** - NEW: Admin panel for lead management
@@ -251,6 +286,7 @@ Expo Router file-based routing:
 - **modal.tsx** - Generic modal wrapper
 
 ### `/docs`
+
 - **DESIGN_SYSTEM.md** (this file) - Design patterns and architecture
 - **CLAUDE.md** - AI assistant guidance and development workflow
 - **BUSINESS_MODEL.md** - Business model canvas and revenue strategy
@@ -312,7 +348,9 @@ This app implements the official Services Australia formula:
 The standard formula doesn't account for all situations. Parents can request adjustments under Section 117 of the Child Support (Assessment) Act 1989. Our app helps identify these factors.
 
 ### Reason Structure
+
 Each reason has:
+
 - **id**: Unique identifier for tracking
 - **label**: User-facing description
 - **description**: Tooltip explanation
@@ -323,28 +361,34 @@ Each reason has:
 ### Categories and Visual Hierarchy
 
 **1. Urgent Matters (Red #ef4444)**
+
 - Priority 1-2 reasons requiring immediate attention
 - Examples: Court dates within 14 days, DV orders, child safety concerns
 - Button turns red when any urgent reason selected
 
 **2. Income Issues (Amber #f59e0b)**
+
 - Priority 2-3 reasons about income discrepancies
 - Examples: Hidden assets, earning capacity, resources not reflected in ATI
 - Special feature: Forensic accountant note when income complexity selected
 - Pulsing border animation to draw attention
 
 **3. Child-Related (Violet #8b5cf6)**
+
 - Priority 3-4 reasons about child costs and special circumstances
 - Examples: High medical costs, private school, disability support
 - Maps to Parent B color scheme (violet accent)
 
 **4. Other Factors (Blue #3b82f6)**
+
 - Priority 4-5 reasons about unique situations
 - Examples: High contact costs, new family expenses, property/spousal maintenance
 - Maps to Parent A color scheme (blue accent)
 
 ### Priority-Based Button Coloring
+
 When multiple reasons selected, button color reflects highest priority:
+
 1. Urgent selected → Red button
 2. Only income selected → Amber button
 3. Only child selected → Violet button
@@ -352,7 +396,9 @@ When multiple reasons selected, button color reflects highest priority:
 5. None selected → Disabled gray button
 
 ### Official Services Australia Mapping
+
 Each reason maps to official CoA grounds (Reason 1-10):
+
 - **Reason 1**: Special needs of child
 - **Reason 2**: High costs for contact/care
 - **Reason 3**: Parent has high costs/commitments
@@ -369,7 +415,7 @@ This mapping helps lawyers quickly identify which official grounds apply to the 
 ## Common Abbreviations
 
 - **ATI**: Adjusted Taxable Income
-- **CSI**: Child Support Income  
+- **CSI**: Child Support Income
 - **CCSI**: Combined Child Support Income
 - **SSA**: Self-Support Amount
 - **FAR**: Fixed Annual Rate
@@ -382,7 +428,9 @@ This mapping helps lawyers quickly identify which official grounds apply to the 
 ## Development Guidelines
 
 ### Production Quality Standards
+
 All code must be production-ready, not demo-quality:
+
 - **Error Handling**: Try-catch blocks, graceful failure, user-friendly error messages
 - **Input Validation**: Sanitize all user inputs, validate email/phone formats, length constraints
 - **Loading States**: Disable buttons during async operations, show loading indicators
@@ -392,9 +440,11 @@ All code must be production-ready, not demo-quality:
 - **Analytics**: Track user interactions, form submissions, error events for optimization
 
 ### Complexity Detection System
+
 The app uses multi-trigger detection to identify high-value cases:
 
 **Auto-Detected Triggers:**
+
 - **High Variance**: Large income disparity or care arrangement complexity
 - **Court Dates**: Within 14 days of hearing (extracted from parent message)
 - **Zero Payment**: $0 liability often indicates formula doesn't fit reality
@@ -402,12 +452,14 @@ The app uses multi-trigger detection to identify high-value cases:
 - **High Stakes**: Annual liability >$15,000 indicates significant financial impact
 
 **User-Selected Triggers (Change of Assessment):**
+
 - Parents can self-identify factors the calculator doesn't capture
 - Organized into 4 categories: Urgent, Income, Child-Related, Other
 - Each reason has priority level (1-5) and official Services Australia mapping
 - Selected reasons passed to lawyer with lead for proper case assessment
 
 ### When Adding Features
+
 1. Update this DESIGN_SYSTEM.md with new patterns
 2. Document in CHANGELOG.md with date and reasoning
 3. Keep components small and focused (< 300 lines)
@@ -417,12 +469,15 @@ The app uses multi-trigger detection to identify high-value cases:
 7. Test on web, iOS simulator, and Android emulator where applicable
 
 ### Lead Management System
+
 **Database:** Supabase (PostgreSQL) hosted in Sydney region
+
 - **leads** table with comprehensive fields including calculation data, complexity reasons, CoA selections
 - Row Level Security (RLS) policies restrict access to authenticated admin only
 - Soft delete pattern (deleted_at timestamp)
 
 **Admin Panel:** Web-only interface at `/admin`
+
 - Login required (Supabase auth)
 - Dashboard view with filters (status, date range)
 - Individual lead detail pages with full context
@@ -430,6 +485,7 @@ The app uses multi-trigger detection to identify high-value cases:
 - Internal notes field for tracking lawyer conversations
 
 **Privacy Compliance:**
+
 - Explicit consent checkbox required on all inquiry forms
 - Privacy policy published and linked from forms
 - Data encrypted at rest (Supabase default)
@@ -437,6 +493,7 @@ The app uses multi-trigger detection to identify high-value cases:
 - Can delete data on request (soft delete + hard delete capability)
 
 ### For AI Assistants
+
 - Read DESIGN_SYSTEM.md first to understand patterns
 - Check CLAUDE.md for development workflow and prompting guidance
 - Check BUSINESS_MODEL.md to understand revenue model and target users

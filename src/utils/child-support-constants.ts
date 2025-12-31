@@ -23,4 +23,4 @@ export const MAR = 534;
 export const SSA = 29841;
 
 // Assessment year type (for cost table compatibility)
-export type AssessmentYear = "2025";
+export type AssessmentYear = '2025';

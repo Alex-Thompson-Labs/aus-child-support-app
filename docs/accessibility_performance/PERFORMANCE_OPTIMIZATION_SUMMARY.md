@@ -11,6 +11,7 @@
 ### 1. ✅ Netlify Configuration (`netlify.toml`)
 
 **Optimizations:**
+
 - Brotli/gzip compression enabled (60-70% reduction)
 - Aggressive caching for static assets (1 year)
 - Short caching for HTML (1 hour for fresh content)
@@ -19,6 +20,7 @@
 - www → non-www redirect
 
 **Expected Impact:**
+
 - Bundle served: ~1.4-1.9 MB (after compression)
 - Repeat visits: Instant (cached)
 - Security: A+ rating
@@ -28,6 +30,7 @@
 ### 2. ✅ Web Vitals Monitoring (`src/utils/web-vitals.ts`)
 
 **Features:**
+
 - Tracks Core Web Vitals (LCP, FID, CLS, FCP, TTFB)
 - Sends metrics to Google Analytics
 - Console logging in dev mode
@@ -36,11 +39,13 @@
 - Memory usage tracking (Chrome only)
 
 **Integration:**
+
 - Initialized in `app/_layout.tsx`
 - Auto-tracks on page load
 - Web-only (no mobile overhead)
 
 **Usage:**
+
 ```bash
 # Dev mode - check console
 npm run web
@@ -64,6 +69,7 @@ npm run lighthouse
 ```
 
 **Output:**
+
 - `dist/bundle-analysis.html` - Visual breakdown of bundle
 - `lighthouse-report.html` - Full performance audit
 
@@ -105,12 +111,14 @@ These are documented in `docs/WEB_PERFORMANCE_OPTIMIZATION.md`:
 ### 1. Lighthouse Audit (5 minutes)
 
 **Automated:**
+
 ```bash
 npm run lighthouse
 # Opens lighthouse-report.html automatically
 ```
 
 **Manual:**
+
 1. Build: `npm run build:web`
 2. Serve: `npx serve dist -p 8080`
 3. Open in Chrome
@@ -118,6 +126,7 @@ npm run lighthouse
 5. Click "Analyze page load"
 
 **Target Scores:**
+
 - Performance: **80+** (minimum), **90+** (ideal)
 - Accessibility: **95+**
 - Best Practices: **90+**
@@ -133,6 +142,7 @@ npm run build:analyze
 ```
 
 **What to Look For:**
+
 - Largest dependencies (candidates for replacement)
 - Duplicate code (opportunities for code splitting)
 - Unused modules (can be removed)
@@ -142,12 +152,14 @@ npm run build:analyze
 ### 3. Real User Monitoring
 
 **Google Analytics (Production):**
+
 1. Deploy to production
 2. Wait 24-48 hours for data
 3. Go to GA → Events → web_vitals
 4. Review metrics by device/browser
 
 **What to Monitor:**
+
 - LCP < 2.5s (75th percentile)
 - FID < 100ms (75th percentile)
 - CLS < 0.1 (75th percentile)
@@ -157,12 +169,14 @@ npm run build:analyze
 ### 4. PageSpeed Insights (Production Only)
 
 **After deployment:**
+
 1. Go to https://pagespeed.web.dev/
 2. Enter: `auschildsupport.com`
 3. Click "Analyze"
 4. Get real-world performance data
 
 **Benefits:**
+
 - Real network conditions
 - Mobile + Desktop scores
 - Field data (actual users)
@@ -208,23 +222,27 @@ CLS: <0.1
 ## Implementation Priority
 
 ### Phase 1: Done ✅
+
 - [x] Netlify caching and compression
 - [x] Web Vitals monitoring
 - [x] Performance testing tools
 - [x] Documentation
 
 ### Phase 2: Quick Wins (1-2 days)
+
 - [ ] Image optimization
 - [ ] System fonts on web
 - [ ] Optimize icon imports
 - [ ] Add React.memo to heavy components
 
 ### Phase 3: Code Splitting (2-3 days)
+
 - [ ] Lazy load admin routes
 - [ ] Lazy load inquiry form
 - [ ] Route-based code splitting
 
 ### Phase 4: Advanced (1 week)
+
 - [ ] Service worker for offline support
 - [ ] Prefetch critical resources
 - [ ] Implement resource hints
@@ -235,17 +253,20 @@ CLS: <0.1
 ## Monitoring & Maintenance
 
 ### Weekly
+
 - [ ] Check Lighthouse score (should stay > 80)
 - [ ] Review Core Web Vitals in GA
 - [ ] Monitor error rates
 
 ### Monthly
+
 - [ ] Full Lighthouse audit
 - [ ] Bundle size analysis
 - [ ] Dependency updates
 - [ ] Performance regression testing
 
 ### Tools to Use
+
 - Lighthouse CLI (`npm run lighthouse`)
 - Bundle Analyzer (`npm run build:analyze`)
 - PageSpeed Insights (production)
@@ -256,11 +277,13 @@ CLS: <0.1
 ## Resources
 
 ### Documentation
+
 - [Web Performance Optimization Guide](./WEB_PERFORMANCE_OPTIMIZATION.md)
 - [Expo Web Performance](https://docs.expo.dev/guides/web-performance/)
 - [Web Vitals](https://web.dev/vitals/)
 
 ### Testing Tools
+
 - [Lighthouse](https://developers.google.com/web/tools/lighthouse)
 - [PageSpeed Insights](https://pagespeed.web.dev/)
 - [WebPageTest](https://www.webpagetest.org/)

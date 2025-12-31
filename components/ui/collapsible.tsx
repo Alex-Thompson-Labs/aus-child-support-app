@@ -7,7 +7,10 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-export function Collapsible({ children, title }: PropsWithChildren & { title: string }) {
+export function Collapsible({
+  children,
+  title,
+}: PropsWithChildren & { title: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const theme = useColorScheme() ?? 'light';
 
@@ -19,7 +22,8 @@ export function Collapsible({ children, title }: PropsWithChildren & { title: st
         activeOpacity={0.8}
         accessibilityRole="button"
         accessibilityLabel={`${title}. ${isOpen ? 'Collapse' : 'Expand'} section`}
-        accessibilityState={{ expanded: isOpen }}>
+        accessibilityState={{ expanded: isOpen }}
+      >
         <IconSymbol
           name="chevron.right"
           size={18}

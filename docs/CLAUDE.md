@@ -18,6 +18,7 @@ npm run lint                # Run ESLint
 ## 🔑 Environment Setup
 
 **Production environment variables (already configured):**
+
 - `EXPO_PUBLIC_SUPABASE_URL` - Supabase database URL
 - `EXPO_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
 - `EXPO_PUBLIC_ADMIN_EMAIL` - Admin login email
@@ -33,6 +34,7 @@ npm run lint                # Run ESLint
 ## 🏗️ Architecture Overview
 
 **🎯 BUSINESS MODEL:** This is a **B2B lead generation** app, not a B2C utility.
+
 - Parents use FREE calculator
 - Complexity triggers detect high-value cases (high income variance, special circumstances, court dates)
 - "Get Legal Help" buttons connect parents with lawyers
@@ -45,11 +47,13 @@ This is an **Expo/React Native multi-platform app** (iOS, Android, Web) that imp
 ### 📱 Platform Support
 
 **Multi-platform (React Native):**
+
 - ✅ **iOS** - Mobile app (App Store deployment pending)
-- ✅ **Android** - Mobile app (Play Store deployment pending)  
+- ✅ **Android** - Mobile app (Play Store deployment pending)
 - ✅ **Web** - Static site export for `auschildsupport.com`
 
 **Platform-specific considerations:**
+
 - PostHog analytics: Mobile only (disabled on web)
 - Haptic feedback: Mobile only
 - Admin panel: Web-optimized (mobile compatible)
@@ -104,7 +108,8 @@ csc/
 ## 🎯 Current Project Phase
 
 **Status:** Phase 2 - Near Launch  
-**Progress:** 
+**Progress:**
+
 - ✅ Calculator built and tested
 - ✅ Complexity triggers implemented
 - ✅ Inquiry form with Supabase integration
@@ -123,6 +128,7 @@ csc/
 ### 🎯 Start Here (For Developers & AI)
 
 **Essential Reading Order:**
+
 1. **This file (CLAUDE.md)** - Architecture and AI guidance
 2. **docs/BUSINESS_MODEL.md** - Revenue model and business logic
 3. **docs/DESIGN_SYSTEM.md** - UI patterns, colors, calculation formulas
@@ -131,6 +137,7 @@ csc/
 ### 📖 Active Guides (`docs/guides/active/`)
 
 **Current Phase Documentation:**
+
 - `REMAINING_TASKS.md` - Immediate next steps and blockers
 - `LEAD_HANDOVER.md` - How to handle incoming leads
 - `WEB_DEPLOYMENT_GUIDE.md` - Web platform deployment process
@@ -138,6 +145,7 @@ csc/
 ### 🗄️ Archived Guides (`docs/guides/old/`)
 
 **Completed Phase Documentation:**
+
 - Phase 1 technical development (calculator, complexity triggers, forms)
 - Phase 2 business setup (email templates, partnership agreements)
 - Historical reference only - not needed for current work
@@ -145,6 +153,7 @@ csc/
 ### 📧 Email Templates (`docs/templates/`)
 
 **Business Communication:**
+
 - `EMAIL_COLD_OUTREACH.md` - Lawyer recruitment
 - `EMAIL_WELCOME_NEW_PARTNER.md` - Onboarding new partners
 - `EMAIL_LEAD_FORWARDING.md` - Sending leads to lawyers
@@ -157,24 +166,29 @@ csc/
 ## 🔧 Key Technical Patterns
 
 ### Calculator Logic
+
 The app implements the official Australian child support 8-step formula from Services Australia.
 
 **Read the full explanation in `docs/DESIGN_SYSTEM.md`**
 
 **Key concepts:**
+
 - **CSI (Child Support Income)**: ATI - SSA - relevant dependents
 - **Income %**: Your share of combined income
 - **Cost %**: Credit for care time (derived from care nights)
 - **The Gap**: Income % - Cost % = Payment %
 
 **Implementation:**
+
 - `src/hooks/useCalculator.ts` - Form state and orchestration
 - `src/utils/child-support-calculations.ts` - Core formulas
 - `src/utils/child-support-constants.ts` - Government rates (year-indexed)
 - `src/utils/cost-of-children-tables.ts` - Official cost tables
 
 ### Complexity Detection
+
 Identifies high-value cases that need legal help:
+
 - High income variance between parents
 - Special circumstances (Change of Assessment reasons)
 - Court dates or legal proceedings
@@ -183,13 +197,16 @@ Identifies high-value cases that need legal help:
 **Implementation:** `src/utils/complexity-detection.ts`
 
 ### Database Integration (Supabase)
+
 Stores inquiry form submissions for admin review:
+
 - **Client:** `src/utils/supabase.ts`
 - **Table:** `leads` (id, name, email, phone, description, urgency, source, created_at)
 - **RLS Policies:** Read/write access configured
 - **Admin Panel:** `app/admin/*` routes
 
 ### Platform-Specific Code
+
 Use `Platform.OS` checks for platform-specific features:
 
 ```typescript
@@ -207,9 +224,11 @@ if (Platform.OS !== 'web') {
 ```
 
 ### Styling System
+
 All styling uses React Native StyleSheet with consistent color palette:
 
 **Colors (from `docs/DESIGN_SYSTEM.md`):**
+
 - Primary: `#2563eb` (blue-600)
 - Background: `#0f172a` (slate-900)
 - Cards: `#1e293b` (slate-800)
@@ -224,6 +243,7 @@ All styling uses React Native StyleSheet with consistent color palette:
 ### Recommended Models by Task Type
 
 **Claude Sonnet 4.5** (Default) ✅
+
 - Code implementation (components, utils, screens)
 - Bug fixes and debugging
 - Adding features to existing code
@@ -232,6 +252,7 @@ All styling uses React Native StyleSheet with consistent color palette:
 - Most development tasks
 
 **Claude Opus 4** (Strategic Use)
+
 - Complex architectural decisions
 - Multi-system integrations
 - Performance optimization strategies
@@ -240,6 +261,7 @@ All styling uses React Native StyleSheet with consistent color palette:
 - When stuck >2 hours on same problem
 
 **Cost Reality:**
+
 - Sonnet 4.5: ~$0.01-0.05 per prompt
 - Opus 4: ~$0.10-0.50 per prompt (10x more)
 - Most tasks work perfectly with Sonnet
@@ -270,11 +292,13 @@ Before implementing, think:
 ### Good vs Bad Prompts
 
 **❌ Bad Prompt:**
+
 ```
 Create a component that displays lead information
 ```
 
 **✅ Good Prompt:**
+
 ```
 Create src/components/LeadCard.tsx that displays lead information.
 
@@ -300,6 +324,7 @@ Think about edge cases: What if lead has no phone? What if email is malformed?
 **Plan Mode** makes Claude Code create a detailed plan BEFORE executing. It costs ~10x more but is valuable for complex tasks.
 
 **Visual Indicators:**
+
 - **Regular Mode:** `? for shortcuts` (default)
 - **Plan Mode:** `" plan mode on (shift+tab to cycle)`
 - **Accept Edits:** `▶▶ accept edits on (shift+tab to cycle)` (different feature - auto-approves changes)
@@ -307,6 +332,7 @@ Think about edge cases: What if lead has no phone? What if email is malformed?
 **Cycle through modes:** Press **Shift+Tab**
 
 ### ✅ Use Plan Mode For:
+
 - Multi-file changes (3+ files)
 - Complex features spanning multiple systems
 - Architecture decisions
@@ -315,6 +341,7 @@ Think about edge cases: What if lead has no phone? What if email is malformed?
 - Integration work (database, API, auth)
 
 ### ❌ Use Regular Mode For:
+
 - Single file edits
 - Bug fixes
 - Adding one feature
@@ -323,6 +350,7 @@ Think about edge cases: What if lead has no phone? What if email is malformed?
 - Copy-paste tasks
 
 ### Cost Comparison
+
 - Phase 1-2 with smart Plan mode use: ~$2-5
 - Same work using Plan mode everywhere: ~$15-30
 - **Rule of thumb:** Use Plan mode for <10% of prompts
@@ -334,6 +362,7 @@ Think about edge cases: What if lead has no phone? What if email is malformed?
 ### Local Testing
 
 **Before deployment:**
+
 ```bash
 # Test all platforms
 npx expo start --ios        # Test iOS
@@ -345,6 +374,7 @@ npx expo start --clear
 ```
 
 **Verify:**
+
 - Calculator produces correct results
 - Complexity triggers fire appropriately
 - Inquiry form saves to Supabase
@@ -355,6 +385,7 @@ npx expo start --clear
 ### Production Testing
 
 **After deployment:**
+
 - Test live web app at `auschildsupport.com`
 - Verify privacy policy link works
 - Test form submission end-to-end
@@ -370,11 +401,13 @@ npx expo start --clear
 ### Web Platform (Current Priority)
 
 **Build for production:**
+
 ```bash
 npx expo export --platform web
 ```
 
 **Deploy to Netlify:**
+
 1. Build: `npx expo export --platform web`
 2. Go to [app.netlify.com/drop](https://app.netlify.com/drop)
 3. Drag `dist/` folder to upload
@@ -385,10 +418,12 @@ npx expo export --platform web
 ### Mobile Platforms (Future)
 
 **iOS App Store:**
+
 - Requires Apple Developer account ($99/year)
 - See `docs/guides/old/APP_STORE_DEPLOYMENT.md`
 
 **Android Play Store:**
+
 - Requires Google Play account ($25 one-time)
 - See `docs/guides/old/APP_STORE_DEPLOYMENT.md`
 
@@ -399,10 +434,12 @@ npx expo export --platform web
 **Admin Panel:** `auschildsupport.com/admin/login`
 
 **Login credentials:** Stored in `.env`
+
 - `EXPO_PUBLIC_ADMIN_EMAIL`
 - `EXPO_PUBLIC_ADMIN_PASSWORD`
 
 **Features:**
+
 - View all submitted leads
 - Mark leads as contacted/converted
 - View lead details and urgency
@@ -415,9 +452,11 @@ npx expo export --platform web
 **Connection:** `src/utils/supabase.ts`
 
 **Tables:**
+
 - `leads` - Inquiry form submissions
 
 **Schema:**
+
 ```sql
 CREATE TABLE leads (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -478,27 +517,32 @@ CREATE TABLE leads (
 ### Common Issues
 
 **Build fails:**
+
 ```bash
 # Clear cache and rebuild
 npx expo start --clear
 ```
 
 **Database connection fails:**
+
 - Check `.env` has correct Supabase credentials
 - Verify RLS policies allow operation
 - Check Supabase project is active
 
 **Admin login fails:**
+
 - Verify credentials in `.env`
 - Check console for error messages
-- Verify EXPO_PUBLIC_ prefix on variables
+- Verify EXPO*PUBLIC* prefix on variables
 
 **Styling looks wrong on web:**
+
 - Platform-specific styles may need adjustment
 - Check for mobile-only components
 - Review responsive breakpoints
 
 **PostHog errors on web:**
+
 - PostHog is intentionally disabled on web
 - This is expected behavior
 
@@ -514,18 +558,21 @@ npx expo start --clear
 ## 📚 Additional Resources
 
 ### Official Documentation
+
 - [Expo Documentation](https://docs.expo.dev/)
 - [React Native Documentation](https://reactnative.dev/)
 - [Supabase Documentation](https://supabase.com/docs)
 - [Expo Router Documentation](https://docs.expo.dev/router/introduction/)
 
 ### Project-Specific Docs
+
 - `docs/BUSINESS_MODEL.md` - Revenue model details
 - `docs/DESIGN_SYSTEM.md` - UI patterns and calculation formulas
 - `docs/PRICING_STRATEGY_ANALYSIS.md` - Regulatory compliance analysis
 - `docs/templates/` - Email and agreement templates
 
 ### Business Setup Docs
+
 - `docs/guides/active/LEAD_HANDOVER.md` - Lead handling process
 - `docs/guides/active/WEB_DEPLOYMENT_GUIDE.md` - Web deployment steps
 - `docs/guides/active/REMAINING_TASKS.md` - Current tasks and blockers
@@ -535,6 +582,7 @@ npx expo start --clear
 ## 🎯 Success Metrics
 
 ### Phase 2 Goals (Current)
+
 - ✅ Web app deployed to `auschildsupport.com`
 - ✅ Privacy policy integrated
 - ✅ Admin panel functional
@@ -543,6 +591,7 @@ npx expo start --clear
 - 🎯 First leads generated
 
 ### Long-term Goals
+
 - Monthly leads: 15-380
 - Monthly revenue: $1,500-$38,000
 - Lawyer partners: 5-20

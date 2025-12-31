@@ -5,8 +5,13 @@
 // that should trigger "Get Legal Help" prompts
 
 import type { CalculationResults, ChildInput } from '../types/calculator';
-import { getCoAReasonById, getHighestPriorityReason, isCourtDateReason, parseCourtDateFromReasonId } from './change-of-assessment-reasons';
 import { convertCareToPercentage } from './child-support-calculations';
+import {
+  getHighestPriorityReason,
+  getSpecialCircumstanceById,
+  isCourtDateReason,
+  parseCourtDateFromReasonId,
+} from './special-circumstances';
 
 /**
  * Flags indicating different types of complexity detected in child support calculations
@@ -114,7 +119,7 @@ export interface ComplexityFormData {
    * Array of selected complexity trigger reason IDs
    * Used to detect situations requiring legal review
    */
-  selectedCoAReasons?: string[];
+  selectedCircumstances?: string[];
   /**
    * Court date string in DD/MM/YYYY format
    * Used to determine if court date is within 60 days (urgent)
@@ -145,24 +150,38 @@ export function detectComplexity(
 
   // Debug logging (only in dev)
   if (__DEV__) {
-    console.log('[detectComplexity] Payment amount:', results.finalPaymentAmount);
+    console.log(
+      '[detectComplexity] Payment amount:',
+      results.finalPaymentAmount
+    );
     console.log('[detectComplexity] Is high value (>15000):', isHighValue);
   }
 
   // Check for shared care dispute (care percentage between 35-65% for any child)
-  const hasSharedCareDispute = formData.children?.some((child: ChildInput) => {
-    const carePercA = convertCareToPercentage(child.careAmountA, child.carePeriod);
-    const carePercB = convertCareToPercentage(child.careAmountB, child.carePeriod);
+  const hasSharedCareDispute =
+    formData.children?.some((child: ChildInput) => {
+      const carePercA = convertCareToPercentage(
+        child.careAmountA,
+        child.carePeriod
+      );
+      const carePercB = convertCareToPercentage(
+        child.careAmountB,
+        child.carePeriod
+      );
 
-    return (carePercA >= 35 && carePercA <= 65) ||
-      (carePercB >= 35 && carePercB <= 65);
-  }) ?? false;
+      return (
+        (carePercA >= 35 && carePercA <= 65) ||
+        (carePercB >= 35 && carePercB <= 65)
+      );
+    }) ?? false;
 
-  // Check for selected CoA reasons
-  const selectedReasons = formData.selectedCoAReasons ?? [];
+  // Check for selected special circumstances
+  const selectedReasons = formData.selectedCircumstances ?? [];
 
   // Check if court date reason is selected (check for dynamic court date reasons)
-  const hasCourtDateSelected = selectedReasons.some(id => isCourtDateReason(id));
+  const hasCourtDateSelected = selectedReasons.some((id) =>
+    isCourtDateReason(id)
+  );
 
   if (__DEV__ && hasCourtDateSelected) {
     console.log('[detectComplexity] Court date reason selected');
@@ -172,8 +191,14 @@ export function detectComplexity(
   const hasSpecialCircumstances = selectedReasons.length > 0;
 
   if (__DEV__) {
-    console.log('[detectComplexity] Selected CoA reasons:', selectedReasons);
-    console.log('[detectComplexity] Has special circumstances:', hasSpecialCircumstances);
+    console.log(
+      '[detectComplexity] Selected special circumstances:',
+      selectedReasons
+    );
+    console.log(
+      '[detectComplexity] Has special circumstances:',
+      hasSpecialCircumstances
+    );
   }
 
   return {
@@ -203,45 +228,62 @@ export function getAlertConfig(
   formData?: ComplexityFormData
 ): AlertConfig | null {
   // Priority 1: Court date selected
-  const courtDateReasonId = formData?.selectedCoAReasons?.find(id => isCourtDateReason(id));
+  const courtDateReasonId = formData?.selectedCircumstances?.find((id) =>
+    isCourtDateReason(id)
+  );
   if (courtDateReasonId) {
     const courtDate = parseCourtDateFromReasonId(courtDateReasonId);
     const dateStr = courtDate
-      ? courtDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })
+      ? courtDate.toLocaleDateString('en-AU', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        })
       : '';
 
     return {
-      title: dateStr ? `Court Date Approaching: ${dateStr}` : "Court Date Approaching",
-      message: "Professional legal preparation is strongly recommended before your court appearance.",
+      title: dateStr
+        ? `Court Date Approaching: ${dateStr}`
+        : 'Court Date Approaching',
+      message:
+        'Professional legal preparation is strongly recommended before your court appearance.',
       urgency: 'high',
-      buttonText: "Get Legal Consultation"
+      buttonText: 'Get Legal Consultation',
     };
   }
 
   // Priority 2: Complexity triggers (special circumstances)
   if (flags.specialCircumstances) {
     // Safely get selected reasons, handle undefined/null
-    const selectedIds = formData?.selectedCoAReasons ?? [];
+    const selectedIds = formData?.selectedCircumstances ?? [];
 
     // Get the most important reason (based on priority)
     const mostImportantReason = getHighestPriorityReason(selectedIds);
 
     if (__DEV__) {
-      console.log('[getAlertConfig] Selected complexity reason IDs:', selectedIds);
-      console.log('[getAlertConfig] Most important reason:', mostImportantReason);
+      console.log(
+        '[getAlertConfig] Selected complexity reason IDs:',
+        selectedIds
+      );
+      console.log(
+        '[getAlertConfig] Most important reason:',
+        mostImportantReason
+      );
     }
 
     // Handle edge case: flag is true but no valid reasons found
     if (!mostImportantReason) {
       if (__DEV__) {
-        console.warn('[getAlertConfig] specialCircumstances flag is true but no valid reasons found');
+        console.warn(
+          '[getAlertConfig] specialCircumstances flag is true but no valid reasons found'
+        );
       }
       // Fallback to generic message
       return {
-        title: "📋 Special Circumstances Detected",
-        message: "Your case has factors that may benefit from legal review.",
+        title: '📋 Special Circumstances Detected',
+        message: 'Your case has factors that may benefit from legal review.',
         urgency: 'medium',
-        buttonText: "Talk to a Lawyer"
+        buttonText: 'Talk to a Lawyer',
       };
     }
 
@@ -251,18 +293,20 @@ export function getAlertConfig(
     const isHighPriority = mostImportantReason.priority <= 3;
 
     // Handle multiple reasons vs single reason
-    const reasonCount = selectedIds.filter(id => getCoAReasonById(id) !== null).length;
+    const reasonCount = selectedIds.filter(
+      (id) => getSpecialCircumstanceById(id) !== null
+    ).length;
 
     if (reasonCount > 1) {
       // Multiple reasons selected
       // Check if any selected reason is Reason 8A (income suspicion)
-      const hasReason8A = selectedIds.some(id => {
-        const reason = getCoAReasonById(id);
-        return reason?.officialCoAReasons.includes('5.2.8');
+      const hasReason8A = selectedIds.some((id) => {
+        const reason = getSpecialCircumstanceById(id);
+        return reason?.officialCodes.includes('5.2.8');
       });
 
       const forensicAccountantTip = hasReason8A
-        ? "Tip: Family lawyers who specialize in complex income cases may recommend a forensic accountant to investigate. These typically cost $5,000-$15,000 but can uncover hidden income worth 10-50x their fee. Your lawyer will advise if this is appropriate for your case."
+        ? 'Tip: Family lawyers who specialize in complex income cases may recommend a forensic accountant to investigate. These typically cost $5,000-$15,000 but can uncover hidden income worth 10-50x their fee. Your lawyer will advise if this is appropriate for your case.'
         : undefined;
 
       return {
@@ -270,40 +314,46 @@ export function getAlertConfig(
           ? `💰 ${reasonCount} Issues Affecting Fairness Detected`
           : `📋 ${reasonCount} Factors Affecting Fairness`,
         message: isHighPriority
-          ? "The income situation looks complicated—a lawyer can help you request an adjustment. This often increases support by $5,000+/year."
-          : "Multiple complexity factors apply to your case. A lawyer can help ensure fair assessment.",
+          ? 'The income situation looks complicated—a lawyer can help you request an adjustment. This often increases support by $5,000+/year.'
+          : 'Multiple complexity factors apply to your case. A lawyer can help ensure fair assessment.',
         urgency: isHighPriority ? 'high' : 'medium',
-        buttonText: "Talk to a Lawyer About This",
-        tip: forensicAccountantTip
+        buttonText: 'Talk to a Lawyer About This',
+        tip: forensicAccountantTip,
       };
     } else {
       // Single reason - use reason-specific message
       // Sanitize the label to prevent any potential issues
       const sanitizedLabel = mostImportantReason.label.replace(/[<>]/g, '');
-      const categoryEmoji = mostImportantReason.category === 'income' ? '💰' :
-        mostImportantReason.category === 'child' ? '👶' : '🏡';
+      const categoryEmoji =
+        mostImportantReason.category === 'income'
+          ? '💰'
+          : mostImportantReason.category === 'child'
+            ? '👶'
+            : '🏡';
 
       // Check if this is a Reason 8A income suspicion case (hidden income)
-      const isReason8A = mostImportantReason.officialCoAReasons.includes('5.2.8');
+      const isReason8A = mostImportantReason.officialCodes.includes('5.2.8');
       const forensicAccountantTip = isReason8A
-        ? "Tip: Family lawyers who specialize in complex income cases may recommend a forensic accountant to investigate. These typically cost $5,000-$15,000 but can uncover hidden income worth 10-50x their fee. Your lawyer will advise if this is appropriate for your case."
+        ? 'Tip: Family lawyers who specialize in complex income cases may recommend a forensic accountant to investigate. These typically cost $5,000-$15,000 but can uncover hidden income worth 10-50x their fee. Your lawyer will advise if this is appropriate for your case.'
         : undefined;
 
       if (isHighPriority) {
         return {
           title: `${categoryEmoji} URGENT: ${sanitizedLabel}`,
-          message: "The income situation looks complicated—a lawyer can help you request an adjustment to make it fair. This often makes a $5,000+ difference in annual support.",
+          message:
+            'The income situation looks complicated—a lawyer can help you request an adjustment to make it fair. This often makes a $5,000+ difference in annual support.',
           urgency: 'high',
-          buttonText: "Talk to a Lawyer",
-          tip: forensicAccountantTip
+          buttonText: 'Talk to a Lawyer',
+          tip: forensicAccountantTip,
         };
       } else {
         return {
-          title: `${categoryEmoji} Change of Assessment: ${sanitizedLabel}`,
-          message: "This situation can be complex—a lawyer knows how to navigate the assessment process to ensure fairness.",
+          title: `${categoryEmoji} Special Circumstances: ${sanitizedLabel}`,
+          message:
+            'This situation can be complex—a lawyer knows how to navigate the assessment process to ensure fairness.',
           urgency: 'medium',
-          buttonText: "Get Legal Help",
-          tip: forensicAccountantTip
+          buttonText: 'Get Legal Help',
+          tip: forensicAccountantTip,
         };
       }
     }
@@ -312,20 +362,21 @@ export function getAlertConfig(
   // Priority 3: Shared care dispute
   if (flags.sharedCareDispute) {
     return {
-      title: "Care Arrangement in Dispute Zone",
-      message: "Shared care between 35-65% is often contested. Consider professional advice.",
+      title: 'Care Arrangement in Dispute Zone',
+      message:
+        'Shared care between 35-65% is often contested. Consider professional advice.',
       urgency: 'medium',
-      buttonText: "Get Guidance"
+      buttonText: 'Get Guidance',
     };
   }
 
   // Priority 4: High value cases
   if (flags.highValue) {
     return {
-      title: "💰 High-Value Case",
+      title: '💰 High-Value Case',
       message: `Your liability is $${Math.round(results.finalPaymentAmount).toLocaleString()}/year. Cases over $15k benefit from verification.`,
       urgency: 'medium',
-      buttonText: "Request Review"
+      buttonText: 'Request Review',
     };
   }
 

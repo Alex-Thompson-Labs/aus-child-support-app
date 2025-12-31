@@ -27,6 +27,7 @@ Update app.json to add web platform support with static output and metro bundler
 ```
 
 Claude Code will add this to your app.json:
+
 - Add "web" to platforms array
 - Add web configuration with static output and metro bundler
 - Keep existing favicon path
@@ -54,11 +55,13 @@ npx expo start --web
 ```
 
 This will:
+
 - Start a development server
 - Open your default browser to `http://localhost:8081`
 - Show any errors that need fixing
 
 **Common issues you might encounter:**
+
 - Components that use native-only features (camera, haptics, etc.)
 - Platform-specific styling that doesn't work on web
 - Navigation gestures that behave differently
@@ -76,6 +79,7 @@ PostHog doesn't work on web without additional configuration. Find the PostHog i
 ```
 
 Claude Code will find your PostHog setup (likely in `app/_layout.tsx`) and add:
+
 ```typescript
 if (Platform.OS !== 'web') {
   // PostHog initialization
@@ -116,6 +120,7 @@ This requires design judgment and understanding responsive design patterns - Opu
 ### 5.5 Test All Features
 
 Manually go through the app and test:
+
 - Calculator works
 - Navigation works
 - Forms work
@@ -183,9 +188,11 @@ You have several free/cheap options:
 ### For Netlify (Easiest - Drag & Drop):
 
 1. **Ask Claude Code to do this:**
+
    ```
    Build the web version for production
    ```
+
    Claude Code will run: `npx expo export --platform web`
 
 2. Go to [app.netlify.com/drop](https://app.netlify.com/drop)
@@ -201,6 +208,7 @@ Set up Netlify CLI deployment with automatic builds
 ```
 
 Claude Code will:
+
 - Install netlify-cli globally
 - Run `netlify init` to connect your site
 - Add a deploy script to package.json
@@ -272,6 +280,7 @@ Set up continuous deployment with Netlify so every git push automatically deploy
 This involves coordinating GitHub, Netlify, and build configurations - Opus handles complex integrations better.
 
 Claude Code will:
+
 - Help you push to GitHub if not already there
 - Guide you through connecting Netlify to GitHub
 - Set up the build settings (build command: `npx expo export --platform web`, publish directory: `dist`)
@@ -290,6 +299,7 @@ Build and deploy the latest changes to the web app
 ```
 
 Claude Code will:
+
 1. Build the production version
 2. Deploy using your configured method (Netlify CLI or show you the dist/ folder to drag-drop)
 
@@ -307,6 +317,7 @@ Claude Code will:
 ### Build fails with "metro" error
 
 **Ask Claude Code to do this:**
+
 ```
 Clear the Expo cache and rebuild for web
 ```
@@ -314,6 +325,7 @@ Clear the Expo cache and rebuild for web
 ### Fonts don't load
 
 **Ask Claude Code to do this:**
+
 ```
 Check font configuration for web and fix any path issues
 ```
@@ -321,6 +333,7 @@ Check font configuration for web and fix any path issues
 ### Navigation doesn't work
 
 **Ask Claude Code to do this:**
+
 ```
 Check Expo Router configuration for web compatibility and fix any issues
 ```
@@ -328,6 +341,7 @@ Check Expo Router configuration for web compatibility and fix any issues
 ### Styling looks different on web
 
 **Ask Claude Code to do this:**
+
 ```
 Find styling differences between mobile and web, add Platform.OS checks where needed
 ```
@@ -335,6 +349,7 @@ Find styling differences between mobile and web, add Platform.OS checks where ne
 ### Analytics not tracking
 
 **Ask Claude Code to do this:**
+
 ```
 Set up PostHog analytics for web platform
 ```
@@ -357,58 +372,65 @@ Set up PostHog analytics for web platform
 **⚠️ Use Opus for #1, Sonnet is fine for #2-4**
 
 1. **Set up web analytics** (recommended - do this first, ⚠️ use Opus):
+
    ```
    Add Google Analytics or Plausible to track web users. Keep PostHog for mobile only.
    ```
-   
+
    Why you need this: PostHog is mobile-only now, so you need separate analytics for web visitors.
-   
+
    **Best options:**
    - **Google Analytics 4** - Free, comprehensive, industry standard
    - **Plausible** - Privacy-focused, simpler, $9/month
    - **Umami** - Open source, self-hosted, free
-   
+
    Opus can better handle the integration complexity, environment variables, and ensuring it doesn't conflict with PostHog.
 
 2. `Add SEO meta tags to improve search engine visibility` (Sonnet OK)
 
 3. `Test web app accessibility with screen readers` ✅
 
-  See comprehensive testing guide: `docs/ACCESSIBILITY_TESTING.md`
+See comprehensive testing guide: `docs/ACCESSIBILITY_TESTING.md`
 
-  Quick tests:
-  - Run Lighthouse accessibility audit (target 95+ score)
-  - Test keyboard navigation (Tab through all elements)
-  - Test with screen reader (VoiceOver on Mac, NVDA on Windows)
-  - Use axe DevTools browser extension
+Quick tests:
 
-  Files created:
-  - `docs/ACCESSIBILITY_AUDIT.md` - Full audit report with 10 issues identified
-  - `docs/ACCESSIBILITY_IMPLEMENTATION_EXAMPLE.md` - Code examples
-  - `docs/ACCESSIBILITY_TESTING.md` - Testing procedures
-  - `src/utils/accessibility.ts` - Helper utilities for accessible components
+- Run Lighthouse accessibility audit (target 95+ score)
+- Test keyboard navigation (Tab through all elements)
+- Test with screen reader (VoiceOver on Mac, NVDA on Windows)
+- Use axe DevTools browser extension
+
+Files created:
+
+- `docs/ACCESSIBILITY_AUDIT.md` - Full audit report with 10 issues identified
+- `docs/ACCESSIBILITY_IMPLEMENTATION_EXAMPLE.md` - Code examples
+- `docs/ACCESSIBILITY_TESTING.md` - Testing procedures
+- `src/utils/accessibility.ts` - Helper utilities for accessible components
 
 4. `Optimize web performance and check Lighthouse score` ✅
 
-  See comprehensive guides:
-  - `docs/WEB_PERFORMANCE_OPTIMIZATION.md` - Full optimization guide
-  - `docs/PERFORMANCE_OPTIMIZATION_SUMMARY.md` - What was implemented
+See comprehensive guides:
 
-  Quick commands:
-  - `npm run build:analyze` - Analyze bundle size
-  - `npm run lighthouse` - Run performance audit
+- `docs/WEB_PERFORMANCE_OPTIMIZATION.md` - Full optimization guide
+- `docs/PERFORMANCE_OPTIMIZATION_SUMMARY.md` - What was implemented
 
-  Optimizations implemented:
-  - ✅ Netlify caching and Brotli compression (60-70% size reduction)
-  - ✅ Web Vitals monitoring (`src/utils/web-vitals.ts`)
-  - ✅ Performance testing scripts
-  - ✅ Security headers and CSP
-  - ✅ HTTP→HTTPS redirects
+Quick commands:
 
-  Current state:
-  - Bundle: 4.8 MB → ~1.4-1.9 MB (compressed)
-  - Monitoring: Auto-tracks LCP, FID, CLS, FCP, TTFB
-  - Target: Lighthouse Performance 80+ (minimum), 90+ (ideal)
+- `npm run build:analyze` - Analyze bundle size
+- `npm run lighthouse` - Run performance audit
+
+Optimizations implemented:
+
+- ✅ Netlify caching and Brotli compression (60-70% size reduction)
+- ✅ Web Vitals monitoring (`src/utils/web-vitals.ts`)
+- ✅ Performance testing scripts
+- ✅ Security headers and CSP
+- ✅ HTTP→HTTPS redirects
+
+Current state:
+
+- Bundle: 4.8 MB → ~1.4-1.9 MB (compressed)
+- Monitoring: Auto-tracks LCP, FID, CLS, FCP, TTFB
+- Target: Lighthouse Performance 80+ (minimum), 90+ (ideal)
 
 ---
 

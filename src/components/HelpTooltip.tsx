@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import { shadowPresets } from "../utils/shadow-styles";
+import React, { useState } from 'react';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { shadowPresets } from '../utils/shadow-styles';
 
 interface HelpTooltipProps {
   what: string | React.ReactNode;
@@ -36,7 +36,9 @@ export function HelpTooltip({
         accessibilityLabel="Help"
         accessibilityHint="Tap to see more information"
       >
-        <Text style={[styles.buttonText, iconColor && { color: iconColor }]}>?</Text>
+        <Text style={[styles.buttonText, iconColor && { color: iconColor }]}>
+          ?
+        </Text>
       </Pressable>
 
       <Modal
@@ -51,7 +53,11 @@ export function HelpTooltip({
           accessibilityRole="button"
           accessibilityLabel="Close help dialog"
         >
-          <Pressable style={styles.tooltip} onPress={(e) => e.stopPropagation()} accessible={true}>
+          <Pressable
+            style={styles.tooltip}
+            onPress={(e) => e.stopPropagation()}
+            accessible={true}
+          >
             <View style={styles.content}>
               {header && (
                 <View style={styles.section}>
@@ -86,38 +92,38 @@ export function HelpTooltip({
 
 const styles = StyleSheet.create({
   container: {
-    position: "relative",
-    alignItems: "center",
-    justifyContent: "center",
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   button: {
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: "#f3f4f6", // grey-100
+    backgroundColor: '#f3f4f6', // grey-100
     borderWidth: 1.5,
-    borderColor: "#6b7280", // grey-500 - WCAG AA compliant (4.5:1)
-    alignItems: "center",
-    justifyContent: "center",
+    borderColor: '#6b7280', // grey-500 - WCAG AA compliant (4.5:1)
+    alignItems: 'center',
+    justifyContent: 'center',
     marginLeft: 6,
   },
   buttonText: {
-    color: "#4b5563", // grey-600 - better contrast (5.9:1)
+    color: '#4b5563', // grey-600 - better contrast (5.9:1)
     fontSize: 13,
-    fontWeight: "700",
+    fontWeight: '700',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   tooltip: {
     width: 280,
-    backgroundColor: "#ffffff", // white
+    backgroundColor: '#ffffff', // white
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#e5e7eb", // grey-200
+    borderColor: '#e5e7eb', // grey-200
     ...shadowPresets.medium,
   },
   content: {
@@ -128,37 +134,36 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     fontSize: 14,
-    fontWeight: "700",
-    color: "#ea580c", // orange-600
+    fontWeight: '700',
+    color: '#ea580c', // orange-600
     marginBottom: 8,
   },
   sectionLabel: {
     fontSize: 12,
-    fontWeight: "600",
-    color: "#ea580c", // orange-600
-    textTransform: "uppercase",
+    fontWeight: '600',
+    color: '#ea580c', // orange-600
+    textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 4,
   },
   sectionText: {
-    color: "#374151", // grey-700
+    color: '#374151', // grey-700
     fontSize: 14,
     lineHeight: 20,
     marginTop: 2,
   },
   sectionLabelWhy: {
     fontSize: 12,
-    fontWeight: "600",
-    color: "#ea580c", // orange-600
-    textTransform: "uppercase",
+    fontWeight: '600',
+    color: '#ea580c', // orange-600
+    textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 4,
   },
   sectionTextWhy: {
-    color: "#374151", // grey-700
+    color: '#374151', // grey-700
     fontSize: 14,
     lineHeight: 20,
     marginTop: 2,
   },
 });
-

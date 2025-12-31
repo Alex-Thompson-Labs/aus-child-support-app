@@ -11,11 +11,13 @@ This guide helps you test the Child Support Calculator's accessibility with scre
 ### macOS - VoiceOver (Safari)
 
 **Enable VoiceOver:**
+
 ```
 Cmd + F5
 ```
 
 **Basic Navigation:**
+
 - `VO + Right Arrow` - Next item
 - `VO + Left Arrow` - Previous item
 - `VO + Space` - Activate button/link
@@ -24,6 +26,7 @@ Cmd + F5
 - `Cmd + F5` - Turn off VoiceOver
 
 **Test Checklist:**
+
 - [ ] Navigate through entire calculator form
 - [ ] Verify all inputs announce their labels
 - [ ] Check error messages are announced
@@ -38,11 +41,13 @@ Cmd + F5
 **Download:** https://www.nvaccess.org/download/
 
 **Enable NVDA:**
+
 ```
 Ctrl + Alt + N (after installation)
 ```
 
 **Basic Navigation:**
+
 - `Down Arrow` - Next line
 - `Up Arrow` - Previous line
 - `Tab` - Next interactive element
@@ -51,12 +56,14 @@ Ctrl + Alt + N (after installation)
 - `Insert + Q` - Quit NVDA
 
 **Browse Mode Commands:**
+
 - `H` - Next heading
 - `F` - Next form field
 - `B` - Next button
 - `E` - Next edit field
 
 **Test Checklist:**
+
 - [ ] Browse entire page in browse mode
 - [ ] Navigate forms with F key
 - [ ] Verify form errors are announced
@@ -68,17 +75,20 @@ Ctrl + Alt + N (after installation)
 ### iOS - VoiceOver (Safari)
 
 **Enable VoiceOver:**
+
 ```
 Settings → Accessibility → VoiceOver → On
 ```
 
 **Basic Gestures:**
+
 - Swipe Right - Next item
 - Swipe Left - Previous item
 - Double Tap - Activate
 - Two-finger scrub - Go back
 
 **Test Checklist:**
+
 - [ ] Navigate calculator on mobile web
 - [ ] Test form inputs
 - [ ] Verify all buttons work
@@ -89,11 +99,13 @@ Settings → Accessibility → VoiceOver → On
 ### Android - TalkBack (Chrome)
 
 **Enable TalkBack:**
+
 ```
 Settings → Accessibility → TalkBack → On
 ```
 
 **Basic Gestures:**
+
 - Swipe Right - Next item
 - Swipe Left - Previous item
 - Double Tap - Activate
@@ -106,6 +118,7 @@ Settings → Accessibility → TalkBack → On
 ### Lighthouse (Built into Chrome)
 
 **Run Audit:**
+
 1. Open Chrome DevTools (F12)
 2. Click "Lighthouse" tab
 3. Select "Accessibility" category
@@ -114,6 +127,7 @@ Settings → Accessibility → TalkBack → On
 **Target Score:** 95+
 
 **Common Issues to Fix:**
+
 - Missing ARIA labels
 - Low color contrast
 - Missing alt text
@@ -124,15 +138,18 @@ Settings → Accessibility → TalkBack → On
 ### axe DevTools Extension
 
 **Install:**
+
 - Chrome: https://chrome.google.com/webstore (search "axe DevTools")
 - Firefox: https://addons.mozilla.org (search "axe DevTools")
 
 **Run Scan:**
+
 1. Open DevTools (F12)
 2. Click "axe DevTools" tab
 3. Click "Scan ALL of my page"
 
 **Priority:**
+
 1. Fix all "Critical" issues
 2. Fix all "Serious" issues
 3. Fix "Moderate" issues if time permits
@@ -142,16 +159,19 @@ Settings → Accessibility → TalkBack → On
 ### WAVE Browser Extension
 
 **Install:**
+
 - Chrome: https://chrome.google.com/webstore (search "WAVE")
 - Firefox: https://addons.mozilla.org (search "WAVE")
 
 **Run Evaluation:**
+
 1. Click WAVE icon in browser toolbar
 2. Review errors (red icons)
 3. Review alerts (yellow icons)
 4. Review features (green icons)
 
 **Visual Indicators:**
+
 - Red = Errors (must fix)
 - Yellow = Alerts (review carefully)
 - Green = Features (good practices)
@@ -163,6 +183,7 @@ Settings → Accessibility → TalkBack → On
 ### Test All Interactive Elements
 
 **Navigation:**
+
 ```
 Tab       → Move to next interactive element
 Shift+Tab → Move to previous interactive element
@@ -173,6 +194,7 @@ Arrow Keys → Navigate within components (pickers, sliders)
 ```
 
 **Checklist:**
+
 - [ ] Can tab through entire form in logical order
 - [ ] All buttons activatable with Enter/Space
 - [ ] Modals can be closed with Esc
@@ -189,10 +211,12 @@ Arrow Keys → Navigate within components (pickers, sliders)
 **Tool:** https://webaim.org/resources/contrastchecker/
 
 **WCAG AA Requirements:**
+
 - Normal text (< 18pt): **4.5:1** contrast ratio
 - Large text (≥ 18pt or bold ≥ 14pt): **3:1** contrast ratio
 
 **Test:**
+
 - [ ] Body text on background
 - [ ] Button text on button background
 - [ ] Link text on background
@@ -204,6 +228,7 @@ Arrow Keys → Navigate within components (pickers, sliders)
 ### Focus Indicators
 
 **Check:**
+
 - [ ] All interactive elements show visible focus ring
 - [ ] Focus ring has sufficient contrast (3:1)
 - [ ] Focus ring doesn't disappear on hover
@@ -216,6 +241,7 @@ Arrow Keys → Navigate within components (pickers, sliders)
 ### Scenario 1: Complete Calculator Form
 
 **Steps:**
+
 1. Navigate to calculator
 2. Enter Parent A income (keyboard only)
 3. Tab to Parent B income
@@ -225,6 +251,7 @@ Arrow Keys → Navigate within components (pickers, sliders)
 7. Read results with screen reader
 
 **Expected:**
+
 - All fields announced with labels
 - Errors announced when validation fails
 - Results announced when calculation completes
@@ -234,6 +261,7 @@ Arrow Keys → Navigate within components (pickers, sliders)
 ### Scenario 2: Lawyer Inquiry Form
 
 **Steps:**
+
 1. Complete calculation
 2. Click "Get Legal Help"
 3. Fill out inquiry form (keyboard only)
@@ -242,6 +270,7 @@ Arrow Keys → Navigate within components (pickers, sliders)
 6. Submit successfully
 
 **Expected:**
+
 - Modal opens and focus moves to form
 - All inputs have clear labels
 - Errors announced immediately
@@ -253,12 +282,14 @@ Arrow Keys → Navigate within components (pickers, sliders)
 ### Scenario 3: Help Tooltips
 
 **Steps:**
+
 1. Tab to help icon (?)
 2. Activate with Enter or Space
 3. Read tooltip content
 4. Close with Esc or click outside
 
 **Expected:**
+
 - Icon has accessible label
 - Tooltip content announced
 - Keyboard accessible
@@ -307,24 +338,28 @@ describe('Accessibility', () => {
 ### Accessibility Checklist
 
 **Forms:**
+
 - [ ] All inputs have labels
 - [ ] Errors are announced
 - [ ] Required fields marked
 - [ ] Validation messages clear
 
 **Navigation:**
+
 - [ ] Keyboard accessible
 - [ ] Logical tab order
 - [ ] Skip links available
 - [ ] Landmarks defined
 
 **Content:**
+
 - [ ] Headings hierarchy (H1 → H2 → H3)
 - [ ] Alt text for images
 - [ ] Color not sole indicator
 - [ ] Sufficient contrast
 
 **Interactive:**
+
 - [ ] Buttons have labels
 - [ ] Links descriptive
 - [ ] Modals accessible
@@ -335,11 +370,13 @@ describe('Accessibility', () => {
 ## 8. Resources
 
 ### Documentation
+
 - [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
 - [React Native Accessibility](https://reactnative.dev/docs/accessibility)
 - [WebAIM Screen Reader Guide](https://webaim.org/articles/screenreader_testing/)
 
 ### Tools
+
 - [Lighthouse](https://developers.google.com/web/tools/lighthouse)
 - [axe DevTools](https://www.deque.com/axe/devtools/)
 - [WAVE](https://wave.webaim.org/extension/)
@@ -347,6 +384,7 @@ describe('Accessibility', () => {
 - [NVDA Screen Reader](https://www.nvaccess.org/)
 
 ### Testing Services
+
 - [Fable](https://makeitfable.com/) - Real users with disabilities
 - [Accessibility Insights](https://accessibilityinsights.io/) - Microsoft tool
 
@@ -368,7 +406,8 @@ When you find an accessibility issue:
    - **Medium:** Minor improvement needed
 
 3. **Create GitHub issue** with template:
-```markdown
+
+````markdown
 ## Accessibility Issue
 
 **Element:** [e.g., "Parent A income input"]
@@ -380,13 +419,17 @@ When you find an accessibility issue:
 **WCAG:** [e.g., "1.3.1 Info and Relationships"]
 
 ## Steps to Reproduce
+
 1. ...
 2. ...
 
 ## Suggested Fix
+
 ```tsx
 // Code example
 ```
+````
+
 ```
 
 ---
@@ -404,3 +447,4 @@ When you find an accessibility issue:
 - Tested with multiple screen readers
 - Real user feedback from people with disabilities
 - Regular accessibility audits (monthly)
+```

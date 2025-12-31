@@ -31,8 +31,8 @@ export interface WebVitals {
  */
 export const WEB_VITALS_THRESHOLDS = {
   LCP: { good: 2500, poor: 4000 }, // ms
-  INP: { good: 200, poor: 500 },   // ms (replaces FID)
-  CLS: { good: 0.1, poor: 0.25 },  // score
+  INP: { good: 200, poor: 500 }, // ms (replaces FID)
+  CLS: { good: 0.1, poor: 0.25 }, // score
   FCP: { good: 1800, poor: 3000 }, // ms
   TTFB: { good: 800, poor: 1800 }, // ms
 } as const;
@@ -66,7 +66,7 @@ export function trackWebVitals(onReport: (vitals: Partial<WebVitals>) => void) {
       .then((webVitalsModule) => {
         // Safely destructure the module (using INP instead of deprecated FID)
         const { onLCP, onINP, onCLS, onFCP, onTTFB } = webVitalsModule;
-        
+
         if (typeof onLCP !== 'function') {
           console.warn('[Web Vitals] Invalid module import');
           return;
@@ -260,7 +260,7 @@ export function getMemoryUsage() {
     return null;
   }
 
-  const performance = (window.performance as any);
+  const performance = window.performance as any;
   if (!performance.memory) {
     return null;
   }
@@ -270,7 +270,9 @@ export function getMemoryUsage() {
     totalJSHeapSize: performance.memory.totalJSHeapSize,
     jsHeapSizeLimit: performance.memory.jsHeapSizeLimit,
     // Percentage of heap used
-    heapUsagePercent: (performance.memory.usedJSHeapSize / performance.memory.jsHeapSizeLimit) * 100,
+    heapUsagePercent:
+      (performance.memory.usedJSHeapSize / performance.memory.jsHeapSizeLimit) *
+      100,
   };
 }
 
@@ -288,7 +290,7 @@ export function logMemoryUsage() {
       'Used Heap': `${(memory.usedJSHeapSize / 1024 / 1024).toFixed(2)} MB`,
       'Total Heap': `${(memory.totalJSHeapSize / 1024 / 1024).toFixed(2)} MB`,
       'Heap Limit': `${(memory.jsHeapSizeLimit / 1024 / 1024).toFixed(2)} MB`,
-      'Usage': `${memory.heapUsagePercent.toFixed(1)}%`,
+      Usage: `${memory.heapUsagePercent.toFixed(1)}%`,
     });
   }
 }

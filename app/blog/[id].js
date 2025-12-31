@@ -1,6 +1,13 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import RenderHtml from 'react-native-render-html';
 
 export default function BlogPost() {
@@ -13,13 +20,15 @@ export default function BlogPost() {
     if (!id) return;
 
     // Fetch just this one specific post
-    fetch(`https://public-api.wordpress.com/wp/v2/sites/auschildsupportbackend.wordpress.com/posts/${id}`)
-      .then(response => response.json())
-      .then(data => {
+    fetch(
+      `https://public-api.wordpress.com/wp/v2/sites/auschildsupportbackend.wordpress.com/posts/${id}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
         setPost(data);
         setLoading(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
         setLoading(false);
       });
@@ -64,9 +73,25 @@ export default function BlogPost() {
             contentWidth={width > 800 ? 760 : width - 40}
             source={{ html: post.content.rendered }}
             tagsStyles={{
-              p: { fontSize: 18, lineHeight: 28, marginBottom: 16, color: '#333' },
-              h2: { fontSize: 24, fontWeight: 'bold', marginTop: 20, marginBottom: 10, color: '#111' },
-              h3: { fontSize: 20, fontWeight: 'bold', marginTop: 15, marginBottom: 8 },
+              p: {
+                fontSize: 18,
+                lineHeight: 28,
+                marginBottom: 16,
+                color: '#333',
+              },
+              h2: {
+                fontSize: 24,
+                fontWeight: 'bold',
+                marginTop: 20,
+                marginBottom: 10,
+                color: '#111',
+              },
+              h3: {
+                fontSize: 20,
+                fontWeight: 'bold',
+                marginTop: 15,
+                marginBottom: 8,
+              },
               li: { fontSize: 18, lineHeight: 28, marginBottom: 8 },
               a: { color: '#0056b3', textDecorationLine: 'none' },
             }}

@@ -18,11 +18,13 @@ A **free calculator** that helps Australian parents calculate child support paym
 ## 🚀 Quick Start
 
 ### 1. Install Dependencies
+
 ```bash
 npm install
 ```
 
 ### 2. Set Up Environment
+
 ```bash
 # Copy environment template
 cp .env.example .env
@@ -32,6 +34,7 @@ cp .env.example .env
 ```
 
 ### 3. Start Development
+
 ```bash
 npm start          # Start Expo dev server
 npm run ios        # iOS simulator
@@ -44,9 +47,11 @@ npm run web        # Web browser
 ## 📚 Documentation
 
 **Current Work:**
+
 - [guides/CHRISTMAS_BREAK_PLAN.md](guides/CHRISTMAS_BREAK_PLAN.md) - Tasks for Dec 24 - Jan 2
 
 **Reference:**
+
 - [docs/CLAUDE.md](docs/CLAUDE.md) - Architecture & production code requirements
 - [docs/BUSINESS_MODEL.md](docs/BUSINESS_MODEL.md) - $50/lead model
 - [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) - Colors, spacing
@@ -77,6 +82,7 @@ csc/
 **Success Metric:** >2% click-through rate
 
 ### This Week's Tasks:
+
 1. ✅ Environment setup (.env created)
 2. ✅ Analytics setup (Google Analytics)
 3. ⏳ Implement complexity triggers
@@ -105,6 +111,7 @@ npm run type-check  # TypeScript validation
 ## 🧪 Testing
 
 Before recruiting users:
+
 1. Complete [guides/phase1/TESTING.md](guides/phase1/TESTING.md)
 2. Verify all analytics events fire
 3. Test on both iOS and Android
@@ -115,6 +122,7 @@ Before recruiting users:
 ## 🆘 Help
 
 **Issues? Check:**
+
 1. [guides/TROUBLESHOOTING.md](guides/TROUBLESHOOTING.md) - Common fixes
 2. [docs/MASTER_PLAN.md](docs/MASTER_PLAN.md) - Code snippets in Appendix A
 3. [docs/CLAUDE.md](docs/CLAUDE.md) - Architecture reference

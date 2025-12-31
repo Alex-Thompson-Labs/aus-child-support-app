@@ -12,13 +12,14 @@ This guide shows how to apply accessibility fixes using the utilities in `src/ut
   value={name}
   onChangeText={setName}
   placeholder="Enter your name"
-/>
-{errors.name && (
-  <Text style={styles.error}>{errors.name}</Text>
-)}
+/>;
+{
+  errors.name && <Text style={styles.error}>{errors.name}</Text>;
+}
 ```
 
 **Problems:**
+
 - No accessibility label
 - Error not associated with input
 - No ARIA attributes for web
@@ -29,7 +30,10 @@ This guide shows how to apply accessibility fixes using the utilities in `src/ut
 ### After (Accessible)
 
 ```tsx
-import { getTextInputA11yProps, getErrorA11yProps } from '@/src/utils/accessibility';
+import {
+  getTextInputA11yProps,
+  getErrorA11yProps,
+} from '@/src/utils/accessibility';
 
 <TextInput
   style={[styles.input, errors.name && styles.inputError]}
@@ -42,18 +46,18 @@ import { getTextInputA11yProps, getErrorA11yProps } from '@/src/utils/accessibil
     error: errors.name,
     errorId: 'error-name',
   })}
-/>
-{errors.name && (
-  <Text
-    style={styles.error}
-    {...getErrorA11yProps({ id: 'error-name' })}
-  >
-    {errors.name}
-  </Text>
-)}
+/>;
+{
+  errors.name && (
+    <Text style={styles.error} {...getErrorA11yProps({ id: 'error-name' })}>
+      {errors.name}
+    </Text>
+  );
+}
 ```
 
 **Result:**
+
 - Screen reader announces: "Full name, text field, Enter your first and last name"
 - When error exists: "Full name, invalid, Name is required"
 - Error is properly associated via `aria-describedby`
@@ -75,7 +79,10 @@ import { getTextInputA11yProps, getErrorA11yProps } from '@/src/utils/accessibil
 ### After
 
 ```tsx
-import { getButtonA11yProps, getFocusRingHandlers } from '@/src/utils/accessibility';
+import {
+  getButtonA11yProps,
+  getFocusRingHandlers,
+} from '@/src/utils/accessibility';
 
 <Pressable
   onPress={handleSubmit}
@@ -88,10 +95,11 @@ import { getButtonA11yProps, getFocusRingHandlers } from '@/src/utils/accessibil
   {...getFocusRingHandlers()}
 >
   <Text style={styles.buttonText}>Submit</Text>
-</Pressable>
+</Pressable>;
 ```
 
 **Result:**
+
 - Screen reader announces: "Submit inquiry form, button, Send your information to family lawyers"
 - Keyboard accessible with Enter/Space
 - Visible focus ring when tabbed to
@@ -130,6 +138,7 @@ import { getSwitchA11yProps } from '@/src/utils/accessibility';
 ```
 
 **Result:**
+
 - Screen reader announces: "Parent A receives income support, switch, on" (or "off")
 - State changes are announced
 - Keyboard accessible
@@ -172,10 +181,7 @@ import { getModalA11yProps } from '@/src/utils/accessibility';
   })}
 >
   <View style={styles.modalContent}>
-    <Text
-      style={styles.title}
-      {...(isWeb && { id: 'modal-dependents-title' })}
-    >
+    <Text style={styles.title} {...(isWeb && { id: 'modal-dependents-title' })}>
       Relevant Dependents
     </Text>
     <Text
@@ -186,10 +192,11 @@ import { getModalA11yProps } from '@/src/utils/accessibility';
     </Text>
     {/* Content */}
   </View>
-</Modal>
+</Modal>;
 ```
 
 **Result:**
+
 - Screen reader announces modal role
 - Modal title is properly associated
 - Focus management (users know they're in a dialog)
@@ -221,10 +228,11 @@ import { getSemanticRegionProps } from '@/src/utils/accessibility';
   })}
 >
   <CalculatorForm {...props} />
-</View>
+</View>;
 ```
 
 **Result:**
+
 - Screen reader users can jump to main content
 - Better page structure navigation
 
@@ -265,6 +273,7 @@ import { getExpandableA11yProps, getKeyboardHandlers } from '@/src/utils/accessi
 ```
 
 **Result:**
+
 - Screen reader announces: "Relevant Dependents, button, expanded" (or "collapsed")
 - Keyboard accessible with Enter/Space
 - Controls relationship established
@@ -405,6 +414,7 @@ export function WebInquiryPanel({ ... }) {
 ### Manual Testing with Screen Readers
 
 **macOS (VoiceOver):**
+
 ```bash
 # Turn on VoiceOver
 Cmd + F5
@@ -416,6 +426,7 @@ Cmd + F5
 ```
 
 **Windows (NVDA):**
+
 1. Download NVDA from https://www.nvaccess.org
 2. Install and launch
 3. Navigate with Tab key
@@ -434,12 +445,14 @@ lighthouse https://localhost:8081 --only-categories=accessibility --view
 ### Browser DevTools
 
 **Chrome DevTools:**
+
 1. Open DevTools (F12)
 2. Go to Lighthouse tab
 3. Select "Accessibility" category
 4. Click "Generate report"
 
 **axe DevTools:**
+
 1. Install extension from Chrome Web Store
 2. Open DevTools → axe tab
 3. Click "Scan ALL of my page"
@@ -449,15 +462,15 @@ lighthouse https://localhost:8081 --only-categories=accessibility --view
 
 ## Common Patterns Cheat Sheet
 
-| Element Type | Helper Function | Key Props |
-|--------------|----------------|-----------|
-| Text Input | `getTextInputA11yProps` | label, hint, error, errorId |
-| Button | `getButtonA11yProps` | label, hint, disabled |
-| Switch/Toggle | `getSwitchA11yProps` | label, checked, disabled |
-| Modal/Dialog | `getModalA11yProps` | titleId, descriptionId |
-| Error Message | `getErrorA11yProps` | id |
-| Expandable | `getExpandableA11yProps` | label, expanded, controlsId |
-| Semantic Region | `getSemanticRegionProps` | role, label |
+| Element Type    | Helper Function          | Key Props                   |
+| --------------- | ------------------------ | --------------------------- |
+| Text Input      | `getTextInputA11yProps`  | label, hint, error, errorId |
+| Button          | `getButtonA11yProps`     | label, hint, disabled       |
+| Switch/Toggle   | `getSwitchA11yProps`     | label, checked, disabled    |
+| Modal/Dialog    | `getModalA11yProps`      | titleId, descriptionId      |
+| Error Message   | `getErrorA11yProps`      | id                          |
+| Expandable      | `getExpandableA11yProps` | label, expanded, controlsId |
+| Semantic Region | `getSemanticRegionProps` | role, label                 |
 
 ---
 
@@ -476,6 +489,7 @@ lighthouse https://localhost:8081 --only-categories=accessibility --view
 ## Questions?
 
 Refer to:
+
 - `docs/ACCESSIBILITY_AUDIT.md` for full audit report
 - `src/utils/accessibility.ts` for utility documentation
 - [React Native Accessibility Guide](https://reactnative.dev/docs/accessibility)

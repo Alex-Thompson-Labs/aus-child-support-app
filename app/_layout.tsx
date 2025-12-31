@@ -1,12 +1,24 @@
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useClientOnly } from '@/src/hooks/useClientOnly';
 import { initPerformanceMonitoring } from '@/src/utils/web-vitals';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Suspense, useEffect } from 'react';
-import ReactGA from "react-ga4";
-import { ActivityIndicator, InteractionManager, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import ReactGA from 'react-ga4';
+import {
+  ActivityIndicator,
+  InteractionManager,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 // LoadingFallback component for async route loading
 function LoadingFallback() {
@@ -33,10 +45,7 @@ export const unstable_settings = {
 // Close button component that matches the breakdown modal pattern
 function CloseButton({ onPress }: { onPress: () => void }) {
   return (
-    <Pressable
-      onPress={onPress}
-      style={headerStyles.closeButton}
-    >
+    <Pressable onPress={onPress} style={headerStyles.closeButton}>
       <Text style={headerStyles.closeButtonText}>✕</Text>
     </Pressable>
   );
@@ -69,24 +78,27 @@ export default function RootLayout() {
   useEffect(() => {
     // Only run on web client where window is available
     if (Platform.OS === 'web' && isClient && typeof window !== 'undefined') {
-      
       // FIX: Set document title for Accessibility score
-      document.title = "Child Support Calculator";
+      document.title = 'Child Support Calculator';
 
       // OPTIMIZATION: Defer Analytics to improve LCP
       // We wait for all interactions to finish, then add a 2.5s delay
       if (enableAnalytics) {
-        const gaMeasurementId = process.env.EXPO_PUBLIC_GA_MEASUREMENT_ID || "G-53139BKGD7";
-        
+        const gaMeasurementId =
+          process.env.EXPO_PUBLIC_GA_MEASUREMENT_ID || 'G-53139BKGD7';
+
         const task = InteractionManager.runAfterInteractions(() => {
           const timer = setTimeout(() => {
             try {
               ReactGA.initialize(gaMeasurementId);
               // Track the initial page load AFTER the paint has likely occurred
-              ReactGA.send({ hitType: "pageview", page: window.location.pathname });
-              console.log("Analytics initialized (deferred)");
+              ReactGA.send({
+                hitType: 'pageview',
+                page: window.location.pathname,
+              });
+              console.log('Analytics initialized (deferred)');
             } catch (error) {
-              console.error("GA Initialization failed:", error);
+              console.error('GA Initialization failed:', error);
             }
           }, 2500); // 2.5 second delay to clear the LCP window
 
@@ -110,7 +122,10 @@ export default function RootLayout() {
           }}
         >
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+          <Stack.Screen
+            name="modal"
+            options={{ presentation: 'modal', title: 'Modal' }}
+          />
           <Stack.Screen
             name="lawyer-inquiry"
             options={{
@@ -123,21 +138,21 @@ export default function RootLayout() {
             options={{
               presentation: 'modal',
               title: 'Admin Login',
-              headerShown: false
+              headerShown: false,
             }}
           />
           <Stack.Screen
             name="admin/dashboard"
             options={{
               title: 'Admin Dashboard',
-              headerShown: false
+              headerShown: false,
             }}
           />
           <Stack.Screen
             name="admin/lead/[id]"
             options={{
               title: 'Lead Details',
-              headerShown: false
+              headerShown: false,
             }}
           />
         </Stack>

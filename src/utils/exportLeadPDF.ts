@@ -3,20 +3,20 @@
  *
  * Generates professional PDF documents for lead details
  * Includes: parent contact, case summary, CoA reasons, calculation data
- * 
+ *
  * OPTIMIZATION: expo-print and expo-sharing are dynamically imported
  * to avoid bundling ~150KB in the main chunk (admin-only feature)
- * 
+ *
  * ============================================================================
  * Function Documentation
  * ============================================================================
- * 
+ *
  * exportLeadAsPDF(lead: LeadSubmission): Promise<void>
- * 
+ *
  * Caller:
  * - app/admin/lead/[id].tsx (line 244) - Admin lead detail screen
  *   Triggered by "Export PDF" button in admin interface
- * 
+ *
  * Parameters:
  * - lead: LeadSubmission - Complete lead data from Supabase database
  *   Required fields:
@@ -37,11 +37,11 @@
  *   - status?: string - Lead status ('new', 'reviewing', 'sent', 'converted', 'lost')
  *   - notes?: string | null - Admin notes
  *   - created_at?: string - ISO timestamp
- * 
+ *
  * Platform Behavior:
  * - Web: Opens print dialog with generated HTML (window.print())
  * - Mobile: Uses expo-print to generate PDF file, then expo-sharing to share
- * 
+ *
  * PDF Content Sections:
  * 1. Header - Lead ID, status badge, generation timestamp
  * 2. Parent Contact - Name, email, phone, location, submission date
@@ -52,13 +52,13 @@
  * 7. Parent's Message - Full message text from inquiry form
  * 8. Admin Notes - Internal notes (if available)
  * 9. Footer - Branding and confidentiality notice
- * 
+ *
  * Error Handling:
  * - Throws error if print window fails to open (web)
  * - Throws error if PDF generation fails (mobile)
  * - Throws error if sharing not available (mobile)
  * - All errors are logged and re-thrown for caller to handle
- * 
+ *
  * Dependencies:
  * - getCoAReasonById() - Converts CoA reason IDs to full reason objects
  * - formatCurrency() - Formats numbers as currency strings
@@ -66,8 +66,8 @@
  */
 
 import { Platform } from 'react-native';
-import { getCoAReasonById } from './change-of-assessment-reasons';
 import { formatCurrency } from './formatters';
+import { getSpecialCircumstanceById } from './special-circumstances';
 import type { LeadSubmission } from './supabase';
 
 /**
@@ -81,7 +81,7 @@ function formatDate(dateString?: string): string {
     month: 'long',
     year: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 }
 
@@ -108,7 +108,11 @@ function getStatusColor(status?: string): string {
 /**
  * Get category color and emoji
  */
-function getCategoryInfo(category: string): { color: string; emoji: string; title: string } {
+function getCategoryInfo(category: string): {
+  color: string;
+  emoji: string;
+  title: string;
+} {
   switch (category) {
     case 'urgent':
       return { color: '#ef4444', emoji: '⚠️', title: 'Urgent Matters' };
@@ -127,29 +131,39 @@ function getCategoryInfo(category: string): { color: string; emoji: string; titl
  * Generate HTML content for PDF
  */
 function generateLeadHTML(lead: LeadSubmission): string {
-  // Extract CoA reasons from complexity_reasons array and convert IDs to full reason objects
-  const coaReasonIds = lead.complexity_reasons || [];
-  const coaReasons = coaReasonIds
-    .map(id => getCoAReasonById(id))
+  // Extract Special Circumstances from complexity_reasons array and convert IDs to full objects
+  const circumstanceIds = lead.complexity_reasons || [];
+  const specialCircumstances = circumstanceIds
+    .map((id) => getSpecialCircumstanceById(id))
     .filter((reason): reason is NonNullable<typeof reason> => reason !== null);
 
-  // Group CoA reasons by category
-  const urgentReasons = coaReasons.filter(r => r.category === 'urgent');
-  const incomeReasons = coaReasons.filter(r => r.category === 'income');
-  const childReasons = coaReasons.filter(r => r.category === 'child');
-  const otherReasons = coaReasons.filter(r => r.category === 'other');
+  // Group Special Circumstances by category
+  const urgentReasons = specialCircumstances.filter(
+    (r) => r.category === 'urgent'
+  );
+  const incomeReasons = specialCircumstances.filter(
+    (r) => r.category === 'income'
+  );
+  const childReasons = specialCircumstances.filter(
+    (r) => r.category === 'child'
+  );
+  const otherReasons = specialCircumstances.filter(
+    (r) => r.category === 'other'
+  );
 
   // Generate care arrangement details
   let careArrangementHTML = '';
   if (lead.care_data && lead.care_data.length > 0) {
     const careRows = lead.care_data
-      .map((child, idx) => `
+      .map(
+        (child, idx) => `
         <tr>
           <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">Child ${idx + 1}</td>
           <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: center;">${child.careA.toFixed(0)}%</td>
           <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: center;">${child.careB.toFixed(0)}%</td>
         </tr>
-      `)
+      `
+      )
       .join('');
 
     careArrangementHTML = `
@@ -177,16 +191,18 @@ function generateLeadHTML(lead: LeadSubmission): string {
 
     const categoryInfo = getCategoryInfo(category);
     const reasonsHTML = reasons
-      .map(r => `
+      .map(
+        (r) => `
         <div style="margin-bottom: 16px; padding: 12px; background: #f9fafb; border-left: 4px solid ${categoryInfo.color}; border-radius: 4px;">
           <div style="display: flex; align-items: start; margin-bottom: 6px;">
             <span style="font-size: 18px; margin-right: 8px;">${categoryInfo.emoji}</span>
             <strong style="color: #1f2937; font-size: 14px;">${r.label}</strong>
           </div>
           <p style="color: #6b7280; font-size: 13px; margin: 6px 0 6px 26px; line-height: 1.5;">${r.description}</p>
-          ${r.officialCoAReasons ? `<p style="color: #6b7280; font-size: 11px; font-style: italic; margin: 4px 0 0 26px;">Official grounds: ${r.officialCoAReasons}</p>` : ''}
+          ${r.officialCodes ? `<p style="color: #6b7280; font-size: 11px; font-style: italic; margin: 4px 0 0 26px;">Official grounds: ${r.officialCodes}</p>` : ''}
         </div>
-      `)
+      `
+      )
       .join('');
 
     return `
@@ -199,14 +215,16 @@ function generateLeadHTML(lead: LeadSubmission): string {
     `;
   };
 
-  const coaReasonsHTML = coaReasons.length > 0 ? `
+  const specialCircumstancesHTML =
+    specialCircumstances.length > 0
+      ? `
     <div style="margin-bottom: 32px; page-break-inside: avoid;">
       <h2 style="color: #1f2937; font-size: 20px; font-weight: 700; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 3px solid #f59e0b;">
-        💭 Change of Assessment Grounds
+        💭 Special Circumstances
       </h2>
       <div style="background: white; padding: 16px; border: 2px solid ${urgentReasons.length > 0 ? '#ef4444' : '#e5e7eb'}; border-radius: 8px;">
         <p style="color: #6b7280; font-size: 13px; margin-bottom: 16px; line-height: 1.5;">
-          The following complexity triggers were identified that may warrant a Change of Assessment:
+          The following special circumstances were identified:
         </p>
         ${generateCoASectionHTML(urgentReasons, 'urgent')}
         ${generateCoASectionHTML(incomeReasons, 'income')}
@@ -214,19 +232,23 @@ function generateLeadHTML(lead: LeadSubmission): string {
         ${generateCoASectionHTML(otherReasons, 'other')}
       </div>
     </div>
-  ` : '';
+  `
+      : '';
 
   // Generate complexity triggers section
-  const complexityTriggersHTML = lead.complexity_reasons && lead.complexity_reasons.length > 0 ? `
+  const complexityTriggersHTML =
+    lead.complexity_reasons && lead.complexity_reasons.length > 0
+      ? `
     <div style="margin-bottom: 24px;">
       <h3 style="color: #1f2937; font-size: 16px; font-weight: 600; margin-bottom: 12px;">Complexity Triggers</h3>
       <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px; border-radius: 4px;">
         <ul style="margin: 0; padding-left: 20px; color: #92400e;">
-          ${lead.complexity_reasons.map(reason => `<li style="margin-bottom: 4px;">${reason}</li>`).join('')}
+          ${lead.complexity_reasons.map((reason) => `<li style="margin-bottom: 4px;">${reason}</li>`).join('')}
         </ul>
       </div>
     </div>
-  ` : '';
+  `
+      : '';
 
   return `
     <!DOCTYPE html>
@@ -290,20 +312,28 @@ function generateLeadHTML(lead: LeadSubmission): string {
                 <a href="mailto:${lead.parent_email}" style="color: #2563eb; text-decoration: none;">${lead.parent_email}</a>
               </p>
             </div>
-            ${lead.parent_phone ? `
+            ${
+              lead.parent_phone
+                ? `
               <div style="margin-bottom: 12px;">
                 <strong style="color: #6b7280; font-size: 13px; display: block; margin-bottom: 4px;">Phone:</strong>
                 <p style="color: #1f2937; font-size: 14px;">
                   <a href="tel:${lead.parent_phone}" style="color: #2563eb; text-decoration: none;">${lead.parent_phone}</a>
                 </p>
               </div>
-            ` : ''}
-            ${lead.location ? `
+            `
+                : ''
+            }
+            ${
+              lead.location
+                ? `
               <div style="margin-bottom: 12px;">
                 <strong style="color: #6b7280; font-size: 13px; display: block; margin-bottom: 4px;">Location:</strong>
                 <p style="color: #1f2937; font-size: 14px;">${lead.location}</p>
               </div>
-            ` : ''}
+            `
+                : ''
+            }
             <div>
               <strong style="color: #6b7280; font-size: 13px; display: block; margin-bottom: 4px;">Submitted:</strong>
               <p style="color: #1f2937; font-size: 14px;">${formatDate(lead.created_at)}</p>
@@ -347,12 +377,14 @@ function generateLeadHTML(lead: LeadSubmission): string {
 
         ${careArrangementHTML}
 
-        ${coaReasonsHTML}
+        ${specialCircumstancesHTML}
 
         ${complexityTriggersHTML}
 
         <!-- Parent Message -->
-        ${lead.parent_message ? `
+        ${
+          lead.parent_message
+            ? `
           <div style="margin-bottom: 32px; page-break-inside: avoid;">
             <h2 style="color: #1f2937; font-size: 20px; font-weight: 700; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 3px solid #2563eb;">
               💬 Parent's Message
@@ -361,10 +393,14 @@ function generateLeadHTML(lead: LeadSubmission): string {
               <p style="color: #374151; font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${lead.parent_message}</p>
             </div>
           </div>
-        ` : ''}
+        `
+            : ''
+        }
 
         <!-- Admin Notes -->
-        ${lead.notes ? `
+        ${
+          lead.notes
+            ? `
           <div style="margin-bottom: 32px; page-break-inside: avoid;">
             <h2 style="color: #1f2937; font-size: 20px; font-weight: 700; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 3px solid #64748b;">
               📝 Admin Notes
@@ -373,7 +409,9 @@ function generateLeadHTML(lead: LeadSubmission): string {
               <p style="color: #334155; font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${lead.notes}</p>
             </div>
           </div>
-        ` : ''}
+        `
+            : ''
+        }
 
         <!-- Footer -->
         <div style="margin-top: 40px; padding-top: 24px; border-top: 2px solid #e5e7eb; text-align: center;">
@@ -413,7 +451,9 @@ export async function exportLeadAsPDF(lead: LeadSubmission): Promise<void> {
       const printWindow = window.open('', '_blank');
 
       if (!printWindow) {
-        throw new Error('Failed to open print window. Please allow popups for this site.');
+        throw new Error(
+          'Failed to open print window. Please allow popups for this site.'
+        );
       }
 
       printWindow.document.write(html);

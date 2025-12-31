@@ -14,7 +14,7 @@ export interface PrivacyPolicyLinkProps {
 
 /**
  * PrivacyPolicyLink - Reusable privacy policy link component
- * 
+ *
  * Displays a clickable link to the privacy policy.
  * Opens in a new tab on web, uses Linking API on native.
  */
@@ -26,10 +26,12 @@ export function PrivacyPolicyLink({
 }: PrivacyPolicyLinkProps) {
   const isWeb = Platform.OS === 'web';
 
-  const webClickableStyles = isWeb ? {
-    cursor: 'pointer' as const,
-    userSelect: 'none' as const,
-  } : {};
+  const webClickableStyles = isWeb
+    ? {
+        cursor: 'pointer' as const,
+        userSelect: 'none' as const,
+      }
+    : {};
 
   const handlePress = () => {
     if (isWeb) {

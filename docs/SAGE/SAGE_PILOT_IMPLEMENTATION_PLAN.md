@@ -9,6 +9,7 @@
 ## Phase 1: Legal & Compliance (3 hours)
 
 ### Task 1.1: Update Partnership Agreement
+
 **File:** `docs/templates/LAWYER_PARTNERSHIP_AGREEMENT.md`  
 **Time:** 1.5 hours  
 **Owner:** You (manual editing)
@@ -54,6 +55,7 @@
 ---
 
 ### Task 1.2: Update Privacy Policy
+
 **File:** `privacy-policy.html`  
 **Time:** 1 hour  
 **Owner:** You (manual HTML editing)
@@ -76,6 +78,7 @@
 ---
 
 ### Task 1.3: Update Consent Checkbox to be Partner-Aware
+
 **Time:** 30 minutes  
 **Owner:** Claude Code
 
@@ -101,6 +104,7 @@ Use the usePartner hook (which you'll create in the next task).
 ## Phase 2: Technical Implementation (4-5 hours)
 
 ### Task 2.1: Create Partner Configuration System
+
 **Time:** 30 minutes  
 **Owner:** Claude Code
 
@@ -123,6 +127,7 @@ Make it easy to add more partners later by just adding entries to an object.
 ---
 
 ### Task 2.2: Create Partner Detection Hook
+
 **Time:** 45 minutes  
 **Owner:** Claude Code
 
@@ -147,6 +152,7 @@ Import the partner config from src/config/partners.ts
 ---
 
 ### Task 2.3: Update Theme System for Partner Branding
+
 **Time:** 30 minutes  
 **Owner:** Claude Code
 
@@ -167,6 +173,7 @@ Keep the existing static Colors export for backward compatibility.
 ---
 
 ### Task 2.4: Create Lead Submission Function with Partner Routing
+
 **Time:** 1.5 hours  
 **Owner:** Claude Code
 
@@ -192,6 +199,7 @@ Handle errors gracefully.
 ---
 
 ### Task 2.5: Create Supabase Edge Function for Email Routing
+
 **Time:** 1.5 hours  
 **Owner:** Claude Code
 
@@ -221,6 +229,7 @@ Create helper functions for email sending and HTML formatting.
 ---
 
 ### Task 2.6: Update Lawyer Inquiry Form to Use Partner Context
+
 **Time:** 45 minutes  
 **Owner:** Claude Code
 
@@ -249,10 +258,12 @@ Keep all functionality identical for non-partner users.
 ## Phase 3: Testing & Validation (1 hour)
 
 ### Task 3.1: Test Partner Detection Flow
+
 **Time:** 15 minutes  
 **Owner:** You (manual testing)
 
 **Test Steps:**
+
 1. Clear browser localStorage
 2. Visit `http://localhost:8081/?partner=sage`
 3. Verify partner branding appears (name, colors, badge)
@@ -265,10 +276,12 @@ Keep all functionality identical for non-partner users.
 ---
 
 ### Task 3.2: Test Lead Submission End-to-End
+
 **Time:** 20 minutes  
 **Owner:** You (manual testing)
 
 **Test Steps:**
+
 1. Visit `http://localhost:8081/?partner=sage`
 2. Fill out inquiry form with test data
 3. Check consent box
@@ -284,10 +297,12 @@ Keep all functionality identical for non-partner users.
 ---
 
 ### Task 3.3: Test Privacy Policy and Consent Flow
+
 **Time:** 10 minutes  
 **Owner:** You (manual testing)
 
 **Test Steps:**
+
 1. Click "Read our Privacy Policy" link
 2. Verify "Legal Practitioner Referrals" section exists
 3. Try submitting form without consent → should block
@@ -298,6 +313,7 @@ Keep all functionality identical for non-partner users.
 ---
 
 ### Task 3.4: Deploy to Production
+
 **Time:** 15 minutes  
 **Owner:** You (manual deployment)
 
@@ -307,6 +323,7 @@ netlify deploy --prod
 ```
 
 **Verify:**
+
 1. `https://auschildsupport.com/?partner=sage` works
 2. Partner branding displays correctly
 3. Lead submission works end-to-end
@@ -319,10 +336,12 @@ netlify deploy --prod
 ## Phase 4: Outreach Preparation (2 hours)
 
 ### Task 4.1: Finalize Partnership Agreement
+
 **Time:** 30 minutes  
 **Owner:** You (manual editing)
 
 **Steps:**
+
 1. Fill in missing details in `docs/templates/LAWYER_PARTNERSHIP_AGREEMENT.md`:
    - Your ABN (or remove if not applicable)
    - Pilot dates: Jan 6 - Feb 3, 2025
@@ -336,10 +355,12 @@ netlify deploy --prod
 ---
 
 ### Task 4.2: Research Sage's Actual Branding
+
 **Time:** 30 minutes  
 **Owner:** You (manual research)
 
 **Steps:**
+
 1. Visit https://sagefamilylawyers.com.au
 2. Use DevTools to extract:
    - Primary brand color (hex code)
@@ -354,6 +375,7 @@ netlify deploy --prod
 ---
 
 ### Task 4.3: Draft Outreach Email
+
 **Time:** 30 minutes  
 **Owner:** You (manual writing)
 
@@ -393,35 +415,42 @@ auschildsupport.com
 ---
 
 ### Task 4.4: Prepare Demo Script
+
 **Time:** 30 minutes  
 **Owner:** You (manual planning)
 
 **Demo Call Outline (10 minutes):**
 
 **Minutes 0-2: Hook**
+
 - "The problem with 'child support lawyer' keywords: you're paying $10-15/click for people who just want DHS phone numbers."
 
 **Minutes 2-5: Demo the Calculator**
+
 - Share screen: auschildsupport.com/?partner=sage
 - Show "Powered by Sage Family Lawyers" branding
 - Walk through Change of Assessment screen
 - Explain complexity flagging ("Self Employed", "Hidden Income")
 
 **Minutes 5-7: Show Lead Quality**
+
 - Show example lead email (mock beforehand)
 - Compare to generic "I need help" inquiry
 
 **Minutes 7-9: Pilot Structure**
+
 - 4-week exclusive pilot, Melbourne CBD
 - I fund $500 in Google Ads
 - You get every lead, zero cost
 - If 3+ qualified consults, we discuss ongoing pricing
 
 **Minute 10: Close**
+
 - "Does that structure make sense?"
 - Send partnership agreement same day
 
 **Objection Handling:**
+
 - "How do I know leads are real?" → "Free pilot. You risk nothing."
 - "What's your take rate?" → "$50/lead post-pilot. 20-30% of your current CPA."
 - "Why only Melbourne?" → "One firm per city. Right of first refusal if it works."
@@ -433,9 +462,11 @@ auschildsupport.com
 ## Phase 5: Pre-Flight Checklist (30 minutes)
 
 ### Final Checks Before Sending Email
+
 **Owner:** You (manual verification)
 
 **Technical:**
+
 - [ ] `auschildsupport.com/?partner=sage` works in production
 - [ ] Partner branding displays correctly
 - [ ] Test lead submission works end-to-end
@@ -443,6 +474,7 @@ auschildsupport.com
 - [ ] Privacy policy updated and deployed
 
 **Legal:**
+
 - [ ] Partnership agreement has all required clauses
 - [ ] Exclusivity terms clear (Melbourne CBD, 4 weeks, right of first refusal)
 - [ ] Pilot pricing clear ($0 for pilot, $50/lead post-pilot)
@@ -450,6 +482,7 @@ auschildsupport.com
 - [ ] Agreement uploaded to DocuSign
 
 **Outreach:**
+
 - [ ] Email drafted and proofread
 - [ ] Demo script prepared
 - [ ] Sage's phone number obtained
@@ -457,6 +490,7 @@ auschildsupport.com
 - [ ] Partnership agreement PDF ready
 
 **Go/No-Go Decision:**
+
 - All boxes checked → Send Wednesday 10am AEDT
 - Missing technical → Delay to Thursday
 - Missing legal → Do not send (legal exposure)
@@ -465,31 +499,35 @@ auschildsupport.com
 
 ## Timeline
 
-| Day | Tasks | Hours |
-|-----|-------|-------|
-| **Mon Dec 30** | Phase 1 (Legal) + Phase 2 Tasks 2.1-2.3 | 5 hours |
-| **Tue Dec 31** | Phase 2 Tasks 2.4-2.6 + Phase 3 (Testing) | 4 hours |
-| **Wed Jan 1** | Phase 4 (Outreach) + Phase 5 (Checks) | 2.5 hours |
-| **Wed Jan 1, 10am** | **SEND EMAIL** | - |
-| **Thu-Fri Jan 2-3** | Follow-up, demo calls | - |
-| **Mon Jan 6** | Pilot start (if signed) | - |
+| Day                 | Tasks                                     | Hours     |
+| ------------------- | ----------------------------------------- | --------- |
+| **Mon Dec 30**      | Phase 1 (Legal) + Phase 2 Tasks 2.1-2.3   | 5 hours   |
+| **Tue Dec 31**      | Phase 2 Tasks 2.4-2.6 + Phase 3 (Testing) | 4 hours   |
+| **Wed Jan 1**       | Phase 4 (Outreach) + Phase 5 (Checks)     | 2.5 hours |
+| **Wed Jan 1, 10am** | **SEND EMAIL**                            | -         |
+| **Thu-Fri Jan 2-3** | Follow-up, demo calls                     | -         |
+| **Mon Jan 6**       | Pilot start (if signed)                   | -         |
 
 ---
 
 ## Risk Mitigation
 
 **If Paul says yes before technical ready:**
+
 - Reply: "Fantastic! Let me finalize the Sage-branded calculator. Demo call Thursday? I'll have the partnership agreement ready."
 - Buys you 48 hours
 
 **If technical fails in production:**
+
 - Demo on localhost as backup
 - "Updating production server, let me show you staging"
 
 **If he asks for references:**
+
 - "This is new—you'd be the first Melbourne firm. That's why it's a free pilot. I need to prove it works as much as you do."
 
 **If he counters with different terms:**
+
 - Listen, take notes
 - "Let me think about that and get back to you by end of day"
 - Don't negotiate live
@@ -505,6 +543,7 @@ auschildsupport.com
 **First lead:** Within 7 days of pilot start
 
 If Paul doesn't respond, move to next firm (Clancy & Triado) with same playbook.
+
 # Executive Summary: Sage Family Lawyers Partnership Pitch
 
 ## What We Do
@@ -518,10 +557,12 @@ The key insight: **Some child support cases are simple, others are complex.** Co
 The calculator has built-in complexity triggers that automatically detect high-value cases:
 
 **Automatic triggers (we detect these from the calculation):**
+
 - **High income cases** (payer earning $150k+) — these families can afford legal representation and often have disputes
 - **Shared care arrangements** (35-65% custody split) — these trigger special formula adjustments that parents often get wrong
 
 **Self-reported triggers (user selects these):**
+
 - **Self-employed payer** (can manipulate reported income)
 - **Income from trusts or companies** (easy to hide assets)
 - **Recent court date approaching** (urgent legal need)
@@ -542,6 +583,7 @@ When someone hits any of these triggers, we flag them as a qualified lead and of
 ## The Partnership Model
 
 **The offer to Sage:**
+
 - We run Google Ads ($500 budget, we pay) pointing to a calculator branded as "Powered by Sage Family Lawyers"
 - Users spend 10-15 minutes calculating their child support
 - If they identify as complex (self-employed, hidden income, court dates), we flag them as qualified
@@ -551,6 +593,7 @@ When someone hits any of these triggers, we flag them as a qualified lead and of
 - **Cost to Sage during pilot: $0**
 
 **After the pilot (if they like the quality):**
+
 - They pay $50 per qualified lead
 - We estimate 10-20 leads/month for Melbourne
 - Their typical client is worth $3,000-10,000 in legal fees
@@ -560,18 +603,21 @@ When someone hits any of these triggers, we flag them as a qualified lead and of
 ## Why This Works
 
 **For the law firm:**
+
 - They only pay for people who have already self-identified as complex cases
 - The person has spent 10+ minutes engaged (high intent signal)
 - They see the full calculation before calling, so they can prioritize high-value cases
 - No development cost—we built the tool, we just white-label it for them
 
 **For us:**
+
 - One partner at $50/lead × 15 leads/month = $750/month recurring
 - Five partners across major cities = $3,750/month
 - The calculator is already built—we just route leads to different firms based on geography
 - Scalable: 440+ Australian family law firms already identified and scraped
 
 **For parents:**
+
 - They get a free, accurate calculator (we use the official government formula)
 - If they're complex, they get connected to a qualified lawyer who understands their situation
 - If they're simple, they just use the calculation and handle it themselves

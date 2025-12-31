@@ -1,16 +1,19 @@
-import { useRouter } from "expo-router";
-import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import ReactGA from "react-ga4";
-import type { CalculationResults } from "../types/calculator";
-import type { ComplexityFormData } from "../utils/complexity-detection";
-import { shadowPresets } from "../utils/shadow-styles";
-import { useResponsive } from "../utils/responsive";
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import ReactGA from 'react-ga4';
+import type { CalculationResults } from '../types/calculator';
+import type { ComplexityFormData } from '../utils/complexity-detection';
+import { shadowPresets } from '../utils/shadow-styles';
+import { useResponsive } from '../utils/responsive';
 
 /**
  * Card variant types for the Smart Conversion Footer
  */
-export type ConversionCardVariant = 'dispute_risk' | 'high_value' | 'binding_agreement';
+export type ConversionCardVariant =
+  | 'dispute_risk'
+  | 'high_value'
+  | 'binding_agreement';
 
 /**
  * Configuration for each card variant
@@ -60,7 +63,7 @@ const CARD_CONFIGS: Record<ConversionCardVariant, CardConfig> = {
 
 /**
  * Determines which card variant to show based on priority logic (waterfall)
- * 
+ *
  * Priority 1: Dispute Risk - If care percentage is between 35% and 65%
  * Priority 2: High Value - If annual liability > $15,000
  * Priority 3: Binding Agreement - Default fallback
@@ -99,7 +102,7 @@ interface SmartConversionFooterProps {
 
 /**
  * Smart Conversion Footer Component
- * 
+ *
  * Displays a single conversion card at the bottom of calculation results
  * based on priority logic. Drives leads to the lawyer inquiry form with
  * pre-filled complexity_trigger and message.
@@ -133,8 +136,8 @@ export function SmartConversionFooter({
     // Track conversion event
     if (isWeb) {
       ReactGA.event({
-        category: "Conversion",
-        action: "Smart_Footer_Click",
+        category: 'Conversion',
+        action: 'Smart_Footer_Click',
         label: cardVariant,
       });
     }
@@ -200,45 +203,55 @@ export function SmartConversionFooter({
       >
         <View style={styles.cardContent}>
           <View style={styles.textContainer}>
-            <Text style={[
-              styles.headline,
-              isSubtleAlert && styles.headlineDark,
-              isProfessionalDoc && styles.headlineProfessional,
-              isHighValue && styles.headlineHighValue
-            ]}>
+            <Text
+              style={[
+                styles.headline,
+                isSubtleAlert && styles.headlineDark,
+                isProfessionalDoc && styles.headlineProfessional,
+                isHighValue && styles.headlineHighValue,
+              ]}
+            >
               {cardConfig.headline}
             </Text>
-            <Text style={[
-              styles.body,
-              isSubtleAlert && styles.bodyDark,
-              isProfessionalDoc && styles.bodyProfessional,
-              isHighValue && styles.bodyHighValue
-            ]}>
+            <Text
+              style={[
+                styles.body,
+                isSubtleAlert && styles.bodyDark,
+                isProfessionalDoc && styles.bodyProfessional,
+                isHighValue && styles.bodyHighValue,
+              ]}
+            >
               {cardConfig.body}
             </Text>
           </View>
         </View>
         <View style={styles.buttonContainer}>
-          <View style={[
-            styles.button,
-            isSubtleAlert && styles.buttonSolid,
-            isProfessionalDoc && styles.buttonProfessional,
-            isHighValue && styles.buttonHighValue
-          ]}>
-            <Text style={[
-              styles.buttonText,
-              isSubtleAlert && styles.buttonTextSolid,
-              isProfessionalDoc && styles.buttonTextProfessional,
-              isHighValue && styles.buttonTextHighValue
-            ]}>
+          <View
+            style={[
+              styles.button,
+              isSubtleAlert && styles.buttonSolid,
+              isProfessionalDoc && styles.buttonProfessional,
+              isHighValue && styles.buttonHighValue,
+            ]}
+          >
+            <Text
+              style={[
+                styles.buttonText,
+                isSubtleAlert && styles.buttonTextSolid,
+                isProfessionalDoc && styles.buttonTextProfessional,
+                isHighValue && styles.buttonTextHighValue,
+              ]}
+            >
               {cardConfig.buttonText}
             </Text>
-            <Text style={[
-              styles.buttonArrow,
-              isSubtleAlert && styles.buttonTextSolid,
-              isProfessionalDoc && styles.buttonTextProfessional,
-              isHighValue && styles.buttonTextHighValue
-            ]}>
+            <Text
+              style={[
+                styles.buttonArrow,
+                isSubtleAlert && styles.buttonTextSolid,
+                isProfessionalDoc && styles.buttonTextProfessional,
+                isHighValue && styles.buttonTextHighValue,
+              ]}
+            >
               →
             </Text>
           </View>

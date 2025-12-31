@@ -1,7 +1,7 @@
-import React, { ReactNode, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { createShadow } from "../utils/shadow-styles";
-import { HelpTooltip } from "./HelpTooltip";
+import React, { ReactNode, useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { createShadow } from '../utils/shadow-styles';
+import { HelpTooltip } from './HelpTooltip';
 
 interface BreakdownStepCardProps {
   stepNumber: number | string;
@@ -54,11 +54,11 @@ export function BreakdownStepCard({
             >
               <HelpTooltip
                 what={tooltip}
-                why={""}
+                why={''}
                 hideWhatLabel
-                iconColor={isHelpHovered ? "#2563eb" : "#64748b"} // blue-600 on hover, slate-500 default - WCAG AA compliant
-                iconBorderColor={isHelpHovered ? "#bfdbfe" : "#cbd5e1"} // blue-200 / slate-300
-                iconBackgroundColor={isHelpHovered ? "#eff6ff" : "#f8fafc"} // blue-50 / slate-50
+                iconColor={isHelpHovered ? '#2563eb' : '#64748b'} // blue-600 on hover, slate-500 default - WCAG AA compliant
+                iconBorderColor={isHelpHovered ? '#bfdbfe' : '#cbd5e1'} // blue-200 / slate-300
+                iconBackgroundColor={isHelpHovered ? '#eff6ff' : '#f8fafc'} // blue-50 / slate-50
               />
             </Pressable>
           )}
@@ -75,48 +75,48 @@ export function BreakdownStepCard({
 const styles = StyleSheet.create({
   // Step container - exact styling from current implementation
   step: {
-    backgroundColor: "#ffffff", // white background
+    backgroundColor: '#ffffff', // white background
     borderRadius: 10,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#e5e7eb", // gray-200 - subtle border
+    borderColor: '#e5e7eb', // gray-200 - subtle border
     ...createShadow({
-      shadowColor: "#000",
+      shadowColor: '#000',
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.05,
       shadowRadius: 3,
       elevation: 1,
     }),
   } as any,
-  
+
   stepHeader: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 10,
     marginBottom: 10,
   },
-  
+
   // Blue circle number - exact styling from current implementation
   stepNumber: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: "#3b82f6", // accent.primary
+    backgroundColor: '#3b82f6', // accent.primary
     borderWidth: 0,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  
+
   stepNumberText: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#ffffff", // white text on blue background
+    fontWeight: '600',
+    color: '#ffffff', // white text on blue background
   },
-  
+
   titleRow: {
     flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   headerTooltip: {
     marginLeft: 6,
@@ -126,15 +126,15 @@ const styles = StyleSheet.create({
   // Uppercase title - exact styling from current implementation
   stepTitle: {
     fontSize: 12,
-    fontWeight: "800",
-    color: "#1a202c", // text.primary - near black
-    textTransform: "uppercase",
+    fontWeight: '800',
+    color: '#1a202c', // text.primary - near black
+    textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  
+
   chevron: {
     fontSize: 16,
-    color: "#2563eb", // blue-600 (Brand Blue)
-    marginLeft: "auto",
+    color: '#2563eb', // blue-600 (Brand Blue)
+    marginLeft: 'auto',
   },
 });

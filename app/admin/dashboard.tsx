@@ -4,7 +4,12 @@
  * Mobile-optimized for use on phone
  */
 
-import { isWeb, useResponsive, webClickableStyles, webInputStyles } from '@/src/utils/responsive';
+import {
+  isWeb,
+  useResponsive,
+  webClickableStyles,
+  webInputStyles,
+} from '@/src/utils/responsive';
 import { getSupabaseClient, type LeadSubmission } from '@/src/utils/supabase';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -44,8 +49,10 @@ export default function AdminDashboardScreen() {
   const checkAuth = async () => {
     // Lazy-load Supabase for auth check
     const supabase = await getSupabaseClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
     if (!session) {
       console.log('[AdminDashboard] No session - redirecting to login');
       router.replace('/admin/login');
@@ -70,7 +77,7 @@ export default function AdminDashboardScreen() {
 
       // Lazy-load Supabase for data fetching
       const supabase = await getSupabaseClient();
-      
+
       const { data, error } = await supabase
         .from('leads')
         .select('*')
@@ -109,22 +116,24 @@ export default function AdminDashboardScreen() {
 
     // Status filter
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(lead => lead.status === statusFilter);
+      filtered = filtered.filter((lead) => lead.status === statusFilter);
     }
 
     // Search query (name or email)
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(lead => 
-        lead.parent_name.toLowerCase().includes(query) ||
-        lead.parent_email.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (lead) =>
+          lead.parent_name.toLowerCase().includes(query) ||
+          lead.parent_email.toLowerCase().includes(query)
       );
     }
 
     // Sort
     if (sortBy === 'date') {
-      filtered.sort((a, b) => 
-        new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()
+      filtered.sort(
+        (a, b) =>
+          new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()
       );
     } else if (sortBy === 'liability') {
       filtered.sort((a, b) => b.annual_liability - a.annual_liability);
@@ -160,10 +169,12 @@ export default function AdminDashboardScreen() {
       <View style={styles.header}>
         <View>
           <Text style={styles.headerTitle}>Admin Dashboard</Text>
-          <Text style={styles.headerSubtitle}>{filteredLeads.length} leads</Text>
+          <Text style={styles.headerSubtitle}>
+            {filteredLeads.length} leads
+          </Text>
         </View>
-        <Pressable 
-          style={[styles.logoutButton, isWeb && webClickableStyles]} 
+        <Pressable
+          style={[styles.logoutButton, isWeb && webClickableStyles]}
           onPress={handleLogout}
         >
           <Text style={styles.logoutButtonText}>Logout</Text>
@@ -182,49 +193,93 @@ export default function AdminDashboardScreen() {
       </View>
 
       {/* Filters */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtersContainer}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.filtersContainer}
+      >
         <Pressable
-          style={[styles.filterChip, statusFilter === 'all' && styles.filterChipActive]}
+          style={[
+            styles.filterChip,
+            statusFilter === 'all' && styles.filterChipActive,
+          ]}
           onPress={() => setStatusFilter('all')}
         >
-          <Text style={[styles.filterChipText, statusFilter === 'all' && styles.filterChipTextActive]}>
+          <Text
+            style={[
+              styles.filterChipText,
+              statusFilter === 'all' && styles.filterChipTextActive,
+            ]}
+          >
             All ({leads.length})
           </Text>
         </Pressable>
-        
+
         <Pressable
-          style={[styles.filterChip, statusFilter === 'new' && styles.filterChipActive]}
+          style={[
+            styles.filterChip,
+            statusFilter === 'new' && styles.filterChipActive,
+          ]}
           onPress={() => setStatusFilter('new')}
         >
-          <Text style={[styles.filterChipText, statusFilter === 'new' && styles.filterChipTextActive]}>
-            New ({leads.filter(l => l.status === 'new').length})
+          <Text
+            style={[
+              styles.filterChipText,
+              statusFilter === 'new' && styles.filterChipTextActive,
+            ]}
+          >
+            New ({leads.filter((l) => l.status === 'new').length})
           </Text>
         </Pressable>
 
         <Pressable
-          style={[styles.filterChip, statusFilter === 'reviewing' && styles.filterChipActive]}
+          style={[
+            styles.filterChip,
+            statusFilter === 'reviewing' && styles.filterChipActive,
+          ]}
           onPress={() => setStatusFilter('reviewing')}
         >
-          <Text style={[styles.filterChipText, statusFilter === 'reviewing' && styles.filterChipTextActive]}>
-            Reviewing ({leads.filter(l => l.status === 'reviewing').length})
+          <Text
+            style={[
+              styles.filterChipText,
+              statusFilter === 'reviewing' && styles.filterChipTextActive,
+            ]}
+          >
+            Reviewing ({leads.filter((l) => l.status === 'reviewing').length})
           </Text>
         </Pressable>
 
         <Pressable
-          style={[styles.filterChip, statusFilter === 'sent' && styles.filterChipActive]}
+          style={[
+            styles.filterChip,
+            statusFilter === 'sent' && styles.filterChipActive,
+          ]}
           onPress={() => setStatusFilter('sent')}
         >
-          <Text style={[styles.filterChipText, statusFilter === 'sent' && styles.filterChipTextActive]}>
-            Sent ({leads.filter(l => l.status === 'sent').length})
+          <Text
+            style={[
+              styles.filterChipText,
+              statusFilter === 'sent' && styles.filterChipTextActive,
+            ]}
+          >
+            Sent ({leads.filter((l) => l.status === 'sent').length})
           </Text>
         </Pressable>
 
         <Pressable
-          style={[styles.filterChip, statusFilter === 'converted' && styles.filterChipActive]}
+          style={[
+            styles.filterChip,
+            statusFilter === 'converted' && styles.filterChipActive,
+          ]}
           onPress={() => setStatusFilter('converted')}
         >
-          <Text style={[styles.filterChipText, statusFilter === 'converted' && styles.filterChipTextActive]}>
-            Converted ({leads.filter(l => l.status === 'converted').length})
+          <Text
+            style={[
+              styles.filterChipText,
+              statusFilter === 'converted' && styles.filterChipTextActive,
+            ]}
+          >
+            Converted ({leads.filter((l) => l.status === 'converted').length})
           </Text>
         </Pressable>
       </ScrollView>
@@ -233,18 +288,34 @@ export default function AdminDashboardScreen() {
       <View style={styles.sortContainer}>
         <Text style={styles.sortLabel}>Sort by:</Text>
         <Pressable
-          style={[styles.sortButton, sortBy === 'date' && styles.sortButtonActive]}
+          style={[
+            styles.sortButton,
+            sortBy === 'date' && styles.sortButtonActive,
+          ]}
           onPress={() => setSortBy('date')}
         >
-          <Text style={[styles.sortButtonText, sortBy === 'date' && styles.sortButtonTextActive]}>
+          <Text
+            style={[
+              styles.sortButtonText,
+              sortBy === 'date' && styles.sortButtonTextActive,
+            ]}
+          >
             Date
           </Text>
         </Pressable>
         <Pressable
-          style={[styles.sortButton, sortBy === 'liability' && styles.sortButtonActive]}
+          style={[
+            styles.sortButton,
+            sortBy === 'liability' && styles.sortButtonActive,
+          ]}
           onPress={() => setSortBy('liability')}
         >
-          <Text style={[styles.sortButtonText, sortBy === 'liability' && styles.sortButtonTextActive]}>
+          <Text
+            style={[
+              styles.sortButtonText,
+              sortBy === 'liability' && styles.sortButtonTextActive,
+            ]}
+          >
             Liability
           </Text>
         </Pressable>
@@ -255,7 +326,11 @@ export default function AdminDashboardScreen() {
         style={styles.leadsList}
         contentContainerStyle={styles.leadsListContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#2563eb" />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#2563eb"
+          />
         }
       >
         {filteredLeads.length === 0 ? (
@@ -273,13 +348,19 @@ export default function AdminDashboardScreen() {
             >
               <View style={styles.leadCardHeader}>
                 <Text style={styles.leadId}>Lead #{lead.id?.slice(0, 8)}</Text>
-                <View style={[styles.statusBadge, getStatusBadgeStyle(lead.status)]}>
-                  <Text style={styles.statusBadgeText}>{lead.status || 'new'}</Text>
+                <View
+                  style={[styles.statusBadge, getStatusBadgeStyle(lead.status)]}
+                >
+                  <Text style={styles.statusBadgeText}>
+                    {lead.status || 'new'}
+                  </Text>
                 </View>
               </View>
 
-              <Text style={styles.leadName}>{getFirstName(lead.parent_name)}</Text>
-              
+              <Text style={styles.leadName}>
+                {getFirstName(lead.parent_name)}
+              </Text>
+
               {lead.location && (
                 <Text style={styles.leadLocation}>{lead.location}</Text>
               )}
@@ -293,13 +374,14 @@ export default function AdminDashboardScreen() {
                 </Text>
               </View>
 
-              {lead.complexity_reasons && lead.complexity_reasons.length > 0 && (
-                <View style={styles.complexityBadge}>
-                  <Text style={styles.complexityBadgeText}>
-                    {lead.complexity_reasons.length} complexity triggers
-                  </Text>
-                </View>
-              )}
+              {lead.complexity_reasons &&
+                lead.complexity_reasons.length > 0 && (
+                  <View style={styles.complexityBadge}>
+                    <Text style={styles.complexityBadgeText}>
+                      {lead.complexity_reasons.length} complexity triggers
+                    </Text>
+                  </View>
+                )}
             </Pressable>
           ))
         )}
@@ -342,10 +424,10 @@ function formatDate(dateString?: string): string {
   if (diffHours < 24) return `${diffHours}h ago`;
   if (diffDays === 1) return 'Yesterday';
   if (diffDays < 7) return `${diffDays}d ago`;
-  
-  return date.toLocaleDateString('en-AU', { 
-    day: 'numeric', 
-    month: 'short' 
+
+  return date.toLocaleDateString('en-AU', {
+    day: 'numeric',
+    month: 'short',
   });
 }
 

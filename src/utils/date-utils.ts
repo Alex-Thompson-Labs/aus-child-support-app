@@ -56,7 +56,7 @@ export function parseAustralianDate(dateStr: string): Date | null {
  */
 export function isWithinDays(dateStr: string, days: number = 30): boolean {
   const date = parseAustralianDate(dateStr);
-  
+
   if (!date) {
     return false;
   }

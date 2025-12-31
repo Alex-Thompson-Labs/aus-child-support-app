@@ -4,7 +4,13 @@
  * Uses Supabase Auth with RLS policies
  */
 
-import { MAX_FORM_WIDTH, isWeb, useResponsive, webClickableStyles, webInputStyles } from '@/src/utils/responsive';
+import {
+  MAX_FORM_WIDTH,
+  isWeb,
+  useResponsive,
+  webClickableStyles,
+  webInputStyles,
+} from '@/src/utils/responsive';
 import { getSupabaseClient } from '@/src/utils/supabase';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -25,16 +31,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function AdminLoginScreen() {
   const router = useRouter();
   const { isDesktop } = useResponsive();
-  
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const webContainerStyle = isWeb ? {
-    maxWidth: MAX_FORM_WIDTH,
-    width: '100%' as const,
-    alignSelf: 'center' as const,
-  } : {};
+  const webContainerStyle = isWeb
+    ? {
+        maxWidth: MAX_FORM_WIDTH,
+        width: '100%' as const,
+        alignSelf: 'center' as const,
+      }
+    : {};
 
   const handleLogin = async () => {
     // Validate inputs
@@ -71,7 +79,7 @@ export default function AdminLoginScreen() {
     try {
       // Lazy-load Supabase only when user attempts to login
       const supabase = await getSupabaseClient();
-      
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password: password.trim(),
@@ -101,9 +109,14 @@ export default function AdminLoginScreen() {
     } catch (error) {
       console.error('[AdminLogin] Unexpected error:', error);
       if (Platform.OS === 'web') {
-        alert(`Error\n\n${error instanceof Error ? error.message : 'Unknown error'}`);
+        alert(
+          `Error\n\n${error instanceof Error ? error.message : 'Unknown error'}`
+        );
       } else {
-        Alert.alert('Error', error instanceof Error ? error.message : 'Unknown error');
+        Alert.alert(
+          'Error',
+          error instanceof Error ? error.message : 'Unknown error'
+        );
       }
     } finally {
       setLoading(false);
@@ -116,14 +129,18 @@ export default function AdminLoginScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        <ScrollView 
-          style={styles.scrollView} 
+        <ScrollView
+          style={styles.scrollView}
           contentContainerStyle={[styles.scrollContent, webContainerStyle]}
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
-            <Text style={[styles.title, isDesktop && styles.titleDesktop]}>Admin Login</Text>
-            <Text style={styles.subtitle}>Manage leads and communicate with lawyers</Text>
+            <Text style={[styles.title, isDesktop && styles.titleDesktop]}>
+              Admin Login
+            </Text>
+            <Text style={styles.subtitle}>
+              Manage leads and communicate with lawyers
+            </Text>
           </View>
 
           <View style={styles.form}>
@@ -154,12 +171,12 @@ export default function AdminLoginScreen() {
               onSubmitEditing={handleLogin}
             />
 
-            <Pressable 
+            <Pressable
               style={[
-                styles.button, 
+                styles.button,
                 loading && styles.buttonDisabled,
-                isWeb && webClickableStyles
-              ]} 
+                isWeb && webClickableStyles,
+              ]}
               onPress={handleLogin}
               disabled={loading}
             >

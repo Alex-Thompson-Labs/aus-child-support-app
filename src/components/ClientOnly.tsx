@@ -1,6 +1,6 @@
 /**
  * ClientOnly Component
- * 
+ *
  * Wrapper component that only renders children on the client side.
  * Prevents hydration mismatches for components that use browser-only APIs.
  */
@@ -18,7 +18,7 @@ interface ClientOnlyProps {
 /**
  * Renders children only after client-side hydration is complete.
  * Use this to wrap components that access window, localStorage, or other browser APIs.
- * 
+ *
  * @example
  * ```tsx
  * <ClientOnly fallback={<div>Loading...</div>}>

@@ -16,9 +16,10 @@
 >
 > **The problem with those keywords:** You are likely paying ~$15/click for parents who just want the free DHS calculator or a shoulder to cry on. They clog up your intake team and rarely have the budget for a retainer.
 >
-> **The solution:** I built an independent calculator (AusChildSupport.com) that filters these users *before* they contact a lawyer. It uses the "Change of Assessment" logic to flag high-value complexity triggers, specifically:
-> * Reason 8 (Hidden income/wealth)
-> * Reason 9 (Self-employed/Trust discrepancies)
+> **The solution:** I built an independent calculator (AusChildSupport.com) that filters these users _before_ they contact a lawyer. It uses the "Change of Assessment" logic to flag high-value complexity triggers, specifically:
+>
+> - Reason 8 (Hidden income/wealth)
+> - Reason 9 (Self-employed/Trust discrepancies)
 >
 > I am looking for **one** Melbourne firm to pilot a "Sponsored Results" placement for these specific high-value cases.
 >
@@ -37,6 +38,7 @@
 ## Strategic Notes
 
 ### Why this specific script?
+
 1.  **No "Salesy" Intro:** It skips the "I hope you are well" fluff. It respects his time.
-2.  **Jargon signalling:** By explicitly citing **"Reason 8"** and **"Reason 9,"** you prove you understand the *Child Support Assessment Act*. This separates you from generic marketing agencies.
-3.  **The "Reallocation" Frame:** You aren't asking for *new* money. You are suggesting
+2.  **Jargon signalling:** By explicitly citing **"Reason 8"** and **"Reason 9,"** you prove you understand the _Child Support Assessment Act_. This separates you from generic marketing agencies.
+3.  **The "Reallocation" Frame:** You aren't asking for _new_ money. You are suggesting

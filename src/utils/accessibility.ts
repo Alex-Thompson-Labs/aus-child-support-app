@@ -35,15 +35,17 @@ export function getTextInputA11yProps({
     accessibilityRole: 'none' as const, // Prevent RN from adding role on web
   };
 
-  const webProps = isWeb ? {
-    role: 'textbox' as any,
-    'aria-label': label,
-    ...(hint && { 'aria-describedby': hint }),
-    ...(error && {
-      'aria-invalid': true,
-      'aria-describedby': errorId,
-    }),
-  } : {};
+  const webProps = isWeb
+    ? {
+        role: 'textbox' as any,
+        'aria-label': label,
+        ...(hint && { 'aria-describedby': hint }),
+        ...(error && {
+          'aria-invalid': true,
+          'aria-describedby': errorId,
+        }),
+      }
+    : {};
 
   return { ...baseProps, ...webProps };
 }
@@ -77,13 +79,15 @@ export function getButtonA11yProps({
     },
   };
 
-  const webProps = isWeb ? {
-    role: 'button' as any,
-    'aria-label': label,
-    'aria-disabled': disabled,
-    ...(pressed !== undefined && { 'aria-pressed': pressed }),
-    tabIndex: disabled ? -1 : 0,
-  } : {};
+  const webProps = isWeb
+    ? {
+        role: 'button' as any,
+        'aria-label': label,
+        'aria-disabled': disabled,
+        ...(pressed !== undefined && { 'aria-pressed': pressed }),
+        tabIndex: disabled ? -1 : 0,
+      }
+    : {};
 
   return { ...baseProps, ...webProps };
 }
@@ -114,12 +118,14 @@ export function getSwitchA11yProps({
     },
   };
 
-  const webProps = isWeb ? {
-    role: 'switch' as any,
-    'aria-label': label,
-    'aria-checked': checked,
-    'aria-disabled': disabled,
-  } : {};
+  const webProps = isWeb
+    ? {
+        role: 'switch' as any,
+        'aria-label': label,
+        'aria-checked': checked,
+        'aria-disabled': disabled,
+      }
+    : {};
 
   return { ...baseProps, ...webProps };
 }
@@ -143,12 +149,14 @@ export function getModalA11yProps({
     accessibilityViewIsModal: true,
   };
 
-  const webProps = isWeb ? {
-    role: 'dialog' as any,
-    'aria-modal': true,
-    'aria-labelledby': titleId,
-    ...(descriptionId && { 'aria-describedby': descriptionId }),
-  } : {};
+  const webProps = isWeb
+    ? {
+        role: 'dialog' as any,
+        'aria-modal': true,
+        'aria-labelledby': titleId,
+        ...(descriptionId && { 'aria-describedby': descriptionId }),
+      }
+    : {};
 
   return { ...baseProps, ...webProps };
 }
@@ -169,11 +177,13 @@ export function getErrorA11yProps({ id }: AccessibleErrorProps) {
     accessibilityLive: 'polite' as const,
   };
 
-  const webProps = isWeb ? {
-    id,
-    role: 'alert' as any,
-    'aria-live': 'polite',
-  } : {};
+  const webProps = isWeb
+    ? {
+        id,
+        role: 'alert' as any,
+        'aria-live': 'polite',
+      }
+    : {};
 
   return { ...baseProps, ...webProps };
 }
@@ -182,17 +192,21 @@ export function getErrorA11yProps({ id }: AccessibleErrorProps) {
  * Props for semantic regions/landmarks
  */
 export interface SemanticRegionProps {
-  role: 'main' | 'navigation' | 'form' | 'region' | 'complementary' | 'banner' | 'contentinfo';
+  role:
+    | 'main'
+    | 'navigation'
+    | 'form'
+    | 'region'
+    | 'complementary'
+    | 'banner'
+    | 'contentinfo';
   label?: string;
 }
 
 /**
  * Get accessibility props for semantic View containers
  */
-export function getSemanticRegionProps({
-  role,
-  label,
-}: SemanticRegionProps) {
+export function getSemanticRegionProps({ role, label }: SemanticRegionProps) {
   if (!isWeb) {
     return {};
   }
@@ -226,13 +240,15 @@ export function getExpandableA11yProps({
     accessibilityState: { expanded },
   };
 
-  const webProps = isWeb ? {
-    role: 'button' as any,
-    'aria-label': label,
-    'aria-expanded': expanded,
-    ...(controlsId && { 'aria-controls': controlsId }),
-    tabIndex: 0,
-  } : {};
+  const webProps = isWeb
+    ? {
+        role: 'button' as any,
+        'aria-label': label,
+        'aria-expanded': expanded,
+        ...(controlsId && { 'aria-controls': controlsId }),
+        tabIndex: 0,
+      }
+    : {};
 
   return { ...baseProps, ...webProps };
 }
@@ -287,7 +303,9 @@ export const focusManagement = {
     );
 
     const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+    const lastElement = focusableElements[
+      focusableElements.length - 1
+    ] as HTMLElement;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Tab') return;
@@ -320,7 +338,10 @@ export const focusManagement = {
 /**
  * Screen reader announcement utility
  */
-export function announceToScreenReader(message: string, priority: 'polite' | 'assertive' = 'polite') {
+export function announceToScreenReader(
+  message: string,
+  priority: 'polite' | 'assertive' = 'polite'
+) {
   if (!isWeb) return;
 
   const announcement = document.createElement('div');
@@ -349,12 +370,14 @@ export function announceToScreenReader(message: string, priority: 'polite' | 'as
 /**
  * Get visual focus styles for web
  */
-export const webFocusStyles = isWeb ? {
-  outlineStyle: 'solid' as any,
-  outlineWidth: '2px' as any,
-  outlineColor: '#3b82f6' as any, // blue-500
-  outlineOffset: '2px' as any,
-} : {};
+export const webFocusStyles = isWeb
+  ? {
+      outlineStyle: 'solid' as any,
+      outlineWidth: '2px' as any,
+      outlineColor: '#3b82f6' as any, // blue-500
+      outlineOffset: '2px' as any,
+    }
+  : {};
 
 /**
  * Create focus event handlers that apply visible focus ring

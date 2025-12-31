@@ -1,11 +1,11 @@
 /**
  * Supabase Client Configuration
- * 
+ *
  * LAZY-LOADED for optimal LCP performance.
  * Supabase client is only initialized when actually needed (user action).
- * 
+ *
  * Used for storing lead submissions from the lawyer inquiry form.
- * 
+ *
  * Security:
  * - Uses anon key (safe for client-side)
  * - Row Level Security (RLS) policies control access
@@ -23,8 +23,12 @@ let supabaseInstance: SupabaseClient | null = null;
  * Get Supabase credentials from environment variables
  */
 function getSupabaseCredentials() {
-  const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl || process.env.EXPO_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = Constants.expoConfig?.extra?.supabaseAnonKey || process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseUrl =
+    Constants.expoConfig?.extra?.supabaseUrl ||
+    process.env.EXPO_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey =
+    Constants.expoConfig?.extra?.supabaseAnonKey ||
+    process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
   return { supabaseUrl, supabaseAnonKey };
 }
@@ -45,27 +49,27 @@ async function getSupabaseClient(): Promise<SupabaseClient> {
 
   // Validate credentials
   if (!supabaseUrl) {
-    console.error('[Supabase] Missing EXPO_PUBLIC_SUPABASE_URL environment variable');
+    console.error(
+      '[Supabase] Missing EXPO_PUBLIC_SUPABASE_URL environment variable'
+    );
   }
 
   if (!supabaseAnonKey) {
-    console.error('[Supabase] Missing EXPO_PUBLIC_SUPABASE_ANON_KEY environment variable');
+    console.error(
+      '[Supabase] Missing EXPO_PUBLIC_SUPABASE_ANON_KEY environment variable'
+    );
   }
 
   // Create and cache Supabase client
-  supabaseInstance = createClient(
-    supabaseUrl || '',
-    supabaseAnonKey || '',
-    {
-      auth: {
-        // Enable auth for admin panel
-        // Anonymous form submissions don't require auth
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: false,
-      },
-    }
-  );
+  supabaseInstance = createClient(supabaseUrl || '', supabaseAnonKey || '', {
+    auth: {
+      // Enable auth for admin panel
+      // Anonymous form submissions don't require auth
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: false,
+    },
+  });
 
   console.log('[Supabase] Client initialized (lazy) with:', {
     hasUrl: !!supabaseUrl,
@@ -84,9 +88,9 @@ export const supabase = new Proxy({} as SupabaseClient, {
   get: function (_target, prop) {
     throw new Error(
       `[Supabase] Direct access to 'supabase.${String(prop)}' is not allowed. ` +
-      `Use getSupabaseClient() instead for lazy loading.`
+        `Use getSupabaseClient() instead for lazy loading.`
     );
-  }
+  },
 });
 
 // Type definitions for database tables
@@ -107,11 +111,13 @@ export interface LeadSubmission {
   annual_liability: number;
 
   // Care arrangement data
-  care_data: {
-    index: number;
-    careA: number;
-    careB: number;
-  }[] | null;
+  care_data:
+    | {
+        index: number;
+        careA: number;
+        careB: number;
+      }[]
+    | null;
 
   // Complexity data
   complexity_trigger: string[] | null;
@@ -138,7 +144,7 @@ export interface LeadSubmission {
 
 /**
  * Submit a new lead to the database
- * 
+ *
  * @param lead - Lead submission data
  * @returns Success status and lead ID or error
  */
@@ -211,10 +217,14 @@ export async function submitLead(lead: LeadSubmission): Promise<{
       consent_given: lead.consent_given,
 
       // Lead management (optional fields)
-      ...(lead.assigned_lawyer_id !== undefined && { assigned_lawyer_id: lead.assigned_lawyer_id }),
+      ...(lead.assigned_lawyer_id !== undefined && {
+        assigned_lawyer_id: lead.assigned_lawyer_id,
+      }),
       ...(lead.status !== undefined && { status: lead.status }),
       ...(lead.sent_at !== undefined && { sent_at: lead.sent_at }),
-      ...(lead.lawyer_response_at !== undefined && { lawyer_response_at: lead.lawyer_response_at }),
+      ...(lead.lawyer_response_at !== undefined && {
+        lawyer_response_at: lead.lawyer_response_at,
+      }),
       ...(lead.notes !== undefined && { notes: lead.notes }),
       ...(lead.deleted_at !== undefined && { deleted_at: lead.deleted_at }),
     };
@@ -288,4 +298,3 @@ export async function checkSupabaseConnection(): Promise<boolean> {
  * Export getSupabaseClient for use in admin pages and other components
  */
 export { getSupabaseClient };
-

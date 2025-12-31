@@ -1,6 +1,6 @@
 /**
  * Form Validation Utilities
- * 
+ *
  * Shared validation and sanitization functions for form inputs.
  * Used across inquiry forms to ensure consistent data validation.
  */
@@ -15,7 +15,8 @@ export const VALIDATION = {
   MESSAGE_MIN_LENGTH: 10,
   MESSAGE_MAX_LENGTH: 1000,
   PHONE_REGEX: /^[\d\s\-+()]{8,20}$/,
-  EMAIL_REGEX: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/,
+  EMAIL_REGEX:
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/,
   // Simple email regex for basic validation (used in LawyerInquiryScreen)
   EMAIL_REGEX_SIMPLE: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
 } as const;
@@ -27,10 +28,10 @@ export const VALIDATION = {
 /**
  * Sanitize a general string input
  * Trims whitespace and normalizes multiple spaces to single space
- * 
+ *
  * @param value - The string to sanitize
  * @returns Sanitized string
- * 
+ *
  * @example
  * sanitizeString('  John   Doe  ') // 'John Doe'
  */
@@ -41,10 +42,10 @@ export function sanitizeString(value: string): string {
 /**
  * Sanitize an email address
  * Trims whitespace and converts to lowercase
- * 
+ *
  * @param email - The email to sanitize
  * @returns Sanitized email string
- * 
+ *
  * @example
  * sanitizeEmail('  John@Example.COM  ') // 'john@example.com'
  */
@@ -55,10 +56,10 @@ export function sanitizeEmail(email: string): string {
 /**
  * Sanitize a phone number
  * Removes all non-digit characters except leading +
- * 
+ *
  * @param phone - The phone number to sanitize
  * @returns Sanitized phone number with only digits and optional leading +
- * 
+ *
  * @example
  * sanitizePhone('+61 (02) 1234-5678') // '+61021234567'
  * sanitizePhone('0412 345 678') // '0412345678'
@@ -77,7 +78,7 @@ export function sanitizePhone(phone: string): string {
 
 /**
  * Validate a name field
- * 
+ *
  * @param name - The name to validate
  * @returns Error message if invalid, undefined if valid
  */
@@ -96,7 +97,7 @@ export function validateName(name: string): string | undefined {
 /**
  * Validate an email address (strict validation)
  * Uses comprehensive regex pattern
- * 
+ *
  * @param email - The email to validate
  * @returns Error message if invalid, undefined if valid
  */
@@ -112,7 +113,7 @@ export function validateEmail(email: string): string | undefined {
 /**
  * Validate an email address (simple validation)
  * Uses basic regex pattern for less strict validation
- * 
+ *
  * @param email - The email to validate
  * @returns Error message if invalid, undefined if valid
  */
@@ -128,7 +129,7 @@ export function validateEmailSimple(email: string): string | undefined {
 /**
  * Validate a phone number
  * Phone is optional, but if provided must match the pattern
- * 
+ *
  * @param phone - The phone number to validate
  * @returns Error message if invalid, undefined if valid or empty
  */
@@ -143,7 +144,7 @@ export function validatePhone(phone: string): string | undefined {
 
 /**
  * Validate a message field
- * 
+ *
  * @param message - The message to validate
  * @returns Error message if invalid, undefined if valid
  */
@@ -161,7 +162,7 @@ export function validateMessage(message: string): string | undefined {
 
 /**
  * Validate consent checkbox
- * 
+ *
  * @param consent - The consent boolean value
  * @returns Error message if not consented, undefined if valid
  */

@@ -19,12 +19,19 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
         // Web-specific tab bar styling
         tabBarStyle: { display: 'none' },
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Calculator',
-          tabBarIcon: ({ color }) => <IconSymbol size={isWeb ? 24 : 28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <IconSymbol
+              size={isWeb ? 24 : 28}
+              name="house.fill"
+              color={color}
+            />
+          ),
         }}
       />
     </Tabs>

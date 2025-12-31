@@ -1,17 +1,17 @@
-import type { CalculationResults } from "../types/calculator";
-import { MAX_PPS } from "./child-support-constants";
+import type { CalculationResults } from '../types/calculator';
+import { MAX_PPS } from './child-support-constants';
 
 /**
  * Represents a specific scenario that causes a $0 payment in child support assessments
  */
 export interface ZeroPaymentScenario {
   type:
-    | "care_threshold"
-    | "balanced_percentages"
-    | "both_low_care"
-    | "mar_prevented_by_care"
-    | "zero_income"
-    | "none";
+    | 'care_threshold'
+    | 'balanced_percentages'
+    | 'both_low_care'
+    | 'mar_prevented_by_care'
+    | 'zero_income'
+    | 'none';
   title: string;
   explanation: string;
   details?: {
@@ -41,14 +41,14 @@ export function detectZeroPaymentScenario(
 ): ZeroPaymentScenario {
   // Guard: If there's actually a payment, return 'none'
   if (results.finalPaymentAmount > 0) {
-    return { type: "none", title: "", explanation: "" };
+    return { type: 'none', title: '', explanation: '' };
   }
 
   // Priority 1: Zero Combined Income
   if (results.CCSI === 0) {
     return {
-      type: "zero_income",
-      title: "Why No Payment?",
+      type: 'zero_income',
+      title: 'Why No Payment?',
       explanation:
         "Both parents have zero child support income after deductions (self-support amount and relevant dependent allowances). When there's no combined income to assess, no child support payment is required.",
     };
@@ -69,20 +69,20 @@ export function detectZeroPaymentScenario(
     !results.childResults.some((c) => c.marAppliedB);
 
   if (marPreventedA || marPreventedB) {
-    const parent = marPreventedA ? "Parent A" : "Parent B";
+    const parent = marPreventedA ? 'Parent A' : 'Parent B';
     const careDetails = marPreventedA
       ? results.childResults
           .filter((c) => c.roundedCareA >= 14)
           .map((c, idx) => `Child ${idx + 1}: ${c.roundedCareA}% care`)
-          .join(", ")
+          .join(', ')
       : results.childResults
           .filter((c) => c.roundedCareB >= 14)
           .map((c, idx) => `Child ${idx + 1}: ${c.roundedCareB}% care`)
-          .join(", ");
+          .join(', ');
 
     return {
-      type: "mar_prevented_by_care",
-      title: "Why No Payment?",
+      type: 'mar_prevented_by_care',
+      title: 'Why No Payment?',
       explanation: `${parent} is exempt from the Minimum Annual Rate because they provide at least 14% care for a child. As their income is below the self-support threshold, their direct care is deemed a sufficient contribution, resulting in a $0 liability.`,
       details: marPreventedA
         ? { parentADetails: careDetails }
@@ -97,10 +97,10 @@ export function detectZeroPaymentScenario(
 
   if (allChildrenBothLowCare) {
     return {
-      type: "both_low_care",
-      title: "Why No Payment?",
+      type: 'both_low_care',
+      title: 'Why No Payment?',
       explanation:
-        "Both parents have less than 35% care of the children. To be eligible to receive child support, a parent must have at least 35% care. Since neither parent meets this threshold, no payment is required.",
+        'Both parents have less than 35% care of the children. To be eligible to receive child support, a parent must have at least 35% care. Since neither parent meets this threshold, no payment is required.',
     };
   }
 
@@ -113,8 +113,8 @@ export function detectZeroPaymentScenario(
 
   if (allChildrenBalanced) {
     return {
-      type: "balanced_percentages",
-      title: "Why No Payment?",
+      type: 'balanced_percentages',
+      title: 'Why No Payment?',
       explanation:
         "Both parents' income and care contributions are balanced, resulting in equal child support percentages. When both parents have similar obligations, no payment is required from either parent.",
     };
@@ -132,8 +132,8 @@ export function detectZeroPaymentScenario(
 
   if (hasPayerWithLowCareReceiver) {
     return {
-      type: "care_threshold",
-      title: "Why No Payment?",
+      type: 'care_threshold',
+      title: 'Why No Payment?',
       explanation:
         "To be eligible to receive child support, a parent must have at least 35% care of the child. When a parent has a child support percentage but the other parent has less than 35% care, no payment is required because the receiving parent doesn't meet the minimum care threshold.",
     };
@@ -141,10 +141,10 @@ export function detectZeroPaymentScenario(
 
   // Fallback: Should not reach here, but return generic explanation
   return {
-    type: "none",
-    title: "Why No Payment?",
+    type: 'none',
+    title: 'Why No Payment?',
     explanation:
-      "No child support payment is required based on the current income and care arrangements.",
+      'No child support payment is required based on the current income and care arrangements.',
   };
 }
 
@@ -184,15 +184,17 @@ export function isFarLimitReached(
   // Check if FAR was applied to earlier children (counting how many have FAR applied)
   const farAppliedCountA = results.childResults
     .slice(0, childIndex)
-    .filter(c => c.farAppliedA).length;
+    .filter((c) => c.farAppliedA).length;
 
   const farAppliedCountB = results.childResults
     .slice(0, childIndex)
-    .filter(c => c.farAppliedB).length;
+    .filter((c) => c.farAppliedB).length;
 
   // If eligible for FAR but not applied, and 3 or more children before this one had FAR applied
-  const farLimitReachedA = parentAEligibleForFar && !child.farAppliedA && farAppliedCountA >= 3;
-  const farLimitReachedB = parentBEligibleForFar && !child.farAppliedB && farAppliedCountB >= 3;
+  const farLimitReachedA =
+    parentAEligibleForFar && !child.farAppliedA && farAppliedCountA >= 3;
+  const farLimitReachedB =
+    parentBEligibleForFar && !child.farAppliedB && farAppliedCountB >= 3;
 
   return farLimitReachedA || farLimitReachedB;
 }

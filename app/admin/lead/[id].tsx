@@ -5,7 +5,11 @@
  */
 
 import { exportLeadAsPDF } from '@/src/utils/exportLeadPDF';
-import { isWeb, webClickableStyles, webInputStyles } from '@/src/utils/responsive';
+import {
+  isWeb,
+  webClickableStyles,
+  webInputStyles,
+} from '@/src/utils/responsive';
 import { getSupabaseClient, type LeadSubmission } from '@/src/utils/supabase';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -46,9 +50,14 @@ export default function LeadDetailScreen() {
   const checkAuthAndLoadLead = async () => {
     // Lazy-load Supabase for auth check
     const supabase = await getSupabaseClient();
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-    if (!session || session.user.email?.toLowerCase() !== 'alex@auschildsupport.com') {
+    if (
+      !session ||
+      session.user.email?.toLowerCase() !== 'alex@auschildsupport.com'
+    ) {
       router.replace('/admin/login');
       return;
     }
@@ -95,19 +104,22 @@ export default function LeadDetailScreen() {
     if (!lead) return;
 
     // Determine the primary issue/trigger
-    const primaryReason = lead.complexity_reasons?.[0] || lead.complexity_trigger || 'Complex case';
+    const primaryReason =
+      lead.complexity_reasons?.[0] || lead.complexity_trigger || 'Complex case';
 
     // Calculate combined parental income
     const combinedIncome = lead.income_parent_a + lead.income_parent_b;
 
     // Determine who pays (higher income parent pays)
-    const payingParent = lead.income_parent_a > lead.income_parent_b ? 'A' : 'B';
+    const payingParent =
+      lead.income_parent_a > lead.income_parent_b ? 'A' : 'B';
 
     // Format care percentages for children
     let careInfo = 'Not specified';
     if (lead.care_data && lead.care_data.length > 0) {
-      const careStrings = lead.care_data.map((child, idx) =>
-        `Child ${idx + 1}: A=${child.careA.toFixed(0)}%, B=${child.careB.toFixed(0)}%`
+      const careStrings = lead.care_data.map(
+        (child, idx) =>
+          `Child ${idx + 1}: A=${child.careA.toFixed(0)}%, B=${child.careB.toFixed(0)}%`
       );
       careInfo = careStrings.join(' | ');
     } else if (lead.children_count > 0) {
@@ -116,9 +128,10 @@ export default function LeadDetailScreen() {
     }
 
     // Add additional complexity triggers if present
-    const additionalTriggers = lead.complexity_reasons && lead.complexity_reasons.length > 1
-      ? `\nAdditional Issues: ${lead.complexity_reasons.slice(1).join(', ')}`
-      : '';
+    const additionalTriggers =
+      lead.complexity_reasons && lead.complexity_reasons.length > 1
+        ? `\nAdditional Issues: ${lead.complexity_reasons.slice(1).join(', ')}`
+        : '';
 
     const teaserEmail = `Subject: New Qualified Lead - ${primaryReason}
 
@@ -138,12 +151,17 @@ auschildsupport.com`;
 
     if (Platform.OS === 'web') {
       // Web: Use Clipboard API
-      navigator.clipboard.writeText(teaserEmail).then(() => {
-        alert('Teaser Email Copied!\n\nThe email template has been copied to your clipboard. Paste it into Gmail and send to the lawyer.');
-      }).catch(err => {
-        console.error('Failed to copy:', err);
-        alert('Copy Failed\n\nPlease copy the text manually.');
-      });
+      navigator.clipboard
+        .writeText(teaserEmail)
+        .then(() => {
+          alert(
+            'Teaser Email Copied!\n\nThe email template has been copied to your clipboard. Paste it into Gmail and send to the lawyer.'
+          );
+        })
+        .catch((err) => {
+          console.error('Failed to copy:', err);
+          alert('Copy Failed\n\nPlease copy the text manually.');
+        });
     } else {
       // Mobile: Use React Native Clipboard
       Clipboard.setString(teaserEmail);
@@ -245,16 +263,26 @@ auschildsupport.com`;
 
       // Show success message
       if (Platform.OS === 'web') {
-        alert('Print Dialog Opened!\n\nUse the print dialog to save as PDF or print the lead report.');
+        alert(
+          'Print Dialog Opened!\n\nUse the print dialog to save as PDF or print the lead report.'
+        );
       } else {
-        Alert.alert('PDF Exported', 'The lead report has been generated successfully.');
+        Alert.alert(
+          'PDF Exported',
+          'The lead report has been generated successfully.'
+        );
       }
     } catch (error) {
       console.error('[LeadDetail] Error exporting PDF:', error);
       if (Platform.OS === 'web') {
-        alert(`Export Failed\n\n${error instanceof Error ? error.message : 'Unknown error occurred'}`);
+        alert(
+          `Export Failed\n\n${error instanceof Error ? error.message : 'Unknown error occurred'}`
+        );
       } else {
-        Alert.alert('Export Failed', error instanceof Error ? error.message : 'Unknown error occurred');
+        Alert.alert(
+          'Export Failed',
+          error instanceof Error ? error.message : 'Unknown error occurred'
+        );
       }
     } finally {
       setExportingPDF(false);
@@ -288,7 +316,7 @@ auschildsupport.com`;
                 }
 
                 Alert.alert('Lead Deleted', 'The lead has been deleted.', [
-                  { text: 'OK', onPress: () => router.back() }
+                  { text: 'OK', onPress: () => router.back() },
                 ]);
               } catch (error) {
                 console.error('[LeadDetail] Unexpected error:', error);
@@ -300,12 +328,18 @@ auschildsupport.com`;
     };
 
     if (Platform.OS === 'web') {
-      if (confirm('Are you sure you want to delete this lead? This action cannot be undone.')) {
+      if (
+        confirm(
+          'Are you sure you want to delete this lead? This action cannot be undone.'
+        )
+      ) {
         getSupabaseClient()
-          .then(supabase => supabase
-            .from('leads')
-            .update({ deleted_at: new Date().toISOString() })
-            .eq('id', leadId))
+          .then((supabase) =>
+            supabase
+              .from('leads')
+              .update({ deleted_at: new Date().toISOString() })
+              .eq('id', leadId)
+          )
           .then(({ error }) => {
             if (error) {
               alert(`Error\n\n${error.message}`);
@@ -357,7 +391,10 @@ auschildsupport.com`;
         </View>
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* Parent Information */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Parent Information</Text>
@@ -367,7 +404,9 @@ auschildsupport.com`;
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Email:</Text>
-            <Text style={[styles.infoValue, styles.infoValueEmail]}>{lead.parent_email}</Text>
+            <Text style={[styles.infoValue, styles.infoValueEmail]}>
+              {lead.parent_email}
+            </Text>
           </View>
           {lead.parent_phone && (
             <View style={styles.infoRow}>
@@ -394,11 +433,15 @@ auschildsupport.com`;
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Parent A Income:</Text>
-            <Text style={styles.infoValue}>${lead.income_parent_a.toLocaleString()}</Text>
+            <Text style={styles.infoValue}>
+              ${lead.income_parent_a.toLocaleString()}
+            </Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Parent B Income:</Text>
-            <Text style={styles.infoValue}>${lead.income_parent_b.toLocaleString()}</Text>
+            <Text style={styles.infoValue}>
+              ${lead.income_parent_b.toLocaleString()}
+            </Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Children:</Text>
@@ -438,7 +481,11 @@ auschildsupport.com`;
             numberOfLines={4}
           />
           <Pressable
-            style={[styles.actionButton, styles.actionButtonSecondary, isWeb && webClickableStyles]}
+            style={[
+              styles.actionButton,
+              styles.actionButtonSecondary,
+              isWeb && webClickableStyles,
+            ]}
             onPress={saveNotes}
             disabled={savingNotes}
           >
@@ -455,14 +502,24 @@ auschildsupport.com`;
           <Text style={styles.sectionTitle}>Actions</Text>
 
           <Pressable
-            style={[styles.actionButton, styles.actionButtonPrimary, isWeb && webClickableStyles]}
+            style={[
+              styles.actionButton,
+              styles.actionButtonPrimary,
+              isWeb && webClickableStyles,
+            ]}
             onPress={generateTeaserEmail}
           >
-            <Text style={styles.actionButtonText}>📋 Generate Teaser Email</Text>
+            <Text style={styles.actionButtonText}>
+              📋 Generate Teaser Email
+            </Text>
           </Pressable>
 
           <Pressable
-            style={[styles.actionButton, styles.actionButtonPrimary, isWeb && webClickableStyles]}
+            style={[
+              styles.actionButton,
+              styles.actionButtonPrimary,
+              isWeb && webClickableStyles,
+            ]}
             onPress={handleExportPDF}
             disabled={exportingPDF}
           >
@@ -475,41 +532,77 @@ auschildsupport.com`;
 
           <View style={styles.statusActions}>
             <Pressable
-              style={[styles.statusButton, lead.status === 'reviewing' && styles.statusButtonActive, isWeb && webClickableStyles]}
+              style={[
+                styles.statusButton,
+                lead.status === 'reviewing' && styles.statusButtonActive,
+                isWeb && webClickableStyles,
+              ]}
               onPress={() => updateStatus('reviewing')}
               disabled={updatingStatus}
             >
-              <Text style={[styles.statusButtonText, lead.status === 'reviewing' && styles.statusButtonTextActive]}>
+              <Text
+                style={[
+                  styles.statusButtonText,
+                  lead.status === 'reviewing' && styles.statusButtonTextActive,
+                ]}
+              >
                 Reviewing
               </Text>
             </Pressable>
 
             <Pressable
-              style={[styles.statusButton, lead.status === 'sent' && styles.statusButtonActive, isWeb && webClickableStyles]}
+              style={[
+                styles.statusButton,
+                lead.status === 'sent' && styles.statusButtonActive,
+                isWeb && webClickableStyles,
+              ]}
               onPress={() => updateStatus('sent')}
               disabled={updatingStatus}
             >
-              <Text style={[styles.statusButtonText, lead.status === 'sent' && styles.statusButtonTextActive]}>
+              <Text
+                style={[
+                  styles.statusButtonText,
+                  lead.status === 'sent' && styles.statusButtonTextActive,
+                ]}
+              >
                 Mark Sent
               </Text>
             </Pressable>
 
             <Pressable
-              style={[styles.statusButton, lead.status === 'converted' && styles.statusButtonActive, isWeb && webClickableStyles]}
+              style={[
+                styles.statusButton,
+                lead.status === 'converted' && styles.statusButtonActive,
+                isWeb && webClickableStyles,
+              ]}
               onPress={() => updateStatus('converted')}
               disabled={updatingStatus}
             >
-              <Text style={[styles.statusButtonText, lead.status === 'converted' && styles.statusButtonTextActive]}>
+              <Text
+                style={[
+                  styles.statusButtonText,
+                  lead.status === 'converted' && styles.statusButtonTextActive,
+                ]}
+              >
                 Converted
               </Text>
             </Pressable>
 
             <Pressable
-              style={[styles.statusButton, lead.status === 'lost' && styles.statusButtonActive, isWeb && webClickableStyles]}
+              style={[
+                styles.statusButton,
+                lead.status === 'lost' && styles.statusButtonActive,
+                isWeb && webClickableStyles,
+              ]}
               onPress={() => updateStatus('lost')}
               disabled={updatingStatus}
             >
-              <Text style={[styles.statusButtonText, lead.status === 'lost' && styles.statusButtonTextActive]}>
+              <Text
+                style={[
+                  styles.statusButtonText,
+                  lead.status === 'lost' && styles.statusButtonTextActive,
+                ]}
+              >
                 Lost
               </Text>
             </Pressable>
@@ -518,9 +611,15 @@ auschildsupport.com`;
 
         {/* Danger Zone */}
         <View style={[styles.section, styles.dangerSection]}>
-          <Text style={[styles.sectionTitle, styles.dangerTitle]}>Danger Zone</Text>
+          <Text style={[styles.sectionTitle, styles.dangerTitle]}>
+            Danger Zone
+          </Text>
           <Pressable
-            style={[styles.actionButton, styles.actionButtonDanger, isWeb && webClickableStyles]}
+            style={[
+              styles.actionButton,
+              styles.actionButtonDanger,
+              isWeb && webClickableStyles,
+            ]}
             onPress={deleteLead}
           >
             <Text style={styles.actionButtonText}>🗑️ Delete Lead</Text>
@@ -789,4 +888,3 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
 });
-

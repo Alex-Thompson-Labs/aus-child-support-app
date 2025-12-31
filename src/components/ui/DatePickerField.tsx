@@ -8,11 +8,11 @@ import { isWeb } from '../../utils/responsive';
 // ============================================================================
 
 interface DatePickerFieldProps {
-    label: string;
-    value: Date | null;
-    onChange: (date: Date | null) => void;
-    error?: string;
-    disabled?: boolean;
+  label: string;
+  value: Date | null;
+  onChange: (date: Date | null) => void;
+  error?: string;
+  disabled?: boolean;
 }
 
 // ============================================================================
@@ -23,30 +23,43 @@ interface DatePickerFieldProps {
  * Format date as "DD MMM YYYY" (e.g., "31 Dec 2025")
  */
 function formatDisplayDate(date: Date): string {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const day = date.getDate();
-    const month = months[date.getMonth()];
-    const year = date.getFullYear();
-    return `${day} ${month} ${year}`;
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  const day = date.getDate();
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
 }
 
 /**
  * Convert Date to YYYY-MM-DD string for HTML input
  */
 function dateToInputValue(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 /**
  * Convert YYYY-MM-DD string to Date object
  */
 function inputValueToDate(value: string): Date | null {
-    if (!value) return null;
-    const date = new Date(value);
-    return isNaN(date.getTime()) ? null : date;
+  if (!value) return null;
+  const date = new Date(value);
+  return isNaN(date.getTime()) ? null : date;
 }
 
 // ============================================================================
@@ -54,128 +67,126 @@ function inputValueToDate(value: string): Date | null {
 // ============================================================================
 
 export default function DatePickerField({
-    label,
-    value,
-    onChange,
-    error,
-    disabled = false
+  label,
+  value,
+  onChange,
+  error,
+  disabled = false,
 }: DatePickerFieldProps) {
-    // Show/hide native picker on mobile
-    const [showPicker, setShowPicker] = useState(false);
+  // Show/hide native picker on mobile
+  const [showPicker, setShowPicker] = useState(false);
 
-    // Handle date change from native picker (iOS/Android)
-    const handleNativeChange = (event: any, selectedDate?: Date) => {
-        if (Platform.OS === 'android') {
-            // Android: always hide picker after selection
-            setShowPicker(false);
-        }
-
-        if (event.type === 'set' && selectedDate) {
-            onChange(selectedDate);
-        } else if (event.type === 'dismissed') {
-            // User cancelled
-            if (Platform.OS === 'ios') {
-                setShowPicker(false);
-            }
-        }
-    };
-
-    // Handle date change from web input
-    const handleWebChange = (event: any) => {
-        const inputValue = event.target.value;
-        const date = inputValueToDate(inputValue);
-        onChange(date);
-    };
-
-    // ========================================================================
-    // Web Rendering (Native HTML input type="date")
-    // ========================================================================
-    if (isWeb) {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.label}>{label}</Text>
-                <input
-                    type="date"
-                    value={value ? dateToInputValue(value) : ''}
-                    onChange={handleWebChange}
-                    disabled={disabled}
-                    style={{
-                        backgroundColor: '#ffffff',
-                        color: '#1a202c',
-                        borderRadius: '8px',
-                        padding: '12px',
-                        borderWidth: '1.5px',
-                        borderStyle: 'solid',
-                        borderColor: error ? '#ef4444' : '#e2e8f0',
-                        fontSize: '16px',
-                        fontFamily: 'inherit',
-                        width: '100%',
-                        boxSizing: 'border-box',
-                        outline: 'none',
-                        cursor: disabled ? 'not-allowed' : 'pointer',
-                        opacity: disabled ? 0.6 : 1,
-                    }}
-                    aria-label={label}
-                    aria-invalid={!!error}
-                    aria-describedby={error ? 'date-error' : undefined}
-                />
-                {error && (
-                    <Text style={styles.errorText} nativeID="date-error">
-                        {error}
-                    </Text>
-                )}
-            </View>
-        );
+  // Handle date change from native picker (iOS/Android)
+  const handleNativeChange = (event: any, selectedDate?: Date) => {
+    if (Platform.OS === 'android') {
+      // Android: always hide picker after selection
+      setShowPicker(false);
     }
 
-    // ========================================================================
-    // Mobile Rendering (Pressable + Native Picker)
-    // ========================================================================
+    if (event.type === 'set' && selectedDate) {
+      onChange(selectedDate);
+    } else if (event.type === 'dismissed') {
+      // User cancelled
+      if (Platform.OS === 'ios') {
+        setShowPicker(false);
+      }
+    }
+  };
+
+  // Handle date change from web input
+  const handleWebChange = (event: any) => {
+    const inputValue = event.target.value;
+    const date = inputValueToDate(inputValue);
+    onChange(date);
+  };
+
+  // ========================================================================
+  // Web Rendering (Native HTML input type="date")
+  // ========================================================================
+  if (isWeb) {
     return (
-        <View style={styles.container}>
-            <Text style={styles.label}>{label}</Text>
-            <Pressable
-                style={[
-                    styles.input,
-                    error && styles.inputError,
-                    disabled && styles.inputDisabled
-                ]}
-                onPress={() => !disabled && setShowPicker(true)}
-                disabled={disabled}
-                accessible={true}
-                accessibilityRole="button"
-                accessibilityLabel={label}
-                accessibilityHint="Tap to select a date"
-                accessibilityState={{ disabled }}
-            >
-                <Text
-                    style={[
-                        styles.inputText,
-                        !value && styles.inputPlaceholder,
-                        disabled && styles.inputTextDisabled
-                    ]}
-                >
-                    {value ? formatDisplayDate(value) : 'Select date'}
-                </Text>
-            </Pressable>
-
-            {error && (
-                <Text style={styles.errorText}>{error}</Text>
-            )}
-
-            {/* Native Date Picker (iOS/Android) */}
-            {showPicker && (
-                <DateTimePicker
-                    value={value || new Date()}
-                    mode="date"
-                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                    onChange={handleNativeChange}
-                    maximumDate={new Date(2099, 11, 31)} // Reasonable max date
-                    minimumDate={new Date(1900, 0, 1)} // Reasonable min date
-                />
-            )}
-        </View>
+      <View style={styles.container}>
+        <Text style={styles.label}>{label}</Text>
+        <input
+          type="date"
+          value={value ? dateToInputValue(value) : ''}
+          onChange={handleWebChange}
+          disabled={disabled}
+          style={{
+            backgroundColor: '#ffffff',
+            color: '#1a202c',
+            borderRadius: '8px',
+            padding: '12px',
+            borderWidth: '1.5px',
+            borderStyle: 'solid',
+            borderColor: error ? '#ef4444' : '#e2e8f0',
+            fontSize: '16px',
+            fontFamily: 'inherit',
+            width: '100%',
+            boxSizing: 'border-box',
+            outline: 'none',
+            cursor: disabled ? 'not-allowed' : 'pointer',
+            opacity: disabled ? 0.6 : 1,
+          }}
+          aria-label={label}
+          aria-invalid={!!error}
+          aria-describedby={error ? 'date-error' : undefined}
+        />
+        {error && (
+          <Text style={styles.errorText} nativeID="date-error">
+            {error}
+          </Text>
+        )}
+      </View>
     );
+  }
+
+  // ========================================================================
+  // Mobile Rendering (Pressable + Native Picker)
+  // ========================================================================
+  return (
+    <View style={styles.container}>
+      <Text style={styles.label}>{label}</Text>
+      <Pressable
+        style={[
+          styles.input,
+          error && styles.inputError,
+          disabled && styles.inputDisabled,
+        ]}
+        onPress={() => !disabled && setShowPicker(true)}
+        disabled={disabled}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel={label}
+        accessibilityHint="Tap to select a date"
+        accessibilityState={{ disabled }}
+      >
+        <Text
+          style={[
+            styles.inputText,
+            !value && styles.inputPlaceholder,
+            disabled && styles.inputTextDisabled,
+          ]}
+        >
+          {value ? formatDisplayDate(value) : 'Select date'}
+        </Text>
+      </Pressable>
+
+      {error && <Text style={styles.errorText}>{error}</Text>}
+
+      {/* Native Date Picker (iOS/Android) */}
+      {showPicker && (
+        <DateTimePicker
+          value={value || new Date()}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={handleNativeChange}
+          maximumDate={new Date(2099, 11, 31)} // Reasonable max date
+          minimumDate={new Date(1900, 0, 1)} // Reasonable min date
+        />
+      )}
+    </View>
+  );
 }
 
 // ============================================================================
@@ -183,44 +194,44 @@ export default function DatePickerField({
 // ============================================================================
 
 const styles = StyleSheet.create({
-    container: {
-        marginBottom: 12,
-    },
-    label: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#4a5568',
-        marginBottom: 8,
-    },
-    input: {
-        backgroundColor: '#ffffff',
-        borderRadius: 8,
-        padding: 12,
-        borderWidth: 1.5,
-        borderColor: '#e2e8f0',
-        justifyContent: 'center',
-        minHeight: 48, // Touch target size
-    },
-    inputError: {
-        borderColor: '#ef4444',
-    },
-    inputDisabled: {
-        backgroundColor: '#f3f4f6',
-        opacity: 0.6,
-    },
-    inputText: {
-        fontSize: 16,
-        color: '#1a202c',
-    },
-    inputPlaceholder: {
-        color: '#64748b',
-    },
-    inputTextDisabled: {
-        color: '#6b7280',
-    },
-    errorText: {
-        color: '#ef4444',
-        fontSize: 12,
-        marginTop: 4,
-    },
+  container: {
+    marginBottom: 12,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#4a5568',
+    marginBottom: 8,
+  },
+  input: {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    padding: 12,
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0',
+    justifyContent: 'center',
+    minHeight: 48, // Touch target size
+  },
+  inputError: {
+    borderColor: '#ef4444',
+  },
+  inputDisabled: {
+    backgroundColor: '#f3f4f6',
+    opacity: 0.6,
+  },
+  inputText: {
+    fontSize: 16,
+    color: '#1a202c',
+  },
+  inputPlaceholder: {
+    color: '#64748b',
+  },
+  inputTextDisabled: {
+    color: '#6b7280',
+  },
+  errorText: {
+    color: '#ef4444',
+    fontSize: 12,
+    marginTop: 4,
+  },
 });

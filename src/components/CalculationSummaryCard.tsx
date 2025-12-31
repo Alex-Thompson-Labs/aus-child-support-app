@@ -26,13 +26,13 @@ export interface CalculationSummaryCardProps {
 
 /**
  * CalculationSummaryCard - Reusable calculation summary display
- * 
+ *
  * Displays a summary of child support calculation inputs including:
  * - Annual liability
  * - Parent A & B incomes
  * - Number of children
  * - Optional complexity trigger
- * 
+ *
  * Used in lawyer inquiry forms across the application.
  */
 export function CalculationSummaryCard({
@@ -47,7 +47,7 @@ export function CalculationSummaryCard({
   containerStyle,
 }: CalculationSummaryCardProps) {
   const isDetailed = variant === 'detailed';
-  
+
   // Parse values for display
   const liabilityValue = liability ? parseFloat(liability) : null;
   const incomeAValue = incomeA ? parseFloat(incomeA) : null;
@@ -57,24 +57,31 @@ export function CalculationSummaryCard({
   return (
     <View>
       {showTitle && (
-        <Text style={[
-          isDetailed ? styles.titleDetailed : styles.titleCompact,
-        ]}>
+        <Text style={[isDetailed ? styles.titleDetailed : styles.titleCompact]}>
           {title}
         </Text>
       )}
-      
-      <View style={[
-        isDetailed ? styles.cardDetailed : styles.cardCompact,
-        containerStyle,
-      ]}>
+
+      <View
+        style={[
+          isDetailed ? styles.cardDetailed : styles.cardCompact,
+          containerStyle,
+        ]}
+      >
         {/* Annual Liability - Always first and prominent */}
         <View style={styles.row}>
           <Text style={isDetailed ? styles.labelDetailed : styles.labelCompact}>
             {isDetailed ? 'Annual Liability:' : 'Annual Liability'}
           </Text>
-          <Text style={isDetailed ? styles.valueAmountDetailed : styles.valueAmountCompact}>
-            {formatCurrency(liabilityValue)}{isDetailed ? '/year' : ''}
+          <Text
+            style={
+              isDetailed
+                ? styles.valueAmountDetailed
+                : styles.valueAmountCompact
+            }
+          >
+            {formatCurrency(liabilityValue)}
+            {isDetailed ? '/year' : ''}
           </Text>
         </View>
 

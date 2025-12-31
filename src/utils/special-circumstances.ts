@@ -3,9 +3,9 @@
  *
  * This module defines simplified, plain-language reasons for complexity triggers
  * that map to official Services Australia Change of Assessment grounds.
- * Users see conversational language; lawyers receive official CoA reason codes.
+ * Users see conversational language; lawyers receive official codes.
  *
- * @module change-of-assessment-reasons
+ * @module special-circumstances
  */
 
 /**
@@ -16,7 +16,7 @@ export type ComplexityCategory = 'urgent' | 'income' | 'child' | 'other';
 /**
  * Represents a complexity trigger that may warrant legal review
  */
-export interface ChangeOfAssessmentReason {
+export interface SpecialCircumstance {
   /** Unique identifier for the reason */
   readonly id: string;
   /** User-facing label in plain language (problem-focused) */
@@ -28,7 +28,7 @@ export interface ChangeOfAssessmentReason {
   /** Priority for sorting alerts (1-10, where 1 is most urgent) */
   readonly priority: number;
   /** Maps to official Services Australia CoA reason codes (e.g., '5.2.8', '5.2.9') */
-  readonly officialCoAReasons: readonly string[];
+  readonly officialCodes: readonly string[];
 }
 
 /**
@@ -44,72 +44,81 @@ export interface ChangeOfAssessmentReason {
  *
  * @constant
  */
-export const CHANGE_OF_ASSESSMENT_REASONS: readonly ChangeOfAssessmentReason[] = [
+export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   // Note: Court date reasons are now dynamic (e.g., court_12_Jan_2026)
   // See createCourtDateReasonId() function below
   {
     id: 'income_resources_not_reflected',
-    label: "Is the other parent hiding any income, property or financial resources that are not reflected in their taxable income",
-    description: "When someone's tax return doesn't reflect their true financial position—such as hidden income, cash businesses, trust distributions, investment property, or other assets—a lawyer can help investigate and present evidence to the Registrar or the Court. This requires specialized knowledge of income sources, business structures, and non-taxable resources.",
+    label:
+      'Is the other parent hiding any income, property or financial resources that are not reflected in their taxable income',
+    description:
+      "When someone's tax return doesn't reflect their true financial position—such as hidden income, cash businesses, trust distributions, investment property, or other assets—a lawyer can help investigate and present evidence to the Registrar or the Court. This requires specialized knowledge of income sources, business structures, and non-taxable resources.",
     category: 'income',
     priority: 4,
-    officialCoAReasons: ['5.2.8'] as const,
+    officialCodes: ['5.2.8'] as const,
   },
   {
     id: 'earning_capacity',
     label: "Taxable income below the other parent's earning capacity",
-    description: "Earning capacity assessments are complex—lawyers know how to prove someone is deliberately underemployed or not working to their full potential. The Registrar needs specific evidence and legal arguments to adjust for earning capacity.",
+    description:
+      'Earning capacity assessments are complex—lawyers know how to prove someone is deliberately underemployed or not working to their full potential. The Registrar needs specific evidence and legal arguments to adjust for earning capacity.',
     category: 'income',
     priority: 5,
-    officialCoAReasons: ['5.2.9'] as const,
+    officialCodes: ['5.2.9'] as const,
   },
   {
     id: 'school_fees',
-    label: "Private school fees or educational costs",
-    description: "Private school fees and special educational costs beyond standard assumptions require legal arguments for proper consideration in assessments.",
+    label: 'Private school fees or educational costs',
+    description:
+      'Private school fees and special educational costs beyond standard assumptions require legal arguments for proper consideration in assessments.',
     category: 'child',
     priority: 6,
-    officialCoAReasons: ['5.2.3'] as const,
+    officialCodes: ['5.2.3'] as const,
   },
   {
     id: 'special_needs',
-    label: "Your child has special needs or high care costs",
-    description: "Cases involving disability, medical conditions, or special educational needs require detailed documentation and legal expertise. Lawyers understand what evidence the Registrar requires and how to present care costs that exceed standard assumptions.",
+    label: 'Your child has special needs or high care costs',
+    description:
+      'Cases involving disability, medical conditions, or special educational needs require detailed documentation and legal expertise. Lawyers understand what evidence the Registrar requires and how to present care costs that exceed standard assumptions.',
     category: 'child',
     priority: 7,
-    officialCoAReasons: ['5.2.2', '5.2.3'] as const,
+    officialCodes: ['5.2.2', '5.2.3'] as const,
   },
   {
     id: 'contact_costs',
-    label: "High costs of contact (travel for visitation)",
-    description: "Significant travel costs for maintaining contact with children can be grounds for adjustment, but require proper documentation and legal presentation.",
+    label: 'High costs of contact (travel for visitation)',
+    description:
+      'Significant travel costs for maintaining contact with children can be grounds for adjustment, but require proper documentation and legal presentation.',
     category: 'child',
     priority: 8,
-    officialCoAReasons: ['5.2.1'] as const,
+    officialCodes: ['5.2.1'] as const,
   },
   {
     id: 'property_settlement',
-    label: "Is there a property settlement to come?",
-    description: "Pending property settlements can significantly affect child support obligations. A lawyer can help ensure the settlement is properly considered in your assessment.",
+    label: 'Is there a property settlement to come?',
+    description:
+      'Pending property settlements can significantly affect child support obligations. A lawyer can help ensure the settlement is properly considered in your assessment.',
     category: 'other',
     priority: 3,
-    officialCoAReasons: ['5.2.11'] as const,
+    officialCodes: ['5.2.11'] as const,
   },
   {
     id: 'child_resources',
-    label: "The child has income, property or financial resources",
-    description: "When a child has their own income, assets, or financial resources, this can affect the fairness of the child support assessment. Lawyers understand how to present evidence of the child's resources and argue for appropriate adjustments.",
+    label: 'The child has income, property or financial resources',
+    description:
+      "When a child has their own income, assets, or financial resources, this can affect the fairness of the child support assessment. Lawyers understand how to present evidence of the child's resources and argue for appropriate adjustments.",
     category: 'other',
     priority: 10,
-    officialCoAReasons: ['5.2.4'] as const,
+    officialCodes: ['5.2.4'] as const,
   },
   {
     id: 'duty_to_maintain',
-    label: "Necessary commitments to support another person or child",
-    description: "If you have a legal duty to maintain another person or child, or have necessary expenses supporting them, this can significantly affect your capacity to pay child support. This includes costs of caring for another child, high contact costs with another child, or support obligations to another person.",
+    label: 'Necessary commitments to support another person or child',
+    description:
+      'If you have a legal duty to maintain another person or child, or have necessary expenses supporting them, this can significantly affect your capacity to pay child support. This includes costs of caring for another child, high contact costs with another child, or support obligations to another person.',
     category: 'other',
     priority: 11,
-    officialCoAReasons: ['5.2.9', '5.2.10'] as const,
+    officialCodes: ['5.2.9', '5.2.10'] as const,
   },
 ] as const;
 
@@ -121,13 +130,15 @@ export const CHANGE_OF_ASSESSMENT_REASONS: readonly ChangeOfAssessmentReason[] =
  *
  * @example
  * ```typescript
- * const reason = getCoAReasonById('income_not_reflected');
+ * const reason = getSpecialCircumstanceById('income_not_reflected');
  * if (reason) {
  *   console.log(reason.label); // "Income not accurately reflected in ATI"
  * }
  * ```
  */
-export function getCoAReasonById(id: string): ChangeOfAssessmentReason | null {
+export function getSpecialCircumstanceById(
+  id: string
+): SpecialCircumstance | null {
   if (!id || typeof id !== 'string') {
     return null;
   }
@@ -142,7 +153,7 @@ export function getCoAReasonById(id: string): ChangeOfAssessmentReason | null {
   }
 
   // Otherwise, look up static reason
-  const reason = CHANGE_OF_ASSESSMENT_REASONS.find(r => r.id === id);
+  const reason = SPECIAL_CIRCUMSTANCES.find((r) => r.id === id);
   return reason ?? null;
 }
 
@@ -162,15 +173,15 @@ export function getCoAReasonById(id: string): ChangeOfAssessmentReason | null {
  */
 export function getHighestPriorityReason(
   selectedIds: string[] | undefined | null
-): ChangeOfAssessmentReason | null {
+): SpecialCircumstance | null {
   if (!selectedIds || !Array.isArray(selectedIds) || selectedIds.length === 0) {
     return null;
   }
 
   // Filter to valid reasons only
   const validReasons = selectedIds
-    .map(id => getCoAReasonById(id))
-    .filter((reason): reason is ChangeOfAssessmentReason => reason !== null);
+    .map((id) => getSpecialCircumstanceById(id))
+    .filter((reason): reason is SpecialCircumstance => reason !== null);
 
   if (validReasons.length === 0) {
     return null;
@@ -183,13 +194,13 @@ export function getHighestPriorityReason(
 }
 
 /**
- * Type guard to check if a value is a valid ChangeOfAssessmentReason ID
+ * Type guard to check if a value is a valid SpecialCircumstance ID
  *
  * @param id - The value to check
  * @returns True if the ID corresponds to a valid reason
  */
-export function isValidCoAReasonId(id: unknown): id is string {
-  return typeof id === 'string' && getCoAReasonById(id) !== null;
+export function isValidSpecialCircumstanceId(id: unknown): id is string {
+  return typeof id === 'string' && getSpecialCircumstanceById(id) !== null;
 }
 
 /**
@@ -197,8 +208,8 @@ export function isValidCoAReasonId(id: unknown): id is string {
  *
  * @returns Array of all valid reason IDs
  */
-export function getAllCoAReasonIds(): readonly string[] {
-  return CHANGE_OF_ASSESSMENT_REASONS.map(r => r.id);
+export function getAllSpecialCircumstanceIds(): readonly string[] {
+  return SPECIAL_CIRCUMSTANCES.map((r) => r.id);
 }
 
 /**
@@ -211,7 +222,10 @@ export function getCategoryDisplayInfo(category: ComplexityCategory): {
   title: string;
   accentColor: string;
 } {
-  const displayInfo: Record<ComplexityCategory, { title: string; accentColor: string }> = {
+  const displayInfo: Record<
+    ComplexityCategory,
+    { title: string; accentColor: string }
+  > = {
     urgent: { title: 'Urgent Matters', accentColor: '#dc2626' }, // red-600
     income: { title: 'Income Issues', accentColor: '#d97706' }, // amber-600
     child: { title: 'Costs & Other Factors', accentColor: '#7c3aed' }, // violet-600
@@ -227,8 +241,8 @@ export function getCategoryDisplayInfo(category: ComplexityCategory): {
  * @param reason - The complexity trigger reason
  * @returns Formatted string of official reason codes (e.g., "Reason 8A, 8B")
  */
-export function formatOfficialCoAReasons(reason: ChangeOfAssessmentReason): string {
-  if (!reason.officialCoAReasons || reason.officialCoAReasons.length === 0) {
+export function formatOfficialCodes(reason: SpecialCircumstance): string {
+  if (!reason.officialCodes || reason.officialCodes.length === 0) {
     return '';
   }
 
@@ -247,18 +261,16 @@ export function formatOfficialCoAReasons(reason: ChangeOfAssessmentReason): stri
     '5.2.11': 'Reason 10 (Other special circumstances)',
   };
 
-  return reason.officialCoAReasons
-    .map(code => codeNames[code] || code)
-    .join(', ');
+  return reason.officialCodes.map((code) => codeNames[code] || code).join(', ');
 }
 
 /**
  * Creates a dynamic court date reason ID from a date
  * Format: court_DD_MMM_YYYY (e.g., court_12_Jan_2026)
- * 
+ *
  * @param date - The court date
  * @returns Formatted reason ID
- * 
+ *
  * @example
  * ```typescript
  * const date = new Date('2026-01-12');
@@ -275,10 +287,10 @@ export function createCourtDateReasonId(date: Date): string {
 
 /**
  * Checks if a reason ID is a court date reason
- * 
+ *
  * @param id - The reason ID to check
  * @returns True if the ID matches the court date pattern
- * 
+ *
  * @example
  * ```typescript
  * isCourtDateReason('court_12_Jan_2026'); // true
@@ -286,15 +298,17 @@ export function createCourtDateReasonId(date: Date): string {
  * ```
  */
 export function isCourtDateReason(id: string): boolean {
-  return id === 'court_date_pending' || /^court_\d{2}_[A-Z][a-z]{2}_\d{4}$/.test(id);
+  return (
+    id === 'court_date_pending' || /^court_\d{2}_[A-Z][a-z]{2}_\d{4}$/.test(id)
+  );
 }
 
 /**
  * Parses a court date from a reason ID
- * 
+ *
  * @param id - The court date reason ID
  * @returns The parsed date, or null if invalid
- * 
+ *
  * @example
  * ```typescript
  * const date = parseCourtDateFromReasonId('court_12_Jan_2026');
@@ -331,10 +345,10 @@ export function parseCourtDateFromReasonId(id: string): Date | null {
 
 /**
  * Gets a user-facing label for a court date reason
- * 
+ *
  * @param date - The court date
  * @returns Formatted label for display
- * 
+ *
  * @example
  * ```typescript
  * const date = new Date('2026-01-12');
@@ -346,25 +360,26 @@ export function getCourtDateReasonLabel(date: Date): string {
   const formatted = date.toLocaleDateString('en-AU', {
     day: 'numeric',
     month: 'short',
-    year: 'numeric'
+    year: 'numeric',
   });
   return `I have an upcoming court date (${formatted})`;
 }
 
 /**
- * Gets a ChangeOfAssessmentReason object for a court date
+ * Gets a SpecialCircumstance object for a court date
  * This allows court date reasons to be treated like static reasons
- * 
+ *
  * @param date - The court date
- * @returns A ChangeOfAssessmentReason object
+ * @returns A SpecialCircumstance object
  */
-export function getCourtDateReason(date: Date): ChangeOfAssessmentReason {
+export function getCourtDateReason(date: Date): SpecialCircumstance {
   return {
     id: createCourtDateReasonId(date),
     label: getCourtDateReasonLabel(date),
-    description: "Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance.",
+    description:
+      'Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance.',
     category: 'urgent',
     priority: 1,
-    officialCoAReasons: ['5.2.11'] as const,
+    officialCodes: ['5.2.11'] as const,
   };
 }

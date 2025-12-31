@@ -1,5 +1,9 @@
 import { CARE_PERIOD_DAYS, CarePeriod } from './child-support-constants';
-import { costOfChildrenByYear, AgeGroupKey, ChildCountKey } from './cost-of-children-tables';
+import {
+  costOfChildrenByYear,
+  AgeGroupKey,
+  ChildCountKey,
+} from './cost-of-children-tables';
 import type { AssessmentYear } from './child-support-constants';
 import type { CostBracketInfo } from '../types/calculator';
 
@@ -18,17 +22,27 @@ export interface ChildCostResult {
  * Calculates the cost of children based on combined income and tables.
  * Returns both the cost and the bracket info for display purposes.
  */
-export function getChildCost(year: AssessmentYear, children: Child[], CCSI: number): ChildCostResult {
+export function getChildCost(
+  year: AssessmentYear,
+  children: Child[],
+  CCSI: number
+): ChildCostResult {
   const numChildren = children.length;
   if (numChildren === 0) {
     return {
       cost: 0,
-      bracketInfo: { minIncome: 0, maxIncome: null, fixed: 0, rate: 0, incomeInBracket: 0 }
+      bracketInfo: {
+        minIncome: 0,
+        maxIncome: null,
+        fixed: 0,
+        rate: 0,
+        incomeInBracket: 0,
+      },
     };
   }
 
-  const hasYounger = children.some(c => c.age === 'Under 13');
-  const hasOlder = children.some(c => c.age === '13+');
+  const hasYounger = children.some((c) => c.age === 'Under 13');
+  const hasOlder = children.some((c) => c.age === '13+');
 
   let groupKey: AgeGroupKey;
   if (hasYounger && hasOlder) {
@@ -41,7 +55,11 @@ export function getChildCost(year: AssessmentYear, children: Child[], CCSI: numb
 
   // Use '3PlusChildren' for 3 or more
   const childKey: ChildCountKey =
-    numChildren === 1 ? '1Child' : numChildren === 2 ? '2Children' : '3PlusChildren';
+    numChildren === 1
+      ? '1Child'
+      : numChildren === 2
+        ? '2Children'
+        : '3PlusChildren';
 
   // Handle cases where a specific key doesn't exist (e.g., '1Child' for 'mixedAges')
   const table = costOfChildrenByYear[year]?.[groupKey];
@@ -49,26 +67,40 @@ export function getChildCost(year: AssessmentYear, children: Child[], CCSI: numb
     console.error(`Missing cost table for: ${year}, ${groupKey}, ${childKey}`);
     return {
       cost: 0,
-      bracketInfo: { minIncome: 0, maxIncome: null, fixed: 0, rate: 0, incomeInBracket: 0 }
+      bracketInfo: {
+        minIncome: 0,
+        maxIncome: null,
+        fixed: 0,
+        rate: 0,
+        incomeInBracket: 0,
+      },
     };
   }
 
   const brackets = table[childKey];
   const bracket = brackets.find(
-    b => CCSI >= b.min_income && (b.max_income === null || CCSI <= b.max_income)
+    (b) =>
+      CCSI >= b.min_income && (b.max_income === null || CCSI <= b.max_income)
   );
 
   if (!bracket) {
     console.error(`No matching bracket found for CCSI: ${CCSI}`);
     return {
       cost: 0,
-      bracketInfo: { minIncome: 0, maxIncome: null, fixed: 0, rate: 0, incomeInBracket: 0 }
+      bracketInfo: {
+        minIncome: 0,
+        maxIncome: null,
+        fixed: 0,
+        rate: 0,
+        incomeInBracket: 0,
+      },
     };
   }
 
   // Apply the formula: Fixed amount + Rate * (Income in bracket)
   // Ensure income doesn't exceed the bracket max (if one exists)
-  const incomeInBracket = Math.min(CCSI, bracket.max_income || CCSI) - bracket.min_income;
+  const incomeInBracket =
+    Math.min(CCSI, bracket.max_income || CCSI) - bracket.min_income;
   const cost = bracket.fixed + incomeInBracket * bracket.rate;
 
   return {
@@ -79,14 +111,17 @@ export function getChildCost(year: AssessmentYear, children: Child[], CCSI: numb
       fixed: bracket.fixed,
       rate: bracket.rate,
       incomeInBracket,
-    }
+    },
   };
 }
 
 /**
  * Converts care nights/days over a period to an annual percentage.
  */
-export function convertCareToPercentage(amount: number, period: CarePeriod): number {
+export function convertCareToPercentage(
+  amount: number,
+  period: CarePeriod
+): number {
   // If period is 'percent', the amount is already a percentage
   if (period === 'percent') {
     return amount;
@@ -126,10 +161,3 @@ export function mapCareToCostPercent(care: number): number {
   if (care <= 86) return 76; // Primary care
   return 100; // More than primary care
 }
-
-
-
-
-
-
-
