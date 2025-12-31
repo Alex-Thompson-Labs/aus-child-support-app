@@ -4,10 +4,15 @@
  * Mobile-optimized for phone use
  */
 
+import { exportLeadAsPDF } from '@/src/utils/exportLeadPDF';
+import { isWeb, webClickableStyles, webInputStyles } from '@/src/utils/responsive';
+import { getSupabaseClient, type LeadSubmission } from '@/src/utils/supabase';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
+  Clipboard,
   Platform,
   Pressable,
   ScrollView,
@@ -15,13 +20,8 @@ import {
   Text,
   TextInput,
   View,
-  ActivityIndicator,
-  Clipboard,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getSupabaseClient, type LeadSubmission } from '@/src/utils/supabase';
-import { useResponsive, isWeb, webInputStyles, webClickableStyles } from '@/src/utils/responsive';
-import { exportLeadAsPDF } from '@/src/utils/exportLeadPDF';
 
 type LeadStatus = 'new' | 'reviewing' | 'sent' | 'converted' | 'lost';
 
@@ -47,7 +47,7 @@ export default function LeadDetailScreen() {
     // Lazy-load Supabase for auth check
     const supabase = await getSupabaseClient();
     const { data: { session } } = await supabase.auth.getSession();
-    
+
     if (!session || session.user.email?.toLowerCase() !== 'alex@auschildsupport.com') {
       router.replace('/admin/login');
       return;
@@ -62,7 +62,7 @@ export default function LeadDetailScreen() {
 
       // Lazy-load Supabase for data fetching
       const supabase = await getSupabaseClient();
-      
+
       const { data, error } = await supabase
         .from('leads')
         .select('*')
@@ -96,17 +96,17 @@ export default function LeadDetailScreen() {
 
     // Determine the primary issue/trigger
     const primaryReason = lead.complexity_reasons?.[0] || lead.complexity_trigger || 'Complex case';
-    
+
     // Calculate combined parental income
     const combinedIncome = lead.income_parent_a + lead.income_parent_b;
-    
+
     // Determine who pays (higher income parent pays)
     const payingParent = lead.income_parent_a > lead.income_parent_b ? 'A' : 'B';
-    
+
     // Format care percentages for children
     let careInfo = 'Not specified';
     if (lead.care_data && lead.care_data.length > 0) {
-      const careStrings = lead.care_data.map((child, idx) => 
+      const careStrings = lead.care_data.map((child, idx) =>
         `Child ${idx + 1}: A=${child.careA.toFixed(0)}%, B=${child.careB.toFixed(0)}%`
       );
       careInfo = careStrings.join(' | ');
@@ -114,13 +114,7 @@ export default function LeadDetailScreen() {
       // If no detailed care data, show count only
       careInfo = `${lead.children_count} child${lead.children_count > 1 ? 'ren' : ''} (care % not specified)`;
     }
-    
-    // Add CoA grounds if applicable
-    const hasCoA = lead.coa_reasons && lead.coa_reasons.count > 0;
-    const coaText = hasCoA 
-      ? `\nCoA Grounds: ${lead.coa_reasons!.reasons.map(r => r.label).join(', ')}`
-      : '';
-    
+
     // Add additional complexity triggers if present
     const additionalTriggers = lead.complexity_reasons && lead.complexity_reasons.length > 1
       ? `\nAdditional Issues: ${lead.complexity_reasons.slice(1).join(', ')}`
@@ -133,7 +127,7 @@ Issue: ${primaryReason}
 Children: ${careInfo}
 Combined Income: $${combinedIncome.toLocaleString()}/year
 Est. Child Support: $${lead.annual_liability.toLocaleString()}/year (Parent ${payingParent} pays)
-Location: ${lead.location || 'Not specified'}${coaText}${additionalTriggers}
+Location: ${lead.location || 'Not specified'}${additionalTriggers}
 
 Interested? Reply YES to purchase this lead for $50.
 Lead ID: #${lead.id?.slice(0, 8)}
@@ -351,8 +345,8 @@ auschildsupport.com`;
     <SafeAreaView style={styles.container} edges={['bottom']}>
       {/* Header */}
       <View style={styles.header}>
-        <Pressable 
-          style={[styles.backButton, isWeb && webClickableStyles]} 
+        <Pressable
+          style={[styles.backButton, isWeb && webClickableStyles]}
           onPress={() => router.back()}
         >
           <Text style={styles.backButtonText}>← Back</Text>
@@ -420,20 +414,6 @@ auschildsupport.com`;
               <View key={index} style={styles.complexityItem}>
                 <Text style={styles.complexityBullet}>•</Text>
                 <Text style={styles.complexityText}>{reason}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* CoA Reasons */}
-        {lead.coa_reasons && lead.coa_reasons.count > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Change of Assessment Reasons ({lead.coa_reasons.count})</Text>
-            {lead.coa_reasons.reasons.map((reason, index) => (
-              <View key={index} style={styles.coaReasonCard}>
-                <Text style={styles.coaReasonLabel}>{reason.label}</Text>
-                <Text style={styles.coaReasonCategory}>Category: {reason.category}</Text>
-                <Text style={styles.coaReasonCategory}>Urgency: {reason.urgency}</Text>
               </View>
             ))}
           </View>

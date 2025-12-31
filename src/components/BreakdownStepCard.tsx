@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   // Uppercase title - exact styling from current implementation
   stepTitle: {
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: "800",
     color: "#1a202c", // text.primary - near black
     textTransform: "uppercase",
     letterSpacing: 0.5,

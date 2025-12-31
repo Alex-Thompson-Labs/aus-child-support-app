@@ -45,14 +45,8 @@ export interface ChangeOfAssessmentReason {
  * @constant
  */
 export const CHANGE_OF_ASSESSMENT_REASONS: readonly ChangeOfAssessmentReason[] = [
-  {
-    id: 'court_date_upcoming',
-    label: "I have an upcoming court date for child support matters",
-    description: "Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance.",
-    category: 'urgent',
-    priority: 1,
-    officialCoAReasons: ['5.2.11'] as const,
-  },
+  // Note: Court date reasons are now dynamic (e.g., court_12_Jan_2026)
+  // See createCourtDateReasonId() function below
   {
     id: 'income_resources_not_reflected',
     label: "Is the other parent hiding any income, property or financial resources that are not reflected in their taxable income",
@@ -138,6 +132,16 @@ export function getCoAReasonById(id: string): ChangeOfAssessmentReason | null {
     return null;
   }
 
+  // Check if it's a dynamic court date reason
+  if (isCourtDateReason(id)) {
+    const date = parseCourtDateFromReasonId(id);
+    if (date) {
+      return getCourtDateReason(date);
+    }
+    return null;
+  }
+
+  // Otherwise, look up static reason
   const reason = CHANGE_OF_ASSESSMENT_REASONS.find(r => r.id === id);
   return reason ?? null;
 }
@@ -246,4 +250,121 @@ export function formatOfficialCoAReasons(reason: ChangeOfAssessmentReason): stri
   return reason.officialCoAReasons
     .map(code => codeNames[code] || code)
     .join(', ');
+}
+
+/**
+ * Creates a dynamic court date reason ID from a date
+ * Format: court_DD_MMM_YYYY (e.g., court_12_Jan_2026)
+ * 
+ * @param date - The court date
+ * @returns Formatted reason ID
+ * 
+ * @example
+ * ```typescript
+ * const date = new Date('2026-01-12');
+ * const id = createCourtDateReasonId(date);
+ * // Returns: 'court_12_Jan_2026'
+ * ```
+ */
+export function createCourtDateReasonId(date: Date): string {
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = date.toLocaleDateString('en-US', { month: 'short' });
+  const year = date.getFullYear();
+  return `court_${day}_${month}_${year}`;
+}
+
+/**
+ * Checks if a reason ID is a court date reason
+ * 
+ * @param id - The reason ID to check
+ * @returns True if the ID matches the court date pattern
+ * 
+ * @example
+ * ```typescript
+ * isCourtDateReason('court_12_Jan_2026'); // true
+ * isCourtDateReason('income_resources_not_reflected'); // false
+ * ```
+ */
+export function isCourtDateReason(id: string): boolean {
+  return id === 'court_date_pending' || /^court_\d{2}_[A-Z][a-z]{2}_\d{4}$/.test(id);
+}
+
+/**
+ * Parses a court date from a reason ID
+ * 
+ * @param id - The court date reason ID
+ * @returns The parsed date, or null if invalid
+ * 
+ * @example
+ * ```typescript
+ * const date = parseCourtDateFromReasonId('court_12_Jan_2026');
+ * // Returns: Date object for January 12, 2026
+ * ```
+ */
+export function parseCourtDateFromReasonId(id: string): Date | null {
+  if (!isCourtDateReason(id)) {
+    return null;
+  }
+
+  try {
+    // Extract parts: court_12_Jan_2026 -> ['12', 'Jan', '2026']
+    const parts = id.replace('court_', '').split('_');
+    if (parts.length !== 3) return null;
+
+    const [day, month, year] = parts;
+
+    // Parse date using standard format
+    const dateStr = `${day} ${month} ${year}`;
+    const parsed = new Date(dateStr);
+
+    // Validate the date is valid
+    if (isNaN(parsed.getTime())) {
+      return null;
+    }
+
+    return parsed;
+  } catch (error) {
+    console.error('[parseCourtDateFromReasonId] Error parsing date:', error);
+    return null;
+  }
+}
+
+/**
+ * Gets a user-facing label for a court date reason
+ * 
+ * @param date - The court date
+ * @returns Formatted label for display
+ * 
+ * @example
+ * ```typescript
+ * const date = new Date('2026-01-12');
+ * const label = getCourtDateReasonLabel(date);
+ * // Returns: 'I have an upcoming court date (12 Jan 2026)'
+ * ```
+ */
+export function getCourtDateReasonLabel(date: Date): string {
+  const formatted = date.toLocaleDateString('en-AU', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+  return `I have an upcoming court date (${formatted})`;
+}
+
+/**
+ * Gets a ChangeOfAssessmentReason object for a court date
+ * This allows court date reasons to be treated like static reasons
+ * 
+ * @param date - The court date
+ * @returns A ChangeOfAssessmentReason object
+ */
+export function getCourtDateReason(date: Date): ChangeOfAssessmentReason {
+  return {
+    id: createCourtDateReasonId(date),
+    label: getCourtDateReasonLabel(date),
+    description: "Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance.",
+    category: 'urgent',
+    priority: 1,
+    officialCoAReasons: ['5.2.11'] as const,
+  };
 }

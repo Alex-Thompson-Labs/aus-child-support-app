@@ -9,9 +9,9 @@ React Native (Expo) • iOS • Android • Web
 
 A **free calculator** that helps Australian parents calculate child support payments, with built-in **complexity detection** that connects high-value cases to family law firms.
 
-**Business Model:** B2B lead generation (lawyers pay $100 per booked consultation)  
-**Target Revenue:** $4K-$270K/year  
-**Current Phase:** Phase 1 - Validation (Week 1-2)
+**Business Model:** B2B lead generation (lawyers pay $50 per qualified lead)  
+**Target Revenue:** $10K-$15K/month at scale (Year 1)  
+**Current Phase:** Phase 3A - Proof Before Pitch (Validation)
 
 ---
 

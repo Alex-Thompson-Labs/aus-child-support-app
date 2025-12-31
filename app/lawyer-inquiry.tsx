@@ -14,9 +14,10 @@ import {
     View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import DatePickerField from '../src/components/ui/DatePickerField';
 import { useAnalytics } from '../src/utils/analytics';
 import type { ChangeOfAssessmentReason } from '../src/utils/change-of-assessment-reasons';
-import { formatOfficialCoAReasons, getCoAReasonById } from '../src/utils/change-of-assessment-reasons';
+import { getCoAReasonById, isCourtDateReason } from '../src/utils/change-of-assessment-reasons';
 import { MAX_FORM_WIDTH, isWeb } from '../src/utils/responsive';
 import type { LeadSubmission } from '../src/utils/supabase';
 import { submitLead } from '../src/utils/supabase';
@@ -198,23 +199,16 @@ function validateConsent(consent: boolean): string | undefined {
 /**
  * Validate court date field (required if visible)
  */
-function validateCourtDate(courtDate: string, isRequired: boolean): string | undefined {
-    const sanitized = courtDate.trim();
-
+function validateCourtDate(courtDate: Date | null, isRequired: boolean): string | undefined {
     if (!isRequired) {
         return undefined;
     }
 
-    if (!sanitized) {
+    if (!courtDate) {
         return 'Court date is required';
     }
 
-    // Basic date validation - check if it's a valid date string
-    const date = new Date(sanitized);
-    if (isNaN(date.getTime())) {
-        return 'Please enter a valid date';
-    }
-
+    // Date is already a valid Date object from the picker
     return undefined;
 }
 
@@ -233,14 +227,21 @@ export default function LawyerInquiryScreen() {
     const incomeA = typeof params.incomeA === 'string' ? params.incomeA : '0';
     const incomeB = typeof params.incomeB === 'string' ? params.incomeB : '0';
     const children = typeof params.children === 'string' ? params.children : '0';
-    
+
     // Parse pre-fill message from Smart Conversion Footer
     const preFillMessage = typeof params.preFillMessage === 'string' ? params.preFillMessage : '';
 
     // Parse care arrangement data
-    const careData = typeof params.careData === 'string'
-        ? JSON.parse(params.careData) as { index: number; careA: number; careB: number }[]
-        : [];
+    // Parse care arrangement data (SAFELY)
+    let careData: { index: number; careA: number; careB: number }[] = [];
+    try {
+        careData = typeof params.careData === 'string'
+            ? JSON.parse(params.careData)
+            : [];
+    } catch (error) {
+        console.error('[LawyerInquiry] Failed to parse careData:', error);
+        careData = []; // Fallback to empty if parsing fails
+    }
 
     // Parse CoA reasons data with error handling
     let coaReasons: string[] | null = null;
@@ -262,7 +263,7 @@ export default function LawyerInquiryScreen() {
     const [consent, setConsent] = useState(false);
 
     // Dynamic field state
-    const [courtDate, setCourtDate] = useState('');
+    const [courtDate, setCourtDate] = useState<Date | null>(null);
     const [financialTags, setFinancialTags] = useState<string[]>([]);
 
     // Validation state
@@ -306,7 +307,7 @@ export default function LawyerInquiryScreen() {
 
 
     // Determine if conditional fields should be shown
-    const shouldShowCourtDate = (coaReasons || []).includes('court_date_upcoming');
+    const shouldShowCourtDate = (coaReasons || []).some(id => isCourtDateReason(id));
     const shouldShowFinancialTags = (coaReasons || []).some(id =>
         id === 'income_resources_not_reflected' || id === 'earning_capacity'
     );
@@ -316,7 +317,7 @@ export default function LawyerInquiryScreen() {
     /**
      * Validate a single field
      */
-    const validateField = useCallback((field: keyof FormErrors, value: string | boolean): string | undefined => {
+    const validateField = useCallback((field: keyof FormErrors, value: string | boolean | Date | null): string | undefined => {
         switch (field) {
             case 'name':
                 return validateName(value as string);
@@ -331,7 +332,7 @@ export default function LawyerInquiryScreen() {
             case 'consent':
                 return validateConsent(value as boolean);
             case 'courtDate':
-                return validateCourtDate(value as string, shouldShowCourtDate);
+                return validateCourtDate(value as Date | null, shouldShowCourtDate);
             default:
                 return undefined;
         }
@@ -385,6 +386,21 @@ export default function LawyerInquiryScreen() {
         const error = validateField(field, value);
         setErrors(prev => ({ ...prev, [field]: error }));
     }, [name, email, phone, postcode, message, consent, courtDate, validateField]);
+
+
+    /**
+     * Handle court date change - validate and clear error
+     */
+    const handleCourtDateChange = useCallback((date: Date | null) => {
+        setCourtDate(date);
+
+        // Mark as touched
+        setTouched(prev => ({ ...prev, courtDate: true }));
+
+        // Validate immediately
+        const error = validateCourtDate(date, shouldShowCourtDate);
+        setErrors(prev => ({ ...prev, courtDate: error }));
+    }, [shouldShowCourtDate]);
 
     /**
      * Handle text change - clear error when user starts typing
@@ -455,32 +471,20 @@ export default function LawyerInquiryScreen() {
             try {
                 analytics.track('inquiry_form_submitted', {
                     trigger_type: trigger || 'unknown',
-                    annual_liability: parseFloat(liability) || 0,
+                    annual_liability: liability ? Number(parseFloat(liability).toFixed(2)) : 0,
                     has_phone: !!sanitizePhone(phone),
                     message_length: sanitizeString(message).length,
                     time_to_submit: timeToSubmit,
-                    // CoA tracking properties
-                    has_coa_reasons: (coaReasons?.length ?? 0) > 0,
-                    coa_reason_count: coaReasons?.length ?? 0,
-                    coa_reason_ids: coaReasons?.join(',') ?? '',
+                    // Complexity tracking properties
+                    has_complexity_reasons: (coaReasons?.length ?? 0) > 0,
+                    complexity_reason_count: coaReasons?.length ?? 0,
+                    complexity_reason_ids: coaReasons?.join(',') ?? '',
                     has_urgent_reasons: validCoAReasons.some(r => r.urgency === 'URGENT')
                 });
             } catch (error) {
                 // Log but don't fail submission on analytics error
                 console.error('[LawyerInquiry] Analytics error:', error);
             }
-
-            // Prepare CoA reasons data
-            const coaReasonsData = validCoAReasons.length > 0 ? {
-                count: validCoAReasons.length,
-                reasons: validCoAReasons.map(r => ({
-                    label: r.label,
-                    description: r.description,
-                    category: r.category,
-                    urgency: r.urgency === 'URGENT' ? 'URGENT' as const : 'Normal' as const,
-                    officialCoAReasons: formatOfficialCoAReasons(r),
-                }))
-            } : null;
 
             // Create lead submission for Supabase
             const leadSubmission: LeadSubmission = {
@@ -502,10 +506,9 @@ export default function LawyerInquiryScreen() {
                 // Complexity data
                 complexity_trigger: trigger || 'unknown',
                 complexity_reasons: coaReasons || [],
-                coa_reasons: coaReasonsData,
 
                 // Dynamic lead data
-                court_date: courtDate.trim() || null,
+                court_date: courtDate ? courtDate.toISOString().split('T')[0] : null,
                 financial_tags: financialTags.length > 0 ? financialTags : null,
 
                 // Message (compiled from CoA reasons, financial tags, court date, and user notes)
@@ -522,9 +525,10 @@ export default function LawyerInquiryScreen() {
 
                     // 2. High-Value Data: Court Date and Financial Tags
                     const highValueData: string[] = [];
-                    
-                    if (courtDate.trim()) {
-                        highValueData.push(`Court Date: ${courtDate.trim()}`);
+
+                    if (courtDate) {
+                        const formattedDate = courtDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+                        highValueData.push(`Court Date: ${formattedDate}`);
                     }
 
                     if (financialTags.length > 0) {
@@ -739,24 +743,13 @@ export default function LawyerInquiryScreen() {
 
                     {/* Court Date Input - Conditional */}
                     {shouldShowCourtDate && (
-                        <View style={styles.inputContainer}>
-                            <Text style={styles.fieldLabel}>When is your court date? *</Text>
-                            <TextInput
-                                style={[styles.input, touched.courtDate && errors.courtDate && styles.inputError]}
-                                placeholder="YYYY-MM-DD"
-                                placeholderTextColor="#64748b"
-                                value={courtDate}
-                                onChangeText={(value) => handleTextChange('courtDate', value, setCourtDate)}
-                                onBlur={() => handleBlur('courtDate')}
-                                returnKeyType="next"
-                                editable={!isSubmitting}
-                                accessibilityLabel="Court date"
-                                accessibilityHint="Enter your upcoming court date"
-                            />
-                            {touched.courtDate && errors.courtDate && (
-                                <Text style={styles.errorText}>{errors.courtDate}</Text>
-                            )}
-                        </View>
+                        <DatePickerField
+                            label="When is your court date? *"
+                            value={courtDate}
+                            onChange={handleCourtDateChange}
+                            error={touched.courtDate ? errors.courtDate : undefined}
+                            disabled={isSubmitting}
+                        />
                     )}
 
                     {/* Name Input */}

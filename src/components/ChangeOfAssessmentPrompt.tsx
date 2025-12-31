@@ -5,13 +5,18 @@ import type { CalculationResults } from "../types/calculator";
 import { useAnalytics } from "../utils/analytics";
 import {
   CHANGE_OF_ASSESSMENT_REASONS,
+  createCourtDateReasonId,
   getHighestPriorityReason,
-  type ChangeOfAssessmentReason,
+  isCourtDateReason,
+  parseCourtDateFromReasonId,
+  type ChangeOfAssessmentReason
 } from "../utils/change-of-assessment-reasons";
 import type { ComplexityFormData } from "../utils/complexity-detection";
 import { isWeb, webClickableStyles } from "../utils/responsive";
 import { createShadow } from "../utils/shadow-styles";
 import { HelpTooltip } from "./HelpTooltip";
+import DatePickerField from "./ui/DatePickerField";
+
 
 interface ChangeOfAssessmentPromptProps {
   results: CalculationResults;
@@ -35,10 +40,18 @@ export function ChangeOfAssessmentPrompt({
   });
   const [isNavigatingFromCoA, setIsNavigatingFromCoA] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [hasCourtDate, setHasCourtDate] = useState(() => {
-    // Initialize from formData
-    return formData?.selectedCoAReasons?.includes('court_date_upcoming') ?? false;
+
+  // Court date state - stores the actual Date object
+  const [courtDate, setCourtDate] = useState<Date | null>(() => {
+    // Initialize from formData if available
+    const reasons = formData?.selectedCoAReasons ?? [];
+    const courtDateReasonId = reasons.find(id => isCourtDateReason(id));
+    if (courtDateReasonId) {
+      return parseCourtDateFromReasonId(courtDateReasonId);
+    }
+    return null;
   });
+
   const [hasPropertySettlement, setHasPropertySettlement] = useState(() => {
     // Initialize from formData
     return formData?.selectedCoAReasons?.includes('property_settlement') ?? false;
@@ -52,7 +65,16 @@ export function ChangeOfAssessmentPrompt({
   React.useEffect(() => {
     const reasons = formData?.selectedCoAReasons ?? [];
     setSelectedReasons(new Set(reasons));
-    setHasCourtDate(reasons.includes('court_date_upcoming'));
+
+    // Update court date from reasons
+    const courtDateReasonId = reasons.find(id => isCourtDateReason(id));
+    if (courtDateReasonId) {
+      const parsedDate = parseCourtDateFromReasonId(courtDateReasonId);
+      setCourtDate(parsedDate);
+    } else {
+      setCourtDate(null);
+    }
+
     setHasPropertySettlement(reasons.includes('property_settlement'));
   }, [formData?.selectedCoAReasons]);
 
@@ -266,48 +288,62 @@ export function ChangeOfAssessmentPrompt({
             </View>
             <View style={styles.checkboxList}>
               {/* Court Date Checkbox */}
-              <View>
-                <Pressable
-                  style={[styles.checkboxRow, isWeb && webClickableStyles]}
-                  onPress={() => {
-                    const newHasCourtDate = !hasCourtDate;
-                    setHasCourtDate(newHasCourtDate);
-                    if (newHasCourtDate) {
-                      // Checking - add the reason
-                      handleCheckboxToggle('court_date_upcoming');
-                    } else {
-                      // Unchecking - remove the reason
-                      if (selectedReasons.has('court_date_upcoming')) {
-                        handleCheckboxToggle('court_date_upcoming');
-                      }
-                    }
-                  }}
-                  accessible={true}
-                  accessibilityRole="checkbox"
-                  accessibilityState={{ checked: hasCourtDate }}
+              <Pressable
+                style={[styles.checkboxRow, isWeb && webClickableStyles]}
+                onPress={() => {
+                  const hasCourtDate = Array.from(selectedReasons).some(id => isCourtDateReason(id));
+                  
+                  if (hasCourtDate) {
+                    // Remove court date reason
+                    setSelectedReasons((prev) => {
+                      const next = new Set(prev);
+                      Array.from(next).forEach(id => {
+                        if (isCourtDateReason(id)) {
+                          next.delete(id);
+                        }
+                      });
+                      
+                      // Notify parent of change
+                      const reasonsArray = Array.from(next);
+                      onCoAReasonsChange?.(reasonsArray);
+                      
+                      return next;
+                    });
+                    setCourtDate(null);
+                  } else {
+                    // Add a placeholder court date reason (will be replaced with actual date in inquiry form)
+                    setSelectedReasons((prev) => {
+                      const next = new Set(prev);
+                      next.add('court_date_pending');
+                      
+                      // Notify parent of change
+                      const reasonsArray = Array.from(next);
+                      onCoAReasonsChange?.(reasonsArray);
+                      
+                      return next;
+                    });
+                  }
+                }}
+                accessible={true}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: Array.from(selectedReasons).some(id => isCourtDateReason(id)) }}
+                accessibilityLabel="I have an upcoming court date for child support matters"
+                accessibilityHint="Double tap to check if you have an upcoming court date for child support matters"
+              >
+                <View
+                  style={[styles.checkbox, Array.from(selectedReasons).some(id => isCourtDateReason(id)) && styles.checkboxChecked]}
                 >
-                  <View style={[styles.checkbox, hasCourtDate && styles.checkboxChecked]}>
-                    {hasCourtDate && <Text style={styles.checkboxCheck}>✓</Text>}
-                  </View>
-                  <View style={styles.checkboxLabelContainer}>
-                    <Text style={styles.checkboxLabel}>Do you have an upcoming court date?</Text>
-                    <HelpTooltip
-                      what="Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance."
-                      why=""
-                      hideWhatLabel
-                    />
-                  </View>
-                </Pressable>
-
-                {/* Inline Warning - Shows when checked */}
-                {hasCourtDate && (
-                  <View style={styles.inlineWarning}>
-                    <Text style={styles.inlineWarningText}>
-                      Tip: Court appearances require significant preparation. We strongly recommend organizing legal representation well in advance.
-                    </Text>
-                  </View>
-                )}
-              </View>
+                  {Array.from(selectedReasons).some(id => isCourtDateReason(id)) && <Text style={styles.checkboxCheck}>✓</Text>}
+                </View>
+                <View style={styles.checkboxLabelContainer}>
+                  <Text style={styles.checkboxLabel}>I have an upcoming court date for child support matters</Text>
+                  <HelpTooltip
+                    what="Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance."
+                    why=""
+                    hideWhatLabel
+                  />
+                </View>
+              </Pressable>
 
               {/* Property Settlement Checkbox */}
               <Pressable

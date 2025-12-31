@@ -49,6 +49,12 @@
   status = 301
   force = true
 
+[[plugins]]
+  package = "@netlify/plugin-sitemap"
+
+[plugins.inputs]
+    buildDir = "dist"
+
 # Static site routing - Expo generates individual HTML files for each route
 # Only fallback for dynamic segments that need it
 

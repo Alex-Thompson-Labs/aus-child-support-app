@@ -14,7 +14,7 @@ import { SmartConversionFooter } from "./SmartConversionFooter";
 // Lazy load the named export
 const ResultsSimpleExplanation = lazy(() =>
   import('./ResultsSimpleExplanation').then((module) => ({
-        default: module.ResultsSimpleExplanation,
+    default: module.ResultsSimpleExplanation,
   }))
 );
 
@@ -100,13 +100,13 @@ export function CalculatorResults({
   const hasChildren = formData?.children && formData.children.length > 0;
 
   const getTrigger = useCallback((): string => {
-    const flagKeys: (keyof ComplexityFlags)[] = ['highValue', 'sharedCareDispute', 'specialCircumstances', 'highVariance', 'incomeSuspicion'];
+    const flagKeys: (keyof ComplexityFlags)[] = ['highValue', 'sharedCareDispute', 'specialCircumstances', 'bindingAgreement'];
     const triggeredFlag = flagKeys.find(k => flags[k]);
     return triggeredFlag ? triggeredFlag.replace(/([A-Z])/g, '_$1').toLowerCase() : 'unknown';
   }, [flags]);
 
   const getAllTriggers = useCallback((): string[] => {
-    const flagKeys: (keyof ComplexityFlags)[] = ['highValue', 'sharedCareDispute', 'specialCircumstances', 'highVariance', 'incomeSuspicion'];
+    const flagKeys: (keyof ComplexityFlags)[] = ['highValue', 'sharedCareDispute', 'specialCircumstances', 'bindingAgreement'];
     return flagKeys.filter(k => flags[k]).map(flag => flag.replace(/([A-Z])/g, '_$1').toLowerCase());
   }, [flags]);
 
@@ -199,7 +199,7 @@ export function CalculatorResults({
         }}
       />
       {results && (
-        <Suspense 
+        <Suspense
           fallback={
             <View style={{ padding: 20, alignItems: 'center' }}>
               <ActivityIndicator size="large" color="#3b82f6" />
@@ -207,13 +207,13 @@ export function CalculatorResults({
             </View>
           }
         >
-          <ResultsSimpleExplanation 
-            results={results} 
-            formState={{ supportA: formData?.supportA ?? false, supportB: formData?.supportB ?? false }} 
+          <ResultsSimpleExplanation
+            results={results}
+            formState={{ supportA: formData?.supportA ?? false, supportB: formData?.supportB ?? false }}
           />
         </Suspense>
       )}
-      
+
       {/* Smart Conversion Footer - Always show at bottom of results */}
       <SmartConversionFooter
         results={results}

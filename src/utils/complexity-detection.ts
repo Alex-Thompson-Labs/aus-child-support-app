@@ -5,19 +5,13 @@
 // that should trigger "Get Legal Help" prompts
 
 import type { CalculationResults, ChildInput } from '../types/calculator';
-import { formatOfficialCoAReasons, getCoAReasonById, getHighestPriorityReason } from './change-of-assessment-reasons';
+import { getCoAReasonById, getHighestPriorityReason, isCourtDateReason, parseCourtDateFromReasonId } from './change-of-assessment-reasons';
 import { convertCareToPercentage } from './child-support-calculations';
 
 /**
  * Flags indicating different types of complexity detected in child support calculations
  */
 export interface ComplexityFlags {
-  /**
-   * Indicates high variance in payment amounts based on small changes
-   * Triggers when payment amount swings more than $3k with 1 night care change
-   */
-  highVariance: boolean;
-
   /**
    * Indicates high annual child support liability
    * Triggers when annual payment amount exceeds $15k
@@ -31,17 +25,16 @@ export interface ComplexityFlags {
   specialCircumstances: boolean;
 
   /**
-   * Indicates user suspects hidden or unreported income
-   * Triggers when user flags potential income discrepancies
-   */
-  incomeSuspicion: boolean;
-
-
-  /**
    * Indicates shared care arrangement in common dispute zone
    * Triggers when care percentage is between 35-65% (typical dispute range)
    */
   sharedCareDispute: boolean;
+
+  /**
+   * Indicates user is interested in binding child support agreement
+   * Triggers when user clicks "Discuss Agreements" button
+   */
+  bindingAgreement: boolean;
 }
 
 /**
@@ -136,6 +129,11 @@ export interface ComplexityFormData {
    * Used for MAR/FAR calculations and zero payment detection
    */
   supportB?: boolean;
+  /**
+   * Whether user has expressed interest in binding child support agreement
+   * Set to true when user clicks "Discuss Agreements" button
+   */
+  wantsBindingAgreement?: boolean;
 }
 
 export function detectComplexity(
@@ -163,9 +161,9 @@ export function detectComplexity(
   // Check for selected CoA reasons
   const selectedReasons = formData.selectedCoAReasons ?? [];
 
-  // Check if court date reason is selected (now just a flag, no date validation)
-  const hasCourtDateSelected = selectedReasons.includes('court_date_upcoming');
-  
+  // Check if court date reason is selected (check for dynamic court date reasons)
+  const hasCourtDateSelected = selectedReasons.some(id => isCourtDateReason(id));
+
   if (__DEV__ && hasCourtDateSelected) {
     console.log('[detectComplexity] Court date reason selected');
   }
@@ -179,11 +177,10 @@ export function detectComplexity(
   }
 
   return {
-    highVariance: false, // TODO: Calculate care variance
     highValue: isHighValue,
     specialCircumstances: hasSpecialCircumstances,
-    incomeSuspicion: false, // TODO: Check formData flags
     sharedCareDispute: hasSharedCareDispute,
+    bindingAgreement: formData.wantsBindingAgreement ?? false,
   };
 }
 
@@ -205,11 +202,16 @@ export function getAlertConfig(
   results: CalculationResults,
   formData?: ComplexityFormData
 ): AlertConfig | null {
-  // Priority 1: Court date selected (no longer checking urgency/date)
-  const hasCourtDateSelected = formData?.selectedCoAReasons?.includes('court_date_upcoming');
-  if (hasCourtDateSelected) {
+  // Priority 1: Court date selected
+  const courtDateReasonId = formData?.selectedCoAReasons?.find(id => isCourtDateReason(id));
+  if (courtDateReasonId) {
+    const courtDate = parseCourtDateFromReasonId(courtDateReasonId);
+    const dateStr = courtDate
+      ? courtDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })
+      : '';
+
     return {
-      title: "Court Date Approaching",
+      title: dateStr ? `Court Date Approaching: ${dateStr}` : "Court Date Approaching",
       message: "Professional legal preparation is strongly recommended before your court appearance.",
       urgency: 'high',
       buttonText: "Get Legal Consultation"
@@ -279,7 +281,7 @@ export function getAlertConfig(
       // Sanitize the label to prevent any potential issues
       const sanitizedLabel = mostImportantReason.label.replace(/[<>]/g, '');
       const categoryEmoji = mostImportantReason.category === 'income' ? '💰' :
-                            mostImportantReason.category === 'child' ? '👶' : '🏡';
+        mostImportantReason.category === 'child' ? '👶' : '🏡';
 
       // Check if this is a Reason 8A income suspicion case (hidden income)
       const isReason8A = mostImportantReason.officialCoAReasons.includes('5.2.8');
@@ -331,76 +333,6 @@ export function getAlertConfig(
   // See docs/MASTER_PLAN.md for complete implementation
 
   return null; // No alert needed
-}
-
-/**
- * Formats complexity trigger reasons for lawyer lead data
- *
- * Creates a structured representation of selected complexity reasons with their
- * labels, descriptions, official CoA codes, and category for lawyer referral emails.
- *
- * @param selectedIds - Array of selected complexity reason IDs from form data
- * @returns Formatted object containing reason details, or null if no valid reasons
- */
-export interface CoALeadData {
-  /** Number of valid reasons selected */
-  count: number;
-  /** Array of reason details for lawyer review */
-  reasons: {
-    label: string;
-    description: string;
-    category: string;
-    urgency: 'URGENT' | 'Normal';
-    officialCoAReasons: string;
-  }[];
-  /** Pre-formatted text block for email templates */
-  formattedText: string;
-}
-
-export function formatCoAReasonsForLead(
-  selectedIds: string[] | undefined | null
-): CoALeadData | null {
-  // Handle undefined/null/empty gracefully
-  if (!selectedIds || !Array.isArray(selectedIds) || selectedIds.length === 0) {
-    return null;
-  }
-
-  // Get all valid reasons, filter out invalid IDs
-  const validReasons = selectedIds
-    .map(id => getCoAReasonById(id))
-    .filter((reason): reason is NonNullable<typeof reason> => reason !== null);
-
-  if (validReasons.length === 0) {
-    if (__DEV__) {
-      console.warn('[formatCoAReasonsForLead] No valid reasons found from IDs:', selectedIds);
-    }
-    return null;
-  }
-
-  // Sort by priority (most urgent first: 1, 2, 3, ... 10)
-  const sortedReasons = [...validReasons].sort((a, b) => a.priority - b.priority);
-
-  // Format each reason with sanitized data and urgency
-  const reasons = sortedReasons.map(reason => ({
-    label: reason.label.replace(/[<>]/g, ''), // Sanitize for safety
-    description: reason.description.replace(/[<>]/g, ''),
-    category: reason.category,
-    urgency: (reason.priority <= 3 ? 'URGENT' : 'Normal') as 'URGENT' | 'Normal',
-    officialCoAReasons: formatOfficialCoAReasons(reason)
-  }));
-
-  // Create formatted text block for email templates
-  const formattedLines = reasons.map((reason, index) => {
-    return `${index + 1}. ${reason.label} (priority: ${reason.urgency})\n   → ${reason.description}\n   → Official grounds: ${reason.officialCoAReasons}`;
-  });
-
-  const formattedText = `CHANGE OF ASSESSMENT GROUNDS:\n${formattedLines.join('\n\n')}`;
-
-  return {
-    count: reasons.length,
-    reasons,
-    formattedText
-  };
 }
 
 /*

@@ -75,9 +75,9 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
     step3: false,  // Income Percentage - collapsed
     step4: false,  // Care Percentage - collapsed
     step5: false,  // Cost Percentage - collapsed
-    step6: true,   // Child Support Percentage - EXPANDED
+    step6: false,  // Child Support Percentage - collapsed
     step7: false,  // Cost of Children - collapsed
-    step8: true,   // Annual Rate - EXPANDED
+    step8: false,  // Annual Rate - collapsed
     specialRate: false, // Special Rate notice - collapsed
   });
 
@@ -368,7 +368,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
         <BreakdownStepCard
           key={index}
           stepNumber={`6${results.childResults.length > 1 ? String.fromCharCode(97 + index) : ''}`}
-          title={`CHILD SUPPORT PERCENTAGE${results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''}`}
+          title={`Child Support Percentage${results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''}`}
           description={results.childResults.length > 1 ? `for Child ${index + 1}` : undefined}
           isExpanded={expandedSteps.step6}
           onToggle={() => setExpandedSteps(prev => ({...prev, step6: !prev.step6}))}
@@ -376,7 +376,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
           <>
             {index === 0 && (
               <Text style={styles.stepExplanation}>
-                A parent must pay child support when their share of income is higher than their share of costs. The difference between these two shares is called the <Text style={{ fontWeight: '600', color: '#3b82f6' }}>CHILD SUPPORT PERCENTAGE</Text>, which is then used in the formula to calculate the child support amount.
+                A parent must pay child support when their share of income is higher than their share of costs. The difference between these two shares is called the child support percentage, which is then used in the formula to calculate the child support amount.
               </Text>
             )}
 
@@ -736,23 +736,37 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
           ? results.childResults.reduce((sum, child) => sum + child.roundedCareB, 0) / results.childResults.length
           : 0;
 
+        const parentABelowSSA = results.ATI_A < results.SSA && avgCareA >= 14;
+        const parentBBelowSSA = results.ATI_B < results.SSA && avgCareB >= 14;
+
         return (
           <>
-            {results.ATI_A < results.SSA && avgCareA >= 14 && (
+            {parentABelowSSA && parentBBelowSSA ? (
               <View style={styles.specialNotice}>
                 <Text style={styles.specialNoticeTitle}>ℹ️ No Payment Required</Text>
                 <Text style={styles.specialNoticeText}>
-                  Parent A&apos;s income ({formatCurrency(results.ATI_A)}) is below the self-support amount ({formatCurrency(results.SSA)}), so they have no income-based obligation. Their care time ({formatPercent2dp(avgCareA)}) means they&apos;re already contributing by covering costs directly during care.
+                  Both parents&apos; income is below the self-support amount ({formatCurrency(results.SSA)}), so neither has an income-based obligation. Their care time (Parent A: {formatPercent2dp(avgCareA)}, Parent B: {formatPercent2dp(avgCareB)}) means they&apos;re already contributing by covering costs directly during care.
                 </Text>
               </View>
-            )}
-            {results.ATI_B < results.SSA && avgCareB >= 14 && (
-              <View style={styles.specialNotice}>
-                <Text style={styles.specialNoticeTitle}>ℹ️ No Payment Required</Text>
-                <Text style={styles.specialNoticeText}>
-                  Parent B&apos;s income ({formatCurrency(results.ATI_B)}) is below the self-support amount ({formatCurrency(results.SSA)}), so they have no income-based obligation. Their care time ({formatPercent2dp(avgCareB)}) means they&apos;re already contributing by covering costs directly during care.
-                </Text>
-              </View>
+            ) : (
+              <>
+                {parentABelowSSA && (
+                  <View style={styles.specialNotice}>
+                    <Text style={styles.specialNoticeTitle}>ℹ️ No Payment Required</Text>
+                    <Text style={styles.specialNoticeText}>
+                      Parent A&apos;s income ({formatCurrency(results.ATI_A)}) is below the self-support amount ({formatCurrency(results.SSA)}), so they have no income-based obligation. Their care time ({formatPercent2dp(avgCareA)}) means they&apos;re already contributing by covering costs directly during care.
+                    </Text>
+                  </View>
+                )}
+                {parentBBelowSSA && (
+                  <View style={styles.specialNotice}>
+                    <Text style={styles.specialNoticeTitle}>ℹ️ No Payment Required</Text>
+                    <Text style={styles.specialNoticeText}>
+                      Parent B&apos;s income ({formatCurrency(results.ATI_B)}) is below the self-support amount ({formatCurrency(results.SSA)}), so they have no income-based obligation. Their care time ({formatPercent2dp(avgCareB)}) means they&apos;re already contributing by covering costs directly during care.
+                    </Text>
+                  </View>
+                )}
+              </>
             )}
           </>
         );
@@ -930,7 +944,7 @@ const styles = StyleSheet.create({
   },
   deductionTotalLabel: {
     fontSize: 13,
-    fontWeight: "600",
+    fontWeight: "700",
     color: "#0f172a", // slate-900
   },
   deductionTotalValue: {
@@ -956,6 +970,7 @@ const styles = StyleSheet.create({
   },
   combinedIncomeLabel: {
     fontSize: 13,
+    fontWeight: "600",
     color: "#64748b", // slate-500
   },
   combinedIncomeValue: {
@@ -970,7 +985,7 @@ const styles = StyleSheet.create({
   },
   combinedIncomeTotalLabel: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: "700",
     color: "#0f172a", // slate-900
   },
   combinedIncomeTotalValue: {
@@ -1020,7 +1035,7 @@ const styles = StyleSheet.create({
   },
   combinedCSIncomeLabel: {
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: "700",
     color: "#3b82f6", // accent.primary - matches Child Support Income blue
     letterSpacing: 0.5,
     textTransform: "uppercase",

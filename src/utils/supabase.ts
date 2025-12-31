@@ -25,7 +25,7 @@ let supabaseInstance: SupabaseClient | null = null;
 function getSupabaseCredentials() {
   const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl || process.env.EXPO_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = Constants.expoConfig?.extra?.supabaseAnonKey || process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
-  
+
   return { supabaseUrl, supabaseAnonKey };
 }
 
@@ -81,7 +81,7 @@ async function getSupabaseClient(): Promise<SupabaseClient> {
  * WARNING: This will dynamically load Supabase libraries. Use sparingly.
  */
 export const supabase = new Proxy({} as SupabaseClient, {
-  get: function(_target, prop) {
+  get: function (_target, prop) {
     throw new Error(
       `[Supabase] Direct access to 'supabase.${String(prop)}' is not allowed. ` +
       `Use getSupabaseClient() instead for lazy loading.`
@@ -116,16 +116,6 @@ export interface LeadSubmission {
   // Complexity data
   complexity_trigger: string;
   complexity_reasons: string[];
-  coa_reasons: {
-    count: number;
-    reasons: {
-      label: string;
-      description: string;
-      category: string;
-      urgency: 'URGENT' | 'Normal';
-      officialCoAReasons: string;
-    }[];
-  } | null;
   court_date?: string | null;
   financial_tags?: string[] | null;
 
@@ -188,7 +178,6 @@ export async function submitLead(lead: LeadSubmission): Promise<{
       consent_given: lead.consent_given,
       complexity_trigger: lead.complexity_trigger,
       complexity_reasons_count: lead.complexity_reasons.length,
-      has_coa_reasons: !!lead.coa_reasons,
     });
 
     // Lazy-load Supabase client only when actually submitting
@@ -233,7 +222,7 @@ export async function submitLead(lead: LeadSubmission): Promise<{
  */
 export async function checkSupabaseConnection(): Promise<boolean> {
   const { supabaseUrl, supabaseAnonKey } = getSupabaseCredentials();
-  
+
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error('[Supabase] Client not configured - missing credentials');
     return false;
@@ -242,7 +231,7 @@ export async function checkSupabaseConnection(): Promise<boolean> {
   try {
     // Lazy-load Supabase client for connection test
     const supabaseClient = await getSupabaseClient();
-    
+
     // Try a simple query to test connection
     const { error } = await supabaseClient.from('leads').select('id').limit(1);
 
