@@ -606,8 +606,7 @@ export function CalculatorForm({
                 placeholder="0"
                 placeholderTextColor="#64748b"
                 accessibilityLabel="Parent A adjusted taxable income"
-                accessibilityHint="Enter Parent A's annual income in dollars"
-                accessibilityState={{ checked: supportA }}
+                accessibilityHint="Enter Parent A's annual income in dollars"              
               />
             </View>
             <View style={styles.switchRow}>
@@ -617,6 +616,8 @@ export function CalculatorForm({
                 style={styles.smallSwitch}
                 accessibilityLabel="Parent A receives income support"
                 accessibilityHint="Toggle if Parent A receives income support payments"
+                // @ts-ignore - Explicitly force the web attribute
+                aria-checked={supportA}
               />
               <Text style={styles.switchLabelSmall}>Inc. support</Text>
               <HelpTooltip
@@ -664,7 +665,8 @@ export function CalculatorForm({
                 style={styles.smallSwitch}
                 accessibilityLabel="Parent B receives income support"
                 accessibilityHint="Toggle if Parent B receives income support payments"
-                accessibilityState={{ checked: supportB }}
+                // @ts-ignore - Explicitly force the web attribute
+                aria-checked={supportB}
               />
               <Text style={styles.switchLabelSmall}>Inc. support</Text>
             </View>

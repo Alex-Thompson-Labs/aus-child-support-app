@@ -1,9 +1,8 @@
 import React from "react";
-import { Platform, Pressable, StyleSheet, View } from "react-native";
-import { Switch as RNSwitch, type SwitchProps as RNSwitchProps } from "react-native";
+import { Platform, Pressable, Switch as RNSwitch, StyleSheet, View, type SwitchProps as RNSwitchProps } from "react-native";
 
 // Brand colors
-const BRAND_BLUE = "#2563EB"; // blue-600
+const BRAND_BLUE = "#0056b3"; // Darker blue for WCAG AA contrast
 const OFF_SLATE = "#475569"; // slate-600
 const KNOB_WHITE = "#ffffff";
 
@@ -44,6 +43,12 @@ export function BrandSwitch({ value, onValueChange, disabled, style, accessibili
   }
 
   // Web: render a fully custom switch to prevent CSS / UA overrides.
+  // Explicitly add aria-checked for WCAG/Lighthouse compliance on web
+  const webAriaProps = {
+    'aria-checked': value,
+    'aria-label': accessibilityLabel,
+  };
+
   return (
     <Pressable
       accessibilityRole="switch"
@@ -53,6 +58,8 @@ export function BrandSwitch({ value, onValueChange, disabled, style, accessibili
       disabled={disabled}
       onPress={() => onValueChange(!value)}
       style={[styles.webRoot, disabled && styles.webRootDisabled, style as any]}
+      // @ts-ignore - Web-specific ARIA attributes
+      {...webAriaProps}
     >
       <View style={[styles.webTrack, value ? styles.webTrackOn : styles.webTrackOff]}>
         <View style={[styles.webThumb, value ? styles.webThumbOn : styles.webThumbOff]} />

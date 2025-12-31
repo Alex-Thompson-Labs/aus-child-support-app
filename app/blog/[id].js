@@ -1,5 +1,5 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import RenderHtml from 'react-native-render-html';
 
@@ -28,7 +28,7 @@ export default function BlogPost() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color="#0056b3" />
       </View>
     );
   }
@@ -46,14 +46,14 @@ export default function BlogPost() {
       {/* Dynamic Header Title */}
       <Stack.Screen options={{ title: 'Article' }} />
 
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         style={styles.scrollView}
       >
         <View style={styles.articleWrapper}>
           {/* Title */}
           <Text style={styles.title}>{post.title.rendered}</Text>
-          
+
           {/* Date */}
           <Text style={styles.date}>
             {new Date(post.date).toLocaleDateString()}
@@ -68,7 +68,7 @@ export default function BlogPost() {
               h2: { fontSize: 24, fontWeight: 'bold', marginTop: 20, marginBottom: 10, color: '#111' },
               h3: { fontSize: 20, fontWeight: 'bold', marginTop: 15, marginBottom: 8 },
               li: { fontSize: 18, lineHeight: 28, marginBottom: 8 },
-              a: { color: '#007AFF', textDecorationLine: 'none' },
+              a: { color: '#0056b3', textDecorationLine: 'none' },
             }}
           />
         </View>
