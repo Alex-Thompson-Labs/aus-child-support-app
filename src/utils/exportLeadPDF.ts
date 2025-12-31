@@ -9,6 +9,7 @@
  */
 
 import { Platform } from 'react-native';
+import { getCoAReasonById } from './change-of-assessment-reasons';
 import { formatCurrency } from './formatters';
 import type { LeadSubmission } from './supabase';
 
@@ -69,8 +70,11 @@ function getCategoryInfo(category: string): { color: string; emoji: string; titl
  * Generate HTML content for PDF
  */
 function generateLeadHTML(lead: LeadSubmission): string {
-  // Extract CoA reasons if available
-  const coaReasons = lead.coa_reasons?.reasons || [];
+  // Extract CoA reasons from complexity_reasons array and convert IDs to full reason objects
+  const coaReasonIds = lead.complexity_reasons || [];
+  const coaReasons = coaReasonIds
+    .map(id => getCoAReasonById(id))
+    .filter((reason): reason is NonNullable<typeof reason> => reason !== null);
 
   // Group CoA reasons by category
   const urgentReasons = coaReasons.filter(r => r.category === 'urgent');
