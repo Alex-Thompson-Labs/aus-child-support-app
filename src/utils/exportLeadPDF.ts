@@ -3,14 +3,14 @@
  *
  * Generates professional PDF documents for lead details
  * Includes: parent contact, case summary, CoA reasons, calculation data
+ * 
+ * OPTIMIZATION: expo-print and expo-sharing are dynamically imported
+ * to avoid bundling ~150KB in the main chunk (admin-only feature)
  */
 
-import * as Print from 'expo-print';
-import * as Sharing from 'expo-sharing';
 import { Platform } from 'react-native';
-import type { LeadSubmission } from './supabase';
-import type { ChangeOfAssessmentReason } from './change-of-assessment-reasons';
 import { formatCurrency } from './formatters';
+import type { LeadSubmission } from './supabase';
 
 /**
  * Format date for display
@@ -371,8 +371,14 @@ export async function exportLeadAsPDF(lead: LeadSubmission): Promise<void> {
       return;
     }
 
-    // Mobile platforms: Use expo-print
+    // Mobile platforms: Use expo-print (dynamically imported)
     console.log('[ExportPDF] Using expo-print for mobile');
+
+    // Dynamic imports to avoid bundling in main chunk
+    const [Print, Sharing] = await Promise.all([
+      import('expo-print'),
+      import('expo-sharing'),
+    ]);
 
     const result = await Print.printToFileAsync({
       html,

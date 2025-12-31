@@ -5,7 +5,7 @@
  */
 
 import { MAX_FORM_WIDTH, isWeb, useResponsive, webClickableStyles, webInputStyles } from '@/src/utils/responsive';
-import { supabase } from '@/src/utils/supabase';
+import { getSupabaseClient } from '@/src/utils/supabase';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -69,6 +69,9 @@ export default function AdminLoginScreen() {
     setLoading(true);
 
     try {
+      // Lazy-load Supabase only when user attempts to login
+      const supabase = await getSupabaseClient();
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password: password.trim(),

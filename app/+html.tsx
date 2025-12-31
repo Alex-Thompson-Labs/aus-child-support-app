@@ -8,14 +8,14 @@ export default function Root({ children }: { children: React.ReactNode }) {
   // SEO Content Strategy: "Problem Aware"
   const siteTitle = 'Child Support Calculator Australia 2025 | Services Australia Formula';
   const siteDescription = 'Accurate Child Support Calculator for Australia (2025-2026). Estimate payments instantly using the official Services Australia formula. Supports 50/50 care, split care, and multiple family assessments. Free & anonymous.';
-  const shareImage = `${siteUrl}/share-preview.png`; 
+  const shareImage = `${siteUrl}/share-preview.png`;
 
   return (
     <html lang="en-AU">
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        
+
         {/* Viewport: interactive-widget handles mobile keyboards better for calculators */}
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, interactive-widget=resizes-content" />
 
@@ -23,6 +23,42 @@ export default function Root({ children }: { children: React.ReactNode }) {
         {/* This speeds up the connection for when _layout.tsx eventually loads the script */}
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+
+        {/* Performance: DNS prefetch for Supabase (form submission) */}
+        <link rel="dns-prefetch" href="https://swcbcudasyiqhtkymcpy.supabase.co" />
+
+        {/* Critical CSS: Above-the-fold styles to prevent FOUC and improve FCP/LCP */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            html, body, #root {
+              margin: 0;
+              padding: 0;
+              min-height: 100%;
+              background-color: #ffffff;
+            }
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+              -webkit-font-smoothing: antialiased;
+              -moz-osx-font-smoothing: grayscale;
+              color: #0f172a;
+            }
+            /* Critical header styles for LCP element */
+            .calculator-header {
+              padding: 12px 16px;
+              border-bottom: 1px solid #f1f5f9;
+              background: #ffffff;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+            .calculator-title {
+              font-size: 18px;
+              font-weight: 800;
+              color: #0f172a;
+              text-align: center;
+            }
+          `
+        }} />
 
         {/* Primary Meta Tags */}
         <title>{siteTitle}</title>
@@ -129,7 +165,7 @@ export default function Root({ children }: { children: React.ReactNode }) {
         }} />
 
         <ScrollViewStyleReset />
-        
+
         {/* REMOVED: The manual Google Analytics script tags. 
             Reason: These are now handled in app/_layout.tsx to prevent duplication. 
         */}

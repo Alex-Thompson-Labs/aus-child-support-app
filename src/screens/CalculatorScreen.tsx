@@ -1,13 +1,37 @@
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Link } from "expo-router";
-import React from "react";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { Suspense, lazy } from "react";
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { CalculatorForm } from "../components/CalculatorForm";
-import { CalculatorResults } from "../components/CalculatorResults";
 import { useCalculator } from "../hooks/useCalculator";
 import { useResponsive } from "../utils/responsive";
 import { shadowPresets } from "../utils/shadow-styles";
+
+// Code-split heavy components for better LCP
+const CalculatorForm = lazy(() => 
+  import("../components/CalculatorForm").then(module => ({ default: module.CalculatorForm }))
+);
+const CalculatorResults = lazy(() => 
+  import("../components/CalculatorResults").then(module => ({ default: module.CalculatorResults }))
+);
+
+// Lightweight skeleton loaders
+function FormSkeleton() {
+  return (
+    <View style={skeletonStyles.container}>
+      <ActivityIndicator size="large" color="#2563eb" />
+      <Text style={skeletonStyles.loadingText}>Loading calculator...</Text>
+    </View>
+  );
+}
+
+function ResultsSkeleton() {
+  return (
+    <View style={skeletonStyles.resultsContainer}>
+      <ActivityIndicator size="small" color="#2563eb" />
+    </View>
+  );
+}
 
 export function CalculatorScreen() {
   const {
@@ -91,9 +115,9 @@ export function CalculatorScreen() {
         <View style={styles.header}>
           <View style={isDesktop ? styles.desktopConstraint : styles.mobileHeaderRow}>
             <Ionicons name="people" size={isDesktop ? 32 : 24} color="#2563eb" />
-            <Text 
+            <Text
               style={[styles.title, isDesktop && styles.titleDesktop]}
-              numberOfLines={1} 
+              numberOfLines={1}
               adjustsFontSizeToFit
               minimumFontScale={0.7}
             >
@@ -108,14 +132,16 @@ export function CalculatorScreen() {
         </View>
 
         {/* Form Body */}
-        <ScrollView 
-          style={styles.content} 
+        <ScrollView
+          style={styles.content}
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
           {/* Main Content Wrapper - Centered for Desktop */}
           <View style={isDesktop ? styles.desktopConstraint : styles.fullWidth}>
-            <CalculatorForm {...formProps} isDesktopWeb={isDesktop} />
+            <Suspense fallback={<FormSkeleton />}>
+              <CalculatorForm {...formProps} isDesktopWeb={isDesktop} />
+            </Suspense>
             {/* Bottom padding ensures the floating card doesn't hide the last inputs */}
             <View style={{ height: 140 }} />
           </View>
@@ -125,13 +151,15 @@ export function CalculatorScreen() {
         {results && (
           <View style={styles.resultsOverlay}>
             <View style={isDesktop ? styles.desktopConstraint : styles.fullWidth}>
-              <CalculatorResults 
-                results={results} 
-                formData={formState} 
-                displayMode="modal"
-                isStale={isStale}
-                resetTimestamp={resetTimestamp}
-              />
+              <Suspense fallback={<ResultsSkeleton />}>
+                <CalculatorResults
+                  results={results}
+                  formData={formState}
+                  displayMode="modal"
+                  isStale={isStale}
+                  resetTimestamp={resetTimestamp}
+                />
+              </Suspense>
             </View>
           </View>
         )}
@@ -220,4 +248,29 @@ const styles = StyleSheet.create({
   fullWidth: {
     width: '100%',
   }
+});
+
+const skeletonStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 60,
+    minHeight: 300,
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#64748b',
+    fontWeight: '500',
+  },
+  resultsContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: 100,
+    ...shadowPresets.small,
+  },
 });

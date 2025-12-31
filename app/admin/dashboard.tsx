@@ -5,7 +5,7 @@
  */
 
 import { isWeb, useResponsive, webClickableStyles, webInputStyles } from '@/src/utils/responsive';
-import { supabase, type LeadSubmission } from '@/src/utils/supabase';
+import { getSupabaseClient, type LeadSubmission } from '@/src/utils/supabase';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -42,6 +42,8 @@ export default function AdminDashboardScreen() {
   }, []);
 
   const checkAuth = async () => {
+    // Lazy-load Supabase for auth check
+    const supabase = await getSupabaseClient();
     const { data: { session } } = await supabase.auth.getSession();
     
     if (!session) {
@@ -66,6 +68,9 @@ export default function AdminDashboardScreen() {
     try {
       setLoading(true);
 
+      // Lazy-load Supabase for data fetching
+      const supabase = await getSupabaseClient();
+      
       const { data, error } = await supabase
         .from('leads')
         .select('*')
@@ -129,6 +134,7 @@ export default function AdminDashboardScreen() {
   }, [leads, statusFilter, searchQuery, sortBy]);
 
   const handleLogout = async () => {
+    const supabase = await getSupabaseClient();
     await supabase.auth.signOut();
     router.replace('/admin/login');
   };

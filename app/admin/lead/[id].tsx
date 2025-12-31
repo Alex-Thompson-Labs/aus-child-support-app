@@ -19,7 +19,7 @@ import {
   Clipboard,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { supabase, type LeadSubmission } from '@/src/utils/supabase';
+import { getSupabaseClient, type LeadSubmission } from '@/src/utils/supabase';
 import { useResponsive, isWeb, webInputStyles, webClickableStyles } from '@/src/utils/responsive';
 import { exportLeadAsPDF } from '@/src/utils/exportLeadPDF';
 
@@ -44,6 +44,8 @@ export default function LeadDetailScreen() {
   }, [leadId]);
 
   const checkAuthAndLoadLead = async () => {
+    // Lazy-load Supabase for auth check
+    const supabase = await getSupabaseClient();
     const { data: { session } } = await supabase.auth.getSession();
     
     if (!session || session.user.email?.toLowerCase() !== 'alex@auschildsupport.com') {
@@ -58,6 +60,9 @@ export default function LeadDetailScreen() {
     try {
       setLoading(true);
 
+      // Lazy-load Supabase for data fetching
+      const supabase = await getSupabaseClient();
+      
       const { data, error } = await supabase
         .from('leads')
         .select('*')
@@ -170,6 +175,7 @@ auschildsupport.com`;
         updates.sent_at = new Date().toISOString();
       }
 
+      const supabase = await getSupabaseClient();
       const { error } = await supabase
         .from('leads')
         .update(updates)
@@ -206,6 +212,7 @@ auschildsupport.com`;
     try {
       setSavingNotes(true);
 
+      const supabase = await getSupabaseClient();
       const { error } = await supabase
         .from('leads')
         .update({ notes: notes.trim() || null })
@@ -274,6 +281,7 @@ auschildsupport.com`;
             style: 'destructive',
             onPress: async () => {
               try {
+                const supabase = await getSupabaseClient();
                 const { error } = await supabase
                   .from('leads')
                   .update({ deleted_at: new Date().toISOString() })
@@ -299,10 +307,11 @@ auschildsupport.com`;
 
     if (Platform.OS === 'web') {
       if (confirm('Are you sure you want to delete this lead? This action cannot be undone.')) {
-        supabase
-          .from('leads')
-          .update({ deleted_at: new Date().toISOString() })
-          .eq('id', leadId)
+        getSupabaseClient()
+          .then(supabase => supabase
+            .from('leads')
+            .update({ deleted_at: new Date().toISOString() })
+            .eq('id', leadId))
           .then(({ error }) => {
             if (error) {
               alert(`Error\n\n${error.message}`);

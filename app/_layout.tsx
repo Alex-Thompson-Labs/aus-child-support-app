@@ -5,8 +5,8 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Suspense, useEffect } from 'react';
-import ReactGA from "react-ga4"; // Added for Web Analytics
-import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import ReactGA from "react-ga4";
+import { ActivityIndicator, InteractionManager, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 // LoadingFallback component for async route loading
 function LoadingFallback() {
@@ -66,21 +66,34 @@ export default function RootLayout() {
   // Define config constants
   const enableAnalytics = process.env.EXPO_PUBLIC_ENABLE_ANALYTICS !== 'false';
 
-  // Initialize Web-specific monitoring and Analytics (client-side only)
   useEffect(() => {
-    // Only run on web, on the client, and if window exists
+    // Only run on web client where window is available
     if (Platform.OS === 'web' && isClient && typeof window !== 'undefined') {
       
-      // 1. Initialize Google Analytics (ONLY if enabled)
+      // OPTIMIZATION: Defer Analytics to improve LCP
+      // We wait for all interactions to finish, then add a 2.5s delay
       if (enableAnalytics) {
         const gaMeasurementId = process.env.EXPO_PUBLIC_GA_MEASUREMENT_ID || "G-53139BKGD7";
-        ReactGA.initialize(gaMeasurementId);
         
-        // Track the initial page load immediately after init
-        ReactGA.send({ hitType: "pageview", page: window.location.pathname });
+        const task = InteractionManager.runAfterInteractions(() => {
+          const timer = setTimeout(() => {
+            try {
+              ReactGA.initialize(gaMeasurementId);
+              // Track the initial page load AFTER the paint has likely occurred
+              ReactGA.send({ hitType: "pageview", page: window.location.pathname });
+              console.log("Analytics initialized (deferred)");
+            } catch (error) {
+              console.error("GA Initialization failed:", error);
+            }
+          }, 2500); // 2.5 second delay to clear the LCP window
+
+          return () => clearTimeout(timer);
+        });
+
+        return () => task.cancel();
       }
 
-      // 2. Initialize Performance Monitoring
+      // Initialize Performance Monitoring (lightweight, can stay)
       initPerformanceMonitoring();
     }
   }, [isClient, enableAnalytics]);

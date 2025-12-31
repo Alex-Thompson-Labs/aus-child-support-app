@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
-import React, { useCallback, useState } from "react";
+import React, { lazy, Suspense, useCallback, useState } from "react";
 import ReactGA from "react-ga4"; // Integrated for web lead tracking
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { CalculationResults } from "../types/calculator";
 import { detectComplexity, type ComplexityFlags, type ComplexityFormData } from "../utils/complexity-detection";
@@ -9,8 +9,15 @@ import { formatCurrency } from "../utils/formatters";
 import { MAX_MODAL_WIDTH, useResponsive } from "../utils/responsive";
 import { shadowPresets } from "../utils/shadow-styles";
 import { ChangeOfAssessmentPrompt } from "./ChangeOfAssessmentPrompt";
-import { ResultsSimpleExplanation } from "./ResultsSimpleExplanation";
 import { SmartConversionFooter } from "./SmartConversionFooter";
+
+// Lazy load the named export
+const ResultsSimpleExplanation = lazy(() =>
+  import('./ResultsSimpleExplanation').then((module) => ({
+        default: module.ResultsSimpleExplanation,
+  }))
+);
+
 
 interface CalculatorResultsProps {
   results: CalculationResults;
@@ -191,8 +198,22 @@ export function CalculatorResults({
           }));
         }}
       />
-      <ResultsSimpleExplanation results={results} formState={{ supportA: formData?.supportA ?? false, supportB: formData?.supportB ?? false }} />
-
+      {results && (
+        <Suspense 
+          fallback={
+            <View style={{ padding: 20, alignItems: 'center' }}>
+              <ActivityIndicator size="large" color="#3b82f6" />
+              <Text style={{ marginTop: 10, color: '#64748b' }}>Loading breakdown...</Text>
+            </View>
+          }
+        >
+          <ResultsSimpleExplanation 
+            results={results} 
+            formState={{ supportA: formData?.supportA ?? false, supportB: formData?.supportB ?? false }} 
+          />
+        </Suspense>
+      )}
+      
       {/* Smart Conversion Footer - Always show at bottom of results */}
       <SmartConversionFooter
         results={results}

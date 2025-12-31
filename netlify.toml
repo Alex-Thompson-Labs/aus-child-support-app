@@ -49,8 +49,18 @@
   status = 301
   force = true
 
-# SPA fallback - serve index.html for all routes (MUST BE LAST)
+# Static site routing - Expo generates individual HTML files for each route
+# Only fallback for dynamic segments that need it
+
+# Handle dynamic admin lead pages (these have [id] in the path)
+[[redirects]]
+  from = "/admin/lead/*"
+  to = "/admin/lead/[id].html"
+  status = 200
+
+# 404 fallback - serve the not-found page for truly unknown routes
+# This comes LAST and only catches routes that don't have pre-rendered HTML
 [[redirects]]
   from = "/*"
-  to = "/index.html"
-  status = 200
+  to = "/+not-found.html"
+  status = 404

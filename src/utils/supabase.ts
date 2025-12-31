@@ -1,7 +1,9 @@
 /**
  * Supabase Client Configuration
  * 
- * Initializes the Supabase client for database operations.
+ * LAZY-LOADED for optimal LCP performance.
+ * Supabase client is only initialized when actually needed (user action).
+ * 
  * Used for storing lead submissions from the lawyer inquiry form.
  * 
  * Security:
@@ -11,41 +13,80 @@
  * - Admin access requires authentication
  */
 
-import { createClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import Constants from 'expo-constants';
 
-// Get Supabase credentials from environment variables
-const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl || process.env.EXPO_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = Constants.expoConfig?.extra?.supabaseAnonKey || process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+// Cache the client instance once initialized
+let supabaseInstance: SupabaseClient | null = null;
 
-// Validate credentials
-if (!supabaseUrl) {
-  console.error('[Supabase] Missing EXPO_PUBLIC_SUPABASE_URL environment variable');
+/**
+ * Get Supabase credentials from environment variables
+ */
+function getSupabaseCredentials() {
+  const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl || process.env.EXPO_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = Constants.expoConfig?.extra?.supabaseAnonKey || process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+  
+  return { supabaseUrl, supabaseAnonKey };
 }
 
-if (!supabaseAnonKey) {
-  console.error('[Supabase] Missing EXPO_PUBLIC_SUPABASE_ANON_KEY environment variable');
-}
-
-// Create Supabase client
-export const supabase = createClient(
-  supabaseUrl || '',
-  supabaseAnonKey || '',
-  {
-    auth: {
-      // Enable auth for admin panel
-      // Anonymous form submissions don't require auth
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: false,
-    },
+/**
+ * Lazily initialize Supabase client only when needed
+ * This prevents @supabase libraries from being loaded on initial page load
+ */
+async function getSupabaseClient(): Promise<SupabaseClient> {
+  // Return cached instance if already initialized
+  if (supabaseInstance) {
+    return supabaseInstance;
   }
-);
 
-console.log('[Supabase] Client initialized with:', {
-  hasUrl: !!supabaseUrl,
-  hasKey: !!supabaseAnonKey,
-  url: supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'MISSING',
+  // Dynamically import Supabase only when needed
+  const { createClient } = await import('@supabase/supabase-js');
+  const { supabaseUrl, supabaseAnonKey } = getSupabaseCredentials();
+
+  // Validate credentials
+  if (!supabaseUrl) {
+    console.error('[Supabase] Missing EXPO_PUBLIC_SUPABASE_URL environment variable');
+  }
+
+  if (!supabaseAnonKey) {
+    console.error('[Supabase] Missing EXPO_PUBLIC_SUPABASE_ANON_KEY environment variable');
+  }
+
+  // Create and cache Supabase client
+  supabaseInstance = createClient(
+    supabaseUrl || '',
+    supabaseAnonKey || '',
+    {
+      auth: {
+        // Enable auth for admin panel
+        // Anonymous form submissions don't require auth
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: false,
+      },
+    }
+  );
+
+  console.log('[Supabase] Client initialized (lazy) with:', {
+    hasUrl: !!supabaseUrl,
+    hasKey: !!supabaseAnonKey,
+    url: supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'MISSING',
+  });
+
+  return supabaseInstance;
+}
+
+/**
+ * Get the Supabase client instance (for compatibility with existing code)
+ * WARNING: This will dynamically load Supabase libraries. Use sparingly.
+ */
+export const supabase = new Proxy({} as SupabaseClient, {
+  get: function(_target, prop) {
+    throw new Error(
+      `[Supabase] Direct access to 'supabase.${String(prop)}' is not allowed. ` +
+      `Use getSupabaseClient() instead for lazy loading.`
+    );
+  }
 });
 
 // Type definitions for database tables
@@ -150,8 +191,11 @@ export async function submitLead(lead: LeadSubmission): Promise<{
       has_coa_reasons: !!lead.coa_reasons,
     });
 
+    // Lazy-load Supabase client only when actually submitting
+    const supabaseClient = await getSupabaseClient();
+
     // Insert lead into database (fire and forget - no select needed)
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('leads')
       .insert([lead]);
 
@@ -188,14 +232,19 @@ export async function submitLead(lead: LeadSubmission): Promise<{
  * Check if Supabase is configured and accessible
  */
 export async function checkSupabaseConnection(): Promise<boolean> {
+  const { supabaseUrl, supabaseAnonKey } = getSupabaseCredentials();
+  
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error('[Supabase] Client not configured - missing credentials');
     return false;
   }
 
   try {
+    // Lazy-load Supabase client for connection test
+    const supabaseClient = await getSupabaseClient();
+    
     // Try a simple query to test connection
-    const { error } = await supabase.from('leads').select('id').limit(1);
+    const { error } = await supabaseClient.from('leads').select('id').limit(1);
 
     if (error) {
       console.error('[Supabase] Connection test failed:', error);
@@ -209,4 +258,9 @@ export async function checkSupabaseConnection(): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * Export getSupabaseClient for use in admin pages and other components
+ */
+export { getSupabaseClient };
 
