@@ -70,6 +70,9 @@ export default function RootLayout() {
     // Only run on web client where window is available
     if (Platform.OS === 'web' && isClient && typeof window !== 'undefined') {
       
+      // FIX: Set document title for Accessibility score
+      document.title = "Child Support Calculator";
+
       // OPTIMIZATION: Defer Analytics to improve LCP
       // We wait for all interactions to finish, then add a 2.5s delay
       if (enableAnalytics) {

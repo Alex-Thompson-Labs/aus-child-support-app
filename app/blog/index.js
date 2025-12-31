@@ -122,13 +122,13 @@ const styles = StyleSheet.create({
   },
   button: {
     alignSelf: 'flex-start',
-    backgroundColor: '#F0F7FF', // Light blue background for button
+    backgroundColor: '#0056b3', // Darker blue for better contrast (WCAG AA compliant)
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
   },
   buttonText: {
-    color: '#007AFF',
+    color: '#ffffff',
     fontWeight: '600',
     fontSize: 16,
   },

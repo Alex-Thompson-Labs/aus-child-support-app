@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   blogButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#0056b3',
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,

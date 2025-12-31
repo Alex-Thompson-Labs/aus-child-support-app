@@ -607,6 +607,7 @@ export function CalculatorForm({
                 placeholderTextColor="#64748b"
                 accessibilityLabel="Parent A adjusted taxable income"
                 accessibilityHint="Enter Parent A's annual income in dollars"
+                accessibilityState={{ checked: supportA }}
               />
             </View>
             <View style={styles.switchRow}>
@@ -663,6 +664,7 @@ export function CalculatorForm({
                 style={styles.smallSwitch}
                 accessibilityLabel="Parent B receives income support"
                 accessibilityHint="Toggle if Parent B receives income support payments"
+                accessibilityState={{ checked: supportB }}
               />
               <Text style={styles.switchLabelSmall}>Inc. support</Text>
             </View>
@@ -973,7 +975,7 @@ const styles = StyleSheet.create({
   },
   calculateButton: {
     flex: 2,
-    backgroundColor: "#2563EB", // Brand Blue (blue-600)
+    backgroundColor: "#0056b3", // Darker blue for better contrast (WCAG AA compliant)
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: "center",
