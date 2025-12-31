@@ -6,6 +6,63 @@
  * 
  * OPTIMIZATION: expo-print and expo-sharing are dynamically imported
  * to avoid bundling ~150KB in the main chunk (admin-only feature)
+ * 
+ * ============================================================================
+ * Function Documentation
+ * ============================================================================
+ * 
+ * exportLeadAsPDF(lead: LeadSubmission): Promise<void>
+ * 
+ * Caller:
+ * - app/admin/lead/[id].tsx (line 244) - Admin lead detail screen
+ *   Triggered by "Export PDF" button in admin interface
+ * 
+ * Parameters:
+ * - lead: LeadSubmission - Complete lead data from Supabase database
+ *   Required fields:
+ *   - id: string - Lead unique identifier
+ *   - parent_name: string - Parent's full name
+ *   - parent_email: string - Parent's email address
+ *   - parent_phone?: string | null - Optional phone number
+ *   - location?: string | null - Postcode/location
+ *   - income_parent_a: number - Parent A's adjusted taxable income
+ *   - income_parent_b: number - Parent B's adjusted taxable income
+ *   - children_count: number - Number of children
+ *   - annual_liability: number - Calculated annual child support amount
+ *   - care_data?: Array<{index: number, careA: number, careB: number}> | null
+ *   - complexity_reasons?: string[] - Array of CoA reason IDs
+ *   - complexity_trigger?: string - Primary trigger type
+ *   - financial_tags?: string[] | null - Selected financial issue tags
+ *   - parent_message?: string | null - Compiled message from inquiry form
+ *   - status?: string - Lead status ('new', 'reviewing', 'sent', 'converted', 'lost')
+ *   - notes?: string | null - Admin notes
+ *   - created_at?: string - ISO timestamp
+ * 
+ * Platform Behavior:
+ * - Web: Opens print dialog with generated HTML (window.print())
+ * - Mobile: Uses expo-print to generate PDF file, then expo-sharing to share
+ * 
+ * PDF Content Sections:
+ * 1. Header - Lead ID, status badge, generation timestamp
+ * 2. Parent Contact - Name, email, phone, location, submission date
+ * 3. Case Summary - Incomes, combined income, children count, annual liability
+ * 4. Care Arrangement - Table showing care percentages per child (if available)
+ * 5. Change of Assessment Grounds - Grouped by category (urgent, income, child, other)
+ * 6. Complexity Triggers - List of trigger types (if available)
+ * 7. Parent's Message - Full message text from inquiry form
+ * 8. Admin Notes - Internal notes (if available)
+ * 9. Footer - Branding and confidentiality notice
+ * 
+ * Error Handling:
+ * - Throws error if print window fails to open (web)
+ * - Throws error if PDF generation fails (mobile)
+ * - Throws error if sharing not available (mobile)
+ * - All errors are logged and re-thrown for caller to handle
+ * 
+ * Dependencies:
+ * - getCoAReasonById() - Converts CoA reason IDs to full reason objects
+ * - formatCurrency() - Formats numbers as currency strings
+ * - LeadSubmission type from supabase.ts
  */
 
 import { Platform } from 'react-native';

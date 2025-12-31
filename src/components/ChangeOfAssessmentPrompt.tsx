@@ -7,7 +7,6 @@ import {
   CHANGE_OF_ASSESSMENT_REASONS,
   getHighestPriorityReason,
   isCourtDateReason,
-  parseCourtDateFromReasonId,
   type ChangeOfAssessmentReason
 } from "../utils/change-of-assessment-reasons";
 import type { ComplexityFormData } from "../utils/complexity-detection";
@@ -15,6 +14,64 @@ import { isWeb, webClickableStyles } from "../utils/responsive";
 import { createShadow } from "../utils/shadow-styles";
 import { HelpTooltip } from "./HelpTooltip";
 
+// ============================================================================
+// Component Documentation
+// ============================================================================
+/**
+ * ChangeOfAssessmentPrompt Component
+ * 
+ * Displays a collapsible section for selecting Change of Assessment (CoA) reasons
+ * and provides navigation to the lawyer inquiry form.
+ * 
+ * Parent Component:
+ * - CalculatorResults.tsx (line 189) - Rendered inside the expanded results modal
+ * 
+ * Props:
+ * - results: CalculationResults - Complete calculation results including incomes, 
+ *   care arrangements, and payment amounts. Used to populate inquiry form data.
+ * 
+ * - formData?: ComplexityFormData - Optional form state that may contain 
+ *   pre-selected CoA reasons (selectedCoAReasons array). Used to initialize 
+ *   checkbox state and sync when formData changes.
+ * 
+ * - onNavigate: () => void - Callback to close the results modal before navigation.
+ *   Required for proper modal dismissal animation on mobile.
+ * 
+ * - onRequestInquiry?: () => void - Optional callback for web inline mode.
+ *   If provided, shows inline inquiry panel instead of navigating to new route.
+ *   Used when displayMode === 'inline' in CalculatorResults.
+ * 
+ * - onCoAReasonsChange?: (reasons: string[]) => void - Optional callback to notify
+ *   parent component when selected reasons change. Used by CalculatorResults to
+ *   update localFormData.selectedCoAReasons for persistence.
+ * 
+ * Navigation Behavior:
+ * When "Talk to a Lawyer About This" button is clicked:
+ * - If onRequestInquiry exists: Calls callback (web inline mode)
+ * - Otherwise: Navigates to /lawyer-inquiry route with params:
+ *   - liability: results.finalPaymentAmount.toString()
+ *   - trigger: "change_of_assessment"
+ *   - incomeA: results.ATI_A.toString()
+ *   - incomeB: results.ATI_B.toString()
+ *   - children: (formData?.children?.length ?? 0).toString()
+ *   - careData: JSON.stringify(careData array)
+ *   - coaReasons: JSON.stringify(Array.from(selectedReasons))
+ *   - coaHighestPriority: getHighestPriorityReason(...)?.id ?? ""
+ * 
+ * State Management:
+ * - selectedReasons: Set<string> - Tracks checked CoA reason IDs
+ * - courtDate: Date | null - Stores actual court date if court date reason selected
+ * - hasPropertySettlement: boolean - Special flag for property settlement checkbox
+ * - isExpanded: boolean - Controls collapsible section visibility
+ * 
+ * Key Features:
+ * - Collapsible UI with badge showing selection count
+ * - Groups reasons by category (Legal, Income, Child, Other)
+ * - Court date handling: Uses placeholder 'court_date_pending' until actual date
+ *   is provided in the inquiry form
+ * - Syncs with formData.selectedCoAReasons via useEffect
+ * - Analytics tracking for reason toggles and button clicks
+ */
 
 interface ChangeOfAssessmentPromptProps {
   results: CalculationResults;
@@ -39,17 +96,6 @@ export function ChangeOfAssessmentPrompt({
   const [isNavigatingFromCoA, setIsNavigatingFromCoA] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Court date state - stores the actual Date object
-  const [courtDate, setCourtDate] = useState<Date | null>(() => {
-    // Initialize from formData if available
-    const reasons = formData?.selectedCoAReasons ?? [];
-    const courtDateReasonId = reasons.find(id => isCourtDateReason(id));
-    if (courtDateReasonId) {
-      return parseCourtDateFromReasonId(courtDateReasonId);
-    }
-    return null;
-  });
-
   const [hasPropertySettlement, setHasPropertySettlement] = useState(() => {
     // Initialize from formData
     return formData?.selectedCoAReasons?.includes('property_settlement') ?? false;
@@ -63,15 +109,6 @@ export function ChangeOfAssessmentPrompt({
   React.useEffect(() => {
     const reasons = formData?.selectedCoAReasons ?? [];
     setSelectedReasons(new Set(reasons));
-
-    // Update court date from reasons
-    const courtDateReasonId = reasons.find(id => isCourtDateReason(id));
-    if (courtDateReasonId) {
-      const parsedDate = parseCourtDateFromReasonId(courtDateReasonId);
-      setCourtDate(parsedDate);
-    } else {
-      setCourtDate(null);
-    }
 
     setHasPropertySettlement(reasons.includes('property_settlement'));
   }, [formData?.selectedCoAReasons]);
@@ -290,7 +327,7 @@ export function ChangeOfAssessmentPrompt({
                 style={[styles.checkboxRow, isWeb && webClickableStyles]}
                 onPress={() => {
                   const hasCourtDate = Array.from(selectedReasons).some(id => isCourtDateReason(id));
-                  
+
                   if (hasCourtDate) {
                     // Remove court date reason
                     setSelectedReasons((prev) => {
@@ -300,24 +337,23 @@ export function ChangeOfAssessmentPrompt({
                           next.delete(id);
                         }
                       });
-                      
+
                       // Notify parent of change
                       const reasonsArray = Array.from(next);
                       onCoAReasonsChange?.(reasonsArray);
-                      
+
                       return next;
                     });
-                    setCourtDate(null);
                   } else {
                     // Add a placeholder court date reason (will be replaced with actual date in inquiry form)
                     setSelectedReasons((prev) => {
                       const next = new Set(prev);
                       next.add('court_date_pending');
-                      
+
                       // Notify parent of change
                       const reasonsArray = Array.from(next);
                       onCoAReasonsChange?.(reasonsArray);
-                      
+
                       return next;
                     });
                   }
@@ -539,22 +575,6 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#e2e8f0', // slate-200 (light grey)
     marginVertical: 6, // minimal gap for tight, cohesive layout
-  },
-  inlineWarning: {
-    marginLeft: 32,
-    marginTop: 8,
-    marginBottom: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    backgroundColor: '#fffbeb', // amber-50 (lightest amber)
-    borderLeftWidth: 4,
-    borderLeftColor: '#f59e0b', // amber-500 (left accent)
-    borderRadius: 6,
-  },
-  inlineWarningText: {
-    fontSize: 13,
-    color: '#78350f', // amber-950 (darker for better contrast)
-    lineHeight: 18,
   },
 
   // Checkboxes

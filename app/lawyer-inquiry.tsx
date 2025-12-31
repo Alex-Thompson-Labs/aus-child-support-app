@@ -23,6 +23,51 @@ import type { LeadSubmission } from '../src/utils/supabase';
 import { submitLead } from '../src/utils/supabase';
 
 // ============================================================================
+// URL Parameters Documentation
+// ============================================================================
+/**
+ * This route component receives data via URL parameters (not React props).
+ * All parameters are passed as strings and parsed within the component.
+ * 
+ * Navigation sources:
+ * - ChangeOfAssessmentPrompt.tsx
+ * - CalculatorResults.tsx
+ * - SmartConversionFooter.tsx
+ * 
+ * Required parameters (always present):
+ * - liability: string - Annual child support liability amount
+ * - trigger: string - Complexity trigger type (e.g., "change_of_assessment", "high_value", etc.)
+ * - incomeA: string - Parent A's adjusted taxable income
+ * - incomeB: string - Parent B's adjusted taxable income
+ * - children: string - Number of children
+ * 
+ * Optional parameters (may be present depending on navigation source):
+ * - careData: string - JSON stringified array of care arrangements
+ *   Format: [{ index: number, careA: number, careB: number }, ...]
+ * 
+ * - coaReasons: string - JSON stringified array of Change of Assessment reason IDs
+ *   Format: ["reason_id_1", "reason_id_2", ...]
+ *   Source: ChangeOfAssessmentPrompt.tsx, CalculatorResults.tsx
+ * 
+ * - coaHighestPriority: string - Highest priority CoA reason ID
+ *   Source: ChangeOfAssessmentPrompt.tsx only
+ * 
+ * - complexityTriggers: string - JSON stringified array of complexity trigger types
+ *   Format: ["trigger1", "trigger2", ...]
+ *   Source: CalculatorResults.tsx, SmartConversionFooter.tsx
+ * 
+ * - preFillMessage: string - Pre-filled message text for the Additional Details field
+ *   Source: SmartConversionFooter.tsx only
+ * 
+ * Parameter parsing:
+ * - All numeric strings are parsed with parseFloat() or parseInt()
+ * - JSON strings are parsed with JSON.parse() with try/catch error handling
+ * - Missing parameters default to safe values (empty strings, null, empty arrays)
+ * 
+ * See component code (lines 238-268) for actual parsing implementation.
+ */
+
+// ============================================================================
 // Types
 // ============================================================================
 
@@ -325,8 +370,6 @@ export default function LawyerInquiryScreen() {
         id === 'income_resources_not_reflected' || id === 'earning_capacity'
     );
 
-    // No pre-fill for message field - keep it empty for clean UX
-
     /**
      * Validate a single field
      */
@@ -501,7 +544,7 @@ export default function LawyerInquiryScreen() {
 
             // Prepare complexity reasons array: remove the static trigger flag, add the real date
             const complexityReasonsWithCourtDate = (coaReasons || [])
-                .filter(id => !isCourtDateReason(id)); 
+                .filter(id => !isCourtDateReason(id));
 
             if (courtDate) {
                 complexityReasonsWithCourtDate.push(formatCourtDateForReasons(courtDate));
@@ -1064,14 +1107,6 @@ const styles = StyleSheet.create({
     coaSection: {
         marginBottom: 24,
     },
-    coaSectionTitle: {
-        fontSize: 14,
-        fontWeight: '700',
-        color: '#4a5568', // dark grey
-        textTransform: 'uppercase',
-        letterSpacing: 0.5,
-        marginBottom: 12,
-    },
     coaReasonCard: {
         backgroundColor: '#eff6ff', // Blue-50 - very light blue
         borderWidth: 1,
@@ -1099,18 +1134,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         color: '#1e40af', // Blue-800 - dark blue
-        lineHeight: 18,
-    },
-    coaReasonCourtDate: {
-        fontSize: 13,
-        fontWeight: '600',
-        color: '#1e40af', // Blue-800 - dark blue
-        marginTop: 4,
-        lineHeight: 18,
-    },
-    coaReasonDescription: {
-        fontSize: 13,
-        color: '#475569', // Slate-600 - medium grey
         lineHeight: 18,
     },
     summaryCard: {

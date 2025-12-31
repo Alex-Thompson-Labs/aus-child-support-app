@@ -1,10 +1,8 @@
-import { useRouter } from "expo-router";
-import React, { lazy, Suspense, useCallback, useState } from "react";
-import ReactGA from "react-ga4"; // Integrated for web lead tracking
+import React, { lazy, Suspense, useState } from "react";
 import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { CalculationResults } from "../types/calculator";
-import { detectComplexity, type ComplexityFlags, type ComplexityFormData } from "../utils/complexity-detection";
+import type { ComplexityFormData } from "../utils/complexity-detection";
 import { formatCurrency } from "../utils/formatters";
 import { MAX_MODAL_WIDTH, useResponsive } from "../utils/responsive";
 import { shadowPresets } from "../utils/shadow-styles";
@@ -18,14 +16,129 @@ const ResultsSimpleExplanation = lazy(() =>
   }))
 );
 
+// ============================================================================
+// Component Documentation
+// ============================================================================
+/**
+ * CalculatorResults Component
+ * 
+ * Displays calculation results in either modal or inline mode.
+ * Shows payment amounts, breakdown details, CoA prompts, and conversion CTAs.
+ * 
+ * Parent Component:
+ * - src/screens/CalculatorScreen.tsx (line 160) - Main calculator screen
+ *   Passes calculation results and form state from useCalculator() hook
+ * 
+ * Props Interface (CalculatorResultsProps):
+ * - results: CalculationResults - Complete calculation results including:
+ *   - finalPaymentAmount: number - Annual child support liability
+ *   - payer: string - Which parent pays ("Parent A", "Parent B", or "Neither")
+ *   - ATI_A: number - Parent A's adjusted taxable income
+ *   - ATI_B: number - Parent B's adjusted taxable income
+ *   - childResults: Array - Care percentages and calculations per child
+ * 
+ * - formData?: ComplexityFormData - Optional form state containing:
+ *   - children: ChildInput[] - Child care arrangement data
+ *   - supportA: boolean - Parent A income support flag
+ *   - supportB: boolean - Parent B income support flag
+ *   - selectedCoAReasons?: string[] - Pre-selected Change of Assessment reasons
+ *   Used for complexity detection and CoA reason persistence
+ * 
+ * - displayMode?: 'modal' | 'inline' - Display layout mode (default: 'modal')
+ *   - 'modal': Floating bottom card that expands to full-screen modal
+ *   - 'inline': Two-column layout with results on left, breakdown on right
+ * 
+ * - onRequestInquiry?: () => void - Optional callback for web inline inquiry panel
+ *   If provided, enables inline inquiry mode instead of navigation
+ * 
+ * - showInquiryPanel?: boolean - Controls inline inquiry panel visibility (default: false)
+ *   Used with onRequestInquiry for web inline mode
+ * 
+ * - onCloseInquiry?: () => void - Optional callback to close inline inquiry panel
+ * 
+ * - isStale?: boolean - Flag indicating results may be outdated (default: false)
+ *   When true, displays strikethrough styling on amounts
+ *   Set by parent when form inputs change before recalculation
+ * 
+ * - resetTimestamp?: number - Timestamp that increments on form reset (default: 0)
+ *   Used to clear CoA reasons when form is explicitly reset
+ * 
+ * Display Modes:
+ * 
+ * 1. Modal Mode (default):
+ *    - Collapsed: Fixed bottom card showing payer and annual amount
+ *    - Expanded: Full-screen modal with hero section, breakdown, CoA prompt, footer
+ *    - User taps card to expand/collapse
+ *    - Returns null if no children exist in calculation
+ * 
+ * 2. Inline Mode:
+ *    - Two-column layout (left: hero, right: breakdown scroll)
+ *    - Used for desktop/tablet layouts
+ *    - No modal overlay, always visible
+ * 
+ * Child Components:
+ * - ChangeOfAssessmentPrompt - CoA reason selection and navigation
+ *   - Receives: results, localFormData, onNavigate callback
+ *   - Syncs selectedCoAReasons via onCoAReasonsChange callback
+ *   - Key prop ensures remount when calculation changes
+ * 
+ * - ResultsSimpleExplanation (lazy) - Detailed calculation breakdown
+ *   - Receives: results, formState (support flags)
+ *   - Code-split for performance (large component)
+ *   - Suspense fallback shows loading indicator
+ * 
+ * - SmartConversionFooter - Conversion CTAs with complexity-based messaging
+ *   - Receives: results, carePercentages, formData, onBeforeNavigate
+ *   - Handles navigation to /lawyer-inquiry route
+ * 
+ * State Management:
+ * - isExpanded: boolean - Controls modal visibility (modal mode only)
+ * - localFormData: ComplexityFormData - Local state preserving CoA reasons
+ *   - Merges fresh formData.children from props with preserved selectedCoAReasons
+ *   - Prevents CoA selections from being lost when form updates
+ *   - Clears on resetTimestamp increment
+ * 
+ * - isNavigating: boolean - Prevents double navigation during route transitions
+ * - lastResultsKey: string - Tracks calculation changes to update formData
+ * 
+ * Complexity Detection:
+ * - Uses detectComplexity() utility with merged formData
+ * - Detects: highValue, sharedCareDispute, specialCircumstances, bindingAgreement
+ * - Triggers used for navigation params and conversion messaging
+ * 
+ * Navigation Behavior:
+ * - navigateToInquiry() function routes to /lawyer-inquiry with params:
+ *   - liability: results.finalPaymentAmount.toString()
+ *   - trigger: getTrigger() - Primary complexity flag
+ *   - complexityTriggers: JSON.stringify(getAllTriggers()) - All flags
+ *   - incomeA: results.ATI_A.toString()
+ *   - incomeB: results.ATI_B.toString()
+ *   - children: (formData?.children?.length ?? 0).toString()
+ *   - careData: JSON.stringify(careData array)
+ *   - coaReasons: JSON.stringify(localFormData.selectedCoAReasons) if exists
+ * 
+ * - Tracks Google Analytics event on web (Lead/Inquiry_Click)
+ * - Closes modal before navigation (onNavigate callback)
+ * 
+ * Key Features:
+ * - CoA reason persistence across form updates
+ * - Stale result indication with strikethrough styling
+ * - Responsive design with web-specific modal constraints
+ * - Code-split heavy components for performance
+ * - Safe area insets handling for mobile notches
+ * - Conditional rendering (returns null if no children)
+ * 
+ * Performance Optimizations:
+ * - ResultsSimpleExplanation lazy loaded (~1153 lines)
+ * - Suspense boundaries for loading states
+ * - Key-based remounting of ChangeOfAssessmentPrompt on calculation change
+ * - Memoized trigger calculation functions
+ */
 
 interface CalculatorResultsProps {
   results: CalculationResults;
   formData?: ComplexityFormData;
   displayMode?: 'modal' | 'inline';
-  onRequestInquiry?: () => void;
-  showInquiryPanel?: boolean;
-  onCloseInquiry?: () => void;
   isStale?: boolean;
   resetTimestamp?: number;
 }
@@ -34,19 +147,14 @@ export function CalculatorResults({
   results,
   formData,
   displayMode = 'modal',
-  onRequestInquiry,
-  showInquiryPanel = false,
-  onCloseInquiry,
   isStale = false,
   resetTimestamp = 0,
 }: CalculatorResultsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const insets = useSafeAreaInsets();
-  const router = useRouter();
   const { isWeb } = useResponsive();
 
   const isInlineMode = displayMode === 'inline';
-  const [isNavigating, setIsNavigating] = useState(false);
 
   // Track local form data updates (selected CoA reasons)
   // Preserve CoA reasons across navigation - only update children/support from props
@@ -86,70 +194,8 @@ export function CalculatorResults({
   const fortnightlyAmount = results.finalPaymentAmount / 26;
   const dailyAmount = results.finalPaymentAmount / 365;
 
-  // Complexity Logic - merge fresh formData.children with local form data (court date, CoA reasons)
-  // This ensures sharedCareDispute is always calculated with current care values from props
-  const complexityFormData: ComplexityFormData = {
-    ...localFormData,
-    children: formData?.children, // Always use fresh children data from props
-    supportA: formData?.supportA,
-    supportB: formData?.supportB,
-  };
-  const flags = detectComplexity(results, complexityFormData);
-
   // Check if any children exist in the calculation
   const hasChildren = formData?.children && formData.children.length > 0;
-
-  const getTrigger = useCallback((): string => {
-    const flagKeys: (keyof ComplexityFlags)[] = ['highValue', 'sharedCareDispute', 'specialCircumstances', 'bindingAgreement'];
-    const triggeredFlag = flagKeys.find(k => flags[k]);
-    return triggeredFlag ? triggeredFlag.replace(/([A-Z])/g, '_$1').toLowerCase() : 'unknown';
-  }, [flags]);
-
-  const getAllTriggers = useCallback((): string[] => {
-    const flagKeys: (keyof ComplexityFlags)[] = ['highValue', 'sharedCareDispute', 'specialCircumstances', 'bindingAgreement'];
-    return flagKeys.filter(k => flags[k]).map(flag => flag.replace(/([A-Z])/g, '_$1').toLowerCase());
-  }, [flags]);
-
-  // Unified Navigation & Analytics Handler
-  // Note: This function is defined but currently not directly used in the component
-  // It may be used by parent components or is kept for future feature implementation
-  const navigateToInquiry = useCallback(() => {
-    if (isNavigating) return;
-    setIsNavigating(true);
-    setIsExpanded(false);
-
-    // Track Lead Generation Event on Web
-    if (isWeb) {
-      ReactGA.event({
-        category: "Lead",
-        action: "Inquiry_Click",
-        label: "Lawyer Form Open",
-      });
-    }
-
-    requestAnimationFrame(() => {
-      const careData = (formData?.children ?? []).map((child, index) => ({
-        index,
-        careA: results.childResults[index]?.roundedCareA ?? 0,
-        careB: results.childResults[index]?.roundedCareB ?? 0
-      }));
-
-      router.push({
-        pathname: '/lawyer-inquiry',
-        params: {
-          liability: results.finalPaymentAmount.toString(),
-          trigger: getTrigger(),
-          complexityTriggers: JSON.stringify(getAllTriggers()),
-          incomeA: results.ATI_A.toString(),
-          incomeB: results.ATI_B.toString(),
-          children: (formData?.children?.length ?? 0).toString(),
-          careData: JSON.stringify(careData),
-          ...(localFormData?.selectedCoAReasons?.length ? { coaReasons: JSON.stringify(localFormData.selectedCoAReasons) } : {})
-        }
-      });
-      setTimeout(() => setIsNavigating(false), 500);
-    });
-  }, [isNavigating, router, results, formData, localFormData, getTrigger, getAllTriggers, isWeb]);
 
   const toggleExpand = () => setIsExpanded(!isExpanded);
 

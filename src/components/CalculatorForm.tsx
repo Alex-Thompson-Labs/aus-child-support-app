@@ -8,6 +8,73 @@ import { HelpTooltip } from "./HelpTooltip";
 import { BrandSwitch } from "./ui/BrandSwitch";
 
 // ============================================================================
+// Component Documentation
+// ============================================================================
+/**
+ * CalculatorForm Component
+ * 
+ * Main form component for child support calculator input fields.
+ * Handles income inputs, care arrangements, relevant dependents, and form actions.
+ * 
+ * Parent Component:
+ * - src/screens/CalculatorScreen.tsx (line 148) - Main calculator screen
+ *   Passes props from useCalculator() hook state and handlers
+ * 
+ * Props Interface (CalculatorFormProps):
+ * - incomeA: number - Parent A's adjusted taxable income
+ * - incomeB: number - Parent B's adjusted taxable income
+ * - supportA: boolean - Whether Parent A receives income support
+ * - supportB: boolean - Whether Parent B receives income support
+ * - childrenData: ChildInput[] - Array of child care arrangement inputs
+ * - relDepA: { u13: number; plus13: number } - Parent A relevant dependents
+ * - relDepB: { u13: number; plus13: number } - Parent B relevant dependents
+ * - errors: FormErrors - Validation error messages by field
+ * - incomePercA?: number - Optional: Parent A's income percentage (for display)
+ * - incomePercB?: number - Optional: Parent B's income percentage (for display)
+ * - csiA?: number - Optional: Parent A's Child Support Income (for display)
+ * - csiB?: number - Optional: Parent B's Child Support Income (for display)
+ * - onIncomeAChange: (value: number) => void - Handler for Parent A income changes
+ * - onIncomeBChange: (value: number) => void - Handler for Parent B income changes
+ * - onSupportAChange: (checked: boolean) => void - Handler for Parent A support toggle
+ * - onSupportBChange: (checked: boolean) => void - Handler for Parent B support toggle
+ * - onAddChild: () => void - Handler to add new child to form
+ * - onRemoveChild: (childId: string) => void - Handler to remove child by ID
+ * - onUpdateChild: (childId: string, updates: Partial<ChildInput>) => void - Update child data
+ * - onRelDepAChange: (updates: Partial<{u13: number; plus13: number}>) => void - Update Parent A dependents
+ * - onRelDepBChange: (updates: Partial<{u13: number; plus13: number}>) => void - Update Parent B dependents
+ * - onCalculate: () => void - Handler to trigger calculation
+ * - onReset: () => void - Handler to reset form to initial state
+ * - isDesktopWeb?: boolean - Controls two-column layout and padding (default: false)
+ * 
+ * Data Flow:
+ * - State managed by useCalculator() hook in CalculatorScreen
+ * - Form changes trigger setIsStale(true) in parent handlers
+ * - Calculation results passed back via useCalculator().results
+ * - Results displayed in CalculatorResults component overlay
+ * 
+ * Child Components:
+ * - ChildRow - Individual child care arrangement input row
+ * - RelevantDependentsPopover - Compact popover for relevant dependents
+ * - BrandSwitch - Custom branded toggle switch component
+ * - HelpTooltip - Contextual help tooltips
+ * 
+ * Layout Behavior:
+ * - Mobile: Single column, full width, bottom padding for results overlay
+ * - Desktop (isDesktopWeb=true): Two-column layout, constrained width, reduced padding
+ * - Responsive input widths: 160px (mobile), 180px (tablet), 200px (desktop)
+ * 
+ * Form Sections:
+ * 1. Income Card - Parent A/B income inputs, income support toggles, relevant dependents
+ * 2. Care Card - Child care arrangement inputs (nights per period, age groups)
+ * 3. Action Buttons - Calculate and Reset buttons
+ * 
+ * Validation:
+ * - Errors passed via errors prop from useCalculator() hook
+ * - Displayed inline below relevant input fields
+ * - Error styling applied to inputs (red border, light red background)
+ */
+
+// ============================================================================
 // RelevantDependentsPopover - Compact button with popover for dependents
 // ============================================================================
 
