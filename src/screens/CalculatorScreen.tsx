@@ -157,14 +157,25 @@ export function CalculatorScreen() {
               size={isDesktop ? 32 : 24}
               color="#2563eb"
             />
-            <Text
-              style={[styles.title, isDesktop && styles.titleDesktop]}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.7}
-            >
-              Child Support Calculator
-            </Text>
+            {Platform.OS === 'web' ? (
+              <h1
+                style={StyleSheet.flatten([
+                  styles.title,
+                  isDesktop && styles.titleDesktop,
+                ]) as any}
+              >
+                Child Support Calculator
+              </h1>
+            ) : (
+              <Text
+                style={[styles.title, isDesktop && styles.titleDesktop]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.7}
+              >
+                Child Support Calculator
+              </Text>
+            )}
             <Link href={'/blog' as any} asChild>
               <Pressable
                 style={styles.blogButton}

@@ -7,10 +7,9 @@ export default function Root({ children }: { children: React.ReactNode }) {
     process.env.EXPO_PUBLIC_SITE_URL || 'https://auschildsupport.com';
 
   // SEO Content Strategy: "Problem Aware"
-  const siteTitle =
-    'Child Support Calculator Australia 2025 | Services Australia Formula';
+  const siteTitle = 'Child Support Calculator | Services Australia Formula';
   const siteDescription =
-    'Accurate Child Support Calculator for Australia (2025-2026). Estimate payments instantly using the official Services Australia formula. Supports 50/50 care, split care, and multiple family assessments. Free & anonymous.';
+    'Accurate Child Support Calculator for Australia (2026). Estimate payments instantly using the official Services Australia formula. Supports 50/50 care, split care, and multiple family assessments. Free & anonymous.';
   const shareImage = `${siteUrl}/share-preview.png`;
 
   return (
@@ -77,7 +76,7 @@ export default function Root({ children }: { children: React.ReactNode }) {
         <meta name="description" content={siteDescription} />
         <meta
           name="keywords"
-          content="child support calculator australia, services australia formula, family tax benefit estimator, dhs child support calculator, 50/50 custody child support, csa calculator, family law lead magnet, child support estimator 2025"
+          content="child support calculator australia, services australia formula, family tax benefit estimator, dhs child support calculator, 50/50 custody child support, csa calculator, family law lead magnet, child support estimator 2026"
         />
         <meta name="author" content="AusChildSupport" />
         <meta name="robots" content="index, follow" />
@@ -138,7 +137,7 @@ export default function Root({ children }: { children: React.ReactNode }) {
               },
               description: siteDescription,
               featureList: [
-                'Services Australia Formula 2025',
+                'Services Australia Formula 2026',
                 'Shared Care Percentage Calculator',
                 'Cost of Children Table Lookup',
                 'Multiple Family Support',
@@ -171,10 +170,10 @@ export default function Root({ children }: { children: React.ReactNode }) {
               mainEntity: [
                 {
                   '@type': 'Question',
-                  name: 'How is child support calculated in Australia for 2025?',
+                  name: 'How is child support calculated in Australia for 2026?',
                   acceptedAnswer: {
                     '@type': 'Answer',
-                    text: "The 2025 calculation uses the Services Australia 8-step formula. It accounts for both parents' adjusted taxable incomes, the percentage of care (nights per fortnight), and the cost of children table based on the combined income pool.",
+                    text: "The 2026 calculation uses the Services Australia 8-step formula. It accounts for both parents' adjusted taxable incomes, the percentage of care (nights per fortnight), and the cost of children table based on the combined income pool.",
                   },
                 },
                 {
