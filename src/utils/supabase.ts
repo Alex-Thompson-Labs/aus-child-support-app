@@ -116,12 +116,10 @@ export interface LeadSubmission {
   // Complexity data
   complexity_trigger: string;
   complexity_reasons: string[];
-  court_date?: string | null;
   financial_tags?: string[] | null;
 
   // Message
   parent_message: string;
-  preferred_contact: string | null;
 
   // Privacy compliance
   consent_given: boolean;
@@ -183,10 +181,48 @@ export async function submitLead(lead: LeadSubmission): Promise<{
     // Lazy-load Supabase client only when actually submitting
     const supabaseClient = await getSupabaseClient();
 
+    // Sanitize payload: explicitly list ONLY columns that exist in the database
+    // This prevents errors from removed fields (e.g., preferred_contact)
+    const sanitizedPayload = {
+      // Parent contact
+      parent_name: lead.parent_name,
+      parent_email: lead.parent_email,
+      parent_phone: lead.parent_phone,
+      location: lead.location,
+
+      // Calculation data
+      income_parent_a: lead.income_parent_a,
+      income_parent_b: lead.income_parent_b,
+      children_count: lead.children_count,
+      annual_liability: lead.annual_liability,
+
+      // Care arrangement data
+      care_data: lead.care_data,
+
+      // Complexity data
+      complexity_trigger: lead.complexity_trigger,
+      complexity_reasons: lead.complexity_reasons,
+      financial_tags: lead.financial_tags,
+
+      // Message
+      parent_message: lead.parent_message,
+
+      // Privacy compliance
+      consent_given: lead.consent_given,
+
+      // Lead management (optional fields)
+      ...(lead.assigned_lawyer_id !== undefined && { assigned_lawyer_id: lead.assigned_lawyer_id }),
+      ...(lead.status !== undefined && { status: lead.status }),
+      ...(lead.sent_at !== undefined && { sent_at: lead.sent_at }),
+      ...(lead.lawyer_response_at !== undefined && { lawyer_response_at: lead.lawyer_response_at }),
+      ...(lead.notes !== undefined && { notes: lead.notes }),
+      ...(lead.deleted_at !== undefined && { deleted_at: lead.deleted_at }),
+    };
+
     // Insert lead into database (fire and forget - no select needed)
     const { error } = await supabaseClient
       .from('leads')
-      .insert([lead]);
+      .insert([sanitizedPayload]);
 
     if (error) {
       console.error('[Supabase] Error inserting lead:', error);

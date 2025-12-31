@@ -107,8 +107,7 @@ function RelevantDependentsPopover({
           {!hasValues && <Text style={popoverStyles.plusIcon}>+</Text>}
         </Pressable>
         <HelpTooltip
-          header="REDUCES ASSESSABLE INCOME"
-          what="Number of children in the parents care from a different relationship..."
+          what="Relevant dependent children are those in a parent's care from a different relationship. An allowance is deducted from the parent's Adjusted Taxable Income to recognize the costs of supporting them, effectively reducing their final child support income."
           why=""
           hideWhatLabel
           iconColor="#60a5fa" // blue-400
@@ -581,8 +580,8 @@ export function CalculatorForm({
               <Text> - Adjusted Taxable Income</Text>
             </Text>
             <HelpTooltip
-              header="What's Included in ATI?"
-              what="- Taxable income
+              what="A parent's ATI includes:
+- Taxable income
 - Reportable fringe benefits
 - Target foreign income
 - Total net investment loss
@@ -621,7 +620,6 @@ export function CalculatorForm({
               />
               <Text style={styles.switchLabelSmall}>Inc. support</Text>
               <HelpTooltip
-                header="MINIMUM ANNUAL RATE / FIXED ANNUAL RATE"
                 what="Whether or not a parent received an income support payment in their taxable income can move the assessment away from using the formula to a fixed or minimum rate under certain conditions"
                 why=""
                 hideWhatLabel
@@ -697,7 +695,6 @@ export function CalculatorForm({
             <Text style={[styles.sectionHeading, { marginBottom: 0 }]}>CARE</Text>
           </View>
           <HelpTooltip
-            header="CARE = OVERNIGHT"
             what="Enter the number of nights each parent has care of the child per week, fortnight, or year and if the child is over or under 13 years of age."
             why=""
             hideWhatLabel

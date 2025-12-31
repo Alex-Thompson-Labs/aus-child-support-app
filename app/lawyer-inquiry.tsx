@@ -212,6 +212,19 @@ function validateCourtDate(courtDate: Date | null, isRequired: boolean): string 
     return undefined;
 }
 
+/**
+ * Format court date as a string for complexity_reasons array
+ * Example: court_date_12_jan_2026
+ */
+function formatCourtDateForReasons(courtDate: Date): string {
+    const day = courtDate.getDate();
+    const monthNames = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    const month = monthNames[courtDate.getMonth()];
+    const year = courtDate.getFullYear();
+
+    return `court_date_${day}_${month}_${year}`;
+}
+
 // ============================================================================
 // Component
 // ============================================================================
@@ -486,6 +499,13 @@ export default function LawyerInquiryScreen() {
                 console.error('[LawyerInquiry] Analytics error:', error);
             }
 
+            // Prepare complexity reasons array with court date if present
+            const complexityReasonsWithCourtDate = [...(coaReasons || [])];
+            if (courtDate) {
+                const formattedCourtDate = formatCourtDateForReasons(courtDate);
+                complexityReasonsWithCourtDate.push(formattedCourtDate);
+            }
+
             // Create lead submission for Supabase
             const leadSubmission: LeadSubmission = {
                 // Parent contact
@@ -505,10 +525,9 @@ export default function LawyerInquiryScreen() {
 
                 // Complexity data
                 complexity_trigger: trigger || 'unknown',
-                complexity_reasons: coaReasons || [],
+                complexity_reasons: complexityReasonsWithCourtDate,
 
                 // Dynamic lead data
-                court_date: courtDate ? courtDate.toISOString().split('T')[0] : null,
                 financial_tags: financialTags.length > 0 ? financialTags : null,
 
                 // Message (compiled from CoA reasons, financial tags, court date, and user notes)
@@ -551,7 +570,6 @@ export default function LawyerInquiryScreen() {
 
                     return compiledParts.length > 0 ? compiledParts.join('\n') : '';
                 })(),
-                preferred_contact: null, // Could add this as a field later
 
                 // Privacy compliance
                 consent_given: consent,

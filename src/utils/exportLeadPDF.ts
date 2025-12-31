@@ -243,10 +243,6 @@ function generateLeadHTML(lead: LeadSubmission): string {
                 <p style="color: #1f2937; font-size: 14px;">${lead.location}</p>
               </div>
             ` : ''}
-            <div style="margin-bottom: 12px;">
-              <strong style="color: #6b7280; font-size: 13px; display: block; margin-bottom: 4px;">Preferred Contact:</strong>
-              <p style="color: #1f2937; font-size: 14px;">${lead.preferred_contact || (lead.parent_phone ? 'Phone' : 'Email')}</p>
-            </div>
             <div>
               <strong style="color: #6b7280; font-size: 13px; display: block; margin-bottom: 4px;">Submitted:</strong>
               <p style="color: #1f2937; font-size: 14px;">${formatDate(lead.created_at)}</p>

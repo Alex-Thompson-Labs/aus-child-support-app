@@ -5,7 +5,6 @@ import type { CalculationResults } from "../types/calculator";
 import { useAnalytics } from "../utils/analytics";
 import {
   CHANGE_OF_ASSESSMENT_REASONS,
-  createCourtDateReasonId,
   getHighestPriorityReason,
   isCourtDateReason,
   parseCourtDateFromReasonId,
@@ -15,7 +14,6 @@ import type { ComplexityFormData } from "../utils/complexity-detection";
 import { isWeb, webClickableStyles } from "../utils/responsive";
 import { createShadow } from "../utils/shadow-styles";
 import { HelpTooltip } from "./HelpTooltip";
-import DatePickerField from "./ui/DatePickerField";
 
 
 interface ChangeOfAssessmentPromptProps {
