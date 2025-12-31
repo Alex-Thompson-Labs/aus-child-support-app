@@ -64,7 +64,6 @@ csc/
 │   ├── _layout.tsx           # Root layout with theme provider
 │   ├── (tabs)/               # Tab navigation for calculator
 │   │   ├── index.tsx         # Home screen (CalculatorScreen)
-│   │   └── explore.tsx       # About/Help screen
 │   ├── admin/                # Admin panel routes
 │   │   ├── dashboard.tsx     # Lead management dashboard
 │   │   ├── login.tsx         # Admin authentication

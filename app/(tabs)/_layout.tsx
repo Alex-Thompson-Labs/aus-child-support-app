@@ -1,10 +1,9 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 
 const isWeb = Platform.OS === 'web';
 
@@ -26,13 +25,6 @@ export default function TabLayout() {
         options={{
           title: 'Calculator',
           tabBarIcon: ({ color }) => <IconSymbol size={isWeb ? 24 : 28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Info',
-          tabBarIcon: ({ color }) => <IconSymbol size={isWeb ? 24 : 28} name="paperplane.fill" color={color} />,
         }}
       />
     </Tabs>

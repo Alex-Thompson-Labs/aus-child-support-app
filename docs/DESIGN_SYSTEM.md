@@ -243,7 +243,6 @@ Expo Router file-based routing:
 - **_layout.tsx** - Root layout
 - **(tabs)/** - Tab navigation group
   - **index.tsx** - Home/calculator screen
-  - **explore.tsx** - About/info screen
 - **admin/** - NEW: Admin panel for lead management
   - **login.tsx** - Admin authentication
   - **dashboard.tsx** - Leads list and management

@@ -5,7 +5,6 @@ import { PostHogProvider } from 'posthog-react-native';
 import { useEffect } from 'react';
 import ReactGA from "react-ga4"; // Added for Web Analytics
 import { Platform, Pressable, StyleSheet, Text } from 'react-native';
-import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useClientOnly } from '@/src/hooks/useClientOnly';

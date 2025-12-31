@@ -81,7 +81,6 @@ csc/
 │   ├── _layout.tsx
 │   ├── (tabs)/                  # Tab navigation
 │   │   ├── index.tsx            # Calculator tab
-│   │   └── explore.tsx
 │   ├── admin/                   # Admin portal
 │   │   ├── dashboard.tsx
 │   │   ├── login.tsx

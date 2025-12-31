@@ -41,6 +41,7 @@ This audit identifies accessibility barriers for screen reader users and keyboar
 **Impact:** Screen reader users cannot identify which parent's income they're entering.
 
 **Recommendation:**
+
 ```tsx
 <TextInput
   style={[styles.currencyInput, ...]}
