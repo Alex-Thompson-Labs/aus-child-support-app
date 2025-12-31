@@ -69,18 +69,10 @@ lead-data/
 analytics-keys.json
 
 # Phase 2 business data (DO NOT COMMIT)
-lawyer-partners.csv
-lawyer-partners.xlsx
-lead-tracker.csv
-lead-tracker.xlsx
-invoices/
-partnership-agreements/signed/
-*.invoice.pdf
+/business-docs
 
 # Email lists
-lawyer-emails.csv
-lawyer-emails.txt
-outreach-lists/
+/data
 
 # Analytics local data
 analytics-exports/
@@ -103,6 +95,49 @@ expo-env.d.ts
 # Local Netlify folder
 .netlify
 
-/data
+# Yarn 2+ (Berry)
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
 
-/docs
+# Package manager locks (keep only one - npm is default for Expo)
+# Uncomment the one you want to keep:
+# yarn.lock
+# pnpm-lock.yaml
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# Test artifacts
+__tests__/__snapshots__/
+*.test.js.snap
+*.test.tsx.snap
+
+# Expo specific
+.expo-shared/
+.expo-internal/
+
+# React Native
+.react-native/
+
+# Lighthouse reports
+lighthouse-report.html
+bundle-analysis.html
+
+# Source maps (if you don't want to commit them)
+*.map
+
+# Supabase local development (if you add it later)
+supabase/.branches/
+supabase/.temp/
+
+# Backup files
+*.backup
+*.bak

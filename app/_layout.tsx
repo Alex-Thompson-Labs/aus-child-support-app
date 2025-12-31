@@ -1,5 +1,6 @@
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useClientOnly } from '@/src/hooks/useClientOnly';
+import { LoadingFallback } from '@/src/components/ui/LoadingFallback';
 import { initPerformanceMonitoring } from '@/src/utils/web-vitals';
 import {
   DarkTheme,
@@ -10,33 +11,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Suspense, useEffect } from 'react';
 import ReactGA from 'react-ga4';
-import {
-  ActivityIndicator,
-  InteractionManager,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-
-// LoadingFallback component for async route loading
-function LoadingFallback() {
-  return (
-    <View style={loadingStyles.container}>
-      <ActivityIndicator size="large" color="#2563EB" />
-    </View>
-  );
-}
-
-const loadingStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-  },
-});
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -82,12 +57,19 @@ export default function RootLayout() {
       document.title = 'Child Support Calculator';
 
       // OPTIMIZATION: Defer Analytics to improve LCP
-      // We wait for all interactions to finish, then add a 2.5s delay
+      // We use requestIdleCallback to defer until browser is idle, then add a 2.5s delay
       if (enableAnalytics) {
         const gaMeasurementId =
           process.env.EXPO_PUBLIC_GA_MEASUREMENT_ID || 'G-53139BKGD7';
 
-        const task = InteractionManager.runAfterInteractions(() => {
+        // Polyfill for requestIdleCallback (not supported in Safari < 16)
+        const requestIdleCallbackPolyfill =
+          window.requestIdleCallback ||
+          function (cb: IdleRequestCallback) {
+            return setTimeout(cb, 1);
+          };
+
+        const idleCallbackId = requestIdleCallbackPolyfill(() => {
           const timer = setTimeout(() => {
             try {
               ReactGA.initialize(gaMeasurementId);
@@ -105,7 +87,15 @@ export default function RootLayout() {
           return () => clearTimeout(timer);
         });
 
-        return () => task.cancel();
+        return () => {
+          // Polyfill for cancelIdleCallback
+          const cancelIdleCallbackPolyfill =
+            window.cancelIdleCallback ||
+            function (id: number) {
+              clearTimeout(id);
+            };
+          cancelIdleCallbackPolyfill(idleCallbackId);
+        };
       }
 
       // Initialize Performance Monitoring (lightweight, can stay)
@@ -126,6 +116,7 @@ export default function RootLayout() {
             name="modal"
             options={{ presentation: 'modal', title: 'Modal' }}
           />
+          {/* LAZY-LOADED: Lawyer Inquiry form - code split via route file */}
           <Stack.Screen
             name="lawyer-inquiry"
             options={{
@@ -133,6 +124,7 @@ export default function RootLayout() {
               headerShown: false,
             }}
           />
+          {/* LAZY-LOADED: Admin routes - code split via route files */}
           <Stack.Screen
             name="admin/login"
             options={{
