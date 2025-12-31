@@ -1,5 +1,5 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Link } from "expo-router";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import React, { Suspense, lazy } from "react";
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -8,10 +8,10 @@ import { useResponsive } from "../utils/responsive";
 import { shadowPresets } from "../utils/shadow-styles";
 
 // Code-split heavy components for better LCP
-const CalculatorForm = lazy(() => 
+const CalculatorForm = lazy(() =>
   import("../components/CalculatorForm").then(module => ({ default: module.CalculatorForm }))
 );
-const CalculatorResults = lazy(() => 
+const CalculatorResults = lazy(() =>
   import("../components/CalculatorResults").then(module => ({ default: module.CalculatorResults }))
 );
 
@@ -50,6 +50,17 @@ export function CalculatorScreen() {
   } = useCalculator();
 
   const { isDesktop } = useResponsive();
+  const params = useLocalSearchParams();
+  const router = useRouter();
+
+  // Reset calculator when navigating back with reset=true
+  React.useEffect(() => {
+    if (params.reset === 'true') {
+      reset();
+      // Clear the param so it doesn't trigger again
+      router.setParams({ reset: undefined });
+    }
+  }, [params.reset, reset, router]);
 
   // Handlers
   const handleIncomeAChange = (value: number) => {
@@ -124,7 +135,7 @@ export function CalculatorScreen() {
               Child Support Calculator
             </Text>
             <Link href={"/blog" as any} asChild>
-              <Pressable 
+              <Pressable
                 style={styles.blogButton}
                 accessibilityRole="button"
                 accessibilityLabel="View blog articles"

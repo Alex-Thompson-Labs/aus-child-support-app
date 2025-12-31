@@ -79,6 +79,7 @@ interface FormErrors {
     message?: string;
     consent?: string;
     courtDate?: string;
+    financialTags?: string;
 }
 
 interface FormTouched {
@@ -89,6 +90,7 @@ interface FormTouched {
     message: boolean;
     consent: boolean;
     courtDate: boolean;
+    financialTags: boolean;
 }
 
 // ============================================================================
@@ -258,6 +260,21 @@ function validateCourtDate(courtDate: Date | null, isRequired: boolean): string 
 }
 
 /**
+ * Validate financial tags (required if "hiding income" CoA reason is present)
+ */
+function validateFinancialTags(tags: string[], coaReasons: string[] | null): string | undefined {
+    // Check if coaReasons includes 'income_resources_not_reflected'
+    // This ID corresponds to "Is the other parent hiding any income..."
+    const hasHidingIncomeReason = coaReasons?.includes('income_resources_not_reflected');
+
+    if (hasHidingIncomeReason && tags.length === 0) {
+        return 'Please select at least one financial issue type.';
+    }
+
+    return undefined;
+}
+
+/**
  * Format court date as a string for complexity_reasons array
  * Example: court_date_12_jan_2026
  */
@@ -268,6 +285,63 @@ function formatCourtDateForReasons(courtDate: Date): string {
     const year = courtDate.getFullYear();
 
     return `court_date_${day}_${month}_${year}`;
+}
+
+/**
+ * Build complexity triggers array based on accumulative logic.
+ * 
+ * Rules (Accumulative):
+ * 1. High Alert (Data-Driven): If coaReasons is not empty OR financialTags is not empty OR liability > 15000 -> push 'high_alert'
+ * 2. Shared Care (Data-Driven): If any child has care percentage between 35% and 65% (inclusive) -> push 'shared_care'
+ * 3. Binding Agreement (Button-Driven ONLY): ONLY push 'binding_agreement' if trigger === 'binding_agreement'
+ *    - Do not infer from other data
+ *    - If they came via "High Alert", do not add "Binding Agreement" even if they fit the criteria
+ * 
+ * @param trigger - Navigation parameter indicating entry point
+ * @param coaReasons - Array of complexity reason IDs
+ * @param financialTags - Array of financial issue tags
+ * @param careData - Array of care arrangements for each child
+ * @param liability - Annual liability amount as a string
+ * @returns Array of active triggers, or null if empty
+ */
+function buildComplexityTriggers(
+    trigger: string,
+    coaReasons: string[] | null,
+    financialTags: string[],
+    careData: { index: number; careA: number; careB: number }[],
+    liability: string
+): string[] | null {
+    const activeTriggers: string[] = [];
+
+    // Parse liability to a number
+    const liabilityAmount = parseFloat(liability) || 0;
+
+    // Rule 1: High Alert (Data-Driven)
+    // IF coaReasons is not empty OR financialTags is not empty OR liability > 15000 -> push 'high_alert'
+    if ((coaReasons && coaReasons.length > 0) || financialTags.length > 0 || liabilityAmount > 15000) {
+        activeTriggers.push('high_alert');
+    }
+
+    // Rule 2: Shared Care (Data-Driven)
+    // Check if any child has care percentage between 35% and 65% (inclusive)
+    const hasSharedCare = careData.some(child => {
+        const careAPercent = child.careA;
+        const careBPercent = child.careB;
+        return (careAPercent >= 35 && careAPercent <= 65) || (careBPercent >= 35 && careBPercent <= 65);
+    });
+
+    if (hasSharedCare) {
+        activeTriggers.push('shared_care');
+    }
+
+    // Rule 3: Binding Agreement (Button-Driven ONLY)
+    // ONLY push if the user explicitly entered via the agreement button
+    if (trigger === 'binding_agreement') {
+        activeTriggers.push('binding_agreement');
+    }
+
+    // Return null if array is empty, otherwise return the array
+    return activeTriggers.length > 0 ? activeTriggers : null;
 }
 
 // ============================================================================
@@ -333,7 +407,8 @@ export default function LawyerInquiryScreen() {
         postcode: false,
         message: false,
         consent: false,
-        courtDate: false
+        courtDate: false,
+        financialTags: false
     });
 
     // Submission state
@@ -389,10 +464,12 @@ export default function LawyerInquiryScreen() {
                 return validateConsent(value as boolean);
             case 'courtDate':
                 return validateCourtDate(value as Date | null, shouldShowCourtDate);
+            case 'financialTags':
+                return validateFinancialTags(financialTags, coaReasons);
             default:
                 return undefined;
         }
-    }, [shouldShowCourtDate, financialTags]);
+    }, [shouldShowCourtDate, financialTags, coaReasons]);
 
     /**
      * Validate all fields and return true if form is valid
@@ -405,7 +482,8 @@ export default function LawyerInquiryScreen() {
             postcode: validatePostcode(postcode),
             message: validateMessage(message, financialTags),
             consent: validateConsent(consent),
-            courtDate: validateCourtDate(courtDate, shouldShowCourtDate)
+            courtDate: validateCourtDate(courtDate, shouldShowCourtDate),
+            financialTags: validateFinancialTags(financialTags, coaReasons)
         };
 
         setErrors(newErrors);
@@ -418,12 +496,13 @@ export default function LawyerInquiryScreen() {
             postcode: true,
             message: true,
             consent: true,
-            courtDate: true
+            courtDate: true,
+            financialTags: true
         });
 
         // Check if any errors exist
         return !Object.values(newErrors).some(error => error !== undefined);
-    }, [name, email, phone, postcode, message, consent, courtDate, shouldShowCourtDate, financialTags]);
+    }, [name, email, phone, postcode, message, consent, courtDate, shouldShowCourtDate, financialTags, coaReasons]);
 
     /**
      * Handle field blur - validate and show error
@@ -439,9 +518,24 @@ export default function LawyerInquiryScreen() {
                             field === 'courtDate' ? courtDate :
                                 message;
 
-        const error = validateField(field, value);
+        field === 'courtDate' ? courtDate :
+            field === 'financialTags' ? financialTags :
+                message;
+
+        // Special handling for array fields (financialTags) is difficult in this generic handler
+        // because validateField expects specific types, but it works since we added the case
+        // However, we need to cast financialTags if it falls into that case
+        // Simplified: use the closure values for arrays instead of passing generic value
+
+        let error: string | undefined;
+        if (field === 'financialTags') {
+            error = validateField(field, null); // Use closure value inside validateField
+        } else {
+            error = validateField(field, value);
+        }
+
         setErrors(prev => ({ ...prev, [field]: error }));
-    }, [name, email, phone, postcode, message, consent, courtDate, validateField]);
+    }, [name, email, phone, postcode, message, consent, courtDate, financialTags, validateField]);
 
 
     /**
@@ -568,7 +662,7 @@ export default function LawyerInquiryScreen() {
                 care_data: careData.length > 0 ? careData : null,
 
                 // Complexity data
-                complexity_trigger: trigger || 'unknown',
+                complexity_trigger: buildComplexityTriggers(trigger, coaReasons, financialTags, careData, liability),
                 complexity_reasons: complexityReasonsWithCourtDate,
 
                 // Dynamic lead data
@@ -653,16 +747,16 @@ export default function LawyerInquiryScreen() {
             // Navigate back after delay
             setTimeout(() => {
                 try {
-                    // Check if we can go back before attempting navigation
-                    if (router.canGoBack()) {
-                        router.back();
-                    } else {
-                        // No previous screen, go to home
-                        router.replace('/');
-                    }
+                    console.log('[LawyerInquiry] Navigating home with reset trigger...');
+                    // Force navigation to home with reset param to clear calculator state
+                    // We use replace() instead of back() to ensure the state is cleared
+                    router.replace({
+                        pathname: '/',
+                        params: { reset: 'true' }
+                    });
                 } catch (error) {
                     console.error('[LawyerInquiry] Navigation error:', error);
-                    // Fallback: try to go to home
+                    // Fallback
                     router.replace('/');
                 }
             }, 2500);
@@ -893,19 +987,32 @@ export default function LawyerInquiryScreen() {
                     {/* Financial Tags - Conditional */}
                     {shouldShowFinancialTags && (
                         <View style={styles.financialSection}>
-                            <Text style={styles.fieldLabel}>What type of financial issue? (Select all that apply)</Text>
+                            <Text style={styles.fieldLabel}>What type of financial issue? (Select all that apply) {coaReasons?.includes('income_resources_not_reflected') && '*'}</Text>
                             <View style={styles.chipsContainer}>
                                 {['Cash Business', 'Refusing to Work', 'Hidden Assets', 'Family Trusts', 'Other'].map((tag) => {
                                     const isSelected = financialTags.includes(tag);
                                     return (
                                         <Pressable
                                             key={tag}
-                                            style={[styles.chip, isSelected && styles.chipActive]}
+                                            style={[
+                                                styles.chip,
+                                                isSelected && styles.chipActive,
+                                                touched.financialTags && errors.financialTags && !isSelected && styles.chipError
+                                            ]}
                                             onPress={() => {
+                                                let newTags;
                                                 if (isSelected) {
-                                                    setFinancialTags(prev => prev.filter(t => t !== tag));
+                                                    newTags = financialTags.filter(t => t !== tag);
                                                 } else {
-                                                    setFinancialTags(prev => [...prev, tag]);
+                                                    newTags = [...financialTags, tag];
+                                                }
+                                                setFinancialTags(newTags);
+
+                                                // Clear error if selection made (and valid)
+                                                // If deselecting makes it invalid, it will be caught on submit or next validation
+                                                // But usually for "at least one", adding one clears error.
+                                                if (touched.financialTags && errors.financialTags && newTags.length > 0) {
+                                                    setErrors(prev => ({ ...prev, financialTags: undefined }));
                                                 }
                                             }}
                                             disabled={isSubmitting}
@@ -921,6 +1028,9 @@ export default function LawyerInquiryScreen() {
                                     );
                                 })}
                             </View>
+                            {touched.financialTags && errors.financialTags && (
+                                <Text style={styles.errorText}>{errors.financialTags}</Text>
+                            )}
                         </View>
                     )}
 
@@ -1375,6 +1485,10 @@ const styles = StyleSheet.create({
     chipActive: {
         backgroundColor: '#3b82f6', // blue-500
         borderColor: '#3b82f6',
+    },
+    chipError: {
+        borderColor: '#ef4444', // red-500
+        backgroundColor: '#fef2f2', // red-50
     },
     chipText: {
         fontSize: 14,

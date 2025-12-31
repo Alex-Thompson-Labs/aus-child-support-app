@@ -114,7 +114,7 @@ export interface LeadSubmission {
   }[] | null;
 
   // Complexity data
-  complexity_trigger: string;
+  complexity_trigger: string[] | null;
   complexity_reasons: string[];
   financial_tags?: string[] | null;
 
