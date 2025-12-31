@@ -21,6 +21,16 @@ const formatCurrency2dp = (num: number): string => {
   return `$${num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 };
 
+// Cost Percentage Table data for Step 5 tooltip
+const COST_PERCENTAGE_TABLE = [
+  { careRange: '0% - 13%', costResult: 'Nil' },
+  { careRange: '14% - 34%', costResult: '24%' },
+  { careRange: '35% - 47%', costResult: '25% + 2% per point over 35%' },
+  { careRange: '48% - 52%', costResult: '50%' },
+  { careRange: '53% - 65%', costResult: '51% + 2% per point over 53%' },
+];
+
+
 export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleExplanationProps) {
   // Collapsible state management - 8-Step Formula
   const [expandedSteps, setExpandedSteps] = useState({
@@ -174,11 +184,9 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
             Child support income is a parent&apos;s income after deducting an amount for their own living costs and for any other children they support outside the child support case.
           </Text>
 
-          {/* Deduction breakdown for each parent */}
           <View style={styles.deductionCards}>
-            {/* Parent A breakdown */}
-            <View style={styles.deductionCard}>
-              <Text style={styles.deductionCardTitle}>PARENT A</Text>
+            {/* Parent A - Using Wrapper Pattern */}
+            <ParentComparisonCard title="PARENT A">
               <View style={styles.deductionRow}>
                 <Text style={styles.deductionLabel}>Adjusted taxable income</Text>
                 <Text style={styles.deductionValue}>{formatCurrency(results.ATI_A)}</Text>
@@ -198,11 +206,10 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                 <Text style={styles.deductionTotalLabel}>Child Support Income</Text>
                 <Text style={styles.deductionTotalValue}>{formatCurrency(Math.max(0, results.CSI_A))}</Text>
               </View>
-            </View>
+            </ParentComparisonCard>
 
-            {/* Parent B breakdown */}
-            <View style={styles.deductionCard}>
-              <Text style={styles.deductionCardTitle}>PARENT B</Text>
+            {/* Parent B - Using Wrapper Pattern */}
+            <ParentComparisonCard title="PARENT B">
               <View style={styles.deductionRow}>
                 <Text style={styles.deductionLabel}>Adjusted taxable income</Text>
                 <Text style={styles.deductionValue}>{formatCurrency(results.ATI_B)}</Text>
@@ -222,7 +229,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                 <Text style={styles.deductionTotalLabel}>Child Support Income</Text>
                 <Text style={styles.deductionTotalValue}>{formatCurrency(Math.max(0, results.CSI_B))}</Text>
               </View>
-            </View>
+            </ParentComparisonCard>
           </View>
         </>
       </BreakdownStepCard>
@@ -270,18 +277,14 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
           </Text>
 
           <View style={styles.incomePercentageCalculation}>
-            <View style={styles.incomePercentageCard}>
-              <Text style={styles.incomePercentageCardTitle}>PARENT A</Text>
-              <Text style={styles.incomePercentageFormula}>
-                {formatCurrency(Math.max(0, results.CSI_A))} ÷ {formatCurrency(results.CCSI)} = {formatPercent2dp(results.incomePercA)}
-              </Text>
-            </View>
-            <View style={styles.incomePercentageCard}>
-              <Text style={styles.incomePercentageCardTitle}>PARENT B</Text>
-              <Text style={styles.incomePercentageFormula}>
-                {formatCurrency(Math.max(0, results.CSI_B))} ÷ {formatCurrency(results.CCSI)} = {formatPercent2dp(results.incomePercB)}
-              </Text>
-            </View>
+            <ParentComparisonCard
+              title="PARENT A"
+              formula={`${formatCurrency(Math.max(0, results.CSI_A))} ÷ ${formatCurrency(results.CCSI)} = ${formatPercent2dp(results.incomePercA)}`}
+            />
+            <ParentComparisonCard
+              title="PARENT B"
+              formula={`${formatCurrency(Math.max(0, results.CSI_B))} ÷ ${formatCurrency(results.CCSI)} = ${formatPercent2dp(results.incomePercB)}`}
+            />
           </View>
 
           <View style={styles.incomeComparison}>
@@ -289,11 +292,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
               <Text style={{ color: '#4a5568' }}>PARENT A</Text> - <Text style={{ color: '#4a5568' }}>{formatPercent2dp(results.incomePercA)}</Text>
             </Text>
 
-            {/* Visual bar */}
-            <View style={styles.visualBar}>
-              <View style={[styles.barSegmentA, { flex: results.incomePercA }]} />
-              <View style={[styles.barSegmentB, { flex: results.incomePercB }]} />
-            </View>
+            <PercentageBar percentA={results.incomePercA} percentB={results.incomePercB} />
 
             <Text style={[styles.careHeaderLabel, { textAlign: 'right' }]}>
               <Text style={{ color: '#4a5568' }}>PARENT B</Text> - <Text style={{ color: '#4a5568' }}>{formatPercent2dp(results.incomePercB)}</Text>
@@ -325,11 +324,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
                 <Text style={{ color: '#4a5568' }}>PARENT A</Text> - <Text style={{ color: '#4a5568' }}>{formatPercent2dp(child.roundedCareA)}</Text>
               </Text>
 
-              {/* Visual bar for care */}
-              <View style={styles.visualBar}>
-                <View style={[styles.barSegmentA, { flex: child.roundedCareA }]} />
-                <View style={[styles.barSegmentB, { flex: child.roundedCareB }]} />
-              </View>
+              <PercentageBar percentA={child.roundedCareA} percentB={child.roundedCareB} />
 
               <Text style={[styles.careHeaderLabel, { textAlign: 'right' }]}>
                 <Text style={{ color: '#4a5568' }}>PARENT B</Text> - <Text style={{ color: '#4a5568' }}>{formatPercent2dp(child.roundedCareB)}</Text>
@@ -358,30 +353,15 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
               </Text>
 
               <View style={{ gap: 10 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
-                  <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>0% - 13%</Text>
-                  <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>Nil</Text>
-                </View>
-
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
-                  <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>14% - 34%</Text>
-                  <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>24%</Text>
-                </View>
-
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
-                  <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>35% - 47%</Text>
-                  <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>25% + 2% per point over 35%</Text>
-                </View>
-
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
-                  <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>48% - 52%</Text>
-                  <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>50%</Text>
-                </View>
-
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}>
-                  <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>53% - 65%</Text>
-                  <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>51% + 2% per point over 53%</Text>
-                </View>
+                {COST_PERCENTAGE_TABLE.map((row, idx) => (
+                  <View
+                    key={idx}
+                    style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#334155' }}
+                  >
+                    <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>{row.careRange}</Text>
+                    <Text style={{ color: '#3b82f6', fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'right' }}>{row.costResult}</Text>
+                  </View>
+                ))}
               </View>
             </View>
           }
@@ -398,35 +378,16 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
             {/* Care to Cost conversion */}
             <View style={[styles.careConversion, { marginTop: index === 0 ? 12 : 16, padding: 12 }]}>
               <View style={styles.conversionCards}>
-                <View style={styles.conversionCard}>
-                  <Text style={[styles.conversionCardLabel, { fontSize: 12 }]}>PARENT A</Text>
-                  <View style={styles.conversionRow}>
-                    <View style={{ alignItems: 'center' }}>
-                      <Text style={styles.conversionValue}>{formatPercent2dp(child.roundedCareA)}</Text>
-                      <Text style={styles.conversionSubLabel}>care</Text>
-                    </View>
-                    <Text style={styles.conversionArrow}>→</Text>
-                    <View style={{ alignItems: 'center' }}>
-                      <Text style={styles.conversionResult}>{formatPercent2dp(child.costPercA)}</Text>
-                      <Text style={styles.conversionSubLabel}>cost</Text>
-                    </View>
-                  </View>
-                </View>
-
-                <View style={styles.conversionCard}>
-                  <Text style={[styles.conversionCardLabel, { fontSize: 12 }]}>PARENT B</Text>
-                  <View style={styles.conversionRow}>
-                    <View style={{ alignItems: 'center' }}>
-                      <Text style={styles.conversionValue}>{formatPercent2dp(child.roundedCareB)}</Text>
-                      <Text style={styles.conversionSubLabel}>care</Text>
-                    </View>
-                    <Text style={styles.conversionArrow}>→</Text>
-                    <View style={{ alignItems: 'center' }}>
-                      <Text style={styles.conversionResult}>{formatPercent2dp(child.costPercB)}</Text>
-                      <Text style={styles.conversionSubLabel}>cost</Text>
-                    </View>
-                  </View>
-                </View>
+                <ParentComparisonCard
+                  title="PARENT A"
+                  careValue={formatPercent2dp(child.roundedCareA)}
+                  costValue={formatPercent2dp(child.costPercA)}
+                />
+                <ParentComparisonCard
+                  title="PARENT B"
+                  careValue={formatPercent2dp(child.roundedCareB)}
+                  costValue={formatPercent2dp(child.costPercB)}
+                />
               </View>
             </View>
           </>
@@ -721,6 +682,95 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
           </>
         );
       })()}
+    </View>
+  );
+}
+
+// --- Reusable Sub-Component: ParentComparisonCard ---
+interface ParentComparisonCardProps {
+  title: string;
+  label?: string;
+  value?: string;
+  isNegative?: boolean;
+  subLabel?: string;
+  formula?: string;
+  // For Step 5 conversion pattern
+  careValue?: string;
+  costValue?: string;
+  children?: React.ReactNode;
+}
+
+function ParentComparisonCard({ title, label, value, isNegative = false, subLabel, formula, careValue, costValue, children }: ParentComparisonCardProps) {
+  // If children are provided, render those instead of the simple label/value pattern
+  if (children) {
+    return (
+      <View style={styles.incomePercentageCard}>
+        <Text style={styles.incomePercentageCardTitle}>{title}</Text>
+        {children}
+      </View>
+    );
+  }
+
+  // Render formula if provided (Step 3 pattern)
+  if (formula) {
+    return (
+      <View style={styles.incomePercentageCard}>
+        <Text style={styles.incomePercentageCardTitle}>{title}</Text>
+        <Text style={styles.incomePercentageFormula}>{formula}</Text>
+      </View>
+    );
+  }
+
+  // Render care→cost conversion pattern (Step 5)
+  if (careValue && costValue) {
+    return (
+      <View style={styles.conversionCard}>
+        <Text style={[styles.conversionCardLabel, { fontSize: 12 }]}>{title}</Text>
+        <View style={styles.conversionRow}>
+          <View style={{ alignItems: 'center' }}>
+            <Text style={styles.conversionValue}>{careValue}</Text>
+            <Text style={styles.conversionSubLabel}>care</Text>
+          </View>
+          <Text style={styles.conversionArrow}>→</Text>
+          <View style={{ alignItems: 'center' }}>
+            <Text style={styles.conversionResult}>{costValue}</Text>
+            <Text style={styles.conversionSubLabel}>cost</Text>
+          </View>
+        </View>
+      </View>
+    );
+  }
+
+  // Simple label/value pattern
+  return (
+    <View style={styles.deductionCard}>
+      <Text style={styles.deductionCardTitle}>{title}</Text>
+      {label && value && (
+        <View style={styles.deductionRow}>
+          <Text style={styles.deductionLabel}>{label}</Text>
+          <Text style={isNegative ? styles.deductionValueNegative : styles.deductionValue}>
+            {isNegative ? `(${value})` : value}
+          </Text>
+        </View>
+      )}
+      {subLabel && (
+        <Text style={styles.conversionSubLabel}>{subLabel}</Text>
+      )}
+    </View>
+  );
+}
+
+// --- Reusable Sub-Component: PercentageBar ---
+interface PercentageBarProps {
+  percentA: number;
+  percentB: number;
+}
+
+function PercentageBar({ percentA, percentB }: PercentageBarProps) {
+  return (
+    <View style={styles.visualBar}>
+      <View style={[styles.barSegmentA, { flex: percentA }]} />
+      <View style={[styles.barSegmentB, { flex: percentB }]} />
     </View>
   );
 }
