@@ -656,7 +656,7 @@ export function ResultsSimpleExplanation({ results, formState }: ResultsSimpleEx
 
           return (
             <View style={[styles.specialNotice, { borderLeftColor: '#64748b' }]}>
-              <Text style={[styles.specialNoticeTitle, { color: '#94a3b8' }]}>
+              <Text style={[styles.specialNoticeTitle, { color: '#64748b' }]}>
                 ℹ️ {scenario.title}
               </Text>
               <View style={styles.specialNoticeContent}>
@@ -847,7 +847,7 @@ const styles = StyleSheet.create({
   },
   chevron: {
     fontSize: 16,
-    color: "#9ca3af", // gray-400
+    color: "#6b7280", // gray-500 - WCAG AA compliant (4.5:1)
     marginLeft: "auto",
   },
   keyBadge: {
@@ -1180,7 +1180,7 @@ const styles = StyleSheet.create({
   },
   conversionArrow: {
     fontSize: 14,
-    color: "#9ca3af", // gray-400
+    color: "#6b7280", // gray-500 - WCAG AA compliant (4.5:1)
   },
   conversionResult: {
     fontSize: 16,

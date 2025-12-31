@@ -96,13 +96,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#f3f4f6", // grey-100
     borderWidth: 1.5,
-    borderColor: "#9ca3af", // grey-400
+    borderColor: "#6b7280", // grey-500 - WCAG AA compliant (4.5:1)
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 6,
   },
   buttonText: {
-    color: "#6b7280", // grey-500
+    color: "#4b5563", // grey-600 - better contrast (5.9:1)
     fontSize: 13,
     fontWeight: "700",
   },

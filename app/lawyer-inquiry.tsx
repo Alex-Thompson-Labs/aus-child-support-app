@@ -1168,7 +1168,7 @@ const styles = StyleSheet.create({
     },
     careSeparator: {
         fontSize: 13,
-        color: '#9ca3af', // grey-400
+        color: '#6b7280', // grey-500 - WCAG AA compliant (4.5:1)
     },
     formTitle: {
         fontSize: 14,
@@ -1200,7 +1200,7 @@ const styles = StyleSheet.create({
     },
     charCount: {
         fontSize: 12,
-        color: '#9ca3af', // grey-400
+        color: '#6b7280', // grey-500 - WCAG AA compliant (4.5:1)
         textAlign: 'right',
         marginTop: 4,
     },
@@ -1220,7 +1220,7 @@ const styles = StyleSheet.create({
         height: 24,
         borderRadius: 4,
         borderWidth: 2,
-        borderColor: '#9ca3af', // grey-400
+        borderColor: '#6b7280', // grey-500 - WCAG AA compliant (4.5:1)
         backgroundColor: '#ffffff', // white
         alignItems: 'center',
         justifyContent: 'center',
@@ -1271,7 +1271,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#2563eb', // blue-600
     },
     buttonDisabled: {
-        backgroundColor: '#9ca3af', // grey-400
+        backgroundColor: '#6b7280', // grey-500 - WCAG AA compliant (4.5:1)
         opacity: 0.6,
     },
     buttonContent: {

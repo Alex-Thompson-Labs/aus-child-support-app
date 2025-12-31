@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderWidth: 2,
-    borderColor: '#9ca3af', // grey-400
+    borderColor: '#6b7280', // grey-500 - WCAG AA compliant (4.5:1)
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',

@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 14,
-    color: '#94a3b8', // slate-400
+    color: '#64748b', // slate-400
     textAlign: 'center',
   },
   form: {

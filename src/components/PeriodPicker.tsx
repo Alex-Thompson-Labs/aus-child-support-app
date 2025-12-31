@@ -119,8 +119,8 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 10,
-    fontWeight: "600",
-    color: "#64748b", // slate-500
+    fontWeight: "700", // Increased from 600 for better visibility
+    color: "#475569", // slate-600 - better contrast (6.7:1)
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },

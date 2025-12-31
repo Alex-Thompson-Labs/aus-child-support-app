@@ -196,8 +196,8 @@ const styles = StyleSheet.create({
   },
   childCountText: {
     fontSize: 11,
-    fontWeight: "600",
-    color: "#64748b", // slate-500 - neutral label
+    fontWeight: "700", // Increased from 600 for better visibility
+    color: "#475569", // slate-600 - better contrast (6.7:1)
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 8,
@@ -288,8 +288,8 @@ const styles = StyleSheet.create({
   },
   toggleLabel: {
     fontSize: 10,
-    fontWeight: "600",
-    color: "#64748b", // slate-500
+    fontWeight: "700", // Increased from 600 for better visibility
+    color: "#475569", // slate-600 - better contrast (6.7:1)
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },

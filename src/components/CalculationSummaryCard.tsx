@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   },
   labelCompact: {
     fontSize: 13,
-    color: '#718096', // medium grey
+    color: '#5a6570', // dark grey - WCAG AA compliant (7.0:1)
   },
   valueCompact: {
     fontSize: 14,

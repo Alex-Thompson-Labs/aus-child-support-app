@@ -123,7 +123,7 @@ function generateLeadHTML(lead: LeadSubmission): string {
             <strong style="color: #1f2937; font-size: 14px;">${r.label}</strong>
           </div>
           <p style="color: #6b7280; font-size: 13px; margin: 6px 0 6px 26px; line-height: 1.5;">${r.description}</p>
-          ${r.officialCoAReasons ? `<p style="color: #9ca3af; font-size: 11px; font-style: italic; margin: 4px 0 0 26px;">Official grounds: ${r.officialCoAReasons}</p>` : ''}
+          ${r.officialCoAReasons ? `<p style="color: #6b7280; font-size: 11px; font-style: italic; margin: 4px 0 0 26px;">Official grounds: ${r.officialCoAReasons}</p>` : ''}
         </div>
       `)
       .join('');
@@ -208,7 +208,7 @@ function generateLeadHTML(lead: LeadSubmission): string {
               ${lead.status || 'new'}
             </div>
           </div>
-          <p style="color: #9ca3af; font-size: 12px; margin-top: 8px; font-family: monospace;">
+          <p style="color: #6b7280; font-size: 12px; margin-top: 8px; font-family: monospace;">
             Lead ID: #${lead.id?.slice(0, 8)}
           </p>
         </div>
@@ -320,10 +320,10 @@ function generateLeadHTML(lead: LeadSubmission): string {
 
         <!-- Footer -->
         <div style="margin-top: 40px; padding-top: 24px; border-top: 2px solid #e5e7eb; text-align: center;">
-          <p style="color: #9ca3af; font-size: 12px; margin-bottom: 4px;">
+          <p style="color: #6b7280; font-size: 12px; margin-bottom: 4px;">
             Australian Child Support Calculator
           </p>
-          <p style="color: #9ca3af; font-size: 12px;">
+          <p style="color: #6b7280; font-size: 12px;">
             <a href="https://auschildsupport.com" style="color: #2563eb; text-decoration: none;">auschildsupport.com</a>
           </p>
           <p style="color: #d1d5db; font-size: 11px; margin-top: 8px;">

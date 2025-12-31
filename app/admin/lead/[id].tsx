@@ -594,7 +594,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#94a3b8',
+    color: '#64748b',
   },
   header: {
     flexDirection: 'row',
@@ -615,7 +615,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 16,
-    color: '#94a3b8',
+    color: '#64748b',
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     flex: 1,
     textAlign: 'center',
@@ -659,7 +659,7 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: '#64748b',
     flex: 0,
     minWidth: 120,
   },
@@ -711,7 +711,7 @@ const styles = StyleSheet.create({
   },
   coaReasonDescription: {
     fontSize: 13,
-    color: '#94a3b8',
+    color: '#64748b',
     marginBottom: 6,
   },
   coaReasonCategory: {
@@ -785,7 +785,7 @@ const styles = StyleSheet.create({
   },
   statusButtonText: {
     fontSize: 13,
-    color: '#94a3b8',
+    color: '#64748b',
     fontWeight: '600',
   },
   statusButtonTextActive: {

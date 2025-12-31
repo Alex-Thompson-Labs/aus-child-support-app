@@ -10,6 +10,8 @@ const KNOB_WHITE = "#ffffff";
 export type BrandSwitchProps = Omit<RNSwitchProps, "trackColor" | "thumbColor"> & {
   value: boolean;
   onValueChange: (value: boolean) => void;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 };
 
 /**
@@ -21,7 +23,7 @@ export type BrandSwitchProps = Omit<RNSwitchProps, "trackColor" | "thumbColor"> 
  * - Some platforms / renderers may ignore or override RN Switch colors.
  * - This wrapper enforces a consistent appearance (especially on web).
  */
-export function BrandSwitch({ value, onValueChange, disabled, style, ...rest }: BrandSwitchProps) {
+export function BrandSwitch({ value, onValueChange, disabled, style, accessibilityLabel, accessibilityHint, ...rest }: BrandSwitchProps) {
   // Native platforms: use the system Switch but force brand colors.
   if (Platform.OS !== "web") {
     return (
@@ -34,6 +36,9 @@ export function BrandSwitch({ value, onValueChange, disabled, style, ...rest }: 
         trackColor={{ false: OFF_SLATE, true: BRAND_BLUE }}
         thumbColor={KNOB_WHITE}
         ios_backgroundColor={OFF_SLATE}
+        accessibilityRole="switch"
+        accessibilityLabel={accessibilityLabel}
+        accessibilityHint={accessibilityHint}
       />
     );
   }
@@ -43,6 +48,8 @@ export function BrandSwitch({ value, onValueChange, disabled, style, ...rest }: 
     <Pressable
       accessibilityRole="switch"
       accessibilityState={{ checked: value, disabled: !!disabled }}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
       disabled={disabled}
       onPress={() => onValueChange(!value)}
       style={[styles.webRoot, disabled && styles.webRootDisabled, style as any]}

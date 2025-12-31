@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#94a3b8',
+    color: '#64748b',
   },
   header: {
     flexDirection: 'row',
@@ -379,7 +379,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: '#64748b',
     marginTop: 4,
   },
   logoutButton: {
@@ -426,7 +426,7 @@ const styles = StyleSheet.create({
   },
   filterChipText: {
     fontSize: 13,
-    color: '#94a3b8',
+    color: '#64748b',
     fontWeight: '600',
   },
   filterChipTextActive: {
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
   },
   sortLabel: {
     fontSize: 13,
-    color: '#94a3b8',
+    color: '#64748b',
     marginRight: 12,
   },
   sortButton: {
@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
   },
   sortButtonText: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: '#64748b',
     fontWeight: '600',
   },
   sortButtonTextActive: {
@@ -516,7 +516,7 @@ const styles = StyleSheet.create({
   },
   leadLocation: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: '#64748b',
     marginBottom: 12,
   },
   leadFooter: {

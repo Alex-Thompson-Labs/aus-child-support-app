@@ -56,7 +56,7 @@ export function BreakdownStepCard({
                 what={tooltip}
                 why={""}
                 hideWhatLabel
-                iconColor={isHelpHovered ? "#2563eb" : "#94a3b8"} // blue-600 on hover, slate-400 default
+                iconColor={isHelpHovered ? "#2563eb" : "#64748b"} // blue-600 on hover, slate-500 default - WCAG AA compliant
                 iconBorderColor={isHelpHovered ? "#bfdbfe" : "#cbd5e1"} // blue-200 / slate-300
                 iconBackgroundColor={isHelpHovered ? "#eff6ff" : "#f8fafc"} // blue-50 / slate-50
               />

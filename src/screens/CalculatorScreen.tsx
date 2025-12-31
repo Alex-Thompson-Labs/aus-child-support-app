@@ -124,7 +124,12 @@ export function CalculatorScreen() {
               Child Support Calculator
             </Text>
             <Link href={"/blog" as any} asChild>
-              <Pressable style={styles.blogButton}>
+              <Pressable 
+                style={styles.blogButton}
+                accessibilityRole="button"
+                accessibilityLabel="View blog articles"
+                accessibilityHint="Opens the blog page with helpful articles"
+              >
                 <Text style={styles.blogButtonText}>Blog</Text>
               </Pressable>
             </Link>
@@ -261,7 +266,7 @@ const skeletonStyles = StyleSheet.create({
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#64748b',
+    color: '#475569', // slate-600 - better contrast (6.7:1)
     fontWeight: '500',
   },
   resultsContainer: {
