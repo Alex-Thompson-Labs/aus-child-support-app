@@ -499,11 +499,12 @@ export default function LawyerInquiryScreen() {
                 console.error('[LawyerInquiry] Analytics error:', error);
             }
 
-            // Prepare complexity reasons array with court date if present
-            const complexityReasonsWithCourtDate = [...(coaReasons || [])];
+            // Prepare complexity reasons array: remove the static trigger flag, add the real date
+            const complexityReasonsWithCourtDate = (coaReasons || [])
+                .filter(id => !isCourtDateReason(id)); 
+
             if (courtDate) {
-                const formattedCourtDate = formatCourtDateForReasons(courtDate);
-                complexityReasonsWithCourtDate.push(formattedCourtDate);
+                complexityReasonsWithCourtDate.push(formatCourtDateForReasons(courtDate));
             }
 
             // Create lead submission for Supabase
