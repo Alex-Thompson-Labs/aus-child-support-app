@@ -1,0 +1,86 @@
+import { Ionicons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import {
+  LayoutAnimation,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  UIManager,
+  View,
+} from 'react-native';
+import { theme } from '../../theme';
+
+// Enable LayoutAnimation for Android
+if (
+  Platform.OS === 'android' &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+interface AccordionProps {
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}
+
+// --- CHANGED TO DEFAULT EXPORT ---
+export default function Accordion({
+  title,
+  children,
+  defaultOpen = false,
+}: AccordionProps) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  const toggleOpen = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setIsOpen(!isOpen);
+  };
+
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity
+        onPress={toggleOpen}
+        style={styles.header}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.title}>{title}</Text>
+        <Ionicons
+          name={isOpen ? 'chevron-up' : 'chevron-down'}
+          size={20}
+          color={theme.colors.textSecondary}
+        />
+      </TouchableOpacity>
+
+      {isOpen && <View style={styles.content}>{children}</View>}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 12,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: theme.colors.border || '#e5e7eb',
+    overflow: 'hidden',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.colors.textPrimary || '#111827',
+  },
+  content: {
+    padding: 16,
+    paddingTop: 0,
+  },
+});

@@ -70,6 +70,7 @@ analytics-keys.json
 
 # Phase 2 business data (DO NOT COMMIT)
 /business-docs
+docs/business-docs/
 
 # Email lists
 /data

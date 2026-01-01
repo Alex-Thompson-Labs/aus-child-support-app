@@ -1,8 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { Suspense, lazy } from 'react';
+import React from 'react';
 import {
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -16,35 +15,10 @@ import { useCalculator } from '../hooks/useCalculator';
 import { useResponsive } from '../utils/responsive';
 import { shadowPresets } from '../utils/shadow-styles';
 
-// Code-split heavy components for better LCP
-const CalculatorForm = lazy(() =>
-  import('../components/CalculatorForm').then((module) => ({
-    default: module.CalculatorForm,
-  }))
-);
-const CalculatorResults = lazy(() =>
-  import('../components/CalculatorResults').then((module) => ({
-    default: module.CalculatorResults,
-  }))
-);
-
-// Lightweight skeleton loaders
-function FormSkeleton() {
-  return (
-    <View style={skeletonStyles.container}>
-      <ActivityIndicator size="large" color="#2563eb" />
-      <Text style={skeletonStyles.loadingText}>Loading calculator...</Text>
-    </View>
-  );
-}
-
-function ResultsSkeleton() {
-  return (
-    <View style={skeletonStyles.resultsContainer}>
-      <ActivityIndicator size="small" color="#2563eb" />
-    </View>
-  );
-}
+// ✅ STANDARD IMPORTS (Reliable)
+import { CalculatorForm } from '../components/CalculatorForm';
+import { CalculatorResults } from '../components/CalculatorResults';
+import { CalculatorFAQ } from '../components/calculator/CalculatorFAQ';
 
 export function CalculatorScreen() {
   const {
@@ -70,7 +44,6 @@ export function CalculatorScreen() {
   React.useEffect(() => {
     if (params.reset === 'true') {
       reset();
-      // Clear the param so it doesn't trigger again
       router.setParams({ reset: undefined });
     }
   }, [params.reset, reset, router]);
@@ -145,11 +118,12 @@ export function CalculatorScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        {/* Responsive Header */}
-        <View style={styles.header}>
+        {/* Header */}
+        {/* @ts-ignore - Web-only ARIA role */}
+        <View style={styles.header} accessibilityRole="banner">
           <View
             style={
-              isDesktop ? styles.desktopConstraint : styles.mobileHeaderRow
+              isDesktop ? styles.headerContainer : styles.mobileHeaderRow
             }
           >
             <Ionicons
@@ -157,69 +131,58 @@ export function CalculatorScreen() {
               size={isDesktop ? 32 : 24}
               color="#2563eb"
             />
-            {Platform.OS === 'web' ? (
-              <h1
-                style={StyleSheet.flatten([
-                  styles.title,
-                  isDesktop && styles.titleDesktop,
-                ]) as any}
-              >
-                Child Support Calculator
-              </h1>
-            ) : (
-              <Text
-                style={[styles.title, isDesktop && styles.titleDesktop]}
-                numberOfLines={1}
-                adjustsFontSizeToFit
-                minimumFontScale={0.7}
-              >
-                Child Support Calculator
-              </Text>
-            )}
+            <Text
+              style={[styles.title, isDesktop && styles.titleDesktop]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.7}
+              accessibilityRole="header"
+              aria-level="1"
+            >
+              Child Support Calculator
+            </Text>
+
             <Link href={'/blog' as any} asChild>
-              <Pressable
-                style={styles.blogButton}
-                accessibilityRole="button"
-                accessibilityLabel="View blog articles"
-                accessibilityHint="Opens the blog page with helpful articles"
-              >
+              <Pressable style={styles.blogButton} accessibilityRole="button">
                 <Text style={styles.blogButtonText}>Blog</Text>
               </Pressable>
             </Link>
           </View>
         </View>
 
-        {/* Form Body */}
+        {/* Content */}
         <ScrollView
           style={styles.content}
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
+          // Cast to 'any' allows web-only roles without TS errors
+          accessibilityRole={'main' as any}
         >
-          {/* Main Content Wrapper - Centered for Desktop */}
-          <View style={isDesktop ? styles.desktopConstraint : styles.fullWidth}>
-            <Suspense fallback={<FormSkeleton />}>
-              <CalculatorForm {...formProps} isDesktopWeb={isDesktop} />
-            </Suspense>
-            {/* Bottom padding ensures the floating card doesn't hide the last inputs */}
+          <View style={isDesktop ? styles.bodyContainer : styles.fullWidth}>
+            {/* ✅ FORM RESTORED (No Suspense) */}
+            <CalculatorForm {...formProps} isDesktopWeb={isDesktop} />
+
+            {/* FAQ Section */}
+            <CalculatorFAQ />
+
+            {/* Bottom Padding */}
             <View style={{ height: 140 }} />
           </View>
         </ScrollView>
 
-        {/* Results Card Overlay */}
+        {/* Results Overlay */}
         {results && (
           <View style={styles.resultsOverlay}>
             <View
-              style={isDesktop ? styles.desktopConstraint : styles.fullWidth}
+              style={isDesktop ? styles.bodyContainer : styles.fullWidth}
             >
-              <Suspense fallback={<ResultsSkeleton />}>
-                <CalculatorResults
-                  results={results}
-                  formData={formState}
-                  displayMode="modal"
-                  isStale={isStale}
-                  resetTimestamp={resetTimestamp}
-                />
-              </Suspense>
+              <CalculatorResults
+                results={results}
+                formData={formState}
+                displayMode="modal"
+                isStale={isStale}
+                resetTimestamp={resetTimestamp}
+              />
             </View>
           </View>
         )}
@@ -243,7 +206,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#f1f5f9',
     backgroundColor: '#ffffff',
     width: '100%',
-    alignItems: 'center', // Center the content
+    alignItems: 'center',
   },
   mobileHeaderRow: {
     flexDirection: 'row',
@@ -251,24 +214,31 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     paddingHorizontal: 12,
-    gap: 8, // Reduced gap for more space
-    flexWrap: 'nowrap', // Keep items on same line
+    gap: 8,
   },
-  desktopConstraint: {
+  headerContainer: {
     width: '100%',
-    maxWidth: 850, // Breathing room for single-line title
+    maxWidth: 850,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    gap: 16, // Add gap between elements
+    gap: 16,
+  },
+  bodyContainer: {
+    width: '100%',
+    maxWidth: 850,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    gap: 16,
   },
   title: {
-    fontSize: 18, // Optimized for mobile screens
+    fontSize: 18,
     fontWeight: '800',
     color: '#0f172a',
-    flex: 1, // Take available space
-    flexShrink: 1, // Allow shrinking if needed
+    flex: 1,
     textAlign: 'center',
   },
   titleDesktop: {
@@ -281,7 +251,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
-    flexShrink: 0, // Prevent button from shrinking
+    flexShrink: 0,
     ...shadowPresets.small,
   },
   blogButtonText: {
@@ -307,30 +277,5 @@ const styles = StyleSheet.create({
   },
   fullWidth: {
     width: '100%',
-  },
-});
-
-const skeletonStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 60,
-    minHeight: 300,
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: '#475569', // slate-600 - better contrast (6.7:1)
-    fontWeight: '500',
-  },
-  resultsContainer: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: 100,
-    ...shadowPresets.small,
   },
 });

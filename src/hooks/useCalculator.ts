@@ -13,7 +13,6 @@ import {
   roundCarePercentage,
 } from '../utils/child-support-calculations';
 import { FAR, MAR, MAX_PPS, SSA } from '../utils/child-support-constants';
-import { isWeb } from '../utils/responsive';
 
 export interface CalculatorFormState {
   incomeA: number;
@@ -169,33 +168,33 @@ export function useCalculator() {
       careA: number;
       careB: number;
     }[] = [
-      ...Array(relDepA.u13).fill({
-        age: 'Under 13' as const,
-        careA: 0,
-        careB: 0,
-      }),
-      ...Array(relDepA.plus13).fill({
-        age: '13+' as const,
-        careA: 0,
-        careB: 0,
-      }),
-    ];
+        ...Array(relDepA.u13).fill({
+          age: 'Under 13' as const,
+          careA: 0,
+          careB: 0,
+        }),
+        ...Array(relDepA.plus13).fill({
+          age: '13+' as const,
+          careA: 0,
+          careB: 0,
+        }),
+      ];
     const relDepChildrenB: {
       age: 'Under 13' | '13+';
       careA: number;
       careB: number;
     }[] = [
-      ...Array(relDepB.u13).fill({
-        age: 'Under 13' as const,
-        careA: 0,
-        careB: 0,
-      }),
-      ...Array(relDepB.plus13).fill({
-        age: '13+' as const,
-        careA: 0,
-        careB: 0,
-      }),
-    ];
+        ...Array(relDepB.u13).fill({
+          age: 'Under 13' as const,
+          careA: 0,
+          careB: 0,
+        }),
+        ...Array(relDepB.plus13).fill({
+          age: '13+' as const,
+          careA: 0,
+          careB: 0,
+        }),
+      ];
 
     // Step 2-4: Calculate Child Support Income (CSI)
     const relDepDeductibleA = getChildCost(
@@ -457,11 +456,19 @@ export function useCalculator() {
   }, [formState, validateForm]);
 
   const calculate = useCallback(() => {
-    const calculationResults = performCalculation();
-    if (calculationResults) {
-      setResults(calculationResults);
-      setIsStale(false);
-    }
+    // Optimize INP: Yield to main thread to allow UI feedback (button press) to render
+    // before starting heavy blocking calculation.
+
+    // Ensure "stale" state is set synchronously to trigger any necessary pending UI updates
+    setIsStale(true);
+
+    setTimeout(() => {
+      const calculationResults = performCalculation();
+      if (calculationResults) {
+        setResults(calculationResults);
+        setIsStale(false);
+      }
+    }, 0);
   }, [performCalculation]);
 
   const reset = useCallback(() => {

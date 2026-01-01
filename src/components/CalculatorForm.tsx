@@ -1,13 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import type { ChildInput, FormErrors } from '../types/calculator';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import type { ChildInput, FormErrors } from '../utils/calculator';
 import {
   MAX_CONTENT_WIDTH,
   isWeb,
@@ -29,62 +22,9 @@ import { BrandSwitch } from './ui/BrandSwitch';
  * Main form component for child support calculator input fields.
  * Handles income inputs, care arrangements, relevant dependents, and form actions.
  *
- * Parent Component:
- * - src/screens/CalculatorScreen.tsx (line 148) - Main calculator screen
- *   Passes props from useCalculator() hook state and handlers
- *
- * Props Interface (CalculatorFormProps):
- * - incomeA: number - Parent A's adjusted taxable income
- * - incomeB: number - Parent B's adjusted taxable income
- * - supportA: boolean - Whether Parent A receives income support
- * - supportB: boolean - Whether Parent B receives income support
- * - childrenData: ChildInput[] - Array of child care arrangement inputs
- * - relDepA: { u13: number; plus13: number } - Parent A relevant dependents
- * - relDepB: { u13: number; plus13: number } - Parent B relevant dependents
- * - errors: FormErrors - Validation error messages by field
- * - incomePercA?: number - Optional: Parent A's income percentage (for display)
- * - incomePercB?: number - Optional: Parent B's income percentage (for display)
- * - csiA?: number - Optional: Parent A's Child Support Income (for display)
- * - csiB?: number - Optional: Parent B's Child Support Income (for display)
- * - onIncomeAChange: (value: number) => void - Handler for Parent A income changes
- * - onIncomeBChange: (value: number) => void - Handler for Parent B income changes
- * - onSupportAChange: (checked: boolean) => void - Handler for Parent A support toggle
- * - onSupportBChange: (checked: boolean) => void - Handler for Parent B support toggle
- * - onAddChild: () => void - Handler to add new child to form
- * - onRemoveChild: (childId: string) => void - Handler to remove child by ID
- * - onUpdateChild: (childId: string, updates: Partial<ChildInput>) => void - Update child data
- * - onRelDepAChange: (updates: Partial<{u13: number; plus13: number}>) => void - Update Parent A dependents
- * - onRelDepBChange: (updates: Partial<{u13: number; plus13: number}>) => void - Update Parent B dependents
- * - onCalculate: () => void - Handler to trigger calculation
- * - onReset: () => void - Handler to reset form to initial state
- * - isDesktopWeb?: boolean - Controls two-column layout and padding (default: false)
- *
- * Data Flow:
- * - State managed by useCalculator() hook in CalculatorScreen
- * - Form changes trigger setIsStale(true) in parent handlers
- * - Calculation results passed back via useCalculator().results
- * - Results displayed in CalculatorResults component overlay
- *
- * Child Components:
- * - ChildRow - Individual child care arrangement input row
- * - RelevantDependentsPopover - Compact popover for relevant dependents
- * - BrandSwitch - Custom branded toggle switch component
- * - HelpTooltip - Contextual help tooltips
- *
- * Layout Behavior:
- * - Mobile: Single column, full width, bottom padding for results overlay
- * - Desktop (isDesktopWeb=true): Two-column layout, constrained width, reduced padding
- * - Responsive input widths: 160px (mobile), 180px (tablet), 200px (desktop)
- *
- * Form Sections:
- * 1. Income Card - Parent A/B income inputs, income support toggles, relevant dependents
- * 2. Care Card - Child care arrangement inputs (nights per period, age groups)
- * 3. Action Buttons - Calculate and Reset buttons
- *
- * Validation:
- * - Errors passed via errors prop from useCalculator() hook
- * - Displayed inline below relevant input fields
- * - Error styling applied to inputs (red border, light red background)
+ * Updates [2026-01-01]:
+ * - Added Semantic HTML mapping (H2 tags) for SEO.
+ * - Improved accessibility grouping for screen readers.
  */
 
 // ============================================================================
@@ -99,8 +39,6 @@ interface RelevantDependentsPopoverProps {
   compact?: boolean; // For horizontal layout
 }
 
-// ... (imports remain the same)
-
 function RelevantDependentsPopover({
   relDepA,
   relDepB,
@@ -110,7 +48,7 @@ function RelevantDependentsPopover({
 }: RelevantDependentsPopoverProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const { isMobile } = useResponsive(); // Use the existing hook
+  const { isMobile } = useResponsive();
   const drawerRef = useRef<View>(null);
   const triggerRef = useRef<View>(null);
 
@@ -147,11 +85,6 @@ function RelevantDependentsPopover({
         document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [isOpen]);
-
-  // Mobile Native App (remains the same)
-  if (!isWeb) {
-    /* ... keep your existing Native Modal code ... */
-  }
 
   // FIXED Web/Mobile Browser Drawer
   return (
@@ -196,6 +129,8 @@ function RelevantDependentsPopover({
               : 'Add relevant dependents'
           }
           accessibilityHint="Tap to add dependent children from other relationships"
+          // @ts-ignore - Web-only accessibility
+          aria-expanded={isOpen}
         >
           <Text
             style={[
@@ -244,8 +179,8 @@ function RelevantDependentsPopover({
                 ? isMobile
                   ? '100%'
                   : compact
-                    ? '400px'
-                    : '450px'
+                  ? '400px'
+                  : '450px'
                 : '0px',
               height: isOpen ? 'auto' : '0px', // Allow vertical expansion
               opacity: isOpen ? 1 : 0,
@@ -266,7 +201,11 @@ function RelevantDependentsPopover({
             ]}
           >
             {/* Parent A */}
-            <View style={popoverStyles.drawerInputGroup}>
+            <View
+              style={popoverStyles.drawerInputGroup}
+              accessibilityRole={'group' as any} // Web-only ARIA role
+              accessibilityLabel="Parent A Dependents"
+            >
               <Text style={popoverStyles.drawerParentLabel}>A</Text>
               <View style={popoverStyles.drawerAgeInputs}>
                 <View style={popoverStyles.drawerAgeGroup}>
@@ -306,7 +245,11 @@ function RelevantDependentsPopover({
             {!isMobile && <View style={popoverStyles.drawerSeparator} />}
 
             {/* Parent B */}
-            <View style={popoverStyles.drawerInputGroup}>
+            <View
+              style={popoverStyles.drawerInputGroup}
+              accessibilityRole={'group' as any} // Web-only ARIA role
+              accessibilityLabel="Parent B Dependents"
+            >
               <Text style={popoverStyles.drawerParentLabel}>B</Text>
               <View style={popoverStyles.drawerAgeInputs}>
                 <View style={popoverStyles.drawerAgeGroup}>
@@ -421,7 +364,6 @@ const popoverStyles = StyleSheet.create({
   // Inline drawer content - expands to the right
   drawerContent: {
     overflow: 'hidden',
-    // height: 40, <-- REMOVE THIS so it can grow if inputs wrap
     minHeight: 40,
   },
   drawerContentOpen: {
@@ -505,122 +447,6 @@ const popoverStyles = StyleSheet.create({
     lineHeight: 18,
     fontWeight: '400',
   },
-  // Mobile modal styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  mobileContent: {
-    backgroundColor: '#ffffff', // white
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#e2e8f0', // subtle border
-    padding: 16,
-    minWidth: 280,
-    maxWidth: 340,
-    gap: 16,
-    ...createShadow({
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.15,
-      shadowRadius: 8,
-      elevation: 10,
-    }),
-  },
-  mobileHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#64748b', // slate-500
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  closeButton: {
-    marginLeft: 'auto',
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#f7fafc', // very light grey
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  closeButtonText: {
-    fontSize: 18,
-    color: '#4a5568', // dark grey
-    lineHeight: 20,
-    fontWeight: '400',
-  },
-  parentsRow: {
-    flexDirection: 'row',
-    gap: 24,
-  },
-  parentCol: {
-    flexShrink: 0,
-    gap: 8,
-  },
-  parentLabelA: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#4a5568', // dark grey - consistent
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    textAlign: 'center',
-  },
-  parentLabelB: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#4a5568', // dark grey - consistent
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    textAlign: 'center',
-  },
-  inputsRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 12,
-  },
-  inputGroup: {
-    alignItems: 'center',
-    gap: 4,
-  },
-  ageLabel: {
-    fontSize: 11,
-    color: '#64748b', // slate-500
-    fontWeight: '600',
-  },
-  input: {
-    width: 50, // Slightly larger for better touch target
-    paddingHorizontal: 4,
-    paddingVertical: 10, // Increased vertical padding for touch
-    fontSize: 16,
-    textAlign: 'center',
-    color: '#1a202c', // near black
-    borderWidth: 1.5,
-    borderColor: '#e2e8f0', // subtle border
-    borderRadius: 6,
-    backgroundColor: '#ffffff', // white
-  },
-  clearButton: {
-    alignSelf: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: '#ffffff', // white
-    borderRadius: 6,
-    borderWidth: 1.5,
-    borderColor: '#e2e8f0', // subtle border
-  },
-  clearButtonText: {
-    fontSize: 12,
-    color: '#5a6570', // dark grey - WCAG AA compliant (7.0:1)
-    fontWeight: '500',
-  },
 });
 
 interface CalculatorFormProps {
@@ -688,17 +514,16 @@ export function CalculatorForm({
         }
       : {};
 
-  // Adjust bottom padding: larger padding on mobile to ensure buttons stay above results card
-  // Increased to 250 to accommodate the blue results footer at the bottom (approx 200px height)
+  // Adjust bottom padding
   const contentPaddingBottom = isDesktopWeb ? 40 : 250;
 
-  // Responsive input width - sized for 8 digits (up to $99,999,999)
+  // Responsive input width
   const inputWidth = isMobile ? 160 : isDesktop ? 200 : 180;
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={[
+    <View
+      style={[
+        styles.container,
         styles.contentContainer,
         { paddingBottom: contentPaddingBottom },
         webContainerStyle,
@@ -710,11 +535,23 @@ export function CalculatorForm({
           <View style={styles.stepBadge}>
             <Text style={styles.stepBadgeText}>1</Text>
           </View>
-          <Text style={styles.sectionHeading}>INCOME</Text>
+          {/* SEO: Semantic H2 Tag */}
+          <Text
+            style={styles.sectionHeading}
+            accessibilityRole="header"
+            // @ts-ignore - Web-only prop
+            aria-level="2"
+          >
+            INCOME
+          </Text>
         </View>
 
         {/* Parent A */}
-        <View style={styles.inputGroup}>
+        <View
+          style={styles.inputGroup}
+          accessibilityRole={'group' as any} // Web-only ARIA role
+          accessibilityLabel="Parent A Income and Support Details"
+        >
           <View style={[styles.labelRow, { gap: 8 }]}>
             <Text style={styles.label}>
               <Text style={styles.parentTitleA}>Parent A</Text>
@@ -783,7 +620,11 @@ export function CalculatorForm({
         </View>
 
         {/* Parent B */}
-        <View style={[styles.inputGroup, { marginTop: 16 }]}>
+        <View
+          style={[styles.inputGroup, { marginTop: 16 }]}
+          accessibilityRole={'group' as any} // Web-only ARIA role
+          accessibilityLabel="Parent B Income and Support Details"
+        >
           <View style={styles.labelRow}>
             <Text style={styles.label}>
               <Text style={styles.parentTitleB}>Parent B</Text>
@@ -853,7 +694,13 @@ export function CalculatorForm({
             <View style={styles.stepBadge}>
               <Text style={styles.stepBadgeText}>2</Text>
             </View>
-            <Text style={[styles.sectionHeading, { marginBottom: 0 }]}>
+            {/* SEO: Semantic H2 Tag */}
+            <Text
+              style={[styles.sectionHeading, { marginBottom: 0 }]}
+              accessibilityRole="header"
+              // @ts-ignore - Web-only prop
+              aria-level="2"
+            >
               CARE
             </Text>
           </View>
@@ -908,13 +755,13 @@ export function CalculatorForm({
           <Text style={styles.resetButtonText}>Reset</Text>
         </Pressable>
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    width: '100%',
   },
   contentContainer: {
     padding: 16,

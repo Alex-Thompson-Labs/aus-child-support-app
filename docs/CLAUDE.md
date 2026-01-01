@@ -1,6 +1,35 @@
 # CLAUDE.md
 
+**Last Updated:** 2026-01-01  
+**Project Phase:** Phase 2 - Near Launch  
+**Status:** Production Ready
+
 This file provides guidance to Claude Code (claude.ai/code) and Desktop Commander when working with code in this repository.
+
+---
+
+## 📑 Table of Contents
+
+- [Quick Start Commands](#-quick-start-commands)
+- [Quick Reference](#-quick-reference)
+- [Environment Setup](#-environment-setup)
+- [Architecture Overview](#-architecture-overview)
+- [Project Structure](#-project-structure)
+- [Current Project Phase](#-current-project-phase)
+- [Documentation Structure](#-documentation-structure)
+- [Key Technical Patterns](#-key-technical-patterns)
+- [AI Assistant Guidance](#-ai-assistant-guidance)
+- [Production Code Standards](#-production-code-standards)
+- [Common Pitfalls to Avoid](#-common-pitfalls-to-avoid)
+- [When to Use Plan Mode](#-when-to-use-plan-mode-claude-code)
+- [Testing Guidelines](#-testing-guidelines)
+- [Deployment](#-deployment)
+- [Admin Access](#-admin-access)
+- [Database (Supabase)](#-database-supabase)
+- [Making Changes](#-making-changes)
+- [Troubleshooting](#-troubleshooting)
+- [Additional Resources](#-additional-resources)
+- [Success Metrics](#-success-metrics)
 
 ---
 
@@ -13,7 +42,26 @@ npx expo start --ios        # Run on iOS simulator
 npx expo start --android    # Run on Android emulator
 npx expo start --web        # Run in web browser
 npm run lint                # Run ESLint
+npm run type-check          # Verify TypeScript types
+npm run build:web           # Build for production (web)
 ```
+
+---
+
+## 🎯 Quick Reference
+
+| Task | Command | Notes |
+|------|---------|-------|
+| Start dev server | `npm start` | All platforms |
+| Test web | `npm run web` | Browser only |
+| Test iOS | `npm run ios` | Requires Xcode |
+| Test Android | `npm run android` | Requires Android Studio |
+| Build for production | `npm run build:web` | Creates `dist/` folder |
+| Run linter | `npm run lint` | Check code quality |
+| Type check | `npm run type-check` | Verify TypeScript |
+| Clear cache | `npm run dev` | Clears Expo cache |
+| Analyze bundle | `npm run build:analyze` | Bundle size analysis |
+| Run Lighthouse | `npm run lighthouse` | Performance audit |
 
 ## 🔑 Environment Setup
 
@@ -28,6 +76,31 @@ npm run lint                # Run ESLint
 **⚠️ NEVER commit `.env` to git** - It contains secrets and is in `.gitignore`
 
 **Note for new developers:** If `.env` is missing, contact the project owner for credentials.
+
+### 🗂️ .gitignore Structure
+
+The project uses a comprehensive `.gitignore` to protect sensitive business data:
+
+**Business Data (NOT tracked):**
+- `/business-docs/` - Lawyer partnerships, invoices, signed agreements
+- `/data/` - Email lists, outreach data, analytics exports
+- `*.key`, `*.pem`, `*.cert` - Security certificates
+- `secrets/`, `config/secrets.json` - API keys and credentials
+
+**Build Artifacts (NOT tracked):**
+- `dist/`, `build/`, `out/` - Generated web builds
+- `/ios`, `/android` - Generated native folders (use `npx expo prebuild` to regenerate)
+- `*.map` - Source maps
+- `.expo/`, `.expo-shared/`, `.expo-internal/` - Expo cache
+
+**Development Files (NOT tracked):**
+- `node_modules/` - Dependencies
+- `.env*` - Environment variables
+- `*.log` - Log files
+- `.DS_Store` - macOS metadata
+
+**Documentation (TRACKED in git):**
+- `docs/` - All documentation files are version controlled for team collaboration
 
 ---
 
@@ -93,14 +166,22 @@ csc/
 │   └── types/                # TypeScript definitions
 │       └── calculator.ts
 │
-├── docs/                     # Documentation
+├── docs/                     # Documentation (tracked in git)
 │   ├── BUSINESS_MODEL.md     # Revenue model details
 │   ├── DESIGN_SYSTEM.md      # UI patterns & calculation formulas
+│   ├── CLAUDE.md             # This file - AI assistant guidance
+│   ├── templates/            # Email templates for lawyer outreach
 │   └── guides/               # Implementation guides
 │       ├── active/           # Current phase guides
 │       └── old/              # Archived phase guides
 │
-└── dist/                     # Web build output (generated)
+├── business-docs/            # Business data (NOT in git - see .gitignore)
+│   └── [lawyer contacts, partnership agreements, invoices]
+│
+├── data/                     # Email lists & analytics (NOT in git)
+│   └── [lawyer emails, outreach lists, analytics exports]
+│
+└── dist/                     # Web build output (generated, not tracked)
 ```
 
 ---
@@ -265,6 +346,33 @@ All styling uses React Native StyleSheet with consistent color palette:
 - Sonnet 4.5: ~$0.01-0.05 per prompt
 - Opus 4: ~$0.10-0.50 per prompt (10x more)
 - Most tasks work perfectly with Sonnet
+
+---
+
+## ⚠️ Common Pitfalls to Avoid
+
+**Code Quality:**
+- ❌ Don't use `any` types - always define proper TypeScript interfaces
+- ❌ Don't skip error handling - production code needs try/catch blocks
+- ❌ Don't forget loading states - users need feedback
+- ❌ Don't ignore edge cases - test with null, undefined, empty strings, extreme values
+
+**Project-Specific:**
+- ❌ Don't use Tailwind CSS - this project uses React Native StyleSheet
+- ❌ Don't enable PostHog on web - it's mobile-only (Platform.OS !== 'web')
+- ❌ Don't modify `/ios` or `/android` manually - they're generated by `expo prebuild`
+- ❌ Don't use `react-native-web` specific APIs without Platform checks
+
+**Security:**
+- ❌ Don't commit `.env` files - they're gitignored for a reason
+- ❌ Don't store business data in git - use `/business-docs/` and `/data/` (gitignored)
+- ❌ Don't expose Supabase keys in client code - use `EXPO_PUBLIC_` prefix only for public keys
+- ❌ Don't hardcode admin credentials - always use environment variables
+
+**Business Logic:**
+- ❌ Don't modify calculation formulas without verifying against Services Australia documentation
+- ❌ Don't change complexity triggers without understanding business impact (affects revenue)
+- ❌ Don't alter lead submission flow without testing end-to-end
 
 ---
 
@@ -467,7 +575,18 @@ CREATE TABLE leads (
   urgency TEXT NOT NULL,
   source TEXT NOT NULL,
   status TEXT DEFAULT 'new',
-  created_at TIMESTAMP DEFAULT NOW()
+  
+  -- Complexity detection fields
+  complexity_trigger TEXT[],        -- Array: ['high_alert', 'shared_care', 'binding_agreement']
+  special_circumstances JSONB,      -- Array of reason IDs with embedded court dates
+                                    -- Example: ["court_12_Jan_2026", "high_income_earner"]
+  financial_tags JSONB,             -- High income variance indicators
+  care_data JSONB,                  -- Child care percentage data
+                                    -- Example: [{"name": "Child 1", "carePercentage": 45}]
+  
+  -- Metadata
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
@@ -505,10 +624,14 @@ CREATE TABLE leads (
 
 ### Documentation Changes
 
+**Documentation is tracked in git** - All files in `docs/` are version controlled.
+
 - Update `CLAUDE.md` for architectural changes
 - Update `DESIGN_SYSTEM.md` for UI pattern changes
 - Update `BUSINESS_MODEL.md` for business logic changes
 - Update `guides/active/REMAINING_TASKS.md` for progress tracking
+
+**Business data is NOT tracked** - Keep sensitive data in `/business-docs/` and `/data/` (gitignored)
 
 ---
 

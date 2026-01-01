@@ -32,20 +32,30 @@
     X-XSS-Protection = "1; mode=block"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "geolocation=(), microphone=(), camera=()"
-    # Content Security Policy (Updated for WordPress)
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.wordpress.com https://*.wp.com https://secure.gravatar.com; font-src 'self' data:; connect-src 'self' https://swcbcudasyiqhtkymcpy.supabase.co https://www.google-analytics.com https://public-api.wordpress.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
 
-# Redirect HTTP to HTTPS
+# ------------------------------------------------------------------------------
+# SEO: URL Normalization Rules
+# ------------------------------------------------------------------------------
+
+# 1. Redirect HTTP to HTTPS
 [[redirects]]
   from = "http://auschildsupport.com/*"
   to = "https://auschildsupport.com/:splat"
   status = 301
   force = true
 
-# Redirect www to non-www
+# 2. Redirect WWW to Non-WWW (Canonical Domain)
 [[redirects]]
   from = "https://www.auschildsupport.com/*"
   to = "https://auschildsupport.com/:splat"
+  status = 301
+  force = true
+
+# 3. Strip Trailing Slashes (Prevent Duplicate Content)
+[[redirects]]
+  from = "/*/"
+  to = "/:splat"
   status = 301
   force = true
 
@@ -55,17 +65,13 @@
 [plugins.inputs]
     buildDir = "dist"
 
-# Static site routing - Expo generates individual HTML files for each route
-# Only fallback for dynamic segments that need it
-
-# Handle dynamic admin lead pages (these have [id] in the path)
+# Static site routing fallback
 [[redirects]]
   from = "/admin/lead/*"
   to = "/admin/lead/[id].html"
   status = 200
 
-# 404 fallback - serve the not-found page for truly unknown routes
-# This comes LAST and only catches routes that don't have pre-rendered HTML
+# 404 fallback
 [[redirects]]
   from = "/*"
   to = "/+not-found.html"

@@ -26,8 +26,12 @@ export function BreakdownStepCard({
   const [isHelpHovered, setIsHelpHovered] = useState(false);
 
   const accessibilityLabel = description
-    ? `Step ${stepNumber}: ${title}. ${description}. ${isExpanded ? 'Expanded' : 'Collapsed'}. Tap to ${isExpanded ? 'collapse' : 'expand'}.`
-    : `Step ${stepNumber}: ${title}. ${isExpanded ? 'Expanded' : 'Collapsed'}. Tap to ${isExpanded ? 'collapse' : 'expand'}.`;
+    ? `Step ${stepNumber}: ${title}. ${description}. ${
+        isExpanded ? 'Expanded' : 'Collapsed'
+      }. Tap to ${isExpanded ? 'collapse' : 'expand'}.`
+    : `Step ${stepNumber}: ${title}. ${
+        isExpanded ? 'Expanded' : 'Collapsed'
+      }. Tap to ${isExpanded ? 'collapse' : 'expand'}.`;
 
   return (
     <View style={styles.step}>
@@ -43,7 +47,15 @@ export function BreakdownStepCard({
         </View>
 
         <View style={styles.titleRow}>
-          <Text style={styles.stepTitle}>{title}</Text>
+          {/* SEO: Semantic H3 Tag */}
+          <Text
+            style={styles.stepTitle}
+            accessibilityRole="header"
+            // @ts-ignore - Web-only prop
+            aria-level="3"
+          >
+            {title}
+          </Text>
           {tooltip != null && (
             <Pressable
               style={styles.headerTooltip}
