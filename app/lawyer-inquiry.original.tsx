@@ -40,6 +40,9 @@ interface FormErrors {
   consent?: string;
   courtDate?: string;
   financialTags?: string;
+  manualIncomeA?: string;
+  manualIncomeB?: string;
+  manualChildren?: string;
 }
 
 interface FormTouched {
@@ -51,7 +54,23 @@ interface FormTouched {
   consent: boolean;
   courtDate: boolean;
   financialTags: boolean;
+  manualIncomeA: boolean;
+  manualIncomeB: boolean;
+  manualChildren: boolean;
 }
+
+// ============================================================================
+// Direct Mode Reason Pre-fills
+// ============================================================================
+
+/**
+ * Pre-fill messages for direct mode based on reason parameter.
+ * Easy to extend: just add new key-value pairs.
+ */
+const REASON_PREFILLS: Record<string, string> = {
+  binding_agreement: 'I am interested in a Binding Child Support Agreement.',
+  hidden_income: 'I suspect the other parent is hiding income.',
+};
 
 // ============================================================================
 // Validation Constants & Helpers
@@ -247,6 +266,49 @@ function validateFinancialTags(
 }
 
 /**
+ * Validate manual income field (required in Direct Mode)
+ */
+function validateManualIncome(
+  income: string,
+  fieldName: string
+): string | undefined {
+  const trimmed = income.trim();
+
+  if (!trimmed) {
+    return `${fieldName} is required`;
+  }
+
+  // Strip non-digits for validation (matching calculator pattern)
+  const cleaned = trimmed.replace(/[^0-9]/g, '');
+  const num = parseInt(cleaned, 10);
+
+  if (isNaN(num) || num < 0) {
+    return 'Please enter a valid income amount';
+  }
+
+  return undefined;
+}
+
+/**
+ * Validate manual children count (required in Direct Mode)
+ */
+function validateManualChildren(children: string): string | undefined {
+  const trimmed = children.trim();
+
+  if (!trimmed) {
+    return 'Number of children is required';
+  }
+
+  const num = parseInt(trimmed, 10);
+
+  if (isNaN(num) || num < 1 || num > 20) {
+    return 'Please enter a valid number (1-20)';
+  }
+
+  return undefined;
+}
+
+/**
  * Format court date as a string for complexity_reasons array
  * Example: court_date_12_jan_2026
  */
@@ -354,9 +416,26 @@ export default function LawyerInquiryScreen() {
   const incomeB = typeof params.incomeB === 'string' ? params.incomeB : '0';
   const children = typeof params.children === 'string' ? params.children : '0';
 
-  // Parse pre-fill message from Smart Conversion Footer
-  const preFillMessage =
-    typeof params.preFillMessage === 'string' ? params.preFillMessage : '';
+  // Parse Direct Mode params
+  const mode = typeof params.mode === 'string' ? params.mode : undefined;
+  const reason = typeof params.reason === 'string' ? params.reason : undefined;
+
+  // Detect Direct Mode: explicit mode=direct OR missing calculation data
+  const isDirectMode = useMemo(() => {
+    const explicitDirect = mode === 'direct';
+    const noCalcData = liability === '0' && incomeA === '0' && incomeB === '0';
+    return explicitDirect || noCalcData;
+  }, [mode, liability, incomeA, incomeB]);
+
+  // Parse pre-fill message from Smart Conversion Footer OR reason param
+  const preFillMessage = useMemo(() => {
+    // preFillMessage param takes priority
+    if (typeof params.preFillMessage === 'string' && params.preFillMessage) {
+      return params.preFillMessage;
+    }
+    // Fall back to reason-based pre-fill
+    return REASON_PREFILLS[reason ?? ''] ?? '';
+  }, [params.preFillMessage, reason]);
 
   // Parse care arrangement data (SAFELY)
   const careData = useMemo((): {
@@ -404,6 +483,11 @@ export default function LawyerInquiryScreen() {
   const [courtDate, setCourtDate] = useState<Date | null>(null);
   const [financialTags, setFinancialTags] = useState<string[]>([]);
 
+  // Direct Mode - Manual Input State
+  const [manualIncomeA, setManualIncomeA] = useState('');
+  const [manualIncomeB, setManualIncomeB] = useState('');
+  const [manualChildren, setManualChildren] = useState('');
+
   // Validation state
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<FormTouched>({
@@ -415,6 +499,9 @@ export default function LawyerInquiryScreen() {
     consent: false,
     courtDate: false,
     financialTags: false,
+    manualIncomeA: false,
+    manualIncomeB: false,
+    manualChildren: false,
   });
 
   // Submission state
@@ -500,11 +587,23 @@ export default function LawyerInquiryScreen() {
           return validateCourtDate(value as Date | null, shouldShowCourtDate);
         case 'financialTags':
           return validateFinancialTags(financialTags, specialCircumstances);
+        case 'manualIncomeA':
+          return isDirectMode
+            ? validateManualIncome(value as string, 'Your income')
+            : undefined;
+        case 'manualIncomeB':
+          return isDirectMode
+            ? validateManualIncome(value as string, "Other parent's income")
+            : undefined;
+        case 'manualChildren':
+          return isDirectMode
+            ? validateManualChildren(value as string)
+            : undefined;
         default:
           return undefined;
       }
     },
-    [shouldShowCourtDate, financialTags, specialCircumstances]
+    [shouldShowCourtDate, financialTags, specialCircumstances, isDirectMode]
   );
 
   /**
@@ -520,6 +619,12 @@ export default function LawyerInquiryScreen() {
       consent: validateConsent(consent),
       courtDate: validateCourtDate(courtDate, shouldShowCourtDate),
       financialTags: validateFinancialTags(financialTags, specialCircumstances),
+      // Direct Mode fields - only validate when in Direct Mode
+      ...(isDirectMode && {
+        manualIncomeA: validateManualIncome(manualIncomeA, 'Your income'),
+        manualIncomeB: validateManualIncome(manualIncomeB, "Other parent's income"),
+        manualChildren: validateManualChildren(manualChildren),
+      }),
     };
 
     setErrors(newErrors);
@@ -534,6 +639,9 @@ export default function LawyerInquiryScreen() {
       consent: true,
       courtDate: true,
       financialTags: true,
+      manualIncomeA: true,
+      manualIncomeB: true,
+      manualChildren: true,
     });
 
     // Check if any errors exist
@@ -549,6 +657,10 @@ export default function LawyerInquiryScreen() {
     shouldShowCourtDate,
     financialTags,
     specialCircumstances,
+    isDirectMode,
+    manualIncomeA,
+    manualIncomeB,
+    manualChildren,
   ]);
 
   /**
@@ -585,6 +697,15 @@ export default function LawyerInquiryScreen() {
         case 'financialTags':
           value = financialTags;
           break;
+        case 'manualIncomeA':
+          value = manualIncomeA;
+          break;
+        case 'manualIncomeB':
+          value = manualIncomeB;
+          break;
+        case 'manualChildren':
+          value = manualChildren;
+          break;
       }
 
       // Pass explicit value to validateField
@@ -602,6 +723,9 @@ export default function LawyerInquiryScreen() {
       consent,
       courtDate,
       financialTags,
+      manualIncomeA,
+      manualIncomeB,
+      manualChildren,
       validateField,
     ]
   );
@@ -700,10 +824,12 @@ export default function LawyerInquiryScreen() {
 
       try {
         analytics.track('inquiry_form_submitted', {
-          trigger_type: trigger || 'unknown',
-          annual_liability: liability
-            ? Number(parseFloat(liability).toFixed(2))
-            : 0,
+          trigger_type: isDirectMode ? 'direct' : (trigger || 'unknown'),
+          is_direct_mode: isDirectMode,
+          direct_mode_reason: isDirectMode ? (reason || 'none') : 'n/a',
+          annual_liability: isDirectMode
+            ? 0
+            : (liability ? Number(parseFloat(liability).toFixed(2)) : 0),
           has_phone: !!sanitizePhone(phone),
           message_length: sanitizeString(message).length,
           time_to_submit: timeToSubmit,
@@ -739,24 +865,34 @@ export default function LawyerInquiryScreen() {
         parent_phone: sanitizePhone(phone) || null,
         location: postcode.trim() || null,
 
-        // Calculation data
-        income_parent_a: parseFloat(incomeA) || 0,
-        income_parent_b: parseFloat(incomeB) || 0,
-        children_count: parseInt(children) || 0,
-        annual_liability: parseFloat(liability) || 0,
+        // Calculation data - Use manual values in Direct Mode
+        income_parent_a: isDirectMode
+          ? parseInt(manualIncomeA.replace(/[^0-9]/g, ''), 10) || 0
+          : parseFloat(incomeA) || 0,
+        income_parent_b: isDirectMode
+          ? parseInt(manualIncomeB.replace(/[^0-9]/g, ''), 10) || 0
+          : parseFloat(incomeB) || 0,
+        children_count: isDirectMode
+          ? parseInt(manualChildren, 10) || 0
+          : parseInt(children) || 0,
+        annual_liability: isDirectMode ? 0 : parseFloat(liability) || 0,
 
-        // Care arrangement
-        care_data: careData.length > 0 ? careData : null,
+        // Care arrangement - null in Direct Mode
+        care_data: isDirectMode ? null : (careData.length > 0 ? careData : null),
 
-        // Complexity data
-        complexity_trigger: buildComplexityTriggers(
-          trigger,
-          specialCircumstances,
-          financialTags,
-          careData,
-          liability
-        ),
-        complexity_reasons: complexityReasonsWithCourtDate,
+        // Complexity data - Use 'direct_inquiry' trigger in Direct Mode
+        complexity_trigger: isDirectMode
+          ? ['direct_inquiry']
+          : buildComplexityTriggers(
+              trigger,
+              specialCircumstances,
+              financialTags,
+              careData,
+              liability
+            ),
+        complexity_reasons: isDirectMode
+          ? (reason ? [reason] : [])
+          : complexityReasonsWithCourtDate,
 
         // Dynamic lead data
         financial_tags: financialTags.length > 0 ? financialTags : null,
@@ -906,6 +1042,11 @@ export default function LawyerInquiryScreen() {
     specialCircumstances,
     postcode,
     consent,
+    isDirectMode,
+    reason,
+    manualIncomeA,
+    manualIncomeB,
+    manualChildren,
   ]);
 
   /**
@@ -985,50 +1126,146 @@ export default function LawyerInquiryScreen() {
             </View>
           )}
 
-          {/* Calculation Summary (read-only) */}
-          <View style={styles.summaryCard}>
-            <Text style={styles.summaryTitle}>Your Calculation Summary</Text>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Annual Liability:</Text>
-              <Text style={styles.summaryAmount}>
-                {formatCurrency(liability)}/year
-              </Text>
-            </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Parent A Income:</Text>
-              <Text style={styles.summaryValue}>{formatCurrency(incomeA)}</Text>
-            </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Parent B Income:</Text>
-              <Text style={styles.summaryValue}>{formatCurrency(incomeB)}</Text>
-            </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Number of Children:</Text>
-              <Text style={styles.summaryValue}>{children}</Text>
-            </View>
+          {/* Calculation Summary OR Direct Mode Manual Inputs */}
+          {!isDirectMode ? (
+            // Standard Mode: Show read-only Calculation Summary
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryTitle}>Your Calculation Summary</Text>
+              <View style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>Annual Liability:</Text>
+                <Text style={styles.summaryAmount}>
+                  {formatCurrency(liability)}/year
+                </Text>
+              </View>
+              <View style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>Parent A Income:</Text>
+                <Text style={styles.summaryValue}>{formatCurrency(incomeA)}</Text>
+              </View>
+              <View style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>Parent B Income:</Text>
+                <Text style={styles.summaryValue}>{formatCurrency(incomeB)}</Text>
+              </View>
+              <View style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>Number of Children:</Text>
+                <Text style={styles.summaryValue}>{children}</Text>
+              </View>
 
-            {/* Care Arrangement */}
-            {careData.length > 0 && (
-              <>
-                <View style={styles.summarySeparator} />
-                <Text style={styles.summarySubtitle}>Care Arrangement</Text>
-                {careData.map((child, idx) => (
-                  <View key={idx} style={styles.careRow}>
-                    <Text style={styles.careChildLabel}>Child {idx + 1}:</Text>
-                    <View style={styles.carePercentages}>
-                      <Text style={styles.careValue}>
-                        Parent A: {child.careA.toFixed(0)}%
-                      </Text>
-                      <Text style={styles.careSeparator}>•</Text>
-                      <Text style={styles.careValue}>
-                        Parent B: {child.careB.toFixed(0)}%
-                      </Text>
+              {/* Care Arrangement */}
+              {careData.length > 0 && (
+                <>
+                  <View style={styles.summarySeparator} />
+                  <Text style={styles.summarySubtitle}>Care Arrangement</Text>
+                  {careData.map((child, idx) => (
+                    <View key={idx} style={styles.careRow}>
+                      <Text style={styles.careChildLabel}>Child {idx + 1}:</Text>
+                      <View style={styles.carePercentages}>
+                        <Text style={styles.careValue}>
+                          Parent A: {child.careA.toFixed(0)}%
+                        </Text>
+                        <Text style={styles.careSeparator}>•</Text>
+                        <Text style={styles.careValue}>
+                          Parent B: {child.careB.toFixed(0)}%
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                ))}
-              </>
-            )}
-          </View>
+                  ))}
+                </>
+              )}
+            </View>
+          ) : (
+            // Direct Mode: Show manual income inputs
+            <View style={styles.directModeCard}>
+              <Text style={styles.summaryTitle}>Your Financial Information</Text>
+              <Text style={styles.directModeSubtitle}>
+                Please provide approximate income details to help the lawyer understand your situation.
+              </Text>
+
+              {/* Your Income Input */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.fieldLabel}>Your Approximate Annual Income *</Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    touched.manualIncomeA && errors.manualIncomeA && styles.inputError,
+                  ]}
+                  placeholder="e.g. 75000"
+                  placeholderTextColor="#64748b"
+                  value={manualIncomeA}
+                  onChangeText={(text) => {
+                    const val = text.replace(/[^0-9]/g, '');
+                    handleTextChange('manualIncomeA', val, setManualIncomeA);
+                  }}
+                  onBlur={() => handleBlur('manualIncomeA')}
+                  keyboardType="numeric"
+                  returnKeyType="next"
+                  editable={!isSubmitting}
+                  accessibilityLabel="Your approximate annual income"
+                  accessibilityHint="Enter your annual income before tax"
+                  {...(isWeb && { inputMode: 'numeric' as any })}
+                />
+                {touched.manualIncomeA && errors.manualIncomeA && (
+                  <Text style={styles.errorText}>{errors.manualIncomeA}</Text>
+                )}
+              </View>
+
+              {/* Other Parent's Income Input */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.fieldLabel}>Other Parent's Approximate Income *</Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    touched.manualIncomeB && errors.manualIncomeB && styles.inputError,
+                  ]}
+                  placeholder="e.g. 60000"
+                  placeholderTextColor="#64748b"
+                  value={manualIncomeB}
+                  onChangeText={(text) => {
+                    const val = text.replace(/[^0-9]/g, '');
+                    handleTextChange('manualIncomeB', val, setManualIncomeB);
+                  }}
+                  onBlur={() => handleBlur('manualIncomeB')}
+                  keyboardType="numeric"
+                  returnKeyType="next"
+                  editable={!isSubmitting}
+                  accessibilityLabel="Other parent's approximate annual income"
+                  accessibilityHint="Enter the other parent's estimated annual income"
+                  {...(isWeb && { inputMode: 'numeric' as any })}
+                />
+                {touched.manualIncomeB && errors.manualIncomeB && (
+                  <Text style={styles.errorText}>{errors.manualIncomeB}</Text>
+                )}
+              </View>
+
+              {/* Number of Children Input */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.fieldLabel}>Number of Children *</Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    touched.manualChildren && errors.manualChildren && styles.inputError,
+                  ]}
+                  placeholder="e.g. 2"
+                  placeholderTextColor="#64748b"
+                  value={manualChildren}
+                  onChangeText={(text) => {
+                    const val = text.replace(/[^0-9]/g, '');
+                    handleTextChange('manualChildren', val, setManualChildren);
+                  }}
+                  onBlur={() => handleBlur('manualChildren')}
+                  keyboardType="numeric"
+                  returnKeyType="next"
+                  maxLength={2}
+                  editable={!isSubmitting}
+                  accessibilityLabel="Number of children"
+                  accessibilityHint="Enter the number of children involved"
+                  {...(isWeb && { inputMode: 'numeric' as any })}
+                />
+                {touched.manualChildren && errors.manualChildren && (
+                  <Text style={styles.errorText}>{errors.manualChildren}</Text>
+                )}
+              </View>
+            </View>
+          )}
 
           <Text style={styles.formTitle}>Your Information</Text>
 
@@ -1433,6 +1670,21 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     borderWidth: 1,
     borderColor: '#e5e7eb', // light grey
+  },
+  // Direct Mode card styles
+  directModeCard: {
+    backgroundColor: '#f9fafb', // very light grey - matches summaryCard
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#e5e7eb', // light grey
+  },
+  directModeSubtitle: {
+    fontSize: 14,
+    color: '#6b7280', // grey-500
+    marginBottom: 16,
+    lineHeight: 20,
   },
   summaryTitle: {
     fontSize: 14,
