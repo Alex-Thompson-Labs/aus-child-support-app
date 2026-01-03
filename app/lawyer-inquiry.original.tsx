@@ -901,11 +901,20 @@ export default function LawyerInquiryScreen() {
         parent_message: (() => {
           const compiledParts: string[] = [];
 
+          // Direct Mode: Add source indicator
+          if (isDirectMode) {
+            compiledParts.push('SOURCE: Direct website inquiry');
+            if (reason) {
+              compiledParts.push(`INQUIRY TYPE: ${reason.replace(/_/g, ' ')}`);
+            }
+          }
+
           // 1. Mapped Statements: Convert Special Circumstances to first-person sentences
           if (validCircumstances.length > 0) {
+            if (compiledParts.length > 0) compiledParts.push('');
             compiledParts.push('SITUATION:');
-            validCircumstances.forEach((reason) => {
-              compiledParts.push(`- ${reason.label}`);
+            validCircumstances.forEach((r) => {
+              compiledParts.push(`- ${r.label}`);
             });
           }
 
@@ -939,7 +948,7 @@ export default function LawyerInquiryScreen() {
             compiledParts.push(userNotes);
           }
 
-          return compiledParts.length > 0 ? compiledParts.join('\n') : '';
+          return compiledParts.length > 0 ? compiledParts.join('\n') : 'Direct website inquiry';
         })(),
 
         // Privacy compliance
