@@ -1,8 +1,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Link, useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import {
   KeyboardAvoidingView,
+  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -16,9 +17,10 @@ import { useResponsive } from '../utils/responsive';
 import { shadowPresets } from '../utils/shadow-styles';
 
 // ✅ STANDARD IMPORTS (Reliable)
+import { CalculatorFAQ } from '../components/calculator/CalculatorFAQ';
 import { CalculatorForm } from '../components/CalculatorForm';
 import { CalculatorResults } from '../components/CalculatorResults';
-import { CalculatorFAQ } from '../components/calculator/CalculatorFAQ';
+import { PrivacyPolicyLink } from '../components/PrivacyPolicyLink';
 
 export function CalculatorScreen() {
   const {
@@ -142,11 +144,13 @@ export function CalculatorScreen() {
               Child Support Calculator
             </Text>
 
-            <Link href={'/blog' as any} asChild>
-              <Pressable style={styles.blogButton} accessibilityRole="button">
-                <Text style={styles.blogButtonText}>Blog</Text>
-              </Pressable>
-            </Link>
+            <Pressable
+              style={styles.blogButton}
+              accessibilityRole="button"
+              onPress={() => Linking.openURL('https://blog.auschildsupport.com')}
+            >
+              <Text style={styles.blogButtonText}>Blog</Text>
+            </Pressable>
           </View>
         </View>
 
@@ -164,6 +168,14 @@ export function CalculatorScreen() {
 
             {/* FAQ Section */}
             <CalculatorFAQ />
+
+            {/* Privacy Footer */}
+            <View style={styles.privacyFooter}>
+              <PrivacyPolicyLink
+                linkText="Privacy Policy"
+                textStyle={styles.privacyFooterText}
+              />
+            </View>
 
             {/* Bottom Padding */}
             <View style={{ height: 140 }} />
@@ -277,5 +289,15 @@ const styles = StyleSheet.create({
   },
   fullWidth: {
     width: '100%',
+  },
+  privacyFooter: {
+    marginTop: 32,
+    marginBottom: 16,
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  privacyFooterText: {
+    fontSize: 12,
+    color: '#64748b', // grey-500
   },
 });

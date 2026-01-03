@@ -63,17 +63,7 @@ coverage/
 *.pem
 *.cert
 secrets/
-config/secrets.json
-lawyer-contacts.json
-lead-data/
-analytics-keys.json
-
-# Phase 2 business data (DO NOT COMMIT)
-/business-docs
-docs/business-docs/
-
-# Email lists
-/data
+scripts/filter_lawyers.py
 
 # Analytics local data
 analytics-exports/
@@ -142,3 +132,7 @@ supabase/.temp/
 # Backup files
 *.backup
 *.bak
+
+# Python Virtual Environment
+venv/
+__pycache__/

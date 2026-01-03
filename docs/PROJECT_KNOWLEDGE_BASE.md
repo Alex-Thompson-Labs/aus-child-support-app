@@ -322,10 +322,9 @@ npm run type-check  # TypeScript validation
 
 ### **Phase Documentation**
 
-- Phase 0: Foundation ✅ (Complete)
-- Phase 1: Validation 🔄 (Current - fake door test)
-- Phase 2: Pilot (Planned - recruit 2-3 law firms)
-- Phase 3: Monetization (Planned - first paying customers)
+- Phase 1: Foundation ✅ (Complete)
+- Phase 3A: Validation 🔄 (Current - proof before pitch)
+- Phase 3B: Pilot / First Revenue (Planned)
 - Phase 4: Scale (Planned - 20+ firms, $5K-10K MRR)
 
 ---

@@ -10,7 +10,6 @@ import {
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
-  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -20,6 +19,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { PrivacyPolicyLink } from '../src/components/PrivacyPolicyLink';
 import DatePickerField from '../src/components/ui/DatePickerField';
 import { useAnalytics } from '../src/utils/analytics';
 import { MAX_FORM_WIDTH, isWeb } from '../src/utils/responsive';
@@ -30,55 +30,6 @@ import {
 } from '../src/utils/special-circumstances';
 import type { LeadSubmission } from '../src/utils/supabase';
 import { submitLead } from '../src/utils/supabase';
-
-// ============================================================================
-// URL Parameters Documentation
-// ============================================================================
-/**
- * This route component receives data via URL parameters (not React props).
- * All parameters are passed as strings and parsed within the component.
- *
- * Navigation sources:
- * - ChangeOfAssessmentPrompt.tsx
- * - CalculatorResults.tsx
- * - SmartConversionFooter.tsx
- *
- * Required parameters (always present):
- * - liability: string - Annual child support liability amount
- * - trigger: string - Complexity trigger type (e.g., "change_of_assessment", "high_value", etc.)
- * - incomeA: string - Parent A's adjusted taxable income
- * - incomeB: string - Parent B's adjusted taxable income
- * - children: string - Number of children
- *
- * Optional parameters (may be present depending on navigation source):
- * - careData: string - JSON stringified array of care arrangements
- *   Format: [{ index: number, careA: number, careB: number }, ...]
- *
- * - specialCircumstances: string - JSON stringified array of Special Circumstance IDs
- *   Format: ["reason_id_1", "reason_id_2", ...]
- *   Source: SpecialCircumstancesPrompt.tsx, CalculatorResults.tsx
- *
- * - priorityCircumstance: string - Highest priority Special Circumstance ID
- *   Source: SpecialCircumstancesPrompt.tsx only
- *
- * - complexityTriggers: string - JSON stringified array of complexity trigger types
- *   Format: ["trigger1", "trigger2", ...]
- *   Source: CalculatorResults.tsx, SmartConversionFooter.tsx
- *
- * - preFillMessage: string - Pre-filled message text for the Additional Details field
- *   Source: SmartConversionFooter.tsx only
- *
- * Parameter parsing:
- * - All numeric strings are parsed with parseFloat() or parseInt()
- * - JSON strings are parsed with JSON.parse() with try/catch error handling
- * - Missing parameters default to safe values (empty strings, null, empty arrays)
- *
- * See component code (lines 238-268) for actual parsing implementation.
- */
-
-// ============================================================================
-// Types
-// ============================================================================
 
 interface FormErrors {
   name?: string;
@@ -969,10 +920,10 @@ export default function LawyerInquiryScreen() {
   // Web-specific container styles
   const webContainerStyle = isWeb
     ? {
-        maxWidth: MAX_FORM_WIDTH,
-        width: '100%' as const,
-        alignSelf: 'center' as const,
-      }
+      maxWidth: MAX_FORM_WIDTH,
+      width: '100%' as const,
+      alignSelf: 'center' as const,
+    }
     : {};
 
   // Success overlay
@@ -1206,9 +1157,9 @@ export default function LawyerInquiryScreen() {
                         styles.chip,
                         isSelected && styles.chipActive,
                         touched.financialTags &&
-                          errors.financialTags &&
-                          !isSelected &&
-                          styles.chipError,
+                        errors.financialTags &&
+                        !isSelected &&
+                        styles.chipError,
                       ]}
                       onPress={() => {
                         let newTags;
@@ -1354,18 +1305,10 @@ export default function LawyerInquiryScreen() {
           )}
 
           {/* Privacy Policy Link */}
-          <Pressable
-            style={styles.privacyLinkContainer}
-            onPress={() => {
-              // Open Privacy Policy in browser
-              Linking.openURL(
-                'https://auschildsupport.com/privacy-policy.html'
-              );
-            }}
-            disabled={isSubmitting}
-          >
-            <Text style={styles.privacyLink}>Read our Privacy Policy</Text>
-          </Pressable>
+          <PrivacyPolicyLink
+            containerStyle={styles.privacyLinkContainer}
+            textStyle={styles.privacyLink}
+          />
 
           {/* Submit Button */}
           <Pressable
