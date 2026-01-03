@@ -2,10 +2,16 @@
   "buildCommand": "npx expo export",
   "outputDirectory": "dist",
   "framework": null,
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
     {
       "source": "/admin/lead/:id",
       "destination": "/admin/lead/[id].html"
+    },
+    {
+      "source": "/blog/:id",
+      "destination": "/blog/[id].html"
     }
   ],
   "headers": [
