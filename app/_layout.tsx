@@ -100,6 +100,12 @@ export default function RootLayout() {
             options={{ presentation: 'modal', title: 'Modal' }}
           />
           <Stack.Screen
+            name="special-circumstances"
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
             name="lawyer-inquiry"
             options={{
               presentation: 'modal',
