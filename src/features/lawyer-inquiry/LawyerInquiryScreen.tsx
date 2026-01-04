@@ -5,24 +5,24 @@
  * Acts as a thin wrapper that composes all sub-components.
  */
 
+import { isWeb, MAX_FORM_WIDTH } from '@/src/utils/responsive';
 import React from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { isWeb, MAX_FORM_WIDTH } from '@/src/utils/responsive';
-import { useRouteParams } from './hooks/useRouteParams';
 import { useInquiryForm } from './hooks/useInquiryForm';
+import { useRouteParams } from './hooks/useRouteParams';
 import { containerStyles } from './styles';
 
 // Components
-import { SuccessView } from './components/SuccessView';
+import { AdditionalDetailsSection } from './components/AdditionalDetailsSection';
+import { ConsentSection } from './components/ConsentSection';
 import { EnrichmentView } from './components/EnrichmentView';
-import { TrustBadge } from './components/TrustBadge';
+import { FinancialSection } from './components/FinancialSection';
 import { FormHeader } from './components/FormHeader';
 import { PersonalInfoSection } from './components/PersonalInfoSection';
 import { SpecialCircumstancesSection } from './components/SpecialCircumstancesSection';
-import { FinancialSection } from './components/FinancialSection';
-import { AdditionalDetailsSection } from './components/AdditionalDetailsSection';
-import { ConsentSection } from './components/ConsentSection';
+import { SuccessView } from './components/SuccessView';
+import { TrustBadge } from './components/TrustBadge';
 
 export default function LawyerInquiryScreen() {
   // Parse route parameters
@@ -45,10 +45,10 @@ export default function LawyerInquiryScreen() {
   // Web container styles
   const webContainerStyle = isWeb
     ? {
-        maxWidth: MAX_FORM_WIDTH,
-        width: '100%' as const,
-        alignSelf: 'center' as const,
-      }
+      maxWidth: MAX_FORM_WIDTH,
+      width: '100%' as const,
+      alignSelf: 'center' as const,
+    }
     : {};
 
   // Render Success View
@@ -66,6 +66,20 @@ export default function LawyerInquiryScreen() {
         isUpdating={form.isUpdatingEnrichment}
         selectedFactors={form.selectedEnrichmentFactors}
         onFactorToggle={form.handleEnrichmentFactorToggle}
+        incomes={{
+          parentA: params.isDirectMode
+            ? parseInt(form.manualIncomeA.replace(/[^0-9]/g, ''), 10) || 0
+            : parseFloat(params.incomeA) || 0,
+          parentB: params.isDirectMode
+            ? parseInt(form.manualIncomeB.replace(/[^0-9]/g, ''), 10) || 0
+            : parseFloat(params.incomeB) || 0,
+        }}
+        childrenCount={
+          params.isDirectMode
+            ? parseInt(form.manualChildren, 10) || 0
+            : parseInt(params.children) || 0
+        }
+        onLiabilityCalculated={form.setEnrichmentLiability}
       />
     );
   }

@@ -268,13 +268,15 @@ export async function submitLead(lead: LeadSubmission): Promise<{
 /**
  * Update a lead with enrichment factors (post-submission data collection)
  * Uses Postgres array concatenation to append factors without needing SELECT permission
+ * Optionally saves a calculated annual liability from the enrichment estimator
  */
 export async function updateLeadEnrichment(
   leadId: string,
-  enrichmentFactors: string[]
+  enrichmentFactors: string[],
+  annualLiability?: number
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    console.log('[Supabase] Updating lead enrichment:', { leadId, enrichmentFactors });
+    console.log('[Supabase] Updating lead enrichment:', { leadId, enrichmentFactors, annualLiability });
 
     // Lazy-load Supabase client
     const supabaseClient = await getSupabaseClient();
@@ -298,6 +300,7 @@ export async function updateLeadEnrichment(
         .from('leads')
         .update({
           complexity_reasons: enrichmentFactors,
+          ...(annualLiability !== undefined && { annual_liability: annualLiability }),
         })
         .eq('id', leadId);
 
@@ -307,6 +310,17 @@ export async function updateLeadEnrichment(
           success: false,
           error: fallbackError.message || 'Failed to update lead',
         };
+      }
+    } else if (annualLiability !== undefined) {
+      // RPC succeeded, but we still need to update the liability separately
+      const { error: liabilityError } = await supabaseClient
+        .from('leads')
+        .update({ annual_liability: annualLiability })
+        .eq('id', leadId);
+
+      if (liabilityError) {
+        console.error('[Supabase] Failed to update liability:', liabilityError);
+        // Don't fail the whole operation, enrichment factors were saved
       }
     }
 

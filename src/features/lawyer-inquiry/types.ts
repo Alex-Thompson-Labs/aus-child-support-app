@@ -5,8 +5,8 @@
  * and component props.
  */
 
-import type { TextInput } from 'react-native';
 import type { SpecialCircumstance } from '@/src/utils/special-circumstances';
+import type { TextInput } from 'react-native';
 
 // ============================================================================
 // Form State Types
@@ -162,6 +162,9 @@ export interface EnrichmentViewProps {
   isUpdating: boolean;
   selectedFactors: string[];
   onFactorToggle: (factorId: string) => void;
+  incomes: { parentA: number; parentB: number };
+  childrenCount: number;
+  onLiabilityCalculated: (amount: number) => void;
 }
 
 export interface FormHeaderProps {

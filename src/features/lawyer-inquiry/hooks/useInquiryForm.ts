@@ -4,35 +4,35 @@
  * Manages all form state, validation, and submission logic.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Platform, TextInput } from 'react-native';
-import { useRouter } from 'expo-router';
 import { useAnalytics } from '@/src/utils/analytics';
+import type { SpecialCircumstance } from '@/src/utils/special-circumstances';
 import {
   getSpecialCircumstanceById,
   isCourtDateReason,
 } from '@/src/utils/special-circumstances';
-import type { SpecialCircumstance } from '@/src/utils/special-circumstances';
-import { submitLead, updateLeadEnrichment } from '@/src/utils/supabase';
 import type { LeadSubmission } from '@/src/utils/supabase';
-import type { FormErrors, FormTouched, CareDataItem } from '../types';
+import { submitLead, updateLeadEnrichment } from '@/src/utils/supabase';
+import { useRouter } from 'expo-router';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, Platform, TextInput } from 'react-native';
 import { ENRICHMENT_INQUIRY_TYPES } from '../config';
+import type { CareDataItem, FormErrors, FormTouched } from '../types';
 import {
-  validateName,
-  validateEmail,
-  validatePhone,
-  validatePostcode,
-  validateMessage,
-  validateConsent,
-  validateCourtDate,
-  validateFinancialTags,
-  validateManualIncome,
-  validateManualChildren,
-  sanitizeString,
+  buildComplexityTriggers,
+  formatCourtDateForReasons,
   sanitizeEmail,
   sanitizePhone,
-  formatCourtDateForReasons,
-  buildComplexityTriggers,
+  sanitizeString,
+  validateConsent,
+  validateCourtDate,
+  validateEmail,
+  validateFinancialTags,
+  validateManualChildren,
+  validateManualIncome,
+  validateMessage,
+  validateName,
+  validatePhone,
+  validatePostcode,
   VALIDATION,
 } from '../validators';
 
@@ -97,6 +97,9 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     string[]
   >([]);
   const [isUpdatingEnrichment, setIsUpdatingEnrichment] = useState(false);
+
+  // Calculated liability from enrichment estimator
+  const [enrichmentLiability, setEnrichmentLiability] = useState<number | null>(null);
 
   // Refs for input focus management
   const emailRef = useRef<TextInput>(null);
@@ -456,8 +459,8 @@ export function useInquiryForm(props: UseInquiryFormProps) {
           annual_liability: props.isDirectMode
             ? 0
             : props.liability
-            ? Number(parseFloat(props.liability).toFixed(2))
-            : 0,
+              ? Number(parseFloat(props.liability).toFixed(2))
+              : 0,
           has_phone: !!sanitizePhone(phone),
           message_length: sanitizeString(message).length,
           time_to_submit: timeToSubmit,
@@ -512,12 +515,12 @@ export function useInquiryForm(props: UseInquiryFormProps) {
         complexity_trigger: props.isDirectMode
           ? ['direct_inquiry']
           : buildComplexityTriggers(
-              props.trigger,
-              props.specialCircumstances,
-              financialTags,
-              props.careData,
-              props.liability
-            ),
+            props.trigger,
+            props.specialCircumstances,
+            financialTags,
+            props.careData,
+            props.liability
+          ),
         complexity_reasons: props.isDirectMode
           ? props.reason
             ? [props.reason]
@@ -729,7 +732,8 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     try {
       const result = await updateLeadEnrichment(
         currentLeadId,
-        selectedEnrichmentFactors
+        selectedEnrichmentFactors,
+        enrichmentLiability ?? undefined
       );
 
       if (!result.success) {
@@ -777,6 +781,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     currentLeadId,
     selectedEnrichmentFactors,
     isUpdatingEnrichment,
+    enrichmentLiability,
 
     // Setters
     setName,
@@ -788,6 +793,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     setManualIncomeA,
     setManualIncomeB,
     setManualChildren,
+    setEnrichmentLiability,
     setErrors,
 
     // Refs
