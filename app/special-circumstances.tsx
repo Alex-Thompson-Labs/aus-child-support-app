@@ -180,7 +180,13 @@ export default function SpecialCircumstancesScreen() {
                 <Text style={styles.headerTitle}>Special Circumstances</Text>
                 <Pressable
                     style={styles.closeButton}
-                    onPress={() => router.back()}
+                    onPress={() => {
+                        if (router.canGoBack()) {
+                            router.back();
+                        } else {
+                            router.replace('/');
+                        }
+                    }}
                     accessible={true}
                     accessibilityRole="button"
                     accessibilityLabel="Close"

@@ -1,7 +1,9 @@
 import React, { lazy, Suspense, useState } from 'react';
 import {
   ActivityIndicator,
+  Linking,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -278,6 +280,34 @@ export function CalculatorResults({
             <Text style={styles.expandedSecondaryLabel}>/day</Text>
           </View>
         </View>
+
+        {/* SEO-friendly blog link */}
+        <View style={styles.blogLinkContainer}>
+          <Text style={styles.blogLinkText}>
+            This estimate is based on the 8-step assessment formula used by Services Australia. To understand the rules behind these steps and how they apply to your situation, read our{' '}
+            <Text
+              accessibilityRole="link"
+              style={styles.blogLink}
+              onPress={() => {
+                const url = 'https://blog.auschildsupport.com/child-support-formula-australia/';
+                if (Platform.OS === 'web') {
+                  window.open(url, '_blank');
+                } else {
+                  Linking.openURL(url);
+                }
+              }}
+              {...(Platform.OS === 'web' && {
+                // @ts-ignore - Web-only props for SEO
+                href: 'https://blog.auschildsupport.com/child-support-formula-australia/',
+                target: '_blank',
+                rel: 'noopener noreferrer',
+              })}
+            >
+              Australian Child Support Guide
+            </Text>
+            .
+          </Text>
+        </View>
       </View>
 
       <SpecialCircumstancesPrompt
@@ -547,6 +577,24 @@ const styles = StyleSheet.create({
     textDecorationColor: '#ef4444',
     textDecorationStyle: 'solid',
     opacity: 0.7,
+  },
+  blogLinkContainer: {
+    marginTop: 20,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  blogLinkText: {
+    color: '#ffffff',
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center',
+  },
+  blogLink: {
+    color: '#ffffff',
+    textDecorationLine: 'underline',
+    textDecorationColor: '#ffffff',
+    fontWeight: '500',
   },
   twoColumnLayout: { flexDirection: 'row', gap: 20 },
   leftColumn: { flex: 1 },
