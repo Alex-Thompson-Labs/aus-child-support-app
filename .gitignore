@@ -136,3 +136,4 @@ supabase/.temp/
 # Python Virtual Environment
 venv/
 __pycache__/
+.vercel

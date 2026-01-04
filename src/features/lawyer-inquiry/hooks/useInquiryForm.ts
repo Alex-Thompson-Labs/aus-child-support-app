@@ -1,0 +1,813 @@
+/**
+ * Lawyer Inquiry Feature - Form State Management Hook
+ *
+ * Manages all form state, validation, and submission logic.
+ */
+
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, Platform, TextInput } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useAnalytics } from '@/src/utils/analytics';
+import {
+  getSpecialCircumstanceById,
+  isCourtDateReason,
+} from '@/src/utils/special-circumstances';
+import type { SpecialCircumstance } from '@/src/utils/special-circumstances';
+import { submitLead, updateLeadEnrichment } from '@/src/utils/supabase';
+import type { LeadSubmission } from '@/src/utils/supabase';
+import type { FormErrors, FormTouched, CareDataItem } from '../types';
+import { ENRICHMENT_INQUIRY_TYPES } from '../config';
+import {
+  validateName,
+  validateEmail,
+  validatePhone,
+  validatePostcode,
+  validateMessage,
+  validateConsent,
+  validateCourtDate,
+  validateFinancialTags,
+  validateManualIncome,
+  validateManualChildren,
+  sanitizeString,
+  sanitizeEmail,
+  sanitizePhone,
+  formatCourtDateForReasons,
+  buildComplexityTriggers,
+  VALIDATION,
+} from '../validators';
+
+export interface UseInquiryFormProps {
+  preFillMessage: string;
+  liability: string;
+  trigger: string;
+  incomeA: string;
+  incomeB: string;
+  children: string;
+  isDirectMode: boolean;
+  reason: string | undefined;
+  careData: CareDataItem[];
+  specialCircumstances: string[] | null;
+}
+
+export function useInquiryForm(props: UseInquiryFormProps) {
+  const router = useRouter();
+  const analytics = useAnalytics();
+
+  // Form state
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [postcode, setPostcode] = useState('');
+  const [message, setMessage] = useState(props.preFillMessage);
+  const [consent, setConsent] = useState(false);
+
+  // Dynamic field state
+  const [courtDate, setCourtDate] = useState<Date | null>(null);
+  const [financialTags, setFinancialTags] = useState<string[]>([]);
+
+  // Direct Mode - Manual Input State
+  const [manualIncomeA, setManualIncomeA] = useState('');
+  const [manualIncomeB, setManualIncomeB] = useState('');
+  const [manualChildren, setManualChildren] = useState('');
+
+  // Validation state
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<FormTouched>({
+    name: false,
+    email: false,
+    phone: false,
+    postcode: false,
+    message: false,
+    consent: false,
+    courtDate: false,
+    financialTags: false,
+    manualIncomeA: false,
+    manualIncomeB: false,
+    manualChildren: false,
+  });
+
+  // Submission state
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  // Enrichment flow state (post-submission data collection)
+  const [showEnrichment, setShowEnrichment] = useState(false);
+  const [currentLeadId, setCurrentLeadId] = useState<string | null>(null);
+  const [selectedEnrichmentFactors, setSelectedEnrichmentFactors] = useState<
+    string[]
+  >([]);
+  const [isUpdatingEnrichment, setIsUpdatingEnrichment] = useState(false);
+
+  // Refs for input focus management
+  const emailRef = useRef<TextInput>(null);
+  const phoneRef = useRef<TextInput>(null);
+  const messageRef = useRef<TextInput>(null);
+
+  // Track if component is mounted to prevent state updates/navigation after unmount
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  // Capture mount timestamp for time_to_submit calculation
+  const mountTimeRef = useRef<number>(Date.now());
+
+  // Get valid Special Circumstances for display, sorted by priority
+  const validCircumstances = useMemo(() => {
+    return (props.specialCircumstances || [])
+      .map((id) => {
+        const reason = getSpecialCircumstanceById(id);
+        if (!reason) return null;
+
+        // Determine urgency based on priority (1-3 = URGENT, 4-10 = NORMAL)
+        const urgency: 'URGENT' | 'NORMAL' =
+          reason.priority <= 3 ? 'URGENT' : 'NORMAL';
+
+        return { ...reason, urgency };
+      })
+      .filter(
+        (
+          reason
+        ): reason is SpecialCircumstance & { urgency: 'URGENT' | 'NORMAL' } =>
+          reason !== null
+      )
+      .sort((a, b) => a.priority - b.priority); // Sort by priority
+  }, [props.specialCircumstances]);
+
+  // Determine if conditional fields should be shown
+  const shouldShowCourtDate = useMemo(
+    () => (props.specialCircumstances || []).some((id) => isCourtDateReason(id)),
+    [props.specialCircumstances]
+  );
+
+  const shouldShowFinancialTags = useMemo(
+    () =>
+      props.reason === 'hidden_income' ||
+      (props.specialCircumstances || []).some(
+        (id) =>
+          id === 'income_resources_not_reflected' || id === 'earning_capacity'
+      ),
+    [props.reason, props.specialCircumstances]
+  );
+
+  /**
+   * Validate a single field
+   */
+  const validateField = useCallback(
+    (
+      field: keyof FormErrors,
+      value: string | boolean | Date | null
+    ): string | undefined => {
+      switch (field) {
+        case 'name':
+          return validateName(value as string);
+        case 'email':
+          return validateEmail(value as string);
+        case 'phone':
+          return validatePhone(value as string);
+        case 'postcode':
+          return validatePostcode(value as string);
+        case 'message':
+          return validateMessage(value as string, financialTags);
+        case 'consent':
+          return validateConsent(value as boolean);
+        case 'courtDate':
+          return validateCourtDate(value as Date | null, shouldShowCourtDate);
+        case 'financialTags':
+          return validateFinancialTags(
+            financialTags,
+            props.specialCircumstances,
+            props.reason
+          );
+        case 'manualIncomeA':
+          return props.isDirectMode
+            ? validateManualIncome(value as string, 'Your income')
+            : undefined;
+        case 'manualIncomeB':
+          return props.isDirectMode
+            ? validateManualIncome(value as string, "Other parent's income")
+            : undefined;
+        case 'manualChildren':
+          return props.isDirectMode
+            ? validateManualChildren(value as string)
+            : undefined;
+        default:
+          return undefined;
+      }
+    },
+    [
+      shouldShowCourtDate,
+      financialTags,
+      props.specialCircumstances,
+      props.isDirectMode,
+      props.reason,
+    ]
+  );
+
+  /**
+   * Validate all fields and return true if form is valid
+   */
+  const validateAllFields = useCallback((): boolean => {
+    const newErrors: FormErrors = {
+      name: validateName(name),
+      email: validateEmail(email),
+      phone: validatePhone(phone),
+      postcode: validatePostcode(postcode),
+      message: validateMessage(message, financialTags),
+      consent: validateConsent(consent),
+      courtDate: validateCourtDate(courtDate, shouldShowCourtDate),
+      financialTags: validateFinancialTags(
+        financialTags,
+        props.specialCircumstances,
+        props.reason
+      ),
+      // Direct Mode fields - only validate when in Direct Mode
+      ...(props.isDirectMode && {
+        manualIncomeA: validateManualIncome(manualIncomeA, 'Your income'),
+        manualIncomeB: validateManualIncome(
+          manualIncomeB,
+          "Other parent's income"
+        ),
+        manualChildren: validateManualChildren(manualChildren),
+      }),
+    };
+
+    setErrors(newErrors);
+
+    // Mark all fields as touched
+    setTouched({
+      name: true,
+      email: true,
+      phone: true,
+      postcode: true,
+      message: true,
+      consent: true,
+      courtDate: true,
+      financialTags: true,
+      manualIncomeA: true,
+      manualIncomeB: true,
+      manualChildren: true,
+    });
+
+    // Check if any errors exist
+    return !Object.values(newErrors).some((error) => error !== undefined);
+  }, [
+    name,
+    email,
+    phone,
+    postcode,
+    message,
+    consent,
+    courtDate,
+    shouldShowCourtDate,
+    financialTags,
+    props.specialCircumstances,
+    props.reason,
+    props.isDirectMode,
+    manualIncomeA,
+    manualIncomeB,
+    manualChildren,
+  ]);
+
+  /**
+   * Handle field blur - validate and show error
+   */
+  const handleBlur = useCallback(
+    (field: keyof FormErrors) => {
+      setTouched((prev) => ({ ...prev, [field]: true }));
+
+      let value: string | boolean | Date | null | string[] = '';
+
+      switch (field) {
+        case 'name':
+          value = name;
+          break;
+        case 'email':
+          value = email;
+          break;
+        case 'phone':
+          value = phone;
+          break;
+        case 'postcode':
+          value = postcode;
+          break;
+        case 'message':
+          value = message;
+          break;
+        case 'consent':
+          value = consent;
+          break;
+        case 'courtDate':
+          value = courtDate;
+          break;
+        case 'financialTags':
+          value = financialTags;
+          break;
+        case 'manualIncomeA':
+          value = manualIncomeA;
+          break;
+        case 'manualIncomeB':
+          value = manualIncomeB;
+          break;
+        case 'manualChildren':
+          value = manualChildren;
+          break;
+      }
+
+      // Pass explicit value to validateField
+      // cast as any because validateField signature might not strictly match all types yet (like string[])
+      const error = validateField(field, value as any);
+
+      setErrors((prev) => ({ ...prev, [field]: error }));
+    },
+    [
+      name,
+      email,
+      phone,
+      postcode,
+      message,
+      consent,
+      courtDate,
+      financialTags,
+      manualIncomeA,
+      manualIncomeB,
+      manualChildren,
+      validateField,
+    ]
+  );
+
+  /**
+   * Handle court date change - validate and clear error
+   */
+  const handleCourtDateChange = useCallback(
+    (date: Date | null) => {
+      setCourtDate(date);
+
+      // Mark as touched
+      setTouched((prev) => ({ ...prev, courtDate: true }));
+
+      // Validate immediately
+      const error = validateCourtDate(date, shouldShowCourtDate);
+      setErrors((prev) => ({ ...prev, courtDate: error }));
+    },
+    [shouldShowCourtDate]
+  );
+
+  /**
+   * Handle text change - clear error when user starts typing
+   */
+  const handleTextChange = useCallback(
+    (
+      field: keyof FormErrors,
+      value: string,
+      setter: (value: string) => void
+    ) => {
+      // Enforce max length for message to prevent paste attacks
+      if (field === 'message' && value.length > VALIDATION.MESSAGE_MAX_LENGTH) {
+        value = value.slice(0, VALIDATION.MESSAGE_MAX_LENGTH);
+      }
+
+      setter(value);
+
+      // If field already has an error, re-validate immediately
+      // The error should only disappear if the new value is actually valid
+      if (touched[field] && errors[field]) {
+        const newError = validateField(field, value);
+        setErrors((prev) => ({ ...prev, [field]: newError }));
+      }
+    },
+    [touched, errors, validateField]
+  );
+
+  /**
+   * Handle consent toggle
+   */
+  const handleConsentToggle = useCallback(() => {
+    const newValue = !consent;
+    setConsent(newValue);
+
+    // Clear error when checking
+    if (newValue && errors.consent) {
+      setErrors((prev) => ({ ...prev, consent: undefined }));
+    }
+  }, [consent, errors.consent]);
+
+  /**
+   * Navigate home helper
+   */
+  const navigateHome = useCallback(() => {
+    try {
+      if (__DEV__)
+        console.log('[LawyerInquiry] Navigating home with reset trigger...');
+      router.replace({
+        pathname: '/',
+        params: { reset: 'true' },
+      });
+    } catch (error) {
+      console.error('[LawyerInquiry] Navigation error:', error);
+      router.replace('/');
+    }
+  }, [router]);
+
+  /**
+   * Handle form submission
+   */
+  const handleSubmit = useCallback(async () => {
+    // Prevent double submission
+    if (isSubmitting) {
+      return;
+    }
+
+    // Validate all fields
+    const isValid = validateAllFields();
+
+    if (!isValid) {
+      // Scroll to first error or show alert
+      if (Platform.OS === 'web') {
+        // On web, use browser alert for better compatibility
+        alert(
+          'Please fix the errors\n\nSome fields need your attention before submitting.'
+        );
+      } else {
+        Alert.alert(
+          'Please fix the errors',
+          'Some fields need your attention before submitting.'
+        );
+      }
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Track analytics BEFORE submission
+      const timeToSubmit = Math.round(
+        (Date.now() - mountTimeRef.current) / 1000
+      );
+
+      try {
+        analytics.track('inquiry_form_submitted', {
+          trigger_type: props.isDirectMode ? 'direct' : props.trigger || 'unknown',
+          is_direct_mode: props.isDirectMode,
+          direct_mode_reason: props.isDirectMode ? props.reason || 'none' : 'n/a',
+          annual_liability: props.isDirectMode
+            ? 0
+            : props.liability
+            ? Number(parseFloat(props.liability).toFixed(2))
+            : 0,
+          has_phone: !!sanitizePhone(phone),
+          message_length: sanitizeString(message).length,
+          time_to_submit: timeToSubmit,
+          // Complexity tracking properties
+          has_complexity_reasons: (props.specialCircumstances?.length ?? 0) > 0,
+          complexity_reason_count: props.specialCircumstances?.length ?? 0,
+          complexity_reason_ids: props.specialCircumstances?.join(',') ?? '',
+          has_urgent_reasons: validCircumstances.some(
+            (r) => r.urgency === 'URGENT'
+          ),
+        });
+      } catch (error) {
+        // Log but don't fail submission on analytics error
+        console.error('[LawyerInquiry] Analytics error:', error);
+      }
+
+      // Prepare complexity reasons array: remove the static trigger flag, add the real date
+      const complexityReasonsWithCourtDate = (
+        props.specialCircumstances || []
+      ).filter((id) => !isCourtDateReason(id));
+
+      if (courtDate) {
+        complexityReasonsWithCourtDate.push(
+          formatCourtDateForReasons(courtDate)
+        );
+      }
+
+      // Create lead submission for Supabase
+      const leadSubmission: LeadSubmission = {
+        // Parent contact
+        parent_name: sanitizeString(name),
+        parent_email: sanitizeEmail(email),
+        parent_phone: sanitizePhone(phone) || null,
+        location: postcode.trim() || null,
+
+        // Calculation data - Use manual values in Direct Mode
+        income_parent_a: props.isDirectMode
+          ? parseInt(manualIncomeA.replace(/[^0-9]/g, ''), 10) || 0
+          : parseFloat(props.incomeA) || 0,
+        income_parent_b: props.isDirectMode
+          ? parseInt(manualIncomeB.replace(/[^0-9]/g, ''), 10) || 0
+          : parseFloat(props.incomeB) || 0,
+        children_count: props.isDirectMode
+          ? parseInt(manualChildren, 10) || 0
+          : parseInt(props.children) || 0,
+        annual_liability: props.isDirectMode ? 0 : parseFloat(props.liability) || 0,
+
+        // Care arrangement - null in Direct Mode
+        care_data: props.isDirectMode ? null : props.careData.length > 0 ? props.careData : null,
+
+        // Complexity data - Use 'direct_inquiry' trigger in Direct Mode
+        complexity_trigger: props.isDirectMode
+          ? ['direct_inquiry']
+          : buildComplexityTriggers(
+              props.trigger,
+              props.specialCircumstances,
+              financialTags,
+              props.careData,
+              props.liability
+            ),
+        complexity_reasons: props.isDirectMode
+          ? props.reason
+            ? [props.reason]
+            : []
+          : complexityReasonsWithCourtDate,
+
+        // Dynamic lead data
+        financial_tags: financialTags.length > 0 ? financialTags : null,
+
+        // Message (compiled from Special Circumstances, financial tags, court date, and user notes)
+        parent_message: (() => {
+          const compiledParts: string[] = [];
+
+          // Direct Mode: Add source indicator
+          if (props.isDirectMode) {
+            compiledParts.push('SOURCE: Direct website inquiry');
+            if (props.reason) {
+              compiledParts.push(`INQUIRY TYPE: ${props.reason.replace(/_/g, ' ')}`);
+            }
+          }
+
+          // 1. Mapped Statements: Convert Special Circumstances to first-person sentences
+          if (validCircumstances.length > 0) {
+            if (compiledParts.length > 0) compiledParts.push('');
+            compiledParts.push('SITUATION:');
+            validCircumstances.forEach((r) => {
+              compiledParts.push(`- ${r.label}`);
+            });
+          }
+
+          // 2. High-Value Data: Court Date and Financial Tags
+          const highValueData: string[] = [];
+
+          if (courtDate) {
+            const formattedDate = courtDate.toLocaleDateString('en-AU', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+            });
+            highValueData.push(`Court Date: ${formattedDate}`);
+          }
+
+          if (financialTags.length > 0) {
+            highValueData.push(`Financial Issues: ${financialTags.join(', ')}`);
+          }
+
+          if (highValueData.length > 0) {
+            if (compiledParts.length > 0) compiledParts.push('');
+            compiledParts.push('KEY DETAILS:');
+            highValueData.forEach((item) => compiledParts.push(`- ${item}`));
+          }
+
+          // 3. User Notes: Append manual text from Additional Details field
+          const userNotes = sanitizeString(message);
+          if (userNotes) {
+            if (compiledParts.length > 0) compiledParts.push('');
+            compiledParts.push('ADDITIONAL DETAILS:');
+            compiledParts.push(userNotes);
+          }
+
+          return compiledParts.length > 0
+            ? compiledParts.join('\n')
+            : 'Direct website inquiry';
+        })(),
+
+        // Privacy compliance
+        consent_given: consent,
+
+        // Initial status
+        status: 'new',
+      };
+
+      if (__DEV__)
+        console.log('[LawyerInquiry] Submitting lead to Supabase...');
+
+      // Submit to Supabase
+      const result = await submitLead(leadSubmission);
+
+      if (!result.success) {
+        // Handle submission error
+        console.error('[LawyerInquiry] Submission failed:', result.error);
+
+        setIsSubmitting(false);
+
+        if (Platform.OS === 'web') {
+          alert(
+            'Submission Failed\n\nThere was an error submitting your inquiry. Please try again or contact us directly.'
+          );
+        } else {
+          Alert.alert(
+            'Submission Failed',
+            'There was an error submitting your inquiry. Please try again or contact us directly.'
+          );
+        }
+        return;
+      }
+
+      if (__DEV__)
+        console.log(
+          '[LawyerInquiry] Lead submitted successfully. ID:',
+          result.leadId
+        );
+
+      setIsSubmitting(false);
+
+      // Check if this inquiry type should show enrichment flow
+      const shouldShowEnrichmentFlow =
+        props.reason && ENRICHMENT_INQUIRY_TYPES.includes(props.reason);
+
+      if (shouldShowEnrichmentFlow && result.leadId) {
+        // Show enrichment view instead of navigating away
+        setCurrentLeadId(result.leadId);
+        setShowEnrichment(true);
+      } else {
+        // Standard flow: show success and navigate home
+        setShowSuccess(true);
+
+        // Navigate back after delay
+        setTimeout(() => {
+          if (!isMounted.current) return;
+
+          try {
+            if (__DEV__)
+              console.log(
+                '[LawyerInquiry] Navigating home with reset trigger...'
+              );
+            router.replace({
+              pathname: '/',
+              params: { reset: 'true' },
+            });
+          } catch (error) {
+            console.error('[LawyerInquiry] Navigation error:', error);
+            router.replace('/');
+          }
+        }, 1500);
+      }
+    } catch (error) {
+      console.error('[LawyerInquiry] Unexpected error:', error);
+
+      setIsSubmitting(false);
+
+      if (Platform.OS === 'web') {
+        alert(
+          'Unexpected Error\n\nAn unexpected error occurred. Please try again.'
+        );
+      } else {
+        Alert.alert(
+          'Unexpected Error',
+          'An unexpected error occurred. Please try again.'
+        );
+      }
+    }
+  }, [
+    isSubmitting,
+    validateAllFields,
+    name,
+    email,
+    phone,
+    message,
+    props.liability,
+    props.trigger,
+    props.incomeA,
+    props.incomeB,
+    props.children,
+    router,
+    analytics,
+    validCircumstances,
+    courtDate,
+    financialTags,
+    props.careData,
+    props.specialCircumstances,
+    postcode,
+    consent,
+    props.isDirectMode,
+    props.reason,
+    manualIncomeA,
+    manualIncomeB,
+    manualChildren,
+  ]);
+
+  /**
+   * Toggle enrichment factor selection
+   */
+  const handleEnrichmentFactorToggle = useCallback((factorId: string) => {
+    setSelectedEnrichmentFactors((prev) =>
+      prev.includes(factorId)
+        ? prev.filter((id) => id !== factorId)
+        : [...prev, factorId]
+    );
+  }, []);
+
+  /**
+   * Handle enrichment submission (Update Case File button)
+   */
+  const handleEnrichmentSubmit = useCallback(async () => {
+    if (!currentLeadId) {
+      navigateHome();
+      return;
+    }
+
+    // If no factors selected, just navigate home
+    if (selectedEnrichmentFactors.length === 0) {
+      navigateHome();
+      return;
+    }
+
+    setIsUpdatingEnrichment(true);
+
+    try {
+      const result = await updateLeadEnrichment(
+        currentLeadId,
+        selectedEnrichmentFactors
+      );
+
+      if (!result.success) {
+        console.error(
+          '[LawyerInquiry] Failed to update enrichment:',
+          result.error
+        );
+        // Still navigate home even if update fails
+      } else if (__DEV__) {
+        console.log('[LawyerInquiry] Enrichment updated successfully');
+      }
+    } catch (error) {
+      console.error('[LawyerInquiry] Error updating enrichment:', error);
+    }
+
+    setIsUpdatingEnrichment(false);
+    navigateHome();
+  }, [currentLeadId, selectedEnrichmentFactors, navigateHome]);
+
+  /**
+   * Skip enrichment and close
+   */
+  const handleSkipEnrichment = useCallback(() => {
+    navigateHome();
+  }, [navigateHome]);
+
+  return {
+    // State
+    name,
+    email,
+    phone,
+    postcode,
+    message,
+    consent,
+    courtDate,
+    financialTags,
+    manualIncomeA,
+    manualIncomeB,
+    manualChildren,
+    errors,
+    touched,
+    isSubmitting,
+    showSuccess,
+    showEnrichment,
+    currentLeadId,
+    selectedEnrichmentFactors,
+    isUpdatingEnrichment,
+
+    // Setters
+    setName,
+    setEmail,
+    setPhone,
+    setPostcode,
+    setMessage,
+    setFinancialTags,
+    setManualIncomeA,
+    setManualIncomeB,
+    setManualChildren,
+    setErrors,
+
+    // Refs
+    emailRef,
+    phoneRef,
+    messageRef,
+
+    // Computed
+    validCircumstances,
+    shouldShowCourtDate,
+    shouldShowFinancialTags,
+
+    // Handlers
+    handleBlur,
+    handleTextChange,
+    handleCourtDateChange,
+    handleConsentToggle,
+    handleSubmit,
+    handleEnrichmentFactorToggle,
+    handleEnrichmentSubmit,
+    handleSkipEnrichment,
+  };
+}
