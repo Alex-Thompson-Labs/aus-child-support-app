@@ -27,6 +27,7 @@ import type { SpecialCircumstance } from '../src/utils/special-circumstances';
 import {
   getSpecialCircumstanceById,
   isCourtDateReason,
+  SPECIAL_CIRCUMSTANCES,
 } from '../src/utils/special-circumstances';
 import type { LeadSubmission } from '../src/utils/supabase';
 import { submitLead, updateLeadEnrichment } from '../src/utils/supabase';
@@ -106,15 +107,36 @@ const DEFAULT_INQUIRY_CONFIG: InquiryTypeConfig = {
 const ENRICHMENT_INQUIRY_TYPES = ['hidden_income', 'binding_agreement'];
 
 /**
- * Available enrichment factors for post-submission collection
+ * Additional enrichment factor for court date (not in SPECIAL_CIRCUMSTANCES)
  */
-const ENRICHMENT_FACTORS = [
-  { id: 'enrichment_court_date', label: 'Upcoming court date' },
-  { id: 'enrichment_property_settlement', label: 'Property settlement pending' },
-  { id: 'enrichment_private_school', label: 'Private school fees' },
-  { id: 'enrichment_special_needs', label: 'Child has special needs' },
-  { id: 'enrichment_high_travel_costs', label: 'High contact/travel costs' },
-] as const;
+const COURT_DATE_ENRICHMENT = {
+  id: 'enrichment_court_date',
+  label: 'I have an upcoming court date for child support matters',
+};
+
+/**
+ * Get enrichment factors based on inquiry type.
+ * Excludes hidden income option when coming from hidden_income inquiry.
+ */
+function getEnrichmentFactors(inquiryType: string | undefined): Array<{ id: string; label: string }> {
+  // Start with court date option
+  const factors: Array<{ id: string; label: string }> = [COURT_DATE_ENRICHMENT];
+
+  // Add all special circumstances, filtering based on inquiry type
+  SPECIAL_CIRCUMSTANCES.forEach((circumstance) => {
+    // Skip hidden income option when inquiry is hidden_income
+    if (inquiryType === 'hidden_income' && circumstance.id === 'income_resources_not_reflected') {
+      return;
+    }
+
+    factors.push({
+      id: circumstance.id,
+      label: circumstance.label,
+    });
+  });
+
+  return factors;
+}
 
 // ============================================================================
 // Direct Mode Reason Pre-fills (Legacy - kept for backward compatibility)
@@ -1262,8 +1284,8 @@ export default function LawyerInquiryScreen() {
           </Text>
 
           {/* Checkboxes */}
-          <View style={styles.enrichmentFactorsList}>
-            {ENRICHMENT_FACTORS.map((factor) => {
+          <ScrollView style={styles.enrichmentFactorsList}>
+            {getEnrichmentFactors(reason).map((factor) => {
               const isSelected = selectedEnrichmentFactors.includes(factor.id);
               return (
                 <Pressable
@@ -1288,7 +1310,7 @@ export default function LawyerInquiryScreen() {
                 </Pressable>
               );
             })}
-          </View>
+          </ScrollView>
 
           {/* Buttons */}
           <View style={styles.enrichmentButtons}>
@@ -2298,6 +2320,7 @@ const styles = StyleSheet.create({
   },
   enrichmentFactorsList: {
     marginBottom: 32,
+    maxHeight: 350,
   },
   enrichmentFactorRow: {
     flexDirection: 'row',
