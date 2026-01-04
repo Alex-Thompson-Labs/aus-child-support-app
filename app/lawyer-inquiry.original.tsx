@@ -29,7 +29,7 @@ import {
   isCourtDateReason,
 } from '../src/utils/special-circumstances';
 import type { LeadSubmission } from '../src/utils/supabase';
-import { submitLead } from '../src/utils/supabase';
+import { submitLead, updateLeadEnrichment } from '../src/utils/supabase';
 
 interface FormErrors {
   name?: string;
@@ -95,6 +95,26 @@ const DEFAULT_INQUIRY_CONFIG: InquiryTypeConfig = {
   buttonText: 'Submit Inquiry',
   preFillMessage: '',
 };
+
+// ============================================================================
+// Enrichment Factors Configuration (Post-submission data collection)
+// ============================================================================
+
+/**
+ * Inquiry types that should show the enrichment flow after submission
+ */
+const ENRICHMENT_INQUIRY_TYPES = ['hidden_income', 'binding_agreement'];
+
+/**
+ * Available enrichment factors for post-submission collection
+ */
+const ENRICHMENT_FACTORS = [
+  { id: 'enrichment_court_date', label: 'Upcoming court date' },
+  { id: 'enrichment_property_settlement', label: 'Property settlement pending' },
+  { id: 'enrichment_private_school', label: 'Private school fees' },
+  { id: 'enrichment_special_needs', label: 'Child has special needs' },
+  { id: 'enrichment_high_travel_costs', label: 'High contact/travel costs' },
+] as const;
 
 // ============================================================================
 // Direct Mode Reason Pre-fills (Legacy - kept for backward compatibility)
@@ -556,6 +576,12 @@ export default function LawyerInquiryScreen() {
   // Submission state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+
+  // Enrichment flow state (post-submission data collection)
+  const [showEnrichment, setShowEnrichment] = useState(false);
+  const [currentLeadId, setCurrentLeadId] = useState<string | null>(null);
+  const [selectedEnrichmentFactors, setSelectedEnrichmentFactors] = useState<string[]>([]);
+  const [isUpdatingEnrichment, setIsUpdatingEnrichment] = useState(false);
 
   // Refs for input focus management
   const emailRef = useRef<TextInput>(null);
@@ -1040,31 +1066,38 @@ export default function LawyerInquiryScreen() {
           result.leadId
         );
 
-      // Show success
       setIsSubmitting(false);
-      setShowSuccess(true);
 
-      // Navigate back after delay
-      setTimeout(() => {
-        if (!isMounted.current) return;
+      // Check if this inquiry type should show enrichment flow
+      const shouldShowEnrichment = reason && ENRICHMENT_INQUIRY_TYPES.includes(reason);
 
-        try {
-          if (__DEV__)
-            console.log(
-              '[LawyerInquiry] Navigating home with reset trigger...'
-            );
-          // Force navigation to home with reset param to clear calculator state
-          // We use replace() instead of back() to ensure the state is cleared
-          router.replace({
-            pathname: '/',
-            params: { reset: 'true' },
-          });
-        } catch (error) {
-          console.error('[LawyerInquiry] Navigation error:', error);
-          // Fallback
-          router.replace('/');
-        }
-      }, 1500);
+      if (shouldShowEnrichment && result.leadId) {
+        // Show enrichment view instead of navigating away
+        setCurrentLeadId(result.leadId);
+        setShowEnrichment(true);
+      } else {
+        // Standard flow: show success and navigate home
+        setShowSuccess(true);
+
+        // Navigate back after delay
+        setTimeout(() => {
+          if (!isMounted.current) return;
+
+          try {
+            if (__DEV__)
+              console.log(
+                '[LawyerInquiry] Navigating home with reset trigger...'
+              );
+            router.replace({
+              pathname: '/',
+              params: { reset: 'true' },
+            });
+          } catch (error) {
+            console.error('[LawyerInquiry] Navigation error:', error);
+            router.replace('/');
+          }
+        }, 1500);
+      }
     } catch (error) {
       console.error('[LawyerInquiry] Unexpected error:', error);
 
@@ -1110,6 +1143,75 @@ export default function LawyerInquiryScreen() {
   ]);
 
   /**
+   * Navigate home helper
+   */
+  const navigateHome = useCallback(() => {
+    try {
+      if (__DEV__)
+        console.log('[LawyerInquiry] Navigating home with reset trigger...');
+      router.replace({
+        pathname: '/',
+        params: { reset: 'true' },
+      });
+    } catch (error) {
+      console.error('[LawyerInquiry] Navigation error:', error);
+      router.replace('/');
+    }
+  }, [router]);
+
+  /**
+   * Toggle enrichment factor selection
+   */
+  const handleEnrichmentFactorToggle = useCallback((factorId: string) => {
+    setSelectedEnrichmentFactors((prev) =>
+      prev.includes(factorId)
+        ? prev.filter((id) => id !== factorId)
+        : [...prev, factorId]
+    );
+  }, []);
+
+  /**
+   * Handle enrichment submission (Update Case File button)
+   */
+  const handleEnrichmentSubmit = useCallback(async () => {
+    if (!currentLeadId) {
+      navigateHome();
+      return;
+    }
+
+    // If no factors selected, just navigate home
+    if (selectedEnrichmentFactors.length === 0) {
+      navigateHome();
+      return;
+    }
+
+    setIsUpdatingEnrichment(true);
+
+    try {
+      const result = await updateLeadEnrichment(currentLeadId, selectedEnrichmentFactors);
+
+      if (!result.success) {
+        console.error('[LawyerInquiry] Failed to update enrichment:', result.error);
+        // Still navigate home even if update fails
+      } else if (__DEV__) {
+        console.log('[LawyerInquiry] Enrichment updated successfully');
+      }
+    } catch (error) {
+      console.error('[LawyerInquiry] Error updating enrichment:', error);
+    }
+
+    setIsUpdatingEnrichment(false);
+    navigateHome();
+  }, [currentLeadId, selectedEnrichmentFactors, navigateHome]);
+
+  /**
+   * Skip enrichment and close
+   */
+  const handleSkipEnrichment = useCallback(() => {
+    navigateHome();
+  }, [navigateHome]);
+
+  /**
    * Format currency for display
    */
   const formatCurrency = (value: string): string => {
@@ -1138,6 +1240,91 @@ export default function LawyerInquiryScreen() {
             Your inquiry has been submitted.{'\n'}A lawyer will contact you
             within 24 hours.
           </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Enrichment view (post-submission data collection)
+  if (showEnrichment) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <View style={styles.enrichmentContainer}>
+          {/* Header */}
+          <View style={styles.enrichmentHeader}>
+            <Text style={styles.enrichmentIcon}>✓</Text>
+            <Text style={styles.enrichmentTitle}>Enquiry Sent!</Text>
+          </View>
+
+          {/* Subtitle */}
+          <Text style={styles.enrichmentSubtitle}>
+            (Optional) Help the lawyer prepare by selecting any other factors that apply:
+          </Text>
+
+          {/* Checkboxes */}
+          <View style={styles.enrichmentFactorsList}>
+            {ENRICHMENT_FACTORS.map((factor) => {
+              const isSelected = selectedEnrichmentFactors.includes(factor.id);
+              return (
+                <Pressable
+                  key={factor.id}
+                  style={styles.enrichmentFactorRow}
+                  onPress={() => handleEnrichmentFactorToggle(factor.id)}
+                  disabled={isUpdatingEnrichment}
+                  accessible={true}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: isSelected }}
+                  accessibilityLabel={factor.label}
+                >
+                  <View
+                    style={[
+                      styles.enrichmentCheckbox,
+                      isSelected && styles.enrichmentCheckboxChecked,
+                    ]}
+                  >
+                    {isSelected && <Text style={styles.enrichmentCheckboxCheck}>✓</Text>}
+                  </View>
+                  <Text style={styles.enrichmentFactorLabel}>{factor.label}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          {/* Buttons */}
+          <View style={styles.enrichmentButtons}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                pressed && styles.buttonPressed,
+                isUpdatingEnrichment && styles.buttonDisabled,
+              ]}
+              onPress={handleEnrichmentSubmit}
+              disabled={isUpdatingEnrichment}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Update Case File"
+            >
+              {isUpdatingEnrichment ? (
+                <View style={styles.buttonContent}>
+                  <ActivityIndicator color="#ffffff" size="small" />
+                  <Text style={styles.buttonText}>Updating...</Text>
+                </View>
+              ) : (
+                <Text style={styles.buttonText}>Update Case File</Text>
+              )}
+            </Pressable>
+
+            <Pressable
+              style={styles.enrichmentSkipButton}
+              onPress={handleSkipEnrichment}
+              disabled={isUpdatingEnrichment}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Skip and Close"
+            >
+              <Text style={styles.enrichmentSkipButtonText}>Skip & Close</Text>
+            </Pressable>
+          </View>
         </View>
       </SafeAreaView>
     );
@@ -2081,5 +2268,78 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 16,
     lineHeight: 18,
+  },
+  // Enrichment view styles
+  enrichmentContainer: {
+    flex: 1,
+    padding: 24,
+    justifyContent: 'center',
+  },
+  enrichmentHeader: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  enrichmentIcon: {
+    fontSize: 48,
+    color: '#10b981', // emerald-500
+    marginBottom: 12,
+  },
+  enrichmentTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#1a202c', // near black
+  },
+  enrichmentSubtitle: {
+    fontSize: 15,
+    color: '#6b7280', // grey-500
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 22,
+  },
+  enrichmentFactorsList: {
+    marginBottom: 32,
+  },
+  enrichmentFactorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+  },
+  enrichmentCheckbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: '#6b7280', // grey-500
+    backgroundColor: '#ffffff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  enrichmentCheckboxChecked: {
+    backgroundColor: '#3b82f6', // blue-500
+    borderColor: '#3b82f6',
+  },
+  enrichmentCheckboxCheck: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  enrichmentFactorLabel: {
+    fontSize: 16,
+    color: '#1a202c', // near black
+    flex: 1,
+  },
+  enrichmentButtons: {
+    gap: 12,
+  },
+  enrichmentSkipButton: {
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  enrichmentSkipButtonText: {
+    fontSize: 15,
+    color: '#6b7280', // grey-500
+    fontWeight: '500',
   },
 }) as any;

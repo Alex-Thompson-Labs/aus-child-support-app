@@ -229,10 +229,12 @@ export async function submitLead(lead: LeadSubmission): Promise<{
       ...(lead.deleted_at !== undefined && { deleted_at: lead.deleted_at }),
     };
 
-    // Insert lead into database (fire and forget - no select needed)
-    const { error } = await supabaseClient
+    // Insert lead into database and return the ID
+    const { data, error } = await supabaseClient
       .from('leads')
-      .insert([sanitizedPayload]);
+      .insert([sanitizedPayload])
+      .select('id')
+      .single();
 
     if (error) {
       console.error('[Supabase] Error inserting lead:', error);
@@ -248,14 +250,70 @@ export async function submitLead(lead: LeadSubmission): Promise<{
       };
     }
 
-    console.log('[Supabase] Lead submitted successfully');
+    console.log('[Supabase] Lead submitted successfully. ID:', data?.id);
 
     return {
       success: true,
-      leadId: undefined, // ID not returned since we don't select
+      leadId: data?.id,
     };
   } catch (error) {
     console.error('[Supabase] Unexpected error submitting lead:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+    };
+  }
+}
+
+/**
+ * Update a lead with enrichment factors (post-submission data collection)
+ * Uses Postgres array concatenation to append factors without needing SELECT permission
+ */
+export async function updateLeadEnrichment(
+  leadId: string,
+  enrichmentFactors: string[]
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    console.log('[Supabase] Updating lead enrichment:', { leadId, enrichmentFactors });
+
+    // Lazy-load Supabase client
+    const supabaseClient = await getSupabaseClient();
+
+    // Use RPC to append to array (avoids needing SELECT permission)
+    // This calls a Postgres function that concatenates arrays
+    const { error: updateError } = await supabaseClient.rpc(
+      'append_complexity_reasons',
+      {
+        lead_id: leadId,
+        new_reasons: enrichmentFactors,
+      }
+    );
+
+    if (updateError) {
+      console.error('[Supabase] RPC error, falling back to direct update:', updateError);
+
+      // Fallback: Try direct update (requires UPDATE policy)
+      // This overwrites rather than appends, but at least saves the enrichment data
+      const { error: fallbackError } = await supabaseClient
+        .from('leads')
+        .update({
+          complexity_reasons: enrichmentFactors,
+        })
+        .eq('id', leadId);
+
+      if (fallbackError) {
+        console.error('[Supabase] Fallback update also failed:', fallbackError);
+        return {
+          success: false,
+          error: fallbackError.message || 'Failed to update lead',
+        };
+      }
+    }
+
+    console.log('[Supabase] Lead enrichment updated successfully. ID:', leadId);
+    return { success: true };
+  } catch (error) {
+    console.error('[Supabase] Unexpected error updating lead enrichment:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
