@@ -283,11 +283,12 @@ function validateCourtDate(
 }
 
 /**
- * Validate financial tags (required if "hiding income" reason is present)
+ * Validate financial tags (required if "hiding income" reason is present or inquiry type is 'hidden_income')
  */
 function validateFinancialTags(
   tags: string[],
-  specialCircumstances: string[] | null
+  specialCircumstances: string[] | null,
+  reason: string | undefined
 ): string | undefined {
   // Check if specialCircumstances includes 'income_resources_not_reflected'
   // This ID corresponds to "Is the other parent hiding any income..."
@@ -295,7 +296,10 @@ function validateFinancialTags(
     'income_resources_not_reflected'
   );
 
-  if (hasHidingIncomeReason && tags.length === 0) {
+  // Also require if inquiry type is 'hidden_income'
+  const isHiddenIncomeInquiry = reason === 'hidden_income';
+
+  if ((hasHidingIncomeReason || isHiddenIncomeInquiry) && tags.length === 0) {
     return 'Please select at least one financial issue type.';
   }
 
@@ -600,11 +604,12 @@ export default function LawyerInquiryScreen() {
 
   const shouldShowFinancialTags = useMemo(
     () =>
+      reason === 'hidden_income' ||
       (specialCircumstances || []).some(
         (id) =>
           id === 'income_resources_not_reflected' || id === 'earning_capacity'
       ),
-    [specialCircumstances]
+    [reason, specialCircumstances]
   );
 
   /**
@@ -631,7 +636,7 @@ export default function LawyerInquiryScreen() {
         case 'courtDate':
           return validateCourtDate(value as Date | null, shouldShowCourtDate);
         case 'financialTags':
-          return validateFinancialTags(financialTags, specialCircumstances);
+          return validateFinancialTags(financialTags, specialCircumstances, reason);
         case 'manualIncomeA':
           return isDirectMode
             ? validateManualIncome(value as string, 'Your income')
@@ -648,7 +653,7 @@ export default function LawyerInquiryScreen() {
           return undefined;
       }
     },
-    [shouldShowCourtDate, financialTags, specialCircumstances, isDirectMode]
+    [shouldShowCourtDate, financialTags, specialCircumstances, isDirectMode, reason]
   );
 
   /**
@@ -663,7 +668,7 @@ export default function LawyerInquiryScreen() {
       message: validateMessage(message, financialTags),
       consent: validateConsent(consent),
       courtDate: validateCourtDate(courtDate, shouldShowCourtDate),
-      financialTags: validateFinancialTags(financialTags, specialCircumstances),
+      financialTags: validateFinancialTags(financialTags, specialCircumstances, reason),
       // Direct Mode fields - only validate when in Direct Mode
       ...(isDirectMode && {
         manualIncomeA: validateManualIncome(manualIncomeA, 'Your income'),
@@ -702,6 +707,7 @@ export default function LawyerInquiryScreen() {
     shouldShowCourtDate,
     financialTags,
     specialCircumstances,
+    reason,
     isDirectMode,
     manualIncomeA,
     manualIncomeB,
