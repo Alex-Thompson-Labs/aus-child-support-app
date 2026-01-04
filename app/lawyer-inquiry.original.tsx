@@ -60,16 +60,53 @@ interface FormTouched {
 }
 
 // ============================================================================
-// Direct Mode Reason Pre-fills
+// Inquiry Type Configuration (Context-Aware UI)
+// ============================================================================
+
+interface InquiryTypeConfig {
+  title: string;
+  subtitle: string | null;
+  buttonText: string;
+  preFillMessage: string;
+}
+
+/**
+ * Configuration for different inquiry types based on blog post deep links.
+ * Controls title, subtitle, button text, and pre-filled message.
+ */
+const INQUIRY_TYPE_CONFIG: Record<string, InquiryTypeConfig> = {
+  hidden_income: {
+    title: 'Income Investigation Inquiry',
+    subtitle: 'Speak to a lawyer about uncovering hidden income and establishing special circumstances.',
+    buttonText: 'Check Lawyer Availability',
+    preFillMessage: 'I suspect the other parent is minimizing their taxable income. I require legal advice on establishing \'special circumstances\' to reflect their true financial capacity.',
+  },
+  binding_agreement: {
+    title: 'Binding Agreement Inquiry',
+    subtitle: 'Get legal advice on drafting, negotiating, or certifying a Binding Child Support Agreement.',
+    buttonText: 'Get Free Quote',
+    preFillMessage: 'I am interested in establishing a Binding Child Support Agreement to secure a private arrangement.',
+  },
+};
+
+const DEFAULT_INQUIRY_CONFIG: InquiryTypeConfig = {
+  title: 'Request Legal Help',
+  subtitle: null,
+  buttonText: 'Submit Inquiry',
+  preFillMessage: '',
+};
+
+// ============================================================================
+// Direct Mode Reason Pre-fills (Legacy - kept for backward compatibility)
 // ============================================================================
 
 /**
  * Pre-fill messages for direct mode based on reason parameter.
- * Easy to extend: just add new key-value pairs.
+ * @deprecated Use INQUIRY_TYPE_CONFIG instead for new implementations
  */
 const REASON_PREFILLS: Record<string, string> = {
-  binding_agreement: 'I am interested in a Binding Child Support Agreement.',
-  hidden_income: 'I suspect the other parent is hiding income.',
+  binding_agreement: INQUIRY_TYPE_CONFIG.binding_agreement.preFillMessage,
+  hidden_income: INQUIRY_TYPE_CONFIG.hidden_income.preFillMessage,
 };
 
 // ============================================================================
@@ -427,15 +464,23 @@ export default function LawyerInquiryScreen() {
     return explicitDirect || noCalcData;
   }, [mode, liability, incomeA, incomeB]);
 
-  // Parse pre-fill message from Smart Conversion Footer OR reason param
+  // Get inquiry type config based on reason param (for context-aware UI)
+  const inquiryConfig = useMemo((): InquiryTypeConfig => {
+    if (reason && INQUIRY_TYPE_CONFIG[reason]) {
+      return INQUIRY_TYPE_CONFIG[reason];
+    }
+    return DEFAULT_INQUIRY_CONFIG;
+  }, [reason]);
+
+  // Parse pre-fill message from Smart Conversion Footer OR inquiry config
   const preFillMessage = useMemo(() => {
     // preFillMessage param takes priority
     if (typeof params.preFillMessage === 'string' && params.preFillMessage) {
       return params.preFillMessage;
     }
-    // Fall back to reason-based pre-fill
-    return REASON_PREFILLS[reason ?? ''] ?? '';
-  }, [params.preFillMessage, reason]);
+    // Fall back to inquiry config pre-fill message
+    return inquiryConfig.preFillMessage;
+  }, [params.preFillMessage, inquiryConfig.preFillMessage]);
 
   // Parse care arrangement data (SAFELY)
   const careData = useMemo((): {
@@ -1098,9 +1143,20 @@ export default function LawyerInquiryScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardView}
       >
+        {/* Trust Badge */}
+        <View style={styles.trustBadge}>
+          <Text style={styles.trustBadgeIcon}>✓</Text>
+          <Text style={styles.trustBadgeText}>Verified Australian Family Law Network</Text>
+        </View>
+
         {/* Header with close button - matches Full Breakdown modal pattern */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Request Legal Help</Text>
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.headerTitle}>{inquiryConfig.title}</Text>
+            {inquiryConfig.subtitle && (
+              <Text style={styles.headerSubtitle}>{inquiryConfig.subtitle}</Text>
+            )}
+          </View>
           <Pressable
             style={styles.closeButton}
             onPress={() => {
@@ -1123,16 +1179,138 @@ export default function LawyerInquiryScreen() {
           contentContainerStyle={[styles.scrollContent, webContainerStyle]}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Special Circumstances reasons Card - Show only if reasons exist */}
+          {/* ============================================================ */}
+          {/* SECTION 1: Personal Information (Foot-in-the-Door Approach) */}
+          {/* ============================================================ */}
+          <Text style={styles.formTitle}>Your Information</Text>
+
+          {/* Name Input */}
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={[
+                styles.input,
+                touched.name && errors.name && styles.inputError,
+              ]}
+              placeholder="Your Name *"
+              placeholderTextColor="#64748b"
+              value={name}
+              onChangeText={(value) => handleTextChange('name', value, setName)}
+              onBlur={() => handleBlur('name')}
+              returnKeyType="next"
+              onSubmitEditing={() => emailRef.current?.focus()}
+              autoCapitalize="words"
+              autoComplete="name"
+              textContentType="name"
+              maxLength={VALIDATION.NAME_MAX_LENGTH}
+              editable={!isSubmitting}
+              accessibilityLabel="Your name"
+              accessibilityHint="Enter your full name"
+            />
+            {touched.name && errors.name && (
+              <Text style={styles.errorText}>{errors.name}</Text>
+            )}
+          </View>
+
+          {/* Email Input */}
+          <View style={styles.inputContainer}>
+            <TextInput
+              ref={emailRef}
+              style={[
+                styles.input,
+                touched.email && errors.email && styles.inputError,
+              ]}
+              placeholder="Email *"
+              placeholderTextColor="#64748b"
+              value={email}
+              onChangeText={(value) =>
+                handleTextChange('email', value, setEmail)
+              }
+              onBlur={() => handleBlur('email')}
+              keyboardType="email-address"
+              returnKeyType="next"
+              onSubmitEditing={() => phoneRef.current?.focus()}
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="email"
+              textContentType="emailAddress"
+              editable={!isSubmitting}
+              accessibilityLabel="Email address"
+              accessibilityHint="Enter your email address"
+            />
+            {touched.email && errors.email && (
+              <Text style={styles.errorText}>{errors.email}</Text>
+            )}
+          </View>
+
+          {/* Phone Input */}
+          <View style={styles.inputContainer}>
+            <TextInput
+              ref={phoneRef}
+              style={[
+                styles.input,
+                touched.phone && errors.phone && styles.inputError,
+              ]}
+              placeholder="Phone (optional)"
+              placeholderTextColor="#64748b"
+              value={phone}
+              onChangeText={(value) =>
+                handleTextChange('phone', value, setPhone)
+              }
+              onBlur={() => handleBlur('phone')}
+              keyboardType="phone-pad"
+              returnKeyType="next"
+              autoComplete="tel"
+              textContentType="telephoneNumber"
+              maxLength={20}
+              editable={!isSubmitting}
+              accessibilityLabel="Phone number"
+              accessibilityHint="Optional. Enter your phone number"
+            />
+            {touched.phone && errors.phone && (
+              <Text style={styles.errorText}>{errors.phone}</Text>
+            )}
+          </View>
+
+          {/* Postcode Input */}
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={[
+                styles.input,
+                touched.postcode && errors.postcode && styles.inputError,
+              ]}
+              placeholder="Postcode *"
+              placeholderTextColor="#64748b"
+              value={postcode}
+              onChangeText={(value) =>
+                handleTextChange('postcode', value, setPostcode)
+              }
+              onBlur={() => handleBlur('postcode')}
+              keyboardType="number-pad"
+              returnKeyType="next"
+              onSubmitEditing={() => messageRef.current?.focus()}
+              maxLength={4}
+              editable={!isSubmitting}
+              accessibilityLabel="Postcode"
+              accessibilityHint="Enter your 4-digit Australian postcode"
+              {...(isWeb && { inputMode: 'numeric' as any })}
+            />
+            {touched.postcode && errors.postcode && (
+              <Text style={styles.errorText}>{errors.postcode}</Text>
+            )}
+          </View>
+
+          {/* ============================================================ */}
+          {/* SECTION 2: Special Circumstances (if any) */}
+          {/* ============================================================ */}
           {validCircumstances.length > 0 && (
             <View style={styles.specialCircumstancesSection}>
-              {validCircumstances.map((reason, index) => (
-                <View key={reason.id} style={styles.specialCircumstanceCard}>
+              {validCircumstances.map((circumstance) => (
+                <View key={circumstance.id} style={styles.specialCircumstanceCard}>
                   <View style={styles.specialCircumstanceHeader}>
                     <Text style={styles.specialCircumstanceIcon}>⚠</Text>
                     <View style={styles.specialCircumstanceTextContainer}>
                       <Text style={styles.specialCircumstanceTitle}>
-                        {reason.label}
+                        {circumstance.label}
                       </Text>
                     </View>
                   </View>
@@ -1140,6 +1318,16 @@ export default function LawyerInquiryScreen() {
               ))}
             </View>
           )}
+
+          {/* ============================================================ */}
+          {/* SECTION 3: Case Eligibility Check (Financial Information) */}
+          {/* ============================================================ */}
+          <View style={styles.financialSectionHeader}>
+            <Text style={styles.lockIcon}>🔒</Text>
+            <Text style={styles.financialSectionHeaderText}>
+              Case Eligibility Check (Confidential)
+            </Text>
+          </View>
 
           {/* Calculation Summary OR Direct Mode Manual Inputs */}
           {!isDirectMode ? (
@@ -1282,108 +1470,6 @@ export default function LawyerInquiryScreen() {
             </View>
           )}
 
-          <Text style={styles.formTitle}>Your Information</Text>
-
-          {/* Court Date Input - Conditional */}
-          {shouldShowCourtDate && (
-            <DatePickerField
-              label="When is your court date? *"
-              value={courtDate}
-              onChange={handleCourtDateChange}
-              error={touched.courtDate ? errors.courtDate : undefined}
-              disabled={isSubmitting}
-            />
-          )}
-
-          {/* Name Input */}
-
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={[
-                styles.input,
-                touched.name && errors.name && styles.inputError,
-              ]}
-              placeholder="Your Name *"
-              placeholderTextColor="#64748b"
-              value={name}
-              onChangeText={(value) => handleTextChange('name', value, setName)}
-              onBlur={() => handleBlur('name')}
-              returnKeyType="next"
-              onSubmitEditing={() => emailRef.current?.focus()}
-              autoCapitalize="words"
-              autoComplete="name"
-              textContentType="name"
-              maxLength={VALIDATION.NAME_MAX_LENGTH}
-              editable={!isSubmitting}
-              accessibilityLabel="Your name"
-              accessibilityHint="Enter your full name"
-            />
-            {touched.name && errors.name && (
-              <Text style={styles.errorText}>{errors.name}</Text>
-            )}
-          </View>
-
-          {/* Email Input */}
-          <View style={styles.inputContainer}>
-            <TextInput
-              ref={emailRef}
-              style={[
-                styles.input,
-                touched.email && errors.email && styles.inputError,
-              ]}
-              placeholder="Email *"
-              placeholderTextColor="#64748b"
-              value={email}
-              onChangeText={(value) =>
-                handleTextChange('email', value, setEmail)
-              }
-              onBlur={() => handleBlur('email')}
-              keyboardType="email-address"
-              returnKeyType="next"
-              onSubmitEditing={() => phoneRef.current?.focus()}
-              autoCapitalize="none"
-              autoCorrect={false}
-              autoComplete="email"
-              textContentType="emailAddress"
-              editable={!isSubmitting}
-              accessibilityLabel="Email address"
-              accessibilityHint="Enter your email address"
-            />
-            {touched.email && errors.email && (
-              <Text style={styles.errorText}>{errors.email}</Text>
-            )}
-          </View>
-
-          {/* Phone Input */}
-          <View style={styles.inputContainer}>
-            <TextInput
-              ref={phoneRef}
-              style={[
-                styles.input,
-                touched.phone && errors.phone && styles.inputError,
-              ]}
-              placeholder="Phone (optional)"
-              placeholderTextColor="#64748b"
-              value={phone}
-              onChangeText={(value) =>
-                handleTextChange('phone', value, setPhone)
-              }
-              onBlur={() => handleBlur('phone')}
-              keyboardType="phone-pad"
-              returnKeyType="next"
-              onSubmitEditing={() => messageRef.current?.focus()}
-              autoComplete="tel"
-              textContentType="telephoneNumber"
-              maxLength={20}
-              editable={!isSubmitting}
-              accessibilityLabel="Phone number"
-              accessibilityHint="Optional. Enter your phone number"
-            />
-            {touched.phone && errors.phone && (
-              <Text style={styles.errorText}>{errors.phone}</Text>
-            )}
-          </View>
-
           {/* Financial Tags - Conditional */}
           {shouldShowFinancialTags && (
             <View style={styles.financialSection}>
@@ -1423,8 +1509,6 @@ export default function LawyerInquiryScreen() {
                         setFinancialTags(newTags);
 
                         // Clear error if selection made (and valid)
-                        // If deselecting makes it invalid, it will be caught on submit or next validation
-                        // But usually for "at least one", adding one clears error.
                         if (
                           touched.financialTags &&
                           errors.financialTags &&
@@ -1460,36 +1544,20 @@ export default function LawyerInquiryScreen() {
             </View>
           )}
 
-          {/* Postcode Input */}
-
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={[
-                styles.input,
-                touched.postcode && errors.postcode && styles.inputError,
-              ]}
-              placeholder="Postcode *"
-              placeholderTextColor="#64748b"
-              value={postcode}
-              onChangeText={(value) =>
-                handleTextChange('postcode', value, setPostcode)
-              }
-              onBlur={() => handleBlur('postcode')}
-              keyboardType="number-pad"
-              returnKeyType="next"
-              onSubmitEditing={() => messageRef.current?.focus()}
-              maxLength={4}
-              editable={!isSubmitting}
-              accessibilityLabel="Postcode"
-              accessibilityHint="Enter your 4-digit Australian postcode"
-              {...(isWeb && { inputMode: 'numeric' as any })}
+          {/* Court Date Input - Conditional */}
+          {shouldShowCourtDate && (
+            <DatePickerField
+              label="When is your court date? *"
+              value={courtDate}
+              onChange={handleCourtDateChange}
+              error={touched.courtDate ? errors.courtDate : undefined}
+              disabled={isSubmitting}
             />
-            {touched.postcode && errors.postcode && (
-              <Text style={styles.errorText}>{errors.postcode}</Text>
-            )}
-          </View>
+          )}
 
-          {/* Message Input */}
+          {/* ============================================================ */}
+          {/* SECTION 4: Additional Details */}
+          {/* ============================================================ */}
           <View style={styles.inputContainer}>
             <Text style={styles.fieldLabel}>
               Additional Details {financialTags.includes('Other') && '*'}
@@ -1524,7 +1592,9 @@ export default function LawyerInquiryScreen() {
             )}
           </View>
 
-          {/* Consent Checkbox */}
+          {/* ============================================================ */}
+          {/* SECTION 5: Consent & Submit */}
+          {/* ============================================================ */}
           <Pressable
             style={styles.checkboxContainer}
             onPress={handleConsentToggle}
@@ -1562,7 +1632,7 @@ export default function LawyerInquiryScreen() {
             textStyle={styles.privacyLink}
           />
 
-          {/* Submit Button */}
+          {/* Submit Button with Dynamic Text */}
           <Pressable
             style={({ pressed }) => [
               styles.button,
@@ -1574,7 +1644,7 @@ export default function LawyerInquiryScreen() {
             accessible={true}
             accessibilityRole="button"
             accessibilityLabel={
-              isSubmitting ? 'Submitting inquiry' : 'Submit inquiry'
+              isSubmitting ? 'Submitting inquiry' : inquiryConfig.buttonText
             }
             accessibilityState={{ disabled: isSubmitting }}
           >
@@ -1584,9 +1654,14 @@ export default function LawyerInquiryScreen() {
                 <Text style={styles.buttonText}>Submitting...</Text>
               </View>
             ) : (
-              <Text style={styles.buttonText}>Submit Inquiry</Text>
+              <Text style={styles.buttonText}>{inquiryConfig.buttonText}</Text>
             )}
           </Pressable>
+
+          {/* Confidentiality Disclaimer */}
+          <Text style={styles.disclaimer}>
+            Your financial data is strictly confidential and used only for conflict checks.
+          </Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -1607,7 +1682,7 @@ const styles = StyleSheet.create({
   // Header styles - matches Full Breakdown modal pattern
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start', // Align to top for subtitle support
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 16,
@@ -1619,7 +1694,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: '#1a202c', // near black
-    flex: 1,
   },
   closeButton: {
     width: 32,
@@ -1634,6 +1708,37 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '400',
     lineHeight: 32,
+  },
+  // Trust Badge styles
+  trustBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: '#f0fdf4', // green-50
+    borderBottomWidth: 1,
+    borderBottomColor: '#bbf7d0', // green-200
+    gap: 6,
+  },
+  trustBadgeIcon: {
+    fontSize: 14,
+    color: '#16a34a', // green-600
+  },
+  trustBadgeText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#166534', // green-800
+  },
+  // Header text container for title + subtitle
+  headerTextContainer: {
+    flex: 1,
+    gap: 4,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#6b7280', // grey-500
+    lineHeight: 20,
   },
   keyboardView: {
     flex: 1,
@@ -1677,6 +1782,24 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#1e40af', // Blue-800 - dark blue
     lineHeight: 18,
+  },
+  // Financial Section Header (Case Eligibility Check)
+  financialSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 24,
+    marginBottom: 16,
+    gap: 8,
+  },
+  financialSectionHeaderText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#4a5568', // dark grey
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  lockIcon: {
+    fontSize: 14,
   },
   summaryCard: {
     backgroundColor: '#f9fafb', // very light grey
@@ -1944,5 +2067,13 @@ const styles = StyleSheet.create({
   },
   chipTextActive: {
     color: '#ffffff',
+  },
+  // Confidentiality Disclaimer
+  disclaimer: {
+    fontSize: 12,
+    color: '#6b7280', // grey-500
+    textAlign: 'center',
+    marginTop: 16,
+    lineHeight: 18,
   },
 }) as any;
