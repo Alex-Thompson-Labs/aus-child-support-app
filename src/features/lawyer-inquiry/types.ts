@@ -165,6 +165,9 @@ export interface EnrichmentViewProps {
   incomes: { parentA: number; parentB: number };
   childrenCount: number;
   onLiabilityCalculated: (amount: number) => void;
+  // Court date for enrichment
+  enrichmentCourtDate: Date | null;
+  onEnrichmentCourtDateChange: (date: Date | null) => void;
 }
 
 export interface FormHeaderProps {

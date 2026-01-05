@@ -101,6 +101,9 @@ export function useInquiryForm(props: UseInquiryFormProps) {
   // Calculated liability from enrichment estimator
   const [enrichmentLiability, setEnrichmentLiability] = useState<number | null>(null);
 
+  // Court date for enrichment flow
+  const [enrichmentCourtDate, setEnrichmentCourtDate] = useState<Date | null>(null);
+
   // Refs for input focus management
   const emailRef = useRef<TextInput>(null);
   const phoneRef = useRef<TextInput>(null);
@@ -729,10 +732,22 @@ export function useInquiryForm(props: UseInquiryFormProps) {
 
     setIsUpdatingEnrichment(true);
 
+    // Process factors - replace enrichment_court_date with dated version if date selected
+    const processedFactors = selectedEnrichmentFactors.map((factor) => {
+      if (factor === 'enrichment_court_date' && enrichmentCourtDate) {
+        // Format: enrichment_court_date_DD_MMM_YYYY (e.g., enrichment_court_date_12_feb_2026)
+        const day = enrichmentCourtDate.getDate();
+        const month = enrichmentCourtDate.toLocaleString('en-AU', { month: 'short' }).toLowerCase();
+        const year = enrichmentCourtDate.getFullYear();
+        return `enrichment_court_date_${day}_${month}_${year}`;
+      }
+      return factor;
+    });
+
     try {
       const result = await updateLeadEnrichment(
         currentLeadId,
-        selectedEnrichmentFactors,
+        processedFactors,
         enrichmentLiability ?? undefined
       );
 
@@ -751,7 +766,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
 
     setIsUpdatingEnrichment(false);
     navigateHome();
-  }, [currentLeadId, selectedEnrichmentFactors, navigateHome]);
+  }, [currentLeadId, selectedEnrichmentFactors, enrichmentCourtDate, navigateHome]);
 
   /**
    * Skip enrichment and close
@@ -782,6 +797,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     selectedEnrichmentFactors,
     isUpdatingEnrichment,
     enrichmentLiability,
+    enrichmentCourtDate,
 
     // Setters
     setName,
@@ -794,6 +810,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     setManualIncomeB,
     setManualChildren,
     setEnrichmentLiability,
+    setEnrichmentCourtDate,
     setErrors,
 
     // Refs

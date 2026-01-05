@@ -80,6 +80,8 @@ export default function LawyerInquiryScreen() {
             : parseInt(params.children) || 0
         }
         onLiabilityCalculated={form.setEnrichmentLiability}
+        enrichmentCourtDate={form.enrichmentCourtDate}
+        onEnrichmentCourtDateChange={form.setEnrichmentCourtDate}
       />
     );
   }

@@ -12,10 +12,12 @@ import {
   type Child,
 } from '@/src/utils/child-support-calculations';
 import { SSA } from '@/src/utils/child-support-constants';
+import { isWeb } from '@/src/utils/responsive';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -23,8 +25,9 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getEnrichmentFactors } from '../config';
+import { getEnrichmentFactors, COURT_DATE_ENRICHMENT } from '../config';
 import {
   buttonStyles,
   containerStyles,
@@ -42,9 +45,13 @@ export function EnrichmentView({
   incomes,
   childrenCount,
   onLiabilityCalculated,
+  enrichmentCourtDate,
+  onEnrichmentCourtDateChange,
 }: EnrichmentViewProps) {
   // Calculator state
   const [showCalculator, setShowCalculator] = useState(false);
+  // Mobile date picker state
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [careDays, setCareDays] = useState('');
   const [childAges, setChildAges] = useState<('Under 13' | '13+')[]>([]);
   const [calculatedLiability, setCalculatedLiability] = useState<number | null>(null);
@@ -127,6 +134,53 @@ export function EnrichmentView({
     }).format(amount);
   };
 
+  // Format date for display
+  const formatDisplayDate = (date: Date): string => {
+    return date.toLocaleDateString('en-AU', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  };
+
+  // Convert Date to YYYY-MM-DD string for HTML input
+  const dateToInputValue = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Handle web date input change
+  const handleWebDateChange = (event: any) => {
+    const inputValue = event.target.value;
+    if (!inputValue) {
+      onEnrichmentCourtDateChange(null);
+      return;
+    }
+    const date = new Date(inputValue);
+    if (!isNaN(date.getTime())) {
+      onEnrichmentCourtDateChange(date);
+    }
+  };
+
+  // Handle native date picker change
+  const handleNativeDateChange = (event: any, selectedDate?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
+    if (event.type === 'set' && selectedDate) {
+      onEnrichmentCourtDateChange(selectedDate);
+    } else if (event.type === 'dismissed') {
+      if (Platform.OS === 'ios') {
+        setShowDatePicker(false);
+      }
+    }
+  };
+
+  // Check if court date factor is selected
+  const isCourtDateSelected = selectedFactors.includes(COURT_DATE_ENRICHMENT.id);
+
   return (
     <SafeAreaView style={containerStyles.container} edges={['top', 'bottom']}>
       <View style={enrichmentStyles.enrichmentContainer}>
@@ -184,33 +238,97 @@ export function EnrichmentView({
         <ScrollView style={enrichmentStyles.enrichmentFactorsList}>
           {getEnrichmentFactors(reason).map((factor) => {
             const isSelected = selectedFactors.includes(factor.id);
+            const isCourtDateFactor = factor.id === COURT_DATE_ENRICHMENT.id;
             return (
-              <Pressable
-                key={factor.id}
-                style={enrichmentStyles.enrichmentFactorRow}
-                onPress={() => onFactorToggle(factor.id)}
-                disabled={isUpdating}
-                accessible={true}
-                accessibilityRole="checkbox"
-                accessibilityState={{ checked: isSelected }}
-                accessibilityLabel={factor.label}
-              >
-                <View
-                  style={[
-                    enrichmentStyles.enrichmentCheckbox,
-                    isSelected && enrichmentStyles.enrichmentCheckboxChecked,
-                  ]}
+              <View key={factor.id}>
+                <Pressable
+                  style={enrichmentStyles.enrichmentFactorRow}
+                  onPress={() => onFactorToggle(factor.id)}
+                  disabled={isUpdating}
+                  accessible={true}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: isSelected }}
+                  accessibilityLabel={factor.label}
                 >
-                  {isSelected && (
-                    <Text style={enrichmentStyles.enrichmentCheckboxCheck}>
-                      ✓
-                    </Text>
-                  )}
-                </View>
-                <Text style={enrichmentStyles.enrichmentFactorLabel}>
-                  {factor.label}
-                </Text>
-              </Pressable>
+                  <View
+                    style={[
+                      enrichmentStyles.enrichmentCheckbox,
+                      isSelected && enrichmentStyles.enrichmentCheckboxChecked,
+                    ]}
+                  >
+                    {isSelected && (
+                      <Text style={enrichmentStyles.enrichmentCheckboxCheck}>
+                        ✓
+                      </Text>
+                    )}
+                  </View>
+                  <Text style={enrichmentStyles.enrichmentFactorLabel}>
+                    {factor.label}
+                  </Text>
+                </Pressable>
+
+                {/* Court Date Picker - shown when court date factor is selected */}
+                {isCourtDateFactor && isSelected && (
+                  <View style={datePickerStyles.container}>
+                    {isWeb ? (
+                      // Web: Native HTML date input
+                      <input
+                        type="date"
+                        value={enrichmentCourtDate ? dateToInputValue(enrichmentCourtDate) : ''}
+                        onChange={handleWebDateChange}
+                        disabled={isUpdating}
+                        style={{
+                          backgroundColor: '#ffffff',
+                          color: enrichmentCourtDate ? '#1a202c' : '#9ca3af',
+                          borderRadius: '8px',
+                          padding: '12px',
+                          borderWidth: '1.5px',
+                          borderStyle: 'solid',
+                          borderColor: '#e2e8f0',
+                          fontSize: '16px',
+                          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                          width: '100%',
+                          boxSizing: 'border-box',
+                          outline: 'none',
+                          cursor: isUpdating ? 'not-allowed' : 'pointer',
+                          opacity: isUpdating ? 0.6 : 1,
+                        }}
+                        aria-label="Select court date"
+                      />
+                    ) : (
+                      // Mobile: Pressable that opens native picker
+                      <>
+                        <Pressable
+                          style={datePickerStyles.input}
+                          onPress={() => !isUpdating && setShowDatePicker(true)}
+                          disabled={isUpdating}
+                        >
+                          <Text
+                            style={[
+                              datePickerStyles.inputText,
+                              !enrichmentCourtDate && datePickerStyles.inputPlaceholder,
+                            ]}
+                          >
+                            {enrichmentCourtDate
+                              ? formatDisplayDate(enrichmentCourtDate)
+                              : 'Select date'}
+                          </Text>
+                        </Pressable>
+                        {showDatePicker && (
+                          <DateTimePicker
+                            value={enrichmentCourtDate || new Date()}
+                            mode="date"
+                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                            onChange={handleNativeDateChange}
+                            minimumDate={new Date()}
+                            maximumDate={new Date(2099, 11, 31)}
+                          />
+                        )}
+                      </>
+                    )}
+                  </View>
+                )}
+              </View>
             );
           })}
         </ScrollView>
@@ -514,5 +632,30 @@ const estimatorStyles = StyleSheet.create({
     fontSize: 15,
     color: '#6b7280', // grey-500
     fontWeight: '500',
+  },
+});
+
+// Styles for the date picker
+const datePickerStyles = StyleSheet.create({
+  container: {
+    marginLeft: 36, // Align with checkbox label
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  input: {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    padding: 12,
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0',
+    justifyContent: 'center',
+    minHeight: 48,
+  },
+  inputText: {
+    fontSize: 16,
+    color: '#1a202c',
+  },
+  inputPlaceholder: {
+    color: '#9ca3af', // grey-400 - lighter placeholder
   },
 });

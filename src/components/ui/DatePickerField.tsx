@@ -1,6 +1,6 @@
+import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { isWeb } from '../../utils/responsive';
 
 // ============================================================================
@@ -104,6 +104,9 @@ export default function DatePickerField({
   // Web Rendering (Native HTML input type="date")
   // ========================================================================
   if (isWeb) {
+    // Use lighter grey for placeholder (no value), dark for actual date
+    const textColor = value ? '#1a202c' : '#9ca3af';
+
     return (
       <View style={styles.container}>
         <Text style={styles.label}>{label}</Text>
@@ -114,14 +117,15 @@ export default function DatePickerField({
           disabled={disabled}
           style={{
             backgroundColor: '#ffffff',
-            color: '#1a202c',
+            color: textColor,
             borderRadius: '8px',
             padding: '12px',
             borderWidth: '1.5px',
             borderStyle: 'solid',
             borderColor: error ? '#ef4444' : '#e2e8f0',
             fontSize: '16px',
-            fontFamily: 'inherit',
+            fontFamily:
+              '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
             width: '100%',
             boxSizing: 'border-box',
             outline: 'none',
