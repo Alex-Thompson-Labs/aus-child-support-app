@@ -554,8 +554,7 @@ export function CalculatorForm({
         >
           <View style={[styles.labelRow, { gap: 8 }]}>
             <Text style={styles.label}>
-              <Text style={styles.parentTitleA}>Parent A</Text>
-              <Text> - Adjusted Taxable Income</Text>
+              <Text style={styles.parentTitleA}>Your Income</Text>
             </Text>
             <HelpTooltip
               what="A parent's ATI includes:
@@ -627,8 +626,7 @@ export function CalculatorForm({
         >
           <View style={styles.labelRow}>
             <Text style={styles.label}>
-              <Text style={styles.parentTitleB}>Parent B</Text>
-              <Text> - Adjusted Taxable Income</Text>
+              <Text style={styles.parentTitleB}>Other Parent's Income</Text>
             </Text>
           </View>
           <View style={styles.inputRow}>

@@ -257,7 +257,7 @@ export function EnrichmentView({
 
               <View style={estimatorStyles.inputGroup}>
                 <Text style={estimatorStyles.inputLabel}>
-                  How many nights per fortnight does Parent A have the children?
+                  How many nights per fortnight do you have the children?
                 </Text>
                 <TextInput
                   style={estimatorStyles.textInput}

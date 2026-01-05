@@ -72,13 +72,13 @@ export function FinancialSection({
             </Text>
           </View>
           <View style={financialStyles.summaryRow}>
-            <Text style={financialStyles.summaryLabel}>Parent A Income:</Text>
+            <Text style={financialStyles.summaryLabel}>Your Income:</Text>
             <Text style={financialStyles.summaryValue}>
               {formatCurrency(incomeA)}
             </Text>
           </View>
           <View style={financialStyles.summaryRow}>
-            <Text style={financialStyles.summaryLabel}>Parent B Income:</Text>
+            <Text style={financialStyles.summaryLabel}>Other Parent's Income:</Text>
             <Text style={financialStyles.summaryValue}>
               {formatCurrency(incomeB)}
             </Text>
@@ -102,11 +102,11 @@ export function FinancialSection({
                   </Text>
                   <View style={financialStyles.carePercentages}>
                     <Text style={financialStyles.careValue}>
-                      Parent A: {child.careA.toFixed(0)}%
+                      You: {child.careA.toFixed(0)}%
                     </Text>
                     <Text style={financialStyles.careSeparator}>•</Text>
                     <Text style={financialStyles.careValue}>
-                      Parent B: {child.careB.toFixed(0)}%
+                      Other Parent: {child.careB.toFixed(0)}%
                     </Text>
                   </View>
                 </View>

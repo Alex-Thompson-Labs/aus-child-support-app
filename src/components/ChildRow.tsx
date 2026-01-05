@@ -99,7 +99,7 @@ export function ChildRow({
           <View
             style={[styles.itemWrapper, isMobile && styles.parentItemMobile]}
           >
-            <Text style={styles.headerLabelA}>PARENT A</Text>
+            <Text style={styles.headerLabelA}>YOU</Text>
             <TextInput
               style={[
                 styles.careInput,
@@ -111,8 +111,8 @@ export function ChildRow({
               keyboardType="number-pad"
               maxLength={5}
               placeholderTextColor="#64748b"
-              accessibilityLabel="Parent A nights of care"
-              accessibilityHint="Enter number of nights child stays with Parent A"
+              accessibilityLabel="Your nights of care"
+              accessibilityHint="Enter number of nights child stays with you"
               {...(isWeb && { inputMode: 'numeric' as any })}
             />
           </View>
@@ -121,7 +121,7 @@ export function ChildRow({
           <View
             style={[styles.itemWrapper, isMobile && styles.parentItemMobile]}
           >
-            <Text style={styles.headerLabelB}>PARENT B</Text>
+            <Text style={styles.headerLabelB}>OTHER PARENT</Text>
             <TextInput
               style={[
                 styles.careInput,
@@ -133,8 +133,8 @@ export function ChildRow({
               keyboardType="number-pad"
               maxLength={5}
               placeholderTextColor="#64748b"
-              accessibilityLabel="Parent B nights of care"
-              accessibilityHint="Enter number of nights child stays with Parent B"
+              accessibilityLabel="Other parent's nights of care"
+              accessibilityHint="Enter number of nights child stays with other parent"
               {...(isWeb && { inputMode: 'numeric' as any })}
             />
           </View>

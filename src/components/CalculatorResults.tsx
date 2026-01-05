@@ -164,6 +164,14 @@ export function CalculatorResults({
   const insets = useSafeAreaInsets();
   const { isWeb } = useResponsive();
 
+  // Helper function to map payer values to user-friendly text
+  const getPayerText = (payer: string): string => {
+    if (payer === 'Parent A') return 'You pay';
+    if (payer === 'Parent B') return 'Other parent pays';
+    if (payer === 'Neither') return 'No payment required';
+    return payer; // Fallback
+  };
+
   const isInlineMode = displayMode === 'inline';
 
   // Track local form data updates (selected Special Circumstances)
@@ -233,9 +241,7 @@ export function CalculatorResults({
       {/* Hero Section in Expanded View */}
       <View style={styles.expandedHeroSection}>
         <Text style={styles.expandedHeroLabel}>
-          {results.payer === 'Neither'
-            ? 'No payment required'
-            : `${results.payer} pays`}
+          {getPayerText(results.payer)}
         </Text>
         <Text
           style={[styles.expandedHeroAmount, isStale && styles.staleAmount]}
@@ -402,9 +408,7 @@ export function CalculatorResults({
             <View style={styles.collapsedContent}>
               <View style={styles.collapsedSummaryRow}>
                 <Text style={styles.collapsedLabel}>
-                  {results.payer === 'Neither'
-                    ? 'No payment'
-                    : `${results.payer} pays `}
+                  {getPayerText(results.payer)}
                 </Text>
                 <Text
                   style={[

@@ -93,20 +93,20 @@ export function CalculationSummaryCard({
           </View>
         )}
 
-        {/* Parent A Income */}
+        {/* Your Income */}
         <View style={styles.row}>
           <Text style={isDetailed ? styles.labelDetailed : styles.labelCompact}>
-            {isDetailed ? 'Parent A Income:' : 'Parent A Income'}
+            {isDetailed ? 'Your Income:' : 'Your Income'}
           </Text>
           <Text style={isDetailed ? styles.valueDetailed : styles.valueCompact}>
             {formatCurrency(incomeAValue)}
           </Text>
         </View>
 
-        {/* Parent B Income */}
+        {/* Other Parent's Income */}
         <View style={styles.row}>
           <Text style={isDetailed ? styles.labelDetailed : styles.labelCompact}>
-            {isDetailed ? 'Parent B Income:' : 'Parent B Income'}
+            {isDetailed ? "Other Parent's Income:" : "Other Parent's Income"}
           </Text>
           <Text style={isDetailed ? styles.valueDetailed : styles.valueCompact}>
             {formatCurrency(incomeBValue)}

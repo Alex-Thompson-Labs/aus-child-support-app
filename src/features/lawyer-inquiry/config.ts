@@ -106,7 +106,7 @@ export function getEnrichmentFactors(
     }
 
     factors.push({
-      id: circumstance.id,
+      id: `enrichment_${circumstance.id}`,
       label: circumstance.label,
     });
   });

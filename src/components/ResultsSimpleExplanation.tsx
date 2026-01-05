@@ -65,7 +65,7 @@ export function ResultsSimpleExplanation({
 
           <View style={styles.deductionCards}>
             {/* Parent A - Using Wrapper Pattern */}
-            <ParentComparisonCard title="PARENT A">
+            <ParentComparisonCard title="YOU">
               <View style={styles.deductionRow}>
                 <Text style={styles.deductionLabel}>
                   Adjusted taxable income
@@ -100,7 +100,7 @@ export function ResultsSimpleExplanation({
             </ParentComparisonCard>
 
             {/* Parent B - Using Wrapper Pattern */}
-            <ParentComparisonCard title="PARENT B">
+            <ParentComparisonCard title="OTHER PARENT">
               <View style={styles.deductionRow}>
                 <Text style={styles.deductionLabel}>
                   Adjusted taxable income
@@ -156,13 +156,13 @@ export function ResultsSimpleExplanation({
 
           <View style={styles.combinedIncomeCalculation}>
             <View style={styles.combinedIncomeRow}>
-              <Text style={styles.combinedIncomeLabel}>Parent A CS Income</Text>
+              <Text style={styles.combinedIncomeLabel}>Your CS Income</Text>
               <Text style={styles.combinedIncomeValue}>
                 {formatCurrency(Math.max(0, results.CSI_A))}
               </Text>
             </View>
             <View style={styles.combinedIncomeRow}>
-              <Text style={styles.combinedIncomeLabel}>Parent B CS Income</Text>
+              <Text style={styles.combinedIncomeLabel}>Other Parent's CS Income</Text>
               <Text style={styles.combinedIncomeValue}>
                 {formatCurrency(Math.max(0, results.CSI_B))}
               </Text>
@@ -198,7 +198,7 @@ export function ResultsSimpleExplanation({
 
           <View style={styles.incomePercentageCalculation}>
             <ParentComparisonCard
-              title="PARENT A"
+              title="YOU"
               formula={`${formatCurrency(
                 Math.max(0, results.CSI_A)
               )} ÷ ${formatCurrency(results.CCSI)} = ${formatPercent2dp(
@@ -206,7 +206,7 @@ export function ResultsSimpleExplanation({
               )}`}
             />
             <ParentComparisonCard
-              title="PARENT B"
+              title="OTHER PARENT"
               formula={`${formatCurrency(
                 Math.max(0, results.CSI_B)
               )} ÷ ${formatCurrency(results.CCSI)} = ${formatPercent2dp(
@@ -217,7 +217,7 @@ export function ResultsSimpleExplanation({
 
           <View style={styles.incomeComparison}>
             <Text style={styles.careHeaderLabel}>
-              <Text style={{ color: '#4a5568' }}>PARENT A</Text> -{' '}
+              <Text style={{ color: '#4a5568' }}>YOU</Text> -{' '}
               <Text style={{ color: '#4a5568' }}>
                 {formatPercent2dp(results.incomePercA)}
               </Text>
@@ -229,7 +229,7 @@ export function ResultsSimpleExplanation({
             />
 
             <Text style={[styles.careHeaderLabel, { textAlign: 'right' }]}>
-              <Text style={{ color: '#4a5568' }}>PARENT B</Text> -{' '}
+              <Text style={{ color: '#4a5568' }}>OTHER PARENT</Text> -{' '}
               <Text style={{ color: '#4a5568' }}>
                 {formatPercent2dp(results.incomePercB)}
               </Text>
@@ -269,7 +269,7 @@ export function ResultsSimpleExplanation({
 
             <View style={styles.careComparison}>
               <Text style={styles.careHeaderLabel}>
-                <Text style={{ color: '#4a5568' }}>PARENT A</Text> -{' '}
+                <Text style={{ color: '#4a5568' }}>YOU</Text> -{' '}
                 <Text style={{ color: '#4a5568' }}>
                   {formatPercent2dp(child.roundedCareA)}
                 </Text>
@@ -281,7 +281,7 @@ export function ResultsSimpleExplanation({
               />
 
               <Text style={[styles.careHeaderLabel, { textAlign: 'right' }]}>
-                <Text style={{ color: '#4a5568' }}>PARENT B</Text> -{' '}
+                <Text style={{ color: '#4a5568' }}>OTHER PARENT</Text> -{' '}
                 <Text style={{ color: '#4a5568' }}>
                   {formatPercent2dp(child.roundedCareB)}
                 </Text>
@@ -385,12 +385,12 @@ export function ResultsSimpleExplanation({
             >
               <View style={styles.conversionCards}>
                 <ParentComparisonCard
-                  title="PARENT A"
+                  title="YOU"
                   careValue={formatPercent2dp(child.roundedCareA)}
                   costValue={formatPercent2dp(child.costPercA)}
                 />
                 <ParentComparisonCard
-                  title="PARENT B"
+                  title="OTHER PARENT"
                   careValue={formatPercent2dp(child.roundedCareB)}
                   costValue={formatPercent2dp(child.costPercB)}
                 />
@@ -433,7 +433,7 @@ export function ResultsSimpleExplanation({
             <View style={styles.gapCalculation}>
               <View style={styles.gapCards}>
                 <GapAnalysisCard
-                  label="PARENT A"
+                  label="YOU"
                   incomePercent={results.incomePercA}
                   costPercent={child.costPercA}
                   csPercent={child.childSupportPercA}
@@ -445,7 +445,7 @@ export function ResultsSimpleExplanation({
                   formatCurrency={formatCurrency}
                 />
                 <GapAnalysisCard
-                  label="PARENT B"
+                  label="OTHER PARENT"
                   incomePercent={results.incomePercB}
                   costPercent={child.costPercB}
                   csPercent={child.childSupportPercB}
