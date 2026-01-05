@@ -20,27 +20,13 @@ interface DatePickerFieldProps {
 // ============================================================================
 
 /**
- * Format date as "DD MMM YYYY" (e.g., "31 Dec 2025")
+ * Format date as "DD/MM/YYYY" (Australian format, e.g., "31/12/2025")
  */
 function formatDisplayDate(date: Date): string {
-  const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
-  const day = date.getDate();
-  const month = months[date.getMonth()];
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
-  return `${day} ${month} ${year}`;
+  return `${day}/${month}/${year}`;
 }
 
 /**
@@ -101,7 +87,7 @@ export default function DatePickerField({
   };
 
   // ========================================================================
-  // Web Rendering (Native HTML input type="date")
+  // Web Rendering (Hidden date input + visible DD/MM/YYYY display)
   // ========================================================================
   if (isWeb) {
     // Use lighter grey for placeholder (no value), dark for actual date
@@ -110,32 +96,48 @@ export default function DatePickerField({
     return (
       <View style={styles.container}>
         <Text style={styles.label}>{label}</Text>
-        <input
-          type="date"
-          value={value ? dateToInputValue(value) : ''}
-          onChange={handleWebChange}
-          disabled={disabled}
-          style={{
-            backgroundColor: '#ffffff',
-            color: textColor,
-            borderRadius: '8px',
-            padding: '12px',
-            borderWidth: '1.5px',
-            borderStyle: 'solid',
-            borderColor: error ? '#ef4444' : '#e2e8f0',
-            fontSize: '16px',
-            fontFamily:
-              '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-            width: '100%',
-            boxSizing: 'border-box',
-            outline: 'none',
-            cursor: disabled ? 'not-allowed' : 'pointer',
-            opacity: disabled ? 0.6 : 1,
-          }}
-          aria-label={label}
-          aria-invalid={!!error}
-          aria-describedby={error ? 'date-error' : undefined}
-        />
+        <div style={{ position: 'relative', width: '100%' }}>
+          {/* Hidden native date input for picker functionality */}
+          <input
+            type="date"
+            value={value ? dateToInputValue(value) : ''}
+            onChange={handleWebChange}
+            disabled={disabled}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              opacity: 0,
+              cursor: disabled ? 'not-allowed' : 'pointer',
+            }}
+            aria-label={label}
+            aria-invalid={!!error}
+            aria-describedby={error ? 'date-error' : undefined}
+          />
+          {/* Visible display showing DD/MM/YYYY format */}
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              color: textColor,
+              borderRadius: '8px',
+              padding: '12px',
+              borderWidth: '1.5px',
+              borderStyle: 'solid',
+              borderColor: error ? '#ef4444' : '#e2e8f0',
+              fontSize: '16px',
+              fontFamily:
+                '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+              width: '100%',
+              boxSizing: 'border-box',
+              pointerEvents: 'none',
+              opacity: disabled ? 0.6 : 1,
+            }}
+          >
+            {value ? formatDisplayDate(value) : 'dd/mm/yyyy'}
+          </div>
+        </div>
         {error && (
           <Text style={styles.errorText} nativeID="date-error">
             {error}

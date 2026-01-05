@@ -134,13 +134,12 @@ export function EnrichmentView({
     }).format(amount);
   };
 
-  // Format date for display
+  // Format date for display (DD/MM/YYYY - Australian format)
   const formatDisplayDate = (date: Date): string => {
-    return date.toLocaleDateString('en-AU', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    });
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
   // Convert Date to YYYY-MM-DD string for HTML input
@@ -271,30 +270,48 @@ export function EnrichmentView({
                 {isCourtDateFactor && isSelected && (
                   <View style={datePickerStyles.container}>
                     {isWeb ? (
-                      // Web: Native HTML date input
-                      <input
-                        type="date"
-                        value={enrichmentCourtDate ? dateToInputValue(enrichmentCourtDate) : ''}
-                        onChange={handleWebDateChange}
-                        disabled={isUpdating}
-                        style={{
-                          backgroundColor: '#ffffff',
-                          color: enrichmentCourtDate ? '#1a202c' : '#9ca3af',
-                          borderRadius: '8px',
-                          padding: '12px',
-                          borderWidth: '1.5px',
-                          borderStyle: 'solid',
-                          borderColor: '#e2e8f0',
-                          fontSize: '16px',
-                          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-                          width: '100%',
-                          boxSizing: 'border-box',
-                          outline: 'none',
-                          cursor: isUpdating ? 'not-allowed' : 'pointer',
-                          opacity: isUpdating ? 0.6 : 1,
-                        }}
-                        aria-label="Select court date"
-                      />
+                      // Web: Hidden date input + visible formatted display (DD/MM/YYYY)
+                      <div style={{ position: 'relative', width: '100%' }}>
+                        {/* Hidden native date input for picker functionality */}
+                        <input
+                          type="date"
+                          value={enrichmentCourtDate ? dateToInputValue(enrichmentCourtDate) : ''}
+                          onChange={handleWebDateChange}
+                          disabled={isUpdating}
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            opacity: 0,
+                            cursor: isUpdating ? 'not-allowed' : 'pointer',
+                          }}
+                          aria-label="Select court date"
+                        />
+                        {/* Visible display showing DD/MM/YYYY format */}
+                        <div
+                          style={{
+                            backgroundColor: '#ffffff',
+                            color: enrichmentCourtDate ? '#1a202c' : '#9ca3af',
+                            borderRadius: '8px',
+                            padding: '12px',
+                            borderWidth: '1.5px',
+                            borderStyle: 'solid',
+                            borderColor: '#e2e8f0',
+                            fontSize: '16px',
+                            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                            width: '100%',
+                            boxSizing: 'border-box',
+                            pointerEvents: 'none',
+                            opacity: isUpdating ? 0.6 : 1,
+                          }}
+                        >
+                          {enrichmentCourtDate
+                            ? formatDisplayDate(enrichmentCourtDate)
+                            : 'dd/mm/yyyy'}
+                        </div>
+                      </div>
                     ) : (
                       // Mobile: Pressable that opens native picker
                       <>
