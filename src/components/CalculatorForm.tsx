@@ -200,13 +200,13 @@ function RelevantDependentsPopover({
               isMobile && { flexWrap: 'wrap', gap: 16 }, // Wrap inputs on mobile
             ]}
           >
-            {/* Parent A */}
+            {/* You */}
             <View
               style={popoverStyles.drawerInputGroup}
               accessibilityRole={'group' as any} // Web-only ARIA role
-              accessibilityLabel="Parent A Dependents"
+              accessibilityLabel="Your Dependents"
             >
-              <Text style={popoverStyles.drawerParentLabel}>A</Text>
+              <Text style={popoverStyles.drawerParentLabel}>YOU</Text>
               <View style={popoverStyles.drawerAgeInputs}>
                 <View style={popoverStyles.drawerAgeGroup}>
                   <Text style={popoverStyles.drawerAgeLabel}>&lt;13</Text>
@@ -219,8 +219,8 @@ function RelevantDependentsPopover({
                       })
                     }
                     keyboardType="numeric"
-                    accessibilityLabel="Parent A dependents under 13"
-                    accessibilityHint="Number of relevant dependent children under 13 for Parent A"
+                    accessibilityLabel="Your dependents under 13"
+                    accessibilityHint="Number of relevant dependent children under 13 for you"
                   />
                 </View>
                 <View style={popoverStyles.drawerAgeGroup}>
@@ -234,8 +234,8 @@ function RelevantDependentsPopover({
                       })
                     }
                     keyboardType="numeric"
-                    accessibilityLabel="Parent A dependents 13 and over"
-                    accessibilityHint="Number of relevant dependent children 13 and over for Parent A"
+                    accessibilityLabel="Your dependents 13 and over"
+                    accessibilityHint="Number of relevant dependent children 13 and over for you"
                   />
                 </View>
               </View>
@@ -244,13 +244,13 @@ function RelevantDependentsPopover({
             {/* Separator - Hide on mobile if wrapped */}
             {!isMobile && <View style={popoverStyles.drawerSeparator} />}
 
-            {/* Parent B */}
+            {/* Other Parent */}
             <View
               style={popoverStyles.drawerInputGroup}
               accessibilityRole={'group' as any} // Web-only ARIA role
-              accessibilityLabel="Parent B Dependents"
+              accessibilityLabel="Other Parent's Dependents"
             >
-              <Text style={popoverStyles.drawerParentLabel}>B</Text>
+              <Text style={popoverStyles.drawerParentLabel}>OTHER PARENT</Text>
               <View style={popoverStyles.drawerAgeInputs}>
                 <View style={popoverStyles.drawerAgeGroup}>
                   <Text style={popoverStyles.drawerAgeLabel}>&lt;13</Text>
@@ -263,8 +263,8 @@ function RelevantDependentsPopover({
                       })
                     }
                     keyboardType="numeric"
-                    accessibilityLabel="Parent B dependents under 13"
-                    accessibilityHint="Number of relevant dependent children under 13 for Parent B"
+                    accessibilityLabel="Other parent's dependents under 13"
+                    accessibilityHint="Number of relevant dependent children under 13 for other parent"
                   />
                 </View>
                 <View style={popoverStyles.drawerAgeGroup}>
@@ -278,8 +278,8 @@ function RelevantDependentsPopover({
                       })
                     }
                     keyboardType="numeric"
-                    accessibilityLabel="Parent B dependents 13 and over"
-                    accessibilityHint="Number of relevant dependent children 13 and over for Parent B"
+                    accessibilityLabel="Other parent's dependents 13 and over"
+                    accessibilityHint="Number of relevant dependent children 13 and over for other parent"
                   />
                 </View>
               </View>
@@ -385,9 +385,9 @@ const popoverStyles = StyleSheet.create({
     flexShrink: 1, // Allow shrinking
   },
   drawerInputGroup: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
-    gap: 8,
+    gap: 4,
   },
   drawerParentLabel: {
     fontSize: 11,
