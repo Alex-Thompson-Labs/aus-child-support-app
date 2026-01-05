@@ -5,7 +5,7 @@ import type {
   ChildInput,
   FormErrors,
   RelevantDependents,
-} from '../types/calculator';
+} from '../utils/calculator';
 import {
   convertCareToPercentage,
   getChildCost,

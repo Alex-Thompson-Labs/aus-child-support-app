@@ -205,7 +205,9 @@ export function CalculatorForm({
         >
           <View style={styles.labelRow}>
             <Text style={styles.label}>
-              <Text style={styles.parentTitleB}>Other Parent's Income</Text>
+              <Text style={styles.parentTitleB}>
+                Other Parent&apos;s Income
+              </Text>
             </Text>
           </View>
           <View style={styles.inputRow}>

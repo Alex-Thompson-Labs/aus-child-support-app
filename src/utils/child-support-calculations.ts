@@ -5,7 +5,7 @@ import {
   ChildCountKey,
 } from './cost-of-children-tables';
 import type { AssessmentYear } from './child-support-constants';
-import type { CostBracketInfo } from '../types/calculator';
+import type { CostBracketInfo } from './calculator';
 
 export interface Child {
   age: 'Under 13' | '13+';

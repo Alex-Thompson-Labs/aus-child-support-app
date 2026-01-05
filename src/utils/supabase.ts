@@ -300,7 +300,7 @@ export async function updateLeadEnrichment(
         .from('leads')
         .update({
           complexity_reasons: enrichmentFactors,
-          ...(annualLiability !== undefined && { annual_liability: annualLiability }),
+          ...(annualLiability !== undefined && { enrichment_annual_liability: annualLiability }),
         })
         .eq('id', leadId);
 
@@ -315,7 +315,7 @@ export async function updateLeadEnrichment(
       // RPC succeeded, but we still need to update the liability separately
       const { error: liabilityError } = await supabaseClient
         .from('leads')
-        .update({ annual_liability: annualLiability })
+        .update({ enrichment_annual_liability: annualLiability })
         .eq('id', leadId);
 
       if (liabilityError) {

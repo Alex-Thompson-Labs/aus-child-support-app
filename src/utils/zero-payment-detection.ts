@@ -1,4 +1,4 @@
-import type { CalculationResults } from '../types/calculator';
+import type { CalculationResults } from '../utils/calculator';
 import { MAX_PPS } from './child-support-constants';
 
 /**

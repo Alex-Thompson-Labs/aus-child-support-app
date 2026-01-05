@@ -4,7 +4,7 @@
 // This detects when calculations indicate high-value cases
 // that should trigger "Get Legal Help" prompts
 
-import type { CalculationResults, ChildInput } from '../types/calculator';
+import type { CalculationResults, ChildInput } from '../utils/calculator';
 import { convertCareToPercentage } from './child-support-calculations';
 import {
   getHighestPriorityReason,

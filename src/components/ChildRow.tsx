@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import type { ChildInput } from '../types/calculator';
+import type { ChildInput } from '../utils/calculator';
 import { CARE_PERIOD_DAYS } from '../utils/child-support-constants';
 import {
   isWeb,

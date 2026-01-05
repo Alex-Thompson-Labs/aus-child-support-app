@@ -8,7 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import type { CalculationResults } from '../types/calculator';
+import type { CalculationResults } from '../utils/calculator';
 import { useAnalytics } from '../utils/analytics';
 import type { ComplexityFormData } from '../utils/complexity-detection';
 import { isWeb, webClickableStyles } from '../utils/responsive';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import type { CalculationResults } from '../../types/calculator';
+import type { CalculationResults } from '../../utils/calculator';
 import { formatCurrency } from '../../utils/formatters';
 import { isFarLimitReached } from '../../utils/zero-payment-detection';
 

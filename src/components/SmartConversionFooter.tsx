@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import ReactGA from 'react-ga4';
-import type { CalculationResults } from '../types/calculator';
+import type { CalculationResults } from '../utils/calculator';
 import type { ComplexityFormData } from '../utils/complexity-detection';
 import { shadowPresets } from '../utils/shadow-styles';
 import { useResponsive } from '../utils/responsive';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import type { CalculationResults } from '../../types/calculator';
+import type { CalculationResults } from '../../utils/calculator';
 import { detectZeroPaymentScenario } from '../../utils/zero-payment-detection';
 
 interface ZeroPaymentScenarioProps {

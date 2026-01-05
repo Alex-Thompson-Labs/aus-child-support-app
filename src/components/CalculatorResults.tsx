@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import type { CalculationResults } from '../types/calculator';
+import type { CalculationResults } from '../utils/calculator';
 import type { ComplexityFormData } from '../utils/complexity-detection';
 import { formatCurrency } from '../utils/formatters';
 import { MAX_MODAL_WIDTH, useResponsive } from '../utils/responsive';
@@ -176,7 +176,11 @@ export function CalculatorResults({
   const [lastResultsKey, setLastResultsKey] = useState('');
 
   // Generate a unique key for the current results
-  const currentResultsKey = `${results.finalPaymentAmount}-${results.payer}-${results.childResults.map((c) => `${c.roundedCareA}-${c.roundedCareB}`).join('-')}-${results.ATI_A}-${results.ATI_B}`;
+  const currentResultsKey = `${results.finalPaymentAmount}-${
+    results.payer
+  }-${results.childResults
+    .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
+    .join('-')}-${results.ATI_A}-${results.ATI_B}`;
 
   // Update formData when results change, but preserve selected CoA reasons
   React.useEffect(() => {
@@ -228,7 +232,11 @@ export function CalculatorResults({
       <ResultsHero results={results} isStale={isStale} variant="modal" />
 
       <SpecialCircumstancesPrompt
-        key={`${results.finalPaymentAmount}-${results.payer}-${results.childResults.map((c) => `${c.roundedCareA}-${c.roundedCareB}`).join('-')}-${results.ATI_A}-${results.ATI_B}`}
+        key={`${results.finalPaymentAmount}-${
+          results.payer
+        }-${results.childResults
+          .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
+          .join('-')}-${results.ATI_A}-${results.ATI_B}`}
         results={results}
         formData={localFormData}
         onNavigate={() => setIsExpanded(false)}
@@ -300,7 +308,13 @@ export function CalculatorResults({
             { paddingBottom: Math.max(insets.bottom, 12) },
           ]}
           accessibilityRole="button"
-          accessibilityLabel={`${results.payer === 'Neither' ? 'No payment required' : `${results.payer} pays ${formatCurrency(results.finalPaymentAmount)} per year`}. Tap to view full breakdown`}
+          accessibilityLabel={`${
+            results.payer === 'Neither'
+              ? 'No payment required'
+              : `${results.payer} pays ${formatCurrency(
+                  results.finalPaymentAmount
+                )} per year`
+          }. Tap to view full breakdown`}
           accessibilityHint="Opens detailed calculation breakdown"
         >
           <View

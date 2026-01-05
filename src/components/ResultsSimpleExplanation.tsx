@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
-import type { CalculationResults } from '../types/calculator';
+import type { CalculationResults } from '../utils/calculator';
 import { formatCurrency } from '../utils/formatters';
 import { AnnualRateBreakdown } from './breakdown/AnnualRateBreakdown';
 import { COST_PERCENTAGE_TABLE } from './breakdown/constants';

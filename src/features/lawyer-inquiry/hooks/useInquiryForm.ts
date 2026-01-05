@@ -724,8 +724,8 @@ export function useInquiryForm(props: UseInquiryFormProps) {
       return;
     }
 
-    // If no factors selected, just navigate home
-    if (selectedEnrichmentFactors.length === 0) {
+    // If no factors selected and no liability calculated, just navigate home
+    if (selectedEnrichmentFactors.length === 0 && enrichmentLiability === null) {
       navigateHome();
       return;
     }
