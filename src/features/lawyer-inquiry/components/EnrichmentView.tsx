@@ -48,6 +48,7 @@ export function EnrichmentView({
   const [careDays, setCareDays] = useState('');
   const [childAges, setChildAges] = useState<('Under 13' | '13+')[]>([]);
   const [calculatedLiability, setCalculatedLiability] = useState<number | null>(null);
+  const [payerLabel, setPayerLabel] = useState<string>('');
 
   // Initialize child ages when modal opens
   const handleOpenCalculator = () => {
@@ -103,8 +104,13 @@ export function EnrichmentView({
     let liability: number;
     if (parentALiability > 0) {
       liability = Math.round(parentALiability);
-    } else {
+      setPayerLabel('You pay');
+    } else if (parentALiability < 0) {
       liability = -Math.round(parentBLiability);
+      setPayerLabel('Other Parent pays');
+    } else {
+      liability = 0;
+      setPayerLabel('No payment required');
     }
 
     setCalculatedLiability(Math.abs(liability));
@@ -145,6 +151,9 @@ export function EnrichmentView({
             </Text>
             {calculatedLiability !== null ? (
               <View style={estimatorStyles.resultContainer}>
+                <Text style={estimatorStyles.payerLabel}>
+                  {payerLabel}
+                </Text>
                 <Text style={estimatorStyles.resultAmount}>
                   {formatCurrency(calculatedLiability)}/yr
                 </Text>
@@ -380,6 +389,12 @@ const estimatorStyles = StyleSheet.create({
   },
   resultContainer: {
     alignItems: 'center',
+  },
+  payerLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+    color: '#1e40af', // blue-800
   },
   resultAmount: {
     fontSize: 28,
