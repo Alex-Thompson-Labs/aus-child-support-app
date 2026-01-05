@@ -1,9 +1,7 @@
 import React, { lazy, Suspense, useState } from 'react';
 import {
   ActivityIndicator,
-  Linking,
   Modal,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -16,6 +14,7 @@ import type { ComplexityFormData } from '../utils/complexity-detection';
 import { formatCurrency } from '../utils/formatters';
 import { MAX_MODAL_WIDTH, useResponsive } from '../utils/responsive';
 import { shadowPresets } from '../utils/shadow-styles';
+import { getPayerText, ResultsHero } from './results/ResultsHero';
 import { SmartConversionFooter } from './SmartConversionFooter';
 import { SpecialCircumstancesPrompt } from './SpecialCircumstancesPrompt';
 
@@ -164,14 +163,6 @@ export function CalculatorResults({
   const insets = useSafeAreaInsets();
   const { isWeb } = useResponsive();
 
-  // Helper function to map payer values to user-friendly text
-  const getPayerText = (payer: string): string => {
-    if (payer === 'Parent A') return 'You pay';
-    if (payer === 'Parent B') return 'Other parent pays';
-    if (payer === 'Neither') return 'No payment required';
-    return payer; // Fallback
-  };
-
   const isInlineMode = displayMode === 'inline';
 
   // Track local form data updates (selected Special Circumstances)
@@ -210,11 +201,6 @@ export function CalculatorResults({
     }
   }, [resetTimestamp]);
 
-  // Calculate payment amounts
-  const monthlyAmount = results.finalPaymentAmount / 12;
-  const fortnightlyAmount = results.finalPaymentAmount / 26;
-  const dailyAmount = results.finalPaymentAmount / 365;
-
   // Check if any children exist in the calculation
   const hasChildren = formData?.children && formData.children.length > 0;
 
@@ -239,82 +225,7 @@ export function CalculatorResults({
       showsVerticalScrollIndicator={true}
     >
       {/* Hero Section in Expanded View */}
-      <View style={styles.expandedHeroSection}>
-        <Text style={styles.expandedHeroLabel}>
-          {getPayerText(results.payer)}
-        </Text>
-        <Text
-          style={[styles.expandedHeroAmount, isStale && styles.staleAmount]}
-        >
-          {formatCurrency(results.finalPaymentAmount)}
-        </Text>
-        <Text style={styles.expandedHeroSubtext}>per year</Text>
-        <View style={styles.expandedSecondaryAmounts}>
-          <View style={styles.expandedSecondaryItem}>
-            <Text
-              style={[
-                styles.expandedSecondaryValue,
-                isStale && styles.staleAmount,
-              ]}
-            >
-              {formatCurrency(monthlyAmount)}
-            </Text>
-            <Text style={styles.expandedSecondaryLabel}>/month</Text>
-          </View>
-          <View style={styles.expandedDivider} />
-          <View style={styles.expandedSecondaryItem}>
-            <Text
-              style={[
-                styles.expandedSecondaryValue,
-                isStale && styles.staleAmount,
-              ]}
-            >
-              {formatCurrency(fortnightlyAmount)}
-            </Text>
-            <Text style={styles.expandedSecondaryLabel}>/fortnight</Text>
-          </View>
-          <View style={styles.expandedDivider} />
-          <View style={styles.expandedSecondaryItem}>
-            <Text
-              style={[
-                styles.expandedSecondaryValue,
-                isStale && styles.staleAmount,
-              ]}
-            >
-              {formatCurrency(dailyAmount)}
-            </Text>
-            <Text style={styles.expandedSecondaryLabel}>/day</Text>
-          </View>
-        </View>
-
-        {/* SEO-friendly blog link */}
-        <View style={styles.blogLinkContainer}>
-          <Text style={styles.blogLinkText}>
-            This estimate is based on the 8-step assessment formula used by Services Australia. To understand the rules behind these steps and how they apply to your situation, read our{' '}
-            <Text
-              accessibilityRole="link"
-              style={styles.blogLink}
-              onPress={() => {
-                const url = 'https://blog.auschildsupport.com/child-support-formula-australia/';
-                if (Platform.OS === 'web') {
-                  window.open(url, '_blank');
-                } else {
-                  Linking.openURL(url);
-                }
-              }}
-              {...(Platform.OS === 'web' && {
-                // @ts-ignore - Web-only props for SEO
-                href: 'https://blog.auschildsupport.com/child-support-formula-australia/',
-                target: '_blank',
-                rel: 'noopener noreferrer',
-              })}
-            >
-              Australian Child Support Guide
-            </Text>
-            .
-          </Text>
-        </View>
-      </View>
+      <ResultsHero results={results} isStale={isStale} variant="modal" />
 
       <SpecialCircumstancesPrompt
         key={`${results.finalPaymentAmount}-${results.payer}-${results.childResults.map((c) => `${c.roundedCareA}-${c.roundedCareB}`).join('-')}-${results.ATI_A}-${results.ATI_B}`}
@@ -365,14 +276,7 @@ export function CalculatorResults({
     return (
       <View style={styles.twoColumnLayout}>
         <View style={styles.leftColumn}>
-          <View style={styles.inlineHeroSection}>
-            <Text
-              style={[styles.expandedHeroAmount, isStale && styles.staleAmount]}
-            >
-              {formatCurrency(results.finalPaymentAmount)}
-            </Text>
-            <Text style={styles.expandedHeroLabel}>per year</Text>
-          </View>
+          <ResultsHero results={results} isStale={isStale} variant="inline" />
         </View>
         <ScrollView style={styles.rightColumn}>
           {renderBreakdownContent()}
@@ -521,87 +425,13 @@ const styles = StyleSheet.create({
   closeIcon: { fontSize: 20, color: '#4a5568' },
   expandedScrollView: { flex: 1 },
   expandedContentContainer: { padding: 16, gap: 16 },
-  expandedHeroSection: {
-    alignItems: 'center',
-    paddingVertical: 24,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    marginBottom: 24,
-    backgroundColor: '#3b82f6',
-    borderWidth: 1,
-    borderColor: '#3b82f6',
-    ...shadowPresets.large,
-  },
-  expandedHeroLabel: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 8,
-  },
-  expandedHeroAmount: {
-    fontSize: 56,
-    fontWeight: '700',
-    color: '#ffffff',
-    letterSpacing: -1,
-    marginBottom: 4,
-  },
-  expandedHeroSubtext: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '400',
-    marginBottom: 20,
-  },
-  expandedSecondaryAmounts: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    width: '100%',
-    gap: 16,
-  },
-  expandedSecondaryItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  expandedSecondaryValue: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#ffffff',
-  },
-  expandedSecondaryLabel: {
-    fontSize: 12,
-    color: '#ffffff',
-  },
-  expandedDivider: {
-    width: 1,
-    height: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-  },
   staleAmount: {
     textDecorationLine: 'line-through',
     textDecorationColor: '#ef4444',
     textDecorationStyle: 'solid',
     opacity: 0.7,
   },
-  blogLinkContainer: {
-    marginTop: 20,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.3)',
-  },
-  blogLinkText: {
-    color: '#ffffff',
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: 'center',
-  },
-  blogLink: {
-    color: '#ffffff',
-    textDecorationLine: 'underline',
-    textDecorationColor: '#ffffff',
-    fontWeight: '500',
-  },
   twoColumnLayout: { flexDirection: 'row', gap: 20 },
   leftColumn: { flex: 1 },
   rightColumn: { flex: 1.5 },
-  inlineHeroSection: { padding: 20, backgroundColor: '#fff', borderRadius: 12 },
 });
