@@ -174,7 +174,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
         case 'postcode':
           return validatePostcode(value as string);
         case 'message':
-          return validateMessage(value as string, financialTags);
+          return validateMessage(value as string, financialTags, props.preFillMessage);
         case 'consent':
           return validateConsent(value as boolean);
         case 'courtDate':
@@ -219,7 +219,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
       email: validateEmail(email),
       phone: validatePhone(phone),
       postcode: validatePostcode(postcode),
-      message: validateMessage(message, financialTags),
+      message: validateMessage(message, financialTags, props.preFillMessage),
       consent: validateConsent(consent),
       courtDate: validateCourtDate(courtDate, shouldShowCourtDate),
       financialTags: validateFinancialTags(

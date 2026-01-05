@@ -135,7 +135,8 @@ export function validateManualChildren(children: string): string | undefined {
  */
 export function validateMessage(
   message: string,
-  financialTags: string[]
+  financialTags: string[],
+  preFillMessage?: string
 ): string | undefined {
   const sanitized = sanitizeString(message);
 
@@ -146,6 +147,10 @@ export function validateMessage(
     }
     if (sanitized.length < VALIDATION.MESSAGE_MIN_LENGTH) {
       return `Details must be at least ${VALIDATION.MESSAGE_MIN_LENGTH} characters`;
+    }
+    // Check if message is identical to pre-filled message
+    if (preFillMessage && sanitized === sanitizeString(preFillMessage)) {
+      return "Please add details explaining the 'Other' financial issue";
     }
   }
 
