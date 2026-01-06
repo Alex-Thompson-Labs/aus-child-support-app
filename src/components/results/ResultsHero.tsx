@@ -58,11 +58,11 @@ export function ResultsHero({
   // Build income support indicator text
   const getIncomeSupportText = () => {
     if (supportA && supportB) {
-      return 'Inc. support applied: You + Other Parent';
+      return 'Income support applied: You + Other Parent';
     } else if (supportA) {
-      return 'Inc. support applied: You';
+      return 'Income support applied: You';
     } else if (supportB) {
-      return 'Inc. support applied: Other Parent';
+      return 'Income support applied: Other Parent';
     }
     return null;
   };

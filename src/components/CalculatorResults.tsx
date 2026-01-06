@@ -18,6 +18,23 @@ import { getPayerText, ResultsHero } from './results/ResultsHero';
 import { SmartConversionFooter } from './SmartConversionFooter';
 import { SpecialCircumstancesPrompt } from './SpecialCircumstancesPrompt';
 
+/**
+ * Helper to generate income support indicator text for collapsed card
+ */
+function getIncomeSupportText(
+  supportA: boolean,
+  supportB: boolean
+): string | null {
+  if (supportA && supportB) {
+    return 'Income support applied: You + Other Parent';
+  } else if (supportA) {
+    return 'Income support applied: You';
+  } else if (supportB) {
+    return 'Income support applied: Other Parent';
+  }
+  return null;
+}
+
 // Lazy load the named export
 const ResultsSimpleExplanation = lazy(() =>
   import('./ResultsSimpleExplanation').then((module) => ({
@@ -345,6 +362,20 @@ export function CalculatorResults({
                   {formatCurrency(results.finalPaymentAmount)}
                 </Text>
               </View>
+              {getIncomeSupportText(
+                formData?.supportA ?? false,
+                formData?.supportB ?? false
+              ) && (
+                <View style={styles.collapsedIncomeSupportBadge}>
+                  <Text style={styles.collapsedIncomeSupportText}>
+                    ✓{' '}
+                    {getIncomeSupportText(
+                      formData?.supportA ?? false,
+                      formData?.supportB ?? false
+                    )}
+                  </Text>
+                </View>
+              )}
             </View>
             <View style={styles.expandHint}>
               <Text style={styles.expandHintText}>Tap for breakdown ▲</Text>
@@ -401,7 +432,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center', // Ensures it stays centered within its wrapper
   },
   collapsedContent: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 6,
@@ -409,6 +440,18 @@ const styles = StyleSheet.create({
   collapsedSummaryRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
+  },
+  collapsedIncomeSupportBadge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginTop: 6,
+  },
+  collapsedIncomeSupportText: {
+    color: '#ffffff',
+    fontSize: 11,
+    fontWeight: '600',
   },
   collapsedLabel: {
     color: '#ffffff',
