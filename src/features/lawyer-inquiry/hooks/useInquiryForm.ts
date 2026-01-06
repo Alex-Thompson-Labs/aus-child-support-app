@@ -47,6 +47,7 @@ export interface UseInquiryFormProps {
   reason: string | undefined;
   careData: CareDataItem[];
   specialCircumstances: string[] | null;
+  payer: string; // "Parent A", "Parent B", or "Neither"
 }
 
 export function useInquiryForm(props: UseInquiryFormProps) {
@@ -92,6 +93,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
 
   // Enrichment flow state (post-submission data collection)
   const [showEnrichment, setShowEnrichment] = useState(false);
+  const [showEnrichmentSuccess, setShowEnrichmentSuccess] = useState(false);
   const [currentLeadId, setCurrentLeadId] = useState<string | null>(null);
   const [selectedEnrichmentFactors, setSelectedEnrichmentFactors] = useState<
     string[]
@@ -100,6 +102,9 @@ export function useInquiryForm(props: UseInquiryFormProps) {
 
   // Calculated liability from enrichment estimator
   const [enrichmentLiability, setEnrichmentLiability] = useState<number | null>(null);
+
+  // Payer role from enrichment estimator
+  const [enrichmentPayerRole, setEnrichmentPayerRole] = useState<'you' | 'other_parent' | null>(null);
 
   // Court date for enrichment flow
   const [enrichmentCourtDate, setEnrichmentCourtDate] = useState<Date | null>(null);
@@ -510,6 +515,13 @@ export function useInquiryForm(props: UseInquiryFormProps) {
           ? parseInt(manualChildren, 10) || 0
           : parseInt(props.children) || 0,
         annual_liability: props.isDirectMode ? 0 : parseFloat(props.liability) || 0,
+        payer_role: props.isDirectMode
+          ? null
+          : props.payer === 'Parent A'
+            ? 'you'
+            : props.payer === 'Parent B'
+              ? 'other_parent'
+              : null,
 
         // Care arrangement - null in Direct Mode
         care_data: props.isDirectMode ? null : props.careData.length > 0 ? props.careData : null,
@@ -748,7 +760,8 @@ export function useInquiryForm(props: UseInquiryFormProps) {
       const result = await updateLeadEnrichment(
         currentLeadId,
         processedFactors,
-        enrichmentLiability ?? undefined
+        enrichmentLiability ?? undefined,
+        enrichmentPayerRole ?? undefined
       );
 
       if (!result.success) {
@@ -756,7 +769,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
           '[LawyerInquiry] Failed to update enrichment:',
           result.error
         );
-        // Still navigate home even if update fails
+        // Still show success even if update fails (user did their part)
       } else if (__DEV__) {
         console.log('[LawyerInquiry] Enrichment updated successfully');
       }
@@ -765,8 +778,16 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     }
 
     setIsUpdatingEnrichment(false);
-    navigateHome();
-  }, [currentLeadId, selectedEnrichmentFactors, enrichmentCourtDate, navigateHome]);
+
+    // Show success state
+    setShowEnrichmentSuccess(true);
+
+    // Navigate home after delay (matching standard success behavior)
+    setTimeout(() => {
+      if (!isMounted.current) return;
+      navigateHome();
+    }, 1500);
+  }, [currentLeadId, selectedEnrichmentFactors, enrichmentCourtDate, enrichmentLiability, enrichmentPayerRole, navigateHome]);
 
   /**
    * Skip enrichment and close
@@ -793,11 +814,13 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     isSubmitting,
     showSuccess,
     showEnrichment,
+    showEnrichmentSuccess,
     currentLeadId,
     selectedEnrichmentFactors,
     isUpdatingEnrichment,
     enrichmentLiability,
     enrichmentCourtDate,
+    enrichmentPayerRole,
 
     // Setters
     setName,
@@ -811,6 +834,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     setManualChildren,
     setEnrichmentLiability,
     setEnrichmentCourtDate,
+    setEnrichmentPayerRole,
     setErrors,
 
     // Refs

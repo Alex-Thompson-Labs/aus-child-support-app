@@ -40,6 +40,7 @@ export default function LawyerInquiryScreen() {
     reason: params.reason,
     careData: params.careData,
     specialCircumstances: params.specialCircumstances,
+    payer: params.payer,
   });
 
   // Web container styles
@@ -80,8 +81,10 @@ export default function LawyerInquiryScreen() {
             : parseInt(params.children) || 0
         }
         onLiabilityCalculated={form.setEnrichmentLiability}
+        onPayerRoleCalculated={form.setEnrichmentPayerRole}
         enrichmentCourtDate={form.enrichmentCourtDate}
         onEnrichmentCourtDateChange={form.setEnrichmentCourtDate}
+        showSuccess={form.showEnrichmentSuccess}
       />
     );
   }

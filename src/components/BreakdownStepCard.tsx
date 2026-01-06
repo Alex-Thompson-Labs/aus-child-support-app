@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { createShadow } from '../utils/shadow-styles';
 import { HelpTooltip } from './HelpTooltip';
@@ -23,8 +23,6 @@ export function BreakdownStepCard({
   isExpanded,
   onToggle,
 }: BreakdownStepCardProps) {
-  const [isHelpHovered, setIsHelpHovered] = useState(false);
-
   const accessibilityLabel = description
     ? `Step ${stepNumber}: ${title}. ${description}. ${
         isExpanded ? 'Expanded' : 'Collapsed'
@@ -57,22 +55,13 @@ export function BreakdownStepCard({
             {title}
           </Text>
           {tooltip != null && (
-            <Pressable
-              style={styles.headerTooltip}
-              onHoverIn={() => setIsHelpHovered(true)}
-              onHoverOut={() => setIsHelpHovered(false)}
-              accessibilityRole="button"
-              accessibilityLabel={`Help for ${title}`}
-            >
+            <View style={styles.headerTooltip}>
               <HelpTooltip
                 what={tooltip}
                 why={''}
                 hideWhatLabel
-                iconColor={isHelpHovered ? '#2563eb' : '#64748b'} // blue-600 on hover, slate-500 default - WCAG AA compliant
-                iconBorderColor={isHelpHovered ? '#bfdbfe' : '#cbd5e1'} // blue-200 / slate-300
-                iconBackgroundColor={isHelpHovered ? '#eff6ff' : '#f8fafc'} // blue-50 / slate-50
               />
-            </Pressable>
+            </View>
           )}
         </View>
 

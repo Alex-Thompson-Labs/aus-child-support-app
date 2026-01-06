@@ -161,6 +161,7 @@ export function SmartConversionFooter({
           children: (formData?.children?.length ?? 0).toString(),
           careData: JSON.stringify(careData),
           preFillMessage: cardConfig.preFillMessage,
+          payer: results.payer,
         },
       });
 

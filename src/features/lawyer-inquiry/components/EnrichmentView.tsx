@@ -16,6 +16,7 @@ import { isWeb } from '@/src/utils/responsive';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Modal,
   Platform,
   Pressable,
@@ -45,13 +46,17 @@ export function EnrichmentView({
   incomes,
   childrenCount,
   onLiabilityCalculated,
+  onPayerRoleCalculated,
   enrichmentCourtDate,
   onEnrichmentCourtDateChange,
+  showSuccess,
 }: EnrichmentViewProps) {
   // Calculator state
   const [showCalculator, setShowCalculator] = useState(false);
   // Mobile date picker state
   const [showDatePicker, setShowDatePicker] = useState(false);
+  // Validation error state
+  const [courtDateError, setCourtDateError] = useState(false);
   const [careDays, setCareDays] = useState('');
   const [childAges, setChildAges] = useState<('Under 13' | '13+')[]>([]);
   const [calculatedLiability, setCalculatedLiability] = useState<number | null>(null);
@@ -112,12 +117,15 @@ export function EnrichmentView({
     if (parentALiability > 0) {
       liability = Math.round(parentALiability);
       setPayerLabel('You pay');
+      onPayerRoleCalculated('you');
     } else if (parentALiability < 0) {
       liability = -Math.round(parentBLiability);
       setPayerLabel('Other Parent pays');
+      onPayerRoleCalculated('other_parent');
     } else {
       liability = 0;
       setPayerLabel('No payment required');
+      onPayerRoleCalculated(null);
     }
 
     setCalculatedLiability(Math.abs(liability));
@@ -142,6 +150,14 @@ export function EnrichmentView({
     return `${day}/${month}/${year}`;
   };
 
+  // Handle date change - clear error when date is entered
+  const handleDateChange = (date: Date | null) => {
+    onEnrichmentCourtDateChange(date);
+    if (date !== null && courtDateError) {
+      setCourtDateError(false);
+    }
+  };
+
   // Convert Date to YYYY-MM-DD string for HTML input
   const dateToInputValue = (date: Date): string => {
     const year = date.getFullYear();
@@ -151,25 +167,25 @@ export function EnrichmentView({
   };
 
   // Handle web date input change
-  const handleWebDateChange = (event: any) => {
+  const handleWebDateInputChange = (event: any) => {
     const inputValue = event.target.value;
     if (!inputValue) {
-      onEnrichmentCourtDateChange(null);
+      handleDateChange(null);
       return;
     }
     const date = new Date(inputValue);
     if (!isNaN(date.getTime())) {
-      onEnrichmentCourtDateChange(date);
+      handleDateChange(date);
     }
   };
 
   // Handle native date picker change
-  const handleNativeDateChange = (event: any, selectedDate?: Date) => {
+  const handleNativeDatePickerChange = (event: any, selectedDate?: Date) => {
     if (Platform.OS === 'android') {
       setShowDatePicker(false);
     }
     if (event.type === 'set' && selectedDate) {
-      onEnrichmentCourtDateChange(selectedDate);
+      handleDateChange(selectedDate);
     } else if (event.type === 'dismissed') {
       if (Platform.OS === 'ios') {
         setShowDatePicker(false);
@@ -179,6 +195,44 @@ export function EnrichmentView({
 
   // Check if court date factor is selected
   const isCourtDateSelected = selectedFactors.includes(COURT_DATE_ENRICHMENT.id);
+
+  // Check if user has provided any enrichment data (estimate or selected factors)
+  const hasEnrichmentData = calculatedLiability !== null || selectedFactors.length > 0;
+
+  // Check if form is valid for submission (court date requires a date to be entered)
+  const canSubmit = !isCourtDateSelected || enrichmentCourtDate !== null;
+
+  // Handle submit with validation
+  const handleSubmitWithValidation = () => {
+    if (!canSubmit) {
+      setCourtDateError(true);
+      if (Platform.OS === 'web') {
+        alert('Please fix the errors\n\nSome fields need your attention before submitting.');
+      } else {
+        Alert.alert(
+          'Please fix the errors',
+          'Some fields need your attention before submitting.'
+        );
+      }
+      return;
+    }
+    setCourtDateError(false);
+    onSubmit();
+  };
+
+  // Success state after enrichment submission
+  if (showSuccess) {
+    return (
+      <SafeAreaView style={containerStyles.container} edges={['top', 'bottom']}>
+        <View style={enrichmentStyles.enrichmentContainer}>
+          <View style={enrichmentStyles.enrichmentHeader}>
+            <Text style={enrichmentStyles.enrichmentIcon}>✓</Text>
+            <Text style={enrichmentStyles.enrichmentTitle}>Case Updated!</Text>
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={containerStyles.container} edges={['top', 'bottom']}>
@@ -270,53 +324,41 @@ export function EnrichmentView({
                 {isCourtDateFactor && isSelected && (
                   <View style={datePickerStyles.container}>
                     {isWeb ? (
-                      // Web: Hidden date input + visible formatted display (DD/MM/YYYY)
-                      <div style={{ position: 'relative', width: '100%' }}>
-                        {/* Hidden native date input for picker functionality */}
+                      // Web: Styled date input
+                      <>
                         <input
                           type="date"
                           value={enrichmentCourtDate ? dateToInputValue(enrichmentCourtDate) : ''}
-                          onChange={handleWebDateChange}
+                          onChange={handleWebDateInputChange}
                           disabled={isUpdating}
-                          style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '100%',
-                            height: '100%',
-                            opacity: 0,
-                            cursor: isUpdating ? 'not-allowed' : 'pointer',
-                          }}
-                          aria-label="Select court date"
-                        />
-                        {/* Visible display showing DD/MM/YYYY format */}
-                        <div
                           style={{
                             backgroundColor: '#ffffff',
                             color: enrichmentCourtDate ? '#1a202c' : '#9ca3af',
                             borderRadius: '8px',
                             padding: '12px',
-                            borderWidth: '1.5px',
-                            borderStyle: 'solid',
-                            borderColor: '#e2e8f0',
+                            border: `1.5px solid ${courtDateError ? '#ef4444' : '#e2e8f0'}`,
                             fontSize: '16px',
                             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                             width: '100%',
                             boxSizing: 'border-box',
-                            pointerEvents: 'none',
                             opacity: isUpdating ? 0.6 : 1,
+                            cursor: isUpdating ? 'not-allowed' : 'pointer',
+                            minHeight: '48px',
                           }}
-                        >
-                          {enrichmentCourtDate
-                            ? formatDisplayDate(enrichmentCourtDate)
-                            : 'dd/mm/yyyy'}
-                        </div>
-                      </div>
+                          aria-label="Select court date"
+                        />
+                        {courtDateError && (
+                          <Text style={datePickerStyles.errorText}>Court date is required</Text>
+                        )}
+                      </>
                     ) : (
                       // Mobile: Pressable that opens native picker
                       <>
                         <Pressable
-                          style={datePickerStyles.input}
+                          style={[
+                            datePickerStyles.input,
+                            courtDateError && datePickerStyles.inputError,
+                          ]}
                           onPress={() => !isUpdating && setShowDatePicker(true)}
                           disabled={isUpdating}
                         >
@@ -331,12 +373,15 @@ export function EnrichmentView({
                               : 'Select date'}
                           </Text>
                         </Pressable>
+                        {courtDateError && (
+                          <Text style={datePickerStyles.errorText}>Court date is required</Text>
+                        )}
                         {showDatePicker && (
                           <DateTimePicker
                             value={enrichmentCourtDate || new Date()}
                             mode="date"
                             display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                            onChange={handleNativeDateChange}
+                            onChange={handleNativeDatePickerChange}
                             minimumDate={new Date()}
                             maximumDate={new Date(2099, 11, 31)}
                           />
@@ -352,27 +397,29 @@ export function EnrichmentView({
 
         {/* Buttons */}
         <View style={enrichmentStyles.enrichmentButtons}>
-          <Pressable
-            style={({ pressed }) => [
-              buttonStyles.button,
-              pressed && buttonStyles.buttonPressed,
-              isUpdating && buttonStyles.buttonDisabled,
-            ]}
-            onPress={onSubmit}
-            disabled={isUpdating}
-            accessible={true}
-            accessibilityRole="button"
-            accessibilityLabel="Update Case File"
-          >
-            {isUpdating ? (
-              <View style={buttonStyles.buttonContent}>
-                <ActivityIndicator color="#ffffff" size="small" />
-                <Text style={buttonStyles.buttonText}>Updating...</Text>
-              </View>
-            ) : (
-              <Text style={buttonStyles.buttonText}>Update Case File</Text>
-            )}
-          </Pressable>
+          {hasEnrichmentData && (
+            <Pressable
+              style={({ pressed }) => [
+                buttonStyles.button,
+                pressed && buttonStyles.buttonPressed,
+                isUpdating && buttonStyles.buttonDisabled,
+              ]}
+              onPress={handleSubmitWithValidation}
+              disabled={isUpdating}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Update Case File"
+            >
+              {isUpdating ? (
+                <View style={buttonStyles.buttonContent}>
+                  <ActivityIndicator color="#ffffff" size="small" />
+                  <Text style={buttonStyles.buttonText}>Updating...</Text>
+                </View>
+              ) : (
+                <Text style={buttonStyles.buttonText}>Update Case File</Text>
+              )}
+            </Pressable>
+          )}
 
           <Pressable
             style={enrichmentStyles.enrichmentSkipButton}
@@ -668,11 +715,19 @@ const datePickerStyles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 48,
   },
+  inputError: {
+    borderColor: '#ef4444', // red-500
+  },
   inputText: {
     fontSize: 16,
     color: '#1a202c',
   },
   inputPlaceholder: {
     color: '#9ca3af', // grey-400 - lighter placeholder
+  },
+  errorText: {
+    color: '#ef4444', // red-500
+    fontSize: 14,
+    marginTop: 4,
   },
 });

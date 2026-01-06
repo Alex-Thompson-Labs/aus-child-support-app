@@ -100,7 +100,8 @@ export function RelevantDependentsPopover({
               ? popoverStyles.triggerButtonCompact
               : popoverStyles.triggerButton,
             hasValues && popoverStyles.triggerButtonActive,
-            isHovered && popoverStyles.triggerButtonHover,
+            isHovered && hasValues && popoverStyles.triggerButtonHover,
+            isHovered && !hasValues && popoverStyles.triggerButtonHoverInactive,
             webClickableStyles,
           ]}
           accessibilityRole="button"
@@ -297,7 +298,7 @@ const popoverStyles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    backgroundColor: '#eff6ff', // blue-50
+    backgroundColor: '#ffffff', // white - neutral state
     borderWidth: 1.5,
     borderColor: '#bfdbfe', // blue-200
     borderRadius: 8,
@@ -306,13 +307,16 @@ const popoverStyles = StyleSheet.create({
   triggerButtonHover: {
     ...(isWeb ? ({ backgroundColor: '#dbeafe' } as any) : {}), // blue-100
   },
+  triggerButtonHoverInactive: {
+    ...(isWeb ? ({ backgroundColor: '#f8fafc' } as any) : {}), // slate-50 - subtle neutral hover
+  },
   triggerButtonCompact: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    backgroundColor: '#eff6ff', // blue-50
+    backgroundColor: '#ffffff', // white - neutral state
     borderWidth: 1.5,
     borderColor: '#bfdbfe', // blue-200
     borderRadius: 6,
@@ -325,12 +329,12 @@ const popoverStyles = StyleSheet.create({
   },
   triggerText: {
     fontSize: 14,
-    color: '#2563EB', // blue-600 (Brand Blue)
+    color: '#64748b', // slate-500 - neutral gray when inactive
     fontWeight: '600',
   },
   triggerTextCompact: {
     fontSize: 12,
-    color: '#2563EB', // blue-600 (Brand Blue)
+    color: '#64748b', // slate-500 - neutral gray when inactive
     fontWeight: '600',
   },
   triggerTextActive: {
@@ -339,7 +343,7 @@ const popoverStyles = StyleSheet.create({
   },
   plusIcon: {
     fontSize: 16,
-    color: '#2563EB', // blue-600 (Brand Blue)
+    color: '#64748b', // slate-500 - neutral gray when inactive
     fontWeight: '700',
   },
   // Inline drawer content - expands to the right

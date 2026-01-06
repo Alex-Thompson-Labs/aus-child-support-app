@@ -230,6 +230,7 @@ export function SpecialCircumstancesPrompt({
               incomeB: results.ATI_B.toString(),
               children: (formData?.children?.length ?? 0).toString(),
               careData: JSON.stringify(careData),
+              payer: results.payer,
 
               // NEW CoA params
               specialCircumstances: JSON.stringify(Array.from(selectedReasons)),

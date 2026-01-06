@@ -109,6 +109,7 @@ export interface LeadSubmission {
   income_parent_b: number;
   children_count: number;
   annual_liability: number;
+  payer_role?: 'you' | 'other_parent' | null;
 
   // Care arrangement data
   care_data:
@@ -201,6 +202,7 @@ export async function submitLead(lead: LeadSubmission): Promise<{
       income_parent_b: lead.income_parent_b,
       children_count: lead.children_count,
       annual_liability: lead.annual_liability,
+      payer_role: lead.payer_role,
 
       // Care arrangement data
       care_data: lead.care_data,
@@ -273,10 +275,11 @@ export async function submitLead(lead: LeadSubmission): Promise<{
 export async function updateLeadEnrichment(
   leadId: string,
   enrichmentFactors: string[],
-  annualLiability?: number
+  annualLiability?: number,
+  payerRole?: 'you' | 'other_parent' | null
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    console.log('[Supabase] Updating lead enrichment:', { leadId, enrichmentFactors, annualLiability });
+    console.log('[Supabase] Updating lead enrichment:', { leadId, enrichmentFactors, annualLiability, payerRole });
 
     // Lazy-load Supabase client
     const supabaseClient = await getSupabaseClient();
@@ -301,6 +304,7 @@ export async function updateLeadEnrichment(
         .update({
           complexity_reasons: enrichmentFactors,
           ...(annualLiability !== undefined && { enrichment_annual_liability: annualLiability }),
+          ...(payerRole !== undefined && { enrichment_payer_role: payerRole }),
         })
         .eq('id', leadId);
 
@@ -311,15 +315,18 @@ export async function updateLeadEnrichment(
           error: fallbackError.message || 'Failed to update lead',
         };
       }
-    } else if (annualLiability !== undefined) {
-      // RPC succeeded, but we still need to update the liability separately
+    } else if (annualLiability !== undefined || payerRole !== undefined) {
+      // RPC succeeded, but we still need to update the liability/payer separately
       const { error: liabilityError } = await supabaseClient
         .from('leads')
-        .update({ enrichment_annual_liability: annualLiability })
+        .update({
+          ...(annualLiability !== undefined && { enrichment_annual_liability: annualLiability }),
+          ...(payerRole !== undefined && { enrichment_payer_role: payerRole }),
+        })
         .eq('id', leadId);
 
       if (liabilityError) {
-        console.error('[Supabase] Failed to update liability:', liabilityError);
+        console.error('[Supabase] Failed to update liability/payer:', liabilityError);
         // Don't fail the whole operation, enrichment factors were saved
       }
     }

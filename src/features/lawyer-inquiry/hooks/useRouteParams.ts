@@ -18,6 +18,7 @@ export interface ParsedRouteParams {
   children: string;
   mode: string | undefined;
   reason: string | undefined;
+  payer: string; // "Parent A", "Parent B", or "Neither"
 
   // Computed values
   isDirectMode: boolean;
@@ -42,6 +43,9 @@ export function useRouteParams(): ParsedRouteParams {
   // Parse Direct Mode params
   const mode = typeof params.mode === 'string' ? params.mode : undefined;
   const reason = typeof params.reason === 'string' ? params.reason : undefined;
+
+  // Parse payer (from calculation results)
+  const payer = typeof params.payer === 'string' ? params.payer : 'Neither';
 
   // Detect Direct Mode: explicit mode=direct OR missing calculation data
   const isDirectMode = useMemo(() => {
@@ -104,6 +108,7 @@ export function useRouteParams(): ParsedRouteParams {
     children,
     mode,
     reason,
+    payer,
     isDirectMode,
     inquiryConfig,
     preFillMessage,

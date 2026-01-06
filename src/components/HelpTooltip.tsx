@@ -100,15 +100,15 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#f3f4f6', // grey-100
+    backgroundColor: '#eff6ff', // blue-50
     borderWidth: 1.5,
-    borderColor: '#6b7280', // grey-500 - WCAG AA compliant (4.5:1)
+    borderColor: '#bfdbfe', // blue-200
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 6,
   },
   buttonText: {
-    color: '#4b5563', // grey-600 - better contrast (5.9:1)
+    color: '#60a5fa', // blue-400
     fontSize: 13,
     fontWeight: '700',
   },
