@@ -25,6 +25,10 @@ export interface ResultsHeroProps {
   results: CalculationResults;
   isStale?: boolean;
   variant?: 'modal' | 'inline';
+  /** Whether Parent A's calculation included income support */
+  supportA?: boolean;
+  /** Whether Parent B's calculation included income support */
+  supportB?: boolean;
 }
 
 /**
@@ -41,6 +45,8 @@ export function ResultsHero({
   results,
   isStale = false,
   variant = 'modal',
+  supportA = false,
+  supportB = false,
 }: ResultsHeroProps) {
   // Calculate payment amounts
   const monthlyAmount = results.finalPaymentAmount / 12;
@@ -48,6 +54,19 @@ export function ResultsHero({
   const dailyAmount = results.finalPaymentAmount / 365;
 
   const isInline = variant === 'inline';
+
+  // Build income support indicator text
+  const getIncomeSupportText = () => {
+    if (supportA && supportB) {
+      return 'Inc. support applied: You + Other Parent';
+    } else if (supportA) {
+      return 'Inc. support applied: You';
+    } else if (supportB) {
+      return 'Inc. support applied: Other Parent';
+    }
+    return null;
+  };
+  const incomeSupportText = getIncomeSupportText();
 
   // Inline variant: compact display
   if (isInline) {
@@ -71,6 +90,11 @@ export function ResultsHero({
         {formatCurrency(results.finalPaymentAmount)}
       </Text>
       <Text style={styles.expandedHeroSubtext}>per year</Text>
+      {incomeSupportText && (
+        <View style={styles.incomeSupportBadge}>
+          <Text style={styles.incomeSupportText}>✓ {incomeSupportText}</Text>
+        </View>
+      )}
       <View style={styles.expandedSecondaryAmounts}>
         <View style={styles.expandedSecondaryItem}>
           <Text
@@ -171,6 +195,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '400',
     marginBottom: 20,
+  },
+  incomeSupportBadge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginBottom: 16,
+  },
+  incomeSupportText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '600',
   },
   expandedSecondaryAmounts: {
     flexDirection: 'row',

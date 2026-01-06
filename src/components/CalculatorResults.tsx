@@ -176,11 +176,10 @@ export function CalculatorResults({
   const [lastResultsKey, setLastResultsKey] = useState('');
 
   // Generate a unique key for the current results
-  const currentResultsKey = `${results.finalPaymentAmount}-${
-    results.payer
-  }-${results.childResults
-    .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
-    .join('-')}-${results.ATI_A}-${results.ATI_B}`;
+  const currentResultsKey = `${results.finalPaymentAmount}-${results.payer
+    }-${results.childResults
+      .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
+      .join('-')}-${results.ATI_A}-${results.ATI_B}`;
 
   // Update formData when results change, but preserve selected CoA reasons
   React.useEffect(() => {
@@ -212,10 +211,10 @@ export function CalculatorResults({
 
   const webModalContainerStyle = isWeb
     ? {
-        maxWidth: MAX_MODAL_WIDTH,
-        width: '100%' as const,
-        alignSelf: 'center' as const,
-      }
+      maxWidth: MAX_MODAL_WIDTH,
+      width: '100%' as const,
+      alignSelf: 'center' as const,
+    }
     : {};
 
   const renderBreakdownContent = () => (
@@ -228,15 +227,19 @@ export function CalculatorResults({
       ]}
       showsVerticalScrollIndicator={true}
     >
-      {/* Hero Section in Expanded View */}
-      <ResultsHero results={results} isStale={isStale} variant="modal" />
+      <ResultsHero
+        results={results}
+        isStale={isStale}
+        variant="modal"
+        supportA={formData?.supportA ?? false}
+        supportB={formData?.supportB ?? false}
+      />
 
       <SpecialCircumstancesPrompt
-        key={`${results.finalPaymentAmount}-${
-          results.payer
-        }-${results.childResults
-          .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
-          .join('-')}-${results.ATI_A}-${results.ATI_B}`}
+        key={`${results.finalPaymentAmount}-${results.payer
+          }-${results.childResults
+            .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
+            .join('-')}-${results.ATI_A}-${results.ATI_B}`}
         results={results}
         formData={localFormData}
         onNavigate={() => setIsExpanded(false)}
@@ -284,7 +287,13 @@ export function CalculatorResults({
     return (
       <View style={styles.twoColumnLayout}>
         <View style={styles.leftColumn}>
-          <ResultsHero results={results} isStale={isStale} variant="inline" />
+          <ResultsHero
+            results={results}
+            isStale={isStale}
+            variant="inline"
+            supportA={formData?.supportA ?? false}
+            supportB={formData?.supportB ?? false}
+          />
         </View>
         <ScrollView style={styles.rightColumn}>
           {renderBreakdownContent()}
@@ -308,13 +317,12 @@ export function CalculatorResults({
             { paddingBottom: Math.max(insets.bottom, 12) },
           ]}
           accessibilityRole="button"
-          accessibilityLabel={`${
-            results.payer === 'Neither'
+          accessibilityLabel={`${results.payer === 'Neither'
               ? 'No payment required'
               : `${results.payer} pays ${formatCurrency(
-                  results.finalPaymentAmount
-                )} per year`
-          }. Tap to view full breakdown`}
+                results.finalPaymentAmount
+              )} per year`
+            }. Tap to view full breakdown`}
           accessibilityHint="Opens detailed calculation breakdown"
         >
           <View
