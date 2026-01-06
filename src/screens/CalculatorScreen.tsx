@@ -98,8 +98,8 @@ export function CalculatorScreen() {
   const [incomeSupportB, setIncomeSupportB] = useState(false);
   // Track which parents need to be asked (for sequential prompting)
   const [needsPromptB, setNeedsPromptB] = useState(false);
-  // Track Parent A's response for use when Parent B is asked
-  const [tempParentAResponse, setTempParentAResponse] = useState(false);
+  // Use a ref to store Parent A's response immediately (not subject to async state updates)
+  const tempParentAResponseRef = React.useRef(false);
 
   /**
    * handleCalculate intercepts the calculate button press.
@@ -149,8 +149,8 @@ export function CalculatorScreen() {
     if (pendingParent === 'A') {
       setIncomeSupportA(true);
       if (needsPromptB) {
-        // Store Parent A's response and ask about Parent B
-        setTempParentAResponse(true);
+        // Store Parent A's response in ref (immediate, not async) and ask about Parent B
+        tempParentAResponseRef.current = true;
         setNeedsPromptB(false);
         setPendingParent('B');
       } else {
@@ -166,8 +166,8 @@ export function CalculatorScreen() {
       setIncomeSupportModalVisible(false);
       // Delay clearing pendingParent to prevent flash during modal close animation
       setTimeout(() => setPendingParent(null), 200);
-      // Use Parent A's stored response, Parent B said Yes
-      runCalculation(tempParentAResponse, true);
+      // Use Parent A's stored response from ref, Parent B said Yes
+      runCalculation(tempParentAResponseRef.current, true);
     }
   };
 
@@ -178,8 +178,8 @@ export function CalculatorScreen() {
     if (pendingParent === 'A') {
       setIncomeSupportA(false);
       if (needsPromptB) {
-        // Store Parent A's response and ask about Parent B
-        setTempParentAResponse(false);
+        // Store Parent A's response in ref (immediate, not async) and ask about Parent B
+        tempParentAResponseRef.current = false;
         setNeedsPromptB(false);
         setPendingParent('B');
       } else {
@@ -195,8 +195,8 @@ export function CalculatorScreen() {
       setIncomeSupportModalVisible(false);
       // Delay clearing pendingParent to prevent flash during modal close animation
       setTimeout(() => setPendingParent(null), 200);
-      // Use Parent A's stored response, Parent B said No
-      runCalculation(tempParentAResponse, false);
+      // Use Parent A's stored response from ref, Parent B said No
+      runCalculation(tempParentAResponseRef.current, false);
     }
   };
 
