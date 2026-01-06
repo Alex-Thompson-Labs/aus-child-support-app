@@ -108,6 +108,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 6,
+    flexShrink: 0, // Prevent text from squishing the icon
   },
   buttonText: {
     color: '#60a5fa', // blue-400
