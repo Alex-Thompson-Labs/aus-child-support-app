@@ -109,8 +109,8 @@ export function CalculatorScreen() {
     const incomeA = formState.incomeA;
     const incomeB = formState.incomeB;
 
-    const aIsBelowThreshold = incomeA > 0 && incomeA < SSA;
-    const bIsBelowThreshold = incomeB > 0 && incomeB < SSA;
+    const aIsBelowThreshold = incomeA >= 0 && incomeA < SSA;
+    const bIsBelowThreshold = incomeB >= 0 && incomeB < SSA;
 
     if (aIsBelowThreshold) {
       // Need to ask about Parent A first
@@ -152,9 +152,10 @@ export function CalculatorScreen() {
         setNeedsPromptB(false);
       } else {
         // Done prompting, run calculation
+        // Parent B was not asked, so they don't receive income support
         setIncomeSupportModalVisible(false);
         setPendingParent(null);
-        runCalculation(true, incomeSupportB);
+        runCalculation(true, false);
       }
     } else if (pendingParent === 'B') {
       setIncomeSupportB(true);
@@ -176,9 +177,10 @@ export function CalculatorScreen() {
         setNeedsPromptB(false);
       } else {
         // Done prompting, run calculation
+        // Parent B was not asked, so they don't receive income support
         setIncomeSupportModalVisible(false);
         setPendingParent(null);
-        runCalculation(false, incomeSupportB);
+        runCalculation(false, false);
       }
     } else if (pendingParent === 'B') {
       setIncomeSupportB(false);
