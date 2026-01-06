@@ -153,14 +153,16 @@ export function CalculatorScreen() {
       } else {
         // Done prompting, run calculation
         // Parent B was not asked, so they don't receive income support
-        setPendingParent(null);
         setIncomeSupportModalVisible(false);
+        // Delay clearing pendingParent to prevent flash during modal close animation
+        setTimeout(() => setPendingParent(null), 200);
         runCalculation(true, false);
       }
     } else if (pendingParent === 'B') {
       setIncomeSupportB(true);
-      setPendingParent(null);
       setIncomeSupportModalVisible(false);
+      // Delay clearing pendingParent to prevent flash during modal close animation
+      setTimeout(() => setPendingParent(null), 200);
       runCalculation(incomeSupportA, true);
     }
   };
@@ -178,14 +180,16 @@ export function CalculatorScreen() {
       } else {
         // Done prompting, run calculation
         // Parent B was not asked, so they don't receive income support
-        setPendingParent(null);
         setIncomeSupportModalVisible(false);
+        // Delay clearing pendingParent to prevent flash during modal close animation
+        setTimeout(() => setPendingParent(null), 200);
         runCalculation(false, false);
       }
     } else if (pendingParent === 'B') {
       setIncomeSupportB(false);
-      setPendingParent(null);
       setIncomeSupportModalVisible(false);
+      // Delay clearing pendingParent to prevent flash during modal close animation
+      setTimeout(() => setPendingParent(null), 200);
       runCalculation(incomeSupportA, false);
     }
   };
