@@ -81,7 +81,7 @@ export function CalculatorForm({
   onReset,
   isDesktopWeb = false,
 }: CalculatorFormProps) {
-  const { isMobile, isDesktop, width } = useResponsive();
+  const { isMobile, isDesktop } = useResponsive();
 
   // Web-specific container styles (only apply max-width when NOT in two-column mode)
   const webContainerStyle =
