@@ -253,7 +253,7 @@ export function ResultsSimpleExplanation({
               ? `for Child ${index + 1}`
               : undefined
           }
-          tooltip="Special rounding rules apply. Regardless of the decimal value, percentages below 50% are rounded down to the nearest whole number with ones above being always rounded up."
+          tooltip={index === 0 ? "Special rounding rules apply. Regardless of the decimal value, percentages below 50% are rounded down to the nearest whole number with ones above being always rounded up." : undefined}
           isExpanded={expandedSteps.step4}
           onToggle={() =>
             setExpandedSteps((prev) => ({ ...prev, step4: !prev.step4 }))
@@ -317,7 +317,7 @@ export function ResultsSimpleExplanation({
               ? `for Child ${index + 1}`
               : undefined
           }
-          tooltip={
+          tooltip={index === 0 ? (
             <View style={{ paddingVertical: 8 }}>
               <Text
                 style={{
@@ -361,7 +361,7 @@ export function ResultsSimpleExplanation({
                 ))}
               </View>
             </View>
-          }
+          ) : undefined}
           isExpanded={expandedSteps.step5}
           onToggle={() =>
             setExpandedSteps((prev) => ({ ...prev, step5: !prev.step5 }))
