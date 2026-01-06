@@ -388,8 +388,8 @@ export function SpecialCircumstancesPrompt({
                     isCourtDateReason(id)
                   ),
                 }}
-                accessibilityLabel="I have an upcoming court date for child support matters"
-                accessibilityHint="Double tap to check if you have an upcoming court date for child support matters"
+                accessibilityLabel="I have an upcoming court hearing regarding child support."
+                accessibilityHint="Double tap to check if you have an upcoming court hearing regarding child support"
               >
                 <View
                   style={[
@@ -405,7 +405,7 @@ export function SpecialCircumstancesPrompt({
                 </View>
                 <View style={styles.checkboxLabelContainer}>
                   <Text style={styles.checkboxLabel}>
-                    I have an upcoming court date for child support matters
+                    I have an upcoming court hearing regarding child support.
                   </Text>
                   <HelpTooltip
                     what="Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance."
@@ -438,7 +438,7 @@ export function SpecialCircumstancesPrompt({
                 </View>
                 <View style={styles.checkboxLabelContainer}>
                   <Text style={styles.checkboxLabel}>
-                    Is there a property settlement to come?
+                    I have a property settlement pending.
                   </Text>
                   <HelpTooltip
                     what="Pending property settlements can significantly affect child support obligations. A lawyer can help ensure the settlement is properly considered in your assessment."

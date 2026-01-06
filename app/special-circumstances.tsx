@@ -251,7 +251,7 @@ export default function SpecialCircumstancesScreen() {
                                         isCourtDateReason(id)
                                     ),
                                 }}
-                                accessibilityLabel="I have an upcoming court date for child support matters"
+                                accessibilityLabel="I have an upcoming court hearing regarding child support."
                             >
                                 <View
                                     style={[
@@ -267,7 +267,7 @@ export default function SpecialCircumstancesScreen() {
                                 </View>
                                 <View style={styles.checkboxLabelContainer}>
                                     <Text style={styles.checkboxLabel}>
-                                        I have an upcoming court date for child support matters
+                                        I have an upcoming court hearing regarding child support.
                                     </Text>
                                     <HelpTooltip
                                         what="Upcoming court dates are critical events. Professional legal preparation is strongly recommended."
@@ -300,7 +300,7 @@ export default function SpecialCircumstancesScreen() {
                                 </View>
                                 <View style={styles.checkboxLabelContainer}>
                                     <Text style={styles.checkboxLabel}>
-                                        Is there a property settlement to come?
+                                        I have a property settlement pending.
                                     </Text>
                                     <HelpTooltip
                                         what="Pending property settlements can significantly affect child support obligations."

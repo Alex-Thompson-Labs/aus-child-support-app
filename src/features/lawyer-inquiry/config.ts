@@ -55,7 +55,7 @@ export const ENRICHMENT_INQUIRY_TYPES = ['hidden_income', 'binding_agreement'];
  */
 export const COURT_DATE_ENRICHMENT: EnrichmentFactor = {
   id: 'enrichment_court_date',
-  label: 'I have an upcoming court date for child support matters',
+  label: 'I have an upcoming court hearing regarding child support.',
 };
 
 /**

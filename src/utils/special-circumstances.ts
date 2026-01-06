@@ -77,7 +77,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   },
   {
     id: 'special_needs',
-    label: 'Your child has special needs or high care costs',
+    label: 'My child(ren) has special needs or high care costs.',
     description:
       'Cases involving disability, medical conditions, or special educational needs require detailed documentation and legal expertise. Lawyers understand what evidence the Registrar requires and how to present care costs that exceed standard assumptions.',
     category: 'child',
@@ -86,7 +86,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   },
   {
     id: 'contact_costs',
-    label: 'I have high travel costs to spend time with the child.',
+    label: 'I have high travel costs to spend time with my child(ren).',
     description:
       'Significant travel costs for maintaining contact with children can be grounds for adjustment, but require proper documentation and legal presentation.',
     category: 'child',
@@ -104,7 +104,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   },
   {
     id: 'child_resources',
-    label: 'The child has their own income or financial resources.',
+    label: 'My child(ren) has their own income or financial resources.',
     description:
       "When a child has their own income, assets, or financial resources, this can affect the fairness of the child support assessment. Lawyers understand how to present evidence of the child's resources and argue for appropriate adjustments.",
     category: 'other',
