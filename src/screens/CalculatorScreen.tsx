@@ -148,19 +148,19 @@ export function CalculatorScreen() {
       setIncomeSupportA(true);
       if (needsPromptB) {
         // Now ask about Parent B
-        setPendingParent('B');
         setNeedsPromptB(false);
+        setPendingParent('B');
       } else {
         // Done prompting, run calculation
         // Parent B was not asked, so they don't receive income support
-        setIncomeSupportModalVisible(false);
         setPendingParent(null);
+        setIncomeSupportModalVisible(false);
         runCalculation(true, false);
       }
     } else if (pendingParent === 'B') {
       setIncomeSupportB(true);
-      setIncomeSupportModalVisible(false);
       setPendingParent(null);
+      setIncomeSupportModalVisible(false);
       runCalculation(incomeSupportA, true);
     }
   };
@@ -173,19 +173,19 @@ export function CalculatorScreen() {
       setIncomeSupportA(false);
       if (needsPromptB) {
         // Now ask about Parent B
-        setPendingParent('B');
         setNeedsPromptB(false);
+        setPendingParent('B');
       } else {
         // Done prompting, run calculation
         // Parent B was not asked, so they don't receive income support
-        setIncomeSupportModalVisible(false);
         setPendingParent(null);
+        setIncomeSupportModalVisible(false);
         runCalculation(false, false);
       }
     } else if (pendingParent === 'B') {
       setIncomeSupportB(false);
-      setIncomeSupportModalVisible(false);
       setPendingParent(null);
+      setIncomeSupportModalVisible(false);
       runCalculation(incomeSupportA, false);
     }
   };
