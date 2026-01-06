@@ -50,7 +50,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   {
     id: 'income_resources_not_reflected',
     label:
-      'Is the other parent hiding any income, property or financial resources that are not reflected in their taxable income',
+      'The other parent has income or assets not reflected in their tax return.',
     description:
       "When someone's tax return doesn't reflect their true financial position—such as hidden income, cash businesses, trust distributions, investment property, or other assets—a lawyer can help investigate and present evidence to the Registrar or the Court. This requires specialized knowledge of income sources, business structures, and non-taxable resources.",
     category: 'income',
@@ -59,7 +59,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   },
   {
     id: 'earning_capacity',
-    label: "Taxable income below the other parent's earning capacity",
+    label: 'The other parent chooses to earn less than they are capable of.',
     description:
       'Earning capacity assessments are complex—lawyers know how to prove someone is deliberately underemployed or not working to their full potential. The Registrar needs specific evidence and legal arguments to adjust for earning capacity.',
     category: 'income',
@@ -68,7 +68,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   },
   {
     id: 'school_fees',
-    label: 'Private school fees or educational costs',
+    label: 'There are high costs for private school or special education.',
     description:
       'Private school fees and special educational costs beyond standard assumptions require legal arguments for proper consideration in assessments.',
     category: 'child',
@@ -86,7 +86,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   },
   {
     id: 'contact_costs',
-    label: 'High costs of contact (travel for visitation)',
+    label: 'I have high travel costs to spend time with the child.',
     description:
       'Significant travel costs for maintaining contact with children can be grounds for adjustment, but require proper documentation and legal presentation.',
     category: 'child',
@@ -95,7 +95,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   },
   {
     id: 'property_settlement',
-    label: 'Is there a property settlement to come?',
+    label: 'I have a property settlement pending.',
     description:
       'Pending property settlements can significantly affect child support obligations. A lawyer can help ensure the settlement is properly considered in your assessment.',
     category: 'other',
@@ -104,7 +104,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   },
   {
     id: 'child_resources',
-    label: 'The child has income, property or financial resources',
+    label: 'The child has their own income or financial resources.',
     description:
       "When a child has their own income, assets, or financial resources, this can affect the fairness of the child support assessment. Lawyers understand how to present evidence of the child's resources and argue for appropriate adjustments.",
     category: 'other',
@@ -113,7 +113,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   },
   {
     id: 'duty_to_maintain',
-    label: 'Necessary commitments to support another person or child',
+    label: 'I have a duty to support another person or child.',
     description:
       'If you have a legal duty to maintain another person or child, or have necessary expenses supporting them, this can significantly affect your capacity to pay child support. This includes costs of caring for another child, high contact costs with another child, or support obligations to another person.',
     category: 'other',
@@ -354,7 +354,7 @@ export function getCourtDateReasonLabel(date: Date): string {
     month: 'short',
     year: 'numeric',
   });
-  return `I have an upcoming court date (${formatted})`;
+  return `I have an upcoming court hearing regarding child support. (${formatted})`;
 }
 
 /**
