@@ -13,7 +13,6 @@ import { createShadow } from '../utils/shadow-styles';
 import { ChildRow } from './ChildRow';
 import { HelpTooltip } from './HelpTooltip';
 import { RelevantDependentsPopover } from './RelevantDependentsPopover';
-import { BrandSwitch } from './ui/BrandSwitch';
 import { YearSelector } from './YearSelector';
 
 // ============================================================================
@@ -33,8 +32,6 @@ import { YearSelector } from './YearSelector';
 interface CalculatorFormProps {
   incomeA: number;
   incomeB: number;
-  supportA: boolean;
-  supportB: boolean;
   childrenData: ChildInput[];
   relDepA: { u13: number; plus13: number };
   relDepB: { u13: number; plus13: number };
@@ -47,8 +44,6 @@ interface CalculatorFormProps {
   onYearChange: (year: AssessmentYear) => void;
   onIncomeAChange: (value: number) => void;
   onIncomeBChange: (value: number) => void;
-  onSupportAChange: (checked: boolean) => void;
-  onSupportBChange: (checked: boolean) => void;
   onAddChild: () => void;
   onRemoveChild: (childId: string) => void;
   onUpdateChild: (childId: string, updates: Partial<ChildInput>) => void;
@@ -62,8 +57,6 @@ interface CalculatorFormProps {
 export function CalculatorForm({
   incomeA,
   incomeB,
-  supportA,
-  supportB,
   childrenData,
   relDepA,
   relDepB,
@@ -76,8 +69,6 @@ export function CalculatorForm({
   onYearChange,
   onIncomeAChange,
   onIncomeBChange,
-  onSupportAChange,
-  onSupportBChange,
   onAddChild,
   onRemoveChild,
   onUpdateChild,
@@ -189,23 +180,6 @@ export function CalculatorForm({
                 accessibilityHint="Enter Parent A's annual income in dollars"
               />
             </View>
-            <View style={styles.switchRow}>
-              <BrandSwitch
-                value={supportA}
-                onValueChange={onSupportAChange}
-                style={styles.smallSwitch}
-                accessibilityLabel="Parent A receives income support"
-                accessibilityHint="Toggle if Parent A receives income support payments"
-                // @ts-ignore - Explicitly force the web attribute
-                aria-checked={supportA}
-              />
-              <Text style={styles.switchLabelSmall}>Inc. support</Text>
-              <HelpTooltip
-                what="Whether or not a parent received an income support payment in their taxable income can move the assessment away from using the formula to a fixed or minimum rate under certain conditions"
-                why=""
-                hideWhatLabel
-              />
-            </View>
           </View>
           {errors.incomeA && (
             <Text style={styles.errorText}>{errors.incomeA}</Text>
@@ -251,18 +225,6 @@ export function CalculatorForm({
                 accessibilityLabel="Parent B adjusted taxable income"
                 accessibilityHint="Enter Parent B's annual income in dollars"
               />
-            </View>
-            <View style={styles.switchRow}>
-              <BrandSwitch
-                value={supportB}
-                onValueChange={onSupportBChange}
-                style={styles.smallSwitch}
-                accessibilityLabel="Parent B receives income support"
-                accessibilityHint="Toggle if Parent B receives income support payments"
-                // @ts-ignore - Explicitly force the web attribute
-                aria-checked={supportB}
-              />
-              <Text style={styles.switchLabelSmall}>Inc. support</Text>
             </View>
           </View>
           {errors.incomeB && (

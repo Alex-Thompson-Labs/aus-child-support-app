@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   KeyboardAvoidingView,
   Linking,
@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCalculator } from '../hooks/useCalculator';
+import { getYearConstants } from '../utils/child-support-constants';
 import { useResponsive } from '../utils/responsive';
 import { shadowPresets } from '../utils/shadow-styles';
 
@@ -20,6 +21,7 @@ import { shadowPresets } from '../utils/shadow-styles';
 import { CalculatorFAQ } from '../components/calculator/CalculatorFAQ';
 import { CalculatorForm } from '../components/CalculatorForm';
 import { CalculatorResults } from '../components/CalculatorResults';
+import { IncomeSupportModal } from '../components/IncomeSupportModal';
 import { PrivacyPolicyLink } from '../components/PrivacyPolicyLink';
 
 export function CalculatorScreen() {
@@ -61,14 +63,6 @@ export function CalculatorScreen() {
     setFormState((prev) => ({ ...prev, incomeB: value }));
     setIsStale(true);
   };
-  const handleSupportAChange = (checked: boolean) => {
-    setFormState((prev) => ({ ...prev, supportA: checked }));
-    setIsStale(true);
-  };
-  const handleSupportBChange = (checked: boolean) => {
-    setFormState((prev) => ({ ...prev, supportB: checked }));
-    setIsStale(true);
-  };
 
   const handleRelDepAChange = (
     updates: Partial<{ u13: number; plus13: number }>
@@ -95,11 +89,108 @@ export function CalculatorScreen() {
     setIsStale(true);
   };
 
+  // =========================================================================
+  // Income Support Modal Logic
+  // =========================================================================
+  const [incomeSupportModalVisible, setIncomeSupportModalVisible] = useState(false);
+  const [pendingParent, setPendingParent] = useState<'A' | 'B' | null>(null);
+  const [incomeSupportA, setIncomeSupportA] = useState(false);
+  const [incomeSupportB, setIncomeSupportB] = useState(false);
+  // Track which parents need to be asked (for sequential prompting)
+  const [needsPromptB, setNeedsPromptB] = useState(false);
+
+  /**
+   * handleCalculate intercepts the calculate button press.
+   * If either parent's income is below the SSA threshold, shows
+   * the income support modal instead of calculating immediately.
+   */
+  const handleCalculate = () => {
+    const { SSA } = getYearConstants(selectedYear);
+    const incomeA = formState.incomeA;
+    const incomeB = formState.incomeB;
+
+    const aIsBelowThreshold = incomeA > 0 && incomeA < SSA;
+    const bIsBelowThreshold = incomeB > 0 && incomeB < SSA;
+
+    if (aIsBelowThreshold) {
+      // Need to ask about Parent A first
+      setPendingParent('A');
+      setNeedsPromptB(bIsBelowThreshold); // Remember if we need to ask about B next
+      setIncomeSupportModalVisible(true);
+    } else if (bIsBelowThreshold) {
+      // Only Parent B is below threshold
+      setPendingParent('B');
+      setNeedsPromptB(false);
+      setIncomeSupportModalVisible(true);
+    } else {
+      // Neither parent is below threshold - proceed with calculation
+      runCalculation(false, false);
+    }
+  };
+
+  /**
+   * Actually runs the calculation with the determined support flags.
+   */
+  const runCalculation = (supportA: boolean, supportB: boolean) => {
+    // Set the support values in form state and then calculate
+    setFormState((prev) => ({ ...prev, supportA, supportB }));
+    // Use a timeout to ensure state is updated before calculating
+    setTimeout(() => {
+      calculate();
+    }, 0);
+  };
+
+  /**
+   * Handle "Yes" response from the income support modal.
+   */
+  const handleIncomeSupportYes = () => {
+    if (pendingParent === 'A') {
+      setIncomeSupportA(true);
+      if (needsPromptB) {
+        // Now ask about Parent B
+        setPendingParent('B');
+        setNeedsPromptB(false);
+      } else {
+        // Done prompting, run calculation
+        setIncomeSupportModalVisible(false);
+        setPendingParent(null);
+        runCalculation(true, incomeSupportB);
+      }
+    } else if (pendingParent === 'B') {
+      setIncomeSupportB(true);
+      setIncomeSupportModalVisible(false);
+      setPendingParent(null);
+      runCalculation(incomeSupportA, true);
+    }
+  };
+
+  /**
+   * Handle "No" response from the income support modal.
+   */
+  const handleIncomeSupportNo = () => {
+    if (pendingParent === 'A') {
+      setIncomeSupportA(false);
+      if (needsPromptB) {
+        // Now ask about Parent B
+        setPendingParent('B');
+        setNeedsPromptB(false);
+      } else {
+        // Done prompting, run calculation
+        setIncomeSupportModalVisible(false);
+        setPendingParent(null);
+        runCalculation(false, incomeSupportB);
+      }
+    } else if (pendingParent === 'B') {
+      setIncomeSupportB(false);
+      setIncomeSupportModalVisible(false);
+      setPendingParent(null);
+      runCalculation(incomeSupportA, false);
+    }
+  };
+
   const formProps = {
     incomeA: formState.incomeA,
     incomeB: formState.incomeB,
-    supportA: formState.supportA,
-    supportB: formState.supportB,
     childrenData: formState.children,
     relDepA: formState.relDepA,
     relDepB: formState.relDepB,
@@ -112,14 +203,12 @@ export function CalculatorScreen() {
     onYearChange: handleYearChange,
     onIncomeAChange: handleIncomeAChange,
     onIncomeBChange: handleIncomeBChange,
-    onSupportAChange: handleSupportAChange,
-    onSupportBChange: handleSupportBChange,
     onAddChild: addChild,
     onRemoveChild: removeChild,
     onUpdateChild: updateChild,
     onRelDepAChange: handleRelDepAChange,
     onRelDepBChange: handleRelDepBChange,
-    onCalculate: calculate,
+    onCalculate: handleCalculate,
     onReset: reset,
   };
 
@@ -207,6 +296,14 @@ export function CalculatorScreen() {
             </View>
           </View>
         )}
+
+        {/* Income Support Modal */}
+        <IncomeSupportModal
+          visible={incomeSupportModalVisible}
+          parentName={pendingParent === 'A' ? 'You' : 'Other Parent'}
+          onYes={handleIncomeSupportYes}
+          onNo={handleIncomeSupportNo}
+        />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
