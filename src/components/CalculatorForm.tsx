@@ -390,6 +390,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     marginBottom: 8,
+    zIndex: 1000,
   },
   stepBadge: {
     width: 24,

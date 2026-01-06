@@ -73,7 +73,7 @@ export function YearSelector({ value, onChange }: YearSelectorProps) {
 const styles = StyleSheet.create({
     container: {
         position: 'relative',
-        zIndex: 100,
+        zIndex: 1000,
     },
     selector: {
         flexDirection: 'row',
@@ -108,9 +108,10 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.15,
         shadowRadius: 8,
-        elevation: 4,
+        elevation: 10,
         minWidth: 80,
-        overflow: 'hidden',
+        overflow: 'visible',
+        zIndex: 1001,
     },
     option: {
         paddingHorizontal: 12,
