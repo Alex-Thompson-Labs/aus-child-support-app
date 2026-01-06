@@ -162,6 +162,7 @@ export function SmartConversionFooter({
           careData: JSON.stringify(careData),
           preFillMessage: cardConfig.preFillMessage,
           payer: results.payer,
+          specialCircumstances: JSON.stringify(formData?.selectedCircumstances ?? []),
         },
       });
 

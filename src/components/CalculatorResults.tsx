@@ -294,7 +294,7 @@ export function CalculatorResults({
         carePercentages={results.childResults.map(
           (child) => child.roundedCareA
         )}
-        formData={formData}
+        formData={localFormData}
         onBeforeNavigate={() => setIsExpanded(false)}
       />
     </ScrollView>
