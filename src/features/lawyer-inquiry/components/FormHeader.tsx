@@ -10,14 +10,28 @@ import { useRouter } from 'expo-router';
 import { headerStyles } from '../styles';
 import type { FormHeaderProps } from '../types';
 
-export function FormHeader({ config, returnTo }: FormHeaderProps) {
+// Map source values to their redirect URLs
+const SOURCE_REDIRECT_MAP: Record<string, string> = {
+  blog: 'https://auschildsupport.com/blog/',
+};
+
+export function FormHeader({ config, source, returnTo }: FormHeaderProps) {
   const router = useRouter();
 
   const handleClose = () => {
-    // If returnTo URL is provided and we're on web, redirect externally
-    if (returnTo && Platform.OS === 'web') {
-      window.location.href = returnTo;
-      return;
+    // Only handle external redirects on web
+    if (Platform.OS === 'web') {
+      // Explicit returnTo URL takes priority
+      if (returnTo) {
+        window.location.href = returnTo;
+        return;
+      }
+
+      // Check if source maps to a known redirect URL
+      if (source && SOURCE_REDIRECT_MAP[source]) {
+        window.location.href = SOURCE_REDIRECT_MAP[source];
+        return;
+      }
     }
 
     // Default behavior: navigate within the app

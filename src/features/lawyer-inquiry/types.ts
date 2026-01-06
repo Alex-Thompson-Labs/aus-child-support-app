@@ -175,6 +175,8 @@ export interface EnrichmentViewProps {
 
 export interface FormHeaderProps {
   config: InquiryTypeConfig;
-  /** External URL to redirect to on exit (e.g., blog). If provided, overrides default navigation. */
+  /** Source indicator for exit redirect (e.g., "blog" redirects to blog URL) */
+  source?: string;
+  /** Explicit external URL to redirect to on exit. Takes priority over source. */
   returnTo?: string;
 }

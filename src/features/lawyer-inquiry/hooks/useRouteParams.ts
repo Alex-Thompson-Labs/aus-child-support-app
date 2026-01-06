@@ -21,7 +21,8 @@ export interface ParsedRouteParams {
   payer: string; // "Parent A", "Parent B", or "Neither"
 
   // External navigation (for blog integration)
-  returnTo: string | undefined; // External URL to return to on exit (e.g., blog)
+  source: string | undefined; // Source indicator (e.g., "blog") for exit redirect
+  returnTo: string | undefined; // Explicit URL to return to on exit
 
   // Computed values
   isDirectMode: boolean;
@@ -50,7 +51,9 @@ export function useRouteParams(): ParsedRouteParams {
   // Parse payer (from calculation results)
   const payer = typeof params.payer === 'string' ? params.payer : 'Neither';
 
-  // Parse returnTo for external navigation (blog integration)
+  // Parse source and returnTo for external navigation (blog integration)
+  const source =
+    typeof params.source === 'string' ? params.source : undefined;
   const returnTo =
     typeof params.returnTo === 'string' ? params.returnTo : undefined;
 
@@ -116,6 +119,7 @@ export function useRouteParams(): ParsedRouteParams {
     mode,
     reason,
     payer,
+    source,
     returnTo,
     isDirectMode,
     inquiryConfig,
