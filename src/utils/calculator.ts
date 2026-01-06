@@ -5,7 +5,7 @@ export interface ChildInput {
   age: 'Under 13' | '13+';
   careAmountA: number;
   careAmountB: number;
-  carePeriod: 'week' | 'fortnight' | 'year';
+  carePeriod: 'week' | 'fortnight' | 'year' | 'percent';
 }
 
 export interface RelevantDependents {

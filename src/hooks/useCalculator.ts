@@ -106,32 +106,36 @@ export function useCalculator() {
 
     // Validate each child
     formState.children.forEach((child) => {
-      const maxNights =
+      const maxValue =
         child.carePeriod === 'week'
           ? 7
           : child.carePeriod === 'fortnight'
             ? 14
             : child.carePeriod === 'year'
               ? 365
-              : 14;
+              : 100; // percent
+
+      const isPercent = child.carePeriod === 'percent';
+      const unitLabel = isPercent ? 'percentage' : 'nights';
+      const unitSymbol = isPercent ? '%' : '';
 
       if (child.careAmountA < 0) {
-        newErrors[child.id] = 'Parent A nights must be 0 or more.';
-      } else if (child.careAmountA > maxNights) {
+        newErrors[child.id] = `Parent A ${unitLabel} must be 0 or more.`;
+      } else if (child.careAmountA > maxValue) {
         newErrors[child.id] =
-          `Parent A nights cannot exceed ${maxNights} for ${child.carePeriod}.`;
+          `Parent A ${unitLabel} cannot exceed ${maxValue}${unitSymbol} for ${child.carePeriod}.`;
       }
       if (child.careAmountB < 0) {
-        newErrors[child.id] = 'Parent B nights must be 0 or more.';
-      } else if (child.careAmountB > maxNights) {
+        newErrors[child.id] = `Parent B ${unitLabel} must be 0 or more.`;
+      } else if (child.careAmountB > maxValue) {
         newErrors[child.id] =
-          `Parent B nights cannot exceed ${maxNights} for ${child.carePeriod}.`;
+          `Parent B ${unitLabel} cannot exceed ${maxValue}${unitSymbol} for ${child.carePeriod}.`;
       }
-      // Validate sum of nights
-      const totalNights = child.careAmountA + child.careAmountB;
-      if (totalNights > maxNights) {
+      // Validate sum
+      const total = child.careAmountA + child.careAmountB;
+      if (total > maxValue) {
         newErrors[child.id] =
-          `Total nights cannot exceed ${maxNights} per ${child.carePeriod}. Currently: ${totalNights}`;
+          `Total ${unitLabel} cannot exceed ${maxValue}${unitSymbol} per ${child.carePeriod}. Currently: ${total}${unitSymbol}`;
       }
     });
 

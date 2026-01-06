@@ -2,7 +2,7 @@ import React from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { webClickableStyles } from '../utils/responsive';
 
-type Period = 'week' | 'fortnight' | 'year';
+type Period = 'week' | 'fortnight' | 'year' | 'percent';
 
 interface PeriodPickerProps {
   value: Period;
@@ -13,6 +13,7 @@ const PERIOD_OPTIONS: { value: Period; label: string }[] = [
   { value: 'week', label: 'Week' },
   { value: 'fortnight', label: 'Fortnight' },
   { value: 'year', label: 'Year' },
+  { value: 'percent', label: 'Percentage' },
 ];
 
 export function PeriodPicker({ value, onChange }: PeriodPickerProps) {

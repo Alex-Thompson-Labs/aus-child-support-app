@@ -33,12 +33,14 @@ export function ChildRow({
       ? 7
       : child.carePeriod === 'fortnight'
         ? 14
-        : 365;
+        : child.carePeriod === 'year'
+          ? 365
+          : 100; // percent
 
   // Calculate if total exceeds maximum
   const totalCare = child.careAmountA + child.careAmountB;
   const isOverLimit = totalCare > maxValue;
-  const periodLabel = ' nights';
+  const periodLabel = child.carePeriod === 'percent' ? '%' : ' nights';
 
   // Helper function to handle care amount changes with auto-adjustment
   const handleCareAmountAChange = (text: string) => {
@@ -53,12 +55,15 @@ export function ChildRow({
     onUpdate({ careAmountA: newAmountA, careAmountB: newAmountB });
   };
 
-  const handlePeriodChange = (period: 'week' | 'fortnight' | 'year') => {
+  const handlePeriodChange = (period: 'week' | 'fortnight' | 'year' | 'percent') => {
     const maxNights = CARE_PERIOD_DAYS[period] || 14;
+    // For percentage, use default 57/43 split
+    const defaultA = period === 'percent' ? 57 : Math.round(maxNights * 0.57);
+    const defaultB = period === 'percent' ? 43 : Math.round(maxNights * 0.43);
     onUpdate({
       carePeriod: period,
-      careAmountA: Math.round(maxNights * 0.57),
-      careAmountB: Math.round(maxNights * 0.43),
+      careAmountA: defaultA,
+      careAmountB: defaultB,
     });
   };
 
