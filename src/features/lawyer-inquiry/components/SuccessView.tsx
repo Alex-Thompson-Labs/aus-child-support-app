@@ -16,8 +16,8 @@ export function SuccessView() {
         <Text style={successStyles.successIcon}>✓</Text>
         <Text style={successStyles.successTitle}>Thank You!</Text>
         <Text style={successStyles.successMessage}>
-          Your inquiry has been submitted.{'\n'}A lawyer will contact you within
-          24 hours.
+          Your inquiry has been submitted.{'\n'}You can expect a call or email
+          within the next 1-2 business days.
         </Text>
       </View>
     </SafeAreaView>
