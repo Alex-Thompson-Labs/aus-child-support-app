@@ -90,6 +90,11 @@ export function CalculatorScreen() {
     setIsStale(true);
   };
 
+  const handleYearChange = (year: typeof selectedYear) => {
+    setSelectedYear(year);
+    setIsStale(true);
+  };
+
   const formProps = {
     incomeA: formState.incomeA,
     incomeB: formState.incomeB,
@@ -104,7 +109,7 @@ export function CalculatorScreen() {
     csiA: results?.CSI_A,
     csiB: results?.CSI_B,
     selectedYear: selectedYear,
-    onYearChange: setSelectedYear,
+    onYearChange: handleYearChange,
     onIncomeAChange: handleIncomeAChange,
     onIncomeBChange: handleIncomeBChange,
     onSupportAChange: handleSupportAChange,
