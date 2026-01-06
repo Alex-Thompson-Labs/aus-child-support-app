@@ -5,13 +5,28 @@
  */
 
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Platform, Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { headerStyles } from '../styles';
 import type { FormHeaderProps } from '../types';
 
-export function FormHeader({ config }: FormHeaderProps) {
+export function FormHeader({ config, returnTo }: FormHeaderProps) {
   const router = useRouter();
+
+  const handleClose = () => {
+    // If returnTo URL is provided and we're on web, redirect externally
+    if (returnTo && Platform.OS === 'web') {
+      window.location.href = returnTo;
+      return;
+    }
+
+    // Default behavior: navigate within the app
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/');
+    }
+  };
 
   return (
     <View style={headerStyles.header}>
@@ -23,13 +38,7 @@ export function FormHeader({ config }: FormHeaderProps) {
       </View>
       <Pressable
         style={headerStyles.closeButton}
-        onPress={() => {
-          if (router.canGoBack()) {
-            router.back();
-          } else {
-            router.replace('/');
-          }
-        }}
+        onPress={handleClose}
         accessible={true}
         accessibilityRole="button"
         accessibilityLabel="Close form"

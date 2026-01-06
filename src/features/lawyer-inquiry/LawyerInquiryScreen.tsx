@@ -100,7 +100,7 @@ export default function LawyerInquiryScreen() {
         <TrustBadge />
 
         {/* Header with close button */}
-        <FormHeader config={params.inquiryConfig} />
+        <FormHeader config={params.inquiryConfig} returnTo={params.returnTo} />
 
         <ScrollView
           style={containerStyles.scrollView}

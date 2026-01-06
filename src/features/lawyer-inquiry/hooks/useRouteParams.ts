@@ -20,6 +20,9 @@ export interface ParsedRouteParams {
   reason: string | undefined;
   payer: string; // "Parent A", "Parent B", or "Neither"
 
+  // External navigation (for blog integration)
+  returnTo: string | undefined; // External URL to return to on exit (e.g., blog)
+
   // Computed values
   isDirectMode: boolean;
   inquiryConfig: InquiryTypeConfig;
@@ -46,6 +49,10 @@ export function useRouteParams(): ParsedRouteParams {
 
   // Parse payer (from calculation results)
   const payer = typeof params.payer === 'string' ? params.payer : 'Neither';
+
+  // Parse returnTo for external navigation (blog integration)
+  const returnTo =
+    typeof params.returnTo === 'string' ? params.returnTo : undefined;
 
   // Detect Direct Mode: explicit mode=direct OR missing calculation data
   const isDirectMode = useMemo(() => {
@@ -109,6 +116,7 @@ export function useRouteParams(): ParsedRouteParams {
     mode,
     reason,
     payer,
+    returnTo,
     isDirectMode,
     inquiryConfig,
     preFillMessage,
