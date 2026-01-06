@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { ChildInput, FormErrors } from '../utils/calculator';
+import type { AssessmentYear } from '../utils/child-support-constants';
 import {
   MAX_CONTENT_WIDTH,
   isWeb,
@@ -13,6 +14,7 @@ import { ChildRow } from './ChildRow';
 import { HelpTooltip } from './HelpTooltip';
 import { RelevantDependentsPopover } from './RelevantDependentsPopover';
 import { BrandSwitch } from './ui/BrandSwitch';
+import { YearSelector } from './YearSelector';
 
 // ============================================================================
 // Component Documentation
@@ -41,6 +43,8 @@ interface CalculatorFormProps {
   incomePercB?: number;
   csiA?: number;
   csiB?: number;
+  selectedYear: AssessmentYear;
+  onYearChange: (year: AssessmentYear) => void;
   onIncomeAChange: (value: number) => void;
   onIncomeBChange: (value: number) => void;
   onSupportAChange: (checked: boolean) => void;
@@ -52,7 +56,7 @@ interface CalculatorFormProps {
   onRelDepBChange: (updates: Partial<{ u13: number; plus13: number }>) => void;
   onCalculate: () => void;
   onReset: () => void;
-  isDesktopWeb?: boolean; // Controls padding and width for two-column layout
+  isDesktopWeb?: boolean;
 }
 
 export function CalculatorForm({
@@ -68,6 +72,8 @@ export function CalculatorForm({
   incomePercB,
   csiA,
   csiB,
+  selectedYear,
+  onYearChange,
   onIncomeAChange,
   onIncomeBChange,
   onSupportAChange,
@@ -87,10 +93,10 @@ export function CalculatorForm({
   const webContainerStyle =
     isWeb && !isDesktopWeb
       ? {
-          maxWidth: MAX_CONTENT_WIDTH,
-          width: '100%' as const,
-          alignSelf: 'center' as const,
-        }
+        maxWidth: MAX_CONTENT_WIDTH,
+        width: '100%' as const,
+        alignSelf: 'center' as const,
+      }
       : {};
 
   // Adjust bottom padding
@@ -123,6 +129,15 @@ export function CalculatorForm({
           >
             INCOME
           </Text>
+          {/* Year Selector with Tooltip */}
+          <View style={styles.yearSelectorContainer}>
+            <YearSelector value={selectedYear} onChange={onYearChange} />
+            <HelpTooltip
+              what="Select 2025 to check existing assessments or compare liability changes for the current period."
+              why=""
+              hideWhatLabel
+            />
+          </View>
         </View>
 
         {/* Parent A */}
@@ -395,6 +410,12 @@ const styles = StyleSheet.create({
     color: '#0f172a', // slate-900 - dark slate
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+  },
+  yearSelectorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginLeft: 'auto', // Push to right side
   },
   cardSubtitle: {
     fontSize: 12,

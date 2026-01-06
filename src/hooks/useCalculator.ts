@@ -12,7 +12,10 @@ import {
   mapCareToCostPercent,
   roundCarePercentage,
 } from '../utils/child-support-calculations';
-import { FAR, MAR, MAX_PPS, SSA } from '../utils/child-support-constants';
+import {
+  AssessmentYear,
+  getYearConstants,
+} from '../utils/child-support-constants';
 
 export interface CalculatorFormState {
   incomeA: number;
@@ -42,6 +45,7 @@ const initialFormState: CalculatorFormState = {
 export function useCalculator() {
   const [formState, setFormState] =
     useState<CalculatorFormState>(initialFormState);
+  const [selectedYear, setSelectedYear] = useState<AssessmentYear>('2026');
   const [errors, setErrors] = useState<FormErrors>({});
   const [results, setResults] = useState<CalculationResults | null>(null);
   const [isStale, setIsStale] = useState(false);
@@ -148,11 +152,13 @@ export function useCalculator() {
       return null;
     }
 
+    // Get year-specific constants
+    const { SSA, FAR, MAR, MAX_PPS } = getYearConstants(selectedYear);
+
     const { incomeA, incomeB, supportA, supportB, relDepA, relDepB } =
       formState;
     const ATI_A = incomeA;
     const ATI_B = incomeB;
-    // Using 2025 rates - current calendar year
 
     // Convert children to calculation format
     const children = formState.children.map((c) => ({
@@ -198,12 +204,12 @@ export function useCalculator() {
 
     // Step 2-4: Calculate Child Support Income (CSI)
     const relDepDeductibleA = getChildCost(
-      '2025',
+      selectedYear,
       relDepChildrenA,
       Math.max(0, ATI_A - SSA)
     ).cost;
     const relDepDeductibleB = getChildCost(
-      '2025',
+      selectedYear,
       relDepChildrenB,
       Math.max(0, ATI_B - SSA)
     ).cost;
@@ -219,7 +225,7 @@ export function useCalculator() {
 
     // Step 5: Calculate Total Cost of Children
     const { cost: totalCost, bracketInfo: costBracketInfo } = getChildCost(
-      '2025',
+      selectedYear,
       children,
       CCSI
     );
@@ -453,7 +459,7 @@ export function useCalculator() {
       receiver,
       finalPaymentAmount,
     };
-  }, [formState, validateForm]);
+  }, [formState, selectedYear, validateForm]);
 
   const calculate = useCallback(() => {
     // Optimize INP: Yield to main thread to allow UI feedback (button press) to render
@@ -484,6 +490,7 @@ export function useCalculator() {
     setResults(null);
     setErrors({});
     setIsStale(false);
+    setSelectedYear('2026'); // Reset to default year
     setResetTimestamp(Date.now()); // Signal that reset occurred
   }, []);
 
@@ -508,6 +515,8 @@ export function useCalculator() {
   return {
     formState,
     setFormState,
+    selectedYear,
+    setSelectedYear,
     errors,
     results,
     isStale,

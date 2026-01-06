@@ -8,19 +8,34 @@ export const CARE_PERIOD_DAYS = {
 
 export type CarePeriod = keyof typeof CARE_PERIOD_DAYS;
 
-// Child Support Constants for 2025 Calendar Year
+// Re-export year configuration types and utilities
+export {
+  AssessmentYear, getYearConfig,
+  getYearConstants, YEARLY_CONFIG
+} from './year-config';
 
-// Fixed Annual Rate
-export const FAR = 1768;
+// =============================================================================
+// Default constants (2026) for backward compatibility
+// =============================================================================
+// These exports use 2026 as the current assessment year default.
+// For year-specific calculations, use getYearConstants(year) instead.
 
-// Maximum Parenting Payment Single
-export const MAX_PPS = 26195;
+import { YEARLY_CONFIG } from './year-config';
 
-// Minimum Annual Rate
-export const MAR = 534;
+const DEFAULT_YEAR = '2026' as const;
+const defaultConfig = YEARLY_CONFIG[DEFAULT_YEAR];
 
-// Self-Support Amount
-export const SSA = 29841;
+/** Fixed Annual Rate (default: 2026) */
+export const FAR = defaultConfig.FIXED_ANNUAL_RATE;
 
-// Assessment year type (for cost table compatibility)
-export type AssessmentYear = '2025';
+/** Maximum Parenting Payment Single (default: 2026) */
+export const MAX_PPS = defaultConfig.PPS_MAX;
+
+/** Minimum Annual Rate (default: 2026) */
+export const MAR = defaultConfig.MIN_ANNUAL_RATE;
+
+/** Self-Support Amount (default: 2026) */
+export const SSA = defaultConfig.SELF_SUPPORT;
+
+/** MTAWE Income Cap (default: 2026) */
+export const MTAWE_CAP = defaultConfig.MTAWE_CAP;

@@ -13,6 +13,7 @@ import {
 } from '@/src/utils/child-support-calculations';
 import { SSA } from '@/src/utils/child-support-constants';
 import { isWeb } from '@/src/utils/responsive';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
@@ -26,9 +27,8 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getEnrichmentFactors, COURT_DATE_ENRICHMENT } from '../config';
+import { COURT_DATE_ENRICHMENT, getEnrichmentFactors } from '../config';
 import {
   buttonStyles,
   containerStyles,
@@ -98,7 +98,7 @@ export function EnrichmentView({
     const combinedIncome = adjustedIncomeA + adjustedIncomeB;
 
     // Get cost of children
-    const { cost } = getChildCost('2025', children, combinedIncome);
+    const { cost } = getChildCost('2026', children, combinedIncome);
 
     // Calculate income shares
     const incomeShareA = combinedIncome > 0 ? adjustedIncomeA / combinedIncome : 0.5;

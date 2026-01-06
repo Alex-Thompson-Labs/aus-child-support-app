@@ -26,6 +26,8 @@ export function CalculatorScreen() {
   const {
     formState,
     setFormState,
+    selectedYear,
+    setSelectedYear,
     errors,
     results,
     isStale,
@@ -101,6 +103,8 @@ export function CalculatorScreen() {
     incomePercB: results?.incomePercB,
     csiA: results?.CSI_A,
     csiB: results?.CSI_B,
+    selectedYear: selectedYear,
+    onYearChange: setSelectedYear,
     onIncomeAChange: handleIncomeAChange,
     onIncomeBChange: handleIncomeBChange,
     onSupportAChange: handleSupportAChange,
