@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   KeyboardAvoidingView,
   Linking,
@@ -100,6 +100,16 @@ export function CalculatorScreen() {
   const [needsPromptB, setNeedsPromptB] = useState(false);
   // Use a ref to store Parent A's response immediately (not subject to async state updates)
   const tempParentAResponseRef = React.useRef(false);
+  // Track if we should auto-calculate after support values are set
+  const shouldAutoCalculateRef = useRef(false);
+
+  // Auto-calculate when support values change (triggered by runCalculation)
+  useEffect(() => {
+    if (shouldAutoCalculateRef.current) {
+      shouldAutoCalculateRef.current = false;
+      calculate();
+    }
+  }, [formState.supportA, formState.supportB, calculate]);
 
   /**
    * handleCalculate intercepts the calculate button press.
@@ -134,12 +144,10 @@ export function CalculatorScreen() {
    * Actually runs the calculation with the determined support flags.
    */
   const runCalculation = (supportA: boolean, supportB: boolean) => {
-    // Set the support values in form state and then calculate
+    // Set flag to trigger calculation in useEffect after state updates
+    shouldAutoCalculateRef.current = true;
+    // Update state - this will trigger the useEffect above
     setFormState((prev) => ({ ...prev, supportA, supportB }));
-    // Use a timeout to ensure state is updated before calculating
-    setTimeout(() => {
-      calculate();
-    }, 0);
   };
 
   /**
