@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCalculator } from '../hooks/useCalculator';
+import { convertCareToPercentage } from '../utils/child-support-calculations';
 import { getYearConstants } from '../utils/child-support-constants';
 import { useResponsive } from '../utils/responsive';
 import { shadowPresets } from '../utils/shadow-styles';
@@ -117,25 +118,51 @@ export function CalculatorScreen() {
    * the income support modal instead of calculating immediately.
    */
   const handleCalculate = () => {
-    const { SSA } = getYearConstants(selectedYear);
+    const { SSA, MAX_PPS } = getYearConstants(selectedYear);
     const incomeA = formState.incomeA;
     const incomeB = formState.incomeB;
 
-    const aIsBelowThreshold = incomeA >= 0 && incomeA < SSA;
-    const bIsBelowThreshold = incomeB >= 0 && incomeB < SSA;
+    // Helper to determine if a parent needs the income support prompt
+    const needsIncomeSupportPrompt = (
+      income: number,
+      careKey: 'careAmountA' | 'careAmountB'
+    ): boolean => {
+      // Check if parent has < 14% care for at least one child
+      const hasLessThan14Care = formState.children.some(child => {
+        const carePercent = convertCareToPercentage(child[careKey], child.carePeriod);
+        return carePercent < 14;
+      });
 
-    if (aIsBelowThreshold) {
+      // Check if parent has < 35% care for at least one child
+      const hasLessThan35Care = formState.children.some(child => {
+        const carePercent = convertCareToPercentage(child[careKey], child.carePeriod);
+        return carePercent < 35;
+      });
+
+      // Rule 1: Income < SSA AND less than 14% care of at least one child
+      const rule1 = income < SSA && hasLessThan14Care;
+
+      // Rule 2: Income < MAX_PPS AND less than 35% care of at least one child
+      const rule2 = income < MAX_PPS && hasLessThan35Care;
+
+      return rule1 || rule2;
+    };
+
+    const promptA = needsIncomeSupportPrompt(incomeA, 'careAmountA');
+    const promptB = needsIncomeSupportPrompt(incomeB, 'careAmountB');
+
+    if (promptA) {
       // Need to ask about Parent A first
       setPendingParent('A');
-      setNeedsPromptB(bIsBelowThreshold); // Remember if we need to ask about B next
+      setNeedsPromptB(promptB); // Remember if we need to ask about B next
       setIncomeSupportModalVisible(true);
-    } else if (bIsBelowThreshold) {
-      // Only Parent B is below threshold
+    } else if (promptB) {
+      // Only Parent B needs prompting
       setPendingParent('B');
       setNeedsPromptB(false);
       setIncomeSupportModalVisible(true);
     } else {
-      // Neither parent is below threshold - proceed with calculation
+      // Neither parent needs prompting - proceed with calculation
       runCalculation(false, false);
     }
   };
