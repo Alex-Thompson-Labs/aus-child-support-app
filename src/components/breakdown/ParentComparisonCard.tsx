@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { theme } from '../../theme';
 
 export interface ParentComparisonCardProps {
     title: string;
@@ -12,6 +13,8 @@ export interface ParentComparisonCardProps {
     careValue?: string;
     costValue?: string;
     children?: React.ReactNode;
+    /** Apply user highlight color (for "You" elements) */
+    isUserHighlighted?: boolean;
 }
 
 export function ParentComparisonCard({
@@ -24,12 +27,14 @@ export function ParentComparisonCard({
     careValue,
     costValue,
     children,
+    isUserHighlighted = false,
 }: ParentComparisonCardProps) {
+    const highlightColor = isUserHighlighted ? theme.colors.userHighlight : undefined;
     // If children are provided, render those instead of the simple label/value pattern
     if (children) {
         return (
             <View style={styles.incomePercentageCard}>
-                <Text style={styles.incomePercentageCardTitle}>{title}</Text>
+                <Text style={[styles.incomePercentageCardTitle, highlightColor && { color: highlightColor }]}>{title}</Text>
                 {children}
             </View>
         );
@@ -39,8 +44,8 @@ export function ParentComparisonCard({
     if (formula) {
         return (
             <View style={styles.incomePercentageCard}>
-                <Text style={styles.incomePercentageCardTitle}>{title}</Text>
-                <Text style={styles.incomePercentageFormula}>{formula}</Text>
+                <Text style={[styles.incomePercentageCardTitle, highlightColor && { color: highlightColor }]}>{title}</Text>
+                <Text style={[styles.incomePercentageFormula, highlightColor && { color: highlightColor }]}>{formula}</Text>
             </View>
         );
     }
@@ -49,17 +54,17 @@ export function ParentComparisonCard({
     if (careValue && costValue) {
         return (
             <View style={styles.conversionCard}>
-                <Text style={[styles.conversionCardLabel, { fontSize: 12 }]}>
+                <Text style={[styles.conversionCardLabel, { fontSize: 12 }, highlightColor && { color: highlightColor }]}>
                     {title}
                 </Text>
                 <View style={styles.conversionRow}>
                     <View style={{ alignItems: 'center' }}>
-                        <Text style={styles.conversionValue}>{careValue}</Text>
+                        <Text style={[styles.conversionValue, highlightColor && { color: highlightColor }]}>{careValue}</Text>
                         <Text style={styles.conversionSubLabel}>care</Text>
                     </View>
                     <Text style={styles.conversionArrow}>→</Text>
                     <View style={{ alignItems: 'center' }}>
-                        <Text style={styles.conversionResult}>{costValue}</Text>
+                        <Text style={[styles.conversionResult, highlightColor && { color: highlightColor }]}>{costValue}</Text>
                         <Text style={styles.conversionSubLabel}>cost</Text>
                     </View>
                 </View>
@@ -70,14 +75,15 @@ export function ParentComparisonCard({
     // Simple label/value pattern
     return (
         <View style={styles.deductionCard}>
-            <Text style={styles.deductionCardTitle}>{title}</Text>
+            <Text style={[styles.deductionCardTitle, highlightColor && { color: highlightColor }]}>{title}</Text>
             {label && value && (
                 <View style={styles.deductionRow}>
                     <Text style={styles.deductionLabel}>{label}</Text>
                     <Text
-                        style={
-                            isNegative ? styles.deductionValueNegative : styles.deductionValue
-                        }
+                        style={[
+                            isNegative ? styles.deductionValueNegative : styles.deductionValue,
+                            highlightColor && { color: highlightColor },
+                        ]}
                     >
                         {isNegative ? `(${value})` : value}
                     </Text>

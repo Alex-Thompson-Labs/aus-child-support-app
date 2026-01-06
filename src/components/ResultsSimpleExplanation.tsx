@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import type { CalculationResults } from '../utils/calculator';
 import { formatCurrency } from '../utils/formatters';
+import { theme } from '../theme';
 import { AnnualRateBreakdown } from './breakdown/AnnualRateBreakdown';
 import { COST_PERCENTAGE_TABLE } from './breakdown/constants';
 import { GapAnalysisCard } from './breakdown/GapAnalysisCard';
@@ -65,7 +66,7 @@ export function ResultsSimpleExplanation({
 
           <View style={styles.deductionCards}>
             {/* Parent A - Using Wrapper Pattern */}
-            <ParentComparisonCard title="YOU">
+            <ParentComparisonCard title="YOU" isUserHighlighted>
               <View style={styles.deductionRow}>
                 <Text style={styles.deductionLabel}>
                   Adjusted taxable income
@@ -90,10 +91,10 @@ export function ResultsSimpleExplanation({
               )}
               <View style={styles.deductionDivider} />
               <View style={styles.deductionRow}>
-                <Text style={styles.deductionTotalLabel}>
+                <Text style={[styles.deductionTotalLabel, { color: theme.colors.userHighlight }]}>
                   Child Support Income
                 </Text>
-                <Text style={styles.deductionTotalValue}>
+                <Text style={[styles.deductionTotalValue, { color: theme.colors.userHighlight }]}>
                   {formatCurrency(Math.max(0, results.CSI_A))}
                 </Text>
               </View>
@@ -156,8 +157,8 @@ export function ResultsSimpleExplanation({
 
           <View style={styles.combinedIncomeCalculation}>
             <View style={styles.combinedIncomeRow}>
-              <Text style={styles.combinedIncomeLabel}>Your CS Income</Text>
-              <Text style={styles.combinedIncomeValue}>
+              <Text style={[styles.combinedIncomeLabel, { color: theme.colors.userHighlight }]}>Your CS Income</Text>
+              <Text style={[styles.combinedIncomeValue, { color: theme.colors.userHighlight }]}>
                 {formatCurrency(Math.max(0, results.CSI_A))}
               </Text>
             </View>
@@ -199,6 +200,7 @@ export function ResultsSimpleExplanation({
           <View style={styles.incomePercentageCalculation}>
             <ParentComparisonCard
               title="YOU"
+              isUserHighlighted
               formula={`${formatCurrency(
                 Math.max(0, results.CSI_A)
               )} ÷ ${formatCurrency(results.CCSI)} = ${formatPercent2dp(
@@ -217,8 +219,8 @@ export function ResultsSimpleExplanation({
 
           <View style={styles.incomeComparison}>
             <Text style={styles.careHeaderLabel}>
-              <Text style={{ color: '#4a5568' }}>YOU</Text> -{' '}
-              <Text style={{ color: '#4a5568' }}>
+              <Text style={{ color: theme.colors.userHighlight }}>YOU</Text> -{' '}
+              <Text style={{ color: theme.colors.userHighlight }}>
                 {formatPercent2dp(results.incomePercA)}
               </Text>
             </Text>
@@ -269,8 +271,8 @@ export function ResultsSimpleExplanation({
 
             <View style={styles.careComparison}>
               <Text style={styles.careHeaderLabel}>
-                <Text style={{ color: '#4a5568' }}>YOU</Text> -{' '}
-                <Text style={{ color: '#4a5568' }}>
+                <Text style={{ color: theme.colors.userHighlight }}>YOU</Text> -{' '}
+                <Text style={{ color: theme.colors.userHighlight }}>
                   {formatPercent2dp(child.roundedCareA)}
                 </Text>
               </Text>
@@ -386,6 +388,7 @@ export function ResultsSimpleExplanation({
               <View style={styles.conversionCards}>
                 <ParentComparisonCard
                   title="YOU"
+                  isUserHighlighted
                   careValue={formatPercent2dp(child.roundedCareA)}
                   costValue={formatPercent2dp(child.costPercA)}
                 />
@@ -434,6 +437,7 @@ export function ResultsSimpleExplanation({
               <View style={styles.gapCards}>
                 <GapAnalysisCard
                   label="YOU"
+                  isUserHighlighted
                   incomePercent={results.incomePercA}
                   costPercent={child.costPercA}
                   csPercent={child.childSupportPercA}

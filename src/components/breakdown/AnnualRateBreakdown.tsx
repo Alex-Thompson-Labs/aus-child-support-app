@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import type { CalculationResults } from '../../utils/calculator';
 import { formatCurrency } from '../../utils/formatters';
 import { isFarLimitReached } from '../../utils/zero-payment-detection';
+import { theme } from '../../theme';
 
 export interface AnnualRateBreakdownProps {
     results: CalculationResults;
@@ -118,7 +119,8 @@ export function AnnualRateBreakdown({
 
                 // Determine color and values based on who actually pays (use final liability as source of truth)
                 const showForParentA = parentAOwesForChild;
-                const payingParentColor = '#475569'; // slate-600 - neutral for all parents
+                // Use user highlight color when "You" (Parent A) is the payer
+                const payingParentColor = showForParentA ? theme.colors.userHighlight : '#475569';
                 const farApplied = showForParentA
                     ? child.farAppliedA
                     : child.farAppliedB;
@@ -131,7 +133,7 @@ export function AnnualRateBreakdown({
 
                 return (
                     <View key={index} style={styles.perChildGapRow}>
-                        <Text style={styles.perChildGapLabel}>
+                        <Text style={[styles.perChildGapLabel, showForParentA && { color: theme.colors.userHighlight }]}>
                             {farApplied ? (
                                 <>
                                     Child {index + 1} -{' '}

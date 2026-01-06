@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { theme } from '../../theme';
 
 export interface GapAnalysisCardProps {
     /** Label for the card ("PARENT A" or "PARENT B") */
@@ -22,6 +23,8 @@ export interface GapAnalysisCardProps {
     formatPercent: (num: number) => string;
     /** Format function for currency */
     formatCurrency: (num: number) => string;
+    /** Apply user highlight color (for "You" elements) */
+    isUserHighlighted?: boolean;
 }
 
 export function GapAnalysisCard({
@@ -35,14 +38,16 @@ export function GapAnalysisCard({
     fixedRateAmount,
     formatPercent,
     formatCurrency,
+    isUserHighlighted = false,
 }: GapAnalysisCardProps) {
     const hasFixedRate = isFarApplied || isMarApplied;
+    const highlightColor = isUserHighlighted ? theme.colors.userHighlight : undefined;
 
     if (hasFixedRate) {
         // Fixed rate view (FAR or MAR)
         return (
             <View style={styles.gapCard}>
-                <Text style={styles.gapCardTitle}>{label}</Text>
+                <Text style={[styles.gapCardTitle, highlightColor && { color: highlightColor }]}>{label}</Text>
                 <View style={styles.gapCardSpecialRate}>
                     <Text style={styles.gapCardSpecialRateText}>
                         {isFarApplied
@@ -54,6 +59,7 @@ export function GapAnalysisCard({
                             styles.gapCardValue,
                             styles.gapCardValueHighlight,
                             { marginTop: 8 },
+                            highlightColor && { color: highlightColor },
                         ]}
                     >
                         {formatCurrency(fixedRateAmount)}
@@ -66,7 +72,7 @@ export function GapAnalysisCard({
     // Standard calculation view
     return (
         <View style={styles.gapCard}>
-            <Text style={styles.gapCardTitle}>{label}</Text>
+            <Text style={[styles.gapCardTitle, highlightColor && { color: highlightColor }]}>{label}</Text>
             <View style={styles.gapCardRow}>
                 <Text style={styles.gapCardLabel}>Income %</Text>
                 <Text style={styles.gapCardValue}>{formatPercent(incomePercent)}</Text>
@@ -79,11 +85,12 @@ export function GapAnalysisCard({
             </View>
             <View style={styles.gapCardDivider} />
             <View style={styles.gapCardRow}>
-                <Text style={[styles.gapCardLabel, styles.gapCardLabelBold]}>CS %</Text>
+                <Text style={[styles.gapCardLabel, styles.gapCardLabelBold, highlightColor && { color: highlightColor }]}>CS %</Text>
                 <Text
                     style={[
                         styles.gapCardValue,
                         csPercent > 0 && !otherParentHasFixedRate && styles.gapCardValueHighlight,
+                        highlightColor && { color: highlightColor },
                     ]}
                 >
                     {otherParentHasFixedRate
