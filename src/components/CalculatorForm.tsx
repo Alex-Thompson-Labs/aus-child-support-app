@@ -120,6 +120,17 @@ export function CalculatorForm({
           >
             INCOME
           </Text>
+          <HelpTooltip
+            what="A parent's ATI includes:
+- Taxable income
+- Reportable fringe benefits
+- Target foreign income
+- Total net investment loss
+- Tax-free pensions or benefits
+- Reportable superannuation contributions"
+            why=""
+            hideWhatLabel
+          />
           {/* Year Selector with Tooltip */}
           <View style={styles.yearSelectorContainer}>
             <YearSelector value={selectedYear} onChange={onYearChange} />
@@ -141,17 +152,6 @@ export function CalculatorForm({
             <Text style={styles.label}>
               <Text style={styles.parentTitleA}>Your Income</Text>
             </Text>
-            <HelpTooltip
-              what="A parent's ATI includes:
-- Taxable income
-- Reportable fringe benefits
-- Target foreign income
-- Total net investment loss
-- Tax-free pensions or benefits
-- Reportable superannuation contributions"
-              why=""
-              hideWhatLabel
-            />
           </View>
           <View style={styles.inputRow}>
             <View
@@ -245,21 +245,19 @@ export function CalculatorForm({
 
       {/* Children Card */}
       <View style={styles.card}>
-        <View style={[styles.labelRow, { gap: 8, marginBottom: 8 }]}>
-          <View style={styles.sectionHeaderRow}>
-            <View style={styles.stepBadge}>
-              <Text style={styles.stepBadgeText}>2</Text>
-            </View>
-            {/* SEO: Semantic H2 Tag */}
-            <Text
-              style={[styles.sectionHeading, { marginBottom: 0 }]}
-              accessibilityRole="header"
-              // @ts-ignore - Web-only prop
-              aria-level="2"
-            >
-              CARE
-            </Text>
+        <View style={styles.sectionHeaderRow}>
+          <View style={styles.stepBadge}>
+            <Text style={styles.stepBadgeText}>2</Text>
           </View>
+          {/* SEO: Semantic H2 Tag */}
+          <Text
+            style={styles.sectionHeading}
+            accessibilityRole="header"
+            // @ts-ignore - Web-only prop
+            aria-level="2"
+          >
+            CARE
+          </Text>
           <HelpTooltip
             what="Enter the number of nights each parent has care of the child per week, fortnight, or year and if the child is over or under 13 years of age."
             why=""
