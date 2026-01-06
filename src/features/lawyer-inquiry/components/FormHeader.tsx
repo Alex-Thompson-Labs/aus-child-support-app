@@ -19,22 +19,30 @@ export function FormHeader({ config, source, returnTo }: FormHeaderProps) {
   const router = useRouter();
 
   const handleClose = () => {
+    // Debug logging for troubleshooting
+    if (__DEV__ || Platform.OS === 'web') {
+      console.log('[FormHeader] Close pressed:', { source, returnTo, platform: Platform.OS });
+    }
+
     // Only handle external redirects on web
     if (Platform.OS === 'web') {
       // Explicit returnTo URL takes priority
       if (returnTo) {
+        console.log('[FormHeader] Redirecting to returnTo:', returnTo);
         window.location.href = returnTo;
         return;
       }
 
       // Check if source maps to a known redirect URL
       if (source && SOURCE_REDIRECT_MAP[source]) {
+        console.log('[FormHeader] Redirecting to source:', SOURCE_REDIRECT_MAP[source]);
         window.location.href = SOURCE_REDIRECT_MAP[source];
         return;
       }
     }
 
     // Default behavior: navigate within the app
+    console.log('[FormHeader] Using default navigation');
     if (router.canGoBack()) {
       router.back();
     } else {

@@ -54,8 +54,21 @@ export function useRouteParams(): ParsedRouteParams {
   // Parse source and returnTo for external navigation (blog integration)
   const source =
     typeof params.source === 'string' ? params.source : undefined;
-  const returnTo =
-    typeof params.returnTo === 'string' ? params.returnTo : undefined;
+
+  // Parse returnTo with URL decoding (handles encoded URLs like https%3A%2F%2F...)
+  const returnTo = useMemo(() => {
+    const rawValue = params.returnTo;
+    if (typeof rawValue !== 'string' || !rawValue) {
+      return undefined;
+    }
+    try {
+      // Decode URL-encoded characters
+      return decodeURIComponent(rawValue);
+    } catch {
+      // If decoding fails, use raw value
+      return rawValue;
+    }
+  }, [params.returnTo]);
 
   // Detect Direct Mode: explicit mode=direct OR missing calculation data
   const isDirectMode = useMemo(() => {
