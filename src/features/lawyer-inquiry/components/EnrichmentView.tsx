@@ -57,60 +57,81 @@ export function EnrichmentView({
   const [showDatePicker, setShowDatePicker] = useState(false);
   // Validation error state
   const [courtDateError, setCourtDateError] = useState(false);
-  const [careDays, setCareDays] = useState('');
-  const [childAges, setChildAges] = useState<('Under 13' | '13+')[]>([]);
+
+  // Per-child data for the liability estimator
+  interface ChildData {
+    id: number;
+    ageGroup: 'Under 13' | '13+';
+    nights: string; // String for TextInput compatibility
+  }
+  const [children, setChildren] = useState<ChildData[]>([]);
   const [calculatedLiability, setCalculatedLiability] = useState<number | null>(null);
   const [payerLabel, setPayerLabel] = useState<string>('');
 
-  // Initialize child ages when modal opens
+  // Initialize children data when modal opens
   const handleOpenCalculator = () => {
-    if (childrenCount > 0 && childAges.length !== childrenCount) {
-      setChildAges(Array(childrenCount).fill('Under 13'));
+    if (childrenCount > 0 && children.length !== childrenCount) {
+      setChildren(
+        Array.from({ length: childrenCount }, (_, i) => ({
+          id: i + 1,
+          ageGroup: 'Under 13' as const,
+          nights: '7', // Default to 7 nights (equal care)
+        }))
+      );
     }
     setShowCalculator(true);
   };
 
-  // Toggle individual child age
-  const toggleChildAge = (index: number) => {
-    setChildAges((prev) =>
-      prev.map((age, i) => (i === index ? (age === 'Under 13' ? '13+' : 'Under 13') : age))
+  // Update a specific child's data
+  const updateChild = (index: number, updates: Partial<ChildData>) => {
+    setChildren((prev) =>
+      prev.map((child, i) => (i === index ? { ...child, ...updates } : child))
     );
   };
 
-  // Calculate liability
+  // Calculate liability with per-child care percentages
   const handleCalculate = () => {
-    if (!careDays || childAges.length === 0) return;
+    if (children.length === 0 || children.some((c) => !c.nights)) return;
 
-    const careNights = parseInt(careDays, 10) || 0;
-    const carePercentA = convertCareToPercentage(careNights, 'fortnight');
-    const carePercentB = 100 - carePercentA;
+    // Build children array with individual care percentages
+    const childrenForCalc: Child[] = children.map((child) => {
+      const careNights = parseInt(child.nights, 10) || 0;
+      const carePercentA = convertCareToPercentage(careNights, 'fortnight');
+      const carePercentB = 100 - carePercentA;
 
-    // Build children array
-    const children: Child[] = childAges.map((age) => ({
-      age,
-      careA: carePercentA,
-      careB: carePercentB,
-    }));
+      return {
+        age: child.ageGroup,
+        careA: carePercentA,
+        careB: carePercentB,
+      };
+    });
 
     // Calculate incomes
     const adjustedIncomeA = Math.max(0, incomes.parentA - SSA);
     const adjustedIncomeB = Math.max(0, incomes.parentB - SSA);
     const combinedIncome = adjustedIncomeA + adjustedIncomeB;
 
-    // Get cost of children
-    const { cost } = getChildCost('2026', children, combinedIncome);
+    // Get cost of children (utility handles mixed ages)
+    const { cost } = getChildCost('2026', childrenForCalc, combinedIncome);
 
     // Calculate income shares
     const incomeShareA = combinedIncome > 0 ? adjustedIncomeA / combinedIncome : 0.5;
     const incomeShareB = combinedIncome > 0 ? adjustedIncomeB / combinedIncome : 0.5;
 
-    // Calculate cost percentages based on care
-    const costPercentA = mapCareToCostPercent(carePercentA) / 100;
-    const costPercentB = mapCareToCostPercent(carePercentB) / 100;
+    // Calculate weighted average cost percentages based on individual care
+    const totalChildren = childrenForCalc.length;
+    const avgCostPercentA =
+      childrenForCalc.reduce((sum, c) => sum + mapCareToCostPercent(c.careA), 0) /
+      totalChildren /
+      100;
+    const avgCostPercentB =
+      childrenForCalc.reduce((sum, c) => sum + mapCareToCostPercent(c.careB), 0) /
+      totalChildren /
+      100;
 
     // Calculate liability (Parent A's perspective)
-    const parentALiability = (incomeShareA - costPercentA) * cost;
-    const parentBLiability = (incomeShareB - costPercentB) * cost;
+    const parentALiability = (incomeShareA - avgCostPercentA) * cost;
+    const parentBLiability = (incomeShareB - avgCostPercentB) * cost;
 
     // Determine who pays whom
     let liability: number;
@@ -447,64 +468,69 @@ export function EnrichmentView({
               <Text style={estimatorStyles.modalTitle}>Estimate Your Liability</Text>
 
               <View style={estimatorStyles.inputGroup}>
-                <Text style={estimatorStyles.inputLabel}>
-                  How many nights per fortnight do you have the children?
-                </Text>
-                <TextInput
-                  style={estimatorStyles.textInput}
-                  value={careDays}
-                  onChangeText={setCareDays}
-                  keyboardType="number-pad"
-                  placeholder="e.g., 7"
-                  placeholderTextColor="#9ca3af"
-                  maxLength={2}
-                />
-              </View>
+                <Text style={estimatorStyles.inputLabel}>Care details:</Text>
+                {children.map((child, index) => (
+                  <View key={child.id} style={estimatorStyles.childRow}>
+                    <Text style={estimatorStyles.childLabel}>Child {child.id}</Text>
 
-              <View style={estimatorStyles.inputGroup}>
-                <Text style={estimatorStyles.inputLabel}>
-                  Ages of children:
-                </Text>
-                {childAges.map((age, index) => (
-                  <Pressable
-                    key={index}
-                    style={estimatorStyles.ageToggleRow}
-                    onPress={() => toggleChildAge(index)}
-                  >
-                    <Text style={estimatorStyles.ageToggleLabel}>
-                      Child {index + 1}:
-                    </Text>
-                    <View style={estimatorStyles.ageToggleButtons}>
-                      <Pressable
-                        style={[
-                          estimatorStyles.ageButton,
-                          age === 'Under 13' && estimatorStyles.ageButtonActive,
-                        ]}
-                        onPress={() => setChildAges((prev) =>
-                          prev.map((a, i) => (i === index ? 'Under 13' : a))
-                        )}
-                      >
-                        <Text style={[
-                          estimatorStyles.ageButtonText,
-                          age === 'Under 13' && estimatorStyles.ageButtonTextActive,
-                        ]}>Under 13</Text>
-                      </Pressable>
-                      <Pressable
-                        style={[
-                          estimatorStyles.ageButton,
-                          age === '13+' && estimatorStyles.ageButtonActive,
-                        ]}
-                        onPress={() => setChildAges((prev) =>
-                          prev.map((a, i) => (i === index ? '13+' : a))
-                        )}
-                      >
-                        <Text style={[
-                          estimatorStyles.ageButtonText,
-                          age === '13+' && estimatorStyles.ageButtonTextActive,
-                        ]}>13+</Text>
-                      </Pressable>
+                    {/* Age Toggle Buttons */}
+                    <View style={estimatorStyles.ageToggleRow}>
+                      <Text style={estimatorStyles.ageToggleLabel}>Age:</Text>
+                      <View style={estimatorStyles.ageToggleButtons}>
+                        <Pressable
+                          style={[
+                            estimatorStyles.ageButton,
+                            child.ageGroup === 'Under 13' &&
+                              estimatorStyles.ageButtonActive,
+                          ]}
+                          onPress={() => updateChild(index, { ageGroup: 'Under 13' })}
+                        >
+                          <Text
+                            style={[
+                              estimatorStyles.ageButtonText,
+                              child.ageGroup === 'Under 13' &&
+                                estimatorStyles.ageButtonTextActive,
+                            ]}
+                          >
+                            Under 13
+                          </Text>
+                        </Pressable>
+                        <Pressable
+                          style={[
+                            estimatorStyles.ageButton,
+                            child.ageGroup === '13+' && estimatorStyles.ageButtonActive,
+                          ]}
+                          onPress={() => updateChild(index, { ageGroup: '13+' })}
+                        >
+                          <Text
+                            style={[
+                              estimatorStyles.ageButtonText,
+                              child.ageGroup === '13+' &&
+                                estimatorStyles.ageButtonTextActive,
+                            ]}
+                          >
+                            13+
+                          </Text>
+                        </Pressable>
+                      </View>
                     </View>
-                  </Pressable>
+
+                    {/* Nights Per Fortnight Input */}
+                    <View style={estimatorStyles.nightsInputRow}>
+                      <Text style={estimatorStyles.nightsLabel}>
+                        Your nights per fortnight:
+                      </Text>
+                      <TextInput
+                        style={estimatorStyles.nightsInput}
+                        value={child.nights}
+                        onChangeText={(text) => updateChild(index, { nights: text })}
+                        keyboardType="number-pad"
+                        placeholder="0-14"
+                        placeholderTextColor="#9ca3af"
+                        maxLength={2}
+                      />
+                    </View>
+                  </View>
                 ))}
               </View>
 
@@ -683,6 +709,41 @@ const estimatorStyles = StyleSheet.create({
   },
   ageButtonTextActive: {
     color: '#ffffff',
+  },
+  // Per-child row styles
+  childRow: {
+    marginTop: 12,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb', // grey-200
+  },
+  childLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#374151', // grey-700
+    marginBottom: 8,
+  },
+  nightsInputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 8,
+  },
+  nightsLabel: {
+    fontSize: 15,
+    color: '#4b5563', // grey-600
+  },
+  nightsInput: {
+    width: 70,
+    height: 40,
+    backgroundColor: '#f9fafb', // grey-50
+    borderWidth: 1,
+    borderColor: '#d1d5db', // grey-300
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#1a202c',
   },
   modalButtons: {
     gap: 12,
