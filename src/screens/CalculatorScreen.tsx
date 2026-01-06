@@ -98,6 +98,8 @@ export function CalculatorScreen() {
   const [incomeSupportB, setIncomeSupportB] = useState(false);
   // Track which parents need to be asked (for sequential prompting)
   const [needsPromptB, setNeedsPromptB] = useState(false);
+  // Track Parent A's response for use when Parent B is asked
+  const [tempParentAResponse, setTempParentAResponse] = useState(false);
 
   /**
    * handleCalculate intercepts the calculate button press.
@@ -147,7 +149,8 @@ export function CalculatorScreen() {
     if (pendingParent === 'A') {
       setIncomeSupportA(true);
       if (needsPromptB) {
-        // Now ask about Parent B
+        // Store Parent A's response and ask about Parent B
+        setTempParentAResponse(true);
         setNeedsPromptB(false);
         setPendingParent('B');
       } else {
@@ -163,7 +166,8 @@ export function CalculatorScreen() {
       setIncomeSupportModalVisible(false);
       // Delay clearing pendingParent to prevent flash during modal close animation
       setTimeout(() => setPendingParent(null), 200);
-      runCalculation(incomeSupportA, true);
+      // Use Parent A's stored response, Parent B said Yes
+      runCalculation(tempParentAResponse, true);
     }
   };
 
@@ -174,7 +178,8 @@ export function CalculatorScreen() {
     if (pendingParent === 'A') {
       setIncomeSupportA(false);
       if (needsPromptB) {
-        // Now ask about Parent B
+        // Store Parent A's response and ask about Parent B
+        setTempParentAResponse(false);
         setNeedsPromptB(false);
         setPendingParent('B');
       } else {
@@ -190,7 +195,8 @@ export function CalculatorScreen() {
       setIncomeSupportModalVisible(false);
       // Delay clearing pendingParent to prevent flash during modal close animation
       setTimeout(() => setPendingParent(null), 200);
-      runCalculation(incomeSupportA, false);
+      // Use Parent A's stored response, Parent B said No
+      runCalculation(tempParentAResponse, false);
     }
   };
 
