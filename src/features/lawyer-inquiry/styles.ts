@@ -33,6 +33,12 @@ export const containerStyles = StyleSheet.create({
 // ============================================================================
 
 export const headerStyles = StyleSheet.create({
+  // Header wrapper - full width background container
+  headerWrapper: {
+    backgroundColor: '#ffffff', // white
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb', // light grey
+  },
   // Header styles - matches Full Breakdown modal pattern
   header: {
     flexDirection: 'row',
@@ -40,9 +46,6 @@ export const headerStyles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: '#ffffff', // white
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb', // light grey
   },
   headerTextContainer: {
     flex: 1,
@@ -72,6 +75,12 @@ export const headerStyles = StyleSheet.create({
     fontWeight: '400',
     lineHeight: 32,
   },
+  // Trust Badge wrapper - full width background container
+  trustBadgeWrapper: {
+    backgroundColor: '#f0fdf4', // green-50
+    borderBottomWidth: 1,
+    borderBottomColor: '#bbf7d0', // green-200
+  },
   // Trust Badge styles
   trustBadge: {
     flexDirection: 'row',
@@ -79,9 +88,6 @@ export const headerStyles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 8,
     paddingHorizontal: 16,
-    backgroundColor: '#f0fdf4', // green-50
-    borderBottomWidth: 1,
-    borderBottomColor: '#bbf7d0', // green-200
     gap: 6,
   },
   trustBadgeIcon: {
