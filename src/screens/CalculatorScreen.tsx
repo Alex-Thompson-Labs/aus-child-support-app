@@ -101,16 +101,6 @@ export function CalculatorScreen() {
   const [needsPromptB, setNeedsPromptB] = useState(false);
   // Use a ref to store Parent A's response immediately (not subject to async state updates)
   const tempParentAResponseRef = React.useRef(false);
-  // Track if we should auto-calculate after support values are set
-  const shouldAutoCalculateRef = useRef(false);
-
-  // Auto-calculate when support values change (triggered by runCalculation)
-  useEffect(() => {
-    if (shouldAutoCalculateRef.current) {
-      shouldAutoCalculateRef.current = false;
-      calculate();
-    }
-  }, [formState.supportA, formState.supportB, calculate]);
 
   /**
    * handleCalculate intercepts the calculate button press.
@@ -171,10 +161,10 @@ export function CalculatorScreen() {
    * Actually runs the calculation with the determined support flags.
    */
   const runCalculation = (supportA: boolean, supportB: boolean) => {
-    // Set flag to trigger calculation in useEffect after state updates
-    shouldAutoCalculateRef.current = true;
-    // Update state - this will trigger the useEffect above
+    // Update state with support flags
     setFormState((prev) => ({ ...prev, supportA, supportB }));
+    // Call calculate directly (setTimeout allows state to update first)
+    setTimeout(() => calculate(), 0);
   };
 
   /**
