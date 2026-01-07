@@ -494,6 +494,14 @@ export const enrichmentStyles = StyleSheet.create({
     flex: 1,
     padding: 24,
     justifyContent: 'center',
+    ...Platform.select({
+      web: {
+        maxWidth: 768,
+        width: '100%',
+        alignSelf: 'center',
+      },
+      default: {},
+    }),
   },
   enrichmentHeader: {
     alignItems: 'center',
