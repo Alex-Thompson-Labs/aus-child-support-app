@@ -5,7 +5,7 @@
  */
 
 import { SPECIAL_CIRCUMSTANCES } from '@/src/utils/special-circumstances';
-import type { InquiryTypeConfig, EnrichmentFactor } from './types';
+import type { EnrichmentFactor, InquiryTypeConfig } from './types';
 
 // ============================================================================
 // Inquiry Type Configuration (Context-Aware UI)
@@ -36,7 +36,7 @@ export const INQUIRY_TYPE_CONFIG: Record<string, InquiryTypeConfig> = {
 
 export const DEFAULT_INQUIRY_CONFIG: InquiryTypeConfig = {
   title: 'Request Legal Help',
-  subtitle: null,
+  subtitle: 'Get a confidential case assessment from our verified family law network.',
   buttonText: 'Submit Inquiry',
   preFillMessage: '',
 };
