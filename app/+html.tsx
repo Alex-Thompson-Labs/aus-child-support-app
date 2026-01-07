@@ -39,7 +39,7 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="twitter:card" content="summary_large_image" />
 
         {/* Favicon */}
-        <link rel="icon" type="image/x-icon" href="/assets/images/webp/aus-child-support-favicon.ico" />
+        <link rel="icon" type="image/png" href="/assets/source_images/favicon-transparent.png" />
         
         {/* Apple Touch Icon (iOS home screen) */}
         <link rel="apple-touch-icon" href="/assets/source_images/aus-child-support-apple-touch-icon.png" />
