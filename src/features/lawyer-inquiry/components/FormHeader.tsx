@@ -51,18 +51,9 @@ export function FormHeader({ config, source, returnTo }: FormHeaderProps) {
     }
   };
 
-  // Web container styles to match form content width
-  const containerStyle = isWeb
-    ? {
-        maxWidth: MAX_FORM_WIDTH,
-        width: '100%' as const,
-        alignSelf: 'center' as const,
-      }
-    : {};
-
   return (
     <View style={headerStyles.headerWrapper}>
-      <View style={[headerStyles.header, containerStyle]}>
+      <View style={headerStyles.header}>
         <View style={headerStyles.headerTextContainer}>
           <Text style={headerStyles.headerTitle}>{config.title}</Text>
           {config.subtitle && (
