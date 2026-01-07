@@ -33,7 +33,7 @@ export function AnnualRateBreakdown({
 
     // If MAR is applied, show a single consolidated line
     if (hasAnyMar) {
-        const payingParentColor = '#64748b'; // Slate 500 - muted neutral
+        const payingParentColor = theme.colors.textMuted;
         const totalMarAmount = results.finalPaymentAmount;
 
         return (
@@ -76,9 +76,9 @@ export function AnnualRateBreakdown({
                 <View style={styles.perChildGapRow}>
                     <Text style={styles.perChildGapLabel}>
                         All children -{' '}
-                        <Text style={{ color: '#64748b' }}>{displayText}</Text>
+                        <Text style={{ color: theme.colors.textMuted }}>{displayText}</Text>
                     </Text>
-                    <Text style={[styles.perChildGapValue, { color: '#64748b' }]}>
+                    <Text style={[styles.perChildGapValue, { color: theme.colors.textMuted }]}>
                         $0
                     </Text>
                 </View>
@@ -108,9 +108,9 @@ export function AnnualRateBreakdown({
                         <View key={index} style={styles.perChildGapRow}>
                             <Text style={styles.perChildGapLabel}>
                                 Child {index + 1} -{' '}
-                                <Text style={{ color: '#64748b' }}>{displayText}</Text>
+                                <Text style={{ color: theme.colors.textMuted }}>{displayText}</Text>
                             </Text>
-                            <Text style={[styles.perChildGapValue, { color: '#64748b' }]}>
+                            <Text style={[styles.perChildGapValue, { color: theme.colors.textMuted }]}>
                                 $0
                             </Text>
                         </View>
@@ -120,7 +120,7 @@ export function AnnualRateBreakdown({
                 // Determine color and values based on who actually pays (use final liability as source of truth)
                 const showForParentA = parentAOwesForChild;
                 // Use user highlight color when "You" (Parent A) is the payer
-                const payingParentColor = showForParentA ? theme.colors.userHighlight : '#64748b';
+                const payingParentColor = showForParentA ? theme.colors.userHighlight : theme.colors.textMuted;
                 const farApplied = showForParentA
                     ? child.farAppliedA
                     : child.farAppliedB;
@@ -181,13 +181,13 @@ export function AnnualRateBreakdown({
 
 const styles = StyleSheet.create({
     perChildGapBreakdown: {
-        backgroundColor: '#f8fafc', // Slate 50
+        backgroundColor: theme.colors.surfaceSubtle,
         borderRadius: 8,
         padding: 10,
         marginBottom: 12,
         gap: 8,
         borderWidth: 1,
-        borderColor: '#e2e8f0', // Slate 200
+        borderColor: theme.colors.border,
     },
     perChildGapRow: {
         flexDirection: 'row',
@@ -196,16 +196,17 @@ const styles = StyleSheet.create({
     },
     perChildGapLabel: {
         fontSize: 13,
-        color: '#64748b',
+        color: theme.colors.textMuted,
     },
     perChildGapValue: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#334155', // Slate 700
+        color: theme.colors.textSecondary,
     },
     perChildGapDivider: {
         height: 1,
-        backgroundColor: '#e2e8f0', // Slate 200
+        backgroundColor: theme.colors.border,
         marginTop: 4,
     },
 });
+

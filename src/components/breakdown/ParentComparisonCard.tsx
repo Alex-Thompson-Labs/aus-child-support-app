@@ -97,40 +97,40 @@ export function ParentComparisonCard({
 const styles = StyleSheet.create({
     // Income percentage card styles
     incomePercentageCard: {
-        backgroundColor: '#f8fafc', // Slate 50
+        backgroundColor: theme.colors.surfaceSubtle,
         borderRadius: 8,
         padding: 12,
         borderWidth: 1,
-        borderColor: '#e2e8f0', // Slate 200
+        borderColor: theme.colors.border,
     },
     incomePercentageCardTitle: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#334155', // Slate 700
+        color: theme.colors.textSecondary,
         textTransform: 'uppercase',
         letterSpacing: 0.5,
         marginBottom: 6,
     },
     incomePercentageFormula: {
         fontSize: 13,
-        color: '#0f172a',
+        color: theme.colors.textPrimary,
         fontWeight: '500',
         textAlign: 'center',
     },
 
     // Deduction card styles
     deductionCard: {
-        backgroundColor: '#f8fafc', // Slate 50
+        backgroundColor: theme.colors.surfaceSubtle,
         borderRadius: 8,
         padding: 10,
         gap: 6,
         borderWidth: 1,
-        borderColor: '#e2e8f0', // Slate 200
+        borderColor: theme.colors.border,
     },
     deductionCardTitle: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#334155', // Slate 700
+        color: theme.colors.textSecondary,
         textTransform: 'uppercase',
         letterSpacing: 0.5,
         marginBottom: 4,
@@ -142,33 +142,33 @@ const styles = StyleSheet.create({
     },
     deductionLabel: {
         fontSize: 13,
-        color: '#64748b',
+        color: theme.colors.textMuted,
     },
     deductionValue: {
         fontSize: 13,
         fontWeight: '500',
-        color: '#0f172a',
+        color: theme.colors.textPrimary,
     },
     deductionValueNegative: {
         fontSize: 13,
         fontWeight: '500',
-        color: '#dc2626',
+        color: theme.colors.error,
     },
 
     // Conversion card styles (care→cost)
     conversionCard: {
         flex: 1,
-        backgroundColor: '#ffffff',
+        backgroundColor: theme.colors.surface,
         borderRadius: 6,
         padding: 10,
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#e2e8f0', // Slate 200
+        borderColor: theme.colors.border,
     },
     conversionCardLabel: {
         fontSize: 10,
         fontWeight: '600',
-        color: '#334155', // Slate 700
+        color: theme.colors.textSecondary,
         textTransform: 'uppercase',
         letterSpacing: 0.5,
         marginBottom: 6,
@@ -181,20 +181,20 @@ const styles = StyleSheet.create({
     conversionValue: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#334155', // Slate 700
+        color: theme.colors.textSecondary,
     },
     conversionArrow: {
         fontSize: 14,
-        color: '#64748b', // Slate 500
+        color: theme.colors.textMuted,
     },
     conversionResult: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#0f172a',
+        color: theme.colors.textPrimary,
     },
     conversionSubLabel: {
         fontSize: 9,
-        color: '#64748b', // Slate 500
+        color: theme.colors.textMuted,
         textTransform: 'uppercase',
     },
 });

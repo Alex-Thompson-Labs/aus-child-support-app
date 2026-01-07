@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { theme } from '../../theme';
 
 export interface PercentageBarProps {
     percentA: number;
@@ -21,12 +22,13 @@ const styles = StyleSheet.create({
         height: 8,
         borderRadius: 4,
         overflow: 'hidden',
-        backgroundColor: '#e2e8f0', // Slate 200
+        backgroundColor: theme.colors.border,
     },
     barSegmentA: {
-        backgroundColor: '#3b82f6',
+        backgroundColor: theme.colors.userHighlight,
     },
     barSegmentB: {
-        backgroundColor: '#e2e8f0', // Slate 200
+        backgroundColor: theme.colors.border,
     },
 });
+

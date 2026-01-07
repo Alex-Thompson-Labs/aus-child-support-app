@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { theme } from '../theme';
 import { createShadow } from '../utils/shadow-styles';
 import { HelpTooltip } from './HelpTooltip';
 
@@ -74,11 +75,11 @@ export function BreakdownStepCard({
 const styles = StyleSheet.create({
   // Step container - exact styling from current implementation
   step: {
-    backgroundColor: '#ffffff', // white background
+    backgroundColor: theme.colors.surface,
     borderRadius: 10,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#e2e8f0', // Slate 200 - subtle border
+    borderColor: theme.colors.border,
     ...createShadow({
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 1 },
@@ -100,7 +101,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#3b82f6', // accent.primary
+    backgroundColor: theme.colors.userHighlight,
     borderWidth: 0,
     alignItems: 'center',
     justifyContent: 'center',
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
   stepNumberText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff', // white text on blue background
+    color: theme.colors.surface, // white text on blue background
   },
 
   titleRow: {
@@ -126,14 +127,15 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#0f172a', // Slate 900 - primary text
+    color: theme.colors.textPrimary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
 
   chevron: {
     fontSize: 16,
-    color: '#3b82f6', // Brand Blue (primary action)
+    color: theme.colors.userHighlight,
     marginLeft: 'auto',
   },
 });
+
