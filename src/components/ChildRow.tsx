@@ -89,6 +89,7 @@ export function ChildRow({
       <Pressable
         onPress={onRemove}
         style={[styles.removeButton, isWeb && webClickableStyles]}
+        hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         accessibilityRole="button"
         accessibilityLabel="Remove child"
         accessibilityHint="Removes this child from the calculation"
@@ -224,13 +225,16 @@ export function ChildRow({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 12,
+    paddingTop: 20, // Extra top padding to accommodate larger remove button
+    paddingHorizontal: 12,
+    paddingBottom: 12,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#e2e8f0', // slate-200 - subtle border
     backgroundColor: '#ffffff', // white background
     marginBottom: 8,
     position: 'relative',
+    overflow: 'visible', // Allow remove button to extend beyond container
     ...createShadow({
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 1 },
@@ -240,8 +244,8 @@ const styles = StyleSheet.create({
     }),
     ...(isWeb
       ? {
-          scrollSnapAlign: 'start',
-        }
+        scrollSnapAlign: 'start',
+      }
       : {}),
   } as any,
   containerDesktop: {
@@ -387,16 +391,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 4,
     right: 4,
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: '#ef4444', // red-500
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#2563EB', // Brand Blue (blue-600)
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 10, // Ensure button stays on top
     ...(isWeb
       ? {
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-        }
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+      }
       : {}),
     ...createShadow({
       shadowColor: '#000',
@@ -408,9 +413,9 @@ const styles = StyleSheet.create({
   } as any,
   removeButtonText: {
     color: '#ffffff',
-    fontSize: 10,
+    fontSize: 16,
     fontWeight: '700',
-    lineHeight: 10,
+    lineHeight: 16,
     marginTop: -1,
   },
   warning: {
