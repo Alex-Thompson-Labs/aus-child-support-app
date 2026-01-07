@@ -4,7 +4,7 @@
     "slug": "ChildSupportCalculator",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/source_images/favicon-transparent.png",
+    "icon": "./assets/source_images/favicon-rounded-white-bg.png",
     "scheme": "childsupportcalculator",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -24,7 +24,7 @@
     "web": {
       "output": "static",
       "bundler": "metro",
-      "favicon": "./assets/source_images/favicon-transparent.png"
+      "favicon": "./assets/source_images/favicon-rounded-white-bg.png"
     },
     "plugins": [
       [
