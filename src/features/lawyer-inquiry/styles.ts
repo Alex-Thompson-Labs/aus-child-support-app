@@ -43,9 +43,10 @@ export const headerStyles = StyleSheet.create({
   // Header styles - matches Full Breakdown modal pattern
   header: {
     flexDirection: 'row',
-    alignItems: 'flex-start', // Align to top for subtitle support
+    alignItems: 'center', // Vertically center title and close button
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingLeft: 20,
+    paddingRight: 12, // Account for close button's internal padding
     paddingVertical: 16,
     ...Platform.select({
       web: {
@@ -57,6 +58,7 @@ export const headerStyles = StyleSheet.create({
   },
   headerTextContainer: {
     flex: 1,
+    justifyContent: 'center', // Center text vertically within container
     gap: 4,
   },
   headerTitle: {

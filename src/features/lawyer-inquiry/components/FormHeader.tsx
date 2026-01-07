@@ -4,9 +4,9 @@
  * Displays the form title, subtitle, and close button.
  */
 
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
-import { useRouter } from 'expo-router';
 import { headerStyles } from '../styles';
 import type { FormHeaderProps } from '../types';
 
@@ -62,6 +62,7 @@ export function FormHeader({ config, source, returnTo }: FormHeaderProps) {
         <Pressable
           style={headerStyles.closeButton}
           onPress={handleClose}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           accessible={true}
           accessibilityRole="button"
           accessibilityLabel="Close form"
