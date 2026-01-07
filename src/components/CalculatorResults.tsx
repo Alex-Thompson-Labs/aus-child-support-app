@@ -335,10 +335,10 @@ export function CalculatorResults({
           ]}
           accessibilityRole="button"
           accessibilityLabel={`${results.payer === 'Neither'
-              ? 'No payment required'
-              : `${results.payer} pays ${formatCurrency(
-                results.finalPaymentAmount
-              )} per year`
+            ? 'No payment required'
+            : `${results.payer} pays ${formatCurrency(
+              results.finalPaymentAmount
+            )} per year`
             }. Tap to view full breakdown`}
           accessibilityHint="Opens detailed calculation breakdown"
         >
@@ -366,16 +366,16 @@ export function CalculatorResults({
                 formData?.supportA ?? false,
                 formData?.supportB ?? false
               ) && (
-                <View style={styles.collapsedIncomeSupportBadge}>
-                  <Text style={styles.collapsedIncomeSupportText}>
-                    ✓{' '}
-                    {getIncomeSupportText(
-                      formData?.supportA ?? false,
-                      formData?.supportB ?? false
-                    )}
-                  </Text>
-                </View>
-              )}
+                  <View style={styles.collapsedIncomeSupportBadge}>
+                    <Text style={styles.collapsedIncomeSupportText}>
+                      ✓{' '}
+                      {getIncomeSupportText(
+                        formData?.supportA ?? false,
+                        formData?.supportB ?? false
+                      )}
+                    </Text>
+                  </View>
+                )}
             </View>
             <View style={styles.expandHint}>
               <Text style={styles.expandHintText}>Tap for breakdown ▲</Text>
@@ -476,18 +476,28 @@ const styles = StyleSheet.create({
   expandedContainer: { flex: 1, backgroundColor: '#f8f9fa' },
   expandedHeader: {
     padding: 16,
+    paddingBottom: 12,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+    marginBottom: 4, // Slight gap before content starts
   },
   expandedHeaderContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  expandedHeaderTitle: { fontSize: 18, fontWeight: '600' },
-  closeButton: { padding: 8 },
-  closeIcon: { fontSize: 20, color: '#4a5568' },
+  expandedHeaderTitle: {
+    fontSize: 18,
+    fontWeight: '700', // Bold for strong typography
+  },
+  closeButton: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeIcon: { fontSize: 22, color: '#4a5568' },
   expandedScrollView: { flex: 1 },
   expandedContentContainer: { padding: 16, gap: 16 },
   staleAmount: {
