@@ -1,7 +1,7 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState, useEffect, useRef } from 'react';
 import {
+  Image,
   KeyboardAvoidingView,
   Linking,
   Platform,
@@ -273,21 +273,12 @@ export function CalculatorScreen() {
               isDesktop ? styles.headerContainer : styles.mobileHeaderRow
             }
           >
-            <Ionicons
-              name="people"
-              size={isDesktop ? 32 : 24}
-              color="#2563eb"
+            <Image
+              source={require('../../assets/images/webp/aus-child-support-logo-header-transparent.webp')}
+              style={isDesktop ? styles.logoDesktop : styles.logoMobile}
+              resizeMode="contain"
+              accessibilityLabel="Australian Child Support Calculator"
             />
-            <Text
-              style={[styles.title, isDesktop && styles.titleDesktop]}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.7}
-              accessibilityRole="header"
-              aria-level="1"
-            >
-              Child Support Calculator
-            </Text>
 
             <Pressable
               style={styles.blogButton}
@@ -378,7 +369,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    paddingHorizontal: 12,
     gap: 8,
   },
   headerContainer: {
@@ -386,9 +376,21 @@ const styles = StyleSheet.create({
     maxWidth: 850,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignSelf: 'center',
     gap: 16,
+  },
+  logoMobile: {
+    height: 52,
+    width: 286,
+    marginLeft: -35,
+    marginTop: -2,
+  },
+  logoDesktop: {
+    height: 52,
+    width: 286,
+    marginLeft: -35,
+    marginTop: -2,
   },
   bodyContainer: {
     width: '100%',
@@ -398,18 +400,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     gap: 16,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: '#0f172a',
-    flex: 1,
-    textAlign: 'center',
-  },
-  titleDesktop: {
-    fontSize: 28,
-    letterSpacing: -0.5,
-    marginLeft: 10,
   },
   blogButton: {
     backgroundColor: '#0056b3',

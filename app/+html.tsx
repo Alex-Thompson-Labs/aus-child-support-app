@@ -38,6 +38,9 @@ export default function Root({ children }: PropsWithChildren) {
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
 
+        {/* Favicon */}
+        <link rel="icon" type="image/x-icon" href="/assets/images/webp/aus-child-support-favicon.ico" />
+
         {/* GLOBAL SCHEMA INJECTION */}
         <script type="application/ld+json">
           {JSON.stringify(organizationSchema)}

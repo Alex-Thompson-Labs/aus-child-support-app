@@ -24,7 +24,7 @@
     "web": {
       "output": "static",
       "bundler": "metro",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/webp/aus-child-support-favicon.ico"
     },
     "plugins": [
       [
