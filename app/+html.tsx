@@ -39,13 +39,13 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="twitter:card" content="summary_large_image" />
 
         {/* Favicon */}
-        <link rel="icon" type="image/png" href="/assets/source_images/favicon-rounded-white-bg.png?v=3" />
-        
+        <link rel="icon" type="image/png" href="/assets/source_images/favicon-rounded-white-bg.png?v=4" />
+
         {/* Apple Touch Icon (iOS home screen) */}
-        <link rel="apple-touch-icon" href="/assets/source_images/favicon-rounded-white-bg.png?v=3" />
-        
+        <link rel="apple-touch-icon" href="/assets/source_images/favicon-rounded-white-bg.png?v=4" />
+
         {/* Android home screen icon */}
-        <link rel="icon" type="image/png" sizes="192x192" href="/assets/source_images/favicon-rounded-white-bg.png?v=3" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/assets/source_images/favicon-rounded-white-bg.png?v=4" />
 
         {/* GLOBAL SCHEMA INJECTION */}
         <script type="application/ld+json">
