@@ -287,7 +287,7 @@ export function EnrichmentView({
                 </Text>
                 <View style={estimatorStyles.warningBox}>
                   <Text style={estimatorStyles.warningText}>
-                    ⚠️ <Text style={estimatorStyles.warningBold}>WARNING:</Text> This does NOT account for hidden income, earning capacity, or special circumstances. Your lawyer will verify this figure with you.
+                    ⚠️ <Text style={estimatorStyles.warningBold}>WARNING:</Text> This estimate is a baseline formula. Your lawyer will help you identify legal grounds to adjust this figure based on your specific family circumstances.
                   </Text>
                 </View>
                 <Pressable

@@ -5,7 +5,7 @@
  * Styles are grouped by component/section for organization.
  */
 
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 // ============================================================================
 // Container & Layout Styles
@@ -38,8 +38,7 @@ export const headerStyles = StyleSheet.create({
     backgroundColor: '#ffffff', // white
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb', // light grey
-    flexDirection: 'row',
-    justifyContent: 'center',
+    alignItems: 'center',
   },
   // Header styles - matches Full Breakdown modal pattern
   header: {
@@ -48,6 +47,13 @@ export const headerStyles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 16,
+    ...Platform.select({
+      web: {
+        maxWidth: 560,
+        width: '100%',
+      },
+      default: {},
+    }),
   },
   headerTextContainer: {
     flex: 1,
@@ -82,8 +88,7 @@ export const headerStyles = StyleSheet.create({
     backgroundColor: '#f0fdf4', // green-50
     borderBottomWidth: 1,
     borderBottomColor: '#bbf7d0', // green-200
-    flexDirection: 'row',
-    justifyContent: 'center',
+    alignItems: 'center',
   },
   // Trust Badge styles
   trustBadge: {
@@ -93,6 +98,13 @@ export const headerStyles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     gap: 6,
+    ...Platform.select({
+      web: {
+        maxWidth: 560,
+        width: '100%',
+      },
+      default: {},
+    }),
   },
   trustBadgeIcon: {
     fontSize: 14,

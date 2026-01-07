@@ -7,7 +7,6 @@
 import React from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { isWeb, MAX_FORM_WIDTH } from '@/src/utils/responsive';
 import { headerStyles } from '../styles';
 import type { FormHeaderProps } from '../types';
 
@@ -51,19 +50,9 @@ export function FormHeader({ config, source, returnTo }: FormHeaderProps) {
     }
   };
 
-  // Web container styles to match form content width
-  const webContainerStyle = isWeb
-    ? {
-        maxWidth: MAX_FORM_WIDTH,
-        width: '100%' as const,
-        marginLeft: 'auto' as const,
-        marginRight: 'auto' as const,
-      }
-    : {};
-
   return (
     <View style={headerStyles.headerWrapper}>
-      <View style={[headerStyles.header, webContainerStyle]}>
+      <View style={headerStyles.header}>
         <View style={headerStyles.headerTextContainer}>
           <Text style={headerStyles.headerTitle}>{config.title}</Text>
           {config.subtitle && (
