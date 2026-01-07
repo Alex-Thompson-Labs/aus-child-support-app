@@ -56,7 +56,8 @@ export function FormHeader({ config, source, returnTo }: FormHeaderProps) {
     ? {
         maxWidth: MAX_FORM_WIDTH,
         width: '100%' as const,
-        alignSelf: 'center' as const,
+        marginLeft: 'auto' as const,
+        marginRight: 'auto' as const,
       }
     : {};
 
