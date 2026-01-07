@@ -40,6 +40,12 @@ export default function Root({ children }: PropsWithChildren) {
 
         {/* Favicon */}
         <link rel="icon" type="image/x-icon" href="/assets/images/webp/aus-child-support-favicon.ico" />
+        
+        {/* Apple Touch Icon (iOS home screen) */}
+        <link rel="apple-touch-icon" href="/assets/source_images/aus-child-support-apple-touch-icon.png" />
+        
+        {/* Android home screen icon */}
+        <link rel="icon" type="image/png" sizes="192x192" href="/assets/source_images/aus-child-support-apple-touch-icon.png" />
 
         {/* GLOBAL SCHEMA INJECTION */}
         <script type="application/ld+json">

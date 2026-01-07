@@ -4,7 +4,7 @@
     "slug": "ChildSupportCalculator",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/source_images/aus-child-support-favicon.png",
     "scheme": "childsupportcalculator",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -24,7 +24,7 @@
     "web": {
       "output": "static",
       "bundler": "metro",
-      "favicon": "./assets/images/webp/aus-child-support-favicon.ico"
+      "favicon": "./assets/source_images/aus-child-support-favicon.png"
     },
     "plugins": [
       [
