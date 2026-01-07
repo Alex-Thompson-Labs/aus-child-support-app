@@ -7,6 +7,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native';
+import { Analytics } from '@vercel/analytics/react';
 import { Stack, usePathname } from 'expo-router';
 import Head from 'expo-router/head';
 import { StatusBar } from 'expo-status-bar'; // <--- Make sure this line is present
@@ -136,6 +137,7 @@ export default function RootLayout() {
           />
         </Stack>
         <StatusBar style="auto" />
+        {Platform.OS === 'web' && <Analytics />}
       </ThemeProvider>
     </Suspense>
   );

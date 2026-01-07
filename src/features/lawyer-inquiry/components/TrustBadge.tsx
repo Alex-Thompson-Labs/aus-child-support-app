@@ -10,9 +10,18 @@ import { isWeb, MAX_FORM_WIDTH } from '@/src/utils/responsive';
 import { headerStyles } from '../styles';
 
 export function TrustBadge() {
+  // Web container styles to match form content width
+  const webContainerStyle = isWeb
+    ? {
+        maxWidth: MAX_FORM_WIDTH,
+        width: '100%' as const,
+        alignSelf: 'center' as const,
+      }
+    : {};
+
   return (
     <View style={headerStyles.trustBadgeWrapper}>
-      <View style={headerStyles.trustBadge}>
+      <View style={[headerStyles.trustBadge, webContainerStyle]}>
         <Text style={headerStyles.trustBadgeIcon}>✓</Text>
         <Text style={headerStyles.trustBadgeText}>
           Verified Australian Family Law Network

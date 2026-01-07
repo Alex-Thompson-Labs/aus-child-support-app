@@ -5,8 +5,7 @@
  * Styles are grouped by component/section for organization.
  */
 
-import { Platform, StyleSheet } from 'react-native';
-import { MAX_FORM_WIDTH } from '@/src/utils/responsive';
+import { StyleSheet } from 'react-native';
 
 // ============================================================================
 // Container & Layout Styles
@@ -48,7 +47,6 @@ export const headerStyles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    ...(Platform.OS === 'web' ? { maxWidth: MAX_FORM_WIDTH, width: '100%', alignSelf: 'center' as const } : {}),
   },
   headerTextContainer: {
     flex: 1,
@@ -93,7 +91,6 @@ export const headerStyles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     gap: 6,
-    ...(Platform.OS === 'web' ? { maxWidth: MAX_FORM_WIDTH, width: '100%', alignSelf: 'center' as const } : {}),
   },
   trustBadgeIcon: {
     fontSize: 14,
