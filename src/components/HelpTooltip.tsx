@@ -95,8 +95,8 @@ export function HelpTooltip({
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
   },
   button: {
     width: 20,
@@ -107,7 +107,8 @@ const styles = StyleSheet.create({
     borderColor: '#bfdbfe', // blue-200
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 6,
+    marginLeft: 0,
+    marginTop: 0,
     flexShrink: 0, // Prevent text from squishing the icon
   },
   buttonText: {

@@ -513,7 +513,8 @@ const styles = StyleSheet.create({
     checkboxLabelContainer: {
         flex: 1,
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'flex-start',
+        gap: 6,
     },
     checkboxLabel: {
         fontSize: 14,

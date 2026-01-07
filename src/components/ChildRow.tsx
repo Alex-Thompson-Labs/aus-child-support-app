@@ -368,11 +368,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: 6,
     overflow: 'hidden',
+    height: 32, // Match PeriodPicker dropdown height
   },
   toggleButton: {
-    width: 32,
-    paddingVertical: 4,
+    width: 40,
+    height: 32, // Match PeriodPicker dropdown height
     alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#f1f5f9', // slate-100 - light inactive
     borderWidth: 1,
     borderColor: '#cbd5e1', // slate-300

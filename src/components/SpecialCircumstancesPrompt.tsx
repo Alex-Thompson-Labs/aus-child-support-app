@@ -1,23 +1,23 @@
 import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
-  Alert,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
+    Alert,
+    Platform,
+    Pressable,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
-import type { CalculationResults } from '../utils/calculator';
 import { useAnalytics } from '../utils/analytics';
+import type { CalculationResults } from '../utils/calculator';
 import type { ComplexityFormData } from '../utils/complexity-detection';
 import { isWeb, webClickableStyles } from '../utils/responsive';
 import { createShadow } from '../utils/shadow-styles';
 import {
-  SPECIAL_CIRCUMSTANCES,
-  getHighestPriorityReason,
-  isCourtDateReason,
-  type SpecialCircumstance,
+    SPECIAL_CIRCUMSTANCES,
+    getHighestPriorityReason,
+    isCourtDateReason,
+    type SpecialCircumstance,
 } from '../utils/special-circumstances';
 import { HelpTooltip } from './HelpTooltip';
 
@@ -659,7 +659,7 @@ const styles = StyleSheet.create({
   checkboxLabelContainer: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   checkboxLabel: {
     fontSize: 14,

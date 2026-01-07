@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     borderColor: '#cbd5e1', // slate-300
     borderRadius: 6,
     paddingHorizontal: 10,
-    paddingVertical: 6,
+    height: 32, // Match Age Range toggle height
     minWidth: 100,
     gap: 8,
   },
