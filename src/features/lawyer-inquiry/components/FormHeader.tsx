@@ -10,11 +10,6 @@ import { Platform, Pressable, Text, View } from 'react-native';
 import { headerStyles } from '../styles';
 import type { FormHeaderProps } from '../types';
 
-// Map source values to their redirect URLs
-const SOURCE_REDIRECT_MAP: Record<string, string> = {
-  blog: 'https://auschildsupport.com/blog/',
-};
-
 export function FormHeader({ config, source, returnTo }: FormHeaderProps) {
   const router = useRouter();
 
@@ -25,20 +20,11 @@ export function FormHeader({ config, source, returnTo }: FormHeaderProps) {
     }
 
     // Only handle external redirects on web
-    if (Platform.OS === 'web') {
+    if (Platform.OS === 'web' && returnTo) {
       // Explicit returnTo URL takes priority
-      if (returnTo) {
-        console.log('[FormHeader] Redirecting to returnTo:', returnTo);
-        window.location.href = returnTo;
-        return;
-      }
-
-      // Check if source maps to a known redirect URL
-      if (source && SOURCE_REDIRECT_MAP[source]) {
-        console.log('[FormHeader] Redirecting to source:', SOURCE_REDIRECT_MAP[source]);
-        window.location.href = SOURCE_REDIRECT_MAP[source];
-        return;
-      }
+      console.log('[FormHeader] Redirecting to returnTo:', returnTo);
+      window.location.href = returnTo;
+      return;
     }
 
     // Default behavior: navigate within the app

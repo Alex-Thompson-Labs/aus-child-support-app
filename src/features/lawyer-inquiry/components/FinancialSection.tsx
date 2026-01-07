@@ -5,12 +5,12 @@
  * plus financial tags and court date picker when applicable.
  */
 
-import React from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
 import DatePickerField from '@/src/components/ui/DatePickerField';
 import { isWeb } from '@/src/utils/responsive';
-import { financialStyles, formStyles } from '../styles';
+import React from 'react';
+import { Pressable, Text, TextInput, View } from 'react-native';
 import { FINANCIAL_TAG_OPTIONS } from '../config';
+import { financialStyles, formStyles } from '../styles';
 import type { FinancialSectionProps } from '../types';
 
 /**
@@ -78,13 +78,17 @@ export function FinancialSection({
             </Text>
           </View>
           <View style={financialStyles.summaryRow}>
-            <Text style={financialStyles.summaryLabel}>Other Parent's Income:</Text>
+            <Text style={financialStyles.summaryLabel}>
+              Other Parent&apos;s Income:
+            </Text>
             <Text style={financialStyles.summaryValue}>
               {formatCurrency(incomeB)}
             </Text>
           </View>
           <View style={financialStyles.summaryRow}>
-            <Text style={financialStyles.summaryLabel}>Number of Children:</Text>
+            <Text style={financialStyles.summaryLabel}>
+              Number of Children:
+            </Text>
             <Text style={financialStyles.summaryValue}>{children}</Text>
           </View>
 

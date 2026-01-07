@@ -8,6 +8,7 @@ import {
   ThemeProvider,
 } from '@react-navigation/native';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Stack, usePathname } from 'expo-router';
 import Head from 'expo-router/head';
 import { StatusBar } from 'expo-status-bar'; // <--- Make sure this line is present
@@ -138,6 +139,7 @@ export default function RootLayout() {
         </Stack>
         <StatusBar style="auto" />
         {Platform.OS === 'web' && <Analytics />}
+        {Platform.OS === 'web' && <SpeedInsights />}
       </ThemeProvider>
     </Suspense>
   );
