@@ -660,12 +660,14 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'flex-start',
+    gap: 8,
   },
   checkboxLabel: {
     fontSize: 14,
     color: '#1a202c', // near-black
     lineHeight: 20,
     flex: 1,
+    paddingRight: 4,
   },
 
   // Footer
