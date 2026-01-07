@@ -24,12 +24,10 @@ export function BreakdownStepCard({
   onToggle,
 }: BreakdownStepCardProps) {
   const accessibilityLabel = description
-    ? `Step ${stepNumber}: ${title}. ${description}. ${
-        isExpanded ? 'Expanded' : 'Collapsed'
-      }. Tap to ${isExpanded ? 'collapse' : 'expand'}.`
-    : `Step ${stepNumber}: ${title}. ${
-        isExpanded ? 'Expanded' : 'Collapsed'
-      }. Tap to ${isExpanded ? 'collapse' : 'expand'}.`;
+    ? `Step ${stepNumber}: ${title}. ${description}. ${isExpanded ? 'Expanded' : 'Collapsed'
+    }. Tap to ${isExpanded ? 'collapse' : 'expand'}.`
+    : `Step ${stepNumber}: ${title}. ${isExpanded ? 'Expanded' : 'Collapsed'
+    }. Tap to ${isExpanded ? 'collapse' : 'expand'}.`;
 
   return (
     <View style={styles.step}>
@@ -80,7 +78,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#e5e7eb', // gray-200 - subtle border
+    borderColor: '#e2e8f0', // Slate 200 - subtle border
     ...createShadow({
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 1 },
@@ -128,14 +126,14 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#1a202c', // text.primary - near black
+    color: '#0f172a', // Slate 900 - primary text
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
 
   chevron: {
     fontSize: 16,
-    color: '#2563eb', // blue-600 (Brand Blue)
+    color: '#3b82f6', // Brand Blue (primary action)
     marginLeft: 'auto',
   },
 });

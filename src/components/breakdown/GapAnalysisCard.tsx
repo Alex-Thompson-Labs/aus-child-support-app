@@ -79,7 +79,7 @@ export function GapAnalysisCard({
             </View>
             <View style={styles.gapCardRow}>
                 <Text style={styles.gapCardLabel}>Cost %</Text>
-                <Text style={[styles.gapCardValue, { color: '#dc2626' }]}>
+                <Text style={[styles.gapCardValue, { color: '#64748b' }]}>
                     ({formatPercent(costPercent)})
                 </Text>
             </View>
@@ -89,7 +89,7 @@ export function GapAnalysisCard({
                 <Text
                     style={[
                         styles.gapCardValue,
-                        csPercent > 0 && !otherParentHasFixedRate && styles.gapCardValueHighlight,
+                        csPercent > 0 && !otherParentHasFixedRate && isUserHighlighted && styles.gapCardValueHighlight,
                         highlightColor && { color: highlightColor },
                     ]}
                 >
@@ -107,11 +107,11 @@ export function GapAnalysisCard({
 const styles = StyleSheet.create({
     gapCard: {
         flex: 1,
-        backgroundColor: '#f9fafb',
+        backgroundColor: '#f8fafc', // Slate 50
         borderRadius: 8,
         padding: 10,
         borderWidth: 1,
-        borderColor: '#e5e7eb',
+        borderColor: '#e2e8f0', // Slate 200
     },
     gapCardTitle: {
         fontSize: 11,
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         letterSpacing: 0.5,
         marginBottom: 10,
-        color: '#4a5568',
+        color: '#334155', // Slate 700
     },
     gapCardRow: {
         flexDirection: 'row',
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     gapCardValue: {
         fontSize: 13,
         fontWeight: '500',
-        color: '#374151',
+        color: '#334155', // Slate 700
         textAlign: 'right',
     },
     gapCardValueHighlight: {
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     },
     gapCardDivider: {
         height: 1,
-        backgroundColor: '#e5e7eb',
+        backgroundColor: '#e2e8f0', // Slate 200
         marginVertical: 6,
     },
     gapCardSpecialRate: {
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     },
     gapCardSpecialRateText: {
         fontSize: 11,
-        color: '#6b7280',
+        color: '#64748b', // Slate 500
         lineHeight: 15,
     },
 });

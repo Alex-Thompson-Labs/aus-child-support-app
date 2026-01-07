@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { theme } from '../../theme';
 import type { CalculationResults } from '../../utils/calculator';
 import { formatCurrency } from '../../utils/formatters';
 import { isFarLimitReached } from '../../utils/zero-payment-detection';
-import { theme } from '../../theme';
 
 export interface AnnualRateBreakdownProps {
     results: CalculationResults;
@@ -33,7 +33,7 @@ export function AnnualRateBreakdown({
 
     // If MAR is applied, show a single consolidated line
     if (hasAnyMar) {
-        const payingParentColor = '#475569'; // slate-600 - neutral for all parents
+        const payingParentColor = '#64748b'; // Slate 500 - muted neutral
         const totalMarAmount = results.finalPaymentAmount;
 
         return (
@@ -120,7 +120,7 @@ export function AnnualRateBreakdown({
                 // Determine color and values based on who actually pays (use final liability as source of truth)
                 const showForParentA = parentAOwesForChild;
                 // Use user highlight color when "You" (Parent A) is the payer
-                const payingParentColor = showForParentA ? theme.colors.userHighlight : '#475569';
+                const payingParentColor = showForParentA ? theme.colors.userHighlight : '#64748b';
                 const farApplied = showForParentA
                     ? child.farAppliedA
                     : child.farAppliedB;
@@ -181,13 +181,13 @@ export function AnnualRateBreakdown({
 
 const styles = StyleSheet.create({
     perChildGapBreakdown: {
-        backgroundColor: '#f9fafb',
+        backgroundColor: '#f8fafc', // Slate 50
         borderRadius: 8,
         padding: 10,
         marginBottom: 12,
         gap: 8,
         borderWidth: 1,
-        borderColor: '#e5e7eb',
+        borderColor: '#e2e8f0', // Slate 200
     },
     perChildGapRow: {
         flexDirection: 'row',
@@ -201,11 +201,11 @@ const styles = StyleSheet.create({
     perChildGapValue: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#374151',
+        color: '#334155', // Slate 700
     },
     perChildGapDivider: {
         height: 1,
-        backgroundColor: '#e5e7eb',
+        backgroundColor: '#e2e8f0', // Slate 200
         marginTop: 4,
     },
 });

@@ -21,12 +21,12 @@ const styles = StyleSheet.create({
         height: 8,
         borderRadius: 4,
         overflow: 'hidden',
-        backgroundColor: '#e5e7eb',
+        backgroundColor: '#e2e8f0', // Slate 200
     },
     barSegmentA: {
         backgroundColor: '#3b82f6',
     },
     barSegmentB: {
-        backgroundColor: '#e5e7eb',
+        backgroundColor: '#e2e8f0', // Slate 200
     },
 });

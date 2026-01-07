@@ -97,16 +97,16 @@ export function ParentComparisonCard({
 const styles = StyleSheet.create({
     // Income percentage card styles
     incomePercentageCard: {
-        backgroundColor: '#f9fafb',
+        backgroundColor: '#f8fafc', // Slate 50
         borderRadius: 8,
         padding: 12,
         borderWidth: 1,
-        borderColor: '#e5e7eb',
+        borderColor: '#e2e8f0', // Slate 200
     },
     incomePercentageCardTitle: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#4a5568',
+        color: '#334155', // Slate 700
         textTransform: 'uppercase',
         letterSpacing: 0.5,
         marginBottom: 6,
@@ -120,17 +120,17 @@ const styles = StyleSheet.create({
 
     // Deduction card styles
     deductionCard: {
-        backgroundColor: '#f9fafb',
+        backgroundColor: '#f8fafc', // Slate 50
         borderRadius: 8,
         padding: 10,
         gap: 6,
         borderWidth: 1,
-        borderColor: '#e5e7eb',
+        borderColor: '#e2e8f0', // Slate 200
     },
     deductionCardTitle: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#4a5568',
+        color: '#334155', // Slate 700
         textTransform: 'uppercase',
         letterSpacing: 0.5,
         marginBottom: 4,
@@ -163,12 +163,12 @@ const styles = StyleSheet.create({
         padding: 10,
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#e5e7eb',
+        borderColor: '#e2e8f0', // Slate 200
     },
     conversionCardLabel: {
         fontSize: 10,
         fontWeight: '600',
-        color: '#4a5568',
+        color: '#334155', // Slate 700
         textTransform: 'uppercase',
         letterSpacing: 0.5,
         marginBottom: 6,
@@ -181,20 +181,20 @@ const styles = StyleSheet.create({
     conversionValue: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#374151',
+        color: '#334155', // Slate 700
     },
     conversionArrow: {
         fontSize: 14,
-        color: '#6b7280',
+        color: '#64748b', // Slate 500
     },
     conversionResult: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#3b82f6',
+        color: '#0f172a',
     },
     conversionSubLabel: {
         fontSize: 9,
-        color: '#6b7280',
+        color: '#64748b', // Slate 500
         textTransform: 'uppercase',
     },
 });

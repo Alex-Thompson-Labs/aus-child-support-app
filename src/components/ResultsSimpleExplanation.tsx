@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { theme } from '../theme';
 import type { CalculationResults } from '../utils/calculator';
 import { formatCurrency } from '../utils/formatters';
-import { theme } from '../theme';
 import { AnnualRateBreakdown } from './breakdown/AnnualRateBreakdown';
 import { COST_PERCENTAGE_TABLE } from './breakdown/constants';
 import { GapAnalysisCard } from './breakdown/GapAnalysisCard';
@@ -231,8 +231,8 @@ export function ResultsSimpleExplanation({
             />
 
             <Text style={[styles.careHeaderLabel, { textAlign: 'right' }]}>
-              <Text style={{ color: '#4a5568' }}>OTHER PARENT</Text> -{' '}
-              <Text style={{ color: '#4a5568' }}>
+              <Text style={{ color: '#334155' }}>OTHER PARENT</Text> -{' '}
+              <Text style={{ color: '#334155' }}>
                 {formatPercent2dp(results.incomePercB)}
               </Text>
             </Text>
@@ -283,8 +283,8 @@ export function ResultsSimpleExplanation({
               />
 
               <Text style={[styles.careHeaderLabel, { textAlign: 'right' }]}>
-                <Text style={{ color: '#4a5568' }}>OTHER PARENT</Text> -{' '}
-                <Text style={{ color: '#4a5568' }}>
+                <Text style={{ color: '#334155' }}>OTHER PARENT</Text> -{' '}
+                <Text style={{ color: '#334155' }}>
                   {formatPercent2dp(child.roundedCareB)}
                 </Text>
               </Text>
@@ -323,7 +323,7 @@ export function ResultsSimpleExplanation({
             <View style={{ paddingVertical: 8 }}>
               <Text
                 style={{
-                  color: '#1a202c',
+                  color: '#0f172a', // Slate 900
                   fontSize: 13,
                   fontWeight: '600',
                   marginBottom: 12,
@@ -345,7 +345,7 @@ export function ResultsSimpleExplanation({
                       borderBottomColor: '#334155',
                     }}
                   >
-                    <Text style={{ color: '#1a202c', fontSize: 13, flex: 1 }}>
+                    <Text style={{ color: '#0f172a', fontSize: 13, flex: 1 }}>
                       {row.careRange}
                     </Text>
                     <Text
@@ -596,7 +596,7 @@ const styles = StyleSheet.create({
 
   stepExplanation: {
     fontSize: 14,
-    color: '#475569',
+    color: '#64748b', // Slate 500
     lineHeight: 20,
     marginBottom: 12,
   },
@@ -623,11 +623,11 @@ const styles = StyleSheet.create({
   deductionValueNegative: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#dc2626',
+    color: '#64748b',
   },
   deductionDivider: {
     height: 1,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: '#e2e8f0', // Slate 200
     marginVertical: 4,
   },
   deductionTotalLabel: {
@@ -638,16 +638,16 @@ const styles = StyleSheet.create({
   deductionTotalValue: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#3b82f6',
+    color: '#0f172a',
   },
 
   // Step 2: Combined Income Calculation
   combinedIncomeCalculation: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8fafc', // Slate 50
     borderRadius: 8,
     padding: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: '#e2e8f0', // Slate 200
     marginTop: 4,
   },
   combinedIncomeRow: {
@@ -668,7 +668,7 @@ const styles = StyleSheet.create({
   },
   combinedIncomeDivider: {
     height: 1,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: '#e2e8f0', // Slate 200
     marginVertical: 6,
   },
   combinedIncomeTotalLabel: {
@@ -679,7 +679,7 @@ const styles = StyleSheet.create({
   combinedIncomeTotalValue: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#3b82f6',
+    color: '#0f172a',
   },
 
   // Step 3: Income Percentage Calculation
@@ -692,7 +692,7 @@ const styles = StyleSheet.create({
   combinedCSIncomeLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#3b82f6',
+    color: '#0f172a',
     letterSpacing: 0.5,
     textTransform: 'uppercase',
   },
@@ -710,7 +710,7 @@ const styles = StyleSheet.create({
   careHeaderLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#475569',
+    color: '#64748b', // Slate 500
     letterSpacing: 0.5,
     textTransform: 'uppercase',
   },
@@ -718,11 +718,11 @@ const styles = StyleSheet.create({
   // Care to Cost conversion
   careConversion: {
     marginTop: 8,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8fafc', // Slate 50
     borderRadius: 8,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: '#e2e8f0', // Slate 200
   },
   conversionCards: {
     flexDirection: 'row',
@@ -731,12 +731,12 @@ const styles = StyleSheet.create({
 
   // Gap calculation (THE KEY INSIGHT)
   gapCalculation: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8fafc', // Slate 50
     borderRadius: 8,
     padding: 16,
     gap: 8,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: '#e2e8f0', // Slate 200
   },
   gapCards: {
     flexDirection: 'row',
@@ -745,16 +745,16 @@ const styles = StyleSheet.create({
 
   // Bracket calculation
   bracketCalculation: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8fafc', // Slate 50
     borderRadius: 8,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: '#e2e8f0', // Slate 200
   },
   bracketTitle: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#475569',
+    color: '#64748b', // Slate 500
     marginBottom: 12,
   },
   bracketFormula: {
@@ -772,11 +772,11 @@ const styles = StyleSheet.create({
   bracketValue: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#1a202c',
+    color: '#0f172a', // Slate 900
   },
   bracketDivider: {
     height: 1,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: '#e2e8f0', // Slate 200
     marginVertical: 4,
   },
   bracketTotalLabel: {
@@ -787,6 +787,6 @@ const styles = StyleSheet.create({
   bracketTotalValue: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#3b82f6',
+    color: '#0f172a',
   },
 });

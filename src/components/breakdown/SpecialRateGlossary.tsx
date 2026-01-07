@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     },
     specialNoticeText: {
         fontSize: 13,
-        color: '#475569',
+        color: '#64748b', // Slate 500
         lineHeight: 18,
     },
 });

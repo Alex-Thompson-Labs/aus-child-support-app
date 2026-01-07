@@ -6,6 +6,6 @@ export const theme = {
     backgroundNeutral: '#F3F4F6',
     border: '#E5E7EB',
     surface: '#FFFFFF',
-    userHighlight: '#1e3a8a', // Dark blue for "You" (current user) elements
+    userHighlight: '#3b82f6', // Bright blue for "You" (current user) elements - matches primary brand color
   },
 };
