@@ -6,33 +6,33 @@
  */
 
 import {
-  convertCareToPercentage,
-  getChildCost,
-  mapCareToCostPercent,
-  type Child,
+    convertCareToPercentage,
+    getChildCost,
+    mapCareToCostPercent,
+    type Child,
 } from '@/src/utils/child-support-calculations';
 import { SSA } from '@/src/utils/child-support-constants';
 import { isWeb } from '@/src/utils/responsive';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    ActivityIndicator,
+    Alert,
+    Modal,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COURT_DATE_ENRICHMENT, getEnrichmentFactors } from '../config';
 import {
-  buttonStyles,
-  containerStyles,
-  enrichmentStyles,
+    buttonStyles,
+    containerStyles,
+    enrichmentStyles,
 } from '../styles';
 import type { EnrichmentViewProps } from '../types';
 
@@ -524,6 +524,13 @@ export function EnrichmentView({
                         style={estimatorStyles.nightsInput}
                         value={child.nights}
                         onChangeText={(text) => updateChild(index, { nights: text })}
+                        onFocus={(e) => {
+                          // Select all text on focus so typing replaces the value
+                          if (isWeb && e.target) {
+                            (e.target as unknown as HTMLInputElement).select?.();
+                          }
+                        }}
+                        selectTextOnFocus={true}
                         keyboardType="number-pad"
                         placeholder="0-14"
                         placeholderTextColor="#9ca3af"

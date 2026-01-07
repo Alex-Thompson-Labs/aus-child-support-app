@@ -3,10 +3,10 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { ChildInput } from '../utils/calculator';
 import { CARE_PERIOD_DAYS } from '../utils/child-support-constants';
 import {
-  isWeb,
-  useResponsive,
-  webClickableStyles,
-  webInputStyles,
+    isWeb,
+    useResponsive,
+    webClickableStyles,
+    webInputStyles,
 } from '../utils/responsive';
 import { createShadow } from '../utils/shadow-styles';
 import { PeriodPicker } from './PeriodPicker';
@@ -114,6 +114,13 @@ export function ChildRow({
               ]}
               value={child.careAmountA.toString()}
               onChangeText={handleCareAmountAChange}
+              onFocus={(e) => {
+                // Select all text on focus so typing replaces the value
+                if (isWeb && e.target) {
+                  (e.target as unknown as HTMLInputElement).select?.();
+                }
+              }}
+              selectTextOnFocus={true}
               keyboardType="number-pad"
               maxLength={5}
               placeholderTextColor="#64748b"
@@ -136,6 +143,13 @@ export function ChildRow({
               ]}
               value={child.careAmountB.toString()}
               onChangeText={handleCareAmountBChange}
+              onFocus={(e) => {
+                // Select all text on focus so typing replaces the value
+                if (isWeb && e.target) {
+                  (e.target as unknown as HTMLInputElement).select?.();
+                }
+              }}
+              selectTextOnFocus={true}
               keyboardType="number-pad"
               maxLength={5}
               placeholderTextColor="#64748b"

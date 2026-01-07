@@ -3,11 +3,11 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { ChildInput, FormErrors } from '../utils/calculator';
 import type { AssessmentYear } from '../utils/child-support-constants';
 import {
-  MAX_CONTENT_WIDTH,
-  isWeb,
-  useResponsive,
-  webClickableStyles,
-  webInputStyles,
+    MAX_CONTENT_WIDTH,
+    isWeb,
+    useResponsive,
+    webClickableStyles,
+    webInputStyles,
 } from '../utils/responsive';
 import { createShadow } from '../utils/shadow-styles';
 import { ChildRow } from './ChildRow';
@@ -173,6 +173,13 @@ export function CalculatorForm({
                   const val = text.replace(/[^0-9]/g, '');
                   onIncomeAChange(parseInt(val) || 0);
                 }}
+                onFocus={(e) => {
+                  // Select all text on focus so typing replaces the value
+                  if (isWeb && e.target) {
+                    (e.target as unknown as HTMLInputElement).select?.();
+                  }
+                }}
+                selectTextOnFocus={true}
                 keyboardType="numeric"
                 placeholder="0"
                 placeholderTextColor="#64748b"
@@ -219,6 +226,13 @@ export function CalculatorForm({
                   const val = text.replace(/[^0-9]/g, '');
                   onIncomeBChange(parseInt(val) || 0);
                 }}
+                onFocus={(e) => {
+                  // Select all text on focus so typing replaces the value
+                  if (isWeb && e.target) {
+                    (e.target as unknown as HTMLInputElement).select?.();
+                  }
+                }}
+                selectTextOnFocus={true}
                 keyboardType="numeric"
                 placeholder="0"
                 placeholderTextColor="#64748b"
