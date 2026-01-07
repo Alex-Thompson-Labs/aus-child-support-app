@@ -117,6 +117,7 @@ export function PeriodPicker({ value, onChange }: PeriodPickerProps) {
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
     gap: 4,
   },
   label: {
