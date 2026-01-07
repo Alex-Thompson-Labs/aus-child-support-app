@@ -29,7 +29,8 @@ export function ParentComparisonCard({
     children,
     isUserHighlighted = false,
 }: ParentComparisonCardProps) {
-    const highlightColor = isUserHighlighted ? theme.colors.userHighlight : undefined;
+    // Use userHighlight for "You" elements, textMuted for "Other Parent" elements
+    const highlightColor = isUserHighlighted ? theme.colors.userHighlight : theme.colors.textMuted;
     // If children are provided, render those instead of the simple label/value pattern
     if (children) {
         return (

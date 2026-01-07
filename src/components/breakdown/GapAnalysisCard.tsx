@@ -41,7 +41,8 @@ export function GapAnalysisCard({
     isUserHighlighted = false,
 }: GapAnalysisCardProps) {
     const hasFixedRate = isFarApplied || isMarApplied;
-    const highlightColor = isUserHighlighted ? theme.colors.userHighlight : undefined;
+    // Use userHighlight for "You" elements, textMuted for "Other Parent" elements
+    const highlightColor = isUserHighlighted ? theme.colors.userHighlight : theme.colors.textMuted;
 
     if (hasFixedRate) {
         // Fixed rate view (FAR or MAR)

@@ -28,7 +28,6 @@ const formatCurrency2dp = (num: number): string => {
   return `$${num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 };
 
-
 export function ResultsSimpleExplanation({
   results,
   formState,
@@ -44,7 +43,6 @@ export function ResultsSimpleExplanation({
     step7: false, // Cost of Children - collapsed
     step8: false, // Annual Rate - collapsed
   });
-
 
   return (
     <View style={styles.container}>
@@ -71,7 +69,12 @@ export function ResultsSimpleExplanation({
                 <Text style={styles.deductionLabel}>
                   Adjusted taxable income
                 </Text>
-                <Text style={styles.deductionValue}>
+                <Text
+                  style={[
+                    styles.deductionValue,
+                    results.ATI_A === 0 && { color: '#64748b' },
+                  ]}
+                >
                   {formatCurrency(results.ATI_A)}
                 </Text>
               </View>
@@ -91,10 +94,20 @@ export function ResultsSimpleExplanation({
               )}
               <View style={styles.deductionDivider} />
               <View style={styles.deductionRow}>
-                <Text style={[styles.deductionTotalLabel, { color: theme.colors.userHighlight }]}>
+                <Text
+                  style={[
+                    styles.deductionTotalLabel,
+                    { color: theme.colors.userHighlight },
+                  ]}
+                >
                   Child Support Income
                 </Text>
-                <Text style={[styles.deductionTotalValue, { color: theme.colors.userHighlight }]}>
+                <Text
+                  style={[
+                    styles.deductionTotalValue,
+                    { color: theme.colors.userHighlight },
+                  ]}
+                >
                   {formatCurrency(Math.max(0, results.CSI_A))}
                 </Text>
               </View>
@@ -106,7 +119,12 @@ export function ResultsSimpleExplanation({
                 <Text style={styles.deductionLabel}>
                   Adjusted taxable income
                 </Text>
-                <Text style={styles.deductionValue}>
+                <Text
+                  style={[
+                    styles.deductionValue,
+                    results.ATI_B === 0 && { color: '#64748b' },
+                  ]}
+                >
                   {formatCurrency(results.ATI_B)}
                 </Text>
               </View>
@@ -126,10 +144,8 @@ export function ResultsSimpleExplanation({
               )}
               <View style={styles.deductionDivider} />
               <View style={styles.deductionRow}>
-                <Text style={styles.deductionTotalLabel}>
-                  Child Support Income
-                </Text>
-                <Text style={styles.deductionTotalValue}>
+                <Text style={[styles.deductionLabel, { color: theme.colors.textMuted }]}>Child Support Income</Text>
+                <Text style={[styles.deductionValue, { color: theme.colors.textMuted }]}>
                   {formatCurrency(Math.max(0, results.CSI_B))}
                 </Text>
               </View>
@@ -157,14 +173,28 @@ export function ResultsSimpleExplanation({
 
           <View style={styles.combinedIncomeCalculation}>
             <View style={styles.combinedIncomeRow}>
-              <Text style={[styles.combinedIncomeLabel, { color: theme.colors.userHighlight }]}>Your CS Income</Text>
-              <Text style={[styles.combinedIncomeValue, { color: theme.colors.userHighlight }]}>
+              <Text
+                style={[
+                  styles.combinedIncomeLabel,
+                  { color: theme.colors.userHighlight },
+                ]}
+              >
+                Your CS Income
+              </Text>
+              <Text
+                style={[
+                  styles.combinedIncomeValue,
+                  { color: theme.colors.userHighlight },
+                ]}
+              >
                 {formatCurrency(Math.max(0, results.CSI_A))}
               </Text>
             </View>
             <View style={styles.combinedIncomeRow}>
-              <Text style={styles.combinedIncomeLabel}>Other Parent's CS Income</Text>
-              <Text style={styles.combinedIncomeValue}>
+              <Text style={[styles.combinedIncomeLabel, { color: theme.colors.textMuted }]}>
+                Other Parent&apos;s CS Income
+              </Text>
+              <Text style={[styles.combinedIncomeValue, { color: theme.colors.textMuted }]}>
                 {formatCurrency(Math.max(0, results.CSI_B))}
               </Text>
             </View>
@@ -231,8 +261,8 @@ export function ResultsSimpleExplanation({
             />
 
             <Text style={[styles.careHeaderLabel, { textAlign: 'right' }]}>
-              <Text style={{ color: '#334155' }}>OTHER PARENT</Text> -{' '}
-              <Text style={{ color: '#334155' }}>
+              <Text style={{ color: theme.colors.textMuted }}>OTHER PARENT</Text> -{' '}
+              <Text style={{ color: theme.colors.textMuted }}>
                 {formatPercent2dp(results.incomePercB)}
               </Text>
             </Text>
@@ -245,8 +275,8 @@ export function ResultsSimpleExplanation({
         <BreakdownStepCard
           key={index}
           stepNumber={`4${results.childResults.length > 1
-            ? String.fromCharCode(97 + index)
-            : ''
+              ? String.fromCharCode(97 + index)
+              : ''
             }`}
           title={`CARE PERCENTAGE${results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''
             }`}
@@ -255,7 +285,11 @@ export function ResultsSimpleExplanation({
               ? `for Child ${index + 1}`
               : undefined
           }
-          tooltip={index === 0 ? "Special rounding rules apply. Regardless of the decimal value, percentages below 50% are rounded down to the nearest whole number with ones above being always rounded up." : undefined}
+          tooltip={
+            index === 0
+              ? 'Special rounding rules apply. Regardless of the decimal value, percentages below 50% are rounded down to the nearest whole number with ones above being always rounded up.'
+              : undefined
+          }
           isExpanded={expandedSteps.step4}
           onToggle={() =>
             setExpandedSteps((prev) => ({ ...prev, step4: !prev.step4 }))
@@ -283,8 +317,8 @@ export function ResultsSimpleExplanation({
               />
 
               <Text style={[styles.careHeaderLabel, { textAlign: 'right' }]}>
-                <Text style={{ color: '#334155' }}>OTHER PARENT</Text> -{' '}
-                <Text style={{ color: '#334155' }}>
+                <Text style={{ color: theme.colors.textMuted }}>OTHER PARENT</Text> -{' '}
+                <Text style={{ color: theme.colors.textMuted }}>
                   {formatPercent2dp(child.roundedCareB)}
                 </Text>
               </Text>
@@ -309,8 +343,8 @@ export function ResultsSimpleExplanation({
         <BreakdownStepCard
           key={index}
           stepNumber={`5${results.childResults.length > 1
-            ? String.fromCharCode(97 + index)
-            : ''
+              ? String.fromCharCode(97 + index)
+              : ''
             }`}
           title={`COST PERCENTAGE${results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''
             }`}
@@ -319,51 +353,53 @@ export function ResultsSimpleExplanation({
               ? `for Child ${index + 1}`
               : undefined
           }
-          tooltip={index === 0 ? (
-            <View style={{ paddingVertical: 8 }}>
-              <Text
-                style={{
-                  color: '#0f172a', // Slate 900
-                  fontSize: 13,
-                  fontWeight: '600',
-                  marginBottom: 12,
-                  textAlign: 'center',
-                }}
-              >
-                Care Percentage → Cost Percentage
-              </Text>
+          tooltip={
+            index === 0 ? (
+              <View style={{ paddingVertical: 8 }}>
+                <Text
+                  style={{
+                    color: '#0f172a', // Slate 900
+                    fontSize: 13,
+                    fontWeight: '600',
+                    marginBottom: 12,
+                    textAlign: 'center',
+                  }}
+                >
+                  Care Percentage → Cost Percentage
+                </Text>
 
-              <View style={{ gap: 10 }}>
-                {COST_PERCENTAGE_TABLE.map((row, idx) => (
-                  <View
-                    key={idx}
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      paddingVertical: 6,
-                      borderBottomWidth: 1,
-                      borderBottomColor: '#334155',
-                    }}
-                  >
-                    <Text style={{ color: '#0f172a', fontSize: 13, flex: 1 }}>
-                      {row.careRange}
-                    </Text>
-                    <Text
+                <View style={{ gap: 10 }}>
+                  {COST_PERCENTAGE_TABLE.map((row, idx) => (
+                    <View
+                      key={idx}
                       style={{
-                        color: '#3b82f6',
-                        fontSize: 13,
-                        fontWeight: '600',
-                        flex: 1,
-                        textAlign: 'right',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        paddingVertical: 6,
+                        borderBottomWidth: 1,
+                        borderBottomColor: '#334155',
                       }}
                     >
-                      {row.costResult}
-                    </Text>
-                  </View>
-                ))}
+                      <Text style={{ color: '#0f172a', fontSize: 13, flex: 1 }}>
+                        {row.careRange}
+                      </Text>
+                      <Text
+                        style={{
+                          color: '#3b82f6',
+                          fontSize: 13,
+                          fontWeight: '600',
+                          flex: 1,
+                          textAlign: 'right',
+                        }}
+                      >
+                        {row.costResult}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
               </View>
-            </View>
-          ) : undefined}
+            ) : undefined
+          }
           isExpanded={expandedSteps.step5}
           onToggle={() =>
             setExpandedSteps((prev) => ({ ...prev, step5: !prev.step5 }))
@@ -408,8 +444,8 @@ export function ResultsSimpleExplanation({
         <BreakdownStepCard
           key={index}
           stepNumber={`6${results.childResults.length > 1
-            ? String.fromCharCode(97 + index)
-            : ''
+              ? String.fromCharCode(97 + index)
+              : ''
             }`}
           title={`Child Support Percentage${results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''
             }`}
@@ -443,8 +479,12 @@ export function ResultsSimpleExplanation({
                   csPercent={child.childSupportPercA}
                   isFarApplied={child.farAppliedA}
                   isMarApplied={child.marAppliedA}
-                  otherParentHasFixedRate={child.farAppliedB || child.marAppliedB}
-                  fixedRateAmount={child.farAppliedA ? results.FAR : results.MAR}
+                  otherParentHasFixedRate={
+                    child.farAppliedB || child.marAppliedB
+                  }
+                  fixedRateAmount={
+                    child.farAppliedA ? results.FAR : results.MAR
+                  }
                   formatPercent={formatPercent2dp}
                   formatCurrency={formatCurrency}
                 />
@@ -455,8 +495,12 @@ export function ResultsSimpleExplanation({
                   csPercent={child.childSupportPercB}
                   isFarApplied={child.farAppliedB}
                   isMarApplied={child.marAppliedB}
-                  otherParentHasFixedRate={child.farAppliedA || child.marAppliedA}
-                  fixedRateAmount={child.farAppliedB ? results.FAR : results.MAR}
+                  otherParentHasFixedRate={
+                    child.farAppliedA || child.marAppliedA
+                  }
+                  fixedRateAmount={
+                    child.farAppliedB ? results.FAR : results.MAR
+                  }
                   formatPercent={formatPercent2dp}
                   formatCurrency={formatCurrency}
                 />
@@ -701,7 +745,6 @@ const styles = StyleSheet.create({
   incomeComparison: {
     gap: 10,
   },
-
 
   // Care comparison
   careComparison: {
