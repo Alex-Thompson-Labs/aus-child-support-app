@@ -38,7 +38,6 @@ export const headerStyles = StyleSheet.create({
     backgroundColor: '#ffffff', // white
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb', // light grey
-    alignItems: 'center', // Center the inner content horizontally
   },
   // Header styles - matches Full Breakdown modal pattern
   header: {
@@ -81,7 +80,6 @@ export const headerStyles = StyleSheet.create({
     backgroundColor: '#f0fdf4', // green-50
     borderBottomWidth: 1,
     borderBottomColor: '#bbf7d0', // green-200
-    alignItems: 'center', // Center the inner content horizontally
   },
   // Trust Badge styles
   trustBadge: {
