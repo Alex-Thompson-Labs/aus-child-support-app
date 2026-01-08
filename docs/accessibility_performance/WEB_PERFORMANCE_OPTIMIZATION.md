@@ -250,11 +250,11 @@ grep -r "import \* as" src/
 
 ### 5. Compression & Caching
 
-**Add `netlify.toml` for production optimizations:**
+**Add `vercel.json` for production optimizations:**
 
-**Note:** `netlify.toml` already exists and is configured. Here's the actual configuration:
+**Note:** `vercel.json` already exists and is configured. Here's the actual configuration:
 
-**Current `netlify.toml` structure:**
+**Current `vercel.json` structure:**
 
 ```toml
 [build]
@@ -299,7 +299,7 @@ grep -r "import \* as" src/
   force = true
 ```
 
-**Note:** Brotli compression is automatically handled by Netlify - no manual configuration needed. The actual file uses `/_expo/static/*` pattern for static assets (not `/*`).
+**Note:** Brotli compression is automatically handled by Vercel - no manual configuration needed. The actual file uses `/_expo/static/*` pattern for static assets (not `/*`).
 
 **Expected Savings:** 60-70% file size reduction via Brotli compression
 
@@ -684,7 +684,7 @@ https://pagespeed.web.dev/
 | System fonts on web | Low    | Medium | 100-300 KB       |
 | Lazy load admin     | Medium | High   | 400-500 KB       |
 | Optimize imports    | Low    | Medium | 100-200 KB       |
-| Netlify compression | Low    | High   | 60-70% reduction |
+| Vercel compression  | Low    | High   | 60-70% reduction |
 | React.memo          | Medium | Medium | Better UX        |
 | Service worker      | High   | Medium | Offline support  |
 

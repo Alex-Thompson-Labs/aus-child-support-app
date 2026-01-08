@@ -8,7 +8,7 @@ This plan prioritizes **learning and proof-building** before lawyer outreach. Th
 
 **Key Changes from v1:**
 
-- Added "Exclusive Partner" parallel track (client-funded ads model)
+- Added "Exclusive Partner" parallel track (Marketing Retainer model)
 - Refined lawyer targeting (small firms already running ads, not solo practitioners)
 - Added property settlement wealth signal to COA reasons
 - Removed ABN/business entity setup (premature)
@@ -24,6 +24,7 @@ This plan prioritizes **learning and proof-building** before lawyer outreach. Th
 **Content Creation (3-4 hours):**
 
 1. Write 3 targeted blog posts on auschildsupport.com:
+
    - "Child Support Calculator Australia: Estimate Your Payments in 60 Seconds"
    - "8 Situations Where Child Support Gets Complicated (And You Need Legal Help)"
    - "Child Support Formula Explained: Income, Care %, and Special Circumstances"
@@ -77,10 +78,10 @@ I've built a child support calculator (auschildsupport.com) that identifies comp
 
 **The Deal:**
 
-- You fund $500 in Google Ads (you control the account, I manage campaigns)
+- You pay a $500 Marketing Retainer (100% goes to ad spend)
+- I spend this budget in **my** Google Ads account targeting **your** region (fully transparent reporting)
 - I rebrand the calculator as "Powered by [Firm Name]" for your region
-- All qualified child support leads in [City] go exclusively to you for 4 weeks
-- I manage the system for free during the pilot
+- All qualified child support leads in [City] go exclusively to you for 4 weeks via **Secure Magic Link**
 - If it works, we discuss ongoing fees. If not, you've spent ad budget you'd spend anyway
 
 **Why this works:**
@@ -103,8 +104,8 @@ When they respond, schedule 15-min Zoom:
 1. Screen share the calculator - show how complexity detection works
 2. Explain CoA reasons = pre-qualification (filters out tire-kickers)
 3. Walk through: Parent uses calculator → sees "complex" → fills inquiry form → goes to them
-4. Show them they'd control Google Ads account (you just manage campaigns)
-5. Ask: "Would you be willing to try this for 4 weeks with $500 of your ad budget?"
+4. Show them that while you manage the ads, they get full transparency on spend/clicks.
+5. Ask: "Would you be willing to pilot this for 4 weeks with a $500 marketing retainer?"
 
 **Success metric: 1 firm agrees to pilot by end of Week 2**
 
@@ -138,13 +139,14 @@ When they respond, schedule 15-min Zoom:
 **Setup co-branded experience (3-4 hours):**
 
 1. Create region-specific landing page variation:
+
    - Add "[Firm Name] Partner" badge to calculator header
    - Update inquiry form: "This referral goes to [Firm Name]"
    - Add firm's logo (get from their website or request)
 
-2. Configure Google Ads with partner:
-   - Help them create Google Ads account OR get added to existing account
-   - Set daily budget: $15-20/day ($500 total / 30 days)
+2. Configure Google Ads (In YOUR Account):
+
+   - Set daily budget: $15-20/day ($500 total / 30 days) from the retainer funds
    - Create 3-5 ad variations targeting "child support calculator australia"
    - Set up conversion tracking (inquiry form submissions)
    - Geographic targeting: 20km radius around their office
@@ -152,13 +154,13 @@ When they respond, schedule 15-min Zoom:
 3. Test end-to-end flow:
    - Run test searches
    - Complete test inquiry
-   - Verify firm receives email notification
+   - Verify firm receives **Secure Magic Link** email notification
 
 **Ongoing management (2-3 hours/week):**
 
 - Monitor ad performance daily
 - Send weekly report to partner: spend, clicks, leads generated
-- Forward all leads within 24 hours with context (CoA reasons, income bracket, urgency)
+- Forward all leads within 24 hours via Secure Magic Link with context (CoA reasons, income bracket, urgency)
 - Track their feedback on lead quality
 
 **Continue organic traffic efforts (4-5 hours):**
@@ -173,29 +175,23 @@ When they respond, schedule 15-min Zoom:
 
 ### If No Exclusive Partner Yet (Validation Path)
 
-**Add property settlement wealth signal (1 hour):**
+**Verify property settlement feature (already implemented):**
 
-Update `/src/utils/change-of-assessment-reasons.ts`:
+The property settlement special circumstance is already implemented in `/src/utils/special-circumstances.ts`:
 
-Insert this into the `CHANGE_OF_ASSESSMENT_REASONS` array at priority 7:
-
-```typescript
-{
-  id: 'property_settlement_pending',
-  label: "Property settlement from separation is pending or recently finalized",
-  description: "Property settlements can significantly impact your financial position and capacity to pay child support. If you're negotiating or have recently completed a property settlement, the division of assets may affect what's fair. Lawyers can argue how property division should factor into your assessment.",
-  category: 'other',
-  priority: 7,
-  officialCoAReasons: ['5.2.5', '5.2.11'] as const,
-}
-```
+- ID: `property_settlement`
+- Priority: 3 (high priority)
+- Official codes: `['5.2.11']`
+- Category: 'other'
 
 **Why this matters:**
 
 - Signals wealth (they have assets to divide)
 - Signals active legal matter (already in the system)
 - Signals urgency (settlement timelines)
-- Official CoA Reason 5.2.5 (property settlements affecting capacity)
+- Official CoA Reason 5.2.11 (property settlements affecting capacity)
+
+**Note:** This feature is already live in the calculator, no code changes needed.
 
 **Find validation lawyers (8-10 hours):**
 
@@ -203,9 +199,11 @@ Insert this into the `CHANGE_OF_ASSESSMENT_REASONS` array at priority 7:
 
 **Where to find them:**
 
-1. Google "family lawyer [Melbourne/Sydney]" → firms running ads
-2. LinkedIn: Search those firms → Find partners or senior associates
-3. Law Society directories: Cross-reference firm size (3-10 lawyers)
+1.  Google "family lawyer \[Melbourne/Sydney\]" → firms running ads
+
+2.  LinkedIn: Search those firms → Find partners or senior associates
+
+3.  Law Society directories: Cross-reference firm size (3-10 lawyers)
 
 **The Pitch (email):**
 
@@ -218,7 +216,9 @@ I've built a child support calculator (auschildsupport.com) that's starting to g
 Would you be willing to receive 3-5 inquiries over the next few weeks (completely free) and give me honest feedback on whether they're worth your time? I'm specifically trying to learn:
 
 - What information you need to evaluate a case quickly
+
 - What distinguishes a serious inquiry from a tire-kicker
+
 - Whether these convert to consultations
 
 No strings attached - I'm in pure learning mode and happy to send referrals elsewhere if the quality isn't there.
@@ -232,25 +232,33 @@ Sam
 **Continue Exclusive Partner outreach (2-3 hours):**
 
 - Send 5-10 more pitches to new firms
+
 - Follow up with firms from Week 1-2 who didn't respond
+
 - Goal: Still trying to land a partner even while validating organically
 
 **Success Metrics:**
 
 - Property settlement CoA reason deployed and visible in calculator
+
 - 2-3 validation lawyers agree to receive free leads
+
 - 15-20 inquiry form completions from organic traffic (cumulative from Week 1-4)
+
 - 1+ Exclusive Partner demo call scheduled (still pursuing this path)
 
 **Failure Signals:**
 
 - <10 inquiries total after 4 weeks = organic won't scale, need paid ads
+
 - Zero validation lawyers respond = pitch needs work
+
 - Zero Exclusive Partner interest after 20+ outreach emails = wrong firms or offer not compelling
 
 ### Time Investment
 
 - **If Partner Signed:** 9-12 hours (setup + management + organic)
+
 - **If Validation Path:** 11-14 hours (code update + lawyer outreach + organic + continued partner pursuit)
 
 ---
@@ -270,21 +278,28 @@ Sam
 
 **Lead quality management (2-3 hours/week):**
 
-- Forward all leads to partner within 24 hours
+- Forward all leads to partner within 24 hours via **Secure Magic Link**
+
 - Track which CoA reasons correlate with partner's feedback
+
 - Weekly check-in call: "Which leads converted? What made them good/bad?"
+
 - Refine complexity detection based on partner's conversion patterns
 
 **Document everything for proof package:**
 
 - Leads generated per week
+
 - Partner's consultation booking rate
+
 - Partner's feedback quotes
+
 - Cost per lead from their ads
 
 **Continue organic traffic (2 hours/week):**
 
 - Answer new Reddit/forum posts
+
 - Any organic leads still go to partner (exclusivity agreement)
 
 **Success metric: Partner books 2+ consultations from ads, wants to continue in February**
@@ -301,8 +316,7 @@ Hi [Lawyer],
 
 New referral from the child support calculator:
 
-**Contact:** [Name], [Phone], [Email]
-**Location:** [Suburb, State]
+**View Full Details:** [Secure Magic Link]
 **Income Bracket:** [Band]
 **Complexity Factors:** [List CoA reasons selected, highlight property settlement if checked]
 **Situation:** "[Their free text description]"
@@ -312,57 +326,78 @@ New referral from the child support calculator:
 
 Let me know if this converts to a consultation - I'm tracking quality to improve the referral criteria.
 
-Thanks,
-Sam
+Thanks, Sam
 
 **Track in spreadsheet:**
 
 - Date sent
+
 - Lawyer name
+
 - Lead details (CoA reasons, income, urgency)
+
 - Lawyer feedback received (Y/N)
+
 - Consultation booked (Y/N)
+
 - Client retained (Y/N)
 
 **Follow-up sequence per lead:**
 
-1. **Day 3:** "Did you contact [Lead Name]? Initial feedback on quality?"
-2. **Day 10:** "Did this convert to a consultation? If not, what was the issue?"
-3. **Day 30:** "If they consulted, did they retain you?"
+1.  **Day 3:** "Did you contact \[Lead Name\]? Initial feedback on quality?"
+
+2.  **Day 10:** "Did this convert to a consultation? If not, what was the issue?"
+
+3.  **Day 30:** "If they consulted, did they retain you?"
 
 **After each lawyer receives 3-5 leads, schedule 15-min call:**
 
-1. "Of the [X] leads I sent, how many were worth your time?"
-2. "What separated the good ones from bad ones?"
-3. "What information was missing that you needed?"
-4. "If paying $50/lead, what would make them worth it?"
-5. "What conversion rate would you need to justify buying leads?"
-6. "Would you pay for leads like [specific good example]?"
+1.  "Of the \[X\] leads I sent, how many were worth your time?"
+
+2.  "What separated the good ones from bad ones?"
+
+3.  "What information was missing that you needed?"
+
+4.  "If paying $50/lead, what would make them worth it?"
+
+5.  "What conversion rate would you need to justify buying leads?"
+
+6.  "Would you pay for leads like \[specific good example\]?"
 
 **Continue Exclusive Partner pursuit (2-3 hours/week):**
 
 - Send 5 more pitches to new firms
+
 - Follow up with previous demo calls
+
 - If any firm shows interest, prioritize setup
 
 **Success Metrics:**
 
 - 10+ leads sent to validation lawyers
+
 - 15%+ consultation rate (2-3 consultations from 10-15 leads)
+
 - 1+ consultation converts to retained client
+
 - Detailed feedback from 2-3 lawyers
+
 - OR: Exclusive Partner finally signs (switch to that path)
 
 **Failure Signals:**
 
 - <5% consultation rate = leads are garbage, complexity filter broken
+
 - Lawyers stop responding after first lead = quality worse than expected
+
 - Lawyers say "fine but wouldn't pay" = business model fundamentally flawed
+
 - Still zero Exclusive Partner interest = that path is dead
 
 ### Time Investment
 
 - **If Partner Path:** 7-9 hours/week
+
 - **If Validation Path:** 6-10 hours/week
 
 ---
@@ -373,16 +408,22 @@ Sam
 
 **Execute client-funded pilot:**
 
-1. Set up co-branded calculator landing page (2-3 hours)
-2. Configure Google Ads with their budget ($500 cap)
-3. Send all leads exclusively to partner firm
-4. Track conversion weekly with partner
+1.  Set up co-branded calculator landing page (2-3 hours)
+
+2.  Configure Google Ads with their budget ($500 cap)
+
+3.  Send all leads exclusively to partner firm
+
+4.  Track conversion weekly with partner
 
 **Build proof package from pilot results (4-5 hours):**
 
 - Document lead volume generated
+
 - Track consultation and retention rates
+
 - Collect testimonial from partner firm
+
 - Use data to pitch additional firms in February
 
 **This path = zero financial risk, real market validation**
@@ -393,17 +434,24 @@ Sam
 
 **Calculate these metrics from Experiment A:**
 
-1. Lead→Consultation rate: [X] consultations ÷ [Y] leads sent = Z%
-2. Consultation→Retained rate: [X] retained ÷ [Y] consultations = Z%
-3. Lead→Retained rate: [X] retained ÷ [Y] leads sent = Z%
-4. Average time to contact lead (from lawyer feedback)
-5. Most common CoA factors in converted leads
-6. Income correlation (do higher income leads convert better?)
+1.  Lead→Consultation rate: \[X\] consultations ÷ \[Y\] leads sent = Z%
+
+2.  Consultation→Retained rate: \[X\] retained ÷ \[Y\] consultations = Z%
+
+3.  Lead→Retained rate: \[X\] retained ÷ \[Y\] leads sent = Z%
+
+4.  Average time to contact lead (from lawyer feedback)
+
+5.  Most common CoA factors in converted leads
+
+6.  Income correlation (do higher income leads convert better?)
 
 **Identify patterns:**
 
 - Which types of cases converted best?
+
 - What information was most valuable to lawyers?
+
 - What red flags predict non-conversion?
 
 **Build Proof Package (4-5 hours)**
@@ -415,10 +463,15 @@ Sam
 **Contents:**
 
 - Number of leads generated organically
+
 - Number sent to family lawyers for evaluation
+
 - Conversion metrics (lead→consult→retained rates)
+
 - Sample lead profile (anonymized) with lawyer outcome
-- Direct lawyer quotes: "[Lawyer Name], [Firm], [City]: 'The leads were well-qualified. I booked 2 consultations from 4 referrals, and retained 1 client worth $3,500 in fees.'"
+
+- Direct lawyer quotes: "\[Lawyer Name\], \[Firm\], \[City\]: 'The leads were well-qualified. I booked 2 consultations from 4 referrals, and retained 1 client worth $3,500 in fees.'"
+
 - Cost comparison: "At 20% consultation rate, a $50 lead costs $250 per consultation. If 50% of consultations retain at $3,000 average, ROI = $500 per retained client."
 
 **Get testimonial quotes from validation lawyers:**
@@ -443,7 +496,7 @@ Based on what actually converted:
 
 **Slide 2:** Solution - "Pre-qualified child support leads from parents actively seeking legal help"
 
-**Slide 3:** How it works - "Free calculator→CoA complexity detection→qualified parent inquiries→sent to you within 24 hours"
+**Slide 3:** How it works - "Free calculator→CoA complexity detection→qualified parent inquiries→sent to you within 24 hours via Secure Link"
 
 **Slide 4:** Trial results - "[Your conversion metrics]"
 
@@ -451,18 +504,22 @@ Based on what actually converted:
 
 **Slide 6:** Pricing - "$50 per lead, no setup fees, cancel anytime" OR "$35 per lead based on conversion data"
 
-**Slide 7:** Guarantee - "If first 3 leads don't generate at least 1 consultation, I'll refund 100% and send 3 more free"
+**Slide 7:** Guarantee - "**100% Lead Credit.** If a lead is invalid or disconnected, I'll credit your account instantly and provide a replacement."
 
 ### Success Metrics
 
 - **If Exclusive Partner:** Ads running, leads flowing, partner satisfied
+
 - **If Validation Only:** 15%+ lead→consultation rate, 2 testimonials, clear ideal customer profile
+
 - Understanding of whether $50/lead pricing is viable or needs adjustment
 
 ### Failure Signals
 
 - <10% consultation rate = model doesn't work, leads too cold
+
 - No lawyers willing to provide testimonial = they didn't find value
+
 - Wide variance in conversion between lawyers = quality inconsistent
 
 ### Time Investment
@@ -476,8 +533,11 @@ Based on what actually converted:
 **Realistic organic traffic (zero budget):**
 
 - Week 1-2: 30-80 sessions
+
 - Week 3-4: 80-150 sessions (Reddit/forum posts gaining traction)
+
 - Week 5-6: 100-200 sessions (SEO starting to kick in)
+
 - Week 7-8: 150-250 sessions
 
 **Total 6-week traffic: 500-800 sessions**
@@ -485,18 +545,20 @@ Based on what actually converted:
 **Conversion to inquiry form: 2-4%**
 
 - Low end: 500 × 2% = 10 inquiries
+
 - High end: 800 × 4% = 32 inquiries
 
 **Quality filter pass rate (CoA complexity): 40-60%**
 
 - Low end: 10 × 40% = 4 qualified leads
+
 - High end: 32 × 60% = 19 qualified leads
 
 **Realistic outcome: 8-15 qualified leads to distribute**
 
 This is enough to validate if you get 2-3 lawyers on board. Each receives 3-5 leads. If conversion is good, you have proof.
 
-**If Exclusive Partner lands:** Their $500 ads budget generates additional 4-6 leads for them specifically.
+**If Exclusive Partner lands:** Their $500 ads budget generates additional 4-6 leads for them specifically (tracked in your analytics).
 
 ---
 
@@ -506,18 +568,23 @@ This is enough to validate if you get 2-3 lawyers on board. Each receives 3-5 le
 
 **Only spend budget if:**
 
-1. Week 8 results show 15%+ consultation rate from organic leads
-2. You have 1-2 lawyer testimonials
-3. You've identified clear "qualified lead" criteria
-4. No Exclusive Partner materialized (otherwise they're funding ads)
+1.  Week 8 results show 15%+ consultation rate from organic leads
+
+2.  You have 1-2 lawyer testimonials
+
+3.  You've identified clear "qualified lead" criteria
+
+4.  No Exclusive Partner materialized (otherwise they're funding ads)
 
 **Then allocate in February:**
 
 - $800-1000: Google Ads targeting "child support calculator Australia"
+
 - $200-300: Freelance writer for 3-5 additional SEO blog posts
+
 - $100-200: Paid listings on legal directories
 
-**If Exclusive Partner works:** Don't spend your budget at all. Use their pilot data to sign more partners in February.
+**If Exclusive Partner works:** Don't spend your budget at all. Use their pilot data to sign more partners in February using the Retainer Model.
 
 ---
 
@@ -528,13 +595,17 @@ This is enough to validate if you get 2-3 lawyers on board. Each receives 3-5 le
 **Lawyer's math:**
 
 - Pays $50 per lead
+
 - Needs 1 retained client per 5 leads to break even (assuming $3,000 avg case value, 50% profit margin)
+
 - Therefore: 20% lead→retained rate required
 
 **Your math:**
 
 - Lead→consultation: 15% minimum (industry standard)
+
 - Consultation→retained: 50% minimum (typical for family law)
+
 - Combined: 15% × 50% = 7.5% lead→retained rate
 
 **This doesn't work at $50/lead.** Lawyer needs 20%, you're delivering 7.5%.
@@ -542,12 +613,15 @@ This is enough to validate if you get 2-3 lawyers on board. Each receives 3-5 le
 **To hit viability:**
 
 - Need 40% lead→consultation rate (very high, requires excellent CoA filtering) + 50% retained rate = 20% end-to-end
+
 - Or lower pricing to $25-35 per lead to match 7.5% economics
 
 **Be prepared to discover:**
 
 - $50/lead is too expensive for the conversion rate you achieve
+
 - You need to charge $25-35 to make economics work for lawyers
+
 - Or you need performance pricing (only charge for consultations booked, not leads sent)
 
 ---
@@ -557,20 +631,27 @@ This is enough to validate if you get 2-3 lawyers on board. Each receives 3-5 le
 **If by Week 4:**
 
 - <5 qualified leads captured → Paid ads required, organic won't scale fast enough
+
 - Zero validation lawyers found → Pitch needs refinement or wrong audience
+
 - Lawyers ghost after receiving first lead → Quality worse than expected
 
 **If by Week 6:**
 
 - <10% consultation rate → Lead quality filter broken or wrong cases
+
 - Lawyers say "wouldn't pay for these" → Business model fundamentally flawed
+
 - High consultation rate but zero retentions → Borderline cases lawyers can't help
+
 - No Exclusive Partner interest after 10 pitches → Wrong firms or offer not compelling
 
 **If by Week 8:**
 
 - Can't get 2 testimonials → No proof to pitch other lawyers
+
 - Conversion data shows unprofitable unit economics → Need to rethink pricing model
+
 - Lawyers want to pay per consultation, not per lead → Different business model required (performance-based)
 
 ---
@@ -581,28 +662,42 @@ This is enough to validate if you get 2-3 lawyers on board. Each receives 3-5 le
 
 ### Outcome A: Exclusive Partner Success
 
-- 1 firm running pilot with their $500 ad budget
+- 1 firm running pilot with their $500 retainer
+
 - 4-10 leads sent to them from ads
+
 - 1-2 consultations booked (proves concept)
+
 - Partner willing to continue in February
+
 - Zero dollars spent from your budget
-- Proof that ads work + firm is willing to pay
+
+- **You own the ad account data and pixel history**
 
 ### Outcome B: Validation Success (No Exclusive Partner)
 
 - 8-15 leads sent to 2-3 validation lawyers
+
 - 15-25% consultation rate (2-4 consultations booked)
+
 - 1-2 retained clients across all lawyers
+
 - 2 lawyer testimonials confirming lead quality
+
 - Clear documentation of what makes a lead "qualified"
+
 - One-page case study showing conversion metrics
+
 - Understanding of whether $50/lead is viable or needs $25-35 pricing
 
 **Either outcome is enough to:**
 
 - Approach 10-15 new lawyers in February with credible data
+
 - Spend $1000 on Google Ads with confidence (if Exclusive Partner didn't happen)
+
 - Negotiate pricing based on actual conversion rates
+
 - Avoid wasting money on a model that doesn't convert
 
 ---
@@ -611,17 +706,28 @@ This is enough to validate if you get 2-3 lawyers on board. Each receives 3-5 le
 
 **What changed:**
 
-1. **Added Exclusive Partner track** - eliminates financial risk if it works
-2. **Changed lawyer target** - small firms (3-10 lawyers) already running ads, not hungry solos
-3. **Added property settlement CoA reason** - captures wealth signal
-4. **Removed ABN setup** - premature, do it when you invoice someone
-5. **Made budget spend conditional** - only if validation succeeds AND no partner funds it
+1.  **Added Exclusive Partner track (Retainer Model)** - eliminates financial risk, retains data asset
+
+2.  **Changed lawyer target** - small firms (3-10 lawyers) already running ads, not hungry solos
+
+3.  **Added property settlement CoA reason** - captures wealth signal
+
+4.  **Made budget spend conditional** - only if validation succeeds AND no partner funds it
+
+5.  **Switched to Lead Credits** - protects cash flow vs cash refunds
 
 **What stayed the same:**
 
 - Organic traffic focus first
+
 - Free lead placement for validation
+
 - Detailed conversion tracking
+
 - Building proof before pitching at scale
 
 **This plan prioritizes learning over revenue. You make $0 in these 8 weeks. But you gain certainty about whether this business works AND potentially get a client to fund your ads testing.**
+
+```
+
+```

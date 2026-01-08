@@ -19,12 +19,11 @@
 - **Platform**: Expo (React Native for Web + Mobile)
 - **Router**: `expo-router` with async routes for code splitting
 - **Language**: TypeScript/TSX
-- **Deployment**: Netlify
+- **Deployment**: Vercel
 - **Key Libraries**:
-  - `lodash` (tree-shaking optimized)
   - `expo-print` & `expo-sharing` (dynamically imported for admin features)
   - `@expo/vector-icons` (optimized imports)
-  - Google Analytics (analytics tracking)
+  - Analytics: Google Analytics (react-ga4) + Vercel Analytics & Speed Insights
 
 ### **Backend & Database Infrastructure**
 
@@ -38,7 +37,8 @@
   - Lead notification workflow: User submits enquiry → Supabase → Make.com → Email notification
   - Real-time alerts for new lead submissions
 - **Admin Dashboard**:
-  - Located at `/admin/login` (password protected)
+  - Login at `/admin/login` (password protected)
+  - Dashboard at `/admin/dashboard`
   - Lead list with search/filter capabilities
   - Status management (new/reviewing/sent/converted/lost)
   - Full lead details view with lawyer assignment tracking
@@ -47,6 +47,9 @@
   - Parent submits inquiry → Saved to Supabase database with full calculation history
   - Admin reviews leads in dashboard for quality and routing
   - Lead status tracking for billing and conversion metrics
+- **SEO Strategy**:
+  - Blog routes (`app/blog/*`) utilize `+html.tsx` for proper meta tag injection and static rendering.
+  - Goal: Ensure indexability of content to drive organic traffic for Phase 3A validation.
 - **Privacy & Compliance**:
   - Privacy policy published at auschildsupport.com/privacy
   - Mandatory consent checkbox on inquiry form
@@ -77,7 +80,7 @@
 │   │   └── exportLeadPDF.ts
 │   └── types/             # TypeScript types
 ├── docs/                  # Documentation
-├── netlify.toml           # Deployment config
+├── vercel.json            # Deployment config
 └── README.md              # Project overview
 ```
 
@@ -168,7 +171,7 @@ Lighthouse Performance score improvements:
 
 - **Code Splitting**: Async routes via `expo-router` plugin
 - **Lazy Loading**: Heavy components wrapped in React `Suspense`
-- **Tree Shaking**: Optimized `lodash` imports
+- **Tree Shaking**: Optimized library imports
 - **Dynamic Imports**: Admin-only libraries (expo-print/sharing)
 - **Bundle Size Reduction**: ~550KB eliminated from unmapped code
   - ~400KB from `@expo/vector-icons` optimization
@@ -210,7 +213,7 @@ Lighthouse Performance score improvements:
 
 - **CalculatorScreen** (`src/screens/CalculatorScreen.tsx`): Main calculator interface
 - **CalculatorForm** (`src/components/CalculatorForm.tsx`): Input form with ATI, care, dependents
-- **AssessmentResult**: Results display with conversion footer
+- **CalculatorResults** (`src/components/CalculatorResults.tsx`): Results display with conversion footer
 - **SpecialCircumstancesForm**: Legal/financial/costs sections with tightened spacing
 - **RelevantDependentsPopover**: Persistent popover with multi-input
 - **BrandSwitch** (`src/components/ui/BrandSwitch.tsx`): Accessible switch component
@@ -220,6 +223,7 @@ Lighthouse Performance score improvements:
 
 - **exportLeadPDF.ts**: PDF generation for leads
 - **useCalculator**: Custom hook for calculation logic
+- **Admin Teaser Generator**: Logic to strip PII (Personal Identifiable Information) from lead details for the initial lawyer email.
 
 ---
 
@@ -264,8 +268,8 @@ Lighthouse Performance score improvements:
 
 ### **Deployment**
 
-- **Platform**: Netlify
-- **Config**: `netlify.toml`
+- **Platform**: Vercel
+- **Config**: `vercel.json`
 - **Build**: Optimized for web target
 - **Environment**: `.env` for configuration (GA tracking ID, etc.)
 
@@ -358,7 +362,7 @@ This is a **mature, production-ready application** with a strong focus on:
 - Main Calculator: `src/screens/CalculatorScreen.tsx`
 - Lead Capture: `app/lawyer-inquiry.tsx`
 - PDF Export: `src/utils/exportLeadPDF.ts`
-- Deployment: `netlify.toml`
+- Deployment: `vercel.json` (Vercel)
 - Environment: `.env`
 
 ### **Navigation Structure**

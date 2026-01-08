@@ -50,7 +50,7 @@ _React Native Web apps are prone to layout shifts (CLS) and slow hydration (LCP)
 ### **C. Canonicalization & URL Structure**
 
 - **Canonical Tags:** Every page MUST have a self-referencing `<link rel="canonical">` to prevent duplicate content from query parameters (e.g., `?reset=true`).
-- **Trailing Slashes:** Enforce a strict policy (strip trailing slashes) via Netlify `_redirects`.
+- **Trailing Slashes:** Enforce a strict policy (strip trailing slashes) via Vercel `vercel.json` rewrites.
 - **WWW Resolution:** Redirect `www` to non-`www` (or vice versa).
 
 ---
@@ -107,11 +107,26 @@ _Target high-intent keywords._
   - "How to Object to a Child Support Assessment"
   - "When to Hire a Family Lawyer for Child Support"
 
+### **C. Programmatic SEO: Change of Assessment Pages (New Opportunity)**
+
+_Leverage existing logic to capture long-tail, high-intent traffic._
+
+**Strategy:** Create 10 dedicated static pages (`app/change-of-assessment/[reason-slug].tsx`), one for each official ground.
+
+**Page Structure:**
+
+1.  **Title:** "Reason [X]: [Reason Name] - Child Support Change of Assessment"
+2.  **Explanation:** Plain English explanation of this specific ground.
+3.  **Example:** "John and Sarah" scenario specific to this reason.
+4.  **CTA:** "Check if you qualify" -> Links back to main calculator with this reason pre-selected.
+
+**Why:** Ranking for "Change of assessment reason 8" is easier than "child support calculator".
+
 ---
 
 ## **4. Measurement & KPIs**
 
-### **Primary Metrics**
+### **Primary Metrics (Google Analytics)**
 
 - **Organic Traffic:** Monthly unique visitors from Google/Bing.
 - **Calculator Completion:** % of users who reach the "Results" state.

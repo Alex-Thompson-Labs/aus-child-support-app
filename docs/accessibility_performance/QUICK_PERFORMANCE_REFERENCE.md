@@ -85,7 +85,7 @@ npm run web
 
 ### Configuration
 
-- `netlify.toml` - Caching, compression, security
+- `vercel.json` - Caching, compression, security
 - `app/+html.tsx` - SEO, Google Analytics
 - `package.json` - Performance scripts
 

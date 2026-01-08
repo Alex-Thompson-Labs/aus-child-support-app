@@ -1,7 +1,7 @@
 # Business Model Canvas
 
-**Last Updated:** December 31, 2025  
-**Project:** Australian Child Support Calculator - B2B Lead Generation Platform  
+**Last Updated:** January 1, 2026
+**Project:** Australian Child Support Calculator - B2B Lead Generation Platform
 **Status:** Phase 3A - Proof Before Pitch (Validation Phase)
 
 ---
@@ -25,8 +25,8 @@
 │ • Make.com           │ • Lead qualification │ • Admin dashboard            │
 │   (automation)       │   & validation       │   (lead management)          │
 │                      │                      │                              │
-│ • Stripe (payments)  │ • Lead routing &     │ • Privacy policy &           │
-│   (Phase 3B+)        │   handover           │   compliance framework       │
+│ • Stripe (payments)  │ • Secure Magic Link │ • Privacy policy &           │
+│   (Phase 3B+)        │   generation         │   compliance framework       │
 │                      │                      │                              │
 │ • Google Ads         │ • Lawyer relationship│ • Domain & brand             │
 │   (traffic -         │   management         │   (auschildsupport.com)      │
@@ -53,13 +53,13 @@
 │ • Privacy-first      │ • One-click lead     │                              │
 │   (no data sold)     │   submission         │ • Direct lawyer referrals    │
 │                      │                      │   (if partner program)       │
-│ FOR LAWYERS:         │ • Secure data        │                              │
-│                      │   handover           │ • Email outreach             │
-│ • Pre-qualified,     │   (encrypted)        │   (LinkedIn, cold email)     │
-│   warm leads         │                      │                              │
-│                      │ • Teaser email       │ • Partner co-branding        │
-│ • $50 per qualified  │   workflow           │   (exclusive partner model)  │
-│   lead (affordable)  │   (quality control)  │                              │
+│ FOR LAWYERS:         │ • Secure Portal      │                              │
+│                      │   (Magic Link)       │ • Email outreach             │
+│ • Pre-qualified,     │                      │   (LinkedIn, cold email)     │
+│   warm leads         │ • Teaser email       │                              │
+│                      │   workflow           │ • Partner co-branding        │
+│ • $50 per qualified  │   (quality control)  │   (exclusive partner model)  │
+│   lead (affordable)  │                      │                              │
 │                      │                      │ • Admin dashboard            │
 │ • Case complexity    │ • Manual lead        │   (for lawyer onboarding)    │
 │   pre-identified     │   review (quality)   │                              │
@@ -68,8 +68,8 @@
 │   (court dates, CoA, │   (Stripe)           │                              │
 │   shared care)       │                      │                              │
 │                      │ • Responsive         │                              │
-│ • Low competition    │   support            │                              │
-│   (niche market)     │                      │                              │
+│ • Marketing Retainer │   support            │                              │
+│   (We manage ads)    │                      │                              │
 └──────────────────────┴──────────────────────┴──────────────────────────────┘
 
 ┌──────────────────────┬──────────────────────────────────────────────────────┐
@@ -88,10 +88,10 @@
 │                      │                                                      │
 | VARIABLE COSTS:      │ Phase 3B (Feb 2026): $2,000-3,000/month             │
 │                      │   - 8-12 lawyers                                     │
-│ • Google Ads         │   - 50+ leads/month                                  │
-│   (conditional -     │                                                      │
-│   only if partner    │ Phase 4 (Months 3-6): $5,000-7,500/month            │
-│   program succeeds)  │   - 20-30 lawyers                                    │
+│ • Marketing Retainer │   - 50+ leads/month                                  │
+│   Ad Spend           │                                                      │
+│   (Client-Funded)    │ Phase 4 (Months 3-6): $5,000-7,500/month            │
+│                      │   - 20-30 lawyers                                    │
 │                      │   - 100-150 leads/month                              │
 │ • Lead validation    │                                                      │
 │   time (manual       │ Phase 5 (Year 1): $10,000-15,000/month              │
@@ -102,15 +102,15 @@
 │   tier)              │                                                      │
 │                      │ • Premium lead tiers (higher value = higher price)   │
 │ OPERATIONAL COSTS:   │                                                      │
-│                      │ • Exclusive partner fees (co-branded calculator)     │
-│ • Development time   │   (if exclusive partner model succeeds)              │
+│                      │ • Marketing Retainers (Monthly recurring service     │
+│ • Development time   │   fee)                                               │
 │   (ongoing           │                                                      │
 │   maintenance)       │ • Volume discounts for high-volume law firms         │
 │                      │                                                      │
 │ • Lawyer outreach &  │ RISK MITIGATION:                                     │
 │   relationship       │                                                      │
-│   management         │ • Refund policy if lead doesn't convert to           │
-│                      │   consultation                                       │
+│   management         │ • 100% Lead Credit if lead doesn't convert to        │
+│                      │   consultation (Credit System vs Cash Refund)        │
 │                      │ • Quality guarantee (manual review before sending)   │
 │ • Legal compliance   │                                                      │
 │   (Privacy Act)      │                                                      │
@@ -126,7 +126,7 @@
 **Family Law Firms (Primary Customers)**
 
 - Lead buyers: Small firms (3-10 lawyers) in major metro areas
-- Exclusive partners (Phase 3A): Firms willing to fund $500 Google Ads for co-branded calculator
+- Exclusive partners (Phase 3A): Firms paying **$500 Marketing Retainer**
 - Validation partners (Phase 3A): 2-3 firms receiving free leads for feedback
 - Target: 286 firms in contact database
 
@@ -135,12 +135,12 @@
 - **Supabase**: Database infrastructure, encrypted storage, RLS policies, Privacy Act compliance
 - **Make.com**: Automation workflow (lead notifications, email triggers)
 - **Stripe**: Payment processing (Phase 3B+)
-- **Google Ads**: Traffic generation (conditional - only if exclusive partner program succeeds)
+- **Google Ads**: Traffic generation (**Account Owned by Platform**, funded by Partners)
 
 **Strategic Partners**
 
 - Legal compliance advisors (Privacy Act expertise)
-- Web hosting providers (Netlify for deployment)
+- Web hosting providers (Vercel for deployment)
 
 ---
 
@@ -162,7 +162,8 @@
 **Lead Management**
 
 - Secure lead storage (Supabase database with encryption)
-- Lead routing: Teaser email workflow → Lawyer acceptance → Full details handover
+- **Secure Magic Link Generation**: Creating time-limited access tokens for viewing leads
+- Lead routing: Teaser email workflow → Lawyer acceptance → Secure Link delivery
 - Status tracking: new/reviewing/sent/converted/lost
 - Billing automation: Monthly Stripe invoicing
 
@@ -171,7 +172,7 @@
 - SEO content (blog posts targeting child support queries)
 - Organic traffic generation (Reddit, forums, social media)
 - Lawyer outreach (LinkedIn, cold email campaigns)
-- Partner program management (exclusive partner onboarding)
+- **Retainer Management**: Optimizing Google Ads campaigns for exclusive partners
 
 **Compliance & Legal**
 
@@ -186,10 +187,11 @@
 
 **Digital Assets**
 
-- **Calculator web app**: auschildsupport.com (React Native Web, deployed on Netlify)
+- **Calculator web app**: auschildsupport.com (React Native Web, deployed on Vercel)
 - **Admin dashboard**: Password-protected lead management system (`/admin/login`)
 - **Supabase database**: Encrypted lead storage with full calculation history
 - **Domain & brand**: auschildsupport.com, professional email (alex@auschildsupport.com)
+- **Ad Account Pixel Data**: The audience data and conversion history in the Google Ads account (Key Asset)
 
 **Data & Information**
 
@@ -216,7 +218,7 @@
 - Supabase (database, auth, RLS)
 - Make.com (automation)
 - Stripe (payments)
-- PostHog (analytics)
+- **Google Analytics + Vercel Analytics** (analytics tracking)
 
 ---
 
@@ -270,7 +272,7 @@
 
 5. **Risk-Free Trial** (Phase 3A)
    - Free leads for validation partners
-   - Exclusive partner model (client funds ads, zero risk for platform)
+   - **Marketing Retainer Model**: You fund the ads, we do the work (zero management fee for pilot)
    - Proof before pitch approach
 
 ---
@@ -289,13 +291,13 @@
 - **Teaser Email Workflow**:
   - Step 1: Receive case summary (without parent contact details)
   - Step 2: Accept if interested → Pay $50
-  - Step 3: Receive full parent details via secure handover
+  - Step 3: Receive full parent details via **Secure Magic Link**
 - **Manual Lead Review**: 30-second quality check before sending
 - **Responsive Support**: Email communication, admin dashboard access
 - **Monthly Billing**: Automated Stripe invoicing
-- **Quality Guarantee**: Refund policy if lead doesn't convert to consultation
+- **Lead Credit Guarantee**: 100% Credit if lead doesn't convert to consultation
 - **Partnership Options**:
-  - Exclusive partner: Co-branded calculator, funded ads
+  - Exclusive partner: Co-branded calculator, **Marketing Retainer**
   - Validation partner: Free leads for feedback (Phase 3A)
 
 ---
@@ -324,7 +326,7 @@
 
 4. **Partner Co-Branding** (Phase 3A - Exclusive Partner Model)
    - Co-branded calculator ("Powered by [Firm Name]")
-   - Partner's Google Ads direct traffic to calculator
+   - **Managed Google Ads** direct traffic to calculator
    - Regional exclusivity
 
 **Lawyer Acquisition (Customer Acquisition):**
@@ -337,7 +339,7 @@
 
 2. **Partner Program**
 
-   - Exclusive partner pitch (firm funds $500 ads)
+   - Exclusive partner pitch (firm pays **$500 Marketing Retainer**)
    - Validation partner program (free leads)
 
 3. **Admin Dashboard**
@@ -348,7 +350,7 @@
 
 4. **Email Communication**
    - Teaser email workflow
-   - Lead handover system
+   - **Secure Magic Link** delivery
    - Monthly billing notifications
 
 ---
@@ -407,7 +409,7 @@
 1. **Domain & Hosting**
 
    - Domain: auschildsupport.com (~$15/year)
-   - Hosting: Netlify (free tier initially)
+   - Hosting: Vercel
    - **Total: ~$50/year**
 
 2. **Database & Infrastructure**
@@ -422,11 +424,11 @@
 
 **VARIABLE COSTS:**
 
-1. **Google Ads** (Conditional)
+1. **Marketing Retainer Ad Spend** (Client-Funded)
 
-   - Only if exclusive partner program succeeds
-   - Partner funds $500, platform manages campaigns
-   - **Risk: $0** (client-funded model)
+   - Partner pays $500 Retainer
+   - 100% of retainer goes to Google Ads
+   - **Risk: $0** (Client funds the spend)
 
 2. **Payment Processing**
 
@@ -493,7 +495,7 @@
 3. Admin reviews lead (30-second quality check)
 4. Teaser email sent to lawyer (case summary, no contact details)
 5. Lawyer responds "YES" → Charged $50 via Stripe
-6. Full parent details sent via secure handover
+6. Full parent details sent via **Secure Magic Link**
 7. Lawyer contacts parent independently
 8. Monthly billing via Stripe (aggregated invoicing)
 
@@ -529,9 +531,9 @@
    - Court date urgent cases
    - High-income cases
 
-2. **Exclusive Partner Fees** (If model succeeds)
+2. **Marketing Retainers** (If model succeeds)
 
-   - Monthly retainer for co-branded calculator
+   - Monthly recurring service fee for managing ads
    - Regional exclusivity
    - Guaranteed lead volume
 
@@ -547,7 +549,7 @@
 
 **RISK MITIGATION:**
 
-- **Refund Policy**: If lead doesn't convert to consultation, full refund
+- **100% Lead Credit**: If lead doesn't convert to consultation, lawyer gets a credit (keeps cash in system)
 - **Quality Guarantee**: Manual review before sending (reduces bad leads)
 - **Teaser Workflow**: Lawyer sees case summary before paying (reduces buyer's remorse)
 
@@ -579,7 +581,7 @@
 - 8+ active paying lawyers (using proof package)
 - 50+ leads delivered
 - $2,000+ monthly revenue
-- <20% refund rate
+- <20% dispute rate
 - Lawyer NPS > 0
 
 **Strong Success:**
@@ -587,7 +589,7 @@
 - 12+ active paying lawyers
 - 80+ leads delivered
 - $3,000+ monthly revenue
-- <10% refund rate
+- <10% dispute rate
 - Lawyer NPS > 30
 - Lawyers asking for MORE leads
 
@@ -619,7 +621,7 @@
 
 **Week 3-4: Execute Path**
 
-- If Exclusive Partner: Setup co-branded calculator, configure their Google Ads
+- If Exclusive Partner: Setup co-branded calculator, configure Google Ads (**Managed Account**)
 - If no partner: Add property settlement CoA reason, place free leads with validation lawyers
 
 **Week 5-8: Scale & Document**

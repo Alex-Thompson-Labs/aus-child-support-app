@@ -1,8 +1,8 @@
 # CLAUDE.md
 
-**Last Updated:** 2026-01-01  
-**Project Phase:** Phase 2 - Near Launch  
-**Status:** Production Ready
+**Last Updated:** 2026-01-01
+**Project Phase:** Phase 3A - Validation
+**Status:** Production Ready / Validation Mode
 
 This file provides guidance to Claude Code (claude.ai/code) and Desktop Commander when working with code in this repository.
 
@@ -44,9 +44,8 @@ npx expo start --web        # Run in web browser
 npm run lint                # Run ESLint
 npm run type-check          # Verify TypeScript types
 npm run build:web           # Build for production (web)
-```
 
----
+## 🎯 Quick Reference
 
 ## 🎯 Quick Reference
 
@@ -71,7 +70,7 @@ npm run build:web           # Build for production (web)
 - `EXPO_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
 - `EXPO_PUBLIC_ADMIN_EMAIL` - Admin login email
 - `EXPO_PUBLIC_ADMIN_PASSWORD` - Admin login password
-- (PostHog disabled for web platform)
+- `EXPO_PUBLIC_GA_MEASUREMENT_ID` - Google Analytics ID (Web/Mobile)
 
 **⚠️ NEVER commit `.env` to git** - It contains secrets and is in `.gitignore`
 
@@ -106,14 +105,14 @@ The project uses a comprehensive `.gitignore` to protect sensitive business data
 
 ## 🏗️ Architecture Overview
 
-**🎯 BUSINESS MODEL:** This is a **B2B lead generation** app, not a B2C utility.
+**🎯 BUSINESS MODEL:** This is a **B2B lead generation** app with a "Privacy First" architecture.
 
 - Parents use FREE calculator
-- Complexity triggers detect high-value cases (high income variance, special circumstances, court dates)
-- "Get Legal Help" buttons connect parents with lawyers
-- Lawyers pay $100 per booked consultation
-- Target: $4K-$380K/year revenue
-- **Full Model Justification:** See `docs/PRICING_STRATEGY_ANALYSIS.md` for comprehensive regulatory compliance analysis
+- Complexity triggers detect high-value cases
+- **Secure Magic Links** deliver lead data to lawyers (No PII in emails)
+- Lawyers pay **$50 per qualified lead** (or a Monthly Retainer)
+- **Marketing Retainer Model:** We manage Google Ads accounts for exclusive partners
+- **Full Model Justification:** See `docs/business-docs/BUSINESS_MODEL.md`
 
 This is an **Expo/React Native multi-platform app** (iOS, Android, Web) that implements an Australian Child Support Calculator with integrated lawyer lead generation.
 
@@ -127,80 +126,83 @@ This is an **Expo/React Native multi-platform app** (iOS, Android, Web) that imp
 
 **Platform-specific considerations:**
 
-- PostHog analytics: Mobile only (disabled on web)
-- Haptic feedback: Mobile only
-- Admin panel: Web-optimized (mobile compatible)
+- **Analytics:** Google Analytics (react-ga4) + Vercel Analytics & Speed Insights
+- **Haptic feedback:** Mobile only
+- **Admin panel:** Web-optimized
+- **Secure View:** Web-only route for lawyers (planned: `/admin/view-lead/[token]`)
 
 ---
 
 ## 🗂️ Project Structure
 
 ```
+
 csc/
-├── app/                      # Expo Router file-based routing
-│   ├── _layout.tsx           # Root layout with theme provider
-│   ├── (tabs)/               # Tab navigation for calculator
-│   │   ├── index.tsx         # Home screen (CalculatorScreen)
-│   ├── admin/                # Admin panel routes
-│   │   ├── dashboard.tsx     # Lead management dashboard
-│   │   ├── login.tsx         # Admin authentication
-│   │   └── lead/[id].tsx     # Individual lead details
-│   └── lawyer-inquiry.tsx    # Inquiry form screen
+├── app/ # Expo Router file-based routing
+│ ├── \_layout.tsx # Root layout with theme provider
+│ ├── (tabs)/ # Tab navigation for calculator
+│ │ ├── index.tsx # Home screen (CalculatorScreen)
+│ ├── admin/ # Admin panel routes
+│ │ ├── dashboard.tsx # Lead management dashboard
+│ │ ├── login.tsx # Admin authentication
+│ │ └── lead/[id].tsx # Individual lead details (Internal)
+│ └── lawyer-inquiry.tsx # Inquiry form screen
 │
-├── src/                      # Domain logic (platform-agnostic)
-│   ├── components/           # React components
-│   │   ├── CalculatorForm.tsx
-│   │   ├── CalculatorResults.tsx
-│   │   ├── SmartConversionFooter.tsx
-│   │   └── WebInquiryPanel.tsx
-│   ├── screens/              # Screen components
-│   │   ├── CalculatorScreen.tsx
-│   │   └── LawyerInquiryScreen.tsx
-│   ├── hooks/                # Custom hooks
-│   │   └── useCalculator.ts  # Main calculation logic
-│   ├── utils/                # Business logic
-│   │   ├── child-support-calculations.ts
-│   │   ├── complexity-detection.ts
-│   │   ├── supabase.ts       # Database client
-│   │   └── analytics.ts      # PostHog wrapper (mobile only)
-│   └── types/                # TypeScript definitions
-│       └── calculator.ts
+├── src/ # Domain logic (platform-agnostic)
+│ ├── components/ # React components
+│ │ ├── CalculatorForm.tsx
+│ │ ├── CalculatorResults.tsx
+│ │ └── SmartConversionFooter.tsx
+│ ├── screens/ # Screen components
+│ │ └── CalculatorScreen.tsx
+│ ├── features/ # Feature modules
+│ │ └── lawyer-inquiry/
+│ │ └── LawyerInquiryScreen.tsx
+│ ├── hooks/ # Custom hooks
+│ │ └── useCalculator.ts # Main calculation logic
+│ ├── utils/ # Business logic
+│ │ ├── child-support-calculations.ts
+│ │ ├── complexity-detection.ts
+│ │ ├── supabase.ts # Database client
+│ │ └── analytics.ts # Google Analytics + Vercel Analytics wrapper
+│ └── types/ # TypeScript definitions
+│ └── calculator.ts
 │
-├── docs/                     # Documentation (tracked in git)
-│   ├── BUSINESS_MODEL.md     # Revenue model details
-│   ├── DESIGN_SYSTEM.md      # UI patterns & calculation formulas
-│   ├── CLAUDE.md             # This file - AI assistant guidance
-│   ├── templates/            # Email templates for lawyer outreach
-│   └── guides/               # Implementation guides
-│       ├── active/           # Current phase guides
-│       └── old/              # Archived phase guides
+├── docs/ # Documentation (tracked in git)
+│ ├── business-docs/
+│ │ └── BUSINESS_MODEL.md # Revenue model details
+│ ├── DESIGN_SYSTEM.md # UI patterns & calculation formulas
+│ └── CLAUDE.md # This file - AI assistant guidance
 │
-├── business-docs/            # Business data (NOT in git - see .gitignore)
-│   └── [lawyer contacts, partnership agreements, invoices]
+├── business-docs/ # Business data (NOT in git - see .gitignore)
+│ └── [lawyer contacts, partnership agreements, invoices]
 │
-├── data/                     # Email lists & analytics (NOT in git)
-│   └── [lawyer emails, outreach lists, analytics exports]
+├── data/ # Email lists & analytics (NOT in git)
+│ └── [lawyer emails, outreach lists, analytics exports]
 │
-└── dist/                     # Web build output (generated, not tracked)
-```
+└── dist/ # Web build output (generated, not tracked)
+
+````
 
 ---
 
 ## 🎯 Current Project Phase
 
-**Status:** Phase 2 - Near Launch  
+**Status:** Phase 3A - Validation
+
+**Goal:** Prove lead quality before scaling
+
 **Progress:**
 
 - ✅ Calculator built and tested
 - ✅ Complexity triggers implemented
 - ✅ Inquiry form with Supabase integration
 - ✅ Admin panel for lead management
-- ✅ Web platform support added
-- 🚧 Web deployment in progress
-- ⏳ Privacy policy integration needed
-- ⏳ Lawyer outreach preparation
+- ✅ **Analytics** integration (Google Analytics + Vercel Analytics)
+- ⏳ **Secure Magic Link** implementation (In Progress)
+- ⏳ **Exclusive Partner (Retainer)** outreach (In Progress)
 
-**See:** `docs/guides/active/REMAINING_TASKS.md` for immediate next steps
+**Next steps:** See BUSINESS_MODEL.md for current validation plan
 
 ---
 
@@ -211,36 +213,17 @@ csc/
 **Essential Reading Order:**
 
 1. **This file (CLAUDE.md)** - Architecture and AI guidance
-2. **docs/BUSINESS_MODEL.md** - Revenue model and business logic
+2. **docs/business-docs/BUSINESS_MODEL.md** - Revenue model and business logic
 3. **docs/DESIGN_SYSTEM.md** - UI patterns, colors, calculation formulas
-4. **docs/guides/active/REMAINING_TASKS.md** - Current work in progress
+4. **docs/business-docs/proof-before-pitch-v2.md** - Current validation plan
 
-### 📖 Active Guides (`docs/guides/active/`)
+### 📖 Documentation Structure
 
 **Current Phase Documentation:**
 
-- `REMAINING_TASKS.md` - Immediate next steps and blockers
-- `LEAD_HANDOVER.md` - How to handle incoming leads
-- `WEB_DEPLOYMENT_GUIDE.md` - Web platform deployment process
-
-### 🗄️ Archived Guides (`docs/guides/old/`)
-
-**Completed Phase Documentation:**
-
-- Phase 1 technical development (calculator, complexity triggers, forms)
-- Phase 2 business setup (email templates, partnership agreements)
-- Historical reference only - not needed for current work
-
-### 📧 Email Templates (`docs/templates/`)
-
-**Business Communication:**
-
-- `EMAIL_COLD_OUTREACH.md` - Lawyer recruitment
-- `EMAIL_WELCOME_NEW_PARTNER.md` - Onboarding new partners
-- `EMAIL_LEAD_FORWARDING.md` - Sending leads to lawyers
-- `EMAIL_WEEKLY_CHECKIN.md` - Partner engagement
-- `EMAIL_MONTHLY_INVOICE.md` - Billing communication
-- `LAWYER_PARTNERSHIP_AGREEMENT.md` - Legal agreement template
+- See `docs/business-docs/BUSINESS_MODEL.md` for current status
+- See `docs/business-docs/PRODUCT_ROADMAP.md` for strategic plan
+- See `docs/business-docs/proof-before-pitch-v2.md` for validation plan
 
 ---
 
@@ -255,27 +238,33 @@ The app implements the official Australian child support 8-step formula from Ser
 **Key concepts:**
 
 - **CSI (Child Support Income)**: ATI - SSA - relevant dependents
-- **Income %**: Your share of combined income
-- **Cost %**: Credit for care time (derived from care nights)
 - **The Gap**: Income % - Cost % = Payment %
 
 **Implementation:**
 
 - `src/hooks/useCalculator.ts` - Form state and orchestration
 - `src/utils/child-support-calculations.ts` - Core formulas
-- `src/utils/child-support-constants.ts` - Government rates (year-indexed)
-- `src/utils/cost-of-children-tables.ts` - Official cost tables
 
 ### Complexity Detection
 
 Identifies high-value cases that need legal help:
 
 - High income variance between parents
-- Special circumstances (Change of Assessment reasons)
+- Change of Assessment reasons (10 official grounds)
 - Court dates or legal proceedings
-- Zero payment anomalies
 
 **Implementation:** `src/utils/complexity-detection.ts`
+
+### Secure Data Delivery (Privacy First)
+
+We **never** email raw lead data to lawyers.
+
+1. **Submission:** Parent submits form -> Saved to Supabase (Encrypted)
+2. **Notification:** Admin gets "Teaser" email (No PII)
+3. **Handover:** Admin generates **Secure Magic Link** -> Sends to Lawyer
+4. **Access:** Lawyer clicks link -> Views data in secure route (planned: `/admin/view-lead/[token]`)
+
+**Implementation Status:** Secure Magic Link system planned (route and utility file to be implemented)
 
 ### Database Integration (Supabase)
 
@@ -293,16 +282,11 @@ Use `Platform.OS` checks for platform-specific features:
 ```typescript
 import { Platform } from 'react-native';
 
-// Analytics (mobile only)
-if (Platform.OS !== 'web') {
-  PostHog.capture('event_name');
-}
-
 // Haptics (mobile only)
 if (Platform.OS !== 'web') {
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 }
-```
+````
 
 ### Styling System
 
@@ -336,10 +320,8 @@ All styling uses React Native StyleSheet with consistent color palette:
 
 - Complex architectural decisions
 - Multi-system integrations
-- Performance optimization strategies
-- Security audits
+- Security audits (Secure Link logic)
 - Design judgment tasks (responsive web design)
-- When stuck >2 hours on same problem
 
 **Cost Reality:**
 
@@ -352,24 +334,26 @@ All styling uses React Native StyleSheet with consistent color palette:
 ## ⚠️ Common Pitfalls to Avoid
 
 **Code Quality:**
+
 - ❌ Don't use `any` types - always define proper TypeScript interfaces
 - ❌ Don't skip error handling - production code needs try/catch blocks
 - ❌ Don't forget loading states - users need feedback
 - ❌ Don't ignore edge cases - test with null, undefined, empty strings, extreme values
 
 **Project-Specific:**
+
 - ❌ Don't use Tailwind CSS - this project uses React Native StyleSheet
-- ❌ Don't enable PostHog on web - it's mobile-only (Platform.OS !== 'web')
 - ❌ Don't modify `/ios` or `/android` manually - they're generated by `expo prebuild`
 - ❌ Don't use `react-native-web` specific APIs without Platform checks
 
 **Security:**
+
+- ❌ **NEVER email PII (Name, Phone, Email)** - always use Secure Magic Links
 - ❌ Don't commit `.env` files - they're gitignored for a reason
 - ❌ Don't store business data in git - use `/business-docs/` and `/data/` (gitignored)
-- ❌ Don't expose Supabase keys in client code - use `EXPO_PUBLIC_` prefix only for public keys
-- ❌ Don't hardcode admin credentials - always use environment variables
 
 **Business Logic:**
+
 - ❌ Don't modify calculation formulas without verifying against Services Australia documentation
 - ❌ Don't change complexity triggers without understanding business impact (affects revenue)
 - ❌ Don't alter lead submission flow without testing end-to-end
@@ -442,20 +426,16 @@ Think about edge cases: What if lead has no phone? What if email is malformed?
 ### ✅ Use Plan Mode For:
 
 - Multi-file changes (3+ files)
-- Complex features spanning multiple systems
+- **Secure Magic Link** implementation (Security critical)
 - Architecture decisions
-- When stuck after 2-3 attempts
-- Major refactoring
 - Integration work (database, API, auth)
 
 ### ❌ Use Regular Mode For:
 
 - Single file edits
 - Bug fixes
-- Adding one feature
 - Documentation updates
-- Simple prompts (1-3 sentences)
-- Copy-paste tasks
+- Simple prompts
 
 ### Cost Comparison
 
@@ -485,10 +465,9 @@ npx expo start --clear
 
 - Calculator produces correct results
 - Complexity triggers fire appropriately
-- Inquiry form saves to Supabase
+- **Google Analytics** events firing
 - Admin panel loads and displays leads
-- All navigation works smoothly
-- Styling looks correct on all platforms
+- **Secure Link** route works correctly
 
 ### Production Testing
 
@@ -498,9 +477,7 @@ npx expo start --clear
 - Verify privacy policy link works
 - Test form submission end-to-end
 - Check admin panel on production database
-- Monitor for console errors
-- Test on multiple browsers (Chrome, Safari, Firefox)
-- Test on mobile browsers
+- Verify analytics events firing (Google Analytics + Vercel Analytics)
 
 ---
 
@@ -514,26 +491,25 @@ npx expo start --clear
 npx expo export --platform web
 ```
 
-**Deploy to Netlify:**
+**Deploy to Vercel:**
 
 1. Build: `npx expo export --platform web`
-2. Go to [app.netlify.com/drop](https://app.netlify.com/drop)
-3. Drag `dist/` folder to upload
-4. Point `auschildsupport.com` to Netlify (update nameservers at registrar)
+2. Use Vercel CLI: `vercel --prod` or connect repository to Vercel dashboard
+3. Point `auschildsupport.com` to Vercel (update DNS records at registrar)
 
-**See:** `docs/guides/active/WEB_DEPLOYMENT_GUIDE.md` for detailed steps
+**Deployment details:** See deployment section above
 
 ### Mobile Platforms (Future)
 
 **iOS App Store:**
 
 - Requires Apple Developer account ($99/year)
-- See `docs/guides/old/APP_STORE_DEPLOYMENT.md`
+- Deployment guide to be created when ready
 
 **Android Play Store:**
 
 - Requires Google Play account ($25 one-time)
-- See `docs/guides/old/APP_STORE_DEPLOYMENT.md`
+- Deployment guide to be created when ready
 
 ---
 
@@ -549,9 +525,8 @@ npx expo export --platform web
 **Features:**
 
 - View all submitted leads
-- Mark leads as contacted/converted
-- View lead details and urgency
-- Track lead sources
+- Mark leads as qualified/paid
+- **Generate Secure View Links** for lawyers
 
 ---
 
@@ -559,36 +534,7 @@ npx expo export --platform web
 
 **Connection:** `src/utils/supabase.ts`
 
-**Tables:**
-
-- `leads` - Inquiry form submissions
-
-**Schema:**
-
-```sql
-CREATE TABLE leads (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name TEXT NOT NULL,
-  email TEXT NOT NULL,
-  phone TEXT,
-  description TEXT NOT NULL,
-  urgency TEXT NOT NULL,
-  source TEXT NOT NULL,
-  status TEXT DEFAULT 'new',
-  
-  -- Complexity detection fields
-  complexity_trigger TEXT[],        -- Array: ['high_alert', 'shared_care', 'binding_agreement']
-  special_circumstances JSONB,      -- Array of reason IDs with embedded court dates
-                                    -- Example: ["court_12_Jan_2026", "high_income_earner"]
-  financial_tags JSONB,             -- High income variance indicators
-  care_data JSONB,                  -- Child care percentage data
-                                    -- Example: [{"name": "Child 1", "carePercentage": 45}]
-  
-  -- Metadata
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
-```
+**Tables:** `leads`
 
 **RLS Policies:** Configured for public insert, admin read/update
 
@@ -600,81 +546,20 @@ CREATE TABLE leads (
 
 ### Code Changes
 
-1. **Understand the change:**
-   - Read relevant documentation first
-   - Check existing patterns in codebase
-   - Review `docs/DESIGN_SYSTEM.md` for UI patterns
-
-2. **Make the change:**
-   - Follow existing code style
-   - Use TypeScript types (no `any`)
-   - Add error handling
-   - Include edge case handling
-   - Add comments for complex logic
-
-3. **Test the change:**
-   - Test on all platforms (web, iOS, Android)
-   - Test edge cases
-   - Check for console errors
-   - Verify no regressions
-
-4. **Document the change:**
-   - Update relevant docs if architecture changed
-   - Update `docs/guides/active/REMAINING_TASKS.md` if completing a task
+1. **Understand the change:** Read relevant documentation first
+2. **Make the change:** Follow existing code style, use TypeScript
+3. **Test the change:** Test on all platforms
+4. **Document the change:** Update `docs/` and `REMAINING_TASKS.md`
 
 ### Documentation Changes
 
 **Documentation is tracked in git** - All files in `docs/` are version controlled.
-
-- Update `CLAUDE.md` for architectural changes
-- Update `DESIGN_SYSTEM.md` for UI pattern changes
-- Update `BUSINESS_MODEL.md` for business logic changes
-- Update `guides/active/REMAINING_TASKS.md` for progress tracking
 
 **Business data is NOT tracked** - Keep sensitive data in `/business-docs/` and `/data/` (gitignored)
 
 ---
 
 ## 🆘 Troubleshooting
-
-### Common Issues
-
-**Build fails:**
-
-```bash
-# Clear cache and rebuild
-npx expo start --clear
-```
-
-**Database connection fails:**
-
-- Check `.env` has correct Supabase credentials
-- Verify RLS policies allow operation
-- Check Supabase project is active
-
-**Admin login fails:**
-
-- Verify credentials in `.env`
-- Check console for error messages
-- Verify EXPO*PUBLIC* prefix on variables
-
-**Styling looks wrong on web:**
-
-- Platform-specific styles may need adjustment
-- Check for mobile-only components
-- Review responsive breakpoints
-
-**PostHog errors on web:**
-
-- PostHog is intentionally disabled on web
-- This is expected behavior
-
-### Getting Help
-
-1. Check existing documentation in `docs/`
-2. Search codebase for similar patterns
-3. Check `docs/guides/active/` for current phase guidance
-4. Ask Claude Code or Desktop Commander with specific error messages
 
 ---
 
@@ -687,38 +572,24 @@ npx expo start --clear
 - [Supabase Documentation](https://supabase.com/docs)
 - [Expo Router Documentation](https://docs.expo.dev/router/introduction/)
 
-### Project-Specific Docs
-
-- `docs/BUSINESS_MODEL.md` - Revenue model details
-- `docs/DESIGN_SYSTEM.md` - UI patterns and calculation formulas
-- `docs/PRICING_STRATEGY_ANALYSIS.md` - Regulatory compliance analysis
-- `docs/templates/` - Email and agreement templates
-
-### Business Setup Docs
-
-- `docs/guides/active/LEAD_HANDOVER.md` - Lead handling process
-- `docs/guides/active/WEB_DEPLOYMENT_GUIDE.md` - Web deployment steps
-- `docs/guides/active/REMAINING_TASKS.md` - Current tasks and blockers
-
 ---
 
 ## 🎯 Success Metrics
 
-### Phase 2 Goals (Current)
+### Phase 3A Goals (Current)
 
 - ✅ Web app deployed to `auschildsupport.com`
-- ✅ Privacy policy integrated
-- ✅ Admin panel functional
-- ✅ Lead database operational
-- 🎯 3-5 lawyer partners signed
-- 🎯 First leads generated
+- ✅ **Analytics** active (Google Analytics + Vercel Analytics)
+- 🎯 **Secure Magic Link** system operational
+- 🎯 1 Exclusive Partner signed (**$500 Retainer**)
+- 🎯 15%+ Consultation Rate
 
 ### Long-term Goals
 
 - Monthly leads: 15-380
 - Monthly revenue: $1,500-$38,000
 - Lawyer partners: 5-20
-- Conversion rate: >20% (inquiry → booked consultation)
+- Dispute Rate: <20%
 
 ---
 

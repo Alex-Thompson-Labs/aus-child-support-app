@@ -1,7 +1,7 @@
 # Key Personas
 
-**Last Updated:** December 31, 2025  
-**Status:** Phase 3A - Validation  
+**Last Updated:** January 1, 2026
+**Status:** Phase 3A - Validation
 **Product:** Australian Child Support Calculator (auschildsupport.com)
 
 ---
@@ -178,7 +178,7 @@ Understanding these personas is critical for product development, marketing, and
 - **Primary Motivation:** Grow client base, increase revenue, maintain profitability
 - **Business Mindset:** ROI-focused, risk-averse, wants proven solutions
 - **Values:** Quality clients, reputation, efficiency, professional relationships
-- **Pain Tolerance:** Low for unproven marketing investments
+- **Pain Tolerance:** Low for unproven marketing investments and technical headaches
 
 ---
 
@@ -190,6 +190,7 @@ Understanding these personas is critical for product development, marketing, and
 - Find high-quality leads (worth pursuing, will convert to retained clients)
 - Reduce client acquisition costs (better ROI than traditional advertising)
 - Scale client base systematically (predictable lead flow)
+- **Avoid Marketing Admin:** Wants leads without managing Google Ads accounts himself
 - Maintain firm reputation (don't waste time on low-value cases)
 
 **Secondary Goals:**
@@ -197,7 +198,7 @@ Understanding these personas is critical for product development, marketing, and
 - Focus on core legal work (less time on marketing)
 - Build expertise in specific areas (Change of Assessment, high-value cases)
 - Generate referrals (satisfied clients refer others)
-- Competitive advantage (unique lead source)
+- **Data Security:** Ensure client data is handled compliantly (no breaches)
 
 ---
 
@@ -220,9 +221,9 @@ Understanding these personas is critical for product development, marketing, and
 
 **Risk Concerns:**
 
+- **Data Liability:** Terrified of Privacy Act breaches or emailing sensitive client info insecurely
 - **Poor-Quality Leads:** Leads not serious about legal help, waste of time/money
-- **Compliance Issues:** Privacy Act requirements, data security worries
-- **Ethical Concerns:** Lead source transparency, fee-sharing restrictions
+- **Technical Complexity:** Hates setting up pixels, ad accounts, and tracking
 - **Unknown ROI:** Hard to predict if $50/lead is worth it without proof
 
 ---
@@ -244,9 +245,9 @@ Understanding these personas is critical for product development, marketing, and
 
 **Lead Management:**
 
-- **Contact Method:** Email preferred, phone backup
+- **Contact Method:** Secure Portal (Magic Link) -> Phone Call
 - **Response Time:** 24-48 hours for teaser email response
-- **Follow-up:** Contacts parent directly after receiving full details
+- **Follow-up:** Contacts parent directly after unlocking full details
 - **Tracking:** May track lead conversion manually (consultation → retained client)
 
 **Relationship Building:**
@@ -265,16 +266,16 @@ Understanding these personas is critical for product development, marketing, and
 - **ROI:** Clear return on investment ($50 lead → consultation → retained client)
 - **Quality:** Pre-qualified, warm leads (already identified as needing help)
 - **Efficiency:** Less time on marketing, more time practicing law
+- **Security:** Knowing they aren't liable for data sitting in email inboxes
+- **Ease:** "Done for you" marketing (Retainer model)
 - **Scalability:** Consistent lead flow (can plan staffing)
-- **Competitive Advantage:** Unique lead source, less competition
 
 **What Inhibits Them:**
 
 - **Risk Aversion:** Won't pay without proof of lead quality
 - **Trust Issues:** Skeptical of lead generation services (historically low quality)
-- **Volume Concerns:** Worried about getting too few or too many leads
+- **Data Fear:** Worried about handling sensitive info
 - **Cost Concerns:** $50 might be too high if conversion rate is low
-- **Process Complexity:** Doesn't want complex onboarding or technical setup
 
 ---
 
@@ -287,19 +288,19 @@ Understanding these personas is critical for product development, marketing, and
 - ✅ Manual review (30-second quality check before sending)
 - ✅ Teaser email workflow (see case summary before committing)
 
-**Affordability:**
+**Affordability & Cash Flow:**
 
 - ✅ $50 per lead (vs $100-300 per click on Google Ads)
 - ✅ Only pay when accepting lead (no upfront costs)
-- ✅ Refund policy if lead doesn't convert to consultation
+- ✅ **100% Lead Credit** if lead doesn't convert to consultation (Risk-Free)
 - ✅ Transparent pricing (no hidden fees)
 
-**Risk Mitigation:**
+**Risk Mitigation & Security:**
 
-- ✅ Teaser email workflow (quality control)
+- ✅ **Secure Magic Links:** Zero PII in emails, protects firm from liability
+- ✅ **Marketing Retainer:** We manage the complex ad accounts/pixels, he just pays a flat fee
 - ✅ Proof package (Phase 3A validation results, testimonials)
 - ✅ Privacy Act compliant (encrypted storage, audit trails)
-- ✅ Quality guarantee (manual review, refund policy)
 
 **Efficiency:**
 
@@ -311,9 +312,9 @@ Understanding these personas is critical for product development, marketing, and
 **Key Messaging for Michael:**
 
 - "Pre-qualified, warm leads for $50 - only pay when you accept"
-- "See case summary before committing - risk-free"
+- "We handle the Google Ads complexity - you just get the leads"
+- "Secure Portal delivery - no client data risks in your inbox"
 - "15%+ consultation rate (validated with free leads first)"
-- "Privacy Act compliant - secure, professional process"
 
 ---
 
@@ -385,7 +386,7 @@ Understanding these personas is critical for product development, marketing, and
 | Persona                       | Primary Goal                     | Key Pain Point                       | What We Offer                          | Conversion Driver              |
 | ----------------------------- | -------------------------------- | ------------------------------------ | -------------------------------------- | ------------------------------ |
 | **Sarah (Parent)**            | Calculate accurate child support | Confusing formulas, privacy concerns | Free, accurate calculator              | Privacy-first, instant results |
-| **Michael (Lawyer)**          | Acquire quality clients          | High client acquisition costs        | Pre-qualified leads for $50            | Proof of quality, ROI          |
+| **Michael (Lawyer)**          | Acquire quality clients          | High acquisition costs, Data Risk    | Pre-qualified leads, **Secure Portal** | Proof of quality, Security     |
 | **David (High-Value Parent)** | Get urgent legal help            | Complex case, time-sensitive         | Complexity detection + lawyer matching | Urgency, quality               |
 | **Lisa (Validation Lawyer)**  | Test new lead source             | Unknown lead quality                 | Free validation leads                  | No risk, early access          |
 
@@ -421,6 +422,7 @@ Understanding these personas is critical for product development, marketing, and
 **Design Decisions:**
 
 - ✅ Teaser email workflow (quality control)
+- ✅ **Secure Magic Link** (Risk reduction)
 - ✅ Simple onboarding (email, payment setup)
 - ✅ Mobile-friendly admin (manage on phone)
 - ✅ Clear ROI messaging (conversion rates, costs)
@@ -428,9 +430,9 @@ Understanding these personas is critical for product development, marketing, and
 **Feature Priorities:**
 
 - ✅ Lead quality assurance (manual review)
-- ✅ Proof package (validation results)
+- ✅ **Lead Credit System** (financial safety)
 - ✅ Automated billing (efficiency)
-- ✅ Lead analytics (track conversion rates)
+- ✅ **Marketing Retainer** (Done-for-you ads)
 
 **Marketing Messaging:**
 
@@ -454,7 +456,7 @@ Understanding these personas is critical for product development, marketing, and
 **Michael (Lawyer):**
 
 - Testing with validation lawyers (free leads)
-- Building proof package (case studies, testimonials)
+- Testing **Exclusive Partner** model (Marketing Retainer)
 - Validating lead quality (15%+ consultation rate target)
 
 ### Phase 3B (First Revenue)
@@ -524,11 +526,11 @@ Understanding these personas is critical for product development, marketing, and
 
 ### For Product Development
 
-1. **Parents (Sarah) = Lead Generators:** Focus on privacy, simplicity, accuracy
-2. **Lawyers (Michael) = Paying Customers:** Focus on ROI, quality, risk mitigation
-3. **Validation First:** Prove value to Michael before asking him to pay (Phase 3A)
-4. **Mobile-First:** 60% of Sarah uses phone, must work perfectly on mobile
-5. **Trust Building:** Both personas have trust concerns (privacy for Sarah, lead quality for Michael)
+1.  **Parents (Sarah) = Lead Generators:** Focus on privacy, simplicity, accuracy
+2.  **Lawyers (Michael) = Paying Customers:** Focus on ROI, quality, risk mitigation, **Data Security**
+3.  **Validation First:** Prove value to Michael before asking him to pay (Phase 3A)
+4.  **Mobile-First:** 60% of Sarah uses phone, must work perfectly on mobile
+5.  **Trust Building:** Both personas have trust concerns (privacy for Sarah, lead quality for Michael)
 
 ### For Marketing
 
@@ -539,8 +541,8 @@ Understanding these personas is critical for product development, marketing, and
 
 ### For Success Metrics
 
-1. **Parent Metrics:** Calculator sessions, complexity detection rate, "Get Legal Help" click rate, form submission rate
-2. **Lawyer Metrics:** Consultation rate (15%+), refund rate (<20%), NPS (>30), repeat purchases
+1.  **Parent Metrics:** Calculator sessions, complexity detection rate, "Get Legal Help" click rate, form submission rate
+2.  **Lawyer Metrics:** Consultation rate (15%+), **dispute rate** (<20%), NPS (>30), repeat purchases
 
 ---
 

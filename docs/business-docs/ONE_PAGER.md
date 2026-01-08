@@ -1,6 +1,6 @@
 # Australian Child Support Calculator - One Pager
 
-**Status:** Phase 3A - Validation | **Website:** auschildsupport.com | **Last Updated:** December 31, 2025
+**Status:** Phase 3A - Validation | **Website:** auschildsupport.com | **Last Updated:** January 1, 2026
 
 ---
 
@@ -22,7 +22,7 @@ We provide a free, accurate child support calculator (Australian 2024-2025 formu
 
 - **Pre-qualified:** Complexity already identified (court dates, Change of Assessment, shared care disputes)
 - **Affordable:** $50 per lead vs $100-300 per click on Google Ads
-- **Risk-Free:** See case summary before committing, full refund if doesn't convert to consultation
+- **Risk-Free:** See case summary before committing, **100% Lead Credit** if it doesn't convert to consultation
 - **Quality Assured:** Manual review (30 seconds per lead), teaser email workflow, Privacy Act compliant
 
 ### For Parents
@@ -45,13 +45,13 @@ We provide a free, accurate child support calculator (Australian 2024-2025 formu
 5. **Admin reviews** → 30-second quality check in admin dashboard
 6. **Teaser email to lawyer** → Case summary (no parent contact details)
 7. **Lawyer accepts** → Charged $50 via Stripe
-8. **Full details sent** → Secure handover (email/phone)
+8. **Full details sent** → **Secure Magic Link** (Time-limited access, no PII in email)
 9. **Lawyer contacts parent** → Schedules consultation independently
 10. **Monthly billing** → Automated Stripe invoicing
 
 **Alternative: Exclusive Partner Model (Phase 3A)**
 
-- Firm funds $500 Google Ads → Co-branded calculator → Exclusive access to all leads in their city for 4 weeks
+- Firm pays **$500 Marketing Retainer** → We manage ads & own data → Co-branded calculator → Exclusive access to all leads in their city for 4 weeks
 - Zero financial risk for platform → Client-funded validation
 
 ---
@@ -105,7 +105,7 @@ We provide a free, accurate child support calculator (Australian 2024-2025 formu
 - **Niche Focus:** Australian family law only (less competition)
 - **Proof Before Pitch:** Validation-first approach (test with free leads before asking lawyers to pay)
 - **Teaser Workflow:** See case summary before committing (reduces buyer risk)
-- **Quality Guarantee:** Manual review, refund if doesn't convert
+- **Quality Guarantee:** Manual review, **Lead Credits** if doesn't convert
 
 **For Parents:**
 
@@ -120,11 +120,11 @@ We provide a free, accurate child support calculator (Australian 2024-2025 formu
 
 **Technology Stack:**
 
-- **Platform:** React Native Web (Expo) - deployed on Netlify
+- **Platform:** React Native Web (Expo) - deployed on Vercel
 - **Database:** Supabase (Sydney region, encrypted storage, RLS policies)
 - **Automation:** Make.com (lead notifications, email triggers)
 - **Payments:** Stripe (Phase 3B+, automated invoicing)
-- **Analytics:** PostHog (mobile), web analytics (TBD)
+- **Analytics:** **Google Analytics + Vercel Analytics** (Web & Mobile)
 
 **Compliance:**
 
@@ -163,23 +163,23 @@ We provide a free, accurate child support calculator (Australian 2024-2025 formu
 
 **Immediate (Week 1-2, January 2026):**
 
-1. Launch organic traffic campaign (blog posts, Reddit, forums, SEO)
-2. Pitch 10-15 firms for Exclusive Partner program ($500 Google Ads funding)
-3. Goal: 1 Exclusive Partner OR 2-3 validation lawyers
+1.  Launch organic traffic campaign (blog posts, Reddit, forums, SEO)
+2.  Pitch 10-15 firms for Exclusive Partner program (**$500 Marketing Retainer**)
+3.  Goal: 1 Exclusive Partner OR 2-3 validation lawyers
 
 **Short-term (Week 3-8, January 2026):**
 
-1. Execute partner program OR place free leads with validation lawyers
-2. Track conversion metrics (Lead→Consultation rate)
-3. Collect testimonials, build proof package
-4. Validate model before asking lawyers to pay
+1.  Execute partner program OR place free leads with validation lawyers
+2.  Track conversion metrics (Lead→Consultation rate)
+3.  Collect testimonials, build proof package
+4.  Validate model before asking lawyers to pay
 
 **Medium-term (February 2026 - If Validation Succeeds):**
 
-1. Launch Phase 3B (first paying lawyers)
-2. Use proof package to sign 8-12 lawyers
-3. Generate first revenue ($2,000-3,000/month)
-4. Scale toward 50+ lawyers by Year 1
+1.  Launch Phase 3B (first paying lawyers)
+2.  Use proof package to sign 8-12 lawyers
+3.  Generate first revenue ($2,000-3,000/month)
+4.  Scale toward 50+ lawyers by Year 1
 
 ---
 

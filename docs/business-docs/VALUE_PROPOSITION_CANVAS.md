@@ -1,7 +1,7 @@
 # Value Proposition Canvas
 
-**Last Updated:** December 31, 2025  
-**Project:** Australian Child Support Calculator - B2B Lead Generation Platform  
+**Last Updated:** January 1, 2026
+**Project:** Australian Child Support Calculator - B2B Lead Generation Platform
 **Status:** Phase 3A - Proof Before Pitch (Validation Phase)
 
 ---
@@ -44,8 +44,8 @@ Each segment requires separate analysis since their jobs, pains, and gains are f
 │   - Lower cost per client acquisition            │   - Lead management interface                    │
 │   - Better ROI than traditional advertising      │   - Lead history and tracking                    │
 │   - Predictable lead costs                       │                                                  │
-│                                                  │ • Secure lead handover                            │
-│ • Scale client base                              │   - Encrypted data transfer                      │
+│                                                  │ • Secure Portal (Magic Link)                            │
+│ • Scale client base                              │   - Encrypted, time-limited access                      │
 │   - Grow number of clients systematically        │   - Privacy Act compliant                        │
 │   - Maintain consistent lead flow                │   - Full calculation history included            │
 │   - Expand to more practice areas                │                                                  │
@@ -53,8 +53,8 @@ Each segment requires separate analysis since their jobs, pains, and gains are f
 │ • Build reputation                               │   - Stripe integration                           │
 │   - Establish authority in family law            │   - Automated invoicing                          │
 │   - Showcase successful case outcomes            │                                                  │
-│   - Generate referrals                           │ • Exclusive partner program (Phase 3A)            │
-│                                                  │   - Co-branded calculator                        │
+│   - Generate referrals                           │ • Marketing Retainer (Exclusive Partner)            │
+│                                                  │   - Managed Google Ads service                        │
 │                                                  │   - Regional exclusivity                         │
 │                                                  │   - Guaranteed lead volume                       │
 ├──────────────────────────────────────────────────┼──────────────────────────────────────────────────┤
@@ -72,7 +72,7 @@ Each segment requires separate analysis since their jobs, pains, and gains are f
 │                                                  │ • Manual lead review process                      │
 │ • Difficulty identifying high-value cases        │   - 30-second quality check before sending       │
 │   - Hard to spot complex cases early             │   - Bad leads filtered out automatically          │
-│   - Miss opportunities for Change of Assessment  │   - Quality guarantee (refund if doesn't convert)│
+│   - Miss opportunities for Change of Assessment  │   - 100% Lead Credit if doesn't convert│
 │   - Don't recognize shared care dispute signals  │                                                  │
 │                                                  │ • Teaser email workflow                           │
 │ • Unpredictable lead flow                        │   - See case summary before committing           │
@@ -86,9 +86,9 @@ Each segment requires separate analysis since their jobs, pains, and gains are f
 │   - Price undercutting                           │     • Shared care disputes                        │
 │                                                  │     • High-value cases                            │
 │ • Risk of poor-quality leads                     │                                                  │
-│   - Leads not serious about legal help           │ • Secure, compliant data handling                │
-│   - Wrong type of cases for firm                 │   - Privacy Act compliant                        │
-│   - Ethical concerns with lead sources           │   - Encrypted storage                            │
+│   - Leads not serious about legal help           │ • Data Liability Protection                │
+│   - Wrong type of cases for firm                 │   - No PII in email inboxes                      │
+│   - Ethical concerns with lead sources           │   - Secure portal delivery                       │
 │                                                  │   - Audit trails                                 │
 │ • Manual lead qualification overhead             │                                                  │
 │   - Time spent vetting leads                     │ • Low competition                                │
@@ -96,10 +96,10 @@ Each segment requires separate analysis since their jobs, pains, and gains are f
 │   - Administrative burden                        │   - Limited number of partner firms              │
 │                                                  │   - Early mover advantage                        │
 │ • Compliance concerns                            │                                                  │
-│   - Privacy Act requirements                     │ • Exclusive partner model (zero risk)             │
-│   - Data security worries                        │   - Client funds $500 Google Ads                 │
-│   - Consent management                           │   - Platform manages campaigns                   │
-│                                                  │   - Zero financial risk for platform             │
+│   - Privacy Act requirements                     │ • Marketing Retainer (Done-For-You)             │
+│   - Data security worries                        │   - No need to manage Google Ads                 │
+│   - Consent management                           │   - Platform manages optimization                   │
+│                                                  │   - Zero technical headache             │
 │                                                  │                                                  │
 │ • Seasonal fluctuations                          │ • Predictable lead flow (as platform scales)      │
 │   - Busy periods overwhelm staff                 │   - Regular lead delivery                        │
@@ -134,7 +134,7 @@ Each segment requires separate analysis since their jobs, pains, and gains are f
 │   - Generate referrals                           │   - Partners with reputable platform             │
 │                                                  │                                                  │
 │ • Competitive advantage                          │ • Exclusive access (partner program)              │
-│   - Unique lead source                           │   - Co-branded calculator builds brand           │
+│   - Unique lead source                           │   - Managed Google Ads service builds brand           │
 │   - Less competition for these leads             │   - Regional exclusivity                         │
 │   - First-mover benefit                          │   - Guaranteed lead volume                       │
 │                                                  │                                                  │
@@ -323,7 +323,7 @@ Each segment requires separate analysis since their jobs, pains, and gains are f
 ✅ **Pain Relief**: $50 per lead is significantly cheaper than traditional advertising ($100-300 per click)  
 ✅ **Gain Creation**: Pre-qualification should lead to higher conversion rates (15%+ consultation rate target)  
 ✅ **Differentiation**: Niche focus (Australian family law only) reduces competition  
-✅ **Risk Mitigation**: Teaser email workflow + refund policy reduces buyer risk
+✅ **Risk Mitigation**: **100% Lead Credit** + **Secure Portal** reduces financial and legal risk
 
 **Fit Gaps to Address:**
 
@@ -359,14 +359,14 @@ Each segment requires separate analysis since their jobs, pains, and gains are f
 
 ### For Family Law Firms
 
-> **"Get pre-qualified, warm leads for $50 each - only pay when you accept. We identify complex family law cases (court dates, Change of Assessment, shared care disputes) and connect them with quality lawyers. See the case summary before committing, with full refund if it doesn't convert to consultation."**
+> **"Get pre-qualified, warm leads for $50 each - only pay when you accept. We handle the Google Ads and data security. You get complex family law cases (court dates, Change of Assessment) delivered via our secure portal. 100% lead credit if it doesn't convert."**
 
 **Key Differentiators:**
 
 - Pre-qualified (complexity already identified)
 - Affordable ($50 vs $100-300 per click on Google Ads)
-- Risk-free (teaser workflow + refund policy)
-- Niche (Australian family law only, less competition)
+- Risk-free (Lead Credit + Secure Portal)
+- Done-For-You Marketing (Retainer model)
 
 ---
 
@@ -391,15 +391,15 @@ Each segment requires separate analysis since their jobs, pains, and gains are f
 
 - **Consultation Rate**: % of leads that convert to initial consultation (target: 15%+)
 - **Lawyer Satisfaction**: NPS score from validation partners (target: >30)
-- **Refund Rate**: % of leads that don't convert (target: <20%)
+- **Dispute Rate**: % of leads that are credited back (target: <20%)
 - **Repeat Interest**: Do lawyers ask for MORE leads? (qualitative)
 
 **Validation Questions:**
 
-1. Would you pay $50 for leads like these? (If yes, proceed to Phase 3B)
-2. Is $50 the right price? (Too high/too low - adjust if needed)
-3. What information is most valuable? (Refine teaser email content)
-4. What's missing? (Identify feature gaps)
+1.  Would you pay $50 for leads like these? (If yes, proceed to Phase 3B)
+2.  Is $50 the right price? (Too high/too low - adjust if needed)
+3.  Does the **Secure Magic Link** workflow feel easy to use?
+4.  What's missing? (Identify feature gaps)
 
 ### Parents
 
@@ -423,11 +423,11 @@ Each segment requires separate analysis since their jobs, pains, and gains are f
 
 ### For Family Law Firms
 
-1. **Price is Critical**: $50 per lead is affordable, but need to prove ROI (consultation rate)
-2. **Quality > Quantity**: Manual review and teaser workflow build trust
-3. **Risk Mitigation Matters**: Refund policy reduces buyer hesitation
-4. **Proof is Essential**: Phase 3A validation critical before asking lawyers to pay
-5. **Niche Advantage**: Australian family law focus reduces competition
+1.  **Price is Critical**: $50 per lead is affordable, but need to prove ROI (consultation rate)
+2.  **Security Matters**: Secure Portal delivery differentiates from "cowboy" lead gen agencies.
+3.  **Risk Mitigation Matters**: Lead Credit policy reduces buyer hesitation
+4.  **Proof is Essential**: Phase 3A validation critical before asking lawyers to pay
+5.  **Marketing Relief**: The Retainer Model solves their pain of managing ads themselves.
 
 ### For Parents
 
@@ -443,32 +443,32 @@ Each segment requires separate analysis since their jobs, pains, and gains are f
 
 ### Phase 3A Validation (January 2026)
 
-1. **Track Family Law Firm Metrics**:
+1.  **Track Family Law Firm Metrics**:
 
-   - Consultation rate (target: 15%+)
-   - Lawyer satisfaction (NPS >30)
-   - Refund rate (<20%)
-   - Collect testimonials
+    - Consultation rate (target: 15%+)
+    - Lawyer satisfaction (NPS >30)
+    - Dispute rate (<20%)
+    - Collect testimonials
 
-2. **Track Parent Metrics**:
+2.  **Track Parent Metrics**:
 
-   - Calculator sessions (50-100)
-   - Complexity detection rate (baseline)
-   - "Get Legal Help" click rate (2%+)
-   - Form submission rate (50%+)
+    - Calculator sessions (50-100)
+    - Complexity detection rate (baseline)
+    - "Get Legal Help" click rate (2%+)
+    - Form submission rate (50%+)
 
-3. **Build Proof Package**:
+3.  **Build Proof Package**:
 
-   - Case studies from validation
-   - Conversion metrics dashboard
-   - Lawyer testimonials
-   - Parent testimonials (if appropriate)
+    - Case studies from validation
+    - Conversion metrics dashboard
+    - Lawyer testimonials
+    - Parent testimonials (if appropriate)
 
-4. **Refine Value Propositions**:
-   - Adjust based on validation feedback
-   - Refine pricing if needed ($25-35 if $50 too high)
-   - Enhance teaser email content
-   - Improve complexity detection thresholds
+4.  **Refine Value Propositions**:
+    - Adjust based on validation feedback
+    - Refine pricing if needed ($25-35 if $50 too high)
+    - Enhance teaser email content
+    - Improve complexity detection thresholds
 
 ### Phase 3B Launch (February 2026 - Only if validation succeeds)
 

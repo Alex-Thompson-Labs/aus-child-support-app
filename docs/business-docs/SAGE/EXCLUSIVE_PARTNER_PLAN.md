@@ -1,7 +1,7 @@
 # Exclusive Partner Outreach Plan: Sage Family Lawyers
 
 **Status:** High Priority Target
-**Context:** Sage is currently running ~38 active Google Ads, making them the most aggressive "Challenger" firm in the market. They are the ideal candidate for the "Client-Funded Ads" model.
+**Context:** Sage is currently running ~38 active Google Ads, making them the most aggressive "Challenger" firm in the market. They are the ideal candidate for the "Marketing Retainer" model.
 
 ---
 
@@ -21,21 +21,20 @@
 _Do not email the general admin address._
 
 - **Primary Target:** **Paul Ross** (Principal)
-  - _Why:_ Male partners in boutique firms often handle the operational/financial marketing decisions.
-  - _Email Pattern:_ Likely `pross@sagefamilylawyers.com.au` or `paul.ross@sagefamilylawyers.com.au`
+  - _Email Pattern:_ Likely `pross@sagefamilylawyers.com.au`
 - **Secondary Target:** **Charlotte Geddes** (Principal)
-  - _Why:_ If Paul doesn't respond, Charlotte is the next logical decision-maker.
 
 ---
 
-## 3. The Offer (The "No Brainer" Pilot)
+## 3. The Offer (The "Marketing Retainer" Pilot)
 
-[cite_start]_Ref: Pivot Plan, Track B [cite: 52-57]_
+_Ref: Pivot Plan, Track B_
 
-- **Financials:** They fund $500 in _their own_ Google Ads account (Zero risk for you).
+- **Financials:** They pay a **$500 Marketing Retainer** (100% goes to ad spend).
+- **Execution:** You spend this in **your** Google Ads account (You retain the pixel/conversion data).
 - **Product:** You rebrand the calculator as "Powered by Sage Family Lawyers."
 - **Exclusivity:** They get **100% of the qualified leads** generated in Melbourne for 4 weeks.
-- **Value Prop:** They get a custom pre-qualification tool (which would cost $10k+ to build) for free, just to test the lead quality.
+- **Delivery:** Leads delivered via **Secure Magic Link** (Privacy Act compliant).
 
 ---
 
@@ -43,7 +42,7 @@ _Do not email the general admin address._
 
 ### Step 1: The "Sniper" Pitch Email
 
-_Send this Tuesday morning (approx 10:00 AM) for best open rates._
+_Send this Tuesday morning (approx 10:00 AM)._
 
 **Subject:** Exclusive pilot: Pre-qualified child support leads for Sage Family Lawyers
 
@@ -57,9 +56,10 @@ _Send this Tuesday morning (approx 10:00 AM) for best open rates._
 >
 > **The Deal:**
 >
-> - **You fund a small $500 test** in your own Google Ads account (zero risk to you, you keep the data).
+> - **$500 Marketing Retainer:** You fund the pilot budget.
+> - **I manage the campaign:** I run the ads in my optimized account targeting your region.
 > - **I rebrand the calculator** as _"Powered by Sage Family Lawyers."_
-> - **All qualified leads** go exclusively to your inbox for 4 weeks.
+> - **All qualified leads** go exclusively to you via a secure portal for 4 weeks.
 >
 > **Why this works for Sage:**
 >
@@ -73,30 +73,13 @@ _Send this Tuesday morning (approx 10:00 AM) for best open rates._
 > Sam
 > auschildsupport.com
 
-### Step 2: The Follow-Up (T+3 Days)
-
-_If no reply by Friday._
-
-**Subject:** Re: Exclusive pilot
-
-> Hi Paul,
->
-> Just floating this to the top of your inbox.
->
-> To be clear, I'm not selling SEO or leads. I'm offering a free tool implementation to help lower the CPA on the 30+ ads you're already running.
->
-> If Sage isn't interested, do you mind if I approach Clancy & Triado? I'd prefer to work with you given your current market presence, but I need to find a pilot partner this week.
->
-> Best,
-> Sam
-
 ### Step 3: The Demo Call Script (15 Mins)
 
-_Goal: Get them to say "Yes" to the $500 test._
+_Goal: Get them to say "Yes" to the $500 retainer._
 
-1.  **The Hook:** "I saw your ads and realized you're paying for clicks from 'tire kickers' who just want free info. My tool filters them out."
-2.  **The Demo:** Share screen. Show the "Change of Assessment" reasons. [cite_start]Explain how checking "Self Employed" flags them as a High Value Lead. [cite: 67-68]
-3.  [cite_start]**The Control:** "You don't pay me anything. You just allocate $500 of your _existing_ budget to a new campaign that I manage for you." [cite: 70]
+1.  **The Hook:** "I saw your ads and realized you're paying for clicks from 'tire kickers'. My tool filters them out."
+2.  **The Demo:** Share screen. Show the "Change of Assessment" reasons.
+3.  **The Control:** "You pay a simple $500 retainer. I handle the ad account, pixel tracking, and optimization. You just get the qualified leads."
 4.  **The Close:** "If we turn this on for 4 weeks and you get 5 qualified consults, would you consider that a win?"
 
 ---
@@ -104,5 +87,5 @@ _Goal: Get them to say "Yes" to the $500 test._
 ## 5. Success Metrics
 
 - **Metric:** 1 Demo Call Scheduled.
-- **Metric:** Agreement to spend $500 on Google Ads.
-- **Metric:** Access granted to their Google Ads account (or they create a new one for you).
+- **Metric:** Agreement to pay $500 Retainer.
+- **Metric:** Invoice paid via Stripe (Retainer).

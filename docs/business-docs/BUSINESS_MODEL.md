@@ -1,6 +1,6 @@
 # Business Model (Current - December 2025)
 
-**Last Updated:** December 31, 2025  
+**Last Updated:** December 31, 2025
 **Status:** Phase 1 & 2 COMPLETE, Phase 3A - Proof Before Pitch (Validation Phase)
 
 ---
@@ -29,18 +29,18 @@
 6. **You review lead in admin dashboard** (30 seconds - quality check)
 7. **You send teaser email to lawyer** (case summary without parent contact details)
 8. **Lawyer responds "YES"** → You charge them $50
-9. **You send full parent details** (email/phone via secure handover)
+9. **You send Secure Magic Link** to view full parent details (Time-limited access)
 10. **Lawyer contacts parent** (schedules consultation themselves)
 11. **Monthly billing via Stripe** (automated invoicing)
 
 ### Exclusive Partner Model (Phase 3A - Client-Funded):
 
-1. **Firm funds $500 Google Ads** (they control account, you manage campaigns)
-2. **Co-branded calculator** ("Powered by [Firm Name]") for their region
-3. **Parent uses calculator** → Sees firm branding
-4. **Complex case detected** → Alert shown
-5. **Parent submits inquiry** → Goes exclusively to partner firm
-6. **All qualified leads in their city** → Sent to them for 4 weeks
+1. **Firm pays $500 Marketing Retainer** (Client-Funded)
+2. **You spend budget from your ad account** targeting **their** region (retaining pixel data)
+3. **Co-branded calculator** ("Powered by [Firm Name]") for their region
+4. **Parent uses calculator** → Sees firm branding
+5. **Complex case detected** → Alert shown
+6. **Parent submits inquiry** → Goes exclusively to partner firm
 7. **You manage ads, forward leads** → They get exclusive access
 8. **If successful** → Discuss ongoing partnership fees
 9. **If unsuccessful** → They've spent normal ad budget, no further obligation
@@ -93,7 +93,7 @@
 - ✅ Supabase database integration (encrypted lead storage)
 - ✅ Admin dashboard (login, lead list, search/filter, status management)
 - ✅ Privacy policy created and published
-- ✅ Analytics tracking (PostHog for mobile, web analytics TBD)
+- ✅ Analytics tracking (Google Analytics + Vercel Analytics)
 - ✅ End-to-end testing complete
 - ✅ **Web app deployed at auschildsupport.com**
 - ✅ Historical year selection removed (current rates only)
@@ -118,12 +118,12 @@
 **Validation Plan (Dual Launch - Week 1-2):**
 
 - **Track A: Organic Traffic** - Blog posts, Reddit, forums, SEO (6-8 hours)
-- **Track B: Exclusive Partner Outreach** - Pitch 10-15 firms to fund $500 Google Ads (6-8 hours)
+- **Track B: Exclusive Partner Outreach** - Pitch 10-15 firms to fund $500 Marketing Retainer (6-8 hours)
 - Goal: 1 Exclusive Partner signed OR 2-3 validation lawyers receiving free leads
 
 **Validation Execution (Week 3-8):**
 
-- If Exclusive Partner: Setup co-branded calculator, configure their Google Ads
+- If Exclusive Partner: Setup co-branded calculator, configure Google Ads in **your** account
 - If no partner: Add property settlement CoA reason, place free leads with validation lawyers
 - Track conversion metrics: Lead→Consultation rate, Consultation→Retained rate
 - Collect testimonials, build proof package
@@ -146,13 +146,13 @@
 
 - **Using:** Send case summary to lawyers first (without parent contact details)
 - **Why:** Lawyer can't contact parent for free, you maintain control, professional appearance
-- **Flow:** Teaser → Lawyer confirms interest → Charge $50 → Send full details
+- **Flow:** Teaser → Lawyer confirms interest → Charge $50 → Send Secure Magic Link
 
 ### Calendar Integration: NO
 
 - **Rejected:** Calendly/Google Calendar API integration
 - **Why:** Too complex, scares lawyers, delays launch
-- **Using:** Simple email forwarding after payment (manual routing)
+- **Using:** Simple email forwarding/link sharing after payment (manual routing)
 
 ### Pricing: $50 per Lead
 
@@ -220,24 +220,17 @@
 
 ## 📁 KEY DOCUMENTS
 
-### Active Tasks
+### Key Documentation
 
-- **Current work:** `/docs/guides/active/REMAINING_TASKS.md` (what to do now)
-
-### Implementation Guides (Reference)
-
-- **Phase 1:** `/docs/guides/old/phase1/` (complete - archived)
-- **Phase 2:** `/docs/guides/old/phase2/` (reference for templates)
-
-### Strategy Docs
-
-- **Partnership Agreement:** `/docs/templates/LAWYER_PARTNERSHIP_AGREEMENT.md`
-- **Web Deployment:** `/docs/guides/active/WEB_DEPLOYMENT_GUIDE.md`
-- **Design System:** `/docs/DESIGN_SYSTEM.md`
+- **Current Status:** This file (BUSINESS_MODEL.md)
+- **Validation Plan:** `docs/business-docs/proof-before-pitch-v2.md`
+- **Strategic Roadmap:** `docs/business-docs/PRODUCT_ROADMAP.md`
+- **Design System:** `docs/DESIGN_SYSTEM.md`
+- **Technical Guide:** `docs/CLAUDE.md`
 
 ### Data & Tracking
 
-- **Lawyer Contacts:** `/data/family_law_contacts_full.csv` (286 firms)
+y- **Lawyer Contacts:** Data files (if present in `/data/` directory - not tracked in git)
 
 ---
 
@@ -284,8 +277,8 @@
 **Risk 3:** Lawyers won't pay $50/lead (Phase 3B)  
 **Mitigation:** Use proof package from Phase 3A, adjust price based on validation data ($25-35 if needed), show ROI math
 
-**Risk 4:** Lead quality too low (high refund rate)  
-**Mitigation:** Manual review before sending, tighten complexity thresholds, validate with free leads first
+**Risk 4:** Lead quality too low (high dispute rate)  
+**Mitigation:** Offer 100% Lead Credit for next lead (avoids cash refunds), manual review before sending, tighten complexity thresholds, validate with free leads first
 
 **Risk 5:** Not enough app traffic (insufficient leads)  
 **Mitigation:** Organic traffic generation, Exclusive Partner ads (if signed), conditional paid ads only if validation succeeds
@@ -310,7 +303,7 @@
 
 **Week 3-4: Execute Path**
 
-- If Exclusive Partner: Setup co-branded calculator, configure their Google Ads
+- If Exclusive Partner: Setup co-branded calculator, configure Google Ads in **your** account
 - If no partner: Add property settlement CoA reason, place free leads with validation lawyers
 
 **Week 5-8: Scale & Document**
@@ -327,4 +320,4 @@ _Only proceed if Phase 3A validation succeeded_
 
 ---
 
-**For current tasks, see:** `/guides/active/ACTIVE_TASKS.md`
+**For current tasks, see:** `docs/business-docs/proof-before-pitch-v2.md` for validation plan
