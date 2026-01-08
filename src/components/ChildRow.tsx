@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { ChildInput } from '../utils/calculator';
 import { CARE_PERIOD_DAYS } from '../utils/child-support-constants';
 import {
-    isWeb,
-    useResponsive,
-    webClickableStyles,
-    webInputStyles,
+  isWeb,
+  useResponsive,
+  webClickableStyles,
+  webInputStyles,
 } from '../utils/responsive';
 import { createShadow } from '../utils/shadow-styles';
 import { PeriodPicker } from './PeriodPicker';
@@ -28,34 +28,85 @@ export function ChildRow({
 }: ChildRowProps) {
   const { isMobile } = useResponsive();
 
+  // Local state for input values while editing
+  const [editingField, setEditingField] = useState<'A' | 'B' | null>(null);
+  const [localValue, setLocalValue] = useState('');
+
   const maxValue =
     child.carePeriod === 'week'
       ? 7
       : child.carePeriod === 'fortnight'
-        ? 14
-        : child.carePeriod === 'year'
-          ? 365
-          : 100; // percent
+      ? 14
+      : child.carePeriod === 'year'
+      ? 365
+      : 100; // percent
 
   // Calculate if total exceeds maximum
   const totalCare = child.careAmountA + child.careAmountB;
   const isOverLimit = totalCare > maxValue;
   const periodLabel = child.carePeriod === 'percent' ? '%' : ' nights';
 
-  // Helper function to handle care amount changes with auto-adjustment
-  const handleCareAmountAChange = (text: string) => {
-    const newAmountA = parseFloat(text.replace(/[^0-9.]/g, '')) || 0;
+  // Focus handlers - clear local value to allow fresh typing
+  const handleFocusA = () => {
+    setEditingField('A');
+    setLocalValue('');
+  };
+
+  const handleFocusB = () => {
+    setEditingField('B');
+    setLocalValue('');
+  };
+
+  // Change handlers - update local state and auto-adjust other field
+  const handleChangeA = (text: string) => {
+    const cleanedText = text.replace(/[^0-9.]/g, '');
+    setLocalValue(cleanedText);
+    // Auto-adjust other field in real-time
+    const newAmountA = parseFloat(cleanedText) || 0;
     const newAmountB = Math.max(0, maxValue - newAmountA);
     onUpdate({ careAmountA: newAmountA, careAmountB: newAmountB });
   };
 
-  const handleCareAmountBChange = (text: string) => {
-    const newAmountB = parseFloat(text.replace(/[^0-9.]/g, '')) || 0;
+  const handleChangeB = (text: string) => {
+    const cleanedText = text.replace(/[^0-9.]/g, '');
+    setLocalValue(cleanedText);
+    // Auto-adjust other field in real-time
+    const newAmountB = parseFloat(cleanedText) || 0;
     const newAmountA = Math.max(0, maxValue - newAmountB);
     onUpdate({ careAmountA: newAmountA, careAmountB: newAmountB });
   };
 
-  const handlePeriodChange = (period: 'week' | 'fortnight' | 'year' | 'percent') => {
+  // Blur handlers - commit value and auto-adjust the other field
+  const handleBlurA = () => {
+    const newAmountA = parseFloat(localValue) || 0;
+    const newAmountB = Math.max(0, maxValue - newAmountA);
+    onUpdate({ careAmountA: newAmountA, careAmountB: newAmountB });
+    setEditingField(null);
+    setLocalValue('');
+  };
+
+  const handleBlurB = () => {
+    const newAmountB = parseFloat(localValue) || 0;
+    const newAmountA = Math.max(0, maxValue - newAmountB);
+    onUpdate({ careAmountA: newAmountA, careAmountB: newAmountB });
+    setEditingField(null);
+    setLocalValue('');
+  };
+
+  // Get display value for inputs
+  const getDisplayValueA = () => {
+    if (editingField === 'A') return localValue;
+    return child.careAmountA === 0 ? '' : child.careAmountA.toString();
+  };
+
+  const getDisplayValueB = () => {
+    if (editingField === 'B') return localValue;
+    return child.careAmountB === 0 ? '' : child.careAmountB.toString();
+  };
+
+  const handlePeriodChange = (
+    period: 'week' | 'fortnight' | 'year' | 'percent'
+  ) => {
     const maxNights = CARE_PERIOD_DAYS[period] || 14;
     // For percentage, use default 57/43 split
     const defaultA = period === 'percent' ? 57 : Math.round(maxNights * 0.57);
@@ -112,15 +163,11 @@ export function ChildRow({
                 styles.compactInput,
                 isWeb && webInputStyles,
               ]}
-              value={child.careAmountA.toString()}
-              onChangeText={handleCareAmountAChange}
-              onFocus={(e) => {
-                // Select all text on focus so typing replaces the value
-                if (isWeb && e.target) {
-                  (e.target as unknown as HTMLInputElement).select?.();
-                }
-              }}
-              selectTextOnFocus={true}
+              value={getDisplayValueA()}
+              onChangeText={handleChangeA}
+              onFocus={handleFocusA}
+              onBlur={handleBlurA}
+              placeholder="0"
               keyboardType="number-pad"
               maxLength={5}
               placeholderTextColor="#64748b"
@@ -141,15 +188,11 @@ export function ChildRow({
                 styles.compactInput,
                 isWeb && webInputStyles,
               ]}
-              value={child.careAmountB.toString()}
-              onChangeText={handleCareAmountBChange}
-              onFocus={(e) => {
-                // Select all text on focus so typing replaces the value
-                if (isWeb && e.target) {
-                  (e.target as unknown as HTMLInputElement).select?.();
-                }
-              }}
-              selectTextOnFocus={true}
+              value={getDisplayValueB()}
+              onChangeText={handleChangeB}
+              onFocus={handleFocusB}
+              onBlur={handleBlurB}
+              placeholder="0"
               keyboardType="number-pad"
               maxLength={5}
               placeholderTextColor="#64748b"
@@ -258,8 +301,8 @@ const styles = StyleSheet.create({
     }),
     ...(isWeb
       ? {
-        scrollSnapAlign: 'start',
-      }
+          scrollSnapAlign: 'start',
+        }
       : {}),
   } as any,
   containerDesktop: {
@@ -416,8 +459,8 @@ const styles = StyleSheet.create({
     zIndex: 10, // Ensure button stays on top
     ...(isWeb
       ? {
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      }
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+        }
       : {}),
     ...createShadow({
       shadowColor: '#000',
