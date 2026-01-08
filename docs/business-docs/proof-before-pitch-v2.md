@@ -23,7 +23,9 @@ This plan prioritizes **learning and proof-building** before lawyer outreach. Th
 
 **Content Creation (3-4 hours):**
 
-1. Write 3 targeted blog posts on auschildsupport.com:
+1. Write 3 targeted blog posts on blog.auschildsupport.com:
+   - **Include:** Inline CTA links using Direct Inquiry URLs (e.g., `/lawyer-inquiry?mode=direct&reason=hidden_income`)
+   - **Include:** Chatbot widget on all blog pages to funnel readers to inquiry form
 
    - "Child Support Calculator Australia: Estimate Your Payments in 60 Seconds"
    - "8 Situations Where Child Support Gets Complicated (And You Need Legal Help)"
@@ -39,6 +41,7 @@ This plan prioritizes **learning and proof-building** before lawyer outreach. Th
 1. Post calculator link on Reddit r/AusLegal as: "I built a free child support calculator - does this match your Services Australia estimate?" (Not promotional, genuinely asking for validation)
 2. Answer Whirlpool threads from past 30 days mentioning child support calculations with: "I built a calculator that matches Services Australia's formula - happy to help you estimate"
 3. In Facebook groups: Respond helpfully to posts asking about child support with calculator mention in comments (not standalone posts)
+4. Use **Direct Enquiry Links** (skip calculator) for specific high-intent threads (e.g., users asking about binding agreements or hidden income).
 
 **SEO Quick Wins (1-2 hours):**
 
@@ -125,7 +128,7 @@ When they respond, schedule 15-min Zoom:
 
 **Total: 12-16 hours over 2 weeks**
 
-- Track A: 6-8 hours (organic traffic)
+- Track A: 6-8 hours (organic traffic: blog posts with inline CTAs + chatbot widget, Reddit, forums)
 - Track B: 6-8 hours (partner outreach and demos)
 
 ---
@@ -164,6 +167,7 @@ When they respond, schedule 15-min Zoom:
 - Track their feedback on lead quality
 
 **Continue organic traffic efforts (4-5 hours):**
+- Monitor chatbot widget conversion rates on blog
 
 - Keep answering Reddit/forum questions
 - Monitor early organic leads

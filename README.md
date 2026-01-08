@@ -72,8 +72,9 @@ csc/
 ├── app/                  # Expo Router (file-based routing)
 │   ├── (tabs)/           # Calculator tab
 │   ├── admin/            # Admin dashboard & Secure View
-│   ├── lawyer-inquiry.tsx # Lead capture form
-│   └── blog/             # Blog routes
+│   ├── lawyer-inquiry.tsx # Lead capture form (main + direct mode)
+│   ├── special-circumstances.tsx # Direct entry from blog links
+│   └── blog/             # Blog routes (external: blog.auschildsupport.com)
 ├── src/
 │   ├── components/       # UI Components
 │   ├── hooks/            # Logic (useCalculator)
@@ -81,6 +82,10 @@ csc/
 │   └── types/            # TypeScript definitions
 └── docs/                 # Project documentation
 ```
+
+**External Traffic Sources:**
+- **Blog Chatbot Widget** (blog.auschildsupport.com) - Pre-calculator funnel
+- **Direct Inquiry Links** - Embedded in blog posts (e.g., `/lawyer-inquiry?mode=direct&reason=hidden_income`)
 
 ---
 
@@ -90,7 +95,7 @@ csc/
 
 **Dual Launch Strategy:**
 
-1.  **Organic Track:** Drive traffic via SEO/Reddit to generate free validation leads.
+1.  **Organic Track:** Drive traffic via SEO/Reddit/Blog (with chatbot widget & inline CTAs) to generate free validation leads.
 2.  **Partner Track:** Pitch "Marketing Retainer" ($500 ad spend) to one exclusive partner.
 
 **Success Metrics:**
@@ -136,7 +141,9 @@ npm run type-check  # TypeScript validation
 ## 🚀 Next Steps
 
 1.  Complete **Secure Magic Link** implementation
-2.  Launch **Organic Traffic** campaign (Blog/Reddit)
+2.  Launch **Organic Traffic** campaign (Blog posts with chatbot widget + inline CTAs, Reddit, forums)
 3.  Send **Exclusive Partner** pitches (Retainer Model)
+
+**Note:** See [docs/CLAUDE.md](docs/CLAUDE.md) for external lead generation channels (chatbot widget, direct routing URLs).
 
 **Let's build this! 🔥**

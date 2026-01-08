@@ -48,10 +48,13 @@
 │   child support      │                      │ • Organic search (SEO)       │
 │   calculation        │ • Automated          │   (blog posts, content)      │
 │                      │   complexity         │                              │
-│ • Instant results    │   detection          │ • Social media (Reddit,      │
-│                      │                      │   forums)                    │
+│ • Instant results    │   detection          │ • Blog chatbot widget        │
+│                      │                      │   (blog.auschildsupport.com) │
 │ • Privacy-first      │ • One-click lead     │                              │
-│   (no data sold)     │   submission         │ • Direct lawyer referrals    │
+│   (no data sold)     │   submission         │ • Social media (Reddit,      │
+│                      │                      │   forums)                    │
+│                      │                      │                              │
+│                      │                      │ • Direct lawyer referrals    │
 │                      │                      │   (if partner program)       │
 │ FOR LAWYERS:         │ • Secure Portal      │                              │
 │                      │   (Magic Link)       │ • Email outreach             │
@@ -170,6 +173,8 @@
 **Marketing & Growth**
 
 - SEO content (blog posts targeting child support queries)
+- Blog chatbot widget (pre-calculator funnel on blog.auschildsupport.com)
+- Direct inquiry links embedded in blog content (bypass calculator, route to inquiry form)
 - Organic traffic generation (Reddit, forums, social media)
 - Lawyer outreach (LinkedIn, cold email campaigns)
 - **Retainer Management**: Optimizing Google Ads campaigns for exclusive partners
@@ -615,7 +620,7 @@
 
 **Week 1-2: Dual Launch**
 
-- **Track A**: Organic traffic (blog posts, Reddit, forums, SEO) - 6-8 hours
+- **Track A**: Organic traffic (blog posts with inline CTAs + chatbot widget, Reddit, forums, SEO) - 6-8 hours
 - **Track B**: Exclusive Partner outreach (pitch 10-15 firms) - 6-8 hours
 - Goal: 1 Exclusive Partner OR 2-3 validation lawyers
 

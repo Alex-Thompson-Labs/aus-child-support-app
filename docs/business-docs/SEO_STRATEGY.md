@@ -100,12 +100,15 @@ _Target high-intent keywords._
 - **Pillar 1: The "How-To"**
   - "How to Calculate Child Support in Australia (2026 Guide)"
   - "Understanding Adjusted Taxable Income (ATI)"
+  - **CTA:** Main Calculator (`/`)
 - **Pillar 2: The "Complex Case"**
   - "Child Support for Self-Employed Parents"
   - "Change of Assessment Reason 8: Hidden Income"
+  - **CTA:** Direct Enquiry (`/lawyer-inquiry?mode=direct&reason=hidden_income`)
 - **Pillar 3: The "Dispute"**
   - "How to Object to a Child Support Assessment"
   - "When to Hire a Family Lawyer for Child Support"
+  - **CTA:** Special Circumstances selection (`/special-circumstances`)
 
 ### **C. Programmatic SEO: Change of Assessment Pages (New Opportunity)**
 
@@ -118,7 +121,7 @@ _Leverage existing logic to capture long-tail, high-intent traffic._
 1.  **Title:** "Reason [X]: [Reason Name] - Child Support Change of Assessment"
 2.  **Explanation:** Plain English explanation of this specific ground.
 3.  **Example:** "John and Sarah" scenario specific to this reason.
-4.  **CTA:** "Check if you qualify" -> Links back to main calculator with this reason pre-selected.
+4.  **CTA:** "Check if you qualify" -> Links to `/special-circumstances` with reason pre-selected.
 
 **Why:** Ranking for "Change of assessment reason 8" is easier than "child support calculator".
 

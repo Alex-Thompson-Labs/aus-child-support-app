@@ -177,6 +177,7 @@ When a partner is detected:
 
 - Update success message: "Your details have been securely encrypted and sent to Sage Family Lawyers via our protected portal. They will contact you within 24 hours."
 - Display Partner Badge: "🔒 Secured by AusChildSupport"
+- **Direct Enquiry Support**: Enable links like `?mode=direct&reason=hidden_income&partner=sage` for deep-linking from Sage's blog or social media.
 
 ## Phase 3: Testing & Validation (1 hour)
 

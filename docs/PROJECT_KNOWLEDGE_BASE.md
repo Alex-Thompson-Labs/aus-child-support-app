@@ -69,6 +69,7 @@
 │   ├── blog/
 │   │   └── [id].js        # Dynamic blog routes
 │   ├── lawyer-inquiry.tsx # Lead capture screen
+│   ├── special-circumstances.tsx # Direct entry for complex cases
 │   └── +html.tsx          # HTML wrapper for web
 ├── src/
 │   ├── components/        # React components
@@ -131,7 +132,13 @@ Detailed calculation breakdowns with comprehensive tooltips:
   - Dynamic validation
 - **PDF Export**: `exportLeadPDF.ts` for professional use
 
-### **4. Blog System**
+### **4. Special Circumstances Entry**
+
+- **SpecialCircumstancesScreen**: Standalone screen (`app/special-circumstances.tsx`)
+- **Purpose**: Allows users from blog links to skip the calculator and select complex factors directly.
+- **Direct Mode**: Navigates to `/lawyer-inquiry` with `mode=direct`, which enables manual income inputs for users who haven't used the calculator.
+
+### **5. Blog System**
 
 - Dynamic routing via `app/blog/[id].js`
 - Accessible navigation from header
@@ -370,6 +377,10 @@ This is a **mature, production-ready application** with a strong focus on:
 - Home (`/`) → CalculatorScreen
 - Blog (`/blog/[id]`) → Dynamic blog posts
 - Inquiry (`/lawyer-inquiry`) → Lead capture form
+- Direct Entry (`/special-circumstances`) → Factors selection for lawyer inquiry
+- Direct Enquiry Links:
+  - `?mode=direct&reason=hidden_income`
+  - `?mode=direct&reason=binding_agreement`
 - Admin (`/admin/*`) → Admin-only features
 
 ### **Key Metrics to Track**

@@ -140,13 +140,14 @@ This is an **Expo/React Native multi-platform app** (iOS, Android, Web) that imp
 csc/
 ├── app/ # Expo Router file-based routing
 │ ├── \_layout.tsx # Root layout with theme provider
-│ ├── (tabs)/ # Tab navigation for calculator
-│ │ ├── index.tsx # Home screen (CalculatorScreen)
 │ ├── admin/ # Admin panel routes
 │ │ ├── dashboard.tsx # Lead management dashboard
 │ │ ├── login.tsx # Admin authentication
 │ │ └── lead/[id].tsx # Individual lead details (Internal)
-│ └── lawyer-inquiry.tsx # Inquiry form screen
+│ ├── lawyer-inquiry.tsx # Inquiry form screen
+│ ├── special-circumstances.tsx # Direct entry screen (for blog links)
+│ └── (tabs)/ # Tab navigation for calculator
+│ │ ├── index.tsx # Home screen (CalculatorScreen)
 │
 ├── src/ # Domain logic (platform-agnostic)
 │ ├── components/ # React components
@@ -229,6 +230,54 @@ csc/
 
 ## 🔧 Key Technical Patterns
 
+### External Lead Generation Channels
+
+**⚠️ CRITICAL:** The app receives traffic from multiple external sources beyond the main calculator.
+
+#### 1. Chatbot Widget (blog.auschildsupport.com)
+
+We have a **custom chatbot widget** deployed on our blog that acts as a "pre-calculator" funnel:
+
+- **Purpose:** Guides blog readers directly to the inquiry form, bypassing the calculator
+- **Implementation:** Uses Direct Inquiry URL patterns (see below)
+- **Why it matters:** This is a key traffic source that developers need to be aware of when:
+  - Modifying the inquiry form URL structure
+  - Testing the lawyer-inquiry flow
+  - Analyzing traffic sources in analytics
+
+#### 2. Direct Routing URLs (Technical Reference)
+
+These URLs are embedded in **BOTH** the Chatbot Widget and throughout Blog Posts to route users directly to specific inquiry types:
+
+**Standard URLs:**
+```
+https://auschildsupport.com/lawyer-inquiry?mode=direct
+https://auschildsupport.com/special-circumstances
+```
+
+**Inquiry Type-Specific URLs:**
+```
+https://auschildsupport.com/lawyer-inquiry?mode=direct&reason=binding_agreement
+https://auschildsupport.com/lawyer-inquiry?mode=direct&reason=hidden_income
+```
+
+**URL Parameters:**
+- `mode=direct` - Bypasses calculator, shows manual input fields
+- `reason=<reason_id>` - Pre-selects inquiry type (binding_agreement, hidden_income, etc.)
+
+**⚠️ Breaking Changes:** If you modify these URL patterns or parameter names, you MUST:
+1. Update the chatbot widget configuration
+2. Search and replace URLs in all blog posts
+3. Notify the team before deploying
+
+**Traffic Entry Points:**
+```
+Blog Post → Chatbot Widget → Direct Inquiry URL → Lawyer Inquiry Form
+Blog Post → Inline CTA Link → Direct Inquiry URL → Lawyer Inquiry Form
+```
+
+---
+
 ### Calculator Logic
 
 The app implements the official Australian child support 8-step formula from Services Australia.
@@ -265,6 +314,15 @@ We **never** email raw lead data to lawyers.
 4. **Access:** Lawyer clicks link -> Views data in secure route (planned: `/admin/view-lead/[token]`)
 
 **Implementation Status:** Secure Magic Link system planned (route and utility file to be implemented)
+
+### Direct Enquiry Flow (Direct Mode)
+
+Captures high-value leads from blog posts without forcing them through the calculator.
+
+- **Entry Point 1**: `/special-circumstances` -> Allows selection of complex factors first.
+- **Entry Point 2**: `/lawyer-inquiry?mode=direct&reason=[slug]` -> Direct form entry.
+- **Mechanism**: `mode=direct` param triggers manual income/children inputs in `FinancialSection`.
+- **Slugs**: `hidden_income`, `binding_agreement` (defined in `src/features/lawyer-inquiry/config.ts`).
 
 ### Database Integration (Supabase)
 

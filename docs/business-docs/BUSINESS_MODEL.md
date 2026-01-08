@@ -46,6 +46,16 @@
 9. **If unsuccessful** → They've spent normal ad budget, no further obligation
 10. **Zero financial risk for you** → They fund ads, you prove concept
 
+### Direct Enquiry Model (High-Value Organic Tracker):
+
+1. **Parent reads blog post** (e.g., about "Hidden Income" or "Binding Agreements")
+   - **Entry Points:** Direct links in blog content OR chatbot widget on blog.auschildsupport.com
+   - **URLs used:** `/lawyer-inquiry?mode=direct&reason=hidden_income` or `/special-circumstances`
+2. **Parent clicks direct link** → Lands on `/lawyer-inquiry?mode=direct&reason=hidden_income` OR `/special-circumstances`
+3. **No calculator needed** → Form allows manual income entry (Direct Mode)
+4. **Captures high-intent users** who are already past the "estimation" phase and need a lawyer NOW.
+5. **Flow matches Standard Model** once enquiry is submitted.
+
 ---
 
 ## 📊 REVENUE PROJECTIONS
@@ -281,7 +291,7 @@ y- **Lawyer Contacts:** Data files (if present in `/data/` directory - not track
 **Mitigation:** Offer 100% Lead Credit for next lead (avoids cash refunds), manual review before sending, tighten complexity thresholds, validate with free leads first
 
 **Risk 5:** Not enough app traffic (insufficient leads)  
-**Mitigation:** Organic traffic generation, Exclusive Partner ads (if signed), conditional paid ads only if validation succeeds
+**Mitigation:** Multi-channel organic traffic generation (blog posts with inline CTAs + chatbot widget, Reddit, forums, SEO), Exclusive Partner ads (if signed), conditional paid ads only if validation succeeds
 
 **Risk 6:** Lawyers ghost after 1-2 leads  
 **Mitigation:** Weekly check-ins, improve lead quality, validation reduces this risk (prove quality first)
@@ -297,7 +307,7 @@ y- **Lawyer Contacts:** Data files (if present in `/data/` directory - not track
 
 **Week 1-2: Dual Launch**
 
-- **Track A:** Organic traffic (blog posts, Reddit, forums, SEO) - 6-8 hours
+- **Track A:** Organic traffic (blog posts with inline CTAs + chatbot widget, Reddit, forums, SEO) - 6-8 hours
 - **Track B:** Exclusive Partner outreach (pitch 10-15 firms) - 6-8 hours
 - Goal: 1 Exclusive Partner OR 2-3 validation lawyers
 

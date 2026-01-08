@@ -85,7 +85,7 @@ We provide a free, accurate child support calculator (Australian 2024-2025 formu
 
 ⏳ **Week 1-2: Dual Launch**
 
-- Track A: Organic traffic (blog posts, Reddit, forums, SEO) - 6-8 hours
+- Track A: Organic traffic (blog posts with inline CTAs + chatbot widget, Reddit, forums, SEO) - 6-8 hours
 - Track B: Exclusive Partner outreach (pitch 10-15 firms) - 6-8 hours
 - Goal: 1 Exclusive Partner OR 2-3 validation lawyers
 
