@@ -38,11 +38,11 @@ This audit identifies accessibility barriers for screen reader users and keyboar
 
 **Current Implementation:**
 
-- ✅ Income inputs have `accessibilityLabel` (lines 758, 816)
-- ✅ Relevant dependents inputs have labels (lines 283, 298, 323, 338)
+- ✅ Income inputs have `accessibilityLabel` (lines 186, 239)
+- ✅ Relevant dependents inputs have labels (via RelevantDependentsPopover component)
 - ⚠️ Missing web-specific `aria-label` props (React Native Web may not translate accessibilityLabel)
 
-**Current Code (lines 743-760):**
+**Current Code (lines 164-188):**
 
 ```tsx
 <TextInput
@@ -80,14 +80,14 @@ This audit identifies accessibility barriers for screen reader users and keyboar
 
 **Status:** ✅ **FIXED** - BrandSwitch component has full accessibility support
 
-**Location:** `src/components/CalculatorForm.tsx` (lines 763-771), `src/components/ui/BrandSwitch.tsx`
+**Location:** `src/components/ui/BrandSwitch.tsx`
 
 **Current Implementation:**
 
 - ✅ `BrandSwitch` component has `accessibilityLabel` prop
 - ✅ Includes `accessibilityRole="switch"`
 - ✅ Web implementation includes `aria-checked` and `aria-label` (lines 65-68 in BrandSwitch.tsx)
-- ✅ Used correctly in CalculatorForm with labels (lines 767, 825)
+- ✅ Component is available for use throughout the codebase
 
 **Current Code (BrandSwitch.tsx lines 64-80):**
 
@@ -122,14 +122,14 @@ return (
 
 **Current Implementation:**
 
-- ✅ Add Child button has `accessibilityLabel` (line 886 in CalculatorForm.tsx)
-- ✅ Calculate button has `accessibilityLabel` (line 898)
-- ✅ Reset button has `accessibilityLabel` (line 906)
-- ✅ Remove child button has `accessibilityLabel` (line 88 in ChildRow.tsx)
-- ✅ Clear dependents button has `accessibilityLabel` (line 228)
+- ✅ Add Child button has `accessibilityLabel` (line 301 in CalculatorForm.tsx)
+- ✅ Calculate button has `accessibilityLabel` (line 313)
+- ✅ Reset button has `accessibilityLabel` (line 321)
+- ✅ Remove child button has `accessibilityLabel` (line 94 in ChildRow.tsx)
+- ✅ Clear dependents button has `accessibilityLabel` (via RelevantDependentsPopover)
 - ⚠️ Web-specific `aria-label` attributes not explicitly added (may work via React Native Web translation)
 
-**Current Code (CalculatorForm.tsx lines 882-909):**
+**Current Code (CalculatorForm.tsx lines 297-324):**
 
 ```tsx
 <Pressable
@@ -224,8 +224,8 @@ return (
 
 **Current Implementation:**
 
-- ✅ DatePickerField has proper error associations (lines 131-133, 136 in DatePickerField.tsx)
-- ❌ CalculatorForm income inputs lack `aria-invalid` and `aria-describedby` (lines 743-760, 801-818)
+- ✅ DatePickerField has proper error associations (lines 116-117, 142 in DatePickerField.tsx)
+- ❌ CalculatorForm income inputs lack `aria-invalid` and `aria-describedby` (lines 164-188, 217-241)
 - ❌ Error messages lack IDs for association
 
 **Example of Correct Implementation (DatePickerField.tsx):**
@@ -299,8 +299,8 @@ return (
 
 **Files Affected:**
 
-- `src/components/CalculatorForm.tsx` - Income inputs (lines 743-760, 801-818)
-- All error message Text components in CalculatorForm
+- `src/components/CalculatorForm.tsx` - Income inputs (lines 164-188, 217-241)
+- All error message Text components in CalculatorForm (lines 191-193, 244-246)
 
 **Status:** ⚠️ Needs implementation
 
@@ -318,8 +318,9 @@ return (
 
 - ✅ `webFocusStyles` implemented (lines 204-219 in responsive.ts)
 - ✅ Uses CSS `:focus` and `:focus-visible` pseudo-classes
-- ✅ Applied via `webInputStyles` and `webClickableStyles`
-- ✅ Focus indicators visible (blue outline, 3px width, 2px offset)
+- ⚠️ **NOTE:** `webFocusStyles` is defined but NOT currently merged into `webInputStyles` or `webClickableStyles`
+- ⚠️ `webInputStyles` sets `outlineStyle: 'none'` which prevents focus outlines from showing
+- ⚠️ Focus styles need to be explicitly applied or merged into the input/clickable styles
 
 **Current Code (responsive.ts lines 204-219):**
 
@@ -486,8 +487,8 @@ accessibilityLabel={`Child ${childIndex}, Parent A nights of care`}
 
 **Current Implementation:**
 
-- ✅ HelpTooltip button border uses `#6b7280` (grey-500, 4.5:1 contrast) - line 105
-- ✅ HelpTooltip button text uses `#4b5563` (grey-600, 5.9:1 contrast) - line 111
+- ✅ HelpTooltip button border uses `#bfdbfe` (blue-200) - line 107
+- ✅ HelpTooltip button text uses `#60a5fa` (blue-400) - line 115
 - ⚠️ Need to verify all text colors meet WCAG AA standards
 
 **Note:** The audit mentioned specific colors (#718096) which may have been updated. Current implementation appears to use better contrast colors. Should verify with automated tools (Lighthouse, axe DevTools).
@@ -504,8 +505,8 @@ accessibilityLabel={`Child ${childIndex}, Parent A nights of care`}
 
 **Current Implementation:**
 
-- ✅ Trigger button has `accessibilityLabel="Help"` (line 36)
-- ✅ Has `accessibilityHint` (line 37)
+- ✅ Trigger button has `accessibilityLabel="Help"` (line 38)
+- ✅ Has `accessibilityHint` (line 39)
 - ❌ Missing `accessibilityExpanded` state
 - ❌ Missing keyboard support (Enter/Space)
 - ❌ Modal missing accessibility properties (covered in issue #4)

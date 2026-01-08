@@ -6,8 +6,8 @@
 
 import { useLocalSearchParams } from 'expo-router';
 import { useMemo } from 'react';
-import type { CareDataItem, InquiryTypeConfig } from '../types';
 import { getInquiryConfig } from '../config';
+import type { CareDataItem, InquiryTypeConfig } from '../types';
 
 export interface ParsedRouteParams {
   // Basic params
@@ -23,6 +23,10 @@ export interface ParsedRouteParams {
   // External navigation (for blog integration)
   source: string | undefined; // Source indicator (e.g., "blog") for exit redirect
   returnTo: string | undefined; // Explicit URL to return to on exit
+
+  // Chatbot lead qualification data
+  hasParentingPlan: string | undefined; // "true", "false", or "unsure"
+  assessmentType: string | undefined; // e.g., "income", "agreement", "special", "appeal"
 
   // Computed values
   isDirectMode: boolean;
@@ -69,6 +73,16 @@ export function useRouteParams(): ParsedRouteParams {
       return rawValue;
     }
   }, [params.returnTo]);
+
+  // Parse chatbot lead qualification params
+  const hasParentingPlan =
+    typeof params.hasParentingPlan === 'string'
+      ? params.hasParentingPlan
+      : undefined;
+  const assessmentType =
+    typeof params.assessmentType === 'string'
+      ? params.assessmentType
+      : undefined;
 
   // Detect Direct Mode: explicit mode=direct OR missing calculation data
   const isDirectMode = useMemo(() => {
@@ -134,6 +148,8 @@ export function useRouteParams(): ParsedRouteParams {
     payer,
     source,
     returnTo,
+    hasParentingPlan,
+    assessmentType,
     isDirectMode,
     inquiryConfig,
     preFillMessage,

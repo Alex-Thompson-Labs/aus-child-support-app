@@ -85,7 +85,7 @@ npm run web
 
 ### Configuration
 
-- `vercel.json` - Caching, compression, security
+- `vercel.json` - Caching headers (security headers not yet configured)
 - `app/+html.tsx` - SEO, Google Analytics
 - `package.json` - Performance scripts
 
@@ -174,7 +174,7 @@ export const ChildRow = memo(function ChildRow({ ... }) {
 - ✅ Brotli/gzip compression (60-70% reduction)
 - ✅ Aggressive caching (static: 1 year, HTML: 1 hour)
 - ✅ Web Vitals tracking (LCP, INP, CLS, FCP, TTFB) - **Note:** Uses INP, not FID
-- ✅ Security headers (CSP, X-Frame-Options, etc.)
+- ⚠️ Security headers - Not yet configured (documented but not in vercel.json)
 - ✅ Performance testing scripts
 - ✅ Bundle analysis tools
 

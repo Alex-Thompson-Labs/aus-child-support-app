@@ -48,6 +48,11 @@ export interface UseInquiryFormProps {
   careData: CareDataItem[];
   specialCircumstances: string[] | null;
   payer: string; // "Parent A", "Parent B", or "Neither"
+
+  // Chatbot lead qualification data
+  hasParentingPlan: string | undefined;
+  assessmentType: string | undefined;
+  returnTo: string | undefined;
 }
 
 export function useInquiryForm(props: UseInquiryFormProps) {
@@ -606,6 +611,11 @@ export function useInquiryForm(props: UseInquiryFormProps) {
 
         // Initial status
         status: 'new',
+
+        // Chatbot lead qualification data
+        parenting_plan_status: props.hasParentingPlan || null,
+        inquiry_type: props.assessmentType || null,
+        referer_url: props.returnTo || null,
       };
 
       if (__DEV__)

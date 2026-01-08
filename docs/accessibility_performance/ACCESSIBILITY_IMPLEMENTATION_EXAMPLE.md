@@ -71,7 +71,7 @@ import { isWeb, webInputStyles } from '@/src/utils/responsive';
 - Screen reader announces: "Full name, text field, Enter your first and last name"
 - When error exists: "Full name, invalid, Name is required"
 - Error is properly associated via `aria-describedby`
-- Focus styles applied via `webInputStyles`
+- ⚠️ **NOTE:** Focus styles are defined in `webFocusStyles` but not currently merged into `webInputStyles` (see issue in ACCESSIBILITY_AUDIT.md)
 
 **Reference:** See `src/components/ui/DatePickerField.tsx` (lines 131-139) for a working example with error associations.
 
@@ -109,10 +109,10 @@ import { isWeb, webClickableStyles } from '@/src/utils/responsive';
 
 - Screen reader announces: "Submit inquiry form, button, Send your information to family lawyers"
 - Keyboard accessible with Enter/Space (React Native default)
-- Visible focus ring via `webClickableStyles` (uses `webFocusStyles` from `responsive.ts`)
+- ⚠️ **NOTE:** Focus styles are defined in `webFocusStyles` but not currently merged into `webClickableStyles`. Focus indicators may not be visible due to `outlineStyle: 'none'` in `webInputStyles`.
 - Disabled state can be added: `accessibilityState={{ disabled: isSubmitting }}`
 
-**Reference:** See `src/components/CalculatorForm.tsx` (lines 894-900) for examples of accessible buttons.
+**Reference:** See `src/components/CalculatorForm.tsx` (lines 297-324) for examples of accessible buttons.
 
 ---
 
@@ -153,7 +153,7 @@ import { BrandSwitch } from '@/components/ui/BrandSwitch';
 
 **Note:** The `BrandSwitch` component handles ARIA attributes internally. See `src/components/ui/BrandSwitch.tsx` (lines 65-80) for implementation.
 
-**Reference:** See `src/components/CalculatorForm.tsx` (lines 763-771) for usage.
+**Note:** BrandSwitch is available for use but may not be currently used in CalculatorForm. Check the codebase for actual usage.
 
 ---
 
@@ -365,7 +365,9 @@ export const webFocusStyles: any = isWeb
   : {};
 ```
 
-These are applied via `webInputStyles` and `webClickableStyles` which include focus styles.
+**⚠️ IMPORTANT:** `webFocusStyles` is defined but NOT currently merged into `webInputStyles` or `webClickableStyles`. The `webInputStyles` actually sets `outlineStyle: 'none'` which prevents focus outlines from showing. To enable focus styles, either:
+1. Merge `webFocusStyles` into `webInputStyles` and `webClickableStyles`, or
+2. Explicitly apply `webFocusStyles` alongside the other styles in components.
 
 ---
 

@@ -41,6 +41,10 @@ export default function LawyerInquiryScreen() {
     careData: params.careData,
     specialCircumstances: params.specialCircumstances,
     payer: params.payer,
+    // Chatbot lead qualification data
+    hasParentingPlan: params.hasParentingPlan,
+    assessmentType: params.assessmentType,
+    returnTo: params.returnTo,
   });
 
   // Web container styles

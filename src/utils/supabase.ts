@@ -88,7 +88,7 @@ export const supabase = new Proxy({} as SupabaseClient, {
   get: function (_target, prop) {
     throw new Error(
       `[Supabase] Direct access to 'supabase.${String(prop)}' is not allowed. ` +
-        `Use getSupabaseClient() instead for lazy loading.`
+      `Use getSupabaseClient() instead for lazy loading.`
     );
   },
 });
@@ -113,12 +113,12 @@ export interface LeadSubmission {
 
   // Care arrangement data
   care_data:
-    | {
-        index: number;
-        careA: number;
-        careB: number;
-      }[]
-    | null;
+  | {
+    index: number;
+    careA: number;
+    careB: number;
+  }[]
+  | null;
 
   // Complexity data
   complexity_trigger: string[] | null;
@@ -141,6 +141,11 @@ export interface LeadSubmission {
 
   // Metadata
   submitted_at?: string;
+
+  // Chatbot lead qualification data
+  parenting_plan_status?: string | null;
+  inquiry_type?: string | null;
+  referer_url?: string | null;
 }
 
 /**
@@ -229,6 +234,11 @@ export async function submitLead(lead: LeadSubmission): Promise<{
       }),
       ...(lead.notes !== undefined && { notes: lead.notes }),
       ...(lead.deleted_at !== undefined && { deleted_at: lead.deleted_at }),
+
+      // Chatbot lead qualification data
+      parenting_plan_status: lead.parenting_plan_status,
+      inquiry_type: lead.inquiry_type,
+      referer_url: lead.referer_url,
     };
 
     // Insert lead into database and return the ID

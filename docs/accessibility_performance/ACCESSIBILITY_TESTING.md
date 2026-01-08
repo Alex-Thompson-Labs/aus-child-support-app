@@ -320,7 +320,7 @@ describe('Accessibility', () => {
   it('has accessible labels on income inputs', () => {
     const { getByLabelText } = render(<CalculatorForm {...props} />);
 
-    // Actual labels as implemented in CalculatorForm.tsx (lines 758, 816)
+    // Actual labels as implemented in CalculatorForm.tsx (lines 186, 239)
     expect(getByLabelText('Parent A adjusted taxable income')).toBeTruthy();
     expect(getByLabelText('Parent B adjusted taxable income')).toBeTruthy();
   });
@@ -328,7 +328,7 @@ describe('Accessibility', () => {
   it('has accessible buttons', () => {
     const { getByRole } = render(<CalculatorForm {...props} />);
 
-    // Actual labels as implemented in CalculatorForm.tsx (lines 898, 906)
+    // Actual labels as implemented in CalculatorForm.tsx (lines 313, 321)
     expect(
       getByRole('button', { name: 'Calculate child support' })
     ).toBeTruthy();

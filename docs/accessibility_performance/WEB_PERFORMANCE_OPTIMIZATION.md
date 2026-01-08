@@ -252,54 +252,45 @@ grep -r "import \* as" src/
 
 **Add `vercel.json` for production optimizations:**
 
-**Note:** `vercel.json` already exists and is configured. Here's the actual configuration:
+**Note:** `vercel.json` already exists but has minimal configuration. Here's the ACTUAL current configuration:
 
-**Current `vercel.json` structure:**
+**Current `vercel.json` structure (JSON format):**
 
-```toml
-[build]
-  command = "npx expo export"
-  publish = "dist"
-
-# Cache static assets for 1 year
-[[headers]]
-  for = "/_expo/static/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-# Cache HTML for shorter time (1 hour)
-[[headers]]
-  for = "/*.html"
-  [headers.values]
-    Cache-Control = "public, max-age=3600, must-revalidate"
-
-# Security headers
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    X-XSS-Protection = "1; mode=block"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
-    Content-Security-Policy = "..." # (configured)
-
-# Redirect HTTP to HTTPS
-[[redirects]]
-  from = "http://auschildsupport.com/*"
-  to = "https://auschildsupport.com/:splat"
-  status = 301
-  force = true
-
-# Redirect www to non-www
-[[redirects]]
-  from = "https://www.auschildsupport.com/*"
-  to = "https://auschildsupport.com/:splat"
-  status = 301
-  force = true
+```json
+{
+  "buildCommand": "npx expo export",
+  "outputDirectory": "dist",
+  "headers": [
+    {
+      "source": "/_expo/static/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/admin/lead/:id",
+      "destination": "/admin/lead/[id].html"
+    },
+    {
+      "source": "/blog/:id",
+      "destination": "/blog/[id].html"
+    }
+  ]
+}
 ```
 
-**Note:** Brotli compression is automatically handled by Vercel - no manual configuration needed. The actual file uses `/_expo/static/*` pattern for static assets (not `/*`).
+**⚠️ Missing from actual configuration (documented but not implemented):**
+- Security headers (X-Frame-Options, CSP, etc.)
+- HTML caching headers
+- HTTP → HTTPS redirects
+- www → non-www redirects
+
+**Note:** Brotli compression is automatically handled by Vercel - no manual configuration needed.
 
 **Expected Savings:** 60-70% file size reduction via Brotli compression
 
