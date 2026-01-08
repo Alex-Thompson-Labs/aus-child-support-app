@@ -151,16 +151,19 @@ export function useCalculator() {
     return Object.keys(newErrors).length === 0;
   }, [formState]);
 
-  const performCalculation = useCallback((): CalculationResults | null => {
-    if (!validateForm()) {
-      return null;
-    }
+  const performCalculation = useCallback(
+    (overrides?: { supportA?: boolean; supportB?: boolean }): CalculationResults | null => {
+      if (!validateForm()) {
+        return null;
+      }
 
-    // Get year-specific constants
-    const { SSA, FAR, MAR, MAX_PPS } = getYearConstants(selectedYear);
+      // Get year-specific constants
+      const { SSA, FAR, MAR, MAX_PPS } = getYearConstants(selectedYear);
 
-    const { incomeA, incomeB, supportA, supportB, relDepA, relDepB } =
-      formState;
+      const { incomeA, incomeB, relDepA, relDepB } = formState;
+      // Use overrides if provided, otherwise fall back to formState
+      const supportA = overrides?.supportA ?? formState.supportA;
+      const supportB = overrides?.supportB ?? formState.supportB;
     const ATI_A = incomeA;
     const ATI_B = incomeB;
 
@@ -465,21 +468,24 @@ export function useCalculator() {
     };
   }, [formState, selectedYear, validateForm]);
 
-  const calculate = useCallback(() => {
-    // Optimize INP: Yield to main thread to allow UI feedback (button press) to render
-    // before starting heavy blocking calculation.
+  const calculate = useCallback(
+    (overrides?: { supportA?: boolean; supportB?: boolean }) => {
+      // Optimize INP: Yield to main thread to allow UI feedback (button press) to render
+      // before starting heavy blocking calculation.
 
-    // Ensure "stale" state is set synchronously to trigger any necessary pending UI updates
-    setIsStale(true);
+      // Ensure "stale" state is set synchronously to trigger any necessary pending UI updates
+      setIsStale(true);
 
-    setTimeout(() => {
-      const calculationResults = performCalculation();
-      if (calculationResults) {
-        setResults(calculationResults);
-        setIsStale(false);
-      }
-    }, 0);
-  }, [performCalculation]);
+      setTimeout(() => {
+        const calculationResults = performCalculation(overrides);
+        if (calculationResults) {
+          setResults(calculationResults);
+          setIsStale(false);
+        }
+      }, 0);
+    },
+    [performCalculation]
+  );
 
   const reset = useCallback(() => {
     setFormState({

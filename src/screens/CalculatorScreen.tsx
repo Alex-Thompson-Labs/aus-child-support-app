@@ -163,8 +163,8 @@ export function CalculatorScreen() {
   const runCalculation = (supportA: boolean, supportB: boolean) => {
     // Update state with support flags
     setFormState((prev) => ({ ...prev, supportA, supportB }));
-    // Call calculate directly (setTimeout allows state to update first)
-    setTimeout(() => calculate(), 0);
+    // Pass values directly to avoid stale closure issue
+    calculate({ supportA, supportB });
   };
 
   /**
