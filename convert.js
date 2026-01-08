@@ -2,7 +2,6 @@ const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
 
-// CHANGED: Look in a dedicated source folder
 const inputDir = './assets/source_images';
 const outputDir = './assets/images/webp';
 
@@ -12,28 +11,29 @@ if (!fs.existsSync(outputDir)) {
 
 fs.readdir(inputDir, (err, files) => {
   if (err) {
-    // Friendly error if you forgot to make the folder
     if (err.code === 'ENOENT') {
-      console.error(
-        `❌ Error: Could not find directory '${inputDir}'. Did you create it?`
-      );
+      console.error(`❌ Error: Could not find directory '${inputDir}'.`);
       return;
     }
     return console.error('Could not list the directory.', err);
   }
 
   files.forEach((file) => {
-    if (path.extname(file).toLowerCase() === '.png') {
+    // 1. GET EXTENSION
+    const ext = path.extname(file).toLowerCase();
+
+    // 2. CHECK FOR BOTH PNG AND JPEG
+    if (ext === '.png' || ext === '.jpg' || ext === '.jpeg') {
       const inputFile = path.join(inputDir, file);
-      const outputFile = path.join(
-        outputDir,
-        path.basename(file, '.png') + '.webp'
-      );
+
+      // 3. GET FILENAME WITHOUT EXTENSION (Works for any length extension)
+      const fileNameNoExt = path.parse(file).name;
+      const outputFile = path.join(outputDir, fileNameNoExt + '.webp');
 
       sharp(inputFile)
         .webp({ quality: 75 })
         .toFile(outputFile)
-        .then(() => console.log(`✅ Converted: ${file}`))
+        .then(() => console.log(`✅ Converted: ${file} -> ${fileNameNoExt}.webp`))
         .catch((err) => console.error(`❌ Error converting ${file}:`, err));
     }
   });

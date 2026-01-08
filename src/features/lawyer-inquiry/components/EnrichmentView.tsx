@@ -11,7 +11,8 @@ import {
     mapCareToCostPercent,
     type Child,
 } from '@/src/utils/child-support-calculations';
-import { SSA } from '@/src/utils/child-support-constants';
+import { SSA, MAX_PPS, MAR } from '@/src/utils/child-support-constants';
+import { IncomeSupportModal } from '@/src/components/IncomeSupportModal';
 import { isWeb } from '@/src/utils/responsive';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
@@ -68,6 +69,12 @@ export function EnrichmentView({
   const [calculatedLiability, setCalculatedLiability] = useState<number | null>(null);
   const [payerLabel, setPayerLabel] = useState<string>('');
 
+  // Income Support Modal Logic
+  const [incomeSupportModalVisible, setIncomeSupportModalVisible] = useState(false);
+  const [pendingParent, setPendingParent] = useState<'A' | 'B' | null>(null);
+  const [needsPromptB, setNeedsPromptB] = useState(false);
+  const tempParentAResponseRef = React.useRef(false);
+
   // Initialize children data when modal opens
   const handleOpenCalculator = () => {
     if (childrenCount > 0 && children.length !== childrenCount) {
@@ -89,10 +96,75 @@ export function EnrichmentView({
     );
   };
 
-  // Calculate liability with per-child care percentages
+  /**
+   * Helper to determine if a parent needs the income support prompt.
+   * Uses the same rules as the main calculator.
+   */
+  const needsIncomeSupportPrompt = (
+    income: number,
+    careKey: 'careA' | 'careB',
+    childrenForCalc: Child[]
+  ): boolean => {
+    // Check if parent has < 14% care for at least one child
+    const hasLessThan14Care = childrenForCalc.some(child => child[careKey] < 14);
+
+    // Check if parent has < 35% care for at least one child
+    const hasLessThan35Care = childrenForCalc.some(child => child[careKey] < 35);
+
+    // Rule 1: Income < SSA AND less than 14% care of at least one child
+    const rule1 = income < SSA && hasLessThan14Care;
+
+    // Rule 2: Income < MAX_PPS AND less than 35% care of at least one child
+    const rule2 = income < MAX_PPS && hasLessThan35Care;
+
+    return rule1 || rule2;
+  };
+
+  /**
+   * Calculate liability with per-child care percentages.
+   * Checks for Income Support prompting before running calculation.
+   */
   const handleCalculate = () => {
     if (children.length === 0 || children.some((c) => !c.nights)) return;
 
+    // Build children array with individual care percentages
+    const childrenForCalc: Child[] = children.map((child) => {
+      const careNights = parseInt(child.nights, 10) || 0;
+      const carePercentA = convertCareToPercentage(careNights, 'fortnight');
+      const carePercentB = 100 - carePercentA;
+
+      return {
+        age: child.ageGroup,
+        careA: carePercentA,
+        careB: carePercentB,
+      };
+    });
+
+    // Check if either parent needs Income Support prompting
+    const promptA = needsIncomeSupportPrompt(incomes.parentA, 'careA', childrenForCalc);
+    const promptB = needsIncomeSupportPrompt(incomes.parentB, 'careB', childrenForCalc);
+
+    if (promptA) {
+      // Need to ask about Parent A first
+      setPendingParent('A');
+      setNeedsPromptB(promptB); // Remember if we need to ask about B next
+      setIncomeSupportModalVisible(true);
+    } else if (promptB) {
+      // Only Parent B needs prompting
+      setPendingParent('B');
+      setNeedsPromptB(false);
+      setIncomeSupportModalVisible(true);
+    } else {
+      // Neither parent needs prompting - proceed with calculation
+      runCalculation(false, false);
+    }
+  };
+
+  /**
+   * Actually runs the calculation with the determined support flags.
+   * Includes MAR (Minimum Annual Rate) logic.
+   */
+  const runCalculation = (supportA: boolean, supportB: boolean) => {
     // Build children array with individual care percentages
     const childrenForCalc: Child[] = children.map((child) => {
       const careNights = parseInt(child.nights, 10) || 0;
@@ -129,9 +201,24 @@ export function EnrichmentView({
       totalChildren /
       100;
 
+    // Check MAR (Minimum Annual Rate) eligibility
+    // MAR applies if: Income < SSA AND on income support AND < 14% care of ALL children
+    const marAppliesA =
+      incomes.parentA < SSA && supportA && childrenForCalc.every((c) => c.careA < 14);
+    const marAppliesB =
+      incomes.parentB < SSA && supportB && childrenForCalc.every((c) => c.careB < 14);
+
     // Calculate liability (Parent A's perspective)
-    const parentALiability = (incomeShareA - avgCostPercentA) * cost;
-    const parentBLiability = (incomeShareB - avgCostPercentB) * cost;
+    let parentALiability = (incomeShareA - avgCostPercentA) * cost;
+    let parentBLiability = (incomeShareB - avgCostPercentB) * cost;
+
+    // Apply MAR caps if applicable
+    if (marAppliesA && parentALiability > MAR) {
+      parentALiability = MAR;
+    }
+    if (marAppliesB && parentBLiability > MAR) {
+      parentBLiability = MAR;
+    }
 
     // Determine who pays whom
     let liability: number;
@@ -151,6 +238,55 @@ export function EnrichmentView({
 
     setCalculatedLiability(Math.abs(liability));
     onLiabilityCalculated(Math.abs(liability));
+    setShowCalculator(false);
+  };
+
+  /**
+   * Handle "Yes" response from the income support modal.
+   */
+  const handleIncomeSupportYes = () => {
+    if (pendingParent === 'A') {
+      if (needsPromptB) {
+        // Store Parent A's response in ref and ask about Parent B
+        tempParentAResponseRef.current = true;
+        setNeedsPromptB(false);
+        setPendingParent('B');
+      } else {
+        // Done prompting, run calculation
+        setIncomeSupportModalVisible(false);
+        setTimeout(() => setPendingParent(null), 200);
+        runCalculation(true, false);
+      }
+    } else if (pendingParent === 'B') {
+      setIncomeSupportModalVisible(false);
+      setTimeout(() => setPendingParent(null), 200);
+      // Use Parent A's stored response from ref, Parent B said Yes
+      runCalculation(tempParentAResponseRef.current, true);
+    }
+  };
+
+  /**
+   * Handle "No" response from the income support modal.
+   */
+  const handleIncomeSupportNo = () => {
+    if (pendingParent === 'A') {
+      if (needsPromptB) {
+        // Store Parent A's response in ref and ask about Parent B
+        tempParentAResponseRef.current = false;
+        setNeedsPromptB(false);
+        setPendingParent('B');
+      } else {
+        // Done prompting, run calculation
+        setIncomeSupportModalVisible(false);
+        setTimeout(() => setPendingParent(null), 200);
+        runCalculation(false, false);
+      }
+    } else if (pendingParent === 'B') {
+      setIncomeSupportModalVisible(false);
+      setTimeout(() => setPendingParent(null), 200);
+      // Use Parent A's stored response from ref, Parent B said No
+      runCalculation(tempParentAResponseRef.current, false);
+    }
   };
 
   // Format currency
@@ -547,10 +683,7 @@ export function EnrichmentView({
                     buttonStyles.button,
                     pressed && buttonStyles.buttonPressed,
                   ]}
-                  onPress={() => {
-                    handleCalculate();
-                    setShowCalculator(false);
-                  }}
+                  onPress={handleCalculate}
                 >
                   <Text style={buttonStyles.buttonText}>Calculate</Text>
                 </Pressable>
@@ -564,6 +697,14 @@ export function EnrichmentView({
             </View>
           </View>
         </Modal>
+
+        {/* Income Support Modal */}
+        <IncomeSupportModal
+          visible={incomeSupportModalVisible}
+          parentName={pendingParent === 'A' ? 'You' : 'Other Parent'}
+          onYes={handleIncomeSupportYes}
+          onNo={handleIncomeSupportNo}
+        />
       </View>
     </SafeAreaView>
   );

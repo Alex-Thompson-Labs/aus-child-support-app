@@ -60,8 +60,9 @@ export function useRouteParams(): ParsedRouteParams {
     typeof params.source === 'string' ? params.source : undefined;
 
   // Parse returnTo with URL decoding (handles encoded URLs like https%3A%2F%2F...)
+  // Check referer_url first (chatbot param), fall back to returnTo
   const returnTo = useMemo(() => {
-    const rawValue = params.returnTo;
+    const rawValue = params.referer_url ?? params.returnTo;
     if (typeof rawValue !== 'string' || !rawValue) {
       return undefined;
     }
@@ -72,17 +73,23 @@ export function useRouteParams(): ParsedRouteParams {
       // If decoding fails, use raw value
       return rawValue;
     }
-  }, [params.returnTo]);
+  }, [params.referer_url, params.returnTo]);
 
   // Parse chatbot lead qualification params
+  // Check parenting_plan_status first (chatbot param), fall back to hasParentingPlan
   const hasParentingPlan =
-    typeof params.hasParentingPlan === 'string'
-      ? params.hasParentingPlan
-      : undefined;
+    typeof params.parenting_plan_status === 'string'
+      ? params.parenting_plan_status
+      : typeof params.hasParentingPlan === 'string'
+        ? params.hasParentingPlan
+        : undefined;
+  // Check inquiry_type first (chatbot param), fall back to assessmentType
   const assessmentType =
-    typeof params.assessmentType === 'string'
-      ? params.assessmentType
-      : undefined;
+    typeof params.inquiry_type === 'string'
+      ? params.inquiry_type
+      : typeof params.assessmentType === 'string'
+        ? params.assessmentType
+        : undefined;
 
   // Detect Direct Mode: explicit mode=direct OR missing calculation data
   const isDirectMode = useMemo(() => {
