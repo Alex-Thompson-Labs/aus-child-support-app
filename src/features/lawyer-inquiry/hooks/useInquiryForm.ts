@@ -133,7 +133,8 @@ export function useInquiryForm(props: UseInquiryFormProps) {
 
   // Get valid Special Circumstances for display, sorted by priority
   const validCircumstances = useMemo(() => {
-    return (props.specialCircumstances || [])
+    const circumstances = (props.specialCircumstances || [])
+      .filter((id) => !isCourtDateReason(id)) // Exclude court_date_pending placeholder
       .map((id) => {
         const reason = getSpecialCircumstanceById(id);
         if (!reason) return null;
@@ -149,9 +150,29 @@ export function useInquiryForm(props: UseInquiryFormProps) {
           reason
         ): reason is SpecialCircumstance & { urgency: 'URGENT' | 'NORMAL' } =>
           reason !== null
-      )
-      .sort((a, b) => a.priority - b.priority); // Sort by priority
-  }, [props.specialCircumstances]);
+      );
+
+    // Add dynamic court date card if date is selected
+    if (courtDate && shouldShowCourtDate) {
+      const formatted = courtDate.toLocaleDateString('en-AU', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      });
+      circumstances.push({
+        id: 'court_date_dynamic',
+        label: `I have an upcoming court hearing regarding child support. (${formatted})`,
+        description: 'Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance.',
+        category: 'urgent' as const,
+        priority: 1,
+        officialCodes: ['5.2.11'] as const,
+        urgency: 'URGENT' as const,
+      });
+    }
+
+    // Sort by priority
+    return circumstances.sort((a, b) => a.priority - b.priority);
+  }, [props.specialCircumstances, courtDate, shouldShowCourtDate]);
 
   // Determine if conditional fields should be shown
   const shouldShowCourtDate = useMemo(
@@ -163,8 +184,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     () =>
       props.reason === 'hidden_income' ||
       (props.specialCircumstances || []).some(
-        (id) =>
-          id === 'income_resources_not_reflected' || id === 'earning_capacity'
+        (id) => id === 'income_resources_not_reflected'
       ),
     [props.reason, props.specialCircumstances]
   );
@@ -187,7 +207,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
         case 'postcode':
           return validatePostcode(value as string);
         case 'message':
-          return validateMessage(value as string, financialTags, props.preFillMessage);
+          return validateMessage(value as string, financialTags, props.preFillMessage, props.specialCircumstances, props.reason);
         case 'consent':
           return validateConsent(value as boolean);
         case 'courtDate':
@@ -220,6 +240,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
       props.specialCircumstances,
       props.isDirectMode,
       props.reason,
+      props.preFillMessage,
     ]
   );
 
@@ -232,7 +253,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
       email: validateEmail(email),
       phone: validatePhone(phone),
       postcode: validatePostcode(postcode),
-      message: validateMessage(message, financialTags, props.preFillMessage),
+      message: validateMessage(message, financialTags, props.preFillMessage, props.specialCircumstances, props.reason),
       consent: validateConsent(consent),
       courtDate: validateCourtDate(courtDate, shouldShowCourtDate),
       financialTags: validateFinancialTags(
@@ -551,7 +572,8 @@ export function useInquiryForm(props: UseInquiryFormProps) {
         financial_tags: financialTags.length > 0 ? financialTags : null,
 
         // Message (raw text from Additional Details field only)
-        parent_message: sanitizeString(message) || null,
+        // Note: Database has NOT NULL constraint, so send empty string instead of null
+        parent_message: sanitizeString(message) || '',
 
         // Privacy compliance
         consent_given: consent,

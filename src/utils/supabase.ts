@@ -125,7 +125,7 @@ export interface LeadSubmission {
   complexity_reasons: string[];
   financial_tags?: string[] | null;
 
-  // Message
+  // Message (required - database has NOT NULL constraint)
   parent_message: string;
 
   // Privacy compliance
@@ -161,10 +161,10 @@ export async function submitLead(lead: LeadSubmission): Promise<{
 }> {
   try {
     // Validate required fields
-    if (!lead.parent_name || !lead.parent_email || !lead.parent_message) {
+    if (!lead.parent_name || !lead.parent_email) {
       return {
         success: false,
-        error: 'Missing required fields: name, email, or message',
+        error: 'Missing required fields: name or email',
       };
     }
 
@@ -184,7 +184,7 @@ export async function submitLead(lead: LeadSubmission): Promise<{
       income_parent_b: lead.income_parent_b,
       children_count: lead.children_count,
       annual_liability: lead.annual_liability,
-      message_length: lead.parent_message.length,
+      message_length: lead.parent_message?.length ?? 0,
       consent_given: lead.consent_given,
       complexity_trigger: lead.complexity_trigger,
       complexity_reasons_count: lead.complexity_reasons.length,

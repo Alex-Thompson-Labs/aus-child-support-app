@@ -125,26 +125,34 @@ export function validateManualChildren(children: string): string | undefined {
 }
 
 /**
- * Validate message field (conditionally required based on financialTags)
+ * Validate message field (conditionally required based on financialTags and hidden income context)
+ *
+ * Message is ONLY required when:
+ * 1. It's a hidden income form (reason === 'hidden_income' OR specialCircumstances includes 'income_resources_not_reflected')
+ * 2. AND the "Other" chip is selected in financial tags
  */
 export function validateMessage(
   message: string,
   financialTags: string[],
-  preFillMessage?: string
+  preFillMessage?: string,
+  specialCircumstances?: string[] | null,
+  reason?: string
 ): string | undefined {
   const sanitized = sanitizeString(message);
 
-  // If "Other" is selected in financial tags, message becomes required
-  if (financialTags.includes('Other')) {
-    if (!sanitized) {
-      return 'Please provide details about the "Other" financial issue';
-    }
-    if (sanitized.length < VALIDATION.MESSAGE_MIN_LENGTH) {
-      return `Details must be at least ${VALIDATION.MESSAGE_MIN_LENGTH} characters`;
+  // Check if this is a hidden income form
+  const isHiddenIncomeForm =
+    reason === 'hidden_income' ||
+    specialCircumstances?.includes('income_resources_not_reflected');
+
+  // Message is only required when it's a hidden income form AND "Other" is selected
+  if (isHiddenIncomeForm && financialTags.includes('Other')) {
+    if (!sanitized || sanitized.length < VALIDATION.MESSAGE_MIN_LENGTH) {
+      return 'Please provide a few more details so the lawyer can understand your situation (minimum 10 characters).';
     }
     // Check if message is identical to pre-filled message
     if (preFillMessage && sanitized === sanitizeString(preFillMessage)) {
-      return "Please add details explaining the 'Other' financial issue";
+      return 'Please provide a few more details so the lawyer can understand your situation (minimum 10 characters).';
     }
   }
 

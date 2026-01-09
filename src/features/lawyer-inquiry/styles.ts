@@ -145,7 +145,7 @@ export const formStyles = StyleSheet.create({
     fontSize: 16,
   },
   inputError: {
-    borderColor: '#ef4444', // red-500
+    borderColor: '#B91C1C', // muted brick red
   },
   textArea: {
     height: 200,
@@ -159,7 +159,7 @@ export const formStyles = StyleSheet.create({
     marginTop: 4,
   },
   errorText: {
-    color: '#ef4444', // red-500
+    color: '#B91C1C', // muted brick red
     fontSize: 12,
     marginTop: 4,
   },
@@ -199,7 +199,7 @@ export const checkboxStyles = StyleSheet.create({
     borderColor: '#3b82f6',
   },
   checkboxError: {
-    borderColor: '#ef4444', // red-500
+    borderColor: '#B91C1C', // muted brick red
   },
   checkboxCheck: {
     color: '#ffffff',
@@ -438,7 +438,7 @@ export const financialStyles = StyleSheet.create({
     borderColor: '#3b82f6',
   },
   chipError: {
-    borderColor: '#ef4444', // red-500
+    borderColor: '#B91C1C', // muted brick red
     backgroundColor: '#fef2f2', // red-50
   },
   chipText: {
