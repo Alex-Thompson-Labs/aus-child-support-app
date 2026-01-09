@@ -188,21 +188,17 @@ export function formatCourtDateForReasons(courtDate: Date): string {
 }
 
 /**
- * Build complexity triggers array based on accumulative logic.
+ * Build complexity triggers array based on button-driven logic only.
  *
- * Rules (Accumulative):
- * 1. High Alert (Data-Driven): If specialCircumstances is not empty OR financialTags is not empty OR liability > 15000 -> push 'high_alert'
- * 2. Shared Care (Data-Driven): If any child has care percentage between 35% and 65% (inclusive) -> push 'shared_care'
- * 3. Binding Agreement (Button-Driven ONLY): ONLY push 'binding_agreement' if trigger === 'binding_agreement'
- *    - Do not infer from other data
- *    - If they came via "High Alert", do not add "Binding Agreement" even if they fit the criteria
+ * All triggers are interaction-based - they reflect which card the user clicked,
+ * not background calculation states.
  *
- * @param trigger - Navigation parameter indicating entry point
- * @param specialCircumstances - Array of complexity reason IDs
- * @param financialTags - Array of financial issue tags
- * @param careData - Array of care arrangements for each child
- * @param liability - Annual liability amount as a string
- * @returns Array of active triggers, or null if empty
+ * @param trigger - Navigation parameter indicating which card was clicked
+ * @param specialCircumstances - Array of complexity reason IDs (unused, kept for API compatibility)
+ * @param financialTags - Array of financial issue tags (unused, kept for API compatibility)
+ * @param careData - Array of care arrangements for each child (unused, kept for API compatibility)
+ * @param liability - Annual liability amount as a string (unused, kept for API compatibility)
+ * @returns Array containing the clicked trigger, or null if empty
  */
 export function buildComplexityTriggers(
   trigger: string,
@@ -213,50 +209,26 @@ export function buildComplexityTriggers(
 ): string[] | null {
   const activeTriggers: string[] = [];
 
-  // Parse liability to a number
-  const liabilityAmount = parseFloat(liability) || 0;
+  // All rules are button-driven only - based on which card was clicked
 
-  // Rule 1: High Alert (Data-Driven)
-  // IF specialCircumstances is not empty OR financialTags is not empty OR liability > 15000 -> push 'high_alert'
-  if (
-    (specialCircumstances && specialCircumstances.length > 0) ||
-    financialTags.length > 0 ||
-    liabilityAmount > 15000
-  ) {
-    activeTriggers.push('high_alert');
-  }
-
-  // Rule 2: Shared Care (Data-Driven)
-  // Check if any child has care percentage between 35% and 65% (inclusive)
-  const hasSharedCare = careData.some((child) => {
-    const careAPercent = child.careA;
-    const careBPercent = child.careB;
-    return (
-      (careAPercent >= 35 && careAPercent <= 65) ||
-      (careBPercent >= 35 && careBPercent <= 65)
-    );
-  });
-
-  if (hasSharedCare) {
-    activeTriggers.push('shared_care');
-  }
-
-  // Rule 3: Binding Agreement (Button-Driven ONLY)
-  // ONLY push if the user explicitly entered via the agreement button
   if (trigger === 'binding_agreement') {
     activeTriggers.push('binding_agreement');
   }
 
-  // Rule 4: Low Assessment (Button-Driven)
-  // Push if user came via the low assessment hidden income button
   if (trigger === 'low_assessment') {
     activeTriggers.push('low_assessment');
   }
 
-  // Rule 5: Payer Reversal (Button-Driven)
-  // Push if user came via the payer reversal hidden income button
   if (trigger === 'payer_reversal') {
     activeTriggers.push('payer_reversal');
+  }
+
+  if (trigger === 'high_value_case') {
+    activeTriggers.push('high_value_case');
+  }
+
+  if (trigger === 'shared_care_dispute') {
+    activeTriggers.push('shared_care_dispute');
   }
 
   // Return null if array is empty, otherwise return the array

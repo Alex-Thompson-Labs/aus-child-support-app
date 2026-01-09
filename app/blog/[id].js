@@ -23,7 +23,12 @@ export default function BlogPost() {
     fetch(
       `https://public-api.wordpress.com/wp/v2/sites/auschildsupportbackend.wordpress.com/posts/${id}`
     )
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        return response.json();
+      })
       .then((data) => {
         setPost(data);
         setLoading(false);
