@@ -51,6 +51,17 @@ const ResultsSimpleExplanation = lazy(() =>
 );
 
 // ============================================================================
+// Event-based breakdown re-open signaling
+// Used when returning from lawyer inquiry to re-open the breakdown modal
+// ============================================================================
+import { DeviceEventEmitter } from 'react-native';
+
+export const OPEN_BREAKDOWN_EVENT = 'openBreakdownModal';
+export const triggerOpenBreakdown = () => {
+  DeviceEventEmitter.emit(OPEN_BREAKDOWN_EVENT);
+};
+
+// ============================================================================
 // Component Documentation
 // ============================================================================
 /**
@@ -185,6 +196,15 @@ export function CalculatorResults({
   resetTimestamp = 0,
 }: CalculatorResultsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  // Listen for event to re-open breakdown modal when returning from lawyer inquiry
+  React.useEffect(() => {
+    const subscription = DeviceEventEmitter.addListener(OPEN_BREAKDOWN_EVENT, () => {
+      console.log('[CalculatorResults] Received open breakdown event');
+      setIsExpanded(true);
+    });
+    return () => subscription.remove();
+  }, []);
   const insets = useSafeAreaInsets();
   const { isWeb } = useResponsive();
 
@@ -507,6 +527,7 @@ const styles = StyleSheet.create({
   expandedHeaderTitle: {
     fontSize: 18,
     fontWeight: '700', // Bold for strong typography
+    color: '#1e3a8a', // blue-900 (Dark Brand Blue)
   },
   closeButton: {
     width: 44,

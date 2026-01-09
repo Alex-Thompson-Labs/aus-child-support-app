@@ -236,6 +236,7 @@ export function SpecialCircumstancesPrompt({
               specialCircumstances: JSON.stringify(Array.from(selectedReasons)),
               priorityCircumstance:
                 getHighestPriorityReason(Array.from(selectedReasons))?.id ?? '',
+              fromBreakdown: 'true', // Track that user came from breakdown modal
             },
           });
         } catch (error) {
@@ -664,7 +665,7 @@ const styles = StyleSheet.create({
   },
   checkboxLabel: {
     fontSize: 14,
-    color: '#1a202c', // near-black
+    color: '#64748b', // Slate 500 - matches step explanation text
     lineHeight: 20,
     flex: 1,
     paddingRight: 4,

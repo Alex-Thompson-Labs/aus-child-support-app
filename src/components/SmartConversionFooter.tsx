@@ -217,6 +217,7 @@ export function SmartConversionFooter({
           preFillMessage: cardConfig.preFillMessage,
           payer: results.payer,
           specialCircumstances: JSON.stringify(formData?.selectedCircumstances ?? []),
+          fromBreakdown: 'true', // Track that user came from breakdown modal
         },
       });
 

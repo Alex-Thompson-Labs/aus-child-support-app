@@ -179,4 +179,6 @@ export interface FormHeaderProps {
   source?: string;
   /** Explicit external URL to redirect to on exit. Takes priority over source. */
   returnTo?: string;
+  /** User came from the Full Breakdown modal - navigate back there on close */
+  fromBreakdown?: boolean;
 }

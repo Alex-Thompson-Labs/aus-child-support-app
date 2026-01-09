@@ -109,6 +109,7 @@ export default function LawyerInquiryScreen() {
           config={params.inquiryConfig}
           source={params.source}
           returnTo={params.returnTo}
+          fromBreakdown={params.fromBreakdown}
         />
 
         <ScrollView

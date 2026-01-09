@@ -6,6 +6,7 @@
 
 import { useLocalSearchParams } from 'expo-router';
 import { useMemo } from 'react';
+import { Platform } from 'react-native';
 import { getInquiryConfig } from '../config';
 import type { CareDataItem, InquiryTypeConfig } from '../types';
 
@@ -59,7 +60,16 @@ export function useRouteParams(): ParsedRouteParams {
   const payer = typeof params.payer === 'string' ? params.payer : 'Neither';
 
   // Parse navigation origin (for conditional close behavior)
-  const fromBreakdown = params.fromBreakdown === 'true';
+  // Handle both string and array formats from expo-router
+  const fromBreakdownRaw = Array.isArray(params.fromBreakdown)
+    ? params.fromBreakdown[0]
+    : params.fromBreakdown;
+  const fromBreakdown = fromBreakdownRaw === 'true';
+
+  // Debug logging
+  if (__DEV__ || Platform.OS === 'web') {
+    console.log('[useRouteParams] fromBreakdown:', { raw: params.fromBreakdown, parsed: fromBreakdown });
+  }
 
   // Parse source and returnTo for external navigation (blog integration)
   const source =
@@ -159,6 +169,7 @@ export function useRouteParams(): ParsedRouteParams {
     mode,
     reason,
     payer,
+    fromBreakdown,
     source,
     returnTo,
     hasParentingPlan,
