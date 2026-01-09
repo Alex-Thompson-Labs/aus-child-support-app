@@ -673,7 +673,7 @@ const styles = StyleSheet.create({
 
   // Footer
   coaFooter: {
-    marginTop: 20,
+    marginTop: 4,
     gap: 12,
   },
   coaButton: {

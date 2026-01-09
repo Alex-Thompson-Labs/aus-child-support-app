@@ -36,7 +36,7 @@ export function AdditionalDetailsSection({
           touched.message && errors.message && formStyles.inputError,
         ]}
         placeholder="Is there anything specific you want the lawyer to know?..."
-        placeholderTextColor="#64748b"
+        placeholderTextColor="#94a3b8"
         value={message}
         onChangeText={(value) => onTextChange('message', value, setMessage)}
         onBlur={() => onBlur('message')}

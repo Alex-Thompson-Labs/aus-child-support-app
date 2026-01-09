@@ -311,13 +311,14 @@ export const circumstancesStyles = StyleSheet.create({
 // ============================================================================
 
 export const financialStyles = StyleSheet.create({
-  // Financial Section Header (Case Eligibility Check)
+  // Financial Section Header (Case Eligibility Check) - Collapsible
   financialSectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 24,
+    marginTop: 4,
     marginBottom: 16,
     gap: 8,
+    cursor: 'pointer',
   },
   financialSectionHeaderText: {
     fontSize: 14,

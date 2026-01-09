@@ -7,11 +7,29 @@
 
 import DatePickerField from '@/src/components/ui/DatePickerField';
 import { isWeb } from '@/src/utils/responsive';
-import React from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import {
+  LayoutAnimation,
+  Platform,
+  Pressable,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  UIManager,
+  View,
+} from 'react-native';
 import { FINANCIAL_TAG_OPTIONS } from '../config';
 import { financialStyles, formStyles } from '../styles';
 import type { FinancialSectionProps } from '../types';
+
+// Enable LayoutAnimation for Android
+if (
+  Platform.OS === 'android' &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 /**
  * Format currency for display
@@ -48,18 +66,38 @@ export function FinancialSection({
   onTextChange,
   onBlur,
 }: FinancialSectionProps) {
+  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+
+  const toggleSummary = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setIsSummaryOpen(!isSummaryOpen);
+  };
+
   return (
     <>
-      {/* Section Header */}
-      <View style={financialStyles.financialSectionHeader}>
+      {/* Section Header - Collapsible */}
+      <TouchableOpacity
+        onPress={toggleSummary}
+        style={financialStyles.financialSectionHeader}
+        activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: isSummaryOpen }}
+        accessibilityLabel="Case Eligibility Check section, tap to expand or collapse"
+      >
         <Text style={financialStyles.lockIcon}>🔒</Text>
         <Text style={financialStyles.financialSectionHeaderText}>
           Case Eligibility Check (Confidential)
         </Text>
-      </View>
+        <Ionicons
+          name={isSummaryOpen ? 'chevron-down' : 'chevron-forward'}
+          size={16}
+          color="#1e3a8a"
+          style={{ marginLeft: 'auto' }}
+        />
+      </TouchableOpacity>
 
-      {/* Calculation Summary OR Direct Mode Manual Inputs */}
-      {!isDirectMode ? (
+      {/* Calculation Summary OR Direct Mode Manual Inputs - Collapsible */}
+      {isSummaryOpen && (!isDirectMode ? (
         // Standard Mode: Show read-only Calculation Summary
         <View style={financialStyles.summaryCard}>
           <Text style={financialStyles.summaryTitle}>
@@ -224,7 +262,7 @@ export function FinancialSection({
             )}
           </View>
         </View>
-      )}
+      ))}
 
       {/* Financial Tags - Conditional */}
       {shouldShowFinancialTags && (

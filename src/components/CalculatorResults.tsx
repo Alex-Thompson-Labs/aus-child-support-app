@@ -17,6 +17,7 @@ import { shadowPresets } from '../utils/shadow-styles';
 import { getPayerText, ResultsHero } from './results/ResultsHero';
 import { SmartConversionFooter } from './SmartConversionFooter';
 import { SpecialCircumstancesPrompt } from './SpecialCircumstancesPrompt';
+import { LazyLoadErrorBoundary } from './ui/LazyLoadErrorBoundary';
 
 /**
  * Helper to generate income support indicator text for collapsed card
@@ -298,24 +299,26 @@ export function CalculatorResults({
         }}
       />
       {results && (
-        <Suspense
-          fallback={
-            <View style={{ padding: 20, alignItems: 'center' }}>
-              <ActivityIndicator size="large" color="#3b82f6" />
-              <Text style={{ marginTop: 10, color: '#64748b' }}>
-                Loading breakdown...
-              </Text>
-            </View>
-          }
-        >
-          <ResultsSimpleExplanation
-            results={results}
-            formState={{
-              supportA: formData?.supportA ?? false,
-              supportB: formData?.supportB ?? false,
-            }}
-          />
-        </Suspense>
+        <LazyLoadErrorBoundary>
+          <Suspense
+            fallback={
+              <View style={{ padding: 20, alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#3b82f6" />
+                <Text style={{ marginTop: 10, color: '#64748b' }}>
+                  Loading breakdown...
+                </Text>
+              </View>
+            }
+          >
+            <ResultsSimpleExplanation
+              results={results}
+              formState={{
+                supportA: formData?.supportA ?? false,
+                supportB: formData?.supportB ?? false,
+              }}
+            />
+          </Suspense>
+        </LazyLoadErrorBoundary>
       )}
 
       {/* Smart Conversion Footer - Always show at bottom of results */}
