@@ -91,6 +91,7 @@ Requirements:
 - Persist to localStorage
 - Return the partner config object
 - Auto-clear if pilot dates have passed
+- **IMPORTANT:** Do NOT import or use this hook anywhere in the codebase yet. This hook should be created but remain unused until explicitly integrated in later tasks. The calculator's appearance and functionality must remain unchanged.
 
 ### Task 2.3: Update Theme System for Partner Branding
 
@@ -102,7 +103,11 @@ Update the theme system to support dynamic partner branding colors.
 
 File: constants/theme.ts
 
-If a partner is detected (via usePartner hook), override the default tint color with the partner's primary color.
+- Add support for partner branding colors, but wrap all partner-related logic in a feature flag.
+- Create a constant: `const PARTNER_BRANDING_ENABLED = false;` at the top of the file.
+- If `PARTNER_BRANDING_ENABLED` is false, the theme system must behave exactly as it currently does - no changes to appearance or functionality.
+- Only if the flag is true AND a partner is detected (via usePartner hook), override the default tint color with the partner's primary color.
+- **IMPORTANT:** The calculator's appearance must remain completely unchanged until this flag is explicitly enabled. Do not import usePartner hook unless the flag is true.
 
 ### Task 2.4: Create Secure Lead Submission Function
 
@@ -120,6 +125,7 @@ The function should:
 - POST to Supabase edge function: /submit-lead
 - Include partner_id in payload
 - Handle success/error
+- **IMPORTANT:** Do NOT modify `src/features/lawyer-inquiry/hooks/useInquiryForm.ts` or any other file that uses lead submission. This new function should be created but remain unused. The existing `submitLead()` function from `src/utils/supabase.ts` must continue to be used. The calculator's functionality must remain completely unchanged until this new function is explicitly integrated in a later task.
 
 ### Task 2.5: Create Supabase Edge Function (Secure Routing)
 
