@@ -7,14 +7,8 @@
 
 // Re-export shared validators for convenience
 export {
-  validateName,
-  validateEmail,
-  validatePhone,
-  validateConsent,
-  sanitizeString,
   sanitizeEmail,
-  sanitizePhone,
-  VALIDATION,
+  sanitizePhone, sanitizeString, validateConsent, validateEmail, validateName, validatePhone, VALIDATION
 } from '@/src/utils/form-validation';
 
 import {
@@ -251,6 +245,18 @@ export function buildComplexityTriggers(
   // ONLY push if the user explicitly entered via the agreement button
   if (trigger === 'binding_agreement') {
     activeTriggers.push('binding_agreement');
+  }
+
+  // Rule 4: Low Assessment (Button-Driven)
+  // Push if user came via the low assessment hidden income button
+  if (trigger === 'low_assessment') {
+    activeTriggers.push('low_assessment');
+  }
+
+  // Rule 5: Payer Reversal (Button-Driven)
+  // Push if user came via the payer reversal hidden income button
+  if (trigger === 'payer_reversal') {
+    activeTriggers.push('payer_reversal');
   }
 
   // Return null if array is empty, otherwise return the array

@@ -607,27 +607,8 @@ export function useInquiryForm(props: UseInquiryFormProps) {
         setCurrentLeadId(result.leadId);
         setShowEnrichment(true);
       } else {
-        // Standard flow: show success and navigate home
+        // Standard flow: show success (no auto-redirect - user will navigate manually)
         setShowSuccess(true);
-
-        // Navigate back after delay
-        setTimeout(() => {
-          if (!isMounted.current) return;
-
-          try {
-            if (__DEV__)
-              console.log(
-                '[LawyerInquiry] Navigating home with reset trigger...'
-              );
-            router.replace({
-              pathname: '/',
-              params: { reset: 'true' },
-            });
-          } catch (error) {
-            console.error('[LawyerInquiry] Navigation error:', error);
-            router.replace('/');
-          }
-        }, 1500);
       }
     } catch (error) {
       console.error('[LawyerInquiry] Unexpected error:', error);

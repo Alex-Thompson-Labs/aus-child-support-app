@@ -6,12 +6,12 @@ import { MAX_PPS } from './child-support-constants';
  */
 export interface ZeroPaymentScenario {
   type:
-    | 'care_threshold'
-    | 'balanced_percentages'
-    | 'both_low_care'
-    | 'mar_prevented_by_care'
-    | 'zero_income'
-    | 'none';
+  | 'care_threshold'
+  | 'balanced_percentages'
+  | 'both_low_care'
+  | 'mar_prevented_by_care'
+  | 'zero_income'
+  | 'none';
   title: string;
   explanation: string;
   details?: {
@@ -72,13 +72,13 @@ export function detectZeroPaymentScenario(
     const parent = marPreventedA ? 'Parent A' : 'Parent B';
     const careDetails = marPreventedA
       ? results.childResults
-          .filter((c) => c.roundedCareA >= 14)
-          .map((c, idx) => `Child ${idx + 1}: ${c.roundedCareA}% care`)
-          .join(', ')
+        .filter((c) => c.roundedCareA >= 14)
+        .map((c, idx) => `Child ${idx + 1}: ${c.roundedCareA}% care`)
+        .join(', ')
       : results.childResults
-          .filter((c) => c.roundedCareB >= 14)
-          .map((c, idx) => `Child ${idx + 1}: ${c.roundedCareB}% care`)
-          .join(', ');
+        .filter((c) => c.roundedCareB >= 14)
+        .map((c, idx) => `Child ${idx + 1}: ${c.roundedCareB}% care`)
+        .join(', ');
 
     return {
       type: 'mar_prevented_by_care',
@@ -197,4 +197,123 @@ export function isFarLimitReached(
     parentBEligibleForFar && !child.farAppliedB && farAppliedCountB >= 3;
 
   return farLimitReachedA || farLimitReachedB;
+}
+
+/**
+ * Detects if the "Low Assessment" trigger should be shown for the user.
+ * This covers when the other parent (Parent B) is paying a fixed/minimum rate,
+ * OR when such a rate WOULD have applied but was negated by care arrangements.
+ *
+ * The user is the "Receiver" (collecting child support) and the other parent
+ * has low income that triggered or would have triggered MAR/FAR.
+ *
+ * Edge cases covered:
+ * 1. MAR is actually applied (Parent B pays MAR)
+ * 2. FAR is actually applied (Parent B pays FAR)
+ * 3. MAR would apply but is negated by ≥14% care of a child
+ * 4. FAR would apply but liability is reversed or negated by care arrangements
+ *
+ * @param results - The calculation results
+ * @param formState - Form state containing income support flags
+ * @returns Object with isLowAssessment flag and reason
+ */
+export function detectLowAssessmentTrigger(
+  results: CalculationResults,
+  formState: { supportA: boolean; supportB: boolean }
+): { isLowAssessment: boolean; reason: string } {
+  // The user is Parent A, so we check if the OTHER PARENT (Parent B) triggers low assessment
+
+  // Case 1: MAR is actually applied to Parent B (other parent paying minimum rate)
+  const hasMarAppliedB = results.childResults.some((c) => c.marAppliedB);
+  if (hasMarAppliedB && results.payer === 'Parent B') {
+    return {
+      isLowAssessment: true,
+      reason: 'Other parent is paying the Minimum Annual Rate',
+    };
+  }
+
+  // Case 2: FAR is actually applied to Parent B (other parent paying fixed rate)
+  const hasFarAppliedB = results.childResults.some((c) => c.farAppliedB);
+  if (hasFarAppliedB && results.payer === 'Parent B') {
+    return {
+      isLowAssessment: true,
+      reason: 'Other parent is paying the Fixed Annual Rate',
+    };
+  }
+
+  // Case 3: MAR WOULD apply to Parent B but is negated by ≥14% care
+  // Criteria for MAR: ATI < SSA, on income support, and <14% care of ALL children
+  // If they have ≥14% care of ANY child, MAR is prevented
+  const marWouldApplyB =
+    results.ATI_B < results.SSA && // Low income
+    formState.supportB && // On income support
+    results.childResults.some((c) => c.roundedCareB >= 14); // Has ≥14% care (preventing MAR)
+
+  // Also check that MAR was NOT actually applied (it was prevented)
+  const marPreventedByCareBCareThreshold =
+    marWouldApplyB && !results.childResults.some((c) => c.marAppliedB);
+
+  if (marPreventedByCareBCareThreshold) {
+    return {
+      isLowAssessment: true,
+      reason:
+        "Other parent's liability is $0 due to care threshold, but they have low income that would otherwise trigger a minimum rate",
+    };
+  }
+
+  // Case 4: FAR conditions exist for Parent B but liability is $0 due to care reversal
+  // FAR criteria: ATI < MAX_PPS, NOT on income support, and other parent (A) has ≥66% care
+  // But if Parent B also has ≥65% care of another child AND Parent A is not on support,
+  // then Parent A would owe FAR to Parent B, potentially reversing/negating the liability
+
+  // Check if Parent B meets FAR eligibility criteria for any child
+  const farEligibleB =
+    results.ATI_B < results.MAX_PPS && // Low income (below MAX_PPS)
+    !formState.supportB; // Not on income support
+
+  // Check if there are children where Parent A has ≥66% care (Parent B would owe FAR)
+  const childrenWhereBWouldOweFar = results.childResults.filter(
+    (c) => c.roundedCareA >= 66
+  );
+
+  // Check if there are children where Parent B has ≥65% care (Parent A might owe FAR back)
+  const childrenWhereAMightOweFar = results.childResults.filter(
+    (c) => c.roundedCareB >= 65
+  );
+
+  // If Parent B is FAR-eligible, has children where they'd owe FAR,
+  // but liability is $0 or Parent A is actually paying,
+  // this suggests FAR was reversed/negated
+  if (
+    farEligibleB &&
+    childrenWhereBWouldOweFar.length > 0 &&
+    (results.finalPaymentAmount === 0 || results.payer === 'Parent A')
+  ) {
+    // Additional check: is there a reversal scenario?
+    // Parent A must also be FAR-eligible for reversal
+    const parentAFarEligible =
+      results.ATI_A < results.MAX_PPS && !formState.supportA;
+
+    if (parentAFarEligible && childrenWhereAMightOweFar.length > 0) {
+      return {
+        isLowAssessment: true,
+        reason:
+          'Fixed rate liabilities have cancelled out due to care arrangements, but the other parent has low income',
+      };
+    }
+  }
+
+  // Case 5: Check if result uses FAR or MAR string (covers any edge case with rateApplied)
+  // AND user is receiver (Parent B is payer)
+  if (
+    results.payer === 'Parent B' &&
+    (results.rateApplied.includes('FAR') || results.rateApplied.includes('MAR'))
+  ) {
+    return {
+      isLowAssessment: true,
+      reason: 'Other parent is paying a standard formula limit rate',
+    };
+  }
+
+  return { isLowAssessment: false, reason: '' };
 }

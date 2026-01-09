@@ -1,16 +1,19 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
 import ReactGA from 'react-ga4';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { CalculationResults } from '../utils/calculator';
 import type { ComplexityFormData } from '../utils/complexity-detection';
-import { shadowPresets } from '../utils/shadow-styles';
 import { useResponsive } from '../utils/responsive';
+import { shadowPresets } from '../utils/shadow-styles';
+import { detectLowAssessmentTrigger } from '../utils/zero-payment-detection';
 
 /**
  * Card variant types for the Smart Conversion Footer
  */
 export type ConversionCardVariant =
+  | 'low_assessment'
+  | 'payer_reversal'
   | 'dispute_risk'
   | 'high_value'
   | 'binding_agreement';
@@ -32,6 +35,24 @@ interface CardConfig {
  * Card configurations for each variant
  */
 const CARD_CONFIGS: Record<ConversionCardVariant, CardConfig> = {
+  low_assessment: {
+    variant: 'low_assessment',
+    backgroundColor: '#fef3c7', // Amber-100 (warning/yellow theme)
+    headline: 'Is this amount too low?',
+    body: "A Fixed or Minimum Rate often means the other parent's real income isn't being assessed. You may be able to force a 'Change of Assessment'.",
+    buttonText: 'Check Hidden Income Eligibility',
+    complexityTrigger: 'low_assessment',
+    preFillMessage: 'I believe the other parent has hidden income or assets that should be assessed.',
+  },
+  payer_reversal: {
+    variant: 'payer_reversal',
+    backgroundColor: '#fef3c7', // Amber-100 (warning/yellow theme)
+    headline: 'Should the other parent be the payer?',
+    body: "Both you and the other parent have triggered fixed rate limits for different children. If the other parent has unreported income, they may owe you more than this assessment shows.",
+    buttonText: 'Check Hidden Income Eligibility',
+    complexityTrigger: 'payer_reversal',
+    preFillMessage: 'I am being asked to pay, but I believe the other parent has hidden income that would reverse this outcome.',
+  },
   dispute_risk: {
     variant: 'dispute_risk',
     backgroundColor: '#fff8e1', // Light amber tint (subtle alert background)
@@ -64,15 +85,45 @@ const CARD_CONFIGS: Record<ConversionCardVariant, CardConfig> = {
 /**
  * Determines which card variant to show based on priority logic (waterfall)
  *
- * Priority 1: Dispute Risk - If care percentage is between 35% and 65%
- * Priority 2: High Value - If annual liability > $15,000
- * Priority 3: Binding Agreement - Default fallback
+ * Priority 1: Low Assessment - User is Receiver AND (result is MAR/FAR OR would be but negated by care)
+ * Priority 2: Dispute Risk - If care percentage is between 35% and 65%
+ * Priority 3: High Value - If annual liability > $15,000
+ * Priority 4: Binding Agreement - Default fallback
  */
 export function determineCardVariant(
   results: CalculationResults,
-  carePercentages: number[]
+  carePercentages: number[],
+  formState?: { supportA: boolean; supportB: boolean }
 ): ConversionCardVariant {
-  // Priority 1: Check for shared care dispute (35-65% care for any child)
+  // Priority 0.5: Check for FAR reversal FIRST - User is PAYER due to both parents having FAR
+  // This must come before low_assessment check to avoid false positives
+  // When both parents have FAR applied and user ends up paying, show payer_reversal variant
+  const userIsPayer = results.payer === 'Parent A';
+  const bothHaveFar = results.FAR_A > 0 && results.FAR_B > 0;
+  const isFarBoth = results.rateApplied.includes('FAR') && results.rateApplied.includes('Both');
+
+  if (userIsPayer && (bothHaveFar || isFarBoth)) {
+    return 'payer_reversal';
+  }
+
+  // Priority 1: Check for Low Assessment trigger using comprehensive detection
+  // This covers edge cases where MAR/FAR is negated by care arrangements
+  if (formState) {
+    const { isLowAssessment } = detectLowAssessmentTrigger(results, formState);
+    if (isLowAssessment) {
+      return 'low_assessment';
+    }
+  } else {
+    // Fallback to simple check if formState not provided
+    const userIsReceiver = results.payer === 'Parent B';
+    const isFarOrMar =
+      results.rateApplied.includes('FAR') || results.rateApplied.includes('MAR');
+    if (userIsReceiver && isFarOrMar) {
+      return 'low_assessment';
+    }
+  }
+
+  // Priority 2: Check for shared care dispute (35-65% care for any child)
   const hasSharedCareDispute = carePercentages.some(
     (percentage) => percentage >= 35 && percentage <= 65
   );
@@ -81,12 +132,12 @@ export function determineCardVariant(
     return 'dispute_risk';
   }
 
-  // Priority 2: Check for high value case (annual liability > $15,000)
+  // Priority 3: Check for high value case (annual liability > $15,000)
   if (results.finalPaymentAmount > 15000) {
     return 'high_value';
   }
 
-  // Priority 3: Default to binding agreement
+  // Priority 4: Default to binding agreement
   return 'binding_agreement';
 }
 
@@ -117,8 +168,11 @@ export function SmartConversionFooter({
   const { isWeb } = useResponsive();
   const [isNavigating, setIsNavigating] = React.useState(false);
 
-  // Determine which card to show
-  const cardVariant = determineCardVariant(results, carePercentages);
+  // Determine which card to show, passing formState for comprehensive edge case detection
+  const formState = formData
+    ? { supportA: formData.supportA ?? false, supportB: formData.supportB ?? false }
+    : undefined;
+  const cardVariant = determineCardVariant(results, carePercentages, formState);
   const cardConfig = CARD_CONFIGS[cardVariant];
 
   /**
@@ -179,6 +233,8 @@ export function SmartConversionFooter({
     onBeforeNavigate,
   ]);
 
+  // Determine if this is a low assessment variant (low_assessment or payer_reversal - both use amber styling)
+  const isLowAssessment = cardVariant === 'low_assessment' || cardVariant === 'payer_reversal';
   // Determine if this is the subtle alert variant (dispute_risk)
   const isSubtleAlert = cardVariant === 'dispute_risk';
   // Determine if this is the professional document variant (binding_agreement)
@@ -193,6 +249,7 @@ export function SmartConversionFooter({
         style={({ pressed }) => [
           styles.card,
           { backgroundColor: cardConfig.backgroundColor },
+          isLowAssessment && styles.lowAssessmentBorder,
           isSubtleAlert && styles.subtleAlertBorder,
           isProfessionalDoc && styles.professionalDocBorder,
           isHighValue && styles.highValueBorder,
@@ -208,6 +265,7 @@ export function SmartConversionFooter({
             <Text
               style={[
                 styles.headline,
+                isLowAssessment && styles.headlineLowAssessment,
                 isSubtleAlert && styles.headlineDark,
                 isProfessionalDoc && styles.headlineProfessional,
                 isHighValue && styles.headlineHighValue,
@@ -218,6 +276,7 @@ export function SmartConversionFooter({
             <Text
               style={[
                 styles.body,
+                isLowAssessment && styles.bodyLowAssessment,
                 isSubtleAlert && styles.bodyDark,
                 isProfessionalDoc && styles.bodyProfessional,
                 isHighValue && styles.bodyHighValue,
@@ -231,6 +290,7 @@ export function SmartConversionFooter({
           <View
             style={[
               styles.button,
+              isLowAssessment && styles.buttonLowAssessment,
               isSubtleAlert && styles.buttonSolid,
               isProfessionalDoc && styles.buttonProfessional,
               isHighValue && styles.buttonHighValue,
@@ -239,8 +299,9 @@ export function SmartConversionFooter({
             <Text
               style={[
                 styles.buttonText,
-                isSubtleAlert && styles.buttonTextSolid,
+                isLowAssessment && styles.buttonTextLowAssessment,
                 isProfessionalDoc && styles.buttonTextProfessional,
+                isSubtleAlert && styles.buttonTextSolid,
                 isHighValue && styles.buttonTextHighValue,
               ]}
             >
@@ -249,6 +310,7 @@ export function SmartConversionFooter({
             <Text
               style={[
                 styles.buttonArrow,
+                isLowAssessment && styles.buttonTextLowAssessment,
                 isSubtleAlert && styles.buttonTextSolid,
                 isProfessionalDoc && styles.buttonTextProfessional,
                 isHighValue && styles.buttonTextHighValue,
@@ -323,6 +385,25 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#ffffff',
     fontWeight: '600',
+  },
+  // Low Assessment Variant Styles (for low_assessment)
+  lowAssessmentBorder: {
+    borderWidth: 1,
+    borderColor: '#f59e0b', // Amber-500 border
+  },
+  headlineLowAssessment: {
+    color: '#92400e', // Amber-800 for headline
+  },
+  bodyLowAssessment: {
+    color: '#78350f', // Amber-900 for body text
+    opacity: 1,
+  },
+  buttonLowAssessment: {
+    backgroundColor: '#f59e0b', // Amber-500 solid button
+    borderColor: '#f59e0b',
+  },
+  buttonTextLowAssessment: {
+    color: '#ffffff', // White text on amber button
   },
   // Subtle Alert Variant Styles (for dispute_risk)
   subtleAlertBorder: {

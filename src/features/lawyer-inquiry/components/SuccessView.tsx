@@ -1,15 +1,48 @@
 /**
  * Success View Component
  *
- * Displays a success message after form submission.
+ * Displays a success message after form submission with manual navigation buttons.
  */
 
-import React from 'react';
-import { Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import React, { useCallback } from 'react';
+import { Linking, Platform, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { successStyles } from '../styles';
 
-export function SuccessView() {
+interface SuccessViewProps {
+  returnTo?: string;
+}
+
+export function SuccessView({ returnTo }: SuccessViewProps) {
+  const router = useRouter();
+
+  const handleReturnToCalculator = useCallback(() => {
+    try {
+      router.replace({
+        pathname: '/',
+        params: { reset: 'true' },
+      });
+    } catch (error) {
+      console.error('[SuccessView] Navigation error:', error);
+      router.replace('/');
+    }
+  }, [router]);
+
+  const handleReturnToBlog = useCallback(() => {
+    if (!returnTo) return;
+
+    if (Platform.OS === 'web') {
+      // On web, use window.location for external URLs
+      window.location.href = returnTo;
+    } else {
+      // On native, use Linking for external URLs
+      Linking.openURL(returnTo).catch((error) => {
+        console.error('[SuccessView] Failed to open URL:', error);
+      });
+    }
+  }, [returnTo]);
+
   return (
     <SafeAreaView style={successStyles.successContainer}>
       <View style={successStyles.successContent}>
@@ -19,6 +52,34 @@ export function SuccessView() {
           Your inquiry has been submitted.{'\n'}You can expect a call or email
           within the next 1-2 business days.
         </Text>
+
+        <View style={successStyles.successButtonsContainer}>
+          <Pressable
+            style={({ pressed }) => [
+              successStyles.successButton,
+              pressed && successStyles.successButtonPressed,
+            ]}
+            onPress={handleReturnToCalculator}
+          >
+            <Text style={successStyles.successButtonText}>
+              Return to Calculator
+            </Text>
+          </Pressable>
+
+          {returnTo && (
+            <Pressable
+              style={({ pressed }) => [
+                successStyles.successButtonSecondary,
+                pressed && successStyles.successButtonSecondaryPressed,
+              ]}
+              onPress={handleReturnToBlog}
+            >
+              <Text style={successStyles.successButtonSecondaryText}>
+                Return to Blog
+              </Text>
+            </Pressable>
+          )}
+        </View>
       </View>
     </SafeAreaView>
   );

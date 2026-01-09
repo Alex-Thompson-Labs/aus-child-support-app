@@ -3,7 +3,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import { theme } from '../../theme';
 import type { CalculationResults } from '../../utils/calculator';
 import { formatCurrency } from '../../utils/formatters';
-import { isFarLimitReached } from '../../utils/zero-payment-detection';
+import {
+    detectLowAssessmentTrigger,
+    isFarLimitReached,
+} from '../../utils/zero-payment-detection';
 
 export interface AnnualRateBreakdownProps {
     results: CalculationResults;
@@ -36,6 +39,9 @@ export function AnnualRateBreakdown({
         const payingParentColor = theme.colors.textMuted;
         const totalMarAmount = results.finalPaymentAmount;
 
+        // Use comprehensive detection for low assessment warning
+        const { isLowAssessment } = detectLowAssessmentTrigger(results, formState);
+
         return (
             <View style={styles.perChildGapBreakdown}>
                 <View style={styles.perChildGapRow}>
@@ -51,6 +57,18 @@ export function AnnualRateBreakdown({
                         {formatCurrency(totalMarAmount)}
                     </Text>
                 </View>
+                {isLowAssessment && (
+                    <View style={styles.warningAlert}>
+                        <Text style={styles.warningTitle}>
+                            ⚠️ Standard Formula Limit Detected
+                        </Text>
+                        <Text style={styles.warningText}>
+                            This result is based on a default minimum or fixed rate. If
+                            the paying parent has lifestyle assets or hidden income, this
+                            figure may be incorrect.
+                        </Text>
+                    </View>
+                )}
                 <View style={styles.perChildGapDivider} />
             </View>
         );
@@ -71,6 +89,9 @@ export function AnnualRateBreakdown({
             ? 'FAR limit reached'
             : 'No payment required';
 
+        // Check if low assessment trigger applies (edge case: MAR/FAR negated by care)
+        const { isLowAssessment } = detectLowAssessmentTrigger(results, formState);
+
         return (
             <View style={styles.perChildGapBreakdown}>
                 <View style={styles.perChildGapRow}>
@@ -82,6 +103,19 @@ export function AnnualRateBreakdown({
                         $0
                     </Text>
                 </View>
+                {isLowAssessment && (
+                    <View style={styles.warningAlert}>
+                        <Text style={styles.warningTitle}>
+                            ⚠️ Standard Formula Limit Detected
+                        </Text>
+                        <Text style={styles.warningText}>
+                            The other parent has low income that would trigger a minimum
+                            or fixed rate, but care arrangements have reduced their
+                            liability to $0. Hidden income or assets may mean this
+                            figure is incorrect.
+                        </Text>
+                    </View>
+                )}
                 <View style={styles.perChildGapDivider} />
             </View>
         );
@@ -159,6 +193,27 @@ export function AnnualRateBreakdown({
                     </View>
                 );
             })}
+
+            {/* Warning for FAR/MAR when user is receiver (including edge cases) */}
+            {(() => {
+                // Use comprehensive detection for low assessment trigger
+                const { isLowAssessment } = detectLowAssessmentTrigger(results, formState);
+                if (isLowAssessment) {
+                    return (
+                        <View style={styles.warningAlert}>
+                            <Text style={styles.warningTitle}>
+                                ⚠️ Standard Formula Limit Detected
+                            </Text>
+                            <Text style={styles.warningText}>
+                                This result is based on a default minimum or fixed rate.
+                                If the paying parent has lifestyle assets or hidden
+                                income, this figure may be incorrect.
+                            </Text>
+                        </View>
+                    );
+                }
+                return null;
+            })()}
             <View style={styles.perChildGapDivider} />
 
             {/* Total Annual Liability */}
@@ -207,6 +262,25 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: theme.colors.border,
         marginTop: 4,
+    },
+    warningAlert: {
+        backgroundColor: '#fef3c7', // Amber-100
+        borderWidth: 1,
+        borderColor: '#f59e0b', // Amber-500
+        borderRadius: 8,
+        padding: 12,
+        marginTop: 8,
+    },
+    warningTitle: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#92400e', // Amber-800
+        marginBottom: 4,
+    },
+    warningText: {
+        fontSize: 12,
+        color: '#78350f', // Amber-900
+        lineHeight: 18,
     },
 });
 

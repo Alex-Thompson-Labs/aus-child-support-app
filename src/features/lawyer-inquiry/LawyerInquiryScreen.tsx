@@ -59,7 +59,7 @@ export default function LawyerInquiryScreen() {
 
   // Render Success View
   if (form.showSuccess) {
-    return <SuccessView />;
+    return <SuccessView returnTo={params.returnTo} />;
   }
 
   // Render Enrichment View
