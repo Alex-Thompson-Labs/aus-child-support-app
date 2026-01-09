@@ -167,18 +167,18 @@ export function AnnualRateBreakdown({
 
                 return (
                     <View key={index} style={styles.perChildGapRow}>
-                        <Text style={[styles.perChildGapLabel, showForParentA && { color: theme.colors.userHighlight }]}>
+                        <Text style={[styles.perChildGapLabel, { fontWeight: '700' }, showForParentA && { color: theme.colors.userHighlight }]}>
                             {farApplied ? (
                                 <>
                                     Child {index + 1} -{' '}
-                                    <Text style={{ color: payingParentColor }}>
+                                    <Text style={{ color: payingParentColor, fontWeight: '700' }}>
                                         Fixed annual rate
                                     </Text>
                                 </>
                             ) : (
                                 <>
                                     Child {index + 1} -{' '}
-                                    <Text style={{ color: payingParentColor }}>
+                                    <Text style={{ color: payingParentColor, fontWeight: '700' }}>
                                         ({formatPercent2dp(gapPercentage)})
                                     </Text>{' '}
                                     × {formatCurrency2dp(child.costPerChild)}
@@ -186,7 +186,7 @@ export function AnnualRateBreakdown({
                             )}
                         </Text>
                         <Text
-                            style={[styles.perChildGapValue, { color: payingParentColor }]}
+                            style={[styles.perChildGapValue, { color: payingParentColor, fontWeight: '700' }]}
                         >
                             {formatCurrency2dp(liability)}
                         </Text>
@@ -218,7 +218,7 @@ export function AnnualRateBreakdown({
 
             {/* Total Annual Liability */}
             <View style={styles.perChildGapRow}>
-                <Text style={[styles.perChildGapLabel, { fontWeight: '700' }]}>
+                <Text style={[styles.perChildGapLabel, { fontWeight: '600', color: '#0f172a' }]}>
                     Total Annual Liability
                 </Text>
                 <Text

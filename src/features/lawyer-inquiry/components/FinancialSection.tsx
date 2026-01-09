@@ -66,7 +66,7 @@ export function FinancialSection({
             Your Calculation Summary
           </Text>
           <View style={financialStyles.summaryRow}>
-            <Text style={financialStyles.summaryLabel}>Annual Liability:</Text>
+            <Text style={financialStyles.summaryLabelBold}>Annual Liability:</Text>
             <Text style={financialStyles.summaryAmount}>
               {formatCurrency(liability)}/year
             </Text>

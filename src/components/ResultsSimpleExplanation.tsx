@@ -65,14 +65,13 @@ export function ResultsSimpleExplanation({
           <View style={styles.deductionCards}>
             {/* Parent A - Using Wrapper Pattern */}
             <ParentComparisonCard title="YOU" isUserHighlighted>
-              <View style={styles.deductionRow}>
+              <View style={[styles.deductionRow, { marginBottom: 4 }]}>
                 <Text style={styles.deductionLabel}>
                   Adjusted taxable income
                 </Text>
                 <Text
                   style={[
-                    styles.deductionValue,
-                    results.ATI_A === 0 && { color: '#64748b' },
+                    styles.deductionLabel,
                   ]}
                 >
                   {formatCurrency(results.ATI_A)}
@@ -80,14 +79,14 @@ export function ResultsSimpleExplanation({
               </View>
               <View style={styles.deductionRow}>
                 <Text style={styles.deductionLabel}>Self-support amount</Text>
-                <Text style={styles.deductionValueNegative}>
+                <Text style={styles.deductionLabel}>
                   ({formatCurrency(results.SSA)})
                 </Text>
               </View>
               {results.relDepDeductibleA > 0 && (
                 <View style={styles.deductionRow}>
                   <Text style={styles.deductionLabel}>Rel dep allowance</Text>
-                  <Text style={styles.deductionValueNegative}>
+                  <Text style={styles.deductionLabel}>
                     ({formatCurrency(results.relDepDeductibleA)})
                   </Text>
                 </View>
@@ -115,14 +114,14 @@ export function ResultsSimpleExplanation({
 
             {/* Parent B - Using Wrapper Pattern */}
             <ParentComparisonCard title="OTHER PARENT">
-              <View style={styles.deductionRow}>
+              <View style={[styles.deductionRow, { marginBottom: 4 }]}>
                 <Text style={styles.deductionLabel}>
                   Adjusted taxable income
                 </Text>
                 <Text
                   style={[
                     styles.deductionValue,
-                    results.ATI_B === 0 && { color: '#64748b' },
+                    { color: theme.colors.textMuted },
                   ]}
                 >
                   {formatCurrency(results.ATI_B)}
@@ -144,8 +143,8 @@ export function ResultsSimpleExplanation({
               )}
               <View style={styles.deductionDivider} />
               <View style={styles.deductionRow}>
-                <Text style={[styles.deductionLabel, { color: theme.colors.textMuted }]}>Child Support Income</Text>
-                <Text style={[styles.deductionValue, { color: theme.colors.textMuted }]}>
+                <Text style={[styles.deductionTotalLabel, { color: theme.colors.textMuted }]}>Child Support Income</Text>
+                <Text style={[styles.deductionTotalValue, { color: theme.colors.textMuted }]}>
                   {formatCurrency(Math.max(0, results.CSI_B))}
                 </Text>
               </View>
@@ -176,7 +175,7 @@ export function ResultsSimpleExplanation({
               <Text
                 style={[
                   styles.combinedIncomeLabel,
-                  { color: theme.colors.userHighlight },
+                  { color: theme.colors.userHighlight, fontWeight: '700' },
                 ]}
               >
                 Your CS Income
@@ -184,22 +183,22 @@ export function ResultsSimpleExplanation({
               <Text
                 style={[
                   styles.combinedIncomeValue,
-                  { color: theme.colors.userHighlight },
+                  { color: theme.colors.userHighlight, fontWeight: '700' },
                 ]}
               >
                 {formatCurrency(Math.max(0, results.CSI_A))}
               </Text>
             </View>
             <View style={styles.combinedIncomeRow}>
-              <Text style={[styles.combinedIncomeLabel, { color: theme.colors.textMuted }]}>
+              <Text style={[styles.combinedIncomeLabel, { color: theme.colors.textMuted, fontWeight: '700' }]}>
                 Other Parent&apos;s CS Income
               </Text>
-              <Text style={[styles.combinedIncomeValue, { color: theme.colors.textMuted }]}>
+              <Text style={[styles.combinedIncomeValue, { color: theme.colors.textMuted, fontWeight: '700' }]}>
                 {formatCurrency(Math.max(0, results.CSI_B))}
               </Text>
             </View>
             <View style={styles.combinedIncomeDivider} />
-            <View style={styles.combinedIncomeRow}>
+            <View style={[styles.combinedIncomeRow, { paddingTop: 2, paddingBottom: 0 }]}>
               <Text style={styles.combinedIncomeTotalLabel}>
                 Combined CS Income
               </Text>
@@ -249,8 +248,8 @@ export function ResultsSimpleExplanation({
 
           <View style={styles.incomeComparison}>
             <Text style={styles.careHeaderLabel}>
-              <Text style={{ color: theme.colors.userHighlight }}>YOU</Text> -{' '}
-              <Text style={{ color: theme.colors.userHighlight }}>
+              <Text style={{ color: theme.colors.userHighlight, fontWeight: '700' }}>YOU</Text> -{' '}
+              <Text style={{ color: theme.colors.userHighlight, fontWeight: '700' }}>
                 {formatPercent2dp(results.incomePercA)}
               </Text>
             </Text>
@@ -261,8 +260,8 @@ export function ResultsSimpleExplanation({
             />
 
             <Text style={[styles.careHeaderLabel, { textAlign: 'right' }]}>
-              <Text style={{ color: theme.colors.textMuted }}>OTHER PARENT</Text> -{' '}
-              <Text style={{ color: theme.colors.textMuted }}>
+              <Text style={{ color: theme.colors.textMuted, fontWeight: '700' }}>OTHER PARENT</Text> -{' '}
+              <Text style={{ color: theme.colors.textMuted, fontWeight: '700' }}>
                 {formatPercent2dp(results.incomePercB)}
               </Text>
             </Text>
@@ -305,8 +304,8 @@ export function ResultsSimpleExplanation({
 
             <View style={styles.careComparison}>
               <Text style={styles.careHeaderLabel}>
-                <Text style={{ color: theme.colors.userHighlight }}>YOU</Text> -{' '}
-                <Text style={{ color: theme.colors.userHighlight }}>
+                <Text style={{ color: theme.colors.userHighlight, fontWeight: '700' }}>YOU</Text> -{' '}
+                <Text style={{ color: theme.colors.userHighlight, fontWeight: '700' }}>
                   {formatPercent2dp(child.roundedCareA)}
                 </Text>
               </Text>
@@ -317,22 +316,11 @@ export function ResultsSimpleExplanation({
               />
 
               <Text style={[styles.careHeaderLabel, { textAlign: 'right' }]}>
-                <Text style={{ color: theme.colors.textMuted }}>OTHER PARENT</Text> -{' '}
-                <Text style={{ color: theme.colors.textMuted }}>
+                <Text style={{ color: theme.colors.textMuted, fontWeight: '700' }}>OTHER PARENT</Text> -{' '}
+                <Text style={{ color: theme.colors.textMuted, fontWeight: '700' }}>
                   {formatPercent2dp(child.roundedCareB)}
                 </Text>
               </Text>
-
-              {/* Divider line for additional children */}
-              {index > 0 && (
-                <View
-                  style={{
-                    height: 1,
-                    backgroundColor: '#334155',
-                    marginTop: 16,
-                  }}
-                />
-              )}
             </View>
           </>
         </BreakdownStepCard>
@@ -418,7 +406,7 @@ export function ResultsSimpleExplanation({
             <View
               style={[
                 styles.careConversion,
-                { marginTop: index === 0 ? 12 : 16, padding: 12 },
+                { marginTop: index === 0 ? 12 : 4, padding: 12 },
               ]}
             >
               <View style={styles.conversionCards}>
@@ -550,8 +538,8 @@ export function ResultsSimpleExplanation({
 
               <View style={styles.bracketFormula}>
                 <View style={styles.bracketRow}>
-                  <Text style={styles.bracketLabel}>Base amount</Text>
-                  <Text style={styles.bracketValue}>
+                  <Text style={styles.bracketTitle}>Base amount</Text>
+                  <Text style={styles.bracketTitle}>
                     {formatCurrency(results.costBracketInfo.fixed)}
                   </Text>
                 </View>
@@ -581,10 +569,10 @@ export function ResultsSimpleExplanation({
                 </View>
                 {results.childResults.length > 0 && (
                   <View style={styles.bracketRow}>
-                    <Text style={styles.bracketLabel}>
+                    <Text style={styles.bracketTitle}>
                       Cost per child ({results.childResults.length})
                     </Text>
-                    <Text style={styles.bracketValue}>
+                    <Text style={styles.bracketTitle}>
                       {formatCurrency2dp(
                         results.totalCost / results.childResults.length
                       )}
@@ -609,12 +597,9 @@ export function ResultsSimpleExplanation({
         <>
           <Text style={styles.stepExplanation}>
             The final annual liability is calculated by multiplying the Child
-            Support Percentage <Text style={{ color: '#3b82f6' }}>(</Text>
-            <Text style={{ fontWeight: '600', color: '#3b82f6' }}>STEP 6</Text>
-            <Text style={{ color: '#3b82f6' }}>)</Text> by the total Cost of the
-            Child <Text style={{ color: '#3b82f6' }}>(</Text>
-            <Text style={{ fontWeight: '600', color: '#3b82f6' }}>STEP 7</Text>
-            <Text style={{ color: '#3b82f6' }}>)</Text>.
+            Support Percentage (
+            <Text style={{ fontWeight: '600' }}>STEP 6</Text>) by the total Cost
+            of the Child (<Text style={{ fontWeight: '600' }}>STEP 7</Text>).
           </Text>
 
           {/* Per-child payment breakdown */}
@@ -648,7 +633,7 @@ const styles = StyleSheet.create({
   // Deduction breakdown cards
   deductionCards: {
     gap: 10,
-    marginBottom: 16,
+    marginBottom: 8,
   },
   deductionRow: {
     flexDirection: 'row',
@@ -713,7 +698,7 @@ const styles = StyleSheet.create({
   combinedIncomeDivider: {
     height: 1,
     backgroundColor: '#e2e8f0', // Slate 200
-    marginVertical: 6,
+    marginVertical: 4,
   },
   combinedIncomeTotalLabel: {
     fontSize: 14,

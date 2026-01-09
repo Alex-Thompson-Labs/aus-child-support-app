@@ -76,7 +76,7 @@ export function GapAnalysisCard({
             <Text style={[styles.gapCardTitle, highlightColor && { color: highlightColor }]}>{label}</Text>
             <View style={styles.gapCardRow}>
                 <Text style={styles.gapCardLabel}>Income %</Text>
-                <Text style={styles.gapCardValue}>{formatPercent(incomePercent)}</Text>
+                <Text style={[styles.gapCardValue, { color: theme.colors.textMuted }]}>{formatPercent(incomePercent)}</Text>
             </View>
             <View style={styles.gapCardRow}>
                 <Text style={styles.gapCardLabel}>Cost %</Text>
@@ -85,12 +85,13 @@ export function GapAnalysisCard({
                 </Text>
             </View>
             <View style={styles.gapCardDivider} />
-            <View style={styles.gapCardRow}>
+            <View style={[styles.gapCardRow, { marginBottom: 0 }]}>
                 <Text style={[styles.gapCardLabel, styles.gapCardLabelBold, highlightColor && { color: highlightColor }]}>CS %</Text>
                 <Text
                     style={[
                         styles.gapCardValue,
                         csPercent > 0 && !otherParentHasFixedRate && isUserHighlighted && styles.gapCardValueHighlight,
+                        csPercent > 0 && !otherParentHasFixedRate && !isUserHighlighted && { fontWeight: '700', fontSize: 16 },
                         highlightColor && { color: highlightColor },
                     ]}
                 >
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
     },
     gapCardTitle: {
         fontSize: 11,
-        fontWeight: '600',
+        fontWeight: '700',
         textTransform: 'uppercase',
         letterSpacing: 0.5,
         marginBottom: 10,
@@ -135,7 +136,7 @@ const styles = StyleSheet.create({
         paddingRight: 4,
     },
     gapCardLabelBold: {
-        fontWeight: '600',
+        fontWeight: '700',
         color: theme.colors.textPrimary,
     },
     gapCardValue: {

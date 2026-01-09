@@ -328,7 +328,6 @@ export function SmartConversionFooter({
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 24,
     marginBottom: 16,
     paddingHorizontal: 16,
   },
@@ -449,7 +448,7 @@ const styles = StyleSheet.create({
     borderColor: '#3b82f6', // Solid brand blue border (blue-500)
   },
   headlineHighValue: {
-    color: '#111827', // Dark authoritative color (gray-900)
+    color: '#1e3a8a', // blue-900 (matches step breakdown card headings)
   },
   bodyHighValue: {
     color: '#374151', // High readability body text (gray-700)

@@ -64,7 +64,7 @@ export const headerStyles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#0f172a', // slate-900 (Dark Navy)
+    color: '#1e3a8a', // blue-900
   },
   headerSubtitle: {
     fontSize: 14,
@@ -127,7 +127,7 @@ export const formStyles = StyleSheet.create({
   formTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0f172a', // slate-900 (Dark Navy)
+    color: '#1e3a8a', // blue-900
     marginBottom: 16,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -273,7 +273,7 @@ export const buttonStyles = StyleSheet.create({
 
 export const circumstancesStyles = StyleSheet.create({
   specialCircumstancesSection: {
-    marginBottom: 24,
+    marginBottom: 12,
   },
   specialCircumstanceCard: {
     backgroundColor: '#eff6ff', // Blue-50 - very light blue
@@ -322,7 +322,7 @@ export const financialStyles = StyleSheet.create({
   financialSectionHeaderText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0f172a', // slate-900 (Dark Navy)
+    color: '#1e3a8a', // blue-900
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -355,8 +355,8 @@ export const financialStyles = StyleSheet.create({
   },
   summaryTitle: {
     fontSize: 14,
-    fontWeight: '700',
-    color: '#0f172a', // slate-900 (Dark Navy)
+    fontWeight: '600',
+    color: '#4a5568', // dark grey (matches Care Arrangement)
     marginBottom: 16,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -370,6 +370,11 @@ export const financialStyles = StyleSheet.create({
   summaryLabel: {
     fontSize: 14,
     color: '#6b7280', // grey-500
+  },
+  summaryLabelBold: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#4a5568', // dark grey (matches Care Arrangement)
   },
   summaryAmount: {
     fontSize: 18,

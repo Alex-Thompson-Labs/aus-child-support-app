@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     },
     incomePercentageCardTitle: {
         fontSize: 12,
-        fontWeight: '600',
+        fontWeight: '700',
         color: theme.colors.textSecondary,
         textTransform: 'uppercase',
         letterSpacing: 0.5,
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     incomePercentageFormula: {
         fontSize: 13,
         color: theme.colors.textPrimary,
-        fontWeight: '500',
+        fontWeight: '700',
         textAlign: 'center',
     },
 
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     },
     deductionCardTitle: {
         fontSize: 12,
-        fontWeight: '600',
+        fontWeight: '700',
         color: theme.colors.textSecondary,
         textTransform: 'uppercase',
         letterSpacing: 0.5,
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     },
     conversionCardLabel: {
         fontSize: 10,
-        fontWeight: '600',
+        fontWeight: '700',
         color: theme.colors.textSecondary,
         textTransform: 'uppercase',
         letterSpacing: 0.5,

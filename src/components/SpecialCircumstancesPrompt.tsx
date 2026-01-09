@@ -665,7 +665,7 @@ const styles = StyleSheet.create({
   },
   checkboxLabel: {
     fontSize: 14,
-    color: '#64748b', // Slate 500 - matches step explanation text
+    color: '#475569', // slate-600 - matches description text
     lineHeight: 20,
     flex: 1,
     paddingRight: 4,
