@@ -188,7 +188,7 @@ export function RelevantDependentsPopover({
               accessibilityRole={'group' as any} // Web-only ARIA role
               accessibilityLabel="Your Dependents"
             >
-              <Text style={popoverStyles.drawerParentLabel}>YOU</Text>
+              <Text style={popoverStyles.drawerParentLabelYou}>YOU</Text>
               <View style={popoverStyles.drawerAgeInputs}>
                 <View style={popoverStyles.drawerAgeGroup}>
                   <Text style={popoverStyles.drawerAgeLabel}>&lt;13</Text>
@@ -232,7 +232,7 @@ export function RelevantDependentsPopover({
               accessibilityRole={'group' as any} // Web-only ARIA role
               accessibilityLabel="Other Parent's Dependents"
             >
-              <Text style={popoverStyles.drawerParentLabel}>OTHER PARENT</Text>
+              <Text style={popoverStyles.drawerParentLabelOther}>OTHER PARENT</Text>
               <View style={popoverStyles.drawerAgeInputs}>
                 <View style={popoverStyles.drawerAgeGroup}>
                   <Text style={popoverStyles.drawerAgeLabel}>&lt;13</Text>
@@ -374,7 +374,14 @@ const popoverStyles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
-  drawerParentLabel: {
+  drawerParentLabelYou: {
+    fontSize: 11,
+    fontWeight: '700', // Increased from 600 for better visibility
+    color: '#3b82f6', // blue-500 (User Highlight) - matches "YOUR INCOME"
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  drawerParentLabelOther: {
     fontSize: 11,
     fontWeight: '700', // Increased from 600 for better visibility
     color: '#475569', // slate-600 - better contrast (6.7:1)
