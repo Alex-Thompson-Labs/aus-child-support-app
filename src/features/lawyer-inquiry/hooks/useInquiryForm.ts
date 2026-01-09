@@ -131,6 +131,12 @@ export function useInquiryForm(props: UseInquiryFormProps) {
   // Capture mount timestamp for time_to_submit calculation
   const mountTimeRef = useRef<number>(Date.now());
 
+  // Determine if conditional fields should be shown (must be defined before validCircumstances)
+  const shouldShowCourtDate = useMemo(
+    () => (props.specialCircumstances || []).some((id) => isCourtDateReason(id)),
+    [props.specialCircumstances]
+  );
+
   // Get valid Special Circumstances for display, sorted by priority
   const validCircumstances = useMemo(() => {
     const circumstances = (props.specialCircumstances || [])
@@ -152,33 +158,41 @@ export function useInquiryForm(props: UseInquiryFormProps) {
           reason !== null
       );
 
-    // Add dynamic court date card if date is selected
-    if (courtDate && shouldShowCourtDate) {
-      const formatted = courtDate.toLocaleDateString('en-AU', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-      });
-      circumstances.push({
-        id: 'court_date_dynamic',
-        label: `I have an upcoming court hearing regarding child support. (${formatted})`,
-        description: 'Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance.',
-        category: 'urgent' as const,
-        priority: 1,
-        officialCodes: ['5.2.11'] as const,
-        urgency: 'URGENT' as const,
-      });
+    // Add dynamic court date card if court date field should be shown
+    if (shouldShowCourtDate) {
+      if (courtDate) {
+        // If date is selected, show with formatted date
+        const formatted = courtDate.toLocaleDateString('en-AU', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        });
+        circumstances.push({
+          id: 'court_date_dynamic',
+          label: `I have an upcoming court hearing regarding child support. (${formatted})`,
+          description: 'Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance.',
+          category: 'urgent' as const,
+          priority: 1,
+          officialCodes: ['5.2.11'] as const,
+          urgency: 'URGENT' as const,
+        });
+      } else {
+        // If no date selected yet, show without date
+        circumstances.push({
+          id: 'court_date_dynamic',
+          label: 'I have an upcoming court hearing regarding child support.',
+          description: 'Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance.',
+          category: 'urgent' as const,
+          priority: 1,
+          officialCodes: ['5.2.11'] as const,
+          urgency: 'URGENT' as const,
+        });
+      }
     }
 
     // Sort by priority
     return circumstances.sort((a, b) => a.priority - b.priority);
   }, [props.specialCircumstances, courtDate, shouldShowCourtDate]);
-
-  // Determine if conditional fields should be shown
-  const shouldShowCourtDate = useMemo(
-    () => (props.specialCircumstances || []).some((id) => isCourtDateReason(id)),
-    [props.specialCircumstances]
-  );
 
   const shouldShowFinancialTags = useMemo(
     () =>

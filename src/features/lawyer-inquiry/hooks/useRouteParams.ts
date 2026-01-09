@@ -20,6 +20,9 @@ export interface ParsedRouteParams {
   reason: string | undefined;
   payer: string; // "Parent A", "Parent B", or "Neither"
 
+  // Navigation origin tracking
+  fromBreakdown: boolean; // User came from the Full Breakdown modal
+
   // External navigation (for blog integration)
   source: string | undefined; // Source indicator (e.g., "blog") for exit redirect
   returnTo: string | undefined; // Explicit URL to return to on exit
@@ -54,6 +57,9 @@ export function useRouteParams(): ParsedRouteParams {
 
   // Parse payer (from calculation results)
   const payer = typeof params.payer === 'string' ? params.payer : 'Neither';
+
+  // Parse navigation origin (for conditional close behavior)
+  const fromBreakdown = params.fromBreakdown === 'true';
 
   // Parse source and returnTo for external navigation (blog integration)
   const source =
