@@ -23,7 +23,9 @@ import { SpecialCircumstancesPrompt } from './SpecialCircumstancesPrompt';
  */
 function getIncomeSupportText(
   supportA: boolean,
-  supportB: boolean
+  supportB: boolean,
+  farA: number = 0,
+  farB: number = 0
 ): string | null {
   if (supportA && supportB) {
     return 'Income support applied: You + Other Parent';
@@ -31,6 +33,12 @@ function getIncomeSupportText(
     return 'Income support applied: You';
   } else if (supportB) {
     return 'Income support applied: Other Parent';
+  }
+  // Check if FAR is applied without income support
+  const isFixedAnnualRate = farA > 0 || farB > 0;
+  const isIncomeSupport = supportA || supportB;
+  if (isFixedAnnualRate && !isIncomeSupport) {
+    return 'Income support not applied: Fixed Annual Rate (FAR) assessment';
   }
   return null;
 }
@@ -364,14 +372,18 @@ export function CalculatorResults({
               </View>
               {getIncomeSupportText(
                 formData?.supportA ?? false,
-                formData?.supportB ?? false
+                formData?.supportB ?? false,
+                results.FAR_A,
+                results.FAR_B
               ) && (
                   <View style={styles.collapsedIncomeSupportBadge}>
                     <Text style={styles.collapsedIncomeSupportText}>
                       ✓{' '}
                       {getIncomeSupportText(
                         formData?.supportA ?? false,
-                        formData?.supportB ?? false
+                        formData?.supportB ?? false,
+                        results.FAR_A,
+                        results.FAR_B
                       )}
                     </Text>
                   </View>

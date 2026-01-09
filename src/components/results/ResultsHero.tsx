@@ -64,6 +64,12 @@ export function ResultsHero({
     } else if (supportB) {
       return 'Income support applied: Other Parent';
     }
+    // Check if FAR is applied without income support
+    const isFixedAnnualRate = results.FAR_A > 0 || results.FAR_B > 0;
+    const isIncomeSupport = supportA || supportB;
+    if (isFixedAnnualRate && !isIncomeSupport) {
+      return 'Income support not applied: Fixed Annual Rate (FAR) assessment';
+    }
     return null;
   };
   const incomeSupportText = getIncomeSupportText();
