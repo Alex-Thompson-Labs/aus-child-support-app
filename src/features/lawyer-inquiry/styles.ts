@@ -64,7 +64,7 @@ export const headerStyles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1a202c', // near black
+    color: '#0f172a', // slate-900 (Dark Navy)
   },
   headerSubtitle: {
     fontSize: 14,
@@ -127,7 +127,7 @@ export const formStyles = StyleSheet.create({
   formTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#4a5568', // dark grey
+    color: '#1e3a8a', // blue-900 (Dark Brand Blue)
     marginBottom: 16,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -235,7 +235,7 @@ export const checkboxStyles = StyleSheet.create({
 
 export const buttonStyles = StyleSheet.create({
   button: {
-    backgroundColor: '#3b82f6', // blue-500
+    backgroundColor: '#0056b3', // Royal Blue (Brand)
     borderRadius: 8,
     paddingVertical: 16,
     alignItems: 'center',
@@ -322,7 +322,7 @@ export const financialStyles = StyleSheet.create({
   financialSectionHeaderText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#4a5568', // dark grey
+    color: '#1e3a8a', // blue-900 (Dark Brand Blue)
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -356,7 +356,7 @@ export const financialStyles = StyleSheet.create({
   summaryTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#4a5568', // dark grey
+    color: '#1e3a8a', // blue-900 (Dark Brand Blue)
     marginBottom: 16,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -578,18 +578,18 @@ export const enrichmentStyles = StyleSheet.create({
     height: 24,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: '#6b7280', // grey-500
+    borderColor: '#cbd5e1', // slate-300 (Grey Border)
     backgroundColor: '#ffffff',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 14,
   },
   enrichmentCheckboxChecked: {
-    backgroundColor: '#3b82f6', // blue-500
-    borderColor: '#3b82f6',
+    backgroundColor: '#eff6ff', // blue-50 (Light Blue Background)
+    borderColor: '#3b82f6', // blue-500 (Blue Border)
   },
   enrichmentCheckboxCheck: {
-    color: '#ffffff',
+    color: '#3b82f6', // blue-500 (Blue Checkmark)
     fontSize: 16,
     fontWeight: '700',
   },

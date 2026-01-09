@@ -518,7 +518,7 @@ const styles = StyleSheet.create({
     },
     checkboxLabel: {
         fontSize: 14,
-        color: '#1a202c',
+        color: '#64748b', // Slate 500 - matches step explanation text
         lineHeight: 20,
         flex: 1,
     },

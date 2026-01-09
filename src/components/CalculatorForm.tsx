@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
   parentTitleA: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#4a5568', // dark grey - consistent with Parent B
+    color: '#0f172a', // slate-900 (Dark Navy) - highlight user
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -548,7 +548,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#eff6ff', // blue-50 - Ghost Blue background
   },
   addChildButtonText: {
-    color: '#2563EB', // blue-600 - Brand Blue text
+    color: '#0056b3', // Royal Blue (Brand)
     fontSize: 14,
     fontWeight: '600',
   },

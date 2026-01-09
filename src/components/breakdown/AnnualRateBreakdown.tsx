@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     warningAlert: {
         backgroundColor: '#fef3c7', // Amber-100
         borderWidth: 1,
-        borderColor: '#f59e0b', // Amber-500
+        borderColor: '#fbbf24', // Amber-400 (softer golden yellow)
         borderRadius: 8,
         padding: 12,
         marginTop: 8,

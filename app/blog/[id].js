@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: '800',
     marginBottom: 10,
-    color: '#000',
+    color: '#0f172a', // slate-900 (Dark Slate)
     lineHeight: 40,
   },
   date: {

@@ -25,10 +25,12 @@ export function BreakdownStepCard({
   onToggle,
 }: BreakdownStepCardProps) {
   const accessibilityLabel = description
-    ? `Step ${stepNumber}: ${title}. ${description}. ${isExpanded ? 'Expanded' : 'Collapsed'
-    }. Tap to ${isExpanded ? 'collapse' : 'expand'}.`
-    : `Step ${stepNumber}: ${title}. ${isExpanded ? 'Expanded' : 'Collapsed'
-    }. Tap to ${isExpanded ? 'collapse' : 'expand'}.`;
+    ? `Step ${stepNumber}: ${title}. ${description}. ${
+        isExpanded ? 'Expanded' : 'Collapsed'
+      }. Tap to ${isExpanded ? 'collapse' : 'expand'}.`
+    : `Step ${stepNumber}: ${title}. ${
+        isExpanded ? 'Expanded' : 'Collapsed'
+      }. Tap to ${isExpanded ? 'collapse' : 'expand'}.`;
 
   return (
     <View style={styles.step}>
@@ -55,11 +57,7 @@ export function BreakdownStepCard({
           </Text>
           {tooltip != null && (
             <View style={styles.headerTooltip}>
-              <HelpTooltip
-                what={tooltip}
-                why={''}
-                hideWhatLabel
-              />
+              <HelpTooltip what={tooltip} why={''} hideWhatLabel />
             </View>
           )}
         </View>
@@ -127,7 +125,7 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 12,
     fontWeight: '800',
-    color: theme.colors.textPrimary,
+    color: '#1e3a8a', // blue-900 (Dark Brand Blue)
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -138,4 +136,3 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
   },
 });
-

@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
         color: '#475569', // slate-600
     },
     yesButton: {
-        backgroundColor: '#2563eb', // blue-600
+        backgroundColor: '#0056b3', // Royal Blue (Brand)
     },
     yesButtonText: {
         fontSize: 16,
