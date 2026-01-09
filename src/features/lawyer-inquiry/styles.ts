@@ -465,6 +465,8 @@ export const successStyles = StyleSheet.create({
   successContent: {
     alignItems: 'center',
     padding: 40,
+    maxWidth: 400,
+    width: '100%',
   },
   successIcon: {
     fontSize: 64,
@@ -482,6 +484,43 @@ export const successStyles = StyleSheet.create({
     color: '#6b7280', // grey-500
     textAlign: 'center',
     lineHeight: 24,
+  },
+  successButtonsContainer: {
+    marginTop: 32,
+    width: '100%',
+    gap: 12,
+  },
+  successButton: {
+    backgroundColor: '#3b82f6', // blue-500
+    borderRadius: 8,
+    paddingVertical: 16,
+    alignItems: 'center',
+    width: '100%',
+  },
+  successButtonPressed: {
+    backgroundColor: '#2563eb', // blue-600
+  },
+  successButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  successButtonSecondary: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#d1d5db', // grey-300
+    borderRadius: 8,
+    paddingVertical: 16,
+    alignItems: 'center',
+    width: '100%',
+  },
+  successButtonSecondaryPressed: {
+    backgroundColor: '#f3f4f6', // grey-100
+  },
+  successButtonSecondaryText: {
+    color: '#4b5563', // grey-600
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 
