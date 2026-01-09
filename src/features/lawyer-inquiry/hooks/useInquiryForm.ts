@@ -550,61 +550,8 @@ export function useInquiryForm(props: UseInquiryFormProps) {
         // Dynamic lead data
         financial_tags: financialTags.length > 0 ? financialTags : null,
 
-        // Message (compiled from Special Circumstances, financial tags, court date, and user notes)
-        parent_message: (() => {
-          const compiledParts: string[] = [];
-
-          // Direct Mode: Add source indicator
-          if (props.isDirectMode) {
-            compiledParts.push('SOURCE: Direct website inquiry');
-            if (props.reason) {
-              compiledParts.push(`INQUIRY TYPE: ${props.reason.replace(/_/g, ' ')}`);
-            }
-          }
-
-          // 1. Mapped Statements: Convert Special Circumstances to first-person sentences
-          if (validCircumstances.length > 0) {
-            if (compiledParts.length > 0) compiledParts.push('');
-            compiledParts.push('SITUATION:');
-            validCircumstances.forEach((r) => {
-              compiledParts.push(`- ${r.label}`);
-            });
-          }
-
-          // 2. High-Value Data: Court Date and Financial Tags
-          const highValueData: string[] = [];
-
-          if (courtDate) {
-            const formattedDate = courtDate.toLocaleDateString('en-AU', {
-              day: 'numeric',
-              month: 'short',
-              year: 'numeric',
-            });
-            highValueData.push(`Court Date: ${formattedDate}`);
-          }
-
-          if (financialTags.length > 0) {
-            highValueData.push(`Financial Issues: ${financialTags.join(', ')}`);
-          }
-
-          if (highValueData.length > 0) {
-            if (compiledParts.length > 0) compiledParts.push('');
-            compiledParts.push('KEY DETAILS:');
-            highValueData.forEach((item) => compiledParts.push(`- ${item}`));
-          }
-
-          // 3. User Notes: Append manual text from Additional Details field
-          const userNotes = sanitizeString(message);
-          if (userNotes) {
-            if (compiledParts.length > 0) compiledParts.push('');
-            compiledParts.push('ADDITIONAL DETAILS:');
-            compiledParts.push(userNotes);
-          }
-
-          return compiledParts.length > 0
-            ? compiledParts.join('\n')
-            : 'Direct website inquiry';
-        })(),
+        // Message (raw text from Additional Details field only)
+        parent_message: sanitizeString(message) || null,
 
         // Privacy compliance
         consent_given: consent,
