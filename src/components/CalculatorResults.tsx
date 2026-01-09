@@ -527,7 +527,7 @@ const styles = StyleSheet.create({
   expandedHeaderTitle: {
     fontSize: 18,
     fontWeight: '700', // Bold for strong typography
-    color: '#0f172a', // slate-900 (Dark Navy)
+    color: '#1e3a8a', // blue-900 (Dark Brand Blue)
   },
   closeButton: {
     width: 44,

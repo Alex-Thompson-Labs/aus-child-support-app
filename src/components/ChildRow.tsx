@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
   headerLabelA: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#4a5568', // dark grey - consistent
+    color: '#3b82f6', // blue-500 (User Highlight) - matches breakdown "YOU"
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },

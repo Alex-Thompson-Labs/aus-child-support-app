@@ -127,7 +127,7 @@ export const formStyles = StyleSheet.create({
   formTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#1e3a8a', // blue-900 (Dark Brand Blue)
+    color: '#0f172a', // slate-900 (Dark Navy)
     marginBottom: 16,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -137,7 +137,7 @@ export const formStyles = StyleSheet.create({
   },
   input: {
     backgroundColor: '#ffffff', // white
-    color: '#1a202c', // near black
+    color: '#334155', // slate-700 (Dark Slate)
     borderRadius: 8,
     padding: 12,
     borderWidth: 1.5,
@@ -211,7 +211,7 @@ export const checkboxStyles = StyleSheet.create({
   },
   checkboxLabel: {
     fontSize: 14,
-    color: '#4b5563', // grey-600
+    color: '#334155', // slate-700 (better readability)
     lineHeight: 20,
   },
   checkboxErrorText: {
@@ -322,7 +322,7 @@ export const financialStyles = StyleSheet.create({
   financialSectionHeaderText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#1e3a8a', // blue-900 (Dark Brand Blue)
+    color: '#0f172a', // slate-900 (Dark Navy)
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -356,7 +356,7 @@ export const financialStyles = StyleSheet.create({
   summaryTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#1e3a8a', // blue-900 (Dark Brand Blue)
+    color: '#0f172a', // slate-900 (Dark Navy)
     marginBottom: 16,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -379,7 +379,7 @@ export const financialStyles = StyleSheet.create({
   summaryValue: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#1a202c', // near black
+    color: '#334155', // slate-700 (Dark Slate)
   },
   summarySeparator: {
     height: 1,
@@ -409,7 +409,7 @@ export const financialStyles = StyleSheet.create({
   careValue: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#1a202c', // near black
+    color: '#334155', // slate-700 (Dark Slate)
   },
   careSeparator: {
     fontSize: 13,
@@ -476,7 +476,7 @@ export const successStyles = StyleSheet.create({
   successTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1a202c', // near black
+    color: '#334155', // slate-700 (Dark Slate)
     marginBottom: 16,
   },
   successMessage: {
@@ -554,7 +554,7 @@ export const enrichmentStyles = StyleSheet.create({
   enrichmentTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1a202c', // near black
+    color: '#334155', // slate-700 (Dark Slate)
   },
   enrichmentSubtitle: {
     fontSize: 15,
@@ -595,7 +595,7 @@ export const enrichmentStyles = StyleSheet.create({
   },
   enrichmentFactorLabel: {
     fontSize: 16,
-    color: '#1a202c', // near black
+    color: '#334155', // slate-700 (Dark Slate)
     flex: 1,
   },
   enrichmentButtons: {

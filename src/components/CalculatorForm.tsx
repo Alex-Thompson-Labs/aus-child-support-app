@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
   sectionHeading: {
     fontSize: 14,
     fontWeight: '800', // extra bold
-    color: '#0f172a', // slate-900 - dark slate
+    color: '#1e3a8a', // blue-900 (Dark Brand Blue)
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
   parentTitleA: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#0f172a', // slate-900 (Dark Navy) - highlight user
+    color: '#3b82f6', // blue-500 (User Highlight) - matches breakdown "YOU"
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
