@@ -41,7 +41,7 @@ export function ResultsSimpleExplanation({
     step5: false, // Cost Percentage - collapsed
     step6: false, // Child Support Percentage - collapsed
     step7: false, // Cost of Children - collapsed
-    step8: false, // Annual Rate - collapsed
+    step8: true, // Annual Rate - expanded by default
   });
 
   return (
