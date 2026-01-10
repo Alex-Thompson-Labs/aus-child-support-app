@@ -64,7 +64,7 @@ export default function BlogPost() {
         contentContainerStyle={styles.scrollContent}
         style={styles.scrollView}
       >
-        <View style={styles.articleWrapper}>
+        <View style={styles.articleWrapper} accessibilityRole="article">
           {/* Title */}
           <Text style={styles.title}>{post.title.rendered}</Text>
 

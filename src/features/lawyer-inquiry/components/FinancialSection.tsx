@@ -102,7 +102,11 @@ export function FinancialSection({
       {/* Calculation Summary OR Direct Mode Manual Inputs - Collapsible */}
       {isSummaryOpen && (!isDirectMode ? (
         // Standard Mode: Show read-only Calculation Summary
-        <View style={financialStyles.summaryCard}>
+        <View
+          style={financialStyles.summaryCard}
+          accessibilityRole={'group' as any}
+          accessibilityLabel="Calculation Summary"
+        >
           <Text style={financialStyles.summaryTitle}>
             Your Calculation Summary
           </Text>
@@ -201,7 +205,11 @@ export function FinancialSection({
         </View>
       ) : (
         // Direct Mode: Show manual income inputs
-        <View style={financialStyles.directModeCard}>
+        <View
+          style={financialStyles.directModeCard}
+          accessibilityRole={'group' as any}
+          accessibilityLabel="Financial Information"
+        >
           <Text style={financialStyles.summaryTitle}>
             Your Financial Information
           </Text>
@@ -309,7 +317,11 @@ export function FinancialSection({
 
       {/* Financial Tags - Conditional */}
       {shouldShowFinancialTags && (
-        <View style={financialStyles.financialSection}>
+        <View
+          style={financialStyles.financialSection}
+          accessibilityRole={'group' as any}
+          accessibilityLabel="Financial Issue Tags"
+        >
           <Text style={formStyles.fieldLabel}>
             What type of financial issue? (Select all that apply){' '}
             {specialCircumstances?.includes('income_resources_not_reflected') &&

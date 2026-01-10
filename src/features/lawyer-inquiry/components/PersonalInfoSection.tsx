@@ -30,7 +30,10 @@ export function PersonalInfoSection({
   messageRef,
 }: PersonalInfoSectionProps) {
   return (
-    <>
+    <View
+      accessibilityRole={'group' as any}
+      accessibilityLabel="Personal Information"
+    >
       <Text style={formStyles.formTitle}>Your Information</Text>
 
       {/* Name Input */}
@@ -141,6 +144,6 @@ export function PersonalInfoSection({
           <Text style={formStyles.errorText}>{errors.postcode}</Text>
         )}
       </View>
-    </>
+    </View>
   );
 }

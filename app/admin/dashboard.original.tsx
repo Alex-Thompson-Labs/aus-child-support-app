@@ -192,11 +192,12 @@ export default function AdminDashboardScreen() {
       </View>
 
       {/* Filters */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.filtersContainer}
-      >
+      <View accessibilityRole="navigation" accessibilityLabel="Filter leads">
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.filtersContainer}
+        >
         <Pressable
           style={[
             styles.filterChip,
@@ -281,7 +282,8 @@ export default function AdminDashboardScreen() {
             Converted ({leads.filter((l) => l.status === 'converted').length})
           </Text>
         </Pressable>
-      </ScrollView>
+        </ScrollView>
+      </View>
 
       {/* Sort Options */}
       <View style={styles.sortContainer}>

@@ -48,7 +48,7 @@ export default function BlogList() {
   }
 
   const renderItem = ({ item }) => (
-    <View style={styles.card}>
+    <View style={styles.card} accessibilityRole="article">
       {/* Title */}
       <Text style={styles.title}>{stripHtml(item.title.rendered)}</Text>
 
@@ -61,6 +61,8 @@ export default function BlogList() {
       <TouchableOpacity
         onPress={() => router.push(`/blog/${item.id}`)}
         style={styles.button}
+        accessibilityRole="button"
+        accessibilityLabel={`Read article: ${stripHtml(item.title.rendered)}`}
       >
         <Text style={styles.buttonText}>Read Article</Text>
       </TouchableOpacity>

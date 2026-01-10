@@ -17,7 +17,11 @@ export function SpecialCircumstancesSection({
   }
 
   return (
-    <View style={circumstancesStyles.specialCircumstancesSection}>
+    <View
+      style={circumstancesStyles.specialCircumstancesSection}
+      accessibilityRole={'group' as any}
+      accessibilityLabel="Special Circumstances"
+    >
       {circumstances.map((circumstance) => (
         <View
           key={circumstance.id}

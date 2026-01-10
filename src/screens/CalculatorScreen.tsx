@@ -307,7 +307,8 @@ export function CalculatorScreen() {
             <CalculatorFAQ />
 
             {/* Privacy Footer */}
-            <View style={styles.privacyFooter}>
+            {/* @ts-ignore - Web-only ARIA role */}
+            <View style={styles.privacyFooter} accessibilityRole="footer">
               <PrivacyPolicyLink
                 linkText="Privacy Policy"
                 textStyle={styles.privacyFooterText}
