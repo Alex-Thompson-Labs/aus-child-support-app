@@ -40,7 +40,7 @@ interface PublicLeadData {
   income_parent_b: number;
   children_count: number;
   annual_liability: number;
-  care_data: Array<{ index: number; careA: number; careB: number }> | null;
+  care_data: { index: number; careA: number; careB: number }[] | null;
   complexity_reasons: string[];
   parent_message: string;
   created_at: string;

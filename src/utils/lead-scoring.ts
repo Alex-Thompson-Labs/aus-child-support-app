@@ -22,7 +22,7 @@ export interface LeadScoringInput {
     financialTags?: string[];
     courtDate?: Date | null;
     liability: number;
-    careData?: Array<{ careA: number; careB: number }>;
+    careData?: { careA: number; careB: number }[];
     bindingAgreement?: boolean;
 }
 
@@ -110,7 +110,7 @@ function hasMultipleComplexity(specialCircumstances: string[] = []): boolean {
  * Check if case has shared care dispute (any child with 35-65% care)
  */
 function hasSharedCareDispute(
-    careData: Array<{ careA: number; careB: number }> = []
+    careData: { careA: number; careB: number }[] = []
 ): boolean {
     return careData.some(child => {
         const careAPercent = child.careA;

@@ -19,6 +19,12 @@ import { SmartConversionFooter } from './SmartConversionFooter';
 import { SpecialCircumstancesPrompt } from './SpecialCircumstancesPrompt';
 import { LazyLoadErrorBoundary } from './ui/LazyLoadErrorBoundary';
 
+// ============================================================================
+// Event-based breakdown re-open signaling
+// Used when returning from lawyer inquiry to re-open the breakdown modal
+// ============================================================================
+import { DeviceEventEmitter } from 'react-native';
+
 /**
  * Helper to generate income support indicator text for collapsed card
  */
@@ -50,12 +56,6 @@ const ResultsSimpleExplanation = lazy(() =>
     default: module.ResultsSimpleExplanation,
   }))
 );
-
-// ============================================================================
-// Event-based breakdown re-open signaling
-// Used when returning from lawyer inquiry to re-open the breakdown modal
-// ============================================================================
-import { DeviceEventEmitter } from 'react-native';
 
 export const OPEN_BREAKDOWN_EVENT = 'openBreakdownModal';
 export const triggerOpenBreakdown = () => {

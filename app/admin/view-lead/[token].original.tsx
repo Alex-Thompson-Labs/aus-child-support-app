@@ -4,10 +4,10 @@
  * Light theme optimized for printing.
  */
 
-import {
-  isWeb,
-  webClickableStyles,
-} from '@/src/utils/responsive';
+import { exportLeadAsPDF } from '@/src/utils/exportLeadPDF';
+import { isWeb, webClickableStyles } from '@/src/utils/responsive';
+import { LeadSubmission } from '@/src/utils/supabase';
+import Constants from 'expo-constants';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -21,24 +21,9 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Constants from 'expo-constants';
 
-interface PublicLeadData {
-  id: string;
-  parent_name: string;
-  parent_email: string;
-  parent_phone: string | null;
-  location: string | null;
-  income_parent_a: number;
-  income_parent_b: number;
-  children_count: number;
-  annual_liability: number;
-  care_data: { index: number; careA: number; careB: number }[] | null;
-  complexity_reasons: string[];
-  parent_message: string;
-  created_at: string;
-}
-
+// Reusing your types
+type PublicLeadData = LeadSubmission;
 type ViewState =
   | { status: 'loading' }
   | { status: 'valid'; lead: PublicLeadData }
@@ -50,6 +35,7 @@ export default function ViewLeadScreen() {
   const token = params.token as string;
 
   const [viewState, setViewState] = useState<ViewState>({ status: 'loading' });
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     const verifyAndLoadLead = async () => {
@@ -104,31 +90,25 @@ export default function ViewLeadScreen() {
     }
   }, [token]);
 
-  // Inject print styles on web
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const style = document.createElement('style');
-      style.id = 'view-lead-print-styles';
-      style.textContent = `
-        @media print {
-          .action-buttons-container { display: none !important; }
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        }
-      `;
-      document.head.appendChild(style);
-      return () => {
-        const existing = document.getElementById('view-lead-print-styles');
-        if (existing) {
-          document.head.removeChild(existing);
-        }
-      };
+  // Handle PDF Download
+  const handleDownloadPDF = async (lead: PublicLeadData) => {
+    try {
+      setIsExporting(true);
+      await exportLeadAsPDF(lead);
+      if (Platform.OS === 'web') {
+        alert('Downloading Brief...\n\nThe PDF is being generated.');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Error generating PDF');
+    } finally {
+      setIsExporting(false);
     }
-  }, []);
+  };
 
   const handleCall = (phone: string) => {
     const cleanPhone = phone.replace(/[^\d+]/g, '');
     const telUrl = `tel:${cleanPhone}`;
-
     if (Platform.OS === 'web') {
       window.open(telUrl, '_self');
     } else {
@@ -144,9 +124,7 @@ export default function ViewLeadScreen() {
         `I would like to discuss your case further.\n\n` +
         `Best regards,`
     );
-
     const mailtoUrl = `mailto:${lead.parent_email}?subject=${subject}&body=${body}`;
-
     if (Platform.OS === 'web') {
       window.open(mailtoUrl, '_self');
     } else {
@@ -154,70 +132,51 @@ export default function ViewLeadScreen() {
     }
   };
 
-  // Loading state
+  // Loading / Error States
   if (viewState.status === 'loading') {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.centeredContent}>
           <ActivityIndicator size="large" color="#2563eb" />
-          <Text style={styles.loadingText}>Verifying access...</Text>
+          <Text style={styles.loadingText}>Verifying secure access...</Text>
         </View>
       </SafeAreaView>
     );
   }
 
-  // Expired token state
-  if (viewState.status === 'expired') {
+  if (viewState.status !== 'valid') {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.centeredContent}>
-          <View style={styles.iconContainer}>
-            <Text style={styles.iconText}>&#x23F0;</Text>
-          </View>
-          <Text style={styles.errorTitle}>Access Expired</Text>
+          <Text style={styles.errorTitle}>Access Denied</Text>
           <Text style={styles.errorMessage}>
-            This link has expired. Magic links are valid for 7 days after
-            creation.
-          </Text>
-          <Text style={styles.errorHint}>
-            Please contact the sender to request a new link.
+            {viewState.status === 'expired'
+              ? 'This secure link has expired.'
+              : 'Invalid link.'}
           </Text>
         </View>
       </SafeAreaView>
     );
   }
 
-  // Invalid token state
-  if (viewState.status === 'invalid') {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.centeredContent}>
-          <View style={styles.iconContainer}>
-            <Text style={styles.iconText}>&#x1F512;</Text>
-          </View>
-          <Text style={styles.errorTitle}>Invalid Link</Text>
-          <Text style={styles.errorMessage}>
-            This link is not valid. It may have been modified or corrupted.
-          </Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  // Valid state - show lead details
   const { lead } = viewState;
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      {/* Header */}
+      {/* Secure Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Lead Details</Text>
+        <View style={styles.headerTopRow}>
+          <Text style={styles.headerTitle}>Client File</Text>
+          <View style={styles.secureBadge}>
+            <Text style={styles.secureBadgeIcon}>🔒</Text>
+            <Text style={styles.secureBadgeText}>End-to-End Encrypted</Text>
+          </View>
+        </View>
         <Text style={styles.headerSubtitle}>
-          Submitted {new Date(lead.created_at).toLocaleDateString('en-AU', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-          })}
+          Ref: #{lead.id?.slice(0, 8) || 'N/A'} • Submitted{' '}
+          {lead.created_at
+            ? new Date(lead.created_at).toLocaleDateString('en-AU')
+            : 'N/A'}
         </Text>
       </View>
 
@@ -225,9 +184,37 @@ export default function ViewLeadScreen() {
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
       >
+        {/* ACTION: Download PDF (Prominent) */}
+        <View style={styles.downloadSection}>
+          <Pressable
+            style={[
+              styles.downloadButton,
+              isWeb && webClickableStyles,
+              isExporting && { opacity: 0.7 },
+            ]}
+            onPress={() => handleDownloadPDF(lead)}
+            disabled={isExporting}
+          >
+            {isExporting ? (
+              <ActivityIndicator color="white" style={{ marginRight: 8 }} />
+            ) : (
+              <Text style={styles.downloadIcon}>📄</Text>
+            )}
+            <Text style={styles.downloadButtonText}>
+              {isExporting
+                ? 'Generating...'
+                : 'Download Full Legal Brief (PDF)'}
+            </Text>
+          </Pressable>
+          <Text style={styles.downloadHint}>
+            Includes full financial breakdown, complexity analysis, and care
+            calculations.
+          </Text>
+        </View>
+
         {/* Contact Information */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Contact Information</Text>
+          <Text style={styles.sectionTitle}>Client Details</Text>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Name</Text>
             <Text style={styles.infoValue}>{lead.parent_name}</Text>
@@ -244,19 +231,13 @@ export default function ViewLeadScreen() {
               <Text style={styles.infoValue}>{lead.parent_phone}</Text>
             </View>
           )}
-          {lead.location && (
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Location</Text>
-              <Text style={styles.infoValue}>{lead.location}</Text>
-            </View>
-          )}
         </View>
 
         {/* Case Summary */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Case Summary</Text>
+          <Text style={styles.sectionTitle}>Assessment Summary</Text>
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Estimated Annual Liability</Text>
+            <Text style={styles.infoLabel}>Est. Liability</Text>
             <Text style={styles.infoValueHighlight}>
               ${lead.annual_liability.toLocaleString('en-AU')}/year
             </Text>
@@ -273,61 +254,26 @@ export default function ViewLeadScreen() {
               ${lead.income_parent_b.toLocaleString('en-AU')}
             </Text>
           </View>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Number of Children</Text>
-            <Text style={styles.infoValue}>{lead.children_count}</Text>
-          </View>
         </View>
-
-        {/* Care Arrangements */}
-        {lead.care_data && lead.care_data.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Care Arrangements</Text>
-            {lead.care_data.map((child, index) => (
-              <View key={index} style={styles.careRow}>
-                <Text style={styles.careLabel}>
-                  Child {child.index + 1}
-                </Text>
-                <Text style={styles.careValue}>
-                  Parent A: {child.careA.toFixed(0)}% | Parent B:{' '}
-                  {child.careB.toFixed(0)}%
-                </Text>
-              </View>
-            ))}
-          </View>
-        )}
 
         {/* Complexity Factors */}
         {lead.complexity_reasons && lead.complexity_reasons.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Complexity Factors</Text>
+            <Text style={styles.sectionTitle}>Complexity Flags</Text>
             {lead.complexity_reasons.map((reason, index) => (
               <View key={index} style={styles.complexityItem}>
-                <Text style={styles.complexityBullet}>&#x2022;</Text>
+                <Text style={styles.complexityBullet}>•</Text>
                 <Text style={styles.complexityText}>{reason}</Text>
               </View>
             ))}
           </View>
         )}
-
-        {/* Parent's Message */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Client&apos;s Message</Text>
-          <Text style={styles.messageText}>{lead.parent_message}</Text>
-        </View>
-
-        {/* Footer info */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            Lead ID: {lead.id.slice(0, 8)}
-          </Text>
-        </View>
       </ScrollView>
 
-      {/* Action Buttons - Fixed at bottom */}
+      {/* Footer Actions */}
       <View
         style={styles.actionButtonsContainer}
-        // @ts-ignore - web className for print hiding
+        // @ts-ignore
         className="action-buttons-container"
       >
         {lead.parent_phone && (
@@ -360,7 +306,7 @@ export default function ViewLeadScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f8fafc', // Light grey background for professional feel
   },
   centeredContent: {
     flex: 1,
@@ -368,51 +314,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 24,
   },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: '#64748b',
-  },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#f1f5f9',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  iconText: {
-    fontSize: 36,
-  },
-  errorTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#0f172a',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  errorMessage: {
-    fontSize: 16,
-    color: '#475569',
-    textAlign: 'center',
-    lineHeight: 24,
-    maxWidth: 320,
-    marginBottom: 16,
-  },
-  errorHint: {
-    fontSize: 14,
-    color: '#64748b',
-    textAlign: 'center',
-  },
+  loadingText: { marginTop: 16, color: '#64748b' },
+  errorTitle: { fontSize: 24, fontWeight: 'bold', marginBottom: 8 },
+  errorMessage: { color: '#64748b' },
+
   header: {
-    backgroundColor: '#f8fafc',
-    padding: 24,
+    backgroundColor: '#ffffff',
+    padding: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#e2e8f0',
     ...Platform.select({
       web: {
-        maxWidth: 680,
+        maxWidth: 800,
         width: '100%',
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -420,24 +333,44 @@ const styles = StyleSheet.create({
       default: {},
     }),
   },
+  headerTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   headerTitle: {
     fontSize: 24,
-    fontWeight: '700',
+    fontWeight: '800',
     color: '#0f172a',
-    marginBottom: 4,
+  },
+  secureBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ecfdf5', // Light green
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 99,
+    borderWidth: 1,
+    borderColor: '#059669',
+  },
+  secureBadgeIcon: { fontSize: 12, marginRight: 6 },
+  secureBadgeText: {
+    fontSize: 12,
+    color: '#059669',
+    fontWeight: '600',
   },
   headerSubtitle: {
     fontSize: 14,
     color: '#64748b',
   },
-  scrollView: {
-    flex: 1,
-  },
+
+  scrollView: { flex: 1 },
   scrollContent: {
-    padding: 16,
+    padding: 24,
     ...Platform.select({
       web: {
-        maxWidth: 680,
+        maxWidth: 800,
         width: '100%',
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -445,18 +378,57 @@ const styles = StyleSheet.create({
       default: {},
     }),
   },
+
+  /* Download Section */
+  downloadSection: {
+    marginBottom: 24,
+    alignItems: 'center',
+  },
+  downloadButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#0f172a', // Dark "Legal" Blue/Black
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  downloadIcon: { fontSize: 20, marginRight: 10 },
+  downloadButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  downloadHint: {
+    marginTop: 12,
+    fontSize: 13,
+    color: '#64748b',
+    textAlign: 'center',
+  },
+
   section: {
     backgroundColor: '#ffffff',
     marginBottom: 16,
-    padding: 20,
-    borderRadius: 8,
+    padding: 24,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: '#e2e8f0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#0f172a',
+    color: '#94a3b8',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
     marginBottom: 16,
     paddingBottom: 8,
     borderBottomWidth: 1,
@@ -465,94 +437,48 @@ const styles = StyleSheet.create({
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    paddingVertical: 10,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#f8fafc',
   },
-  infoLabel: {
-    fontSize: 14,
-    color: '#64748b',
-    flex: 1,
-  },
-  infoValue: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#0f172a',
-    flex: 1,
-    textAlign: 'right',
-  },
-  infoValueEmail: {
-    fontSize: 13,
-  },
-  infoValueHighlight: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#2563eb',
-    flex: 1,
-    textAlign: 'right',
-  },
-  careRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f8fafc',
-  },
-  careLabel: {
-    fontSize: 14,
-    color: '#64748b',
-  },
-  careValue: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#0f172a',
-  },
+  infoLabel: { fontSize: 15, color: '#64748b' },
+  infoValue: { fontSize: 15, fontWeight: '500', color: '#0f172a' },
+  infoValueEmail: { color: '#2563eb' },
+  infoValueHighlight: { fontSize: 18, fontWeight: '700', color: '#0f172a' },
+
   complexityItem: {
     flexDirection: 'row',
     marginBottom: 8,
-    paddingLeft: 4,
+    backgroundColor: '#fff7ed', // Light Orange
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#fdba74',
   },
   complexityBullet: {
     fontSize: 16,
-    color: '#f59e0b',
+    color: '#ea580c',
     marginRight: 10,
-    fontWeight: '700',
+    fontWeight: 'bold',
   },
   complexityText: {
     fontSize: 14,
-    color: '#0f172a',
+    color: '#9a3412',
+    fontWeight: '500',
     flex: 1,
-    lineHeight: 20,
   },
-  messageText: {
-    fontSize: 14,
-    color: '#0f172a',
-    lineHeight: 22,
-  },
-  footer: {
-    marginTop: 8,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
-    alignItems: 'center',
-  },
-  footerText: {
-    fontSize: 12,
-    color: '#94a3b8',
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-  },
+
+  /* Footer */
   actionButtonsContainer: {
     flexDirection: 'row',
-    gap: 12,
-    padding: 16,
-    backgroundColor: '#f8fafc',
+    gap: 16,
+    padding: 24,
+    backgroundColor: '#ffffff',
     borderTopWidth: 1,
     borderTopColor: '#e2e8f0',
     ...Platform.select({
       web: {
-        maxWidth: 680,
+        maxWidth: 800,
         width: '100%',
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -562,20 +488,21 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
+    paddingVertical: 16,
     borderRadius: 8,
     alignItems: 'center',
-    justifyContent: 'center',
+    borderWidth: 1,
   },
   callButton: {
-    backgroundColor: '#16a34a',
+    backgroundColor: '#ffffff',
+    borderColor: '#cbd5e1',
   },
   emailButton: {
-    backgroundColor: '#2563eb',
+    backgroundColor: '#ffffff',
+    borderColor: '#cbd5e1',
   },
   actionButtonText: {
-    color: '#ffffff',
+    color: '#475569',
     fontSize: 15,
     fontWeight: '600',
   },

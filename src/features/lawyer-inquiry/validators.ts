@@ -6,14 +6,14 @@
  */
 
 // Re-export shared validators for convenience
-export {
-  sanitizeEmail,
-  sanitizePhone, sanitizeString, validateConsent, validateEmail, validateName, validatePhone, VALIDATION
-} from '@/src/utils/form-validation';
-
 import {
   sanitizeString,
   VALIDATION,
+} from '@/src/utils/form-validation';
+
+export {
+  sanitizeEmail,
+  sanitizePhone, sanitizeString, validateConsent, validateEmail, validateName, validatePhone, VALIDATION
 } from '@/src/utils/form-validation';
 
 // ============================================================================

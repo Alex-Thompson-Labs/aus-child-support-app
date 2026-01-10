@@ -1,4 +1,12 @@
 // Constants for care period calculations
+// =============================================================================
+// Default constants (2026) for backward compatibility
+// =============================================================================
+// These exports use 2026 as the current assessment year default.
+// For year-specific calculations, use getYearConstants(year) instead.
+
+import { YEARLY_CONFIG } from './year-config';
+
 export const CARE_PERIOD_DAYS = {
   week: 7,
   fortnight: 14,
@@ -13,14 +21,6 @@ export {
   AssessmentYear, getYearConfig,
   getYearConstants, YEARLY_CONFIG
 } from './year-config';
-
-// =============================================================================
-// Default constants (2026) for backward compatibility
-// =============================================================================
-// These exports use 2026 as the current assessment year default.
-// For year-specific calculations, use getYearConstants(year) instead.
-
-import { YEARLY_CONFIG } from './year-config';
 
 const DEFAULT_YEAR = '2026' as const;
 const defaultConfig = YEARLY_CONFIG[DEFAULT_YEAR];
