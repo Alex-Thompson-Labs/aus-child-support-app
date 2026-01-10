@@ -548,7 +548,7 @@ const styles = StyleSheet.create({
   groupHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 20,
     gap: 12,
   },
   groupTitle: {
@@ -615,7 +615,7 @@ const styles = StyleSheet.create({
 
   // Footer
   coaFooter: {
-    marginTop: 4,
+    marginTop: 24,
     gap: 12,
   },
   coaButton: {
