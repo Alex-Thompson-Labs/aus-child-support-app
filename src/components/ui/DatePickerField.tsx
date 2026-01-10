@@ -96,7 +96,7 @@ export default function DatePickerField({
     return (
       <View style={styles.container}>
         <Text style={styles.label}>{label}</Text>
-        <div style={{ position: 'relative', width: '100%' }}>
+        <div style={{ position: 'relative', width: '140px' }}>
           {/* Hidden native date input for picker functionality */}
           <input
             type="date"
@@ -133,6 +133,7 @@ export default function DatePickerField({
               boxSizing: 'border-box',
               pointerEvents: 'none',
               opacity: disabled ? 0.6 : 1,
+              textAlign: 'center',
             }}
           >
             {value ? formatDisplayDate(value) : 'dd/mm/yyyy'}

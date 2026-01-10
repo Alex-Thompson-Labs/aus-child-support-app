@@ -122,7 +122,6 @@ export interface ComplexityFormData {
   selectedCircumstances?: string[];
   /**
    * Court date string in DD/MM/YYYY format
-   * Used to determine if court date is within 60 days (urgent)
    */
   /**
    * Whether Parent A receives income support payments
@@ -235,10 +234,10 @@ export function getAlertConfig(
     const courtDate = parseCourtDateFromReasonId(courtDateReasonId);
     const dateStr = courtDate
       ? courtDate.toLocaleDateString('en-AU', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-      })
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        })
       : '';
 
     return {
@@ -328,8 +327,8 @@ export function getAlertConfig(
         mostImportantReason.category === 'income'
           ? '💰'
           : mostImportantReason.category === 'child'
-            ? '👶'
-            : '🏡';
+          ? '👶'
+          : '🏡';
 
       // Check if this is a Reason 8A income suspicion case (hidden income)
       const isReason8A = mostImportantReason.officialCodes.includes('5.2.8');
@@ -374,7 +373,9 @@ export function getAlertConfig(
   if (flags.highValue) {
     return {
       title: '💰 High-Value Case',
-      message: `Your liability is $${Math.round(results.finalPaymentAmount).toLocaleString()}/year. Cases over $15k benefit from verification.`,
+      message: `Your liability is $${Math.round(
+        results.finalPaymentAmount
+      ).toLocaleString()}/year. Cases over $15k benefit from verification.`,
       urgency: 'medium',
       buttonText: 'Request Review',
     };
