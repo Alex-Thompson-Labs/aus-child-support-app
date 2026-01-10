@@ -222,11 +222,10 @@ export function CalculatorResults({
   const [lastResultsKey, setLastResultsKey] = useState('');
 
   // Generate a unique key for the current results
-  const currentResultsKey = `${results.finalPaymentAmount}-${
-    results.payer
-  }-${results.childResults
-    .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
-    .join('-')}-${results.ATI_A}-${results.ATI_B}`;
+  const currentResultsKey = `${results.finalPaymentAmount}-${results.payer
+    }-${results.childResults
+      .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
+      .join('-')}-${results.ATI_A}-${results.ATI_B}`;
 
   // Update formData when results change, but preserve selected CoA reasons
   React.useEffect(() => {
@@ -258,10 +257,10 @@ export function CalculatorResults({
 
   const webModalContainerStyle = isWeb
     ? {
-        maxWidth: MAX_MODAL_WIDTH,
-        width: '100%' as const,
-        alignSelf: 'center' as const,
-      }
+      maxWidth: MAX_MODAL_WIDTH,
+      width: '100%' as const,
+      alignSelf: 'center' as const,
+    }
     : {};
 
   const renderBreakdownContent = () => (
@@ -283,11 +282,10 @@ export function CalculatorResults({
       />
 
       <SpecialCircumstancesPrompt
-        key={`${results.finalPaymentAmount}-${
-          results.payer
-        }-${results.childResults
-          .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
-          .join('-')}-${results.ATI_A}-${results.ATI_B}`}
+        key={`${results.finalPaymentAmount}-${results.payer
+          }-${results.childResults
+            .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
+            .join('-')}-${results.ATI_A}-${results.ATI_B}`}
         results={results}
         formData={localFormData}
         onNavigate={() => setIsExpanded(false)}
@@ -367,13 +365,12 @@ export function CalculatorResults({
             { paddingBottom: Math.max(insets.bottom, 12) },
           ]}
           accessibilityRole="button"
-          accessibilityLabel={`${
-            results.payer === 'Neither'
-              ? 'No payment required'
-              : `${results.payer} pays ${formatCurrency(
-                  results.finalPaymentAmount
-                )} per year`
-          }. Tap to view full breakdown`}
+          accessibilityLabel={`${results.payer === 'Neither'
+            ? 'No payment required'
+            : `${results.payer} pays ${formatCurrency(
+              results.finalPaymentAmount
+            )} per year`
+            }. Tap to view full breakdown`}
           accessibilityHint="Opens detailed calculation breakdown"
         >
           <View
@@ -402,18 +399,18 @@ export function CalculatorResults({
                 results.FAR_A,
                 results.FAR_B
               ) && (
-                <View style={styles.collapsedIncomeSupportBadge}>
-                  <Text style={styles.collapsedIncomeSupportText}>
-                    ✓{' '}
-                    {getIncomeSupportText(
-                      formData?.supportA ?? false,
-                      formData?.supportB ?? false,
-                      results.FAR_A,
-                      results.FAR_B
-                    )}
-                  </Text>
-                </View>
-              )}
+                  <View style={styles.collapsedIncomeSupportBadge}>
+                    <Text style={styles.collapsedIncomeSupportText}>
+                      ✓{' '}
+                      {getIncomeSupportText(
+                        formData?.supportA ?? false,
+                        formData?.supportB ?? false,
+                        results.FAR_A,
+                        results.FAR_B
+                      )}
+                    </Text>
+                  </View>
+                )}
             </View>
             <View style={styles.expandHint}>
               <Text style={styles.expandHintText}>Tap for breakdown ▲</Text>
@@ -515,12 +512,14 @@ const styles = StyleSheet.create({
   expandHintText: { color: '#ffffff', fontSize: 11, opacity: 0.8 },
   expandedContainer: { flex: 1, backgroundColor: '#f8f9fa' },
   expandedHeader: {
-    padding: 16,
-    paddingBottom: 12,
+    padding: 4,
+    paddingBottom: 4,
+    paddingLeft: 24,
+    paddingRight: 16,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
-    marginBottom: 4, // Slight gap before content starts
+    marginBottom: 0,
   },
   expandedHeaderContent: {
     flexDirection: 'row',

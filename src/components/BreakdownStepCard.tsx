@@ -25,12 +25,10 @@ export function BreakdownStepCard({
   onToggle,
 }: BreakdownStepCardProps) {
   const accessibilityLabel = description
-    ? `Step ${stepNumber}: ${title}. ${description}. ${
-        isExpanded ? 'Expanded' : 'Collapsed'
-      }. Tap to ${isExpanded ? 'collapse' : 'expand'}.`
-    : `Step ${stepNumber}: ${title}. ${
-        isExpanded ? 'Expanded' : 'Collapsed'
-      }. Tap to ${isExpanded ? 'collapse' : 'expand'}.`;
+    ? `Step ${stepNumber}: ${title}. ${description}. ${isExpanded ? 'Expanded' : 'Collapsed'
+    }. Tap to ${isExpanded ? 'collapse' : 'expand'}.`
+    : `Step ${stepNumber}: ${title}. ${isExpanded ? 'Expanded' : 'Collapsed'
+    }. Tap to ${isExpanded ? 'collapse' : 'expand'}.`;
 
   return (
     <View style={styles.step}>
@@ -71,11 +69,11 @@ export function BreakdownStepCard({
 }
 
 const styles = StyleSheet.create({
-  // Step container - exact styling from current implementation
   step: {
     backgroundColor: theme.colors.surface,
     borderRadius: 10,
-    padding: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     borderWidth: 1,
     borderColor: theme.colors.border,
     ...createShadow({
@@ -91,7 +89,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    marginBottom: 10,
   },
 
   // Blue circle number - exact styling from current implementation

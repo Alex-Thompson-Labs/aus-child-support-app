@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import { shadowPresets } from '../utils/shadow-styles';
 import { isWeb } from '../utils/responsive';
+import { shadowPresets } from '../utils/shadow-styles';
 
 interface HelpTooltipProps {
   what: string | React.ReactNode;
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 0,
-    marginTop: 0,
+    marginTop: 4, // Align with top of text
     flexShrink: 0, // Prevent text from squishing the icon
   },
   buttonText: {
@@ -175,6 +175,6 @@ const styles = StyleSheet.create({
 // Web-specific styles to remove focus outline
 const buttonWebStyle = isWeb
   ? ({
-      outlineStyle: 'none',
-    } as any)
+    outlineStyle: 'none',
+  } as any)
   : {};

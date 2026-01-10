@@ -1,12 +1,12 @@
 import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
-    Alert,
-    Platform,
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
+  Alert,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import { useAnalytics } from '../utils/analytics';
 import type { CalculationResults } from '../utils/calculator';
@@ -14,71 +14,12 @@ import type { ComplexityFormData } from '../utils/complexity-detection';
 import { isWeb, webClickableStyles } from '../utils/responsive';
 import { createShadow } from '../utils/shadow-styles';
 import {
-    SPECIAL_CIRCUMSTANCES,
-    getHighestPriorityReason,
-    isCourtDateReason,
-    type SpecialCircumstance,
+  SPECIAL_CIRCUMSTANCES,
+  getHighestPriorityReason,
+  isCourtDateReason,
+  type SpecialCircumstance,
 } from '../utils/special-circumstances';
 import { HelpTooltip } from './HelpTooltip';
-
-// ============================================================================
-// Component Documentation
-// ============================================================================
-/**
- * SpecialCircumstancesPrompt Component
- *
- * Displays a collapsible section for selecting Special Circumstances
- * and provides navigation to the lawyer inquiry form.
- *
- * Parent Component:
- * - CalculatorResults.tsx (line 189) - Rendered inside the expanded results modal
- *
- * Props:
- * - results: CalculationResults - Complete calculation results including incomes,
- *   care arrangements, and payment amounts. Used to populate inquiry form data.
- *
- * - formData?: ComplexityFormData - Optional form state that may contain
- *   pre-selected special circumstances (selectedCircumstances array). Used to initialize
- *   checkbox state and sync when formData changes.
- *
- * - onNavigate: () => void - Callback to close the results modal before navigation.
- *   Required for proper modal dismissal animation on mobile.
- *
- * - onRequestInquiry?: () => void - Optional callback for web inline mode.
- *   If provided, shows inline inquiry panel instead of navigating to new route.
- *   Used when displayMode === 'inline' in CalculatorResults.
- *
- * - onSpecialCircumstancesChange?: (reasons: string[]) => void - Optional callback to notify
- *   parent component when selected reasons change. Used by CalculatorResults to
- *   update localFormData.selectedCircumstances for persistence.
- *
- * Navigation Behavior:
- * When "Talk to a Lawyer About This" button is clicked:
- * - If onRequestInquiry exists: Calls callback (web inline mode)
- * - Otherwise: Navigates to /lawyer-inquiry route with params:
- *   - liability: results.finalPaymentAmount.toString()
- *   - trigger: "change_of_assessment"
- *   - incomeA: results.ATI_A.toString()
- *   - incomeB: results.ATI_B.toString()
- *   - children: (formData?.children?.length ?? 0).toString()
- *   - careData: JSON.stringify(careData array)
- *   - specialCircumstances: JSON.stringify(Array.from(selectedReasons))
- *   - priorityCircumstance: getHighestPriorityReason(...)?.id ?? ""
- *
- * State Management:
- * - selectedReasons: Set<string> - Tracks checked special circumstance IDs
- * - courtDate: Date | null - Stores actual court date if court date reason selected
- * - hasPropertySettlement: boolean - Special flag for property settlement checkbox
- * - isExpanded: boolean - Controls collapsible section visibility
- *
- * Key Features:
- * - Collapsible UI with badge showing selection count
- * - Groups reasons by category (Legal, Income, Child, Other)
- * - Court date handling: Uses placeholder 'court_date_pending' until actual date
- *   is provided in the inquiry form
- * - Syncs with formData.selectedCircumstances via useEffect
- * - Analytics tracking for reason toggles and button clicks
- */
 
 interface SpecialCircumstancesPromptProps {
   results: CalculationResults;
@@ -503,9 +444,8 @@ export function SpecialCircumstancesPrompt({
             accessible={true}
             accessibilityRole="button"
             accessibilityLabel="Talk to a Lawyer About This"
-            accessibilityHint={`${selectedReasons.size} reason${
-              selectedReasons.size === 1 ? '' : 's'
-            } selected`}
+            accessibilityHint={`${selectedReasons.size} reason${selectedReasons.size === 1 ? '' : 's'
+              } selected`}
             accessibilityState={{ disabled: buttonDisabled }}
           >
             <Text style={styles.coaButtonText}>
@@ -531,7 +471,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 2,
     borderColor: '#bfdbfe', // blue-200
-    padding: 24,
+    paddingTop: 16,
+    paddingBottom: 24,
+    paddingHorizontal: 24,
     marginBottom: 16,
     ...createShadow({
       shadowColor: '#000',
@@ -595,7 +537,7 @@ const styles = StyleSheet.create({
 
   // Category sections
   categorySections: {
-    gap: 16,
+    gap: 10,
     marginTop: 20,
   },
 
@@ -628,14 +570,13 @@ const styles = StyleSheet.create({
   sectionDivider: {
     height: 1,
     backgroundColor: '#e2e8f0', // slate-200 (light grey)
-    marginVertical: 6, // minimal gap for tight, cohesive layout
+    marginVertical: 2, // minimal gap for tight, cohesive layout
   },
 
   // Checkboxes
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 8,
   },
   checkbox: {
     width: 20,
@@ -647,6 +588,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
+    marginTop: 4, // Align top of checkbox with top of text
   },
   checkboxChecked: {
     backgroundColor: '#2563EB', // blue-600 (Brand Blue)

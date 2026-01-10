@@ -179,8 +179,8 @@ export const checkboxStyles = StyleSheet.create({
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginTop: 16,
-    marginBottom: 8,
+    marginTop: 2,
+    marginBottom: 2,
   },
   checkbox: {
     width: 24,
@@ -219,7 +219,7 @@ export const checkboxStyles = StyleSheet.create({
     marginTop: 0,
   },
   privacyLinkContainer: {
-    marginBottom: 8,
+    marginBottom: 2,
     marginLeft: 36, // Align with checkbox label
   },
   privacyLink: {
@@ -335,7 +335,7 @@ export const financialStyles = StyleSheet.create({
     backgroundColor: '#f9fafb', // very light grey
     borderRadius: 12,
     padding: 16,
-    marginBottom: 24,
+    marginBottom: 12,
     borderWidth: 1,
     borderColor: '#e5e7eb', // light grey
   },

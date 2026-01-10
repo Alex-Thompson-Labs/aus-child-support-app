@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
   logoMobile: {
     height: 52,
     width: 286,
-    marginLeft: -35,
+    marginLeft: -45,
     marginTop: -2,
   },
   logoDesktop: {
