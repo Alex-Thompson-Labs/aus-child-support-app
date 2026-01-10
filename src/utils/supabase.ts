@@ -146,6 +146,11 @@ export interface LeadSubmission {
   parenting_plan_status?: string | null;
   inquiry_type?: string | null;
   referer_url?: string | null;
+
+  // Lead scoring data (calculated client-side)
+  lead_score?: number;
+  score_category?: string;
+  scoring_factors?: string[];
 }
 
 /**
@@ -239,6 +244,11 @@ export async function submitLead(lead: LeadSubmission): Promise<{
       parenting_plan_status: lead.parenting_plan_status,
       inquiry_type: lead.inquiry_type,
       referer_url: lead.referer_url,
+
+      // Lead scoring data
+      lead_score: lead.lead_score,
+      score_category: lead.score_category,
+      scoring_factors: lead.scoring_factors,
     };
 
     // Insert lead into database and return the ID

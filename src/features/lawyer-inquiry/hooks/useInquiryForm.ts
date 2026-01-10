@@ -5,6 +5,7 @@
  */
 
 import { useAnalytics } from '@/src/utils/analytics';
+import { calculateLeadScore } from '@/src/utils/lead-scoring';
 import type { SpecialCircumstance } from '@/src/utils/special-circumstances';
 import {
   getSpecialCircumstanceById,
@@ -536,6 +537,24 @@ export function useInquiryForm(props: UseInquiryFormProps) {
         );
       }
 
+      // Calculate lead score based on multiple factors
+      const scoreResult = calculateLeadScore({
+        specialCircumstances: complexityReasonsWithCourtDate,
+        financialTags,
+        courtDate,
+        liability: props.isDirectMode ? 0 : parseFloat(props.liability) || 0,
+        careData: props.isDirectMode ? undefined : props.careData,
+        bindingAgreement: false, // Not captured in current form - future enhancement
+      });
+
+      if (__DEV__) {
+        console.log('[LawyerInquiry] Lead score calculated:', {
+          score: scoreResult.score,
+          category: scoreResult.category,
+          factors: scoreResult.factors,
+        });
+      }
+
       // Create lead submission for Supabase
       const leadSubmission: LeadSubmission = {
         // Parent contact
@@ -599,6 +618,11 @@ export function useInquiryForm(props: UseInquiryFormProps) {
         parenting_plan_status: props.hasParentingPlan || null,
         inquiry_type: props.assessmentType || null,
         referer_url: props.returnTo || null,
+
+        // Lead scoring data
+        lead_score: scoreResult.score,
+        score_category: scoreResult.category,
+        scoring_factors: scoreResult.factors,
       };
 
       if (__DEV__)
