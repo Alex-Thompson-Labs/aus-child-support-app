@@ -42,12 +42,11 @@ export const headerStyles = StyleSheet.create({
   },
   // Header styles - matches Full Breakdown modal pattern
   header: {
-    flexDirection: 'row',
-    alignItems: 'center', // Vertically center title and close button
-    justifyContent: 'space-between',
+    flexDirection: 'column',
     paddingLeft: 20,
     paddingRight: 12, // Account for close button's internal padding
-    paddingVertical: 16,
+    paddingVertical: 10,
+    gap: 2,
     ...Platform.select({
       web: {
         maxWidth: 560,
@@ -56,10 +55,10 @@ export const headerStyles = StyleSheet.create({
       default: {},
     }),
   },
-  headerTextContainer: {
-    flex: 1,
-    justifyContent: 'center', // Center text vertically within container
-    gap: 4,
+  headerTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   headerTitle: {
     fontSize: 18,
@@ -80,7 +79,7 @@ export const headerStyles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   closeButtonText: {
-    color: '#6b7280', // medium grey
+    color: '#1e3a8a', // blue-900 (matches header title)
     fontSize: 24,
     fontWeight: '400',
     lineHeight: 32,
@@ -148,7 +147,7 @@ export const formStyles = StyleSheet.create({
     borderColor: '#B91C1C', // muted brick red
   },
   textArea: {
-    height: 200,
+    height: 152,
     textAlignVertical: 'top',
     paddingTop: 12,
   },
@@ -327,8 +326,17 @@ export const financialStyles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  lockIcon: {
-    fontSize: 14,
+  secureBadge: {
+    backgroundColor: '#1e3a8a', // blue-900 (matches the header text color)
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  secureBadgeText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#ffffff',
+    letterSpacing: 0.5,
   },
   // Summary Card (Standard Mode)
   summaryCard: {

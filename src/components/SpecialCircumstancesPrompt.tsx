@@ -570,7 +570,7 @@ const styles = StyleSheet.create({
   sectionDivider: {
     height: 1,
     backgroundColor: '#e2e8f0', // slate-200 (light grey)
-    marginVertical: 2, // minimal gap for tight, cohesive layout
+    marginVertical: 12, // more space between sections
   },
 
   // Checkboxes

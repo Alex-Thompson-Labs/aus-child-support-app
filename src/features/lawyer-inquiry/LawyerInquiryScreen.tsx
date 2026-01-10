@@ -146,6 +146,7 @@ export default function LawyerInquiryScreen() {
           <FinancialSection
             isDirectMode={params.isDirectMode}
             liability={params.liability}
+            payer={params.payer}
             incomeA={params.incomeA}
             incomeB={params.incomeB}
             children={params.children}

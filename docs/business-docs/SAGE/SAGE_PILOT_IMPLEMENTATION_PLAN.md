@@ -179,11 +179,14 @@ Update the lawyer inquiry form success state.
 
 File: app/lawyer-inquiry.tsx
 
-When a partner is detected:
-
-- Update success message: "Your details have been securely encrypted and sent to Sage Family Lawyers via our protected portal. They will contact you within 24 hours."
-- Display Partner Badge: "🔒 Secured by AusChildSupport"
-- **Direct Enquiry Support**: Enable links like `?mode=direct&reason=hidden_income&partner=sage` for deep-linking from Sage's blog or social media.
+- **IMPORTANT:** The success message and appearance must remain exactly as it currently is until explicitly enabled.
+- Add partner detection logic, but gate all partner-specific changes behind partner detection.
+- Only if a partner is detected (via usePartner hook):
+  - Update success message: "Your details have been securely encrypted and sent to Sage Family Lawyers via our protected portal. They will contact you within 24 hours."
+  - Display Partner Badge: "🔒 Secured by AusChildSupport"
+- If no partner is detected, use the existing default success message and behavior.
+- **Direct Enquiry Support**: Enable links like `?mode=direct&reason=hidden_income&partner=sage` for deep-linking, but only apply partner-specific messaging when partner is actually detected.
+- **CRITICAL:** Since usePartner hook is disabled (Task 2.2), the calculator's success message must remain unchanged - implement the logic but ensure it defaults to current behavior when no partner is detected. Do NOT import or use usePartner hook unless partner detection is explicitly enabled.
 
 ## Phase 3: Testing & Validation (1 hour)
 

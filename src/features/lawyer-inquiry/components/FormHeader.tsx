@@ -49,22 +49,22 @@ export function FormHeader({ config, source, returnTo, fromBreakdown }: FormHead
   return (
     <View style={headerStyles.headerWrapper}>
       <View style={headerStyles.header}>
-        <View style={headerStyles.headerTextContainer}>
+        <View style={headerStyles.headerTitleRow}>
           <Text style={headerStyles.headerTitle}>{config.title}</Text>
-          {config.subtitle && (
-            <Text style={headerStyles.headerSubtitle}>{config.subtitle}</Text>
-          )}
+          <Pressable
+            style={headerStyles.closeButton}
+            onPress={handleClose}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Close form"
+          >
+            <Text style={headerStyles.closeButtonText}>✕</Text>
+          </Pressable>
         </View>
-        <Pressable
-          style={headerStyles.closeButton}
-          onPress={handleClose}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          accessible={true}
-          accessibilityRole="button"
-          accessibilityLabel="Close form"
-        >
-          <Text style={headerStyles.closeButtonText}>✕</Text>
-        </Pressable>
+        {config.subtitle && (
+          <Text style={headerStyles.headerSubtitle}>{config.subtitle}</Text>
+        )}
       </View>
     </View>
   );

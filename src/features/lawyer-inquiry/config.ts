@@ -36,7 +36,7 @@ export const INQUIRY_TYPE_CONFIG: Record<string, InquiryTypeConfig> = {
 
 export const DEFAULT_INQUIRY_CONFIG: InquiryTypeConfig = {
   title: 'Request Legal Help',
-  subtitle: 'Get a confidential case assessment from our verified family law network.',
+  subtitle: 'Connect with an independent expert to review your calculation results.',
   buttonText: 'Submit Inquiry',
   preFillMessage: '',
 };

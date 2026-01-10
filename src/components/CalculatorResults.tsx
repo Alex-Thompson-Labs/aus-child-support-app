@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  closeIcon: { fontSize: 22, color: '#4a5568' },
+  closeIcon: { fontSize: 22, color: '#1e3a8a' }, // blue-900 (matches header title)
   expandedScrollView: { flex: 1 },
   expandedContentContainer: { padding: 16, gap: 16 },
   staleAmount: {

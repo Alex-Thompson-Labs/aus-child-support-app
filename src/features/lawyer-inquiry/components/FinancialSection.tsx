@@ -43,6 +43,7 @@ function formatCurrency(value: string): string {
 export function FinancialSection({
   isDirectMode,
   liability,
+  payer,
   incomeA,
   incomeB,
   children,
@@ -66,7 +67,7 @@ export function FinancialSection({
   onTextChange,
   onBlur,
 }: FinancialSectionProps) {
-  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+  const [isSummaryOpen, setIsSummaryOpen] = useState(true);
 
   const toggleSummary = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -84,7 +85,9 @@ export function FinancialSection({
         accessibilityState={{ expanded: isSummaryOpen }}
         accessibilityLabel="Case Eligibility Check section, tap to expand or collapse"
       >
-        <Text style={financialStyles.lockIcon}>🔒</Text>
+        <View style={financialStyles.secureBadge}>
+          <Text style={financialStyles.secureBadgeText}>SECURE</Text>
+        </View>
         <Text style={financialStyles.financialSectionHeaderText}>
           Case Eligibility Check (Confidential)
         </Text>
@@ -104,7 +107,9 @@ export function FinancialSection({
             Your Calculation Summary
           </Text>
           <View style={financialStyles.summaryRow}>
-            <Text style={financialStyles.summaryLabelBold}>Annual Liability:</Text>
+            <Text style={financialStyles.summaryLabelBold}>
+              {payer === 'Parent A' ? 'You Pay:' : payer === 'Parent B' ? 'You Receive:' : 'Annual Liability:'}
+            </Text>
             <Text style={financialStyles.summaryAmount}>
               {formatCurrency(liability)}/year
             </Text>
@@ -123,38 +128,76 @@ export function FinancialSection({
               {formatCurrency(incomeB)}
             </Text>
           </View>
-          <View style={financialStyles.summaryRow}>
-            <Text style={financialStyles.summaryLabel}>
-              Number of Children:
-            </Text>
-            <Text style={financialStyles.summaryValue}>{children}</Text>
-          </View>
 
           {/* Care Arrangement */}
-          {careData.length > 0 && (
-            <>
-              <View style={financialStyles.summarySeparator} />
-              <Text style={financialStyles.summarySubtitle}>
-                Care Arrangement
-              </Text>
-              {careData.map((child, idx) => (
-                <View key={idx} style={financialStyles.careRow}>
-                  <Text style={financialStyles.careChildLabel}>
-                    Child {idx + 1}:
-                  </Text>
-                  <View style={financialStyles.carePercentages}>
-                    <Text style={financialStyles.careValue}>
-                      You: {child.careA.toFixed(0)}%
-                    </Text>
-                    <Text style={financialStyles.careSeparator}>•</Text>
-                    <Text style={financialStyles.careValue}>
-                      Other Parent: {child.careB.toFixed(0)}%
-                    </Text>
-                  </View>
-                </View>
-              ))}
-            </>
-          )}
+          {careData.length > 0 && (() => {
+            // Group children by identical care percentages
+            const groupedCare: { careA: number; careB: number; childIndices: number[] }[] = [];
+            careData.forEach((child, idx) => {
+              const existingGroup = groupedCare.find(
+                (g) => g.careA === child.careA && g.careB === child.careB
+              );
+              if (existingGroup) {
+                existingGroup.childIndices.push(idx + 1);
+              } else {
+                groupedCare.push({
+                  careA: child.careA,
+                  careB: child.careB,
+                  childIndices: [idx + 1],
+                });
+              }
+            });
+
+            const totalChildren = careData.length;
+            const childCountLabel = totalChildren === 1 ? '1 child' : `${totalChildren} children`;
+
+            // Format child label based on grouping
+            const formatChildLabel = (indices: number[]): string | null => {
+              // Single child total - no label needed
+              if (totalChildren === 1) {
+                return null;
+              }
+              // All children have same care
+              if (indices.length === totalChildren) {
+                return 'All children:';
+              }
+              // Subset of children
+              if (indices.length === 1) {
+                return `Child ${indices[0]}:`;
+              }
+              return `Children ${indices.join(', ')}:`;
+            };
+
+            return (
+              <>
+                <View style={financialStyles.summarySeparator} />
+                <Text style={financialStyles.summarySubtitle}>
+                  Care Arrangement – {childCountLabel}
+                </Text>
+                {groupedCare.map((group, idx) => {
+                  const label = formatChildLabel(group.childIndices);
+                  return (
+                    <View key={idx} style={financialStyles.careRow}>
+                      {label && (
+                        <Text style={financialStyles.careChildLabel}>
+                          {label}
+                        </Text>
+                      )}
+                      <View style={financialStyles.carePercentages}>
+                        <Text style={financialStyles.careValue}>
+                          You: {group.careA.toFixed(0)}%
+                        </Text>
+                        <Text style={financialStyles.careSeparator}>•</Text>
+                        <Text style={financialStyles.careValue}>
+                          Other Parent: {group.careB.toFixed(0)}%
+                        </Text>
+                      </View>
+                    </View>
+                  );
+                })}
+              </>
+            );
+          })()}
         </View>
       ) : (
         // Direct Mode: Show manual income inputs
@@ -176,8 +219,8 @@ export function FinancialSection({
               style={[
                 formStyles.input,
                 touched.manualIncomeA &&
-                  errors.manualIncomeA &&
-                  formStyles.inputError,
+                errors.manualIncomeA &&
+                formStyles.inputError,
               ]}
               placeholder="e.g. 75000"
               placeholderTextColor="#64748b"
@@ -208,8 +251,8 @@ export function FinancialSection({
               style={[
                 formStyles.input,
                 touched.manualIncomeB &&
-                  errors.manualIncomeB &&
-                  formStyles.inputError,
+                errors.manualIncomeB &&
+                formStyles.inputError,
               ]}
               placeholder="e.g. 60000"
               placeholderTextColor="#64748b"
@@ -238,8 +281,8 @@ export function FinancialSection({
               style={[
                 formStyles.input,
                 touched.manualChildren &&
-                  errors.manualChildren &&
-                  formStyles.inputError,
+                errors.manualChildren &&
+                formStyles.inputError,
               ]}
               placeholder="e.g. 2"
               placeholderTextColor="#64748b"
@@ -282,9 +325,9 @@ export function FinancialSection({
                     financialStyles.chip,
                     isSelected && financialStyles.chipActive,
                     touched.financialTags &&
-                      errors.financialTags &&
-                      !isSelected &&
-                      financialStyles.chipError,
+                    errors.financialTags &&
+                    !isSelected &&
+                    financialStyles.chipError,
                   ]}
                   onPress={() => {
                     let newTags;

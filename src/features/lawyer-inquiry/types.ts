@@ -97,6 +97,7 @@ export interface FinancialSectionProps {
   isDirectMode: boolean;
   // Standard mode props
   liability: string;
+  payer: string; // "Parent A" (You Pay), "Parent B" (You Receive), or "Neither"
   incomeA: string;
   incomeB: string;
   children: string;
