@@ -64,6 +64,7 @@ coverage/
 *.cert
 secrets/
 scripts/filter_lawyers.py
+docs/business-docs/
 
 # Analytics local data
 analytics-exports/
