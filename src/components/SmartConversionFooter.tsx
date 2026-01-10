@@ -263,6 +263,7 @@ export function SmartConversionFooter({
       >
         <View style={styles.cardContent}>
           <View style={styles.textContainer}>
+            {/* @ts-ignore - Web-only ARIA attributes */}
             <Text
               style={[
                 styles.headline,
@@ -271,6 +272,8 @@ export function SmartConversionFooter({
                 isProfessionalDoc && styles.headlineProfessional,
                 isHighValue && styles.headlineHighValue,
               ]}
+              accessibilityRole="header"
+              aria-level="2"
             >
               {cardConfig.headline}
             </Text>

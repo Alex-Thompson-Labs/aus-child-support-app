@@ -25,12 +25,12 @@ export default function RootLayout() {
   const isClient = useClientOnly();
   const pathname = usePathname();
 
-  // SEO: Generate Canonical URL (Strip query params)
+  // SEO: Generate Canonical URL (Strip query params and trailing slashes)
   const siteUrl =
     process.env.EXPO_PUBLIC_SITE_URL || 'https://auschildsupport.com';
-  // Handle root path logic safely
-  const cleanPath = pathname === '/' ? '' : pathname;
-  const canonicalUrl = `${siteUrl}${cleanPath}`;
+  // Handle root path and normalize trailing slashes (vercel.json has trailingSlash: false)
+  const normalizedPath = pathname === '/' ? '' : pathname.replace(/\/$/, '');
+  const canonicalUrl = `${siteUrl}${normalizedPath}`;
 
   // Define config constants
   const enableAnalytics = process.env.EXPO_PUBLIC_ENABLE_ANALYTICS !== 'false';

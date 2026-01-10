@@ -1,5 +1,7 @@
+import { NoIndex } from '@/src/components/seo/NoIndex';
+import { createShadow } from '@/src/utils/shadow-styles';
 import { Stack, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -8,15 +10,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { createShadow } from '@/src/utils/shadow-styles';
 
 export default function BlogList() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter(); // 👈 Use the router hook
+  const router = useRouter();
 
   useEffect(() => {
-    // Your WordPress API URL
+    // WordPress API URL
     const API_URL =
       'https://public-api.wordpress.com/wp/v2/sites/auschildsupportbackend.wordpress.com/posts';
 
@@ -41,6 +42,7 @@ export default function BlogList() {
   if (loading) {
     return (
       <View style={styles.center}>
+        <NoIndex />
         <ActivityIndicator size="large" color="#0000ff" />
         <Text style={{ marginTop: 10 }}>Loading articles...</Text>
       </View>
@@ -57,7 +59,7 @@ export default function BlogList() {
         {stripHtml(item.excerpt.rendered)}
       </Text>
 
-      {/* 👇 CHANGED: Now links to your internal Reader page */}
+      {/* Link to internal Reader page */}
       <TouchableOpacity
         onPress={() => router.push(`/blog/${item.id}`)}
         style={styles.button}
@@ -71,6 +73,8 @@ export default function BlogList() {
 
   return (
     <View style={styles.container}>
+      {/* NoIndex: Main blog is at blog.auschildsupport.com - this is just in-app reader */}
+      <NoIndex />
       <Stack.Screen options={{ title: 'Latest News' }} />
 
       <FlatList
@@ -88,12 +92,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
-    alignItems: 'center', // Centers content on Desktop
+    alignItems: 'center',
     width: '100%',
   },
   listStyle: {
     width: '100%',
-    maxWidth: 800, // Stops stretching on Desktop
+    maxWidth: 800,
     flex: 1,
   },
   listContent: {
@@ -132,7 +136,7 @@ const styles = StyleSheet.create({
   },
   button: {
     alignSelf: 'flex-start',
-    backgroundColor: '#0056b3', // Darker blue for better contrast (WCAG AA compliant)
+    backgroundColor: '#0056b3',
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,

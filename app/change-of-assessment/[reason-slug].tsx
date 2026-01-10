@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PageSEO } from '../../src/components/seo/PageSEO';
+import { Breadcrumb } from '../../src/components/ui/Breadcrumb';
 import {
   COA_REASON_PAGES,
   getCoAReasonBySlug,
@@ -76,10 +77,10 @@ export default function ChangeOfAssessmentReasonPage() {
   // Web-specific container styles
   const webContainerStyle = isWeb
     ? {
-        maxWidth: MAX_FORM_WIDTH,
-        width: '100%' as const,
-        alignSelf: 'center' as const,
-      }
+      maxWidth: MAX_FORM_WIDTH,
+      width: '100%' as const,
+      alignSelf: 'center' as const,
+    }
     : {};
 
   return (
@@ -116,17 +117,13 @@ export default function ChangeOfAssessmentReasonPage() {
           keyboardShouldPersistTaps="handled"
         >
           {/* Breadcrumbs */}
-          <View style={styles.breadcrumbs}>
-            <Pressable onPress={handleCalculator}>
-              <Text style={styles.breadcrumbLink}>Home</Text>
-            </Pressable>
-            <Text style={styles.breadcrumbSeparator}> {'>'} </Text>
-            <Text style={styles.breadcrumbText}>Change of Assessment</Text>
-            <Text style={styles.breadcrumbSeparator}> {'>'} </Text>
-            <Text style={styles.breadcrumbCurrent}>
-              Reason {reason.reasonNumber}
-            </Text>
-          </View>
+          <Breadcrumb
+            items={[
+              { label: 'Home', path: '/' },
+              { label: 'Change of Assessment' },
+              { label: `Reason ${reason.reasonNumber}` },
+            ]}
+          />
 
           {/* Page Title */}
           <Text style={styles.pageTitle}>
@@ -198,6 +195,32 @@ export default function ChangeOfAssessmentReasonPage() {
                   View All Special Circumstances
                 </Text>
               </Pressable>
+            </View>
+          </View>
+
+          {/* Browse Other Reasons - Internal Linking for SEO */}
+          <View style={styles.otherReasonsSection}>
+            {/* @ts-ignore - Web-only ARIA attributes */}
+            <Text style={styles.otherReasonsTitle} accessibilityRole="header" aria-level="2">
+              Browse Other Reasons
+            </Text>
+            <View style={styles.otherReasonsList}>
+              {COA_REASON_PAGES.filter((r) => r.slug !== slug).map((otherReason) => (
+                <Pressable
+                  key={otherReason.slug}
+                  style={[styles.otherReasonLink, isWeb && webClickableStyles]}
+                  onPress={() => router.push(`/change-of-assessment/${otherReason.slug}`)}
+                  accessibilityRole="link"
+                  accessibilityLabel={`Reason ${otherReason.reasonNumber}: ${otherReason.shortName}`}
+                >
+                  <Text style={styles.otherReasonNumber}>
+                    Reason {otherReason.reasonNumber}
+                  </Text>
+                  <Text style={styles.otherReasonName} numberOfLines={1}>
+                    {otherReason.shortName}
+                  </Text>
+                </Pressable>
+              ))}
             </View>
           </View>
 
@@ -480,5 +503,41 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#92400e',
     lineHeight: 20,
+  },
+
+  // Browse Other Reasons - Internal Linking
+  otherReasonsSection: {
+    marginBottom: 24,
+  },
+  otherReasonsTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1e293b',
+    marginBottom: 12,
+  },
+  otherReasonsList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  otherReasonLink: {
+    backgroundColor: '#f1f5f9',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  otherReasonNumber: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#2563EB',
+  },
+  otherReasonName: {
+    fontSize: 13,
+    color: '#475569',
+    fontWeight: '500',
+    maxWidth: 180,
   },
 });

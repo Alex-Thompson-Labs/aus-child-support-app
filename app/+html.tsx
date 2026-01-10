@@ -7,7 +7,7 @@ const organizationSchema = {
   '@type': 'Organization',
   name: 'AusChildSupport',
   url: 'https://auschildsupport.com',
-  logo: 'https://auschildsupport.com/logo.png',
+  logo: 'https://auschildsupport.com/favicon-rounded-white-bg.png',
 };
 
 // GLOBAL SCHEMA: SoftwareApplication
@@ -22,11 +22,8 @@ const softwareApplicationSchema = {
     price: '0',
     priceCurrency: 'AUD',
   },
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: '4.8',
-    reviewCount: '150',
-  },
+  // Note: aggregateRating removed - Google requires real, verified ratings
+  // Add back only when you have actual user reviews to reference
 };
 
 export default function Root({ children }: PropsWithChildren) {
@@ -55,6 +52,7 @@ export default function Root({ children }: PropsWithChildren) {
         />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Child Support Calculator Australia - Free calculator using official Services Australia 2026 formula" />
         <meta name="twitter:card" content="summary_large_image" />
 
         {/* Favicon */}

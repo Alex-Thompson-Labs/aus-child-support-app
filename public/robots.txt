@@ -5,5 +5,12 @@ Allow: /
 # Disallow admin pages
 Disallow: /admin/
 
+# Disallow duplicate .original routes (index bloat prevention)
+Disallow: /*.original
+
+# Disallow non-indexable routes
+Disallow: /modal
+Disallow: /_sitemap
+
 # Sitemap
 Sitemap: https://auschildsupport.com/sitemap.xml

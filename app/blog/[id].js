@@ -1,3 +1,4 @@
+import { NoIndex } from '@/src/components/seo/NoIndex';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -11,7 +12,7 @@ import {
 import RenderHtml from 'react-native-render-html';
 
 export default function BlogPost() {
-  const { id } = useLocalSearchParams(); // Get the ID from the URL
+  const { id } = useLocalSearchParams();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const { width } = useWindowDimensions();
@@ -19,7 +20,6 @@ export default function BlogPost() {
   useEffect(() => {
     if (!id) return;
 
-    // Fetch just this one specific post
     fetch(
       `https://public-api.wordpress.com/wp/v2/sites/auschildsupportbackend.wordpress.com/posts/${id}`
     )
@@ -42,6 +42,7 @@ export default function BlogPost() {
   if (loading) {
     return (
       <View style={styles.center}>
+        <NoIndex />
         <ActivityIndicator size="large" color="#0056b3" />
       </View>
     );
@@ -50,6 +51,7 @@ export default function BlogPost() {
   if (!post) {
     return (
       <View style={styles.center}>
+        <NoIndex />
         <Text>Article not found.</Text>
       </View>
     );
@@ -57,7 +59,8 @@ export default function BlogPost() {
 
   return (
     <View style={styles.container}>
-      {/* Dynamic Header Title */}
+      {/* NoIndex: Main blog is at blog.auschildsupport.com - this is just in-app reader */}
+      <NoIndex />
       <Stack.Screen options={{ title: 'Article' }} />
 
       <ScrollView
@@ -111,7 +114,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    alignItems: 'center', // Centers content on Desktop
+    alignItems: 'center',
   },
   center: {
     flex: 1,
@@ -123,19 +126,19 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   scrollContent: {
-    alignItems: 'center', // Keeps the article column centered
+    alignItems: 'center',
     paddingVertical: 30,
   },
   articleWrapper: {
     width: '100%',
-    maxWidth: 800, // Reads like a Medium article on Desktop
+    maxWidth: 800,
     paddingHorizontal: 20,
   },
   title: {
     fontSize: 32,
     fontWeight: '800',
     marginBottom: 10,
-    color: '#0f172a', // slate-900 (Dark Slate)
+    color: '#0f172a',
     lineHeight: 40,
   },
   date: {
