@@ -44,61 +44,61 @@ export default function LeadDetailScreen() {
   const [exportingPDF, setExportingPDF] = useState(false);
 
   useEffect(() => {
-    checkAuthAndLoadLead();
-  }, [leadId]);
-
-  const checkAuthAndLoadLead = async () => {
-    // Lazy-load Supabase for auth check
-    const supabase = await getSupabaseClient();
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (
-      !session ||
-      session.user.email?.toLowerCase() !== 'alex@auschildsupport.com'
-    ) {
-      router.replace('/admin/login');
-      return;
-    }
-
-    await loadLead();
-  };
-
-  const loadLead = async () => {
-    try {
-      setLoading(true);
-
-      // Lazy-load Supabase for data fetching
+    const checkAuthAndLoadLead = async () => {
+      // Lazy-load Supabase for auth check
       const supabase = await getSupabaseClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      const { data, error } = await supabase
-        .from('leads')
-        .select('*')
-        .eq('id', leadId)
-        .single();
-
-      if (error) {
-        console.error('[LeadDetail] Error loading lead:', error);
-        if (Platform.OS === 'web') {
-          alert(`Error Loading Lead\n\n${error.message}`);
-        } else {
-          Alert.alert('Error Loading Lead', error.message);
-        }
-        router.back();
+      if (
+        !session ||
+        session.user.email?.toLowerCase() !== 'alex@auschildsupport.com'
+      ) {
+        router.replace('/admin/login');
         return;
       }
 
-      console.log('[LeadDetail] Loaded lead:', data.id);
-      setLead(data);
-      setNotes(data.notes || '');
-    } catch (error) {
-      console.error('[LeadDetail] Unexpected error:', error);
-      router.back();
-    } finally {
-      setLoading(false);
-    }
-  };
+      await loadLead();
+    };
+
+    const loadLead = async () => {
+      try {
+        setLoading(true);
+
+        // Lazy-load Supabase for data fetching
+        const supabase = await getSupabaseClient();
+
+        const { data, error } = await supabase
+          .from('leads')
+          .select('*')
+          .eq('id', leadId)
+          .single();
+
+        if (error) {
+          console.error('[LeadDetail] Error loading lead:', error);
+          if (Platform.OS === 'web') {
+            alert(`Error Loading Lead\n\n${error.message}`);
+          } else {
+            Alert.alert('Error Loading Lead', error.message);
+          }
+          router.back();
+          return;
+        }
+
+        console.log('[LeadDetail] Loaded lead:', data.id);
+        setLead(data);
+        setNotes(data.notes || '');
+      } catch (error) {
+        console.error('[LeadDetail] Unexpected error:', error);
+        router.back();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuthAndLoadLead();
+  }, [leadId, router]);
 
   const generateTeaserEmail = () => {
     if (!lead) return;
@@ -119,12 +119,16 @@ export default function LeadDetailScreen() {
     if (lead.care_data && lead.care_data.length > 0) {
       const careStrings = lead.care_data.map(
         (child, idx) =>
-          `Child ${idx + 1}: A=${child.careA.toFixed(0)}%, B=${child.careB.toFixed(0)}%`
+          `Child ${idx + 1}: A=${child.careA.toFixed(
+            0
+          )}%, B=${child.careB.toFixed(0)}%`
       );
       careInfo = careStrings.join(' | ');
     } else if (lead.children_count > 0) {
       // If no detailed care data, show count only
-      careInfo = `${lead.children_count} child${lead.children_count > 1 ? 'ren' : ''} (care % not specified)`;
+      careInfo = `${lead.children_count} child${
+        lead.children_count > 1 ? 'ren' : ''
+      } (care % not specified)`;
     }
 
     // Add additional complexity triggers if present
@@ -276,7 +280,9 @@ auschildsupport.com`;
       console.error('[LeadDetail] Error exporting PDF:', error);
       if (Platform.OS === 'web') {
         alert(
-          `Export Failed\n\n${error instanceof Error ? error.message : 'Unknown error occurred'}`
+          `Export Failed\n\n${
+            error instanceof Error ? error.message : 'Unknown error occurred'
+          }`
         );
       } else {
         Alert.alert(

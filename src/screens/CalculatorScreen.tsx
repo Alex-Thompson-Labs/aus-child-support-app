@@ -93,10 +93,9 @@ export function CalculatorScreen() {
   // =========================================================================
   // Income Support Modal Logic
   // =========================================================================
-  const [incomeSupportModalVisible, setIncomeSupportModalVisible] = useState(false);
+  const [incomeSupportModalVisible, setIncomeSupportModalVisible] =
+    useState(false);
   const [pendingParent, setPendingParent] = useState<'A' | 'B' | null>(null);
-  const [incomeSupportA, setIncomeSupportA] = useState(false);
-  const [incomeSupportB, setIncomeSupportB] = useState(false);
   // Track which parents need to be asked (for sequential prompting)
   const [needsPromptB, setNeedsPromptB] = useState(false);
   // Use a ref to store Parent A's response immediately (not subject to async state updates)
@@ -118,14 +117,20 @@ export function CalculatorScreen() {
       careKey: 'careAmountA' | 'careAmountB'
     ): boolean => {
       // Check if parent has < 14% care for at least one child
-      const hasLessThan14Care = formState.children.some(child => {
-        const carePercent = convertCareToPercentage(child[careKey], child.carePeriod);
+      const hasLessThan14Care = formState.children.some((child) => {
+        const carePercent = convertCareToPercentage(
+          child[careKey],
+          child.carePeriod
+        );
         return carePercent < 14;
       });
 
       // Check if parent has < 35% care for at least one child
-      const hasLessThan35Care = formState.children.some(child => {
-        const carePercent = convertCareToPercentage(child[careKey], child.carePeriod);
+      const hasLessThan35Care = formState.children.some((child) => {
+        const carePercent = convertCareToPercentage(
+          child[careKey],
+          child.carePeriod
+        );
         return carePercent < 35;
       });
 
@@ -172,7 +177,6 @@ export function CalculatorScreen() {
    */
   const handleIncomeSupportYes = () => {
     if (pendingParent === 'A') {
-      setIncomeSupportA(true);
       if (needsPromptB) {
         // Store Parent A's response in ref (immediate, not async) and ask about Parent B
         tempParentAResponseRef.current = true;
@@ -187,7 +191,6 @@ export function CalculatorScreen() {
         runCalculation(true, false);
       }
     } else if (pendingParent === 'B') {
-      setIncomeSupportB(true);
       setIncomeSupportModalVisible(false);
       // Delay clearing pendingParent to prevent flash during modal close animation
       setTimeout(() => setPendingParent(null), 200);
@@ -201,7 +204,6 @@ export function CalculatorScreen() {
    */
   const handleIncomeSupportNo = () => {
     if (pendingParent === 'A') {
-      setIncomeSupportA(false);
       if (needsPromptB) {
         // Store Parent A's response in ref (immediate, not async) and ask about Parent B
         tempParentAResponseRef.current = false;
@@ -216,7 +218,6 @@ export function CalculatorScreen() {
         runCalculation(false, false);
       }
     } else if (pendingParent === 'B') {
-      setIncomeSupportB(false);
       setIncomeSupportModalVisible(false);
       // Delay clearing pendingParent to prevent flash during modal close animation
       setTimeout(() => setPendingParent(null), 200);
@@ -259,9 +260,7 @@ export function CalculatorScreen() {
         {/* @ts-ignore - Web-only ARIA role */}
         <View style={styles.header} accessibilityRole="banner">
           <View
-            style={
-              isDesktop ? styles.headerContainer : styles.mobileHeaderRow
-            }
+            style={isDesktop ? styles.headerContainer : styles.mobileHeaderRow}
           >
             <Image
               source={require('../../assets/images/webp/aus-child-support-logo-header-transparent.webp')}
@@ -273,7 +272,9 @@ export function CalculatorScreen() {
             <Pressable
               style={styles.blogButton}
               accessibilityRole="button"
-              onPress={() => Linking.openURL('https://blog.auschildsupport.com')}
+              onPress={() =>
+                Linking.openURL('https://blog.auschildsupport.com')
+              }
             >
               <Text style={styles.blogButtonText}>Blog</Text>
             </Pressable>
@@ -311,9 +312,7 @@ export function CalculatorScreen() {
         {/* Results Overlay */}
         {results && (
           <View style={styles.resultsOverlay}>
-            <View
-              style={isDesktop ? styles.bodyContainer : styles.fullWidth}
-            >
+            <View style={isDesktop ? styles.bodyContainer : styles.fullWidth}>
               <CalculatorResults
                 results={results}
                 formData={formState}

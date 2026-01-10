@@ -6,7 +6,6 @@
 
 import {
   isWeb,
-  useResponsive,
   webClickableStyles,
   webInputStyles,
 } from '@/src/utils/responsive';
@@ -41,37 +40,7 @@ export default function AdminDashboardScreen() {
   const [statusFilter, setStatusFilter] = useState<'all' | LeadStatus>('all');
   const [sortBy, setSortBy] = useState<'date' | 'liability'>('date');
 
-  // Check authentication on mount
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    // Lazy-load Supabase for auth check
-    const supabase = await getSupabaseClient();
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
-      console.log('[AdminDashboard] No session - redirecting to login');
-      router.replace('/admin/login');
-      return;
-    }
-
-    // Verify it's the admin email
-    if (session.user.email?.toLowerCase() !== 'alex@auschildsupport.com') {
-      console.log('[AdminDashboard] Not admin email - redirecting');
-      await supabase.auth.signOut();
-      router.replace('/admin/login');
-      return;
-    }
-
-    console.log('[AdminDashboard] Auth verified - loading leads');
-    loadLeads();
-  };
-
-  const loadLeads = async () => {
+  const loadLeads = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -103,12 +72,42 @@ export default function AdminDashboardScreen() {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, []);
+
+  // Check authentication on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      // Lazy-load Supabase for auth check
+      const supabase = await getSupabaseClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        console.log('[AdminDashboard] No session - redirecting to login');
+        router.replace('/admin/login');
+        return;
+      }
+
+      // Verify it's the admin email
+      if (session.user.email?.toLowerCase() !== 'alex@auschildsupport.com') {
+        console.log('[AdminDashboard] Not admin email - redirecting');
+        await supabase.auth.signOut();
+        router.replace('/admin/login');
+        return;
+      }
+
+      console.log('[AdminDashboard] Auth verified - loading leads');
+      loadLeads();
+    };
+
+    checkAuth();
+  }, [router, loadLeads]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     loadLeads();
-  }, []);
+  }, [loadLeads]);
 
   // Apply filters and search
   useEffect(() => {

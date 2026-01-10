@@ -1,5 +1,3 @@
-import type { AssessmentYear } from '../utils/child-support-constants';
-
 export interface ChildInput {
   id: string;
   age: 'Under 13' | '13+';

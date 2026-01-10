@@ -59,11 +59,11 @@ export default function LawyerInquiryScreen() {
   // Web container styles
   const webContainerStyle = isWeb
     ? {
-      maxWidth: MAX_FORM_WIDTH,
-      width: '100%' as const,
-      marginLeft: 'auto' as const,
-      marginRight: 'auto' as const,
-    }
+        maxWidth: MAX_FORM_WIDTH,
+        width: '100%' as const,
+        marginLeft: 'auto' as const,
+        marginRight: 'auto' as const,
+      }
     : {};
 
   // Render Success View
@@ -128,7 +128,10 @@ export default function LawyerInquiryScreen() {
 
         <ScrollView
           style={containerStyles.scrollView}
-          contentContainerStyle={[containerStyles.scrollContent, webContainerStyle]}
+          contentContainerStyle={[
+            containerStyles.scrollContent,
+            webContainerStyle,
+          ]}
           keyboardShouldPersistTaps="handled"
         >
           {/* Section 1: Personal Information */}
@@ -163,6 +166,7 @@ export default function LawyerInquiryScreen() {
             payer={params.payer}
             incomeA={params.incomeA}
             incomeB={params.incomeB}
+            // eslint-disable-next-line react/no-children-prop
             children={params.children}
             careData={params.careData}
             manualIncomeA={form.manualIncomeA}

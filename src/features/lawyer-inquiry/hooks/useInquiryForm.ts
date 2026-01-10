@@ -107,13 +107,19 @@ export function useInquiryForm(props: UseInquiryFormProps) {
   const [isUpdatingEnrichment, setIsUpdatingEnrichment] = useState(false);
 
   // Calculated liability from enrichment estimator
-  const [enrichmentLiability, setEnrichmentLiability] = useState<number | null>(null);
+  const [enrichmentLiability, setEnrichmentLiability] = useState<number | null>(
+    null
+  );
 
   // Payer role from enrichment estimator
-  const [enrichmentPayerRole, setEnrichmentPayerRole] = useState<'you' | 'other_parent' | null>(null);
+  const [enrichmentPayerRole, setEnrichmentPayerRole] = useState<
+    'you' | 'other_parent' | null
+  >(null);
 
   // Court date for enrichment flow
-  const [enrichmentCourtDate, setEnrichmentCourtDate] = useState<Date | null>(null);
+  const [enrichmentCourtDate, setEnrichmentCourtDate] = useState<Date | null>(
+    null
+  );
 
   // Refs for input focus management
   const emailRef = useRef<TextInput>(null);
@@ -134,7 +140,8 @@ export function useInquiryForm(props: UseInquiryFormProps) {
 
   // Determine if conditional fields should be shown (must be defined before validCircumstances)
   const shouldShowCourtDate = useMemo(
-    () => (props.specialCircumstances || []).some((id) => isCourtDateReason(id)),
+    () =>
+      (props.specialCircumstances || []).some((id) => isCourtDateReason(id)),
     [props.specialCircumstances]
   );
 
@@ -171,7 +178,8 @@ export function useInquiryForm(props: UseInquiryFormProps) {
         circumstances.push({
           id: 'court_date_dynamic',
           label: `I have an upcoming court hearing regarding child support. (${formatted})`,
-          description: 'Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance.',
+          description:
+            'Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance.',
           category: 'urgent' as const,
           priority: 1,
           officialCodes: ['5.2.11'] as const,
@@ -182,7 +190,8 @@ export function useInquiryForm(props: UseInquiryFormProps) {
         circumstances.push({
           id: 'court_date_dynamic',
           label: 'I have an upcoming court hearing regarding child support.',
-          description: 'Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance.',
+          description:
+            'Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance.',
           category: 'urgent' as const,
           priority: 1,
           officialCodes: ['5.2.11'] as const,
@@ -222,7 +231,13 @@ export function useInquiryForm(props: UseInquiryFormProps) {
         case 'postcode':
           return validatePostcode(value as string);
         case 'message':
-          return validateMessage(value as string, financialTags, props.preFillMessage, props.specialCircumstances, props.reason);
+          return validateMessage(
+            value as string,
+            financialTags,
+            props.preFillMessage,
+            props.specialCircumstances,
+            props.reason
+          );
         case 'consent':
           return validateConsent(value as boolean);
         case 'courtDate':
@@ -268,7 +283,13 @@ export function useInquiryForm(props: UseInquiryFormProps) {
       email: validateEmail(email),
       phone: validatePhone(phone),
       postcode: validatePostcode(postcode),
-      message: validateMessage(message, financialTags, props.preFillMessage, props.specialCircumstances, props.reason),
+      message: validateMessage(
+        message,
+        financialTags,
+        props.preFillMessage,
+        props.specialCircumstances,
+        props.reason
+      ),
       consent: validateConsent(consent),
       courtDate: validateCourtDate(courtDate, shouldShowCourtDate),
       financialTags: validateFinancialTags(
@@ -319,6 +340,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     props.specialCircumstances,
     props.reason,
     props.isDirectMode,
+    props.preFillMessage,
     manualIncomeA,
     manualIncomeB,
     manualChildren,
@@ -502,14 +524,18 @@ export function useInquiryForm(props: UseInquiryFormProps) {
 
       try {
         analytics.track('inquiry_form_submitted', {
-          trigger_type: props.isDirectMode ? 'direct' : props.trigger || 'unknown',
+          trigger_type: props.isDirectMode
+            ? 'direct'
+            : props.trigger || 'unknown',
           is_direct_mode: props.isDirectMode,
-          direct_mode_reason: props.isDirectMode ? props.reason || 'none' : 'n/a',
+          direct_mode_reason: props.isDirectMode
+            ? props.reason || 'none'
+            : 'n/a',
           annual_liability: props.isDirectMode
             ? 0
             : props.liability
-              ? Number(parseFloat(props.liability).toFixed(2))
-              : 0,
+            ? Number(parseFloat(props.liability).toFixed(2))
+            : 0,
           has_phone: !!sanitizePhone(phone),
           message_length: sanitizeString(message).length,
           time_to_submit: timeToSubmit,
@@ -573,28 +599,34 @@ export function useInquiryForm(props: UseInquiryFormProps) {
         children_count: props.isDirectMode
           ? parseInt(manualChildren, 10) || 0
           : parseInt(props.children) || 0,
-        annual_liability: props.isDirectMode ? 0 : parseFloat(props.liability) || 0,
+        annual_liability: props.isDirectMode
+          ? 0
+          : parseFloat(props.liability) || 0,
         payer_role: props.isDirectMode
           ? null
           : props.payer === 'Parent A'
-            ? 'you'
-            : props.payer === 'Parent B'
-              ? 'other_parent'
-              : null,
+          ? 'you'
+          : props.payer === 'Parent B'
+          ? 'other_parent'
+          : null,
 
         // Care arrangement - null in Direct Mode
-        care_data: props.isDirectMode ? null : props.careData.length > 0 ? props.careData : null,
+        care_data: props.isDirectMode
+          ? null
+          : props.careData.length > 0
+          ? props.careData
+          : null,
 
         // Complexity data - Use 'direct_inquiry' trigger in Direct Mode
         complexity_trigger: props.isDirectMode
           ? ['direct_inquiry']
           : buildComplexityTriggers(
-            props.trigger,
-            props.specialCircumstances,
-            financialTags,
-            props.careData,
-            props.liability
-          ),
+              props.trigger,
+              props.specialCircumstances,
+              financialTags,
+              props.careData,
+              props.liability
+            ),
         complexity_reasons: props.isDirectMode
           ? props.reason
             ? [props.reason]
@@ -698,7 +730,10 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     props.incomeA,
     props.incomeB,
     props.children,
-    router,
+    props.payer,
+    props.hasParentingPlan,
+    props.assessmentType,
+    props.returnTo,
     analytics,
     validCircumstances,
     courtDate,
@@ -735,7 +770,10 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     }
 
     // If no factors selected and no liability calculated, just navigate home
-    if (selectedEnrichmentFactors.length === 0 && enrichmentLiability === null) {
+    if (
+      selectedEnrichmentFactors.length === 0 &&
+      enrichmentLiability === null
+    ) {
       navigateHome();
       return;
     }
@@ -747,7 +785,9 @@ export function useInquiryForm(props: UseInquiryFormProps) {
       if (factor === 'enrichment_court_date' && enrichmentCourtDate) {
         // Format: enrichment_court_date_DD_MMM_YYYY (e.g., enrichment_court_date_12_feb_2026)
         const day = enrichmentCourtDate.getDate();
-        const month = enrichmentCourtDate.toLocaleString('en-AU', { month: 'short' }).toLowerCase();
+        const month = enrichmentCourtDate
+          .toLocaleString('en-AU', { month: 'short' })
+          .toLowerCase();
         const year = enrichmentCourtDate.getFullYear();
         return `enrichment_court_date_${day}_${month}_${year}`;
       }
@@ -785,7 +825,14 @@ export function useInquiryForm(props: UseInquiryFormProps) {
       if (!isMounted.current) return;
       navigateHome();
     }, 1500);
-  }, [currentLeadId, selectedEnrichmentFactors, enrichmentCourtDate, enrichmentLiability, enrichmentPayerRole, navigateHome]);
+  }, [
+    currentLeadId,
+    selectedEnrichmentFactors,
+    enrichmentCourtDate,
+    enrichmentLiability,
+    enrichmentPayerRole,
+    navigateHome,
+  ]);
 
   /**
    * Skip enrichment and close

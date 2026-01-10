@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useState } from 'react';
 import {
   ActivityIndicator,
+  DeviceEventEmitter,
   Modal,
   Pressable,
   ScrollView,
@@ -23,7 +24,6 @@ import { LazyLoadErrorBoundary } from './ui/LazyLoadErrorBoundary';
 // Event-based breakdown re-open signaling
 // Used when returning from lawyer inquiry to re-open the breakdown modal
 // ============================================================================
-import { DeviceEventEmitter } from 'react-native';
 
 /**
  * Helper to generate income support indicator text for collapsed card
@@ -200,10 +200,13 @@ export function CalculatorResults({
 
   // Listen for event to re-open breakdown modal when returning from lawyer inquiry
   React.useEffect(() => {
-    const subscription = DeviceEventEmitter.addListener(OPEN_BREAKDOWN_EVENT, () => {
-      console.log('[CalculatorResults] Received open breakdown event');
-      setIsExpanded(true);
-    });
+    const subscription = DeviceEventEmitter.addListener(
+      OPEN_BREAKDOWN_EVENT,
+      () => {
+        console.log('[CalculatorResults] Received open breakdown event');
+        setIsExpanded(true);
+      }
+    );
     return () => subscription.remove();
   }, []);
   const insets = useSafeAreaInsets();
@@ -222,10 +225,11 @@ export function CalculatorResults({
   const [lastResultsKey, setLastResultsKey] = useState('');
 
   // Generate a unique key for the current results
-  const currentResultsKey = `${results.finalPaymentAmount}-${results.payer
-    }-${results.childResults
-      .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
-      .join('-')}-${results.ATI_A}-${results.ATI_B}`;
+  const currentResultsKey = `${results.finalPaymentAmount}-${
+    results.payer
+  }-${results.childResults
+    .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
+    .join('-')}-${results.ATI_A}-${results.ATI_B}`;
 
   // Update formData when results change, but preserve selected CoA reasons
   React.useEffect(() => {
@@ -257,10 +261,10 @@ export function CalculatorResults({
 
   const webModalContainerStyle = isWeb
     ? {
-      maxWidth: MAX_MODAL_WIDTH,
-      width: '100%' as const,
-      alignSelf: 'center' as const,
-    }
+        maxWidth: MAX_MODAL_WIDTH,
+        width: '100%' as const,
+        alignSelf: 'center' as const,
+      }
     : {};
 
   const renderBreakdownContent = () => (
@@ -282,10 +286,11 @@ export function CalculatorResults({
       />
 
       <SpecialCircumstancesPrompt
-        key={`${results.finalPaymentAmount}-${results.payer
-          }-${results.childResults
-            .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
-            .join('-')}-${results.ATI_A}-${results.ATI_B}`}
+        key={`${results.finalPaymentAmount}-${
+          results.payer
+        }-${results.childResults
+          .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
+          .join('-')}-${results.ATI_A}-${results.ATI_B}`}
         results={results}
         formData={localFormData}
         onNavigate={() => setIsExpanded(false)}
@@ -365,12 +370,13 @@ export function CalculatorResults({
             { paddingBottom: Math.max(insets.bottom, 12) },
           ]}
           accessibilityRole="button"
-          accessibilityLabel={`${results.payer === 'Neither'
-            ? 'No payment required'
-            : `${results.payer} pays ${formatCurrency(
-              results.finalPaymentAmount
-            )} per year`
-            }. Tap to view full breakdown`}
+          accessibilityLabel={`${
+            results.payer === 'Neither'
+              ? 'No payment required'
+              : `${results.payer} pays ${formatCurrency(
+                  results.finalPaymentAmount
+                )} per year`
+          }. Tap to view full breakdown`}
           accessibilityHint="Opens detailed calculation breakdown"
         >
           <View
@@ -399,18 +405,18 @@ export function CalculatorResults({
                 results.FAR_A,
                 results.FAR_B
               ) && (
-                  <View style={styles.collapsedIncomeSupportBadge}>
-                    <Text style={styles.collapsedIncomeSupportText}>
-                      ✓{' '}
-                      {getIncomeSupportText(
-                        formData?.supportA ?? false,
-                        formData?.supportB ?? false,
-                        results.FAR_A,
-                        results.FAR_B
-                      )}
-                    </Text>
-                  </View>
-                )}
+                <View style={styles.collapsedIncomeSupportBadge}>
+                  <Text style={styles.collapsedIncomeSupportText}>
+                    ✓{' '}
+                    {getIncomeSupportText(
+                      formData?.supportA ?? false,
+                      formData?.supportB ?? false,
+                      results.FAR_A,
+                      results.FAR_B
+                    )}
+                  </Text>
+                </View>
+              )}
             </View>
             <View style={styles.expandHint}>
               <Text style={styles.expandHintText}>Tap for breakdown ▲</Text>
