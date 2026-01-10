@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    alignSelf: 'center',
+    marginHorizontal: 'auto',
     gap: 16,
   },
   blogButton: {

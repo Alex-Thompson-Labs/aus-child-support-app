@@ -468,6 +468,7 @@ const styles = StyleSheet.create({
   fixedBottomCard: {
     width: '94%',
     maxWidth: 750, // Matches the narrow form width exactly
+    minHeight: 85, // Fixed height to prevent CLS when content varies
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingBottom: 8,

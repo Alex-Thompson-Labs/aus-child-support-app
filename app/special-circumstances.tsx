@@ -3,6 +3,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { HelpTooltip } from '../src/components/HelpTooltip';
+import { PageSEO } from '../src/components/seo/PageSEO';
+import Accordion from '../src/components/ui/Accordion';
 import { useAnalytics } from '../src/utils/analytics';
 import {
   MAX_FORM_WIDTH,
@@ -50,6 +52,37 @@ export default function SpecialCircumstancesScreen() {
   );
   const [isNavigating, setIsNavigating] = useState(false);
   const [hasPropertySettlement, setHasPropertySettlement] = useState(false);
+
+  // PAGE SCHEMA: FAQ for Special Circumstances
+  const faqSchema = {
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'What are special circumstances in child support?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Special circumstances are situations that are too complex for the standard child support calculator. These include issues with income reporting, property settlements, high child care costs, or upcoming court hearings that may affect your assessment.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Can I select multiple special circumstances?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Yes, you can select multiple circumstances that apply to your situation. The system will identify the highest priority circumstance to help match you with appropriate legal assistance.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'What happens after I select my circumstances?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'After selecting your circumstances, you will be directed to speak with a family lawyer who can help you request adjustments to your child support assessment through Services Australia.',
+        },
+      },
+    ],
+  };
 
   // Handle preselect URL parameter (from CoA reason pages)
   useEffect(() => {
@@ -188,9 +221,16 @@ export default function SpecialCircumstancesScreen() {
     : {};
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      {/* Header */}
-      <View style={styles.header}>
+    <>
+      <PageSEO
+        title="Special Circumstances - Child Support Calculator Australia"
+        description="Identify special circumstances that may affect your child support assessment. Select applicable circumstances and connect with a family lawyer for assistance."
+        canonicalPath="/special-circumstances"
+        schema={faqSchema}
+      />
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        {/* Header */}
+        <View style={styles.header}>
         <Text style={styles.headerTitle}>Special Circumstances</Text>
         <Pressable
           style={styles.closeButton}
@@ -393,8 +433,39 @@ export default function SpecialCircumstancesScreen() {
             </Text>
           )}
         </View>
+
+        {/* FAQ Section */}
+        <View style={styles.faqSection}>
+          <Text style={styles.faqSectionTitle}>Frequently Asked Questions</Text>
+          
+          <Accordion title="What are special circumstances in child support?">
+            <Text style={styles.faqText}>
+              Special circumstances are situations that are too complex for the standard 
+              child support calculator. These include issues with income reporting, 
+              property settlements, high child care costs, or upcoming court hearings 
+              that may affect your assessment.
+            </Text>
+          </Accordion>
+
+          <Accordion title="Can I select multiple special circumstances?">
+            <Text style={styles.faqText}>
+              Yes, you can select multiple circumstances that apply to your situation. 
+              The system will identify the highest priority circumstance to help match 
+              you with appropriate legal assistance.
+            </Text>
+          </Accordion>
+
+          <Accordion title="What happens after I select my circumstances?">
+            <Text style={styles.faqText}>
+              After selecting your circumstances, you will be directed to speak with 
+              a family lawyer who can help you request adjustments to your child support 
+              assessment through Services Australia.
+            </Text>
+          </Accordion>
+        </View>
       </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </>
   );
 }
 
@@ -466,6 +537,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#475569',
     lineHeight: 21,
+  },
+
+  // FAQ Section
+  faqSection: {
+    marginTop: 32,
+    marginBottom: 24,
+  },
+  faqSectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1e293b',
+    marginBottom: 16,
+  },
+  faqText: {
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#475569',
   },
 
   // Category sections
