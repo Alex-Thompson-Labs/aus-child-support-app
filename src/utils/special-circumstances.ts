@@ -94,6 +94,15 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
     officialCodes: ['5.2.1'] as const,
   },
   {
+    id: 'high_childcare_costs',
+    label: 'I have high childcare costs.',
+    description:
+      'When childcare costs are significantly higher than what the standard formula accounts for—such as full-time daycare, before/after school care, or holiday programs—a lawyer can help present evidence for an adjustment.',
+    category: 'child',
+    priority: 9,
+    officialCodes: ['5.2.6'] as const,
+  },
+  {
     id: 'property_settlement',
     label: 'I have a property settlement pending.',
     description:
@@ -245,7 +254,7 @@ export function formatOfficialCodes(reason: SpecialCircumstance): string {
     '5.2.3': 'Reason 3 (High costs of caring/educating child)',
     '5.2.4': "Reason 4 (Child's income/resources)",
     '5.2.5': 'Reason 5 (Property settlement impacts capacity)',
-    '5.2.6': 'Reason 6 (High child care costs)',
+    '5.2.6': 'Reason 6 (High childcare costs)',
     '5.2.7': 'Reason 7 (Reduced capacity - commitments)',
     '5.2.8': 'Reason 8A (Income/property/resources)',
     '5.2.9': 'Reason 8B (Earning capacity)',

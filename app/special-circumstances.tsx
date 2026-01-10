@@ -1,5 +1,5 @@
-import { useRouter } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { HelpTooltip } from '../src/components/HelpTooltip';
@@ -14,6 +14,7 @@ import {
   SPECIAL_CIRCUMSTANCES,
   getHighestPriorityReason,
   isCourtDateReason,
+  isValidSpecialCircumstanceId,
   type SpecialCircumstance,
 } from '../src/utils/special-circumstances';
 
@@ -41,6 +42,7 @@ import {
 export default function SpecialCircumstancesScreen() {
   const router = useRouter();
   const analytics = useAnalytics();
+  const { preselect } = useLocalSearchParams<{ preselect?: string }>();
 
   // State management
   const [selectedReasons, setSelectedReasons] = useState<Set<string>>(
@@ -48,6 +50,17 @@ export default function SpecialCircumstancesScreen() {
   );
   const [isNavigating, setIsNavigating] = useState(false);
   const [hasPropertySettlement, setHasPropertySettlement] = useState(false);
+
+  // Handle preselect URL parameter (from CoA reason pages)
+  useEffect(() => {
+    if (preselect && isValidSpecialCircumstanceId(preselect)) {
+      setSelectedReasons(new Set([preselect]));
+      // Also set property settlement state if that's what's preselected
+      if (preselect === 'property_settlement') {
+        setHasPropertySettlement(true);
+      }
+    }
+  }, [preselect]);
 
   // Group reasons by category
   const incomeReasons = SPECIAL_CIRCUMSTANCES.filter(

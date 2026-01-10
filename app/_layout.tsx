@@ -143,6 +143,12 @@ export default function RootLayout() {
               headerShown: false,
             }}
           />
+          <Stack.Screen
+            name="change-of-assessment/[reason-slug]"
+            options={{
+              headerShown: false,
+            }}
+          />
         </Stack>
         <StatusBar style="auto" />
         {Platform.OS === 'web' && <Analytics />}

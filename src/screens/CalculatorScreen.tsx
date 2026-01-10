@@ -259,6 +259,16 @@ export function CalculatorScreen() {
         {/* Header */}
         {/* @ts-ignore - Web-only ARIA role */}
         <View style={styles.header} accessibilityRole="banner">
+          {/* SEO: Visually hidden H1 for search engines and screen readers */}
+          {/* @ts-ignore - Web-only ARIA attributes */}
+          <Text
+            style={styles.visuallyHidden}
+            accessibilityRole="header"
+            aria-level="1"
+          >
+            Child Support Calculator Australia 2026
+          </Text>
+
           <View
             style={isDesktop ? styles.headerContainer : styles.mobileHeaderRow}
           >
@@ -343,6 +353,14 @@ const styles = StyleSheet.create({
   },
   keyboardView: {
     flex: 1,
+  },
+  // SEO: Screen reader only - visually hidden but accessible
+  visuallyHidden: {
+    position: 'absolute',
+    left: -9999,
+    width: 1,
+    height: 1,
+    overflow: 'hidden',
   },
   header: {
     paddingHorizontal: 16,

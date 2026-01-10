@@ -6,4 +6,4 @@ Allow: /
 Disallow: /admin/
 
 # Sitemap
-Sitemap: https://childsupportcalc.app/sitemap.xml
+Sitemap: https://auschildsupport.com/sitemap.xml
