@@ -1,6 +1,7 @@
 # SEO Strategy for Child Support Calculator
 
-**Last Updated:** 2026-01-01
+**Last Updated:** 2026-01-01  
+**Status Review:** 2026-01-01 - Implementation status updated based on codebase audit
 **Site:** auschildsupport.com
 **Tech Stack:** Expo Router (React Native Web)
 **Phase:** Phase 2 (Web Deployment & Optimization)
@@ -19,17 +20,27 @@ For a React Native Web application, standard SEO tactics are insufficient. The d
 
 _Critical: React Native components compile to `<div>` by default. We must explicitly map them to HTML5 semantic tags for accessibility and SEO._
 
-| React Native Component | Prop Required                                 | Renders As HTML | Usage Context                   |
-| :--------------------- | :-------------------------------------------- | :-------------- | :------------------------------ |
-| `<View>`               | `accessibilityRole="header"` `aria-level="1"` | `<h1>`          | Page Main Title                 |
-| `<View>`               | `accessibilityRole="header"` `aria-level="2"` | `<h2>`          | Section Headings                |
-| `<View>`               | `accessibilityRole="main"`                    | `<main>`        | Wraps primary content           |
-| `<View>`               | `accessibilityRole="article"`                 | `<article>`     | Blog post container             |
-| `<View>`               | `accessibilityRole="navigation"`              | `<nav>`         | Header/Tab bar                  |
-| `<View>`               | `accessibilityRole="footer"`                  | `<footer>`      | Site footer                     |
-| `<Link>`               | _Default Expo Router_                         | `<a>`           | **ALWAYS** use for internal nav |
+**Status: Partially Implemented** ✅
+
+| React Native Component | Prop Required                                 | Renders As HTML | Usage Context                   | Status |
+| :--------------------- | :-------------------------------------------- | :-------------- | :------------------------------ | :----- |
+| `<View>`               | `accessibilityRole="header"` `aria-level="1"` | `<h1>`          | Page Main Title                 | ⚠️ TODO |
+| `<View>`               | `accessibilityRole="header"` `aria-level="2"` | `<h2>`          | Section Headings                | ✅ Done |
+| `<View>`               | `accessibilityRole="main"`                    | `<main>`        | Wraps primary content           | ✅ Done |
+| `<View>`               | `accessibilityRole="article"`                 | `<article>`     | Blog post container             | ⚠️ TODO |
+| `<View>`               | `accessibilityRole="navigation"`              | `<nav>`         | Header/Tab bar                  | ⚠️ TODO |
+| `<View>`               | `accessibilityRole="banner"`                  | `<header>`      | Site header                     | ✅ Done |
+| `<View>`               | `accessibilityRole="footer"`                  | `<footer>`      | Site footer                     | ⚠️ TODO |
+| `<Link>`               | _Default Expo Router_                         | `<a>`           | **ALWAYS** use for internal nav | ✅ Used |
 
 **Strict Rule:** Never use `Pressable` + `router.push` for navigation links. Crawlers cannot follow JavaScript events. Always use `<Link href="...">`.
+
+**Current Implementation:**
+- ✅ Header has `accessibilityRole="banner"` (`CalculatorScreen.tsx:260`)
+- ✅ Main content has `accessibilityRole="main"` (`CalculatorScreen.tsx:289`)
+- ✅ Section headings use `accessibilityRole="header"` with `aria-level="2"` (`CalculatorForm.tsx:117, 269`)
+- ✅ Form sections use `accessibilityRole="group"` (`CalculatorForm.tsx:148, 199`)
+- ⚠️ **Missing:** Main page title needs `accessibilityRole="header"` with `aria-level="1"`
 
 ### **B. Core Web Vitals Targets**
 
@@ -49,9 +60,9 @@ _React Native Web apps are prone to layout shifts (CLS) and slow hydration (LCP)
 
 ### **C. Canonicalization & URL Structure**
 
-- **Canonical Tags:** Every page MUST have a self-referencing `<link rel="canonical">` to prevent duplicate content from query parameters (e.g., `?reset=true`).
-- **Trailing Slashes:** Enforce a strict policy (strip trailing slashes) via Vercel `vercel.json` rewrites.
-- **WWW Resolution:** Redirect `www` to non-`www` (or vice versa).
+- **Canonical Tags:** ✅ Implemented per-page via `PageSEO` component. ⚠️ **TODO:** Consider adding global canonical fallback in `app/+html.tsx` for pages without PageSEO.
+- **Trailing Slashes:** ⚠️ **Status Unknown:** Need to verify Vercel `vercel.json` configuration.
+- **WWW Resolution:** ⚠️ **Status Unknown:** Need to verify redirect configuration.
 
 ---
 
@@ -75,11 +86,12 @@ _Crucial for "viral" sharing in parenting groups._
 
 ### **Schema Markup (JSON-LD)**
 
-_Inject into `app/+html.tsx` head._
+_Status: Partially implemented_
 
-1.  **`SoftwareApplication`**: Defines the tool, price ($0), and operating systems.
-2.  **`Organization`**: Defines "AusChildSupport" as the publisher.
-3.  **`FAQPage`**: Hardcoded FAQs about the 8-step formula.
+1.  **`Organization`**: ✅ Implemented in `app/+html.tsx` head.
+2.  **`SoftwareApplication`**: ⚠️ Currently only on home page via `PageSEO` component. **TODO:** Add to global `app/+html.tsx` for all pages.
+3.  **`FAQPage`**: ✅ Implemented on home page (`app/(tabs)/index.tsx`).
+4.  **`WebApplication`**: ✅ Implemented on home page via `PageSEO` component (similar to SoftwareApplication).
 
 ---
 
@@ -143,9 +155,75 @@ _Leverage existing logic to capture long-tail, high-intent traffic._
 
 ---
 
-## **5. Immediate Action Plan**
+## **5. Implementation Status & Remaining Tasks**
 
-1.  **Update `app/+html.tsx`**: Inject Canonical, Schema, and Critical CSS.
-2.  **Audit Accessibility**: Review `CalculatorScreen.tsx` and add `accessibilityRole="header"`.
-3.  **Create Sitemap**: Ensure `public/sitemap.xml` includes all static routes and blog posts.
-4.  **Verify Robots**: Ensure `public/robots.txt` allows crawling of everything except `/admin`.
+### ✅ **Completed**
+
+1. **Schema Markup (Partial)**
+   - ✅ Organization schema in `app/+html.tsx`
+   - ✅ FAQPage schema on home page (`app/(tabs)/index.tsx`)
+   - ✅ WebApplication schema on home page via `PageSEO` component
+   - ✅ Per-page canonical tags via `PageSEO` component
+
+2. **Accessibility (Partial)**
+   - ✅ Basic semantic HTML roles implemented:
+     - `accessibilityRole="banner"` on header (`CalculatorScreen.tsx`)
+     - `accessibilityRole="main"` on main content (`CalculatorScreen.tsx`)
+     - `accessibilityRole="header"` with `aria-level="2"` on section headings (`CalculatorForm.tsx`)
+     - `accessibilityRole="group"` on form sections
+     - `accessibilityRole="button"` on interactive elements
+
+3. **Social Sharing**
+   - ✅ Open Graph meta tags in `app/+html.tsx`
+   - ✅ Twitter card meta tags
+   - ✅ Share preview image configured
+
+4. **Robots.txt Structure**
+   - ✅ Correct structure (allows all, disallows `/admin/`)
+
+### ⚠️ **Remaining Tasks**
+
+1. **Update `app/+html.tsx`**
+   - ❌ **Missing:** Global `SoftwareApplication` schema (currently only on home page via PageSEO)
+   - ❌ **Missing:** Critical CSS for faster LCP (preload fonts, inline critical styles)
+   - ⚠️ **Partial:** Canonical tags (handled per-page via PageSEO, but no global fallback)
+
+2. **Accessibility Enhancements**
+   - ⚠️ **Needs Review:** Main page title should have `accessibilityRole="header"` with `aria-level="1"`
+   - ⚠️ **Needs Review:** Ensure all major sections have proper semantic roles
+   - ✅ Calculator form sections already have proper H2 tags
+
+3. **Sitemap (`public/sitemap.xml`)**
+   - ❌ **Critical:** Domain is incorrect (`childsupportcalc.app` → should be `auschildsupport.com`)
+   - ❌ **Missing Routes:**
+     - `/special-circumstances`
+     - `/blog` (blog index page)
+     - Blog post routes (dynamic - `/blog/[id]` - needs programmatic generation or manual list)
+   - ⚠️ **Current:** Only has 2 URLs (home and lawyer-inquiry)
+   - **Note:** Blog posts are fetched from WordPress API, so sitemap should either:
+     - Dynamically generate from API on build, OR
+     - Manually maintain list of published post IDs
+
+4. **Robots.txt (`public/robots.txt`)**
+   - ❌ **Critical:** Sitemap URL uses wrong domain (`childsupportcalc.app` → should be `auschildsupport.com`)
+   - ✅ Structure is correct (allows all, disallows `/admin/`)
+
+5. **Core Web Vitals Optimization**
+   - ⚠️ **Needs Testing:** LCP target (< 2.5s) - requires font preloading and critical CSS
+   - ⚠️ **Needs Testing:** CLS target (< 0.1) - results modal positioning needs verification
+   - ✅ Calculation debouncing already implemented
+
+### **Priority Order**
+
+1. **High Priority (Domain Fixes)**
+   - Fix sitemap.xml domain
+   - Fix robots.txt sitemap URL
+
+2. **Medium Priority (SEO Foundation)**
+   - Add SoftwareApplication schema to global `app/+html.tsx`
+   - Add critical CSS to `app/+html.tsx`
+   - Update sitemap with all routes
+
+3. **Low Priority (Enhancements)**
+   - Comprehensive accessibility audit
+   - Core Web Vitals testing and optimization

@@ -69,7 +69,6 @@ The system automatically detects complexity using the following criteria (in pri
 **Criteria:**
 
 - Parent has selected a court date reason
-- Court date is within 60 days (or any future date)
 - **Urgency:** High
 - **Alert:** "Court Date Approaching: [Date]"
 
@@ -311,7 +310,6 @@ The system automatically detects complexity using the following criteria (in pri
 | **No Consent**             | Consent checkbox not checked | Privacy Act violation    |
 | **Incomplete Form**        | Missing required fields      | Insufficient information |
 | **Spam/Test**              | Obvious test submission      | Not a real inquiry       |
-| **Zero Payment Case**      | No child support payable     | No legal work needed     |
 
 **Manual Rejection (During Review):**
 
@@ -379,7 +377,7 @@ The system automatically detects complexity using the following criteria (in pri
 
 **Priority Order (When Multiple Leads Available):**
 
-1. **Court Date Urgent** (within 30 days)
+1. **Court Date Urgent**
 2. **High-Value + Income Issues** (>$15k + Reason 8A/8B)
 3. **Property Settlement** (Reason 10)
 4. **High-Value Case** (>$15k, no other factors)

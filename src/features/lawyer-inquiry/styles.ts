@@ -23,7 +23,8 @@ export const containerStyles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 12,
     paddingBottom: 40,
   },
 });
@@ -45,8 +46,8 @@ export const headerStyles = StyleSheet.create({
     flexDirection: 'column',
     paddingLeft: 20,
     paddingRight: 12, // Account for close button's internal padding
-    paddingVertical: 10,
-    gap: 2,
+    paddingVertical: 2,
+    gap: 0,
     ...Platform.select({
       web: {
         maxWidth: 560,
@@ -69,11 +70,13 @@ export const headerStyles = StyleSheet.create({
     fontSize: 14,
     color: '#6b7280', // grey-500
     lineHeight: 20,
+    marginTop: 0,
+    marginBottom: 8,
   },
   closeButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'transparent',
@@ -127,7 +130,7 @@ export const formStyles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: '#1e3a8a', // blue-900
-    marginBottom: 16,
+    marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -220,6 +223,7 @@ export const checkboxStyles = StyleSheet.create({
   privacyLinkContainer: {
     marginBottom: 2,
     marginLeft: 36, // Align with checkbox label
+    marginTop: 4,
   },
   privacyLink: {
     fontSize: 13,
@@ -238,7 +242,7 @@ export const buttonStyles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 16,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 12,
   },
   buttonPressed: {
     backgroundColor: '#2563eb', // blue-600
@@ -314,7 +318,7 @@ export const financialStyles = StyleSheet.create({
   financialSectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 4,
+    marginTop: -8,
     marginBottom: 16,
     gap: 8,
     cursor: 'pointer',
@@ -342,7 +346,9 @@ export const financialStyles = StyleSheet.create({
   summaryCard: {
     backgroundColor: '#f9fafb', // very light grey
     borderRadius: 12,
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 8,
     marginBottom: 12,
     borderWidth: 1,
     borderColor: '#e5e7eb', // light grey
@@ -366,7 +372,7 @@ export const financialStyles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#4a5568', // dark grey (matches Care Arrangement)
-    marginBottom: 16,
+    marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -535,6 +541,21 @@ export const successStyles = StyleSheet.create({
     color: '#4b5563', // grey-600
     fontSize: 16,
     fontWeight: '600',
+  },
+  // Partner-specific badge (shown when partner detected)
+  partnerBadge: {
+    backgroundColor: '#f0fdf4', // green-50
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginTop: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  partnerBadgeText: {
+    fontSize: 13,
+    color: '#166534', // green-800
+    fontWeight: '500',
   },
 });
 

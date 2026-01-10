@@ -89,7 +89,7 @@ export function FinancialSection({
           <Text style={financialStyles.secureBadgeText}>SECURE</Text>
         </View>
         <Text style={financialStyles.financialSectionHeaderText}>
-          Case Eligibility Check (Confidential)
+          Case Eligibility Check
         </Text>
         <Ionicons
           name={isSummaryOpen ? 'chevron-down' : 'chevron-forward'}

@@ -32,6 +32,9 @@ export interface ParsedRouteParams {
   hasParentingPlan: string | undefined; // "true", "false", or "unsure"
   assessmentType: string | undefined; // e.g., "income", "agreement", "special", "appeal"
 
+  // Partner attribution (for partner-specific success messaging)
+  partner: string | undefined; // Partner identifier from URL (e.g., "sage")
+
   // Computed values
   isDirectMode: boolean;
   inquiryConfig: InquiryTypeConfig;
@@ -107,6 +110,10 @@ export function useRouteParams(): ParsedRouteParams {
         ? params.assessmentType
         : undefined;
 
+  // Parse partner param (for partner-specific success messaging)
+  const partner =
+    typeof params.partner === 'string' ? params.partner : undefined;
+
   // Detect Direct Mode: explicit mode=direct OR missing calculation data
   const isDirectMode = useMemo(() => {
     const explicitDirect = mode === 'direct';
@@ -174,6 +181,7 @@ export function useRouteParams(): ParsedRouteParams {
     returnTo,
     hasParentingPlan,
     assessmentType,
+    partner,
     isDirectMode,
     inquiryConfig,
     preFillMessage,

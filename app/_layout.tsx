@@ -136,6 +136,13 @@ export default function RootLayout() {
               headerShown: false,
             }}
           />
+          <Stack.Screen
+            name="admin/view-lead/[token]"
+            options={{
+              title: 'View Lead',
+              headerShown: false,
+            }}
+          />
         </Stack>
         <StatusBar style="auto" />
         {Platform.OS === 'web' && <Analytics />}

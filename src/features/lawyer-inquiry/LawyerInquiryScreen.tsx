@@ -5,15 +5,11 @@
  * Acts as a thin wrapper that composes all sub-components.
  */
 
+import { PARTNERS, type PartnerKey } from '@/src/config/partners';
 import { isWeb, MAX_FORM_WIDTH } from '@/src/utils/responsive';
 import React from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useInquiryForm } from './hooks/useInquiryForm';
-import { useRouteParams } from './hooks/useRouteParams';
-import { containerStyles } from './styles';
-
-// Components
 import { AdditionalDetailsSection } from './components/AdditionalDetailsSection';
 import { ConsentSection } from './components/ConsentSection';
 import { EnrichmentView } from './components/EnrichmentView';
@@ -23,6 +19,19 @@ import { PersonalInfoSection } from './components/PersonalInfoSection';
 import { SpecialCircumstancesSection } from './components/SpecialCircumstancesSection';
 import { SuccessView } from './components/SuccessView';
 import { TrustBadge } from './components/TrustBadge';
+import { useInquiryForm } from './hooks/useInquiryForm';
+import { useRouteParams } from './hooks/useRouteParams';
+import { containerStyles } from './styles';
+
+/**
+ * Get partner display name if the partner ID is valid.
+ * Returns undefined for invalid/unknown partners (graceful fallback to default messaging).
+ */
+function getPartnerName(partnerId: string | undefined): string | undefined {
+  if (!partnerId) return undefined;
+  const config = PARTNERS[partnerId as PartnerKey];
+  return config?.name;
+}
 
 export default function LawyerInquiryScreen() {
   // Parse route parameters
@@ -59,7 +68,12 @@ export default function LawyerInquiryScreen() {
 
   // Render Success View
   if (form.showSuccess) {
-    return <SuccessView returnTo={params.returnTo} />;
+    return (
+      <SuccessView
+        returnTo={params.returnTo}
+        partnerName={getPartnerName(params.partner)}
+      />
+    );
   }
 
   // Render Enrichment View

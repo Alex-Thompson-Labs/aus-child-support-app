@@ -12,9 +12,10 @@ import { successStyles } from '../styles';
 
 interface SuccessViewProps {
   returnTo?: string;
+  partnerName?: string; // e.g., "Sage Family Lawyers" - triggers partner-specific messaging
 }
 
-export function SuccessView({ returnTo }: SuccessViewProps) {
+export function SuccessView({ returnTo, partnerName }: SuccessViewProps) {
   const router = useRouter();
 
   const handleReturnToCalculator = useCallback(() => {
@@ -48,10 +49,25 @@ export function SuccessView({ returnTo }: SuccessViewProps) {
       <View style={successStyles.successContent}>
         <Text style={successStyles.successIcon}>✓</Text>
         <Text style={successStyles.successTitle}>Thank You!</Text>
-        <Text style={successStyles.successMessage}>
-          Your inquiry has been submitted.{'\n'}You can expect a call or email
-          within the next 1-2 business days.
-        </Text>
+        {partnerName ? (
+          <>
+            <Text style={successStyles.successMessage}>
+              Your details have been securely encrypted and sent to{' '}
+              {partnerName} via our protected portal. They will contact you
+              within 24 hours.
+            </Text>
+            <View style={successStyles.partnerBadge}>
+              <Text style={successStyles.partnerBadgeText}>
+                Secured by AusChildSupport
+              </Text>
+            </View>
+          </>
+        ) : (
+          <Text style={successStyles.successMessage}>
+            Your inquiry has been submitted.{'\n'}You can expect a call or email
+            within the next 1-2 business days.
+          </Text>
+        )}
 
         <View style={successStyles.successButtonsContainer}>
           <Pressable
