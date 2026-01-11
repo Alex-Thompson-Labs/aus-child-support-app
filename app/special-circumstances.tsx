@@ -1,6 +1,14 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  Linking,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { HelpTooltip } from '../src/components/HelpTooltip';
 import { PageSEO } from '../src/components/seo/PageSEO';
@@ -44,7 +52,19 @@ import {
 export default function SpecialCircumstancesScreen() {
   const router = useRouter();
   const analytics = useAnalytics();
-  const { preselect } = useLocalSearchParams<{ preselect?: string }>();
+  const { preselect, returnTo: rawReturnTo } = useLocalSearchParams<{
+    preselect?: string;
+    returnTo?: string;
+  }>();
+
+  const returnTo = useMemo(() => {
+    if (!rawReturnTo) return undefined;
+    try {
+      return decodeURIComponent(rawReturnTo);
+    } catch {
+      return rawReturnTo;
+    }
+  }, [rawReturnTo]);
 
   // State management
   const [selectedReasons, setSelectedReasons] = useState<Set<string>>(
@@ -173,6 +193,9 @@ export default function SpecialCircumstancesScreen() {
           mode: 'direct',
           reason: 'special_circumstances',
 
+          // Pass returnTo
+          ...(returnTo ? { returnTo } : {}),
+
           // Special Circumstances data
           specialCircumstances: JSON.stringify(Array.from(selectedReasons)),
           priorityCircumstance:
@@ -214,10 +237,10 @@ export default function SpecialCircumstancesScreen() {
   // Web-specific container styles
   const webContainerStyle = isWeb
     ? {
-        maxWidth: MAX_FORM_WIDTH,
-        width: '100%' as const,
-        alignSelf: 'center' as const,
-      }
+      maxWidth: MAX_FORM_WIDTH,
+      width: '100%' as const,
+      alignSelf: 'center' as const,
+    }
     : {};
 
   return (
@@ -231,239 +254,253 @@ export default function SpecialCircumstancesScreen() {
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         {/* Header */}
         <View style={styles.header}>
-        <Text style={styles.headerTitle}>Special Circumstances</Text>
-        <Pressable
-          style={styles.closeButton}
-          onPress={() => {
-            if (router.canGoBack()) {
-              router.back();
-            } else {
-              router.replace('/');
-            }
-          }}
-          accessible={true}
-          accessibilityRole="button"
-          accessibilityLabel="Close"
-        >
-          <Text style={styles.closeButtonText}>✕</Text>
-        </Pressable>
-      </View>
-
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={[styles.scrollContent, webContainerStyle]}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* Introduction Card */}
-        <View style={styles.introCard}>
-          <Text style={styles.introTitle}>Do special circumstances exist?</Text>
-          <Text style={styles.introDescription}>
-            Some situations are too complex for the standard calculator. If any
-            of these apply, a lawyer can help you request adjustments to your
-            child support assessment.
-          </Text>
-        </View>
-
-        {/* Category Sections */}
-        <View style={styles.categorySections}>
-          {/* Legal Section */}
-          <View style={styles.reasonGroup}>
-            <View style={styles.groupHeader}>
-              <Text style={[styles.groupTitle, { color: '#1e3a8a' }]}>
-                Legal
-              </Text>
-            </View>
-            <View style={styles.checkboxList}>
-              {/* Court Date Checkbox */}
-              <Pressable
-                style={[styles.checkboxRow, isWeb && webClickableStyles]}
-                onPress={() => {
-                  const hasCourtDate = Array.from(selectedReasons).some((id) =>
-                    isCourtDateReason(id)
-                  );
-
-                  if (hasCourtDate) {
-                    setSelectedReasons((prev) => {
-                      const next = new Set(prev);
-                      Array.from(next).forEach((id) => {
-                        if (isCourtDateReason(id)) {
-                          next.delete(id);
-                        }
-                      });
-                      return next;
-                    });
-                  } else {
-                    setSelectedReasons((prev) => {
-                      const next = new Set(prev);
-                      next.add('court_date_pending');
-                      return next;
-                    });
-                  }
-                }}
-                accessible={true}
-                accessibilityRole="checkbox"
-                accessibilityState={{
-                  checked: Array.from(selectedReasons).some((id) =>
-                    isCourtDateReason(id)
-                  ),
-                }}
-                accessibilityLabel="I have an upcoming court hearing regarding child support."
-              >
-                <View
-                  style={[
-                    styles.checkbox,
-                    Array.from(selectedReasons).some((id) =>
-                      isCourtDateReason(id)
-                    ) && styles.checkboxChecked,
-                  ]}
-                >
-                  {Array.from(selectedReasons).some((id) =>
-                    isCourtDateReason(id)
-                  ) && <Text style={styles.checkboxCheck}>✓</Text>}
-                </View>
-                <View style={styles.checkboxLabelContainer}>
-                  <Text style={styles.checkboxLabel}>
-                    I have an upcoming court hearing regarding child support.
-                  </Text>
-                  <HelpTooltip
-                    what="Upcoming court dates are critical events. Professional legal preparation is strongly recommended."
-                    why=""
-                    hideWhatLabel
-                  />
-                </View>
-              </Pressable>
-
-              {/* Property Settlement Checkbox */}
-              <Pressable
-                style={[styles.checkboxRow, isWeb && webClickableStyles]}
-                onPress={() => {
-                  setHasPropertySettlement(!hasPropertySettlement);
-                  handleCheckboxToggle('property_settlement');
-                }}
-                accessible={true}
-                accessibilityRole="checkbox"
-                accessibilityState={{ checked: hasPropertySettlement }}
-              >
-                <View
-                  style={[
-                    styles.checkbox,
-                    hasPropertySettlement && styles.checkboxChecked,
-                  ]}
-                >
-                  {hasPropertySettlement && (
-                    <Text style={styles.checkboxCheck}>✓</Text>
-                  )}
-                </View>
-                <View style={styles.checkboxLabelContainer}>
-                  <Text style={styles.checkboxLabel}>
-                    I have a property settlement pending.
-                  </Text>
-                  <HelpTooltip
-                    what="Pending property settlements can significantly affect child support obligations."
-                    why=""
-                    hideWhatLabel
-                  />
-                </View>
-              </Pressable>
-            </View>
-          </View>
-
-          {/* Section Divider */}
-          <View style={styles.sectionDivider} />
-
-          {/* Income Issues Group */}
-          <View style={styles.reasonGroup}>
-            <View style={styles.groupHeader}>
-              <Text style={[styles.groupTitle, { color: '#1e3a8a' }]}>
-                The Other Parent&apos;s Financials
-              </Text>
-            </View>
-            <View style={styles.checkboxList}>
-              {incomeReasons.map(renderCheckbox)}
-            </View>
-          </View>
-
-          {/* Costs & Other Factors Group */}
-          {(childReasons.length > 0 || otherReasons.length > 0) && (
-            <>
-              <View style={styles.sectionDivider} />
-
-              <View style={styles.reasonGroup}>
-                <View style={styles.groupHeader}>
-                  <Text style={[styles.groupTitle, { color: '#1e3a8a' }]}>
-                    Costs & Other Factors
-                  </Text>
-                </View>
-                <View style={styles.checkboxList}>
-                  {childReasons.map(renderCheckbox)}
-                  {otherReasons.map(renderCheckbox)}
-                </View>
-              </View>
-            </>
-          )}
-        </View>
-
-        {/* Continue Button */}
-        <View style={styles.footer}>
+          <Text style={styles.headerTitle}>Special Circumstances</Text>
           <Pressable
-            style={[
-              styles.continueButton,
-              buttonDisabled && styles.continueButtonDisabled,
-              isWeb && !buttonDisabled && webClickableStyles,
-            ]}
-            onPress={handleContinue}
-            disabled={buttonDisabled}
+            style={styles.closeButton}
+            onPress={() => {
+              if (returnTo) {
+                if (returnTo.startsWith('http')) {
+                  if (Platform.OS === 'web') {
+                    window.location.href = returnTo;
+                  } else {
+                    Linking.openURL(returnTo);
+                  }
+                } else {
+                  // @ts-ignore
+                  router.push(returnTo);
+                }
+                return;
+              }
+
+              if (router.canGoBack()) {
+                router.back();
+              } else {
+                router.replace('/');
+              }
+            }}
             accessible={true}
             accessibilityRole="button"
-            accessibilityLabel="Continue to speak with a lawyer"
-            accessibilityState={{ disabled: buttonDisabled }}
+            accessibilityLabel="Close"
           >
-            {isNavigating ? (
-              <Text style={styles.continueButtonText}>Loading...</Text>
-            ) : (
-              <Text style={styles.continueButtonText}>
-                Continue to Speak with a Lawyer
+            <Text style={styles.closeButtonText}>✕</Text>
+          </Pressable>
+        </View>
+
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={[styles.scrollContent, webContainerStyle]}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Introduction Card */}
+          <View style={styles.introCard}>
+            <Text style={styles.introTitle}>Do special circumstances exist?</Text>
+            <Text style={styles.introDescription}>
+              Some situations are too complex for the standard calculator. If any
+              of these apply, a lawyer can help you request adjustments to your
+              child support assessment.
+            </Text>
+          </View>
+
+          {/* Category Sections */}
+          <View style={styles.categorySections}>
+            {/* Legal Section */}
+            <View style={styles.reasonGroup}>
+              <View style={styles.groupHeader}>
+                <Text style={[styles.groupTitle, { color: '#1e3a8a' }]}>
+                  Legal
+                </Text>
+              </View>
+              <View style={styles.checkboxList}>
+                {/* Court Date Checkbox */}
+                <Pressable
+                  style={[styles.checkboxRow, isWeb && webClickableStyles]}
+                  onPress={() => {
+                    const hasCourtDate = Array.from(selectedReasons).some((id) =>
+                      isCourtDateReason(id)
+                    );
+
+                    if (hasCourtDate) {
+                      setSelectedReasons((prev) => {
+                        const next = new Set(prev);
+                        Array.from(next).forEach((id) => {
+                          if (isCourtDateReason(id)) {
+                            next.delete(id);
+                          }
+                        });
+                        return next;
+                      });
+                    } else {
+                      setSelectedReasons((prev) => {
+                        const next = new Set(prev);
+                        next.add('court_date_pending');
+                        return next;
+                      });
+                    }
+                  }}
+                  accessible={true}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{
+                    checked: Array.from(selectedReasons).some((id) =>
+                      isCourtDateReason(id)
+                    ),
+                  }}
+                  accessibilityLabel="I have an upcoming court hearing regarding child support."
+                >
+                  <View
+                    style={[
+                      styles.checkbox,
+                      Array.from(selectedReasons).some((id) =>
+                        isCourtDateReason(id)
+                      ) && styles.checkboxChecked,
+                    ]}
+                  >
+                    {Array.from(selectedReasons).some((id) =>
+                      isCourtDateReason(id)
+                    ) && <Text style={styles.checkboxCheck}>✓</Text>}
+                  </View>
+                  <View style={styles.checkboxLabelContainer}>
+                    <Text style={styles.checkboxLabel}>
+                      I have an upcoming court hearing regarding child support.
+                    </Text>
+                    <HelpTooltip
+                      what="Upcoming court dates are critical events. Professional legal preparation is strongly recommended."
+                      why=""
+                      hideWhatLabel
+                    />
+                  </View>
+                </Pressable>
+
+                {/* Property Settlement Checkbox */}
+                <Pressable
+                  style={[styles.checkboxRow, isWeb && webClickableStyles]}
+                  onPress={() => {
+                    setHasPropertySettlement(!hasPropertySettlement);
+                    handleCheckboxToggle('property_settlement');
+                  }}
+                  accessible={true}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: hasPropertySettlement }}
+                >
+                  <View
+                    style={[
+                      styles.checkbox,
+                      hasPropertySettlement && styles.checkboxChecked,
+                    ]}
+                  >
+                    {hasPropertySettlement && (
+                      <Text style={styles.checkboxCheck}>✓</Text>
+                    )}
+                  </View>
+                  <View style={styles.checkboxLabelContainer}>
+                    <Text style={styles.checkboxLabel}>
+                      I have a property settlement pending.
+                    </Text>
+                    <HelpTooltip
+                      what="Pending property settlements can significantly affect child support obligations."
+                      why=""
+                      hideWhatLabel
+                    />
+                  </View>
+                </Pressable>
+              </View>
+            </View>
+
+            {/* Section Divider */}
+            <View style={styles.sectionDivider} />
+
+            {/* Income Issues Group */}
+            <View style={styles.reasonGroup}>
+              <View style={styles.groupHeader}>
+                <Text style={[styles.groupTitle, { color: '#1e3a8a' }]}>
+                  The Other Parent&apos;s Financials
+                </Text>
+              </View>
+              <View style={styles.checkboxList}>
+                {incomeReasons.map(renderCheckbox)}
+              </View>
+            </View>
+
+            {/* Costs & Other Factors Group */}
+            {(childReasons.length > 0 || otherReasons.length > 0) && (
+              <>
+                <View style={styles.sectionDivider} />
+
+                <View style={styles.reasonGroup}>
+                  <View style={styles.groupHeader}>
+                    <Text style={[styles.groupTitle, { color: '#1e3a8a' }]}>
+                      Costs & Other Factors
+                    </Text>
+                  </View>
+                  <View style={styles.checkboxList}>
+                    {childReasons.map(renderCheckbox)}
+                    {otherReasons.map(renderCheckbox)}
+                  </View>
+                </View>
+              </>
+            )}
+          </View>
+
+          {/* Continue Button */}
+          <View style={styles.footer}>
+            <Pressable
+              style={[
+                styles.continueButton,
+                buttonDisabled && styles.continueButtonDisabled,
+                isWeb && !buttonDisabled && webClickableStyles,
+              ]}
+              onPress={handleContinue}
+              disabled={buttonDisabled}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Continue to speak with a lawyer"
+              accessibilityState={{ disabled: buttonDisabled }}
+            >
+              {isNavigating ? (
+                <Text style={styles.continueButtonText}>Loading...</Text>
+              ) : (
+                <Text style={styles.continueButtonText}>
+                  Continue to Speak with a Lawyer
+                </Text>
+              )}
+            </Pressable>
+            {selectedReasons.size > 0 && (
+              <Text style={styles.selectedCount}>
+                {selectedReasons.size} reason
+                {selectedReasons.size === 1 ? '' : 's'} selected
               </Text>
             )}
-          </Pressable>
-          {selectedReasons.size > 0 && (
-            <Text style={styles.selectedCount}>
-              {selectedReasons.size} reason
-              {selectedReasons.size === 1 ? '' : 's'} selected
-            </Text>
-          )}
-        </View>
+          </View>
 
-        {/* FAQ Section */}
-        <View style={styles.faqSection}>
-          <Text style={styles.faqSectionTitle}>Frequently Asked Questions</Text>
-          
-          <Accordion title="What are special circumstances in child support?">
-            <Text style={styles.faqText}>
-              Special circumstances are situations that are too complex for the standard 
-              child support calculator. These include issues with income reporting, 
-              property settlements, high child care costs, or upcoming court hearings 
-              that may affect your assessment.
-            </Text>
-          </Accordion>
+          {/* FAQ Section */}
+          <View style={styles.faqSection}>
+            <Text style={styles.faqSectionTitle}>Frequently Asked Questions</Text>
 
-          <Accordion title="Can I select multiple special circumstances?">
-            <Text style={styles.faqText}>
-              Yes, you can select multiple circumstances that apply to your situation. 
-              The system will identify the highest priority circumstance to help match 
-              you with appropriate legal assistance.
-            </Text>
-          </Accordion>
+            <Accordion title="What are special circumstances in child support?">
+              <Text style={styles.faqText}>
+                Special circumstances are situations that are too complex for the standard
+                child support calculator. These include issues with income reporting,
+                property settlements, high child care costs, or upcoming court hearings
+                that may affect your assessment.
+              </Text>
+            </Accordion>
 
-          <Accordion title="What happens after I select my circumstances?">
-            <Text style={styles.faqText}>
-              After selecting your circumstances, you will be directed to speak with 
-              a family lawyer who can help you request adjustments to your child support 
-              assessment through Services Australia.
-            </Text>
-          </Accordion>
-        </View>
-      </ScrollView>
+            <Accordion title="Can I select multiple special circumstances?">
+              <Text style={styles.faqText}>
+                Yes, you can select multiple circumstances that apply to your situation.
+                The system will identify the highest priority circumstance to help match
+                you with appropriate legal assistance.
+              </Text>
+            </Accordion>
+
+            <Accordion title="What happens after I select my circumstances?">
+              <Text style={styles.faqText}>
+                After selecting your circumstances, you will be directed to speak with
+                a family lawyer who can help you request adjustments to your child support
+                assessment through Services Australia.
+              </Text>
+            </Accordion>
+          </View>
+        </ScrollView>
       </SafeAreaView>
     </>
   );

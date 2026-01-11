@@ -56,6 +56,7 @@ export const PageSEO: React.FC<PageSEOProps> = ({
       />
 
       {/* Twitter/X - also used by Slack, Discord, LinkedIn, iMessage, etc */}
+      <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={`${BASE_URL}/share-preview.jpg`} />

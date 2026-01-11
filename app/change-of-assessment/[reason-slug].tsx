@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
+  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -31,10 +32,20 @@ export async function generateStaticParams() {
 }
 
 export default function ChangeOfAssessmentReasonPage() {
-  const { 'reason-slug': slug } = useLocalSearchParams<{
+  const { 'reason-slug': slug, returnTo: rawReturnTo } = useLocalSearchParams<{
     'reason-slug': string;
+    returnTo?: string;
   }>();
   const router = useRouter();
+
+  const returnTo = useMemo(() => {
+    if (!rawReturnTo) return undefined;
+    try {
+      return decodeURIComponent(rawReturnTo);
+    } catch {
+      return rawReturnTo;
+    }
+  }, [rawReturnTo]);
 
   const reason = getCoAReasonBySlug(slug ?? '');
 
@@ -48,9 +59,26 @@ export default function ChangeOfAssessmentReasonPage() {
           </Text>
           <Pressable
             style={[styles.ctaButton, isWeb && webClickableStyles]}
-            onPress={() => router.replace('/')}
+            onPress={() => {
+              if (returnTo) {
+                if (returnTo.startsWith('http')) {
+                  if (Platform.OS === 'web') {
+                    window.location.href = returnTo;
+                  } else {
+                    Linking.openURL(returnTo);
+                  }
+                } else {
+                  // @ts-ignore
+                  router.push(returnTo);
+                }
+                return;
+              }
+              router.replace('/');
+            }}
           >
-            <Text style={styles.ctaButtonText}>Return Home</Text>
+            <Text style={styles.ctaButtonText}>
+              {returnTo ? 'Go Back' : 'Return Home'}
+            </Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -60,14 +88,18 @@ export default function ChangeOfAssessmentReasonPage() {
   const schema = buildSchema(reason);
 
   const handleCTA = () => {
+    const params: any = {};
     if (reason.relatedCircumstanceId) {
-      router.push({
-        pathname: '/special-circumstances',
-        params: { preselect: reason.relatedCircumstanceId },
-      });
-    } else {
-      router.push('/special-circumstances');
+      params.preselect = reason.relatedCircumstanceId;
     }
+    if (returnTo) {
+      params.returnTo = returnTo;
+    }
+
+    router.push({
+      pathname: '/special-circumstances',
+      params,
+    });
   };
 
   const handleCalculator = () => {
@@ -97,6 +129,20 @@ export default function ChangeOfAssessmentReasonPage() {
           <Pressable
             style={[styles.backButton, isWeb && webClickableStyles]}
             onPress={() => {
+              if (returnTo) {
+                if (returnTo.startsWith('http')) {
+                  if (Platform.OS === 'web') {
+                    window.location.href = returnTo;
+                  } else {
+                    Linking.openURL(returnTo);
+                  }
+                } else {
+                  // @ts-ignore - Dynamic string path is valid but TS might complain
+                  router.push(returnTo);
+                }
+                return;
+              }
+
               if (router.canGoBack()) {
                 router.back();
               } else {
