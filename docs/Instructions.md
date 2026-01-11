@@ -70,11 +70,19 @@ Since Rank Math is already installed, verify these settings are correct:
 2. Set:
    - **Single Post Title**: `%title% | AusChildSupport Blog`
    - **Meta Description**: `%excerpt%`
-   - **Schema Type**: **Blog Post**
-   - **Article Type**: **Blog Post**
-3. Toggle ON: **Add SEO Meta Box**
+   - **Schema Type**: **Article** (or "Blog Post" if available)
+   - **Article Type**: **Blog Post** (if available, otherwise "Article")
 
-#### 4d. Advanced Settings (Misc & Authors)
+#### 4c. Pages Settings
+1. Go to **Rank Math** → **Titles & Meta** → **Pages**
+2. Configure:
+   - **Schema Type**: **None** (Because your main pages like Contact/About are on your external app, not WordPress)
+
+#### 4d. Categories & Tags
+1. Go to **Rank Math** → **Titles & Meta** → **Categories**: Leave as default (Index).
+2. Go to **Rank Math** → **Titles & Meta** → **Tags**: Leave as default (No Index).
+
+#### 4e. Advanced Settings (Misc & Authors)
 1. Go to **Rank Math** → **Titles & Meta** → **Authors**
    - **Author Archives**: Ensure **Disabled** is selected (Blue).
 2. Go to **Rank Math** → **Titles & Meta** → **Misc Pages**
@@ -103,22 +111,47 @@ Since Rank Math is already installed, verify these settings are correct:
 ### Step 6: Enable XML Sitemap
 
 1. Go to **Rank Math** → **Sitemap Settings** → **General**
-2. Toggle ON: **Sitemap**
-3. Your sitemap will be at: `https://blog.auschildsupport.com/sitemap_index.xml`
-4. Configure which post types to include (Posts: yes, Pages: yes)
-5. Click **Save Changes**
-6. Visit the sitemap URL to verify it works
+   - **Images in Sitemaps**: **ON**
+2. Go to **Rank Math** → **Sitemap Settings** → **Post Types** (Left Sidebar)
+   - **Posts**: **Include in Sitemap** (ON)
+   - **Pages**: **Include in Sitemap** (OFF) - *Critical for your hybrid setup*
+4. Click **Save Changes**
+
+#### 6b. Fix 404 Error (Important)
+If your sitemap URL returns a "Page Not Found" (404) error:
+1. Go to **Settings** → **Permalinks**
+2. Scroll down and click **Save Changes** (this flushes the rewrite rules).
+3. Try the link again: `https://blog.auschildsupport.com/sitemap_index.xml`
 
 ---
 
-### Step 7: Add Blog Sitemap to Google Search Console
+### Step 7: Add Blog to Google Search Console (GSC)
 
-1. Go to [Google Search Console](https://search.google.com/search-console)
-2. If you haven't already, add property for `blog.auschildsupport.com`
-3. Verify using one of the methods (HTML tag, DNS, etc.)
-4. Once verified, go to **Sitemaps** in the left menu
-5. Enter: `sitemap_index.xml`
-6. Click **Submit**
+Since the blog is on a subdomain (`blog.`), it needs its own property in GSC, or to be covered by a Domain property.
+
+#### 7a. Add Property
+1. Go to [Google Search Console](https://search.google.com/search-console).
+2. Click the property dropdown (top left) → **Add Property**.
+3. Choose **URL Prefix**.
+4. Enter: `https://blog.auschildsupport.com`
+5. Click **Continue**.
+
+#### 7b. Verify Ownership
+*   **Case A (Auto-Verified)**: If you verified your main domain via **DNS**, this will auto-verify instantly.
+*   **Case B (Rank Math Method)**:
+    1. If it asks for verification, choose **HTML Tag**.
+    2. Copy the code (contents inside `content="..."`).
+    3. Go to **WordPress** → **Rank Math** → **General Settings** → **Webmaster Tools**.
+    4. Paste code in **Google Search Console**.
+    5. Click **Save Changes** in WordPress.
+    6. Click **Verify** in GSC.
+
+#### 7c. Submit Sitemap
+1. Inside the new `https://blog.auschildsupport.com` property in GSC:
+2. Go to **Sitemaps** (left menu).
+3. Enter: `sitemap_index.xml`
+4. Click **Submit**.
+5. Verify status is **Success**.
 
 ---
 
