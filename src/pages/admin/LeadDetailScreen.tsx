@@ -7,6 +7,7 @@
 import { exportLeadAsPDF } from '@/src/utils/exportLeadPDF';
 import {
   isWeb,
+  MAX_CONTENT_WIDTH,
   webClickableStyles,
   webInputStyles,
 } from '@/src/utils/responsive';
@@ -126,9 +127,8 @@ export default function LeadDetailScreen() {
       careInfo = careStrings.join(' | ');
     } else if (lead.children_count > 0) {
       // If no detailed care data, show count only
-      careInfo = `${lead.children_count} child${
-        lead.children_count > 1 ? 'ren' : ''
-      } (care % not specified)`;
+      careInfo = `${lead.children_count} child${lead.children_count > 1 ? 'ren' : ''
+        } (care % not specified)`;
     }
 
     // Add additional complexity triggers if present
@@ -280,8 +280,7 @@ auschildsupport.com`;
       console.error('[LeadDetail] Error exporting PDF:', error);
       if (Platform.OS === 'web') {
         alert(
-          `Export Failed\n\n${
-            error instanceof Error ? error.message : 'Unknown error occurred'
+          `Export Failed\n\n${error instanceof Error ? error.message : 'Unknown error occurred'
           }`
         );
       } else {
@@ -381,269 +380,278 @@ auschildsupport.com`;
     );
   }
 
+  // Web container style for constrained width on desktop
+  const webContainerStyle = isWeb ? {
+    maxWidth: MAX_CONTENT_WIDTH,
+    width: '100%' as const,
+    alignSelf: 'center' as const,
+  } : {};
+
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Pressable
-          style={[styles.backButton, isWeb && webClickableStyles]}
-          onPress={() => router.back()}
+      <View style={[styles.contentWrapper, webContainerStyle]}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Pressable
+            style={[styles.backButton, isWeb && webClickableStyles]}
+            onPress={() => router.back()}
+          >
+            <Text style={styles.backButtonText}>← Back</Text>
+          </Pressable>
+          <Text style={styles.headerTitle}>Lead #{lead.id?.slice(0, 8)}</Text>
+          <View style={[styles.statusBadge, getStatusBadgeStyle(lead.status)]}>
+            <Text style={styles.statusBadgeText}>{lead.status || 'new'}</Text>
+          </View>
+        </View>
+
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
         >
-          <Text style={styles.backButtonText}>← Back</Text>
-        </Pressable>
-        <Text style={styles.headerTitle}>Lead #{lead.id?.slice(0, 8)}</Text>
-        <View style={[styles.statusBadge, getStatusBadgeStyle(lead.status)]}>
-          <Text style={styles.statusBadgeText}>{lead.status || 'new'}</Text>
-        </View>
-      </View>
-
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-      >
-        {/* Parent Information */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Parent Information</Text>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Name:</Text>
-            <Text style={styles.infoValue}>{lead.parent_name}</Text>
-          </View>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Email:</Text>
-            <Text style={[styles.infoValue, styles.infoValueEmail]}>
-              {lead.parent_email}
-            </Text>
-          </View>
-          {lead.parent_phone && (
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Phone:</Text>
-              <Text style={styles.infoValue}>{lead.parent_phone}</Text>
-            </View>
-          )}
-          {lead.location && (
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Location:</Text>
-              <Text style={styles.infoValue}>{lead.location}</Text>
-            </View>
-          )}
-        </View>
-
-        {/* Case Details */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Case Details</Text>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Annual Liability:</Text>
-            <Text style={styles.infoValueHighlight}>
-              ${lead.annual_liability.toLocaleString()}/year
-            </Text>
-          </View>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Parent A Income:</Text>
-            <Text style={styles.infoValue}>
-              ${lead.income_parent_a.toLocaleString()}
-            </Text>
-          </View>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Parent B Income:</Text>
-            <Text style={styles.infoValue}>
-              ${lead.income_parent_b.toLocaleString()}
-            </Text>
-          </View>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Children:</Text>
-            <Text style={styles.infoValue}>{lead.children_count}</Text>
-          </View>
-        </View>
-
-        {/* Complexity Triggers */}
-        {lead.complexity_reasons && lead.complexity_reasons.length > 0 && (
+          {/* Parent Information */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Complexity Triggers</Text>
-            {lead.complexity_reasons.map((reason, index) => (
-              <View key={index} style={styles.complexityItem}>
-                <Text style={styles.complexityBullet}>•</Text>
-                <Text style={styles.complexityText}>{reason}</Text>
+            <Text style={styles.sectionTitle}>Parent Information</Text>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Name:</Text>
+              <Text style={styles.infoValue}>{lead.parent_name}</Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Email:</Text>
+              <Text style={[styles.infoValue, styles.infoValueEmail]}>
+                {lead.parent_email}
+              </Text>
+            </View>
+            {lead.parent_phone && (
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Phone:</Text>
+                <Text style={styles.infoValue}>{lead.parent_phone}</Text>
               </View>
-            ))}
-          </View>
-        )}
-
-        {/* Parent's Message */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Parent&apos;s Message</Text>
-          <Text style={styles.messageText}>{lead.parent_message}</Text>
-        </View>
-
-        {/* Notes */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Admin Notes</Text>
-          <TextInput
-            style={[styles.notesInput, isWeb && webInputStyles]}
-            placeholder="Add notes about this lead..."
-            placeholderTextColor="#64748b"
-            value={notes}
-            onChangeText={setNotes}
-            multiline
-            numberOfLines={4}
-          />
-          <Pressable
-            style={[
-              styles.actionButton,
-              styles.actionButtonSecondary,
-              isWeb && webClickableStyles,
-            ]}
-            onPress={saveNotes}
-            disabled={savingNotes}
-          >
-            {savingNotes ? (
-              <ActivityIndicator color="#2563eb" size="small" />
-            ) : (
-              <Text style={styles.actionButtonTextSecondary}>Save Notes</Text>
             )}
-          </Pressable>
-        </View>
-
-        {/* Actions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Actions</Text>
-
-          <Pressable
-            style={[
-              styles.actionButton,
-              styles.actionButtonPrimary,
-              isWeb && webClickableStyles,
-            ]}
-            onPress={generateTeaserEmail}
-          >
-            <Text style={styles.actionButtonText}>
-              📋 Generate Teaser Email
-            </Text>
-          </Pressable>
-
-          <Pressable
-            style={[
-              styles.actionButton,
-              styles.actionButtonPrimary,
-              isWeb && webClickableStyles,
-            ]}
-            onPress={handleExportPDF}
-            disabled={exportingPDF}
-          >
-            {exportingPDF ? (
-              <ActivityIndicator color="#ffffff" size="small" />
-            ) : (
-              <Text style={styles.actionButtonText}>📄 Export Lead as PDF</Text>
+            {lead.location && (
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Location:</Text>
+                <Text style={styles.infoValue}>{lead.location}</Text>
+              </View>
             )}
-          </Pressable>
-
-          <View style={styles.statusActions}>
-            <Pressable
-              style={[
-                styles.statusButton,
-                lead.status === 'reviewing' && styles.statusButtonActive,
-                isWeb && webClickableStyles,
-              ]}
-              onPress={() => updateStatus('reviewing')}
-              disabled={updatingStatus}
-            >
-              <Text
-                style={[
-                  styles.statusButtonText,
-                  lead.status === 'reviewing' && styles.statusButtonTextActive,
-                ]}
-              >
-                Reviewing
-              </Text>
-            </Pressable>
-
-            <Pressable
-              style={[
-                styles.statusButton,
-                lead.status === 'sent' && styles.statusButtonActive,
-                isWeb && webClickableStyles,
-              ]}
-              onPress={() => updateStatus('sent')}
-              disabled={updatingStatus}
-            >
-              <Text
-                style={[
-                  styles.statusButtonText,
-                  lead.status === 'sent' && styles.statusButtonTextActive,
-                ]}
-              >
-                Mark Sent
-              </Text>
-            </Pressable>
-
-            <Pressable
-              style={[
-                styles.statusButton,
-                lead.status === 'converted' && styles.statusButtonActive,
-                isWeb && webClickableStyles,
-              ]}
-              onPress={() => updateStatus('converted')}
-              disabled={updatingStatus}
-            >
-              <Text
-                style={[
-                  styles.statusButtonText,
-                  lead.status === 'converted' && styles.statusButtonTextActive,
-                ]}
-              >
-                Converted
-              </Text>
-            </Pressable>
-
-            <Pressable
-              style={[
-                styles.statusButton,
-                lead.status === 'lost' && styles.statusButtonActive,
-                isWeb && webClickableStyles,
-              ]}
-              onPress={() => updateStatus('lost')}
-              disabled={updatingStatus}
-            >
-              <Text
-                style={[
-                  styles.statusButtonText,
-                  lead.status === 'lost' && styles.statusButtonTextActive,
-                ]}
-              >
-                Lost
-              </Text>
-            </Pressable>
           </View>
-        </View>
 
-        {/* Danger Zone */}
-        <View style={[styles.section, styles.dangerSection]}>
-          <Text style={[styles.sectionTitle, styles.dangerTitle]}>
-            Danger Zone
-          </Text>
-          <Pressable
-            style={[
-              styles.actionButton,
-              styles.actionButtonDanger,
-              isWeb && webClickableStyles,
-            ]}
-            onPress={deleteLead}
-          >
-            <Text style={styles.actionButtonText}>🗑️ Delete Lead</Text>
-          </Pressable>
-        </View>
+          {/* Case Details */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Case Details</Text>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Annual Liability:</Text>
+              <Text style={styles.infoValueHighlight}>
+                ${lead.annual_liability.toLocaleString()}/year
+              </Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Parent A Income:</Text>
+              <Text style={styles.infoValue}>
+                ${lead.income_parent_a.toLocaleString()}
+              </Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Parent B Income:</Text>
+              <Text style={styles.infoValue}>
+                ${lead.income_parent_b.toLocaleString()}
+              </Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Children:</Text>
+              <Text style={styles.infoValue}>{lead.children_count}</Text>
+            </View>
+          </View>
 
-        {/* Metadata */}
-        <View style={styles.metadata}>
-          <Text style={styles.metadataText}>
-            Created: {new Date(lead.created_at!).toLocaleString('en-AU')}
-          </Text>
-          {lead.sent_at && (
-            <Text style={styles.metadataText}>
-              Sent: {new Date(lead.sent_at).toLocaleString('en-AU')}
-            </Text>
+          {/* Complexity Triggers */}
+          {lead.complexity_reasons && lead.complexity_reasons.length > 0 && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Complexity Triggers</Text>
+              {lead.complexity_reasons.map((reason, index) => (
+                <View key={index} style={styles.complexityItem}>
+                  <Text style={styles.complexityBullet}>•</Text>
+                  <Text style={styles.complexityText}>{reason}</Text>
+                </View>
+              ))}
+            </View>
           )}
-        </View>
-      </ScrollView>
+
+          {/* Parent's Message */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Parent&apos;s Message</Text>
+            <Text style={styles.messageText}>{lead.parent_message}</Text>
+          </View>
+
+          {/* Notes */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Admin Notes</Text>
+            <TextInput
+              style={[styles.notesInput, isWeb && webInputStyles]}
+              placeholder="Add notes about this lead..."
+              placeholderTextColor="#64748b"
+              value={notes}
+              onChangeText={setNotes}
+              multiline
+              numberOfLines={4}
+            />
+            <Pressable
+              style={[
+                styles.actionButton,
+                styles.actionButtonSecondary,
+                isWeb && webClickableStyles,
+              ]}
+              onPress={saveNotes}
+              disabled={savingNotes}
+            >
+              {savingNotes ? (
+                <ActivityIndicator color="#2563eb" size="small" />
+              ) : (
+                <Text style={styles.actionButtonTextSecondary}>Save Notes</Text>
+              )}
+            </Pressable>
+          </View>
+
+          {/* Actions */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Actions</Text>
+
+            <Pressable
+              style={[
+                styles.actionButton,
+                styles.actionButtonPrimary,
+                isWeb && webClickableStyles,
+              ]}
+              onPress={generateTeaserEmail}
+            >
+              <Text style={styles.actionButtonText}>
+                📋 Generate Teaser Email
+              </Text>
+            </Pressable>
+
+            <Pressable
+              style={[
+                styles.actionButton,
+                styles.actionButtonPrimary,
+                isWeb && webClickableStyles,
+              ]}
+              onPress={handleExportPDF}
+              disabled={exportingPDF}
+            >
+              {exportingPDF ? (
+                <ActivityIndicator color="#ffffff" size="small" />
+              ) : (
+                <Text style={styles.actionButtonText}>📄 Export Lead as PDF</Text>
+              )}
+            </Pressable>
+
+            <View style={styles.statusActions}>
+              <Pressable
+                style={[
+                  styles.statusButton,
+                  lead.status === 'reviewing' && styles.statusButtonActive,
+                  isWeb && webClickableStyles,
+                ]}
+                onPress={() => updateStatus('reviewing')}
+                disabled={updatingStatus}
+              >
+                <Text
+                  style={[
+                    styles.statusButtonText,
+                    lead.status === 'reviewing' && styles.statusButtonTextActive,
+                  ]}
+                >
+                  Reviewing
+                </Text>
+              </Pressable>
+
+              <Pressable
+                style={[
+                  styles.statusButton,
+                  lead.status === 'sent' && styles.statusButtonActive,
+                  isWeb && webClickableStyles,
+                ]}
+                onPress={() => updateStatus('sent')}
+                disabled={updatingStatus}
+              >
+                <Text
+                  style={[
+                    styles.statusButtonText,
+                    lead.status === 'sent' && styles.statusButtonTextActive,
+                  ]}
+                >
+                  Mark Sent
+                </Text>
+              </Pressable>
+
+              <Pressable
+                style={[
+                  styles.statusButton,
+                  lead.status === 'converted' && styles.statusButtonActive,
+                  isWeb && webClickableStyles,
+                ]}
+                onPress={() => updateStatus('converted')}
+                disabled={updatingStatus}
+              >
+                <Text
+                  style={[
+                    styles.statusButtonText,
+                    lead.status === 'converted' && styles.statusButtonTextActive,
+                  ]}
+                >
+                  Converted
+                </Text>
+              </Pressable>
+
+              <Pressable
+                style={[
+                  styles.statusButton,
+                  lead.status === 'lost' && styles.statusButtonActive,
+                  isWeb && webClickableStyles,
+                ]}
+                onPress={() => updateStatus('lost')}
+                disabled={updatingStatus}
+              >
+                <Text
+                  style={[
+                    styles.statusButtonText,
+                    lead.status === 'lost' && styles.statusButtonTextActive,
+                  ]}
+                >
+                  Lost
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+
+          {/* Danger Zone */}
+          <View style={[styles.section, styles.dangerSection]}>
+            <Text style={[styles.sectionTitle, styles.dangerTitle]}>
+              Danger Zone
+            </Text>
+            <Pressable
+              style={[
+                styles.actionButton,
+                styles.actionButtonDanger,
+                isWeb && webClickableStyles,
+              ]}
+              onPress={deleteLead}
+            >
+              <Text style={styles.actionButtonText}>🗑️ Delete Lead</Text>
+            </Pressable>
+          </View>
+
+          {/* Metadata */}
+          <View style={styles.metadata}>
+            <Text style={styles.metadataText}>
+              Created: {new Date(lead.created_at!).toLocaleString('en-AU')}
+            </Text>
+            {lead.sent_at && (
+              <Text style={styles.metadataText}>
+                Sent: {new Date(lead.sent_at).toLocaleString('en-AU')}
+              </Text>
+            )}
+          </View>
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -670,6 +678,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0f172a', // slate-900
+  },
+  contentWrapper: {
+    flex: 1,
   },
   loadingContainer: {
     flex: 1,

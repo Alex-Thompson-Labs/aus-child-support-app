@@ -5,6 +5,7 @@
 
 import {
   isWeb,
+  MAX_CONTENT_WIDTH,
   webClickableStyles,
   webInputStyles,
 } from '@/src/utils/responsive';
@@ -229,130 +230,139 @@ export default function ProposalsScreen() {
     );
   }
 
+  // Web container style for constrained width on desktop
+  const webContainerStyle = isWeb ? {
+    maxWidth: MAX_CONTENT_WIDTH,
+    width: '100%' as const,
+    alignSelf: 'center' as const,
+  } : {};
+
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Pressable
-            style={[styles.backButton, isWeb && webClickableStyles]}
-            onPress={handleBack}
-          >
-            <Text style={styles.backButtonText}>Back</Text>
-          </Pressable>
-          <View>
-            <Text style={styles.headerTitle}>Partnership Proposals</Text>
-            <Text style={styles.headerSubtitle}>
-              {proposals.length} proposal{proposals.length !== 1 ? 's' : ''}
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Create New Proposal */}
-      <View style={styles.createSection}>
-        <Text style={styles.createTitle}>Create New Proposal</Text>
-        <View style={styles.createForm}>
-          <TextInput
-            style={[styles.input, isWeb && webInputStyles]}
-            placeholder="Firm name (e.g. Smith Family Lawyers)"
-            placeholderTextColor="#64748b"
-            value={newFirmName}
-            onChangeText={setNewFirmName}
-            editable={!creating}
-          />
-          <Pressable
-            style={[
-              styles.createButton,
-              creating && styles.createButtonDisabled,
-              isWeb && webClickableStyles,
-            ]}
-            onPress={handleCreate}
-            disabled={creating}
-          >
-            {creating ? (
-              <ActivityIndicator size="small" color="#ffffff" />
-            ) : (
-              <Text style={styles.createButtonText}>Create</Text>
-            )}
-          </Pressable>
-        </View>
-      </View>
-
-      {/* Proposals List */}
-      <ScrollView
-        style={styles.list}
-        contentContainerStyle={styles.listContent}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor="#2563eb"
-          />
-        }
-      >
-        {proposals.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>No proposals yet</Text>
-            <Text style={styles.emptyStateHint}>
-              Create your first proposal above
-            </Text>
-          </View>
-        ) : (
-          proposals.map((proposal) => (
-            <View key={proposal.id} style={styles.card}>
-              <View style={styles.cardHeader}>
-                <Text style={styles.firmName}>{proposal.firm_name}</Text>
-                <Pressable
-                  style={[
-                    styles.statusBadge,
-                    proposal.is_active
-                      ? styles.statusActive
-                      : styles.statusInactive,
-                    isWeb && webClickableStyles,
-                  ]}
-                  onPress={() => handleToggleActive(proposal)}
-                >
-                  <Text style={styles.statusText}>
-                    {proposal.is_active ? 'Active' : 'Inactive'}
-                  </Text>
-                </Pressable>
-              </View>
-
-              <View style={styles.statsRow}>
-                <View style={styles.stat}>
-                  <Text style={styles.statValue}>{proposal.view_count}</Text>
-                  <Text style={styles.statLabel}>Views</Text>
-                </View>
-                <View style={styles.stat}>
-                  <Text style={styles.statValue}>
-                    {proposal.total_view_minutes}
-                  </Text>
-                  <Text style={styles.statLabel}>Minutes</Text>
-                </View>
-                <View style={styles.stat}>
-                  <Text style={styles.statValue}>
-                    {formatDate(proposal.created_at)}
-                  </Text>
-                  <Text style={styles.statLabel}>Created</Text>
-                </View>
-              </View>
-
-              <View style={styles.cardFooter}>
-                <Text style={styles.slug}>/partner/{proposal.slug}</Text>
-                <Pressable
-                  style={[styles.copyButton, isWeb && webClickableStyles]}
-                  onPress={() => handleCopyLink(proposal.slug)}
-                >
-                  <Text style={styles.copyButtonText}>
-                    {copiedSlug === proposal.slug ? 'Copied!' : 'Copy Link'}
-                  </Text>
-                </Pressable>
-              </View>
+      <View style={[styles.contentWrapper, webContainerStyle]}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Pressable
+              style={[styles.backButton, isWeb && webClickableStyles]}
+              onPress={handleBack}
+            >
+              <Text style={styles.backButtonText}>Back</Text>
+            </Pressable>
+            <View>
+              <Text style={styles.headerTitle}>Partnership Proposals</Text>
+              <Text style={styles.headerSubtitle}>
+                {proposals.length} proposal{proposals.length !== 1 ? 's' : ''}
+              </Text>
             </View>
-          ))
-        )}
-      </ScrollView>
+          </View>
+        </View>
+
+        {/* Create New Proposal */}
+        <View style={styles.createSection}>
+          <Text style={styles.createTitle}>Create New Proposal</Text>
+          <View style={styles.createForm}>
+            <TextInput
+              style={[styles.input, isWeb && webInputStyles]}
+              placeholder="Firm name (e.g. Smith Family Lawyers)"
+              placeholderTextColor="#64748b"
+              value={newFirmName}
+              onChangeText={setNewFirmName}
+              editable={!creating}
+            />
+            <Pressable
+              style={[
+                styles.createButton,
+                creating && styles.createButtonDisabled,
+                isWeb && webClickableStyles,
+              ]}
+              onPress={handleCreate}
+              disabled={creating}
+            >
+              {creating ? (
+                <ActivityIndicator size="small" color="#ffffff" />
+              ) : (
+                <Text style={styles.createButtonText}>Create</Text>
+              )}
+            </Pressable>
+          </View>
+        </View>
+
+        {/* Proposals List */}
+        <ScrollView
+          style={styles.list}
+          contentContainerStyle={styles.listContent}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor="#2563eb"
+            />
+          }
+        >
+          {proposals.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>No proposals yet</Text>
+              <Text style={styles.emptyStateHint}>
+                Create your first proposal above
+              </Text>
+            </View>
+          ) : (
+            proposals.map((proposal) => (
+              <View key={proposal.id} style={styles.card}>
+                <View style={styles.cardHeader}>
+                  <Text style={styles.firmName}>{proposal.firm_name}</Text>
+                  <Pressable
+                    style={[
+                      styles.statusBadge,
+                      proposal.is_active
+                        ? styles.statusActive
+                        : styles.statusInactive,
+                      isWeb && webClickableStyles,
+                    ]}
+                    onPress={() => handleToggleActive(proposal)}
+                  >
+                    <Text style={styles.statusText}>
+                      {proposal.is_active ? 'Active' : 'Inactive'}
+                    </Text>
+                  </Pressable>
+                </View>
+
+                <View style={styles.statsRow}>
+                  <View style={styles.stat}>
+                    <Text style={styles.statValue}>{proposal.view_count}</Text>
+                    <Text style={styles.statLabel}>Views</Text>
+                  </View>
+                  <View style={styles.stat}>
+                    <Text style={styles.statValue}>
+                      {proposal.total_view_minutes}
+                    </Text>
+                    <Text style={styles.statLabel}>Minutes</Text>
+                  </View>
+                  <View style={styles.stat}>
+                    <Text style={styles.statValue}>
+                      {formatDate(proposal.created_at)}
+                    </Text>
+                    <Text style={styles.statLabel}>Created</Text>
+                  </View>
+                </View>
+
+                <View style={styles.cardFooter}>
+                  <Text style={styles.slug}>/partner/{proposal.slug}</Text>
+                  <Pressable
+                    style={[styles.copyButton, isWeb && webClickableStyles]}
+                    onPress={() => handleCopyLink(proposal.slug)}
+                  >
+                    <Text style={styles.copyButtonText}>
+                      {copiedSlug === proposal.slug ? 'Copied!' : 'Copy Link'}
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+            ))
+          )}
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -369,6 +379,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0f172a',
+  },
+  contentWrapper: {
+    flex: 1,
   },
   loadingContainer: {
     flex: 1,

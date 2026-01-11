@@ -6,6 +6,7 @@
 
 import {
   isWeb,
+  MAX_CONTENT_WIDTH,
   webClickableStyles,
   webInputStyles,
 } from '@/src/utils/responsive';
@@ -162,237 +163,246 @@ export default function AdminDashboardScreen() {
     );
   }
 
+  // Web container style for constrained width on desktop
+  const webContainerStyle = isWeb ? {
+    maxWidth: MAX_CONTENT_WIDTH,
+    width: '100%' as const,
+    alignSelf: 'center' as const,
+  } : {};
+
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.headerTitle}>Admin Dashboard</Text>
-          <Text style={styles.headerSubtitle}>
-            {filteredLeads.length} leads
-          </Text>
-        </View>
-        <Pressable
-          style={[styles.proposalsButton, isWeb && webClickableStyles]}
-          onPress={() => router.push('/admin/proposals')}
-        >
-          <Text style={styles.proposalsButtonText}>Proposals</Text>
-        </Pressable>
-        <Pressable
-          style={[styles.logoutButton, isWeb && webClickableStyles]}
-          onPress={handleLogout}
-        >
-          <Text style={styles.logoutButtonText}>Logout</Text>
-        </Pressable>
-      </View>
-
-      {/* Search */}
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={[styles.searchInput, isWeb && webInputStyles]}
-          placeholder="Search by name or email..."
-          placeholderTextColor="#64748b"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-      </View>
-
-      {/* Filters */}
-      <View accessibilityRole="navigation" accessibilityLabel="Filter leads">
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.filtersContainer}
-        >
-        <Pressable
-          style={[
-            styles.filterChip,
-            statusFilter === 'all' && styles.filterChipActive,
-          ]}
-          onPress={() => setStatusFilter('all')}
-        >
-          <Text
-            style={[
-              styles.filterChipText,
-              statusFilter === 'all' && styles.filterChipTextActive,
-            ]}
-          >
-            All ({leads.length})
-          </Text>
-        </Pressable>
-
-        <Pressable
-          style={[
-            styles.filterChip,
-            statusFilter === 'new' && styles.filterChipActive,
-          ]}
-          onPress={() => setStatusFilter('new')}
-        >
-          <Text
-            style={[
-              styles.filterChipText,
-              statusFilter === 'new' && styles.filterChipTextActive,
-            ]}
-          >
-            New ({leads.filter((l) => l.status === 'new').length})
-          </Text>
-        </Pressable>
-
-        <Pressable
-          style={[
-            styles.filterChip,
-            statusFilter === 'reviewing' && styles.filterChipActive,
-          ]}
-          onPress={() => setStatusFilter('reviewing')}
-        >
-          <Text
-            style={[
-              styles.filterChipText,
-              statusFilter === 'reviewing' && styles.filterChipTextActive,
-            ]}
-          >
-            Reviewing ({leads.filter((l) => l.status === 'reviewing').length})
-          </Text>
-        </Pressable>
-
-        <Pressable
-          style={[
-            styles.filterChip,
-            statusFilter === 'sent' && styles.filterChipActive,
-          ]}
-          onPress={() => setStatusFilter('sent')}
-        >
-          <Text
-            style={[
-              styles.filterChipText,
-              statusFilter === 'sent' && styles.filterChipTextActive,
-            ]}
-          >
-            Sent ({leads.filter((l) => l.status === 'sent').length})
-          </Text>
-        </Pressable>
-
-        <Pressable
-          style={[
-            styles.filterChip,
-            statusFilter === 'converted' && styles.filterChipActive,
-          ]}
-          onPress={() => setStatusFilter('converted')}
-        >
-          <Text
-            style={[
-              styles.filterChipText,
-              statusFilter === 'converted' && styles.filterChipTextActive,
-            ]}
-          >
-            Converted ({leads.filter((l) => l.status === 'converted').length})
-          </Text>
-        </Pressable>
-        </ScrollView>
-      </View>
-
-      {/* Sort Options */}
-      <View style={styles.sortContainer}>
-        <Text style={styles.sortLabel}>Sort by:</Text>
-        <Pressable
-          style={[
-            styles.sortButton,
-            sortBy === 'date' && styles.sortButtonActive,
-          ]}
-          onPress={() => setSortBy('date')}
-        >
-          <Text
-            style={[
-              styles.sortButtonText,
-              sortBy === 'date' && styles.sortButtonTextActive,
-            ]}
-          >
-            Date
-          </Text>
-        </Pressable>
-        <Pressable
-          style={[
-            styles.sortButton,
-            sortBy === 'liability' && styles.sortButtonActive,
-          ]}
-          onPress={() => setSortBy('liability')}
-        >
-          <Text
-            style={[
-              styles.sortButtonText,
-              sortBy === 'liability' && styles.sortButtonTextActive,
-            ]}
-          >
-            Liability
-          </Text>
-        </Pressable>
-      </View>
-
-      {/* Leads List */}
-      <ScrollView
-        style={styles.leadsList}
-        contentContainerStyle={styles.leadsListContent}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor="#2563eb"
-          />
-        }
-      >
-        {filteredLeads.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>
-              {searchQuery ? 'No leads match your search' : 'No leads yet'}
+      <View style={[styles.contentWrapper, webContainerStyle]}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.headerTitle}>Admin Dashboard</Text>
+            <Text style={styles.headerSubtitle}>
+              {filteredLeads.length} leads
             </Text>
           </View>
-        ) : (
-          filteredLeads.map((lead) => (
+          <Pressable
+            style={[styles.proposalsButton, isWeb && webClickableStyles]}
+            onPress={() => router.push('/admin/proposals')}
+          >
+            <Text style={styles.proposalsButtonText}>Proposals</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.logoutButton, isWeb && webClickableStyles]}
+            onPress={handleLogout}
+          >
+            <Text style={styles.logoutButtonText}>Logout</Text>
+          </Pressable>
+        </View>
+
+        {/* Search */}
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={[styles.searchInput, isWeb && webInputStyles]}
+            placeholder="Search by name or email..."
+            placeholderTextColor="#64748b"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
+
+        {/* Filters */}
+        <View accessibilityRole="navigation" accessibilityLabel="Filter leads">
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.filtersContainer}
+          >
             <Pressable
-              key={lead.id}
-              style={[styles.leadCard, isWeb && webClickableStyles]}
-              onPress={() => handleLeadPress(lead)}
+              style={[
+                styles.filterChip,
+                statusFilter === 'all' && styles.filterChipActive,
+              ]}
+              onPress={() => setStatusFilter('all')}
             >
-              <View style={styles.leadCardHeader}>
-                <Text style={styles.leadId}>Lead #{lead.id?.slice(0, 8)}</Text>
-                <View
-                  style={[styles.statusBadge, getStatusBadgeStyle(lead.status)]}
-                >
-                  <Text style={styles.statusBadgeText}>
-                    {lead.status || 'new'}
-                  </Text>
-                </View>
-              </View>
-
-              <Text style={styles.leadName}>
-                {getFirstName(lead.parent_name)}
+              <Text
+                style={[
+                  styles.filterChipText,
+                  statusFilter === 'all' && styles.filterChipTextActive,
+                ]}
+              >
+                All ({leads.length})
               </Text>
+            </Pressable>
 
-              {lead.location && (
-                <Text style={styles.leadLocation}>{lead.location}</Text>
-              )}
+            <Pressable
+              style={[
+                styles.filterChip,
+                statusFilter === 'new' && styles.filterChipActive,
+              ]}
+              onPress={() => setStatusFilter('new')}
+            >
+              <Text
+                style={[
+                  styles.filterChipText,
+                  statusFilter === 'new' && styles.filterChipTextActive,
+                ]}
+              >
+                New ({leads.filter((l) => l.status === 'new').length})
+              </Text>
+            </Pressable>
 
-              <View style={styles.leadFooter}>
-                <Text style={styles.leadLiability}>
-                  ${lead.annual_liability.toLocaleString()}/yr
-                </Text>
-                <Text style={styles.leadDate}>
-                  {formatDate(lead.created_at)}
-                </Text>
-              </View>
+            <Pressable
+              style={[
+                styles.filterChip,
+                statusFilter === 'reviewing' && styles.filterChipActive,
+              ]}
+              onPress={() => setStatusFilter('reviewing')}
+            >
+              <Text
+                style={[
+                  styles.filterChipText,
+                  statusFilter === 'reviewing' && styles.filterChipTextActive,
+                ]}
+              >
+                Reviewing ({leads.filter((l) => l.status === 'reviewing').length})
+              </Text>
+            </Pressable>
 
-              {lead.complexity_reasons &&
-                lead.complexity_reasons.length > 0 && (
-                  <View style={styles.complexityBadge}>
-                    <Text style={styles.complexityBadgeText}>
-                      {lead.complexity_reasons.length} complexity triggers
+            <Pressable
+              style={[
+                styles.filterChip,
+                statusFilter === 'sent' && styles.filterChipActive,
+              ]}
+              onPress={() => setStatusFilter('sent')}
+            >
+              <Text
+                style={[
+                  styles.filterChipText,
+                  statusFilter === 'sent' && styles.filterChipTextActive,
+                ]}
+              >
+                Sent ({leads.filter((l) => l.status === 'sent').length})
+              </Text>
+            </Pressable>
+
+            <Pressable
+              style={[
+                styles.filterChip,
+                statusFilter === 'converted' && styles.filterChipActive,
+              ]}
+              onPress={() => setStatusFilter('converted')}
+            >
+              <Text
+                style={[
+                  styles.filterChipText,
+                  statusFilter === 'converted' && styles.filterChipTextActive,
+                ]}
+              >
+                Converted ({leads.filter((l) => l.status === 'converted').length})
+              </Text>
+            </Pressable>
+          </ScrollView>
+        </View>
+
+        {/* Sort Options */}
+        <View style={styles.sortContainer}>
+          <Text style={styles.sortLabel}>Sort by:</Text>
+          <Pressable
+            style={[
+              styles.sortButton,
+              sortBy === 'date' && styles.sortButtonActive,
+            ]}
+            onPress={() => setSortBy('date')}
+          >
+            <Text
+              style={[
+                styles.sortButtonText,
+                sortBy === 'date' && styles.sortButtonTextActive,
+              ]}
+            >
+              Date
+            </Text>
+          </Pressable>
+          <Pressable
+            style={[
+              styles.sortButton,
+              sortBy === 'liability' && styles.sortButtonActive,
+            ]}
+            onPress={() => setSortBy('liability')}
+          >
+            <Text
+              style={[
+                styles.sortButtonText,
+                sortBy === 'liability' && styles.sortButtonTextActive,
+              ]}
+            >
+              Liability
+            </Text>
+          </Pressable>
+        </View>
+
+        {/* Leads List */}
+        <ScrollView
+          style={styles.leadsList}
+          contentContainerStyle={styles.leadsListContent}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor="#2563eb"
+            />
+          }
+        >
+          {filteredLeads.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>
+                {searchQuery ? 'No leads match your search' : 'No leads yet'}
+              </Text>
+            </View>
+          ) : (
+            filteredLeads.map((lead) => (
+              <Pressable
+                key={lead.id}
+                style={[styles.leadCard, isWeb && webClickableStyles]}
+                onPress={() => handleLeadPress(lead)}
+              >
+                <View style={styles.leadCardHeader}>
+                  <Text style={styles.leadId}>Lead #{lead.id?.slice(0, 8)}</Text>
+                  <View
+                    style={[styles.statusBadge, getStatusBadgeStyle(lead.status)]}
+                  >
+                    <Text style={styles.statusBadgeText}>
+                      {lead.status || 'new'}
                     </Text>
                   </View>
+                </View>
+
+                <Text style={styles.leadName}>
+                  {getFirstName(lead.parent_name)}
+                </Text>
+
+                {lead.location && (
+                  <Text style={styles.leadLocation}>{lead.location}</Text>
                 )}
-            </Pressable>
-          ))
-        )}
-      </ScrollView>
+
+                <View style={styles.leadFooter}>
+                  <Text style={styles.leadLiability}>
+                    ${lead.annual_liability.toLocaleString()}/yr
+                  </Text>
+                  <Text style={styles.leadDate}>
+                    {formatDate(lead.created_at)}
+                  </Text>
+                </View>
+
+                {lead.complexity_reasons &&
+                  lead.complexity_reasons.length > 0 && (
+                    <View style={styles.complexityBadge}>
+                      <Text style={styles.complexityBadgeText}>
+                        {lead.complexity_reasons.length} complexity triggers
+                      </Text>
+                    </View>
+                  )}
+              </Pressable>
+            ))
+          )}
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -442,6 +452,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0f172a', // slate-900
+  },
+  contentWrapper: {
+    flex: 1,
   },
   loadingContainer: {
     flex: 1,
