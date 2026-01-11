@@ -37,26 +37,8 @@ export default function Root({ children }: PropsWithChildren) {
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
 
-        {/* FALLBACK METADATA */}
-        <title>Child Support Calculator Australia 2026 | Free & Accurate</title>
-        <meta
-          name="description"
-          content="Official 2026 Services Australia formula. Calculate child support payments instantly."
-        />
-
         {/* GLOBAL SOCIAL (STATIC) */}
         <meta property="og:site_name" content="AusChildSupport" />
-        <meta
-          property="og:image"
-          content="https://auschildsupport.com/share-preview.jpg"
-        />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta
-          property="og:image:alt"
-          content="Child Support Calculator Australia - Free calculator using official Services Australia 2026 formula"
-        />
-        <meta name="twitter:card" content="summary_large_image" />
 
         {/* Favicon */}
         <link

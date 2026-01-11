@@ -32,20 +32,42 @@ export async function generateStaticParams() {
 }
 
 export default function ChangeOfAssessmentReasonPage() {
-  const { 'reason-slug': slug, returnTo: rawReturnTo } = useLocalSearchParams<{
+  const { 'reason-slug': rawSlug, returnTo: queryReturnTo } = useLocalSearchParams<{
     'reason-slug': string;
     returnTo?: string;
   }>();
   const router = useRouter();
 
-  const returnTo = useMemo(() => {
-    if (!rawReturnTo) return undefined;
-    try {
-      return decodeURIComponent(rawReturnTo);
-    } catch {
-      return rawReturnTo;
+  // Handle malformed URLs where query params are appended with & instead of ?
+  // e.g. /high-costs-of-contact&returnTo=...
+  const { slug, returnTo } = useMemo(() => {
+    let cleanSlug = rawSlug;
+    let extractedReturnTo = queryReturnTo;
+
+    // Check if slug contains malformed query params
+    if (cleanSlug && cleanSlug.includes('&')) {
+      const parts = cleanSlug.split('&');
+      cleanSlug = parts[0];
+
+      // Try to find returnTo in the split parts
+      const returnToPart = parts.find(p => p.startsWith('returnTo='));
+      if (returnToPart) {
+        extractedReturnTo = returnToPart.split('=')[1];
+      }
     }
-  }, [rawReturnTo]);
+
+    // Decode returnTo if present
+    let decodedReturnTo: string | undefined = undefined;
+    if (extractedReturnTo) {
+      try {
+        decodedReturnTo = decodeURIComponent(extractedReturnTo);
+      } catch {
+        decodedReturnTo = extractedReturnTo;
+      }
+    }
+
+    return { slug: cleanSlug, returnTo: decodedReturnTo };
+  }, [rawSlug, queryReturnTo]);
 
   const reason = getCoAReasonBySlug(slug ?? '');
 
