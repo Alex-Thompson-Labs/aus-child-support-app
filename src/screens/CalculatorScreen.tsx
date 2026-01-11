@@ -415,9 +415,9 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 850,
     flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 'auto',
+    alignItems: 'stretch',
+    marginLeft: 'auto',
+    marginRight: 'auto',
     gap: 16,
   },
   blogButton: {
@@ -437,9 +437,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
+    flexGrow: 1,
     paddingBottom: 20,
     paddingHorizontal: 16,
-    alignItems: 'center',
   },
   resultsOverlay: {
     position: 'absolute',

@@ -101,10 +101,20 @@ export default function Root({ children }: PropsWithChildren) {
               [role="main"], main {
                 flex: 1;
                 padding: 16px;
-                max-width: 850px;
-                margin: 0 auto;
                 width: 100%;
                 min-height: 400px;
+              }
+              
+              /* ScrollView content centering for React Native Web */
+              [role="main"] > div {
+                display: flex;
+                justify-content: center;
+                width: 100%;
+              }
+              
+              [role="main"] > div > div {
+                max-width: 850px;
+                width: 100%;
               }
               
               /* Logo - reserve space to prevent CLS */
@@ -127,6 +137,14 @@ export default function Root({ children }: PropsWithChildren) {
                 min-height: 100vh;
                 display: flex;
                 flex-direction: column;
+                align-items: center;
+                width: 100%;
+              }
+              
+              /* Center all direct children of root */
+              #root > * {
+                width: 100%;
+                max-width: 100%;
               }
             `,
           }}
