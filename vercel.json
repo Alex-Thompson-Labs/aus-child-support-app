@@ -4,6 +4,13 @@
   "framework": null,
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/change-of-assessment/:slug(.*)&returnTo=:returnTo*",
+      "destination": "/change-of-assessment/:slug?returnTo=:returnTo",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/admin/lead/:id",
