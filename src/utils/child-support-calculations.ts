@@ -1,4 +1,4 @@
-import type { CostBracketInfo } from './calculator';
+import type { CostBracketInfo, OtherCaseChild } from './calculator';
 import {
   AssessmentYear,
   CARE_PERIOD_DAYS,
@@ -182,4 +182,99 @@ export function mapCareToCostPercent(care: number): number {
   if (care <= 65) return 51 + 2 * (care - 53); // Shared care (Linear)
   if (care <= 86) return 76; // Primary care
   return 100; // More than primary care
+}
+
+// ============================================================================
+// Multi-case Support Functions (Formula 3 & 4)
+// ============================================================================
+
+/**
+ * Calculates the Multi-case Allowance for a parent with children in other cases.
+ *
+ * The "Same Age" Rule: For each other-case child, we calculate the cost as if
+ * ALL of the parent's children (current case + other cases) were the same age
+ * as that child, then divide by total children count.
+ *
+ * @param year - Assessment year
+ * @param parentCSI - The parent's individual Child Support Income (ATI - SSA)
+ * @param currentCaseChildren - Children in the current case
+ * @param otherCaseChildren - Children in other child support cases
+ * @returns The multi-case allowance to deduct from the parent's income (rounded to nearest dollar)
+ */
+export function calculateMultiCaseAllowance(
+  year: AssessmentYear,
+  parentCSI: number,
+  currentCaseChildren: { age: 'Under 13' | '13+' }[],
+  otherCaseChildren: OtherCaseChild[]
+): number {
+  if (otherCaseChildren.length === 0) return 0;
+  if (parentCSI <= 0) return 0;
+
+  const totalChildCount = currentCaseChildren.length + otherCaseChildren.length;
+  let allowance = 0;
+
+  for (const otherChild of otherCaseChildren) {
+    // Create virtual children all of same age as this other-case child
+    // This implements the "Same Age" rule
+    const virtualChildren: Child[] = Array(totalChildCount)
+      .fill(null)
+      .map(() => ({
+        age: otherChild.age,
+        careA: 0,
+        careB: 0,
+      }));
+
+    // Calculate cost using parent's individual CSI
+    const { cost: totalCost } = getChildCost(year, virtualChildren, parentCSI);
+
+    // This child's share
+    const childCost = totalCost / totalChildCount;
+    allowance += childCost;
+  }
+
+  return Math.round(allowance);
+}
+
+/**
+ * Calculates the Multi-case Cap for a specific child.
+ *
+ * The cap ensures the paying parent's liability for a multi-case child
+ * doesn't exceed their share of that child's cost.
+ *
+ * Cap = Child's cost × (100% - parent's cost percentage for that child)
+ *
+ * @param childCost - The cost calculated for this specific child
+ * @param parentCostPercentage - The parent's cost percentage (from care %)
+ * @returns The multi-case cap amount (rounded to nearest dollar)
+ */
+export function calculateMultiCaseCap(
+  childCost: number,
+  parentCostPercentage: number
+): number {
+  return Math.round(childCost * ((100 - parentCostPercentage) / 100));
+}
+
+/**
+ * Applies multi-case cap to a child's liability.
+ *
+ * @param standardLiability - The liability calculated by standard formula
+ * @param multiCaseCap - The calculated multi-case cap
+ * @returns Object with final liability and whether cap was applied
+ */
+export function applyMultiCaseCap(
+  standardLiability: number,
+  multiCaseCap: number
+): { liability: number; capApplied: boolean } {
+  if (standardLiability > multiCaseCap) {
+    return { liability: multiCaseCap, capApplied: true };
+  }
+  return { liability: standardLiability, capApplied: false };
+}
+
+/**
+ * Validates non-parent carer care percentage.
+ * Non-parent carers must have at least 35% care.
+ */
+export function validateNonParentCarerCare(carePercentage: number): boolean {
+  return carePercentage >= 35;
 }

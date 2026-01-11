@@ -17,6 +17,8 @@ interface ChildRowProps {
   onRemove: () => void;
   childIndex?: number;
   totalChildren?: number;
+  /** Show NPC (non-parent carer) care input when enabled */
+  showNPCInput?: boolean;
 }
 
 export function ChildRow({
@@ -25,24 +27,28 @@ export function ChildRow({
   onRemove,
   childIndex,
   totalChildren,
+  showNPCInput = false,
 }: ChildRowProps) {
   const { isMobile } = useResponsive();
 
   // Local state for input values while editing
-  const [editingField, setEditingField] = useState<'A' | 'B' | null>(null);
+  const [editingField, setEditingField] = useState<'A' | 'B' | 'NPC' | null>(
+    null
+  );
   const [localValue, setLocalValue] = useState('');
 
   const maxValue =
     child.carePeriod === 'week'
       ? 7
       : child.carePeriod === 'fortnight'
-      ? 14
-      : child.carePeriod === 'year'
-      ? 365
-      : 100; // percent
+        ? 14
+        : child.carePeriod === 'year'
+          ? 365
+          : 100; // percent
 
-  // Calculate if total exceeds maximum
-  const totalCare = child.careAmountA + child.careAmountB;
+  // Calculate if total exceeds maximum (including NPC if enabled)
+  const npcAmount = showNPCInput ? child.careAmountNPC ?? 0 : 0;
+  const totalCare = child.careAmountA + child.careAmountB + npcAmount;
   const isOverLimit = totalCare > maxValue;
   const periodLabel = child.carePeriod === 'percent' ? '%' : ' nights';
 
@@ -93,6 +99,26 @@ export function ChildRow({
     setLocalValue('');
   };
 
+  // NPC (Non-Parent Carer) handlers
+  const handleFocusNPC = () => {
+    setEditingField('NPC');
+    setLocalValue('');
+  };
+
+  const handleChangeNPC = (text: string) => {
+    const cleanedText = text.replace(/[^0-9.]/g, '');
+    setLocalValue(cleanedText);
+    const newAmountNPC = parseFloat(cleanedText) || 0;
+    onUpdate({ careAmountNPC: newAmountNPC });
+  };
+
+  const handleBlurNPC = () => {
+    const newAmountNPC = parseFloat(localValue) || 0;
+    onUpdate({ careAmountNPC: newAmountNPC });
+    setEditingField(null);
+    setLocalValue('');
+  };
+
   // Get display value for inputs
   const getDisplayValueA = () => {
     if (editingField === 'A') return localValue;
@@ -102,6 +128,12 @@ export function ChildRow({
   const getDisplayValueB = () => {
     if (editingField === 'B') return localValue;
     return child.careAmountB === 0 ? '' : child.careAmountB.toString();
+  };
+
+  const getDisplayValueNPC = () => {
+    if (editingField === 'NPC') return localValue;
+    const amount = child.careAmountNPC ?? 0;
+    return amount === 0 ? '' : amount.toString();
   };
 
   const handlePeriodChange = (
@@ -201,6 +233,33 @@ export function ChildRow({
               {...(isWeb && { inputMode: 'numeric' as any })}
             />
           </View>
+
+          {/* Non-Parent Carer (Formula 4) */}
+          {showNPCInput && (
+            <View
+              style={[styles.itemWrapper, isMobile && styles.parentItemMobile]}
+            >
+              <Text style={styles.headerLabelNPC}>NON-PARENT CARER</Text>
+              <TextInput
+                style={[
+                  styles.careInput,
+                  styles.compactInput,
+                  isWeb && webInputStyles,
+                ]}
+                value={getDisplayValueNPC()}
+                onChangeText={handleChangeNPC}
+                onFocus={handleFocusNPC}
+                onBlur={handleBlurNPC}
+                placeholder="0"
+                keyboardType="number-pad"
+                maxLength={5}
+                placeholderTextColor="#64748b"
+                accessibilityLabel="Non-parent carer's nights of care"
+                accessibilityHint="Enter number of nights child stays with non-parent carer"
+                {...(isWeb && { inputMode: 'numeric' as never })}
+              />
+            </View>
+          )}
         </View>
 
         {/* Row 2: Period and Age Range - on desktop inline, on mobile second row */}
@@ -382,6 +441,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: '#4a5568', // dark grey - consistent
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  headerLabelNPC: {
+    fontSize: 10, // Slightly smaller to fit longer text
+    fontWeight: '600',
+    color: '#7c3aed', // violet-600 - distinct from parents
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },

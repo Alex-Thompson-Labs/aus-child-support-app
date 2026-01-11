@@ -1,17 +1,25 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import type { ChildInput, FormErrors } from '../utils/calculator';
+import type {
+  ChildInput,
+  FormErrors,
+  MultiCaseInfo,
+  NonParentCarerInfo,
+  OtherCaseChild,
+} from '../utils/calculator';
 import type { AssessmentYear } from '../utils/child-support-constants';
 import {
-    MAX_CONTENT_WIDTH,
-    isWeb,
-    useResponsive,
-    webClickableStyles,
-    webInputStyles,
+  MAX_CONTENT_WIDTH,
+  isWeb,
+  useResponsive,
+  webClickableStyles,
+  webInputStyles,
 } from '../utils/responsive';
 import { createShadow } from '../utils/shadow-styles';
 import { ChildRow } from './ChildRow';
 import { HelpTooltip } from './HelpTooltip';
+import { NonParentCarerSection } from './NonParentCarerSection';
+import { OtherCasesPopover } from './OtherCasesPopover';
 import { RelevantDependentsPopover } from './RelevantDependentsPopover';
 import { YearSelector } from './YearSelector';
 
@@ -52,6 +60,14 @@ interface CalculatorFormProps {
   onCalculate: () => void;
   onReset: () => void;
   isDesktopWeb?: boolean;
+  // Multi-case support (Formula 3)
+  multiCaseA: MultiCaseInfo;
+  multiCaseB: MultiCaseInfo;
+  onMultiCaseAChange: (otherChildren: OtherCaseChild[]) => void;
+  onMultiCaseBChange: (otherChildren: OtherCaseChild[]) => void;
+  // Non-parent carer support (Formula 4)
+  nonParentCarer: NonParentCarerInfo;
+  onNonParentCarerChange: (info: NonParentCarerInfo) => void;
 }
 
 export function CalculatorForm({
@@ -77,6 +93,14 @@ export function CalculatorForm({
   onCalculate,
   onReset,
   isDesktopWeb = false,
+  // Multi-case support (Formula 3)
+  multiCaseA,
+  multiCaseB,
+  onMultiCaseAChange,
+  onMultiCaseBChange,
+  // Non-parent carer support (Formula 4)
+  nonParentCarer,
+  onNonParentCarerChange,
 }: CalculatorFormProps) {
   const { isMobile, isDesktop } = useResponsive();
 
@@ -255,6 +279,23 @@ export function CalculatorForm({
             onRelDepBChange={onRelDepBChange}
           />
         </View>
+
+        {/* Other Cases - Multi-case support (Formula 3) */}
+        <View style={[styles.inputGroup, { marginTop: 12 }]}>
+          <OtherCasesPopover
+            multiCaseA={multiCaseA}
+            multiCaseB={multiCaseB}
+            onMultiCaseAChange={onMultiCaseAChange}
+            onMultiCaseBChange={onMultiCaseBChange}
+          />
+        </View>
+
+        {/* Non-Parent Carer (Formula 4) */}
+        <NonParentCarerSection
+          nonParentCarer={nonParentCarer}
+          onNonParentCarerChange={onNonParentCarerChange}
+          error={errors.nonParentCarer}
+        />
       </View>
 
       {/* Children Card */}
@@ -286,6 +327,7 @@ export function CalculatorForm({
               child={child}
               onUpdate={(updates) => onUpdateChild(child.id, updates)}
               onRemove={() => onRemoveChild(child.id)}
+              showNPCInput={nonParentCarer.enabled}
             />
           ))}
         </View>

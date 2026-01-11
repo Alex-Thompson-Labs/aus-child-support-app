@@ -4,9 +4,16 @@ import type {
   CalculatorInputs,
   ChildInput,
   FormErrors,
+  MultiCaseInfo,
+  NonParentCarerInfo,
+  OtherCaseChild,
+  PayerRole,
   RelevantDependents,
 } from '../utils/calculator';
 import {
+  applyMultiCaseCap,
+  calculateMultiCaseAllowance,
+  calculateMultiCaseCap,
   convertCareToPercentage,
   getChildCost,
   mapCareToCostPercent,
@@ -25,6 +32,11 @@ export interface CalculatorFormState {
   children: ChildInput[];
   relDepA: RelevantDependents;
   relDepB: RelevantDependents;
+  // Multi-case support (Formula 3)
+  multiCaseA: MultiCaseInfo;
+  multiCaseB: MultiCaseInfo;
+  // Non-parent carer support (Formula 4)
+  nonParentCarer: NonParentCarerInfo;
 }
 
 // Start with no children - user must click "Add Child" to begin
@@ -40,6 +52,11 @@ const initialFormState: CalculatorFormState = {
   children: getInitialChildren(),
   relDepA: { u13: 0, plus13: 0 },
   relDepB: { u13: 0, plus13: 0 },
+  // Multi-case support (Formula 3)
+  multiCaseA: { otherChildren: [] },
+  multiCaseB: { otherChildren: [] },
+  // Non-parent carer support (Formula 4)
+  nonParentCarer: { enabled: false, carePercentage: 0 },
 };
 
 export function useCalculator() {
@@ -90,6 +107,32 @@ export function useCalculator() {
     },
     []
   );
+
+  // Multi-case support callbacks (Formula 3)
+  const updateMultiCaseA = useCallback((otherChildren: OtherCaseChild[]) => {
+    setFormState((prev) => ({
+      ...prev,
+      multiCaseA: { otherChildren },
+    }));
+    setIsStale(true);
+  }, []);
+
+  const updateMultiCaseB = useCallback((otherChildren: OtherCaseChild[]) => {
+    setFormState((prev) => ({
+      ...prev,
+      multiCaseB: { otherChildren },
+    }));
+    setIsStale(true);
+  }, []);
+
+  // Non-parent carer support callbacks (Formula 4)
+  const updateNonParentCarer = useCallback((info: NonParentCarerInfo) => {
+    setFormState((prev) => ({
+      ...prev,
+      nonParentCarer: info,
+    }));
+    setIsStale(true);
+  }, []);
 
   const validateForm = useCallback((): boolean => {
     const newErrors: FormErrors = {};
@@ -145,6 +188,25 @@ export function useCalculator() {
     }
     if (formState.relDepB.u13 < 0 || formState.relDepB.plus13 < 0) {
       newErrors.relDepB = 'Dependent count cannot be negative.';
+    }
+
+    // Validate multi-case (Formula 3)
+    if (formState.multiCaseA.otherChildren.length > 10) {
+      newErrors.multiCaseA = 'Maximum 10 children in other cases.';
+    }
+    if (formState.multiCaseB.otherChildren.length > 10) {
+      newErrors.multiCaseB = 'Maximum 10 children in other cases.';
+    }
+
+    // Validate non-parent carer (Formula 4)
+    if (formState.nonParentCarer.enabled) {
+      if (formState.nonParentCarer.carePercentage < 35) {
+        newErrors.nonParentCarer =
+          'Non-parent carer must have at least 35% care.';
+      }
+      if (formState.nonParentCarer.carePercentage > 100) {
+        newErrors.nonParentCarer = 'Care percentage cannot exceed 100%.';
+      }
     }
 
     setErrors(newErrors);
@@ -221,10 +283,35 @@ export function useCalculator() {
       Math.max(0, ATI_B - SSA)
     ).cost;
 
-    const CSI_A = Math.max(0, ATI_A - relDepDeductibleA - SSA);
-    const CSI_B = Math.max(0, ATI_B - relDepDeductibleB - SSA);
+    // Step 2a: Calculate Multi-case Allowance (Formula 3)
+    // For parents with children in other child support cases
+    const rawCSI_A = Math.max(0, ATI_A - SSA);
+    const rawCSI_B = Math.max(0, ATI_B - SSA);
 
-    const CCSI = CSI_A + CSI_B; // Combined CSI
+    const multiCaseAllowanceA = calculateMultiCaseAllowance(
+      selectedYear,
+      rawCSI_A,
+      children,
+      formState.multiCaseA.otherChildren
+    );
+    const multiCaseAllowanceB = calculateMultiCaseAllowance(
+      selectedYear,
+      rawCSI_B,
+      children,
+      formState.multiCaseB.otherChildren
+    );
+
+    // CSI = ATI - Relevant Dependents - SSA - Multi-case Allowance
+    const CSI_A = Math.max(
+      0,
+      ATI_A - relDepDeductibleA - SSA - multiCaseAllowanceA
+    );
+    const CSI_B = Math.max(
+      0,
+      ATI_B - relDepDeductibleB - SSA - multiCaseAllowanceB
+    );
+
+    const CCSI = CSI_A + CSI_B; // Combined CSI (NPC income not included)
 
     // Income Percentages
     const incomePercA = CCSI > 0 ? (CSI_A / CCSI) * 100 : 0;
@@ -242,9 +329,27 @@ export function useCalculator() {
     let totalLiabilityA = 0;
     let totalLiabilityB = 0;
 
-    const childResults = children.map((c) => {
+    // Check if non-parent carer is enabled
+    const hasNPC = formState.nonParentCarer.enabled;
+    const npcCarePercent = hasNPC ? formState.nonParentCarer.carePercentage : 0;
+
+    const childResults = children.map((c, childIndex) => {
       const roundedCareA = roundCarePercentage(c.careA);
       const roundedCareB = roundCarePercentage(c.careB);
+
+      // Handle NPC care (Formula 4)
+      // Get NPC care from the child input if available
+      const childInput = formState.children[childIndex];
+      const rawCareNPC = hasNPC
+        ? childInput?.careAmountNPC !== undefined
+          ? convertCareToPercentage(
+              childInput.careAmountNPC,
+              childInput.carePeriod
+            )
+          : npcCarePercent
+        : 0;
+      const roundedCareNPC = roundCarePercentage(rawCareNPC);
+      const costPercNPC = mapCareToCostPercent(roundedCareNPC);
 
       const costPercA = mapCareToCostPercent(roundedCareA);
       const costPercB = mapCareToCostPercent(roundedCareB);
@@ -260,12 +365,27 @@ export function useCalculator() {
       const positivePercB = Math.max(0, childSupportPercB);
 
       if (positivePercA > positivePercB) {
-        if (roundedCareB >= 35) {
+        if (roundedCareB >= 35 || (hasNPC && roundedCareNPC >= 35)) {
           liabilityA = (positivePercA / 100) * costPerChild;
         }
       } else if (positivePercB > positivePercA) {
-        if (roundedCareA >= 35) {
+        if (roundedCareA >= 35 || (hasNPC && roundedCareNPC >= 35)) {
           liabilityB = (positivePercB / 100) * costPerChild;
+        }
+      }
+
+      // Calculate liability to NPC (Formula 4)
+      let liabilityToNPC_A = 0;
+      let liabilityToNPC_B = 0;
+      if (hasNPC && roundedCareNPC >= 35) {
+        // Each parent's liability to NPC = their child support % × child cost
+        if (childSupportPercA > 0) {
+          liabilityToNPC_A =
+            (childSupportPercA / 100) * costPerChild * (costPercNPC / 100);
+        }
+        if (childSupportPercB > 0) {
+          liabilityToNPC_B =
+            (childSupportPercB / 100) * costPerChild * (costPercNPC / 100);
         }
       }
 
@@ -290,6 +410,17 @@ export function useCalculator() {
         farAppliedB: false,
         marAppliedA: false,
         marAppliedB: false,
+        // Multi-case cap fields (will be updated below)
+        multiCaseCapA: undefined as number | undefined,
+        multiCaseCapB: undefined as number | undefined,
+        multiCaseCapAppliedA: false,
+        multiCaseCapAppliedB: false,
+        // NPC fields (Formula 4)
+        careNPC: rawCareNPC,
+        roundedCareNPC,
+        costPercNPC,
+        liabilityToNPC_A,
+        liabilityToNPC_B,
       };
     });
 
@@ -385,6 +516,54 @@ export function useCalculator() {
       child.marAppliedB = marAppliedB;
     });
 
+    // Step 10a: Apply Multi-case Cap (Formula 3)
+    // The cap limits liability for parents with children in other cases
+    let multiCaseCapAppliedA = false;
+    let multiCaseCapAppliedB = false;
+
+    const hasMultiCaseA = formState.multiCaseA.otherChildren.length > 0;
+    const hasMultiCaseB = formState.multiCaseB.otherChildren.length > 0;
+
+    if (hasMultiCaseA || hasMultiCaseB) {
+      // Reset final liabilities to recalculate with caps
+      finalLiabilityA = 0;
+      finalLiabilityB = 0;
+
+      childResults.forEach((child) => {
+        let adjustedLiabilityA = child.finalLiabilityA;
+        let adjustedLiabilityB = child.finalLiabilityB;
+
+        // Apply multi-case cap for Parent A
+        if (hasMultiCaseA && child.finalLiabilityA > 0) {
+          const capA = calculateMultiCaseCap(child.costPerChild, child.costPercA);
+          child.multiCaseCapA = capA;
+          const capResult = applyMultiCaseCap(child.finalLiabilityA, capA);
+          adjustedLiabilityA = capResult.liability;
+          child.multiCaseCapAppliedA = capResult.capApplied;
+          if (capResult.capApplied) {
+            multiCaseCapAppliedA = true;
+          }
+        }
+
+        // Apply multi-case cap for Parent B
+        if (hasMultiCaseB && child.finalLiabilityB > 0) {
+          const capB = calculateMultiCaseCap(child.costPerChild, child.costPercB);
+          child.multiCaseCapB = capB;
+          const capResult = applyMultiCaseCap(child.finalLiabilityB, capB);
+          adjustedLiabilityB = capResult.liability;
+          child.multiCaseCapAppliedB = capResult.capApplied;
+          if (capResult.capApplied) {
+            multiCaseCapAppliedB = true;
+          }
+        }
+
+        child.finalLiabilityA = adjustedLiabilityA;
+        child.finalLiabilityB = adjustedLiabilityB;
+        finalLiabilityA += adjustedLiabilityA;
+        finalLiabilityB += adjustedLiabilityB;
+      });
+    }
+
     // Determine rate applied string
     if (appliedRates.length > 0) {
       const farA = appliedRates.filter((r) =>
@@ -436,6 +615,36 @@ export function useCalculator() {
       receiver = 'Neither';
     }
 
+    // Calculate total payment to NPC (Formula 4)
+    let paymentToNPC: number | undefined;
+    if (hasNPC) {
+      paymentToNPC = childResults.reduce(
+        (sum, child) =>
+          sum + (child.liabilityToNPC_A ?? 0) + (child.liabilityToNPC_B ?? 0),
+        0
+      );
+    }
+
+    // Determine payerRole
+    let payerRole: PayerRole = 'neither';
+    if (hasNPC && paymentToNPC && paymentToNPC > 0) {
+      const anyPayingA = childResults.some(
+        (c) => (c.liabilityToNPC_A ?? 0) > 0
+      );
+      const anyPayingB = childResults.some(
+        (c) => (c.liabilityToNPC_B ?? 0) > 0
+      );
+      if (anyPayingA && anyPayingB) {
+        payerRole = 'both_paying';
+      } else if (anyPayingA) {
+        payerRole = 'paying_parent';
+      } else if (anyPayingB) {
+        payerRole = 'receiving_parent';
+      }
+    } else if (finalPaymentAmount > 0) {
+      payerRole = payer === 'Parent A' ? 'paying_parent' : 'receiving_parent';
+    }
+
     return {
       ATI_A,
       ATI_B,
@@ -465,6 +674,14 @@ export function useCalculator() {
       payer,
       receiver,
       finalPaymentAmount,
+      // Multi-case fields (Formula 3)
+      multiCaseAllowanceA,
+      multiCaseAllowanceB,
+      multiCaseCapAppliedA,
+      multiCaseCapAppliedB,
+      // NPC fields (Formula 4)
+      payerRole,
+      paymentToNPC,
     };
   }, [formState, selectedYear, validateForm]);
 
@@ -496,6 +713,11 @@ export function useCalculator() {
       children: getInitialChildren(),
       relDepA: { u13: 0, plus13: 0 },
       relDepB: { u13: 0, plus13: 0 },
+      // Multi-case support (Formula 3)
+      multiCaseA: { otherChildren: [] },
+      multiCaseB: { otherChildren: [] },
+      // Non-parent carer support (Formula 4)
+      nonParentCarer: { enabled: false, carePercentage: 0 },
     });
     setResults(null);
     setErrors({});
@@ -509,6 +731,10 @@ export function useCalculator() {
       age: c.age as 'Under 13' | '13+',
       careA: convertCareToPercentage(c.careAmountA, c.carePeriod),
       careB: convertCareToPercentage(c.careAmountB, c.carePeriod),
+      careNPC:
+        c.careAmountNPC !== undefined
+          ? convertCareToPercentage(c.careAmountNPC, c.carePeriod)
+          : undefined,
     }));
 
     return {
@@ -519,6 +745,9 @@ export function useCalculator() {
       children,
       relDepA: formState.relDepA,
       relDepB: formState.relDepB,
+      multiCaseA: formState.multiCaseA,
+      multiCaseB: formState.multiCaseB,
+      nonParentCarer: formState.nonParentCarer,
     };
   }, [formState]);
 
@@ -534,6 +763,9 @@ export function useCalculator() {
     addChild,
     removeChild,
     updateChild,
+    updateMultiCaseA,
+    updateMultiCaseB,
+    updateNonParentCarer,
     validateForm,
     calculate,
     reset,

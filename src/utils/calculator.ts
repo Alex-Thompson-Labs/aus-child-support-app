@@ -4,6 +4,8 @@ export interface ChildInput {
   careAmountA: number;
   careAmountB: number;
   carePeriod: 'week' | 'fortnight' | 'year' | 'percent';
+  /** Care amount for non-parent carer (Formula 4). Optional. */
+  careAmountNPC?: number;
 }
 
 export interface RelevantDependents {
@@ -20,9 +22,17 @@ export interface CalculatorInputs {
     age: 'Under 13' | '13+';
     careA: number;
     careB: number;
+    /** Care percentage for non-parent carer (Formula 4). Optional. */
+    careNPC?: number;
   }[];
   relDepA: RelevantDependents;
   relDepB: RelevantDependents;
+  /** Multi-case info for Parent A (Formula 3). */
+  multiCaseA?: MultiCaseInfo;
+  /** Multi-case info for Parent B (Formula 3). */
+  multiCaseB?: MultiCaseInfo;
+  /** Non-parent carer info (Formula 4). */
+  nonParentCarer?: NonParentCarerInfo;
 }
 
 export interface ChildResult {
@@ -44,6 +54,17 @@ export interface ChildResult {
   farAppliedB: boolean;
   marAppliedA: boolean;
   marAppliedB: boolean;
+  // Multi-case cap fields (Formula 3)
+  multiCaseCapA?: number;
+  multiCaseCapB?: number;
+  multiCaseCapAppliedA: boolean;
+  multiCaseCapAppliedB: boolean;
+  // Non-parent carer fields (Formula 4)
+  careNPC?: number;
+  roundedCareNPC?: number;
+  costPercNPC?: number;
+  liabilityToNPC_A?: number;
+  liabilityToNPC_B?: number;
 }
 
 export interface CostBracketInfo {
@@ -83,6 +104,14 @@ export interface CalculationResults {
   payer: string;
   receiver: string;
   finalPaymentAmount: number;
+  // Multi-case fields (Formula 3)
+  multiCaseAllowanceA: number;
+  multiCaseAllowanceB: number;
+  multiCaseCapAppliedA: boolean;
+  multiCaseCapAppliedB: boolean;
+  // Non-parent carer fields (Formula 4)
+  payerRole: PayerRole;
+  paymentToNPC?: number;
 }
 
 export interface FormErrors {
@@ -91,3 +120,42 @@ export interface FormErrors {
   children?: string;
   [childId: string]: string | undefined;
 }
+
+// ============================================================================
+// Multi-case Support Types (Formula 3 & 4)
+// ============================================================================
+
+/**
+ * Represents a child from another child support case.
+ * Used for calculating Multi-case Allowance.
+ */
+export interface OtherCaseChild {
+  id: string;
+  age: 'Under 13' | '13+';
+}
+
+/**
+ * Multi-case information for a parent.
+ * Contains children this parent has in OTHER child support cases.
+ */
+export interface MultiCaseInfo {
+  otherChildren: OtherCaseChild[];
+}
+
+/**
+ * Non-parent carer information (Formula 4).
+ * A non-parent carer (e.g., grandparent) must have at least 35% care.
+ */
+export interface NonParentCarerInfo {
+  enabled: boolean;
+  carePercentage: number;
+}
+
+/**
+ * Payer role determination for multi-case scenarios.
+ */
+export type PayerRole =
+  | 'paying_parent'
+  | 'receiving_parent'
+  | 'both_paying'
+  | 'neither';

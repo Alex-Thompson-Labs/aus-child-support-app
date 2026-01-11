@@ -38,6 +38,9 @@ export function CalculatorScreen() {
     addChild,
     removeChild,
     updateChild,
+    updateMultiCaseA,
+    updateMultiCaseB,
+    updateNonParentCarer,
     calculate,
     reset,
     resetTimestamp,
@@ -248,6 +251,14 @@ export function CalculatorScreen() {
     onRelDepBChange: handleRelDepBChange,
     onCalculate: handleCalculate,
     onReset: reset,
+    // Multi-case support (Formula 3)
+    multiCaseA: formState.multiCaseA,
+    multiCaseB: formState.multiCaseB,
+    onMultiCaseAChange: updateMultiCaseA,
+    onMultiCaseBChange: updateMultiCaseB,
+    // Non-parent carer support (Formula 4)
+    nonParentCarer: formState.nonParentCarer,
+    onNonParentCarerChange: updateNonParentCarer,
   };
 
   return (
