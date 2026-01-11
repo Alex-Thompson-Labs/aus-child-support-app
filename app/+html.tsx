@@ -48,21 +48,33 @@ export default function Root({ children }: PropsWithChildren) {
         <meta property="og:site_name" content="AusChildSupport" />
         <meta
           property="og:image"
-          content="https://auschildsupport.com/share-preview.png"
+          content="https://auschildsupport.com/share-preview.jpg"
         />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Child Support Calculator Australia - Free calculator using official Services Australia 2026 formula" />
+        <meta
+          property="og:image:alt"
+          content="Child Support Calculator Australia - Free calculator using official Services Australia 2026 formula"
+        />
         <meta name="twitter:card" content="summary_large_image" />
 
         {/* Favicon */}
-        <link rel="icon" type="image/png" href="/favicon-rounded-white-bg.png?v=4" />
+        <link
+          rel="icon"
+          type="image/png"
+          href="/favicon-rounded-white-bg.png?v=4"
+        />
 
         {/* Apple Touch Icon (iOS home screen) */}
         <link rel="apple-touch-icon" href="/favicon-rounded-white-bg.png?v=4" />
 
         {/* Android home screen icon */}
-        <link rel="icon" type="image/png" sizes="192x192" href="/favicon-rounded-white-bg.png?v=4" />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="192x192"
+          href="/favicon-rounded-white-bg.png?v=4"
+        />
 
         {/* CRITICAL: Preload hero logo for faster LCP */}
         <link
