@@ -151,6 +151,17 @@ export interface LeadSubmission {
   lead_score?: number;
   score_category?: string;
   scoring_factors?: string[];
+
+  // Special circumstances additional data (JSONB-compatible)
+  // Used for PSI and international jurisdiction fields
+  special_circumstances_data?: {
+    // PSI fields
+    separation_date?: string; // ISO date string (sensitive - privacy)
+    cohabited_6_months?: boolean;
+
+    // International fields
+    other_parent_country?: string;
+  } | null;
 }
 
 /**
@@ -249,6 +260,9 @@ export async function submitLead(lead: LeadSubmission): Promise<{
       lead_score: lead.lead_score,
       score_category: lead.score_category,
       scoring_factors: lead.scoring_factors,
+
+      // Special circumstances additional data (PSI, international)
+      special_circumstances_data: lead.special_circumstances_data,
     };
 
     // Insert lead into database and return the ID

@@ -4,8 +4,13 @@
  * Manages all form state, validation, and submission logic.
  */
 
+import { sanitizeCountry } from '@/src/utils/all-countries';
 import { useAnalytics } from '@/src/utils/analytics';
 import { calculateLeadScore } from '@/src/utils/lead-scoring';
+import {
+  EXCLUDED_JURISDICTIONS,
+  RECIPROCATING_JURISDICTIONS,
+} from '@/src/utils/reciprocating-jurisdictions';
 import type { SpecialCircumstance } from '@/src/utils/special-circumstances';
 import {
   getSpecialCircumstanceById,
@@ -77,6 +82,13 @@ export function useInquiryForm(props: UseInquiryFormProps) {
   const [manualIncomeB, setManualIncomeB] = useState('');
   const [manualChildren, setManualChildren] = useState('');
 
+  // PSI (Post-Separation Income) field state
+  const [separationDate, setSeparationDate] = useState<Date | null>(null);
+  const [cohabited6Months, setCohabited6Months] = useState(false);
+
+  // International Jurisdiction field state
+  const [otherParentCountry, setOtherParentCountry] = useState('');
+
   // Validation state
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<FormTouched>({
@@ -91,6 +103,9 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     manualIncomeA: false,
     manualIncomeB: false,
     manualChildren: false,
+    separationDate: false,
+    cohabited6Months: false,
+    otherParentCountry: false,
   });
 
   // Submission state
@@ -213,6 +228,52 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     [props.reason, props.specialCircumstances]
   );
 
+  // PSI (Post-Separation Income) conditional fields
+  const shouldShowPsiFields = useMemo(
+    () =>
+      (props.specialCircumstances || []).includes('post_separation_income'),
+    [props.specialCircumstances]
+  );
+
+  // Show warning if separation date is more than 3 years ago
+  const showPsiWarning = useMemo(() => {
+    if (!separationDate || !shouldShowPsiFields) return false;
+
+    const threeYearsAgo = new Date();
+    threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 3);
+
+    return separationDate < threeYearsAgo;
+  }, [separationDate, shouldShowPsiFields]);
+
+  // International Jurisdiction conditional fields
+  const shouldShowInternationalFields = useMemo(
+    () =>
+      (props.specialCircumstances || []).includes('international_jurisdiction'),
+    [props.specialCircumstances]
+  );
+
+  // Determine international warning type based on selected country
+  const internationalWarning = useMemo((): 'excluded' | 'non_reciprocating' | null => {
+    if (!otherParentCountry || !shouldShowInternationalFields) return null;
+
+    const sanitized = sanitizeCountry(otherParentCountry);
+    if (!sanitized) return null;
+
+    // Check if excluded jurisdiction (case-insensitive match)
+    const isExcluded = EXCLUDED_JURISDICTIONS.some(
+      (j) => j.toLowerCase() === sanitized.toLowerCase()
+    );
+    if (isExcluded) return 'excluded';
+
+    // Check if reciprocating jurisdiction (case-insensitive match)
+    const isReciprocating = RECIPROCATING_JURISDICTIONS.some(
+      (j) => j.toLowerCase() === sanitized.toLowerCase()
+    );
+    if (!isReciprocating) return 'non_reciprocating';
+
+    return null; // Reciprocating - no warning
+  }, [otherParentCountry, shouldShowInternationalFields]);
+
   /**
    * Validate a single field
    */
@@ -323,6 +384,9 @@ export function useInquiryForm(props: UseInquiryFormProps) {
       manualIncomeA: true,
       manualIncomeB: true,
       manualChildren: true,
+      separationDate: true,
+      cohabited6Months: true,
+      otherParentCountry: true,
     });
 
     // Check if any errors exist
@@ -534,8 +598,8 @@ export function useInquiryForm(props: UseInquiryFormProps) {
           annual_liability: props.isDirectMode
             ? 0
             : props.liability
-            ? Number(parseFloat(props.liability).toFixed(2))
-            : 0,
+              ? Number(parseFloat(props.liability).toFixed(2))
+              : 0,
           has_phone: !!sanitizePhone(phone),
           message_length: sanitizeString(message).length,
           time_to_submit: timeToSubmit,
@@ -605,28 +669,28 @@ export function useInquiryForm(props: UseInquiryFormProps) {
         payer_role: props.isDirectMode
           ? null
           : props.payer === 'Parent A'
-          ? 'you'
-          : props.payer === 'Parent B'
-          ? 'other_parent'
-          : null,
+            ? 'you'
+            : props.payer === 'Parent B'
+              ? 'other_parent'
+              : null,
 
         // Care arrangement - null in Direct Mode
         care_data: props.isDirectMode
           ? null
           : props.careData.length > 0
-          ? props.careData
-          : null,
+            ? props.careData
+            : null,
 
         // Complexity data - Use 'direct_inquiry' trigger in Direct Mode
         complexity_trigger: props.isDirectMode
           ? ['direct_inquiry']
           : buildComplexityTriggers(
-              props.trigger,
-              props.specialCircumstances,
-              financialTags,
-              props.careData,
-              props.liability
-            ),
+            props.trigger,
+            props.specialCircumstances,
+            financialTags,
+            props.careData,
+            props.liability
+          ),
         complexity_reasons: props.isDirectMode
           ? props.reason
             ? [props.reason]
@@ -655,6 +719,24 @@ export function useInquiryForm(props: UseInquiryFormProps) {
         lead_score: scoreResult.score,
         score_category: scoreResult.category,
         scoring_factors: scoreResult.factors,
+
+        // Special circumstances additional data (PSI, international)
+        special_circumstances_data:
+          shouldShowPsiFields || shouldShowInternationalFields
+            ? {
+              // PSI fields (if applicable)
+              ...(shouldShowPsiFields && separationDate
+                ? { separation_date: separationDate.toISOString() }
+                : {}),
+              ...(shouldShowPsiFields
+                ? { cohabited_6_months: cohabited6Months }
+                : {}),
+              // International fields (if applicable)
+              ...(shouldShowInternationalFields && otherParentCountry
+                ? { other_parent_country: sanitizeCountry(otherParentCountry) }
+                : {}),
+            }
+            : null,
       };
 
       if (__DEV__)
@@ -747,6 +829,13 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     manualIncomeA,
     manualIncomeB,
     manualChildren,
+    // PSI fields
+    shouldShowPsiFields,
+    separationDate,
+    cohabited6Months,
+    // International fields
+    shouldShowInternationalFields,
+    otherParentCountry,
   ]);
 
   /**
@@ -882,6 +971,16 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     setEnrichmentPayerRole,
     setErrors,
 
+    // PSI state & setters
+    separationDate,
+    setSeparationDate,
+    cohabited6Months,
+    setCohabited6Months,
+
+    // International state & setters
+    otherParentCountry,
+    setOtherParentCountry,
+
     // Refs
     emailRef,
     phoneRef,
@@ -891,6 +990,12 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     validCircumstances,
     shouldShowCourtDate,
     shouldShowFinancialTags,
+    // PSI computed
+    shouldShowPsiFields,
+    showPsiWarning,
+    // International computed
+    shouldShowInternationalFields,
+    internationalWarning,
 
     // Handlers
     handleBlur,

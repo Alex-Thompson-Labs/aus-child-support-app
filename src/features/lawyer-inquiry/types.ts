@@ -24,6 +24,9 @@ export interface FormErrors {
   manualIncomeA?: string;
   manualIncomeB?: string;
   manualChildren?: string;
+  // PSI & International fields
+  separationDate?: string;
+  otherParentCountry?: string;
 }
 
 export interface FormTouched {
@@ -38,6 +41,10 @@ export interface FormTouched {
   manualIncomeA: boolean;
   manualIncomeB: boolean;
   manualChildren: boolean;
+  // PSI & International fields
+  separationDate: boolean;
+  cohabited6Months: boolean;
+  otherParentCountry: boolean;
 }
 
 // ============================================================================
@@ -118,6 +125,18 @@ export interface FinancialSectionProps {
   shouldShowCourtDate: boolean;
   courtDate: Date | null;
   onCourtDateChange: (date: Date | null) => void;
+  // PSI (Post-Separation Income) conditional fields
+  shouldShowPsiFields: boolean;
+  separationDate: Date | null;
+  onSeparationDateChange: (date: Date | null) => void;
+  cohabited6Months: boolean;
+  onCohabited6MonthsChange: (value: boolean) => void;
+  showPsiWarning: boolean;
+  // International Jurisdiction conditional fields
+  shouldShowInternationalFields: boolean;
+  otherParentCountry: string;
+  onOtherParentCountryChange: (country: string) => void;
+  internationalWarning: 'excluded' | 'non_reciprocating' | null;
   // Common
   errors: FormErrors;
   touched: FormTouched;

@@ -6,13 +6,16 @@
  */
 
 import DatePickerField from '@/src/components/ui/DatePickerField';
+import { searchCountries } from '@/src/utils/all-countries';
 import { isWeb } from '@/src/utils/responsive';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   LayoutAnimation,
   Platform,
   Pressable,
+  ScrollView,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -61,6 +64,19 @@ export function FinancialSection({
   shouldShowCourtDate,
   courtDate,
   onCourtDateChange,
+  // PSI props
+  shouldShowPsiFields,
+  separationDate,
+  onSeparationDateChange,
+  cohabited6Months,
+  onCohabited6MonthsChange,
+  showPsiWarning,
+  // International props
+  shouldShowInternationalFields,
+  otherParentCountry,
+  onOtherParentCountryChange,
+  internationalWarning,
+  // Common
   errors,
   touched,
   isSubmitting,
@@ -68,6 +84,13 @@ export function FinancialSection({
   onBlur,
 }: FinancialSectionProps) {
   const [isSummaryOpen, setIsSummaryOpen] = useState(true);
+  const [countrySearch, setCountrySearch] = useState('');
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+
+  // Filter countries based on search
+  const filteredCountries = useMemo(() => {
+    return searchCountries(countrySearch).slice(0, 10); // Limit to 10 results
+  }, [countrySearch]);
 
   const toggleSummary = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -383,6 +406,148 @@ export function FinancialSection({
           error={touched.courtDate ? errors.courtDate : undefined}
           disabled={isSubmitting}
         />
+      )}
+
+      {/* PSI (Post-Separation Income) Fields - Conditional */}
+      {shouldShowPsiFields && (
+        <View
+          style={financialStyles.financialSection}
+          accessibilityRole={'group' as any}
+          accessibilityLabel="Post-Separation Income Details"
+        >
+          <DatePickerField
+            label="Date of last separation *"
+            value={separationDate}
+            onChange={onSeparationDateChange}
+            error={touched.separationDate ? errors.separationDate : undefined}
+            disabled={isSubmitting}
+          />
+
+          <View style={financialStyles.switchRow}>
+            <Text style={financialStyles.switchLabel}>
+              Did you live together for at least 6 months before separating?
+            </Text>
+            <Switch
+              value={cohabited6Months}
+              onValueChange={onCohabited6MonthsChange}
+              disabled={isSubmitting}
+              trackColor={{ false: '#cbd5e1', true: '#93c5fd' }}
+              thumbColor={cohabited6Months ? '#2563eb' : '#94a3b8'}
+              accessibilityLabel="Lived together for 6 months"
+            />
+          </View>
+
+          {/* Amber Warning for >3 years */}
+          {showPsiWarning && (
+            <View style={financialStyles.warningBox}>
+              <Ionicons name="alert-circle" size={20} color="#d97706" />
+              <Text style={financialStyles.warningText}>
+                Note: Income exclusion is typically granted for the first 3
+                years after separation. Cases beyond this are harder to prove
+                but a lawyer can review your specific circumstances.
+              </Text>
+            </View>
+          )}
+        </View>
+      )}
+
+      {/* International Jurisdiction Fields - Conditional */}
+      {shouldShowInternationalFields && (
+        <View
+          style={financialStyles.financialSection}
+          accessibilityRole={'group' as any}
+          accessibilityLabel="International Jurisdiction Details"
+        >
+          <Text style={formStyles.fieldLabel}>
+            Other parent's country of habitual residence *
+          </Text>
+
+          {/* Country Search Input */}
+          <TextInput
+            style={[
+              formStyles.input,
+              touched.otherParentCountry &&
+              errors.otherParentCountry &&
+              formStyles.inputError,
+            ]}
+            placeholder="Search for a country..."
+            placeholderTextColor="#64748b"
+            value={otherParentCountry || countrySearch}
+            onChangeText={(text) => {
+              setCountrySearch(text);
+              if (otherParentCountry) {
+                onOtherParentCountryChange('');
+              }
+              setShowCountryDropdown(true);
+            }}
+            onFocus={() => setShowCountryDropdown(true)}
+            editable={!isSubmitting}
+            accessibilityLabel="Country search"
+            accessibilityHint="Type to search for a country"
+          />
+
+          {/* Country Dropdown */}
+          {showCountryDropdown && countrySearch.length > 0 && !otherParentCountry && (
+            <View style={financialStyles.countryDropdown}>
+              <ScrollView
+                style={financialStyles.countryDropdownScroll}
+                keyboardShouldPersistTaps="handled"
+                nestedScrollEnabled
+              >
+                {filteredCountries.map((country) => (
+                  <Pressable
+                    key={country}
+                    style={financialStyles.countryOption}
+                    onPress={() => {
+                      onOtherParentCountryChange(country);
+                      setCountrySearch('');
+                      setShowCountryDropdown(false);
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Select ${country}`}
+                  >
+                    <Text style={financialStyles.countryOptionText}>
+                      {country}
+                    </Text>
+                  </Pressable>
+                ))}
+                {filteredCountries.length === 0 && (
+                  <Text style={financialStyles.noResultsText}>
+                    No countries found
+                  </Text>
+                )}
+              </ScrollView>
+            </View>
+          )}
+
+          {touched.otherParentCountry && errors.otherParentCountry && (
+            <Text style={formStyles.errorText}>{errors.otherParentCountry}</Text>
+          )}
+
+          {/* Excluded Jurisdiction Warning (Red) */}
+          {internationalWarning === 'excluded' && (
+            <View style={financialStyles.errorBox}>
+              <Ionicons name="warning" size={20} color="#dc2626" />
+              <Text style={financialStyles.errorBoxText}>
+                Note: This is an Excluded Jurisdiction. An administrative
+                assessment is not possible, but you may be able to obtain an
+                Australian court order.
+              </Text>
+            </View>
+          )}
+
+          {/* Non-Reciprocating Warning (Amber) */}
+          {internationalWarning === 'non_reciprocating' && (
+            <View style={financialStyles.warningBox}>
+              <Ionicons name="alert-circle" size={20} color="#d97706" />
+              <Text style={financialStyles.warningText}>
+                Note: This appears to be a Non-Reciprocating Jurisdiction.
+                Australian child support assessments and court orders are
+                generally not enforceable in this country.
+              </Text>
+            </View>
+          )}
+        </View>
       )}
     </>
   );

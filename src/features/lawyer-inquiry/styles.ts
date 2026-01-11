@@ -469,6 +469,96 @@ export const financialStyles = StyleSheet.create({
   chipTextActive: {
     color: '#ffffff',
   },
+  // PSI Switch Row styles
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    gap: 12,
+  },
+  switchLabel: {
+    flex: 1,
+    fontSize: 14,
+    color: '#334155', // slate-700
+    lineHeight: 20,
+  },
+  // Warning box (amber) - for soft triage
+  warningBox: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    backgroundColor: '#fffbeb', // amber-50
+    borderWidth: 1,
+    borderColor: '#fcd34d', // amber-300
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 12,
+  },
+  warningText: {
+    flex: 1,
+    fontSize: 13,
+    color: '#92400e', // amber-800
+    lineHeight: 18,
+  },
+  // Error box (red) - for excluded jurisdictions
+  errorBox: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    backgroundColor: '#fef2f2', // red-50
+    borderWidth: 1,
+    borderColor: '#fecaca', // red-200
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 12,
+  },
+  errorBoxText: {
+    flex: 1,
+    fontSize: 13,
+    color: '#991b1b', // red-800
+    lineHeight: 18,
+  },
+  // Country dropdown styles
+  countryDropdown: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e2e8f0', // slate-200
+    borderRadius: 8,
+    marginTop: 4,
+    maxHeight: 200,
+    ...Platform.select({
+      web: {
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+      },
+    }),
+  },
+  countryDropdownScroll: {
+    maxHeight: 200,
+  },
+  countryOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9', // slate-100
+  },
+  countryOptionText: {
+    fontSize: 14,
+    color: '#334155', // slate-700
+  },
+  noResultsText: {
+    padding: 16,
+    fontSize: 14,
+    color: '#6b7280', // grey-500
+    textAlign: 'center',
+  },
 });
 
 // ============================================================================

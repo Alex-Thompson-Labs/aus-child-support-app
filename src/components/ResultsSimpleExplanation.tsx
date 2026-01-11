@@ -91,6 +91,14 @@ export function ResultsSimpleExplanation({
                   </Text>
                 </View>
               )}
+              {results.multiCaseAllowanceA !== undefined && results.multiCaseAllowanceA > 0 && (
+                <View style={styles.deductionRow}>
+                  <Text style={styles.deductionLabel}>Multi-case allowance</Text>
+                  <Text style={styles.deductionLabel}>
+                    ({formatCurrency(results.multiCaseAllowanceA)})
+                  </Text>
+                </View>
+              )}
               <View style={styles.deductionDivider} />
               <View style={styles.deductionRow}>
                 <Text
@@ -138,6 +146,14 @@ export function ResultsSimpleExplanation({
                   <Text style={styles.deductionLabel}>Rel dep allowance</Text>
                   <Text style={styles.deductionValueNegative}>
                     ({formatCurrency(results.relDepDeductibleB)})
+                  </Text>
+                </View>
+              )}
+              {results.multiCaseAllowanceB !== undefined && results.multiCaseAllowanceB > 0 && (
+                <View style={styles.deductionRow}>
+                  <Text style={styles.deductionLabel}>Multi-case allowance</Text>
+                  <Text style={styles.deductionValueNegative}>
+                    ({formatCurrency(results.multiCaseAllowanceB)})
                   </Text>
                 </View>
               )}

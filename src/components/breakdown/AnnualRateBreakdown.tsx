@@ -165,31 +165,48 @@ export function AnnualRateBreakdown({
                     ? child.finalLiabilityA
                     : child.finalLiabilityB;
 
+                // Check if multi-case cap was applied
+                const multiCaseCapApplied = showForParentA
+                    ? child.multiCaseCapAppliedA
+                    : child.multiCaseCapAppliedB;
+                const multiCaseCap = showForParentA
+                    ? child.multiCaseCapA
+                    : child.multiCaseCapB;
+
                 return (
-                    <View key={index} style={styles.perChildGapRow}>
-                        <Text style={[styles.perChildGapLabel, { fontWeight: '700' }, showForParentA && { color: theme.colors.userHighlight }]}>
-                            {farApplied ? (
-                                <>
-                                    Child {index + 1} -{' '}
-                                    <Text style={{ color: payingParentColor, fontWeight: '700' }}>
-                                        Fixed annual rate
-                                    </Text>
-                                </>
-                            ) : (
-                                <>
-                                    Child {index + 1} -{' '}
-                                    <Text style={{ color: payingParentColor, fontWeight: '700' }}>
-                                        ({formatPercent2dp(gapPercentage)})
-                                    </Text>{' '}
-                                    × {formatCurrency2dp(child.costPerChild)}
-                                </>
-                            )}
-                        </Text>
-                        <Text
-                            style={[styles.perChildGapValue, { color: payingParentColor, fontWeight: '700' }]}
-                        >
-                            {formatCurrency2dp(liability)}
-                        </Text>
+                    <View key={index}>
+                        <View style={styles.perChildGapRow}>
+                            <Text style={[styles.perChildGapLabel, { fontWeight: '700' }, showForParentA && { color: theme.colors.userHighlight }]}>
+                                {farApplied ? (
+                                    <>
+                                        Child {index + 1} -{' '}
+                                        <Text style={{ color: payingParentColor, fontWeight: '700' }}>
+                                            Fixed annual rate
+                                        </Text>
+                                    </>
+                                ) : (
+                                    <>
+                                        Child {index + 1} -{' '}
+                                        <Text style={{ color: payingParentColor, fontWeight: '700' }}>
+                                            ({formatPercent2dp(gapPercentage)})
+                                        </Text>{' '}
+                                        × {formatCurrency2dp(child.costPerChild)}
+                                    </>
+                                )}
+                            </Text>
+                            <Text
+                                style={[styles.perChildGapValue, { color: payingParentColor, fontWeight: '700' }]}
+                            >
+                                {formatCurrency2dp(liability)}
+                            </Text>
+                        </View>
+                        {multiCaseCapApplied && multiCaseCap !== undefined && (
+                            <View style={styles.multiCaseCapNote}>
+                                <Text style={styles.multiCaseCapText}>
+                                    Multi-case cap applied (capped at {formatCurrency2dp(multiCaseCap)})
+                                </Text>
+                            </View>
+                        )}
                     </View>
                 );
             })}
@@ -230,6 +247,29 @@ export function AnnualRateBreakdown({
                     {formatCurrency2dp(results.finalPaymentAmount)}
                 </Text>
             </View>
+
+            {/* Non-parent Carer Payment */}
+            {results.paymentToNPC !== undefined && results.paymentToNPC > 0 && (
+                <>
+                    <View style={styles.npcPaymentDivider} />
+                    <View style={styles.npcPaymentSection}>
+                        <Text style={styles.npcPaymentTitle}>
+                            Non-Parent Carer Payment
+                        </Text>
+                        <Text style={styles.npcPaymentExplanation}>
+                            Both parents owe child support to the non-parent carer based on their care percentage.
+                        </Text>
+                        <View style={styles.perChildGapRow}>
+                            <Text style={styles.npcPaymentLabel}>
+                                Total to non-parent carer
+                            </Text>
+                            <Text style={styles.npcPaymentValue}>
+                                {formatCurrency2dp(results.paymentToNPC)}
+                            </Text>
+                        </View>
+                    </View>
+                </>
+            )}
         </View>
     );
 }
@@ -281,6 +321,55 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#78350f', // Amber-900
         lineHeight: 18,
+    },
+    multiCaseCapNote: {
+        marginTop: 4,
+        marginLeft: 8,
+        paddingLeft: 8,
+        borderLeftWidth: 2,
+        borderLeftColor: '#a78bfa', // Violet-400
+    },
+    multiCaseCapText: {
+        fontSize: 11,
+        color: '#7c3aed', // Violet-600
+        fontStyle: 'italic',
+    },
+    npcPaymentDivider: {
+        height: 1,
+        backgroundColor: '#c4b5fd', // Violet-300
+        marginTop: 12,
+        marginBottom: 8,
+    },
+    npcPaymentSection: {
+        backgroundColor: '#f5f3ff', // Violet-50
+        borderRadius: 6,
+        padding: 10,
+        borderWidth: 1,
+        borderColor: '#ddd6fe', // Violet-200
+    },
+    npcPaymentTitle: {
+        fontSize: 12,
+        fontWeight: '700',
+        color: '#5b21b6', // Violet-800
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+        marginBottom: 4,
+    },
+    npcPaymentExplanation: {
+        fontSize: 11,
+        color: '#6d28d9', // Violet-700
+        marginBottom: 8,
+        lineHeight: 16,
+    },
+    npcPaymentLabel: {
+        fontSize: 13,
+        color: '#5b21b6', // Violet-800
+        fontWeight: '500',
+    },
+    npcPaymentValue: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#5b21b6', // Violet-800
     },
 });
 

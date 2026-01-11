@@ -37,11 +37,13 @@ export interface LeadScoreResult {
 // ============================================================================
 
 const SCORING_POINTS = {
-    COURT_DATE_URGENT: 10,      // Court date within 30 days
+    COURT_DATE_URGENT: 10,       // Court date within 30 days
+    INTERNATIONAL_JURISDICTION: 8, // International case - high complexity
     PROPERTY_SETTLEMENT: 8,      // Property settlement pending
     INCOME_ISSUES: 7,            // Hidden assets or cash business
     HIGH_VALUE_CASE: 6,          // Liability > $15,000
     MULTIPLE_COMPLEXITY: 5,      // 3+ special circumstances
+    POST_SEPARATION_INCOME: 5,   // PSI - common, valuable case
     SPECIAL_CIRCUMSTANCE: 4,     // Other special circumstance
     SHARED_CARE_DISPUTE: 3,      // Care arrangement 35-65%
     BINDING_AGREEMENT: 2,        // Interest in binding agreement
@@ -83,6 +85,20 @@ function isCourtDateUrgent(courtDate: Date | null | undefined): boolean {
  */
 function hasPropertySettlement(specialCircumstances: string[] = []): boolean {
     return specialCircumstances.includes(PROPERTY_SETTLEMENT_CIRCUMSTANCE);
+}
+
+/**
+ * Check if case has international jurisdiction complexity
+ */
+function hasInternationalJurisdiction(specialCircumstances: string[] = []): boolean {
+    return specialCircumstances.includes('international_jurisdiction');
+}
+
+/**
+ * Check if case has post-separation income claim
+ */
+function hasPostSeparationIncome(specialCircumstances: string[] = []): boolean {
+    return specialCircumstances.includes('post_separation_income');
 }
 
 /**
@@ -163,10 +179,22 @@ export function calculateLeadScore(input: LeadScoringInput): LeadScoreResult {
         factors.push('court_date_urgent');
     }
 
+    // International Jurisdiction (+8)
+    if (hasInternationalJurisdiction(input.specialCircumstances)) {
+        score += SCORING_POINTS.INTERNATIONAL_JURISDICTION;
+        factors.push('international_jurisdiction');
+    }
+
     // Property Settlement (+8)
     if (hasPropertySettlement(input.specialCircumstances)) {
         score += SCORING_POINTS.PROPERTY_SETTLEMENT;
         factors.push('property_settlement');
+    }
+
+    // Post-Separation Income (+5)
+    if (hasPostSeparationIncome(input.specialCircumstances)) {
+        score += SCORING_POINTS.POST_SEPARATION_INCOME;
+        factors.push('post_separation_income');
     }
 
     // Income Issues (+7)

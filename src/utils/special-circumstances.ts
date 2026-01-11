@@ -48,6 +48,15 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   // Note: Court date reasons are now dynamic (e.g., court_12_Jan_2026)
   // See createCourtDateReasonId() function below
   {
+    id: 'post_separation_income',
+    label: 'I have earned extra income (second job/overtime) since we separated.',
+    description:
+      'Income from a pattern established after separation can be excluded from your ATI for up to 3 years.',
+    category: 'income',
+    priority: 2,
+    officialCodes: ['3.5'] as const,
+  },
+  {
     id: 'income_resources_not_reflected',
     label:
       'The other parent has income or assets not reflected in their tax return.',
@@ -110,6 +119,15 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
     category: 'other',
     priority: 3,
     officialCodes: ['5.2.11'] as const,
+  },
+  {
+    id: 'international_jurisdiction',
+    label: 'The other parent lives outside of Australia.',
+    description:
+      'International cases involve complex rules regarding reciprocating and excluded jurisdictions.',
+    category: 'other',
+    priority: 5,
+    officialCodes: ['1.5.1'] as const,
   },
   {
     id: 'child_resources',

@@ -109,6 +109,11 @@ export interface CalculationResults {
   multiCaseAllowanceB: number;
   multiCaseCapAppliedA: boolean;
   multiCaseCapAppliedB: boolean;
+  // MAR/FAR cap explanations for multi-case scenarios
+  marCapExplanationA?: string;
+  marCapExplanationB?: string;
+  farCapExplanationA?: string;
+  farCapExplanationB?: string;
   // Non-parent carer fields (Formula 4)
   payerRole: PayerRole;
   paymentToNPC?: number;
