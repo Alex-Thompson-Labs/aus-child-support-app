@@ -130,6 +130,13 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="admin/proposals"
+            options={{
+              title: 'Partnership Proposals',
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
             name="admin/lead/[id]"
             options={{
               title: 'Lead Details',
@@ -147,6 +154,13 @@ export default function RootLayout() {
             name="change-of-assessment/[reason-slug]"
             options={{
               headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="partner/[slug]"
+            options={{
+              headerShown: false,
+              title: 'Partnership Proposal',
             }}
           />
         </Stack>

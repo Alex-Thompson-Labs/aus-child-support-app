@@ -173,6 +173,12 @@ export default function AdminDashboardScreen() {
           </Text>
         </View>
         <Pressable
+          style={[styles.proposalsButton, isWeb && webClickableStyles]}
+          onPress={() => router.push('/admin/proposals')}
+        >
+          <Text style={styles.proposalsButtonText}>Proposals</Text>
+        </Pressable>
+        <Pressable
           style={[styles.logoutButton, isWeb && webClickableStyles]}
           onPress={handleLogout}
         >
@@ -464,6 +470,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#64748b',
     marginTop: 4,
+  },
+  proposalsButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#2563eb',
+    borderRadius: 6,
+    marginRight: 8,
+  },
+  proposalsButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
   },
   logoutButton: {
     paddingHorizontal: 16,

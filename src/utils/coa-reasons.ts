@@ -159,32 +159,32 @@ John applied for a Change of Assessment under Reason 4. He argued that Michael's
     canonicalPath: '/change-of-assessment/childs-income-resources',
   },
   {
-    slug: 'property-settlement-impacts-capacity',
+    slug: 'transferred-benefits',
     reasonNumber: '5',
     officialCode: '5.2.5',
-    title: 'Reason 5: Property Settlement Affects Capacity to Pay - Child Support Change of Assessment',
-    shortName: 'Property Settlement Impact',
+    title: 'Reason 5: Transferred Money, Goods or Property for Child - Child Support Change of Assessment',
+    shortName: 'Transferred Benefits',
     metaDescription:
-      'Learn about Change of Assessment Reason 5: When a property settlement significantly affects your capacity to pay child support or meet your own needs.',
-    plainEnglishExplanation: `If your property settlement from separation has significantly affected your ability to pay child support (or your need to receive it), you may be able to change your assessment. This is "Reason 5" under the Child Support (Assessment) Act.
+      'Learn about Change of Assessment Reason 5: When you have already paid or transferred money, goods or property for your child\'s benefit.',
+    plainEnglishExplanation: `If you've already paid or transferred money, goods or property to your child, the receiving parent or a third party for the child's benefit, you may be able to have your assessment changed. This is "Reason 5" under the Child Support (Assessment) Act.
 
 This reason applies when:
-- You received significantly less property than your ex-partner
-- You gave up property to keep the family home for the children
-- The property split left you with debts but few assets
-- Your ex-partner received property that generates income not captured in their assessment
+- You've transferred money or assets as part of a property settlement for the child's benefit
+- You've paid school fees, medical costs, or other expenses directly
+- You've given property or goods to your child or their carer
+- You've made payments to a third party (like a school) for your child
 
-Property settlements are supposed to be final, but sometimes they create ongoing financial impacts that make the standard child support assessment unfair.`,
+You can show evidence such as court orders, agreements, or bank statements that demonstrate the transfer of funds or property for the child's benefit.`,
     exampleScenario: {
       title: "John and Sarah's Story",
-      content: `In their property settlement, Sarah kept the family home (worth $800,000 with a $300,000 mortgage) while John received $200,000 in superannuation he can't access until retirement, plus took on $100,000 of the couple's debts.
+      content: `During their property settlement, John agreed to transfer $50,000 directly into an education trust for his two children, plus pay their private school fees in advance for the next two years ($40,000).
 
-Although the split was technically "equal," John now pays rent while servicing debt, leaving him with far less disposable income than Sarah who owns an appreciating asset.
+Despite making these substantial payments for his children's benefit, his child support assessment was calculated as if he hadn't contributed anything extra.
 
-John applied for a Change of Assessment under Reason 5. He demonstrated that the property settlement left him with significantly reduced capacity to pay child support compared to what his income alone would suggest. The Registrar reduced his payments accordingly.`,
+John applied for a Change of Assessment under Reason 5. He provided the property settlement agreement showing the education trust transfer and receipts for the prepaid school fees. The Registrar determined that these transferred benefits should be considered and reduced his ongoing payments accordingly.`,
     },
     relatedCircumstanceId: 'property_settlement',
-    canonicalPath: '/change-of-assessment/property-settlement-impacts-capacity',
+    canonicalPath: '/change-of-assessment/transferred-benefits',
   },
   {
     slug: 'high-childcare-costs',
@@ -334,33 +334,37 @@ John applied for a Change of Assessment under Reason 9. He provided the court or
     canonicalPath: '/change-of-assessment/duty-to-maintain-another',
   },
   {
-    slug: 'other-special-circumstances',
+    slug: 'resident-child-responsibility',
     reasonNumber: '10',
     officialCode: '5.2.11',
-    title: 'Reason 10: Other Special Circumstances - Child Support Change of Assessment',
-    shortName: 'Other Special Circumstances',
+    title: 'Reason 10: Resident Child Responsibility - Child Support Change of Assessment',
+    shortName: 'Resident Child Responsibility',
     metaDescription:
-      'Learn about Change of Assessment Reason 10: The catch-all ground for special circumstances not covered by other reasons. Includes just and equitable considerations.',
-    plainEnglishExplanation: `If your situation doesn't fit neatly into Reasons 1-9 but you believe special circumstances make the standard assessment unfair, you may still be able to have it changed. This is "Reason 10" under the Child Support (Assessment) Act.
+      'Learn about Change of Assessment Reason 10: When your responsibility to support a resident child significantly reduces your capacity to support another child.',
+    plainEnglishExplanation: `If your responsibility to support a resident child significantly reduces your capacity to support another child, you may be able to have your assessment changed. This is "Reason 10" under the Child Support (Assessment) Act.
 
-This catch-all reason considers whether, in the special circumstances of your case, the assessment is "just and equitable" (fair) to both parents and the children. It might apply when:
+For this reason to apply, Services Australia checks if the child:
+- Normally lives with you
+- Isn't legally your child
+- Is under 18
+- Isn't part of a couple
+- Needs financial help
 
-- You have an unusual combination of circumstances
-- Something unexpected has changed your situation
-- The formula produces a clearly unfair result in your case
-- There are special circumstances the other reasons don't cover
+They also check if either:
+- You are or were the partner of one of the child's legal parents for 2 years in a row
+- The legal parents can't support the child because they're deceased, too ill or have caring duties
 
-The Registrar has broad discretion to consider any relevant factors.`,
+You will need to show evidence that the legal parents can't support the child, and information about the child's need for financial help.`,
     exampleScenario: {
       title: "John and Sarah's Story",
-      content: `John was seriously injured in a workplace accident. While he receives workers compensation payments (which count as income for child support), he also has significant ongoing medical costs and has had to modify his home for wheelchair access.
+      content: `John lives with his partner Michelle and her 10-year-old daughter Emma from a previous relationship. Emma's biological father passed away three years ago, and John has been supporting Emma as a resident child in his household for the past two years.
 
-None of the specific reasons quite fit John's situation - he's not supporting another person, and his income is accurately assessed. But his necessary medical and disability expenses mean the standard assessment leaves him unable to meet his own basic needs.
+John also pays child support for his two children with Sarah. However, his financial responsibility to support Emma significantly reduces his capacity to pay.
 
-John applied for a Change of Assessment under Reason 10. He provided evidence of his injury, medical expenses, and necessary home modifications. The Registrar determined that in his special circumstances, the standard assessment was not just and equitable, and reduced his child support to reflect his genuine capacity to pay.`,
+John applied for a Change of Assessment under Reason 10. He provided evidence that he had been Michelle's partner for over 2 years, that Emma's biological father was deceased, and documentation of Emma's living expenses and financial needs. The Registrar reduced his child support to reflect his reduced capacity due to his responsibility to support Emma.`,
     },
-    relatedCircumstanceId: 'property_settlement',
-    canonicalPath: '/change-of-assessment/other-special-circumstances',
+    relatedCircumstanceId: 'duty_to_maintain',
+    canonicalPath: '/change-of-assessment/resident-child-responsibility',
   },
 ] as const;
 

@@ -42,13 +42,13 @@ const COA_SLUGS = [
     'special-needs-care-costs',
     'high-costs-caring-educating-child',
     'childs-income-resources',
-    'property-settlement-impacts-capacity',
+    'transferred-benefits',
     'high-childcare-costs',
     'reduced-capacity-commitments',
     'income-property-resources',
     'earning-capacity',
     'duty-to-maintain-another',
-    'other-special-circumstances',
+    'resident-child-responsibility',
 ];
 
 /**
