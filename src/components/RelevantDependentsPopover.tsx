@@ -50,7 +50,8 @@ export function RelevantDependentsPopover({
           display: 'flex' as any,
           flexDirection: isMobile ? ('column' as any) : ('row' as any), // Stack trigger on mobile
           alignItems: isMobile ? ('flex-start' as any) : ('center' as any),
-          width: '100%',
+          alignSelf: 'flex-start' as any, // Prevent stretching to full width
+          flexWrap: 'wrap' as any,
         },
       ]}
     >
@@ -414,7 +415,7 @@ const popoverStyles = StyleSheet.create({
     borderColor: '#e2e8f0', // subtle border
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 4,
+    marginLeft: 12,
   },
   drawerClearButtonText: {
     fontSize: 16,

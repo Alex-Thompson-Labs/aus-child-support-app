@@ -111,7 +111,8 @@ export function OtherCasesPopover({
           display: 'flex' as never,
           flexDirection: isMobile ? ('column' as never) : ('row' as never),
           alignItems: isMobile ? ('flex-start' as never) : ('center' as never),
-          width: '100%',
+          alignSelf: 'flex-start' as never, // Prevent stretching to full width
+          flexWrap: 'wrap' as never,
         },
       ]}
     >
@@ -446,7 +447,7 @@ const popoverStyles = StyleSheet.create({
     borderColor: '#e2e8f0',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 4,
+    marginLeft: 12,
   },
   drawerClearButtonText: {
     fontSize: 16,
