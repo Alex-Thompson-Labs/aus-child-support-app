@@ -1,17 +1,28 @@
+import { SemanticColors } from '@/constants/theme';
+import { useColorScheme } from 'react-native';
+
+/**
+ * Hook to get the current theme colors based on system color scheme.
+ * This is the primary way components should access theme colors.
+ * 
+ * @example
+ * const { colors } = useAppTheme();
+ * <View style={{ backgroundColor: colors.cardBackground }} />
+ */
+export function useAppTheme(): { colors: typeof SemanticColors.light; isDark: boolean } {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  
+  // Type assertion needed because TS sees light/dark as different literal types
+  const colors = (isDark ? SemanticColors.dark : SemanticColors.light) as typeof SemanticColors.light;
+  
+  return { colors, isDark };
+}
+
+/**
+ * @deprecated Use useAppTheme() hook instead for dynamic dark mode support.
+ * This static export is kept for backward compatibility during migration.
+ */
 export const theme = {
-  colors: {
-    primary: '#007AFF', // Standard iOS Blue or your brand color
-
-    // Slate palette - used across breakdown components for visual consistency
-    textPrimary: '#0f172a', // Slate 900 - main headings and key values
-    textSecondary: '#334155', // Slate 700 - labels and secondary text
-    textMuted: '#64748b', // Slate 500 - captions, hints, and muted content
-    backgroundNeutral: '#f8fafc', // Slate 50 - subtle backgrounds for inner cards
-    border: '#e2e8f0', // Slate 200 - borders and dividers
-    surface: '#ffffff', // Pure white for main card surfaces
-    surfaceSubtle: '#f8fafc', // Slate 50 - alias for backgroundNeutral (semantic naming)
-
-    userHighlight: '#3b82f6', // Bright blue for "You" (current user) elements - matches primary brand color
-    error: '#dc2626', // Red 600 - negative values and errors
-  },
+  colors: SemanticColors.light,
 };

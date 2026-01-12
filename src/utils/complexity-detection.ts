@@ -1,9 +1,3 @@
-// Complexity detection for lawyer lead generation
-// TODO: Implement this in Day 1-2 of Phase 1
-//
-// This detects when calculations indicate high-value cases
-// that should trigger "Get Legal Help" prompts
-
 import type { CalculationResults, ChildInput } from '../utils/calculator';
 import { convertCareToPercentage } from './child-support-calculations';
 import {
@@ -380,9 +374,6 @@ export function getAlertConfig(
       buttonText: 'Request Review',
     };
   }
-
-  // TODO: Implement other triggers
-  // See docs/MASTER_PLAN.md for complete implementation
 
   return null; // No alert needed
 }

@@ -1,19 +1,20 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useAppTheme } from '../theme';
 import type {
-  ChildInput,
-  FormErrors,
-  MultiCaseInfo,
-  NonParentCarerInfo,
-  OtherCaseChild,
+    ChildInput,
+    FormErrors,
+    MultiCaseInfo,
+    NonParentCarerInfo,
+    OtherCaseChild,
 } from '../utils/calculator';
 import type { AssessmentYear } from '../utils/child-support-constants';
 import {
-  MAX_CONTENT_WIDTH,
-  isWeb,
-  useResponsive,
-  webClickableStyles,
-  webInputStyles,
+    MAX_CONTENT_WIDTH,
+    isWeb,
+    useResponsive,
+    webClickableStyles,
+    webInputStyles,
 } from '../utils/responsive';
 import { createShadow } from '../utils/shadow-styles';
 import { ChildRow } from './ChildRow';
@@ -103,6 +104,68 @@ export function CalculatorForm({
   onNonParentCarerChange,
 }: CalculatorFormProps) {
   const { isMobile, isDesktop } = useResponsive();
+  const { colors } = useAppTheme();
+
+  // Memoized dynamic styles based on theme
+  const dynamicStyles = useMemo(() => ({
+    card: {
+      backgroundColor: colors.cardBackground,
+      borderColor: colors.cardBorder,
+    },
+    stepBadge: {
+      backgroundColor: colors.primary,
+    },
+    stepBadgeText: {
+      color: colors.textInverse,
+    },
+    sectionHeading: {
+      color: colors.primaryDark,
+    },
+    parentTitleA: {
+      color: colors.userHighlight,
+    },
+    parentTitleB: {
+      color: colors.textSecondary,
+    },
+    label: {
+      color: colors.textSecondary,
+    },
+    currencySymbol: {
+      color: colors.textMuted,
+    },
+    currencyInput: {
+      color: colors.inputText,
+      borderColor: colors.inputBorder,
+      backgroundColor: colors.inputBackground,
+    },
+    inputError: {
+      borderColor: colors.errorBorder,
+      backgroundColor: colors.errorLight,
+    },
+    errorText: {
+      color: colors.error,
+    },
+    addChildButton: {
+      borderColor: colors.primaryBorder,
+      backgroundColor: colors.primaryLight,
+    },
+    addChildButtonText: {
+      color: colors.buttonPrimary,
+    },
+    calculateButton: {
+      backgroundColor: colors.buttonPrimary,
+    },
+    calculateButtonText: {
+      color: colors.buttonPrimaryText,
+    },
+    resetButton: {
+      backgroundColor: colors.buttonSecondary,
+      borderColor: colors.buttonSecondaryBorder,
+    },
+    resetButtonText: {
+      color: colors.buttonSecondaryText,
+    },
+  }), [colors]);
 
   // Web-specific container styles (only apply max-width when NOT in two-column mode)
   const webContainerStyle =
@@ -130,14 +193,14 @@ export function CalculatorForm({
       ]}
     >
       {/* Combined Parents Card */}
-      <View style={styles.card}>
+      <View style={[styles.card, dynamicStyles.card]}>
         <View style={styles.sectionHeaderRow}>
-          <View style={styles.stepBadge}>
-            <Text style={styles.stepBadgeText}>1</Text>
+          <View style={[styles.stepBadge, dynamicStyles.stepBadge]}>
+            <Text style={[styles.stepBadgeText, dynamicStyles.stepBadgeText]}>1</Text>
           </View>
           {/* SEO: Semantic H2 Tag */}
           <Text
-            style={styles.sectionHeading}
+            style={[styles.sectionHeading, dynamicStyles.sectionHeading]}
             accessibilityRole="header"
             // @ts-ignore - Web-only prop
             aria-level="2"
@@ -173,8 +236,8 @@ export function CalculatorForm({
           accessibilityLabel="Parent A Income and Support Details"
         >
           <View style={[styles.labelRow, { gap: 8 }]}>
-            <Text style={styles.label}>
-              <Text style={styles.parentTitleA}>Your Income</Text>
+            <Text style={[styles.label, dynamicStyles.label]}>
+              <Text style={[styles.parentTitleA, dynamicStyles.parentTitleA]}>Your Income</Text>
             </Text>
           </View>
           <View style={styles.inputRow}>
@@ -184,12 +247,13 @@ export function CalculatorForm({
                 { width: inputWidth, minWidth: inputWidth },
               ]}
             >
-              <Text style={styles.currencySymbol}>$</Text>
+              <Text style={[styles.currencySymbol, dynamicStyles.currencySymbol]}>$</Text>
               <TextInput
                 style={[
                   styles.currencyInput,
+                  dynamicStyles.currencyInput,
                   { width: inputWidth, minWidth: inputWidth },
-                  errors.incomeA && styles.inputError,
+                  errors.incomeA && dynamicStyles.inputError,
                   isWeb && webInputStyles,
                 ]}
                 value={incomeA ? incomeA.toString() : ''}
@@ -206,14 +270,14 @@ export function CalculatorForm({
                 selectTextOnFocus={true}
                 keyboardType="numeric"
                 placeholder="0"
-                placeholderTextColor="#64748b"
+                placeholderTextColor={colors.placeholder}
                 accessibilityLabel="Parent A adjusted taxable income"
                 accessibilityHint="Enter Parent A's annual income in dollars"
               />
             </View>
           </View>
           {errors.incomeA && (
-            <Text style={styles.errorText}>{errors.incomeA}</Text>
+            <Text style={[styles.errorText, dynamicStyles.errorText]}>{errors.incomeA}</Text>
           )}
         </View>
 
@@ -224,8 +288,8 @@ export function CalculatorForm({
           accessibilityLabel="Parent B Income and Support Details"
         >
           <View style={styles.labelRow}>
-            <Text style={styles.label}>
-              <Text style={styles.parentTitleB}>
+            <Text style={[styles.label, dynamicStyles.label]}>
+              <Text style={[styles.parentTitleB, dynamicStyles.parentTitleB]}>
                 Other Parent&apos;s Income
               </Text>
             </Text>
@@ -237,12 +301,13 @@ export function CalculatorForm({
                 { width: inputWidth, minWidth: inputWidth },
               ]}
             >
-              <Text style={styles.currencySymbol}>$</Text>
+              <Text style={[styles.currencySymbol, dynamicStyles.currencySymbol]}>$</Text>
               <TextInput
                 style={[
                   styles.currencyInput,
+                  dynamicStyles.currencyInput,
                   { width: inputWidth, minWidth: inputWidth },
-                  errors.incomeB && styles.inputError,
+                  errors.incomeB && dynamicStyles.inputError,
                   isWeb && webInputStyles,
                 ]}
                 value={incomeB ? incomeB.toString() : ''}
@@ -259,14 +324,14 @@ export function CalculatorForm({
                 selectTextOnFocus={true}
                 keyboardType="numeric"
                 placeholder="0"
-                placeholderTextColor="#64748b"
+                placeholderTextColor={colors.placeholder}
                 accessibilityLabel="Parent B adjusted taxable income"
                 accessibilityHint="Enter Parent B's annual income in dollars"
               />
             </View>
           </View>
           {errors.incomeB && (
-            <Text style={styles.errorText}>{errors.incomeB}</Text>
+            <Text style={[styles.errorText, dynamicStyles.errorText]}>{errors.incomeB}</Text>
           )}
         </View>
 
@@ -298,14 +363,14 @@ export function CalculatorForm({
       </View>
 
       {/* Children Card */}
-      <View style={styles.card}>
+      <View style={[styles.card, dynamicStyles.card]}>
         <View style={styles.sectionHeaderRow}>
-          <View style={styles.stepBadge}>
-            <Text style={styles.stepBadgeText}>2</Text>
+          <View style={[styles.stepBadge, dynamicStyles.stepBadge]}>
+            <Text style={[styles.stepBadgeText, dynamicStyles.stepBadgeText]}>2</Text>
           </View>
           {/* SEO: Semantic H2 Tag */}
           <Text
-            style={styles.sectionHeading}
+            style={[styles.sectionHeading, dynamicStyles.sectionHeading]}
             accessibilityRole="header"
             // @ts-ignore - Web-only prop
             aria-level="2"
@@ -332,16 +397,16 @@ export function CalculatorForm({
         </View>
 
         {errors.children && (
-          <Text style={styles.errorText}>{errors.children}</Text>
+          <Text style={[styles.errorText, dynamicStyles.errorText]}>{errors.children}</Text>
         )}
 
         <Pressable
           onPress={onAddChild}
-          style={[styles.addChildButton, isWeb && webClickableStyles]}
+          style={[styles.addChildButton, dynamicStyles.addChildButton, isWeb && webClickableStyles]}
           accessibilityRole="button"
           accessibilityLabel="Add another child to the calculation"
         >
-          <Text style={styles.addChildButtonText}>+ Add Child</Text>
+          <Text style={[styles.addChildButtonText, dynamicStyles.addChildButtonText]}>+ Add Child</Text>
         </Pressable>
       </View>
 
@@ -349,19 +414,19 @@ export function CalculatorForm({
       <View style={styles.actionButtons}>
         <Pressable
           onPress={onCalculate}
-          style={[styles.calculateButton, isWeb && webClickableStyles]}
+          style={[styles.calculateButton, dynamicStyles.calculateButton, isWeb && webClickableStyles]}
           accessibilityRole="button"
           accessibilityLabel="Calculate child support"
         >
-          <Text style={styles.calculateButtonText}>Calculate</Text>
+          <Text style={[styles.calculateButtonText, dynamicStyles.calculateButtonText]}>Calculate</Text>
         </Pressable>
         <Pressable
           onPress={onReset}
-          style={[styles.resetButton, isWeb && webClickableStyles]}
+          style={[styles.resetButton, dynamicStyles.resetButton, isWeb && webClickableStyles]}
           accessibilityRole="button"
           accessibilityLabel="Reset form to default values"
         >
-          <Text style={styles.resetButtonText}>Reset</Text>
+          <Text style={[styles.resetButtonText, dynamicStyles.resetButtonText]}>Reset</Text>
         </Pressable>
       </View>
     </View>
@@ -378,12 +443,10 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   card: {
-    backgroundColor: '#ffffff', // pure white for content
     borderRadius: 12,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#e2e8f0', // subtle but visible border
-    // Cross-platform shadow for better depth perception
+    // Colors set via dynamicStyles
     ...createShadow({
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
@@ -395,7 +458,6 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#5a6570', // dark grey - WCAG AA compliant (7.0:1)
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 12,
@@ -411,19 +473,16 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#2563EB', // Brand Blue (blue-600)
     alignItems: 'center',
     justifyContent: 'center',
   },
   stepBadgeText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#ffffff', // white text
   },
   sectionHeading: {
     fontSize: 14,
-    fontWeight: '800', // extra bold
-    color: '#1e3a8a', // blue-900 (Dark Brand Blue)
+    fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -431,11 +490,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginLeft: 'auto', // Push to right side
+    marginLeft: 'auto',
   },
   cardSubtitle: {
     fontSize: 12,
-    color: '#5a6570', // dark grey - WCAG AA compliant (7.0:1)
     marginTop: 2,
   },
   parentsGrid: {
@@ -451,21 +509,18 @@ const styles = StyleSheet.create({
   parentTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#64748b', // slate-500 - improved contrast (4.61:1)
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   parentTitleA: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#3b82f6', // blue-500 (User Highlight) - matches breakdown "YOU"
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   parentTitleB: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#4a5568', // dark grey - consistent with Parent A
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -480,7 +535,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#4a5568', // dark grey for labels
   },
   inputRow: {
     flexDirection: 'row',
@@ -492,7 +546,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     position: 'relative',
-    // Width is now set dynamically via inline style
     flex: 0,
     flexShrink: 0,
     zIndex: 2,
@@ -500,30 +553,23 @@ const styles = StyleSheet.create({
   currencySymbol: {
     position: 'absolute',
     left: 12,
-    color: '#5a6570', // dark grey - WCAG AA compliant (7.0:1)
     fontSize: 18,
     fontWeight: '500',
     zIndex: 1,
   },
   currencyInput: {
-    // Width is set via inline style for responsive behavior
     paddingLeft: 32,
     paddingRight: 12,
     paddingVertical: 10,
     fontSize: 18,
-    color: '#1a202c', // near black, high contrast
     borderWidth: 1.5,
-    borderColor: '#e2e8f0', // subtle border
     borderRadius: 8,
-    backgroundColor: '#ffffff', // white input background
   },
   inputError: {
-    borderColor: '#ef4444', // red-500
-    backgroundColor: 'rgba(239, 68, 68, 0.1)', // red-500 with opacity
+    // Colors set via dynamicStyles
   },
   errorText: {
     fontSize: 14,
-    color: '#f87171', // red-400
     marginTop: 4,
   },
   incomeBarContainer: {
@@ -535,7 +581,6 @@ const styles = StyleSheet.create({
   incomeBar: {
     flex: 1,
     height: 8,
-    backgroundColor: '#334155', // slate-700
     borderRadius: 4,
     overflow: 'hidden',
   },
@@ -546,15 +591,13 @@ const styles = StyleSheet.create({
   incomePercText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#3b82f6', // blue-500
     width: 40,
     textAlign: 'right',
   },
   csiText: {
     fontSize: 12,
-    color: '#64748b', // slate-500 - improved contrast (4.61:1)
     marginLeft: 8,
-    fontWeight: '500', // Added weight for better visibility
+    fontWeight: '500',
   },
   switchRow: {
     flexDirection: 'row',
@@ -566,13 +609,11 @@ const styles = StyleSheet.create({
     transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
   },
   switchLabelSmall: {
-    fontSize: 13, // Increased from 12 for better readability
-    color: '#4a5568', // dark grey - better contrast (7.7:1)
-    fontWeight: '500', // Added weight for better visibility
+    fontSize: 13,
+    fontWeight: '500',
   },
   switchLabel: {
     fontSize: 14,
-    color: '#4a5568', // dark grey
   },
   childrenList: {
     gap: 12,
@@ -582,14 +623,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderWidth: 1,
     borderStyle: 'solid',
-    borderColor: '#bfdbfe', // blue-200 - solid border
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#eff6ff', // blue-50 - Ghost Blue background
   },
   addChildButtonText: {
-    color: '#0056b3', // Royal Blue (Brand)
     fontSize: 14,
     fontWeight: '600',
   },
@@ -600,29 +638,24 @@ const styles = StyleSheet.create({
   },
   calculateButton: {
     flex: 2,
-    backgroundColor: '#0056b3', // Darker blue for better contrast (WCAG AA compliant)
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
   calculateButtonText: {
-    color: '#ffffff',
     fontSize: 18,
     fontWeight: '700',
   },
   resetButton: {
     flex: 1,
-    backgroundColor: '#ffffff', // white background
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: '#e2e8f0', // subtle border
   },
   resetButtonText: {
-    color: '#4a5568', // medium grey
     fontSize: 16,
     fontWeight: '600',
   },

@@ -84,6 +84,7 @@ csc/
 ```
 
 **External Traffic Sources:**
+
 - **Blog Chatbot Widget** (blog.auschildsupport.com) - Pre-calculator funnel
 - **Direct Inquiry Links** - Embedded in blog posts (e.g., `/lawyer-inquiry?mode=direct&reason=hidden_income`)
 
