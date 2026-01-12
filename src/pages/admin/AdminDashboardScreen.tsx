@@ -94,8 +94,9 @@ export default function AdminDashboardScreen() {
         return;
       }
 
-      // Verify it's the admin email
-      if (session.user.email?.toLowerCase() !== 'alex@auschildsupport.com') {
+      // Verify it's the admin email (configured via EXPO_PUBLIC_ADMIN_EMAIL)
+      const adminEmail = process.env.EXPO_PUBLIC_ADMIN_EMAIL?.toLowerCase();
+      if (!adminEmail || session.user.email?.toLowerCase() !== adminEmail) {
         console.log('[AdminDashboard] Not admin email - redirecting');
         await supabase.auth.signOut();
         router.replace('/admin/login');
@@ -211,7 +212,7 @@ export default function AdminDashboardScreen() {
         </View>
 
         {/* Filters */}
-        <View accessibilityRole="navigation" accessibilityLabel="Filter leads">
+        <View accessibilityLabel="Filter leads">
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}

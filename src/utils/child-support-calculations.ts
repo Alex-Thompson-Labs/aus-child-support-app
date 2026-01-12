@@ -1,18 +1,22 @@
-import type { AgeRange, CostBracketInfo, OtherCaseChild } from './calculator';
+import type { AgeRange, ChildInput, CostBracketInfo, OtherCaseChild } from './calculator';
 import { deriveAgeRange } from './calculator';
 import {
-    AssessmentYear,
-    CARE_PERIOD_DAYS,
-    CarePeriod,
+  AssessmentYear,
+  CARE_PERIOD_DAYS,
+  CarePeriod,
 } from './child-support-constants';
 import { COTCBandValues, YEARLY_CONFIG } from './year-config';
 
-export interface Child {
-  /** Specific age of the child (0-25) */
-  age: number;
+/**
+ * Child type for calculation functions.
+ * Derived from ChildInput with care amounts as percentages.
+ */
+export interface Child extends Pick<ChildInput, 'age'> {
   /** Derived age range for calculation engine (computed from age) */
   ageRange?: AgeRange;
+  /** Care percentage for Parent A */
   careA: number;
+  /** Care percentage for Parent B */
   careB: number;
 }
 
@@ -64,7 +68,7 @@ export function getChildCost(
   // Filter out adult children (18+) from standard calculation
   // Adult Child Maintenance is handled separately
   const eligibleChildren = childrenWithRanges.filter((c) => c.ageRange !== '18+');
-  
+
   if (eligibleChildren.length === 0) {
     // All children are 18+ - return zero cost for standard calculation
     // Adult Child Maintenance logic will be implemented separately

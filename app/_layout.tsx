@@ -49,6 +49,7 @@ export default function RootLayout() {
   // Callback to hide splash screen once the root view has performed layout
   const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {
+      // Hide the splash screen once the app has rendered
       await SplashScreen.hideAsync();
     }
   }, [appIsReady]);
@@ -117,7 +118,7 @@ export default function RootLayout() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ffffff' }} onLayout={onLayoutRootView}>
+    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <Suspense fallback={<LoadingFallback />}>
         {/* SEO: Dynamic Canonical Tag via Expo Head */}
         <Head>

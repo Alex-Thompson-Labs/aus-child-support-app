@@ -12,6 +12,9 @@ import { useCallback, useEffect, useState } from 'react';
 
 type AuthState = 'loading' | 'authenticated' | 'unauthenticated';
 
+// Admin email from environment variable (set in .env)
+const ADMIN_EMAIL = process.env.EXPO_PUBLIC_ADMIN_EMAIL?.toLowerCase();
+
 export default function AdminLayout() {
     const pathname = usePathname();
     const [authState, setAuthState] = useState<AuthState>('loading');
@@ -29,8 +32,8 @@ export default function AdminLayout() {
                 return;
             }
 
-            // Verify admin email
-            if (session.user.email?.toLowerCase() !== 'alex@auschildsupport.com') {
+            // Verify admin email (configured via EXPO_PUBLIC_ADMIN_EMAIL)
+            if (!ADMIN_EMAIL || session.user.email?.toLowerCase() !== ADMIN_EMAIL) {
                 console.log('[AdminLayout] Not admin email - signing out');
                 await supabase.auth.signOut();
                 setAuthState('unauthenticated');
@@ -59,7 +62,7 @@ export default function AdminLayout() {
                 console.log('[AdminLayout] Auth state change:', event);
 
                 if (event === 'SIGNED_IN' && session) {
-                    if (session.user.email?.toLowerCase() === 'alex@auschildsupport.com') {
+                    if (ADMIN_EMAIL && session.user.email?.toLowerCase() === ADMIN_EMAIL) {
                         setAuthState('authenticated');
                     } else {
                         setAuthState('unauthenticated');
