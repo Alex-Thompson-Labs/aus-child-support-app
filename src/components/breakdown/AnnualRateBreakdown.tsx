@@ -44,8 +44,25 @@ export function AnnualRateBreakdown({
         // Use comprehensive detection for low assessment warning
         const { isLowAssessment } = detectLowAssessmentTrigger(results, formState);
 
+        // Check for adult children (18+) that need special cards
+        const adultChildren = results.childResults.filter((c) => c.isAdultChild);
+        // Check for children turning 18 (age 17) that need banners
+        const childrenTurning18 = results.childResults.filter((c) => c.isTurning18);
+
         return (
             <View style={styles.perChildGapBreakdown}>
+                {/* Show Adult Child Maintenance cards for 18+ children */}
+                {adultChildren.map((child, idx) => {
+                    const originalIndex = results.childResults.findIndex((c) => c === child);
+                    return (
+                        <AdultChildMaintenanceCard
+                            key={`adult-${originalIndex}`}
+                            childIndex={originalIndex}
+                            childAge={child.age}
+                        />
+                    );
+                })}
+
                 <View style={styles.perChildGapRow}>
                     <Text style={styles.perChildGapLabel}>
                         All children -{' '}
@@ -59,6 +76,15 @@ export function AnnualRateBreakdown({
                         {formatCurrency(totalMarAmount)}
                     </Text>
                 </View>
+
+                {/* Show Turning 18 banners for 17-year-olds */}
+                {childrenTurning18.map((child, idx) => {
+                    const originalIndex = results.childResults.findIndex((c) => c === child);
+                    return (
+                        <Turning18Banner key={`turn18-${originalIndex}`} childIndex={originalIndex} />
+                    );
+                })}
+
                 {isLowAssessment && (
                     <View style={styles.warningAlert}>
                         <Text style={styles.warningTitle}>
@@ -94,8 +120,25 @@ export function AnnualRateBreakdown({
         // Check if low assessment trigger applies (edge case: MAR/FAR negated by care)
         const { isLowAssessment } = detectLowAssessmentTrigger(results, formState);
 
+        // Check for adult children (18+) that need special cards
+        const adultChildren = results.childResults.filter((c) => c.isAdultChild);
+        // Check for children turning 18 (age 17) that need banners
+        const childrenTurning18 = results.childResults.filter((c) => c.isTurning18);
+
         return (
             <View style={styles.perChildGapBreakdown}>
+                {/* Show Adult Child Maintenance cards for 18+ children */}
+                {adultChildren.map((child, idx) => {
+                    const originalIndex = results.childResults.findIndex((c) => c === child);
+                    return (
+                        <AdultChildMaintenanceCard
+                            key={`adult-${originalIndex}`}
+                            childIndex={originalIndex}
+                            childAge={child.age}
+                        />
+                    );
+                })}
+
                 <View style={styles.perChildGapRow}>
                     <Text style={styles.perChildGapLabel}>
                         All children -{' '}
@@ -105,6 +148,15 @@ export function AnnualRateBreakdown({
                         $0
                     </Text>
                 </View>
+
+                {/* Show Turning 18 banners for 17-year-olds */}
+                {childrenTurning18.map((child, idx) => {
+                    const originalIndex = results.childResults.findIndex((c) => c === child);
+                    return (
+                        <Turning18Banner key={`turn18-${originalIndex}`} childIndex={originalIndex} />
+                    );
+                })}
+
                 {isLowAssessment && (
                     <View style={styles.warningAlert}>
                         <Text style={styles.warningTitle}>
@@ -353,40 +405,40 @@ const styles = StyleSheet.create({
     },
     npcPaymentDivider: {
         height: 1,
-        backgroundColor: '#c4b5fd', // Violet-300
+        backgroundColor: '#93c5fd', // Blue-300
         marginTop: 12,
         marginBottom: 8,
     },
     npcPaymentSection: {
-        backgroundColor: '#f5f3ff', // Violet-50
+        backgroundColor: '#eff6ff', // Blue-50
         borderRadius: 6,
         padding: 10,
         borderWidth: 1,
-        borderColor: '#ddd6fe', // Violet-200
+        borderColor: '#bfdbfe', // Blue-200
     },
     npcPaymentTitle: {
         fontSize: 12,
         fontWeight: '700',
-        color: '#5b21b6', // Violet-800
+        color: '#1e40af', // Blue-800
         textTransform: 'uppercase',
         letterSpacing: 0.5,
         marginBottom: 4,
     },
     npcPaymentExplanation: {
         fontSize: 11,
-        color: '#6d28d9', // Violet-700
+        color: '#1d4ed8', // Blue-700
         marginBottom: 8,
         lineHeight: 16,
     },
     npcPaymentLabel: {
         fontSize: 13,
-        color: '#5b21b6', // Violet-800
+        color: '#1e40af', // Blue-800
         fontWeight: '500',
     },
     npcPaymentValue: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#5b21b6', // Violet-800
+        color: '#1e40af', // Blue-800
     },
 });
 

@@ -1477,7 +1477,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PageSEO } from '../../src/components/seo/PageSEO';
+import Accordion from '../../src/components/ui/Accordion';
 import { Breadcrumb } from '../../src/components/ui/Breadcrumb';
+import { buildCoAFaqSchema, getCoAFaqs } from '../../src/utils/coa-faqs';
 import {
   COA_REASON_PAGES,
   getCoAReasonBySlug,
@@ -1758,6 +1760,21 @@ export default function ChangeOfAssessmentReasonPage() {
             </View>
           </View>
 
+          {/* FAQ Section */}
+          {getCoAFaqs(slug ?? '').length > 0 && (
+            <View style={styles.faqSection}>
+              {/* @ts-ignore - Web-only ARIA attributes */}
+              <Text style={styles.faqSectionTitle} accessibilityRole="header" aria-level="2">
+                Frequently Asked Questions
+              </Text>
+              {getCoAFaqs(slug ?? '').map((faq, index) => (
+                <Accordion key={index} title={faq.question}>
+                  <Text style={styles.faqText}>{faq.answer}</Text>
+                </Accordion>
+              ))}
+            </View>
+          )}
+
           {/* Disclaimer */}
           <View style={styles.disclaimer}>
             <Text style={styles.disclaimerText}>
@@ -1776,8 +1793,9 @@ export default function ChangeOfAssessmentReasonPage() {
  * Builds schema.org structured data for the page
  */
 function buildSchema(reason: CoAReasonPage) {
-  return {
-    '@context': 'https://schema.org',
+  const faqSchema = buildCoAFaqSchema(reason.slug);
+
+  const webPageSchema = {
     '@type': 'WebPage',
     name: reason.title,
     description: reason.metaDescription,
@@ -1808,6 +1826,14 @@ function buildSchema(reason: CoAReasonPage) {
         },
       ],
     },
+  };
+
+  // Return @graph with both WebPage and FAQPage schemas
+  return {
+    '@context': 'https://schema.org',
+    '@graph': faqSchema
+      ? [webPageSchema, faqSchema]
+      : [webPageSchema],
   };
 }
 
@@ -2073,6 +2099,23 @@ const styles = StyleSheet.create({
     color: '#475569',
     fontWeight: '500',
     maxWidth: 180,
+  },
+
+  // FAQ Section
+  faqSection: {
+    marginTop: 24,
+    marginBottom: 24,
+  },
+  faqSectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1e293b',
+    marginBottom: 16,
+  },
+  faqText: {
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#475569',
   },
 });
 --- END OF FILE: app/change-of-assessment/[reason-slug].tsx ---
@@ -2382,6 +2425,26 @@ const FAQ_DATA = [
                 question: 'What income is used for child support?',
                 answer: 'Child support uses your Adjusted Taxable Income (ATI), which includes taxable income, reportable fringe benefits, certain tax-free pensions, net investment losses, and reportable superannuation contributions.',
             },
+            {
+                question: 'What is the Self-Support Amount (SSA)?',
+                answer: 'The Self-Support Amount is one-third of the Male Total Average Weekly Earnings (MTAWE). This amount is deducted from each parent\'s ATI before calculating child support. In 2026, this is approximately $29,212 per year.',
+            },
+            {
+                question: 'How does the number of children affect child support?',
+                answer: 'More children generally means higher child support. The Costs of Children table uses age groups and combined parental income to determine the total cost, which increases with each additional child.',
+            },
+            {
+                question: 'What are relevant dependents and how do they affect my assessment?',
+                answer: 'Relevant dependents are other children you support who are not part of this child support case. Each relevant dependent reduces your child support income by a percentage (24% for one, 34% for two, 40% for three or more).',
+            },
+            {
+                question: 'How accurate is this calculator?',
+                answer: 'This calculator uses the exact formula and 2026 rates from Services Australia. However, special circumstances, care changes, or complex income situations may result in a different official assessment.',
+            },
+            {
+                question: 'How often should I recalculate child support?',
+                answer: 'You should recalculate when there are significant changes to income, care arrangements, or the number of children. Services Australia typically reassesses annually based on tax returns.',
+            },
         ],
     },
     // Change of Assessment FAQs
@@ -2395,6 +2458,30 @@ const FAQ_DATA = [
             {
                 question: 'When can I apply for a Change of Assessment?',
                 answer: 'You can apply when special circumstances mean the standard formula doesn\'t reflect your true situation. Common reasons include: the other parent has hidden income, you have high travel costs to see your children, or a property settlement affects your capacity to pay.',
+            },
+            {
+                question: 'What are the 10 reasons for a Change of Assessment?',
+                answer: 'The reasons include: (1) High costs of contact, (2) Special needs care costs, (3) High education costs, (4) Child\'s income, (5) Transferred benefits, (6) High childcare costs, (7) Reduced capacity, (8A) Hidden income/property, (8B) Earning capacity, (9) Legal duty to others, and (10) Resident child responsibility.',
+            },
+            {
+                question: 'How long does a Change of Assessment take?',
+                answer: 'A Change of Assessment typically takes 6-12 weeks from lodgement to decision. Complex cases involving hidden income or multiple reasons may take longer, especially if a conference is required.',
+            },
+            {
+                question: 'What evidence do I need for a Change of Assessment?',
+                answer: 'Evidence depends on the reason you\'re applying. Common documents include tax returns, receipts, medical reports, payslips, bank statements, and evidence of the other parent\'s lifestyle or assets.',
+            },
+            {
+                question: 'Can the other parent object to my application?',
+                answer: 'Yes. The other parent will be given an opportunity to respond to your application. They can provide their own evidence and attend a conference with the Registrar. Both parties have a chance to explain their situation.',
+            },
+            {
+                question: 'What happens after I lodge an application?',
+                answer: 'Services Australia will review your application, request any additional documents, and may schedule a conference call with both parties. A Registrar will make a decision based on all the evidence provided.',
+            },
+            {
+                question: 'Can I appeal a Change of Assessment decision?',
+                answer: 'Yes. If you disagree with the decision, you can object within 28 days or apply to the Social Security Appeals Tribunal (SSAT) for review. Legal advice can help you understand your options.',
             },
         ],
     },
@@ -2413,6 +2500,62 @@ const FAQ_DATA = [
             {
                 question: 'Is my information confidential?',
                 answer: 'Yes. Your personal and financial information is encrypted and only shared with the legal professionals who will be reviewing your case.',
+            },
+            {
+                question: 'How much does legal advice cost?',
+                answer: 'Initial consultations are often free or at a reduced rate. Costs for ongoing representation vary based on complexity. Many lawyers offer no-win, no-fee arrangements for child support matters.',
+            },
+            {
+                question: 'What can a lawyer help with in child support cases?',
+                answer: 'A lawyer can help with Change of Assessment applications, objections, SSAT appeals, binding child support agreements, and cases involving hidden income or complex financial structures.',
+            },
+            {
+                question: 'Do I need a lawyer for a Change of Assessment?',
+                answer: 'A lawyer is not required, but professional advice can help strengthen your case, especially for complex matters like Reason 8A (hidden income) or when the other parent has legal representation.',
+            },
+        ],
+    },
+    // Care Arrangements FAQs
+    {
+        category: 'Care Arrangements',
+        questions: [
+            {
+                question: 'How does split care affect child support?',
+                answer: 'Split care occurs when each parent has different children living with them primarily. Each child is assessed separately, and the parent with less care for each child typically pays support for that child.',
+            },
+            {
+                question: 'How are school holidays counted in care percentage?',
+                answer: 'Care is calculated over the entire year, including school holidays. If you have your children during school holidays, these nights are added to your total annual care calculation.',
+            },
+            {
+                question: 'What if the other parent doesn\'t follow the care arrangement?',
+                answer: 'If actual care differs from the assessed care by more than 14 nights per year, you can apply to Services Australia to update the assessment. Keep a record of actual care provided.',
+            },
+            {
+                question: 'What is the 14% threshold for care?',
+                answer: 'At 14% care (52 nights per year), your cost percentage begins to reduce your child support liability. Below 14%, you may still pay child support but receive no cost offset.',
+            },
+        ],
+    },
+    // Special Circumstances FAQs
+    {
+        category: 'Special Circumstances',
+        questions: [
+            {
+                question: 'When should I apply for a Change of Assessment?',
+                answer: 'Apply when the standard formula produces an unfair result due to special circumstances, such as: the other parent has unreported income, you have very high contact costs, or your child has special medical needs.',
+            },
+            {
+                question: 'Can I apply for multiple reasons at once?',
+                answer: 'Yes. You can list multiple reasons in one application. Many applicants combine Reason 8A (hidden income) with other financial reasons to present a complete picture of their situation.',
+            },
+            {
+                question: 'What happens after I\'m matched with a lawyer?',
+                answer: 'The lawyer will review your calculation, discuss your situation, and advise whether you have grounds for a Change of Assessment. They can help you prepare and lodge your application.',
+            },
+            {
+                question: 'Is there a priority for different reasons?',
+                answer: 'All 10 reasons are equally valid, but some are more common and have higher success rates. Reasons 8A (hidden income) and 1 (high contact costs) are frequently applied and have established precedents.',
             },
         ],
     },
@@ -2449,7 +2592,7 @@ export default function FAQPage() {
         <>
             <PageSEO
                 title="FAQ | Child Support Calculator Australia"
-                description="Frequently asked questions about Australian child support calculations, Change of Assessment applications, and connecting with family law professionals."
+                description="Frequently asked questions about Australian child support calculations, Change of Assessment applications, care arrangements, and connecting with family law professionals."
                 canonicalPath="/faq"
                 schema={faqSchema}
             />
@@ -10586,6 +10729,61 @@ Execute prompts 1-7 in sequence to complete all high and medium priority SEO fou
 - **Schema markup** (prompt 3) is important for rich snippets in search results
 - **Critical CSS** (prompt 4) directly impacts Core Web Vitals scores
 --- END OF FILE: docs/business-docs/SEO_STRATEGY_AI_PROMPTS.md ---
+
+--- START OF FILE: docs/business-docs/X_GUIDE.md ---
+This guide provides a comprehensive framework for launching an X (Twitter) presence for your child support calculator in 2026. While Facebook is excellent for direct reach, X is your tool for building professional authority and connecting with the broader Australian legal and policy landscape.
+
+# **X (Twitter) Launch Blueprint: Aus Child Support Calculator**
+
+### **1\. Profile Setup (The Storefront)**
+
+Your profile is your digital business card and must immediately communicate trust and expertise.
+
+Element,Recommendation
+Username (@Handle),@AusChildSupport (ideal) or @ChildSupportAus.
+Display Name,Aus Child Support Calculator.
+Profile Picture,Use the same Scales of Justice icon on a royal blue background for brand consistency.
+Header Banner,"A clean graphic featuring the ""15 Seconds, Not Minutes"" claim and a phone mockup showing an assessment breakdown."
+Bio (160 Chars),"""Calculate 2026 Australian child support in seconds, not minutes 📱 Using all 6 official formulas. Private & Anonymous. 🇦🇺 #FamilyLaw #ChildSupport""."
+Link,https://auschildsupport.com/.
+Location,Australia (or your specific state)
+
+### **2\. Content Strategy: What to Post**
+
+X favors short, timely, and conversational content. Aim for 2–5 posts per day, including replies.
+
+#### **Pillar 1: Educational Tips (Value First)**
+
+- "Did you know Formula 1 is only for simple cases? Our tool handles all 6 formulas under the *Child Support (Assessment) Act 1989*. ⚖️".
+- "Confused by 'Cost of Children' tables? We've updated our calculator for the 2026 rates. Check your estimate today.".
+
+#### **Pillar 2: Privacy & Speed (The Hook)**
+
+- "No login, no data storage. Get your estimate anonymously in seconds.".
+- **Video Clip:** A 15-second screen recording of the calculator in action to show how fast it is.
+
+#### **Pillar 3: The "Pinned Tweet" (Your Introduction)**
+
+- **Post:** "Stop guessing your 2026 assessment. Our independent calculator is updated for the new year and covers complex multi-case scenarios. 🇦🇺👇".
+- **Action:** Pin this to the top of your profile so it's the first thing visitors see.
+
+### **3\. Networking: Who to Follow & Engage**
+
+Growth on X comes from interacting with others, not just broadcasting.
+
+- **Legal Bodies:** @LawCouncilAu, @AusFedPolice (for domestic law updates), and state-based Bar Associations.
+- **Community Support:** @CLCsAustralia (Community Legal Centres) and family violence advocacy groups like @SafeandEqual.
+- **Journalists:** Follow Australian legal affairs and social policy reporters from the ABC, SMH, and The Age.
+- **Groups/Communities:** Search for "Law Twitter" or "Australian Family Law" communities to join relevant discussions.
+
+### **4\. Step-by-Step Creation Guide**
+
+1.  **Register:** Visit twitter.com and sign up with alex@auschildsupport.com.
+2.  **Verify:** Complete the email verification and set a strong password.
+3.  **Optimize:** Immediately fill out the Bio and Link. Do not leave these blank.
+4.  **The "Follow 10" Rule:** Find and follow 10 major Australian legal organizations to "prime" your algorithm for professional content.
+5.  **Search & Monitor:** Use the search bar for terms like "child support help" or "Family Court Australia" to find people asking questions you can help answer (without giving legal advice).
+--- END OF FILE: docs/business-docs/X_GUIDE.md ---
 
 --- START OF FILE: docs/business-docs/proof-before-pitch-v2.md ---
 # 6-8 Week Validation Plan: Proof Before Pitch (v2)
@@ -20649,7 +20847,6 @@ export function CalculatorForm({
         <NonParentCarerSection
           nonParentCarer={nonParentCarer}
           onNonParentCarerChange={onNonParentCarerChange}
-          error={errors.nonParentCarer}
         />
       </View>
 
@@ -21003,6 +21200,7 @@ import type { ComplexityFormData } from '../utils/complexity-detection';
 import { formatCurrency } from '../utils/formatters';
 import { MAX_MODAL_WIDTH, useResponsive } from '../utils/responsive';
 import { shadowPresets } from '../utils/shadow-styles';
+import { FtbImpactCard } from './FtbImpactCard';
 import { getPayerText, ResultsHero } from './results/ResultsHero';
 import { SmartConversionFooter } from './SmartConversionFooter';
 import { SpecialCircumstancesPrompt } from './SpecialCircumstancesPrompt';
@@ -21213,11 +21411,10 @@ export function CalculatorResults({
   const [lastResultsKey, setLastResultsKey] = useState('');
 
   // Generate a unique key for the current results
-  const currentResultsKey = `${results.finalPaymentAmount}-${
-    results.payer
-  }-${results.childResults
-    .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
-    .join('-')}-${results.ATI_A}-${results.ATI_B}`;
+  const currentResultsKey = `${results.finalPaymentAmount}-${results.payer
+    }-${results.childResults
+      .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
+      .join('-')}-${results.ATI_A}-${results.ATI_B}`;
 
   // Update formData when results change, but preserve selected CoA reasons
   React.useEffect(() => {
@@ -21249,10 +21446,10 @@ export function CalculatorResults({
 
   const webModalContainerStyle = isWeb
     ? {
-        maxWidth: MAX_MODAL_WIDTH,
-        width: '100%' as const,
-        alignSelf: 'center' as const,
-      }
+      maxWidth: MAX_MODAL_WIDTH,
+      width: '100%' as const,
+      alignSelf: 'center' as const,
+    }
     : {};
 
   const renderBreakdownContent = () => (
@@ -21274,11 +21471,10 @@ export function CalculatorResults({
       />
 
       <SpecialCircumstancesPrompt
-        key={`${results.finalPaymentAmount}-${
-          results.payer
-        }-${results.childResults
-          .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
-          .join('-')}-${results.ATI_A}-${results.ATI_B}`}
+        key={`${results.finalPaymentAmount}-${results.payer
+          }-${results.childResults
+            .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
+            .join('-')}-${results.ATI_A}-${results.ATI_B}`}
         results={results}
         formData={localFormData}
         onNavigate={() => setIsExpanded(false)}
@@ -21321,6 +21517,13 @@ export function CalculatorResults({
         formData={localFormData}
         onBeforeNavigate={() => setIsExpanded(false)}
       />
+
+      {/* FTB Impact Card - Shows FTB Part A/B implications */}
+      <FtbImpactCard
+        results={results}
+        userIncome={results.ATI_A}
+        childCount={formData?.children?.length ?? results.childResults.length}
+      />
     </ScrollView>
   );
 
@@ -21358,13 +21561,12 @@ export function CalculatorResults({
             { paddingBottom: Math.max(insets.bottom, 12) },
           ]}
           accessibilityRole="button"
-          accessibilityLabel={`${
-            results.payer === 'Neither'
+          accessibilityLabel={`${results.payer === 'Neither'
               ? 'No payment required'
               : `${results.payer} pays ${formatCurrency(
-                  results.finalPaymentAmount
-                )} per year`
-          }. Tap to view full breakdown`}
+                results.finalPaymentAmount
+              )} per year`
+            }. Tap to view full breakdown`}
           accessibilityHint="Opens detailed calculation breakdown"
         >
           <View
@@ -21393,18 +21595,18 @@ export function CalculatorResults({
                 results.FAR_A,
                 results.FAR_B
               ) && (
-                <View style={styles.collapsedIncomeSupportBadge}>
-                  <Text style={styles.collapsedIncomeSupportText}>
-                    ✓{' '}
-                    {getIncomeSupportText(
-                      formData?.supportA ?? false,
-                      formData?.supportB ?? false,
-                      results.FAR_A,
-                      results.FAR_B
-                    )}
-                  </Text>
-                </View>
-              )}
+                  <View style={styles.collapsedIncomeSupportBadge}>
+                    <Text style={styles.collapsedIncomeSupportText}>
+                      ✓{' '}
+                      {getIncomeSupportText(
+                        formData?.supportA ?? false,
+                        formData?.supportB ?? false,
+                        results.FAR_A,
+                        results.FAR_B
+                      )}
+                    </Text>
+                  </View>
+                )}
             </View>
             <View style={styles.expandHint}>
               <Text style={styles.expandHintText}>Tap for breakdown ▲</Text>
@@ -21551,6 +21753,7 @@ const styles = StyleSheet.create({
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { ChildInput } from '../utils/calculator';
+
 import { CARE_PERIOD_DAYS } from '../utils/child-support-constants';
 import {
   isWeb,
@@ -21560,6 +21763,7 @@ import {
 } from '../utils/responsive';
 import { createShadow } from '../utils/shadow-styles';
 import { PeriodPicker } from './PeriodPicker';
+
 
 interface ChildRowProps {
   child: ChildInput;
@@ -21582,10 +21786,12 @@ export function ChildRow({
   const { isMobile } = useResponsive();
 
   // Local state for input values while editing
-  const [editingField, setEditingField] = useState<'A' | 'B' | 'NPC' | null>(
-    null
-  );
+  const [editingField, setEditingField] = useState<
+    'A' | 'B' | 'NPC' | 'Age' | null
+  >(null);
   const [localValue, setLocalValue] = useState('');
+
+
 
   const maxValue =
     child.carePeriod === 'week'
@@ -21684,6 +21890,31 @@ export function ChildRow({
     if (editingField === 'NPC') return localValue;
     const amount = child.careAmountNPC ?? 0;
     return amount === 0 ? '' : amount.toString();
+  };
+
+  // Age input handlers
+  const handleFocusAge = () => {
+    setEditingField('Age');
+    setLocalValue('');
+  };
+
+  const handleChangeAge = (text: string) => {
+    const cleanedText = text.replace(/[^0-9]/g, '').slice(0, 2);
+    setLocalValue(cleanedText);
+    const newAge = parseInt(cleanedText, 10) || 0;
+    onUpdate({ age: newAge });
+  };
+
+  const handleBlurAge = () => {
+    const newAge = parseInt(localValue, 10) || 0;
+    onUpdate({ age: newAge });
+    setEditingField(null);
+    setLocalValue('');
+  };
+
+  const getDisplayValueAge = () => {
+    if (editingField === 'Age') return localValue;
+    return child.age === 0 ? '' : child.age.toString();
   };
 
   const handlePeriodChange = (
@@ -21789,7 +22020,7 @@ export function ChildRow({
             <View
               style={[styles.itemWrapper, isMobile && styles.parentItemMobile]}
             >
-              <Text style={styles.headerLabelNPC}>NON-PARENT CARER</Text>
+              <Text style={styles.headerLabelNPC}>NPC</Text>
               <TextInput
                 style={[
                   styles.careInput,
@@ -21822,58 +22053,33 @@ export function ChildRow({
             />
           </View>
 
-          {/* Age Range Toggle */}
+          {/* Age Input */}
           <View
             style={[
               styles.toggleWithLabel,
               isMobile && styles.optionItemMobile,
             ]}
           >
-            <Text style={styles.toggleLabel}>Age Range</Text>
-            <View style={styles.toggleGroup}>
-              <Pressable
-                onPress={() => onUpdate({ age: 'Under 13' })}
-                style={[
-                  styles.toggleButton,
-                  styles.toggleButtonLeft,
-                  child.age === 'Under 13' && styles.toggleButtonActive,
-                  isWeb && webClickableStyles,
-                ]}
-                accessibilityRole="button"
-                accessibilityLabel="Select age under 13"
-                accessibilityState={{ selected: child.age === 'Under 13' }}
-              >
-                <Text
-                  style={[
-                    styles.toggleButtonText,
-                    child.age === 'Under 13' && styles.toggleButtonTextActive,
-                  ]}
-                >
-                  {'<13'}
-                </Text>
-              </Pressable>
-              <Pressable
-                onPress={() => onUpdate({ age: '13+' })}
-                style={[
-                  styles.toggleButton,
-                  styles.toggleButtonRight,
-                  child.age === '13+' && styles.toggleButtonActive13Plus,
-                  isWeb && webClickableStyles,
-                ]}
-                accessibilityRole="button"
-                accessibilityLabel="Select age 13 and over"
-                accessibilityState={{ selected: child.age === '13+' }}
-              >
-                <Text
-                  style={[
-                    styles.toggleButtonText,
-                    child.age === '13+' && styles.toggleButtonTextActive,
-                  ]}
-                >
-                  13+
-                </Text>
-              </Pressable>
-            </View>
+            <Text style={styles.toggleLabel}>Age</Text>
+            <TextInput
+              style={[
+                styles.careInput,
+                styles.ageInput,
+                isWeb && webInputStyles,
+              ]}
+              value={getDisplayValueAge()}
+              onChangeText={handleChangeAge}
+              onFocus={handleFocusAge}
+              onBlur={handleBlurAge}
+              placeholder="0"
+              keyboardType="number-pad"
+              maxLength={2}
+              placeholderTextColor="#64748b"
+              accessibilityLabel="Child's age"
+              accessibilityHint="Enter child's age in years"
+              {...(isWeb && { inputMode: 'numeric' as any })}
+            />
+
           </View>
         </View>
       </View>
@@ -21910,8 +22116,8 @@ const styles = StyleSheet.create({
     }),
     ...(isWeb
       ? {
-          scrollSnapAlign: 'start',
-        }
+        scrollSnapAlign: 'start',
+      }
       : {}),
   } as any,
   containerDesktop: {
@@ -21980,6 +22186,13 @@ const styles = StyleSheet.create({
   compactInput: {
     width: 70,
   },
+  ageInput: {
+    width: 56,
+    height: 32,
+    fontSize: 13,
+    paddingVertical: 0,
+    borderRadius: 6,
+  },
   headerLabelA: {
     fontSize: 12,
     fontWeight: '600',
@@ -21995,9 +22208,9 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   headerLabelNPC: {
-    fontSize: 10, // Slightly smaller to fit longer text
+    fontSize: 12, // Same size as other header labels
     fontWeight: '600',
-    color: '#7c3aed', // violet-600 - distinct from parents
+    color: '#1e3a8a', // blue-900 (Dark Brand Blue) - matches "CARE" header
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -22015,6 +22228,8 @@ const styles = StyleSheet.create({
   toggleWithLabel: {
     alignItems: 'center',
     gap: 4,
+    position: 'relative',
+    zIndex: 10,
   },
   toggleLabel: {
     fontSize: 10,
@@ -22062,6 +22277,7 @@ const styles = StyleSheet.create({
   toggleButtonTextActive: {
     color: '#ffffff', // white on blue
   },
+
   removeButton: {
     position: 'absolute',
     top: 4,
@@ -22075,8 +22291,8 @@ const styles = StyleSheet.create({
     zIndex: 10, // Ensure button stays on top
     ...(isWeb
       ? {
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-        }
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+      }
       : {}),
     ...createShadow({
       shadowColor: '#000',
@@ -22141,6 +22357,284 @@ export function ClientOnly({ children, fallback = null }: ClientOnlyProps) {
   return <>{children}</>;
 }
 --- END OF FILE: src/components/ClientOnly.tsx ---
+
+--- START OF FILE: src/components/FtbImpactCard.tsx ---
+/**
+ * FTB Impact Card Component
+ *
+ * Displays targeted messaging about how Child Support affects
+ * Family Tax Benefit (FTB) payments. Shows different cards based
+ * on whether user is a receiver (payee) or payer.
+ *
+ * Designed to drive lawyer inquiry conversions for structuring advice.
+ */
+
+import React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import type { CalculationResults } from '../utils/calculator';
+import {
+    calculatePartAReduction,
+    checkPartBEligibility,
+    isCloseToPartBEligibility,
+} from '../utils/ftb-logic';
+import { shadowPresets } from '../utils/shadow-styles';
+
+// ============================================================================
+// Types
+// ============================================================================
+
+interface FtbImpactCardProps {
+    /** Calculation results with payment direction and amounts */
+    results: CalculationResults;
+    /** User's income (ATI) */
+    userIncome: number;
+    /** Number of children in assessment */
+    childCount: number;
+    /** Callback when CTA is pressed */
+    onCtaPress?: () => void;
+}
+
+// ============================================================================
+// Currency Formatter
+// ============================================================================
+
+const currencyFormatter = new Intl.NumberFormat('en-AU', {
+    style: 'currency',
+    currency: 'AUD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+});
+
+function formatCurrency(amount: number): string {
+    return currencyFormatter.format(amount);
+}
+
+// ============================================================================
+// Component
+// ============================================================================
+
+/**
+ * FTB Impact Card
+ *
+ * Shows context-aware messages about FTB impact:
+ * - Receivers: Warning about Part A reduction
+ * - Payers: Opportunity for Part B via deduction
+ * - Payers (near eligible): Educational info
+ */
+export function FtbImpactCard({
+    results,
+    userIncome,
+    childCount,
+    onCtaPress,
+}: FtbImpactCardProps): React.ReactElement | null {
+    const isReceiver = results.payer === 'Parent B'; // User is Parent A, receives from B
+    const isPayer = results.payer === 'Parent A'; // User is Parent A, pays to B
+    const childSupportAmount = results.finalPaymentAmount;
+
+    // Don't show card if no payment
+    if (results.payer === 'Neither' || childSupportAmount <= 0) {
+        return null;
+    }
+
+    // ========================================================================
+    // State A: User is Receiver (Payee) - Check Part A Reduction
+    // ========================================================================
+    if (isReceiver) {
+        const partAReduction = calculatePartAReduction(
+            childSupportAmount,
+            childCount,
+            userIncome
+        );
+
+        if (partAReduction > 0) {
+            return (
+                <View style={[styles.card, styles.warningCard]}>
+                    <Text style={styles.warningTitle}>
+                        ⚠️ Impact on Centrelink Payments
+                    </Text>
+                    <Text style={styles.bodyText}>
+                        Because you receive{' '}
+                        <Text style={styles.bold}>
+                            {formatCurrency(childSupportAmount)}
+                        </Text>{' '}
+                        in Child Support, your Family Tax Benefit Part A may be reduced by
+                        approx.{' '}
+                        <Text style={styles.bold}>{formatCurrency(partAReduction)}</Text>{' '}
+                        per year due to the Maintenance Income Test.
+                    </Text>
+                    <Text style={styles.ctaText}>
+                        A Binding Child Support Agreement can help structure this better.
+                        Speak to a lawyer.
+                    </Text>
+                    {onCtaPress && (
+                        <Pressable
+                            style={styles.ctaButton}
+                            onPress={onCtaPress}
+                            accessibilityRole="button"
+                            accessibilityLabel="Learn about structuring child support"
+                        >
+                            <Text style={styles.ctaButtonText}>
+                                Ask About FTB Structuring
+                            </Text>
+                        </Pressable>
+                    )}
+                </View>
+            );
+        }
+    }
+
+    // ========================================================================
+    // State B: User is Payer - Check Part B Eligibility
+    // ========================================================================
+    if (isPayer) {
+        const eligibility = checkPartBEligibility(childSupportAmount, userIncome);
+
+        // "Green Light" scenario - deduction makes them eligible
+        if (eligibility === 'ELIGIBLE_VIA_DEDUCTION') {
+            return (
+                <View style={[styles.card, styles.opportunityCard]}>
+                    <Text style={styles.opportunityTitle}>
+                        💡 Opportunity: Pay School Fees Instead of Cash?
+                    </Text>
+                    <Text style={styles.bodyText}>
+                        Because you are eligible for the FTB Part B tax break, you may be
+                        able to structure your Child Support to pay{' '}
+                        <Text style={styles.bold}>School Fees directly</Text> instead of
+                        cash transfers, while keeping your tax advantage.
+                    </Text>
+                    {onCtaPress && (
+                        <Pressable
+                            style={styles.opportunityButton}
+                            onPress={onCtaPress}
+                            accessibilityRole="button"
+                            accessibilityLabel="Ask a lawyer about school fees substitution"
+                        >
+                            <Text style={styles.opportunityButtonText}>
+                                Ask a Lawyer about a 'School Fees Substitution' Agreement
+                            </Text>
+                        </Pressable>
+                    )}
+                </View>
+            );
+        }
+
+        // "Close to eligible" scenario - educational message
+        if (
+            eligibility === 'INELIGIBLE' &&
+            isCloseToPartBEligibility(userIncome, childSupportAmount)
+        ) {
+            return (
+                <View style={[styles.card, styles.infoCard]}>
+                    <Text style={styles.infoTitle}>💼 Tax Tip</Text>
+                    <Text style={styles.bodyText}>
+                        Did you know Child Support paid is tax-deductible for the FTB income
+                        test? It reduces your assessable income, which can help you qualify
+                        for benefits.
+                    </Text>
+                </View>
+            );
+        }
+    }
+
+    // No card to show
+    return null;
+}
+
+// ============================================================================
+// Styles
+// ============================================================================
+
+const styles = StyleSheet.create({
+    card: {
+        borderRadius: 12,
+        padding: 16,
+        marginTop: 16,
+        ...shadowPresets.card,
+    },
+
+    // Warning Card (Amber/Orange) - Receiver Part A
+    warningCard: {
+        backgroundColor: '#fef3c7', // amber-100
+        borderWidth: 1,
+        borderColor: '#f59e0b', // amber-500
+    },
+    warningTitle: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#92400e', // amber-800
+        marginBottom: 8,
+    },
+
+    // Opportunity Card (Teal/Blue) - Payer Part B
+    opportunityCard: {
+        backgroundColor: '#e0f2f1', // teal-50
+        borderWidth: 1,
+        borderColor: '#14b8a6', // teal-500
+    },
+    opportunityTitle: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#0f766e', // teal-700
+        marginBottom: 8,
+    },
+    opportunityButton: {
+        backgroundColor: '#0d9488', // teal-600
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        marginTop: 12,
+        alignItems: 'center',
+    },
+    opportunityButtonText: {
+        color: '#ffffff',
+        fontSize: 14,
+        fontWeight: '600',
+        textAlign: 'center',
+    },
+
+    // Info Card (Gray/Blue) - Close to eligible
+    infoCard: {
+        backgroundColor: '#f1f5f9', // slate-100
+        borderWidth: 1,
+        borderColor: '#94a3b8', // slate-400
+    },
+    infoTitle: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#475569', // slate-600
+        marginBottom: 8,
+    },
+
+    // Shared styles
+    bodyText: {
+        fontSize: 14,
+        lineHeight: 20,
+        color: '#374151', // gray-700
+    },
+    bold: {
+        fontWeight: '700',
+    },
+    ctaText: {
+        fontSize: 13,
+        fontStyle: 'italic',
+        color: '#92400e', // amber-800
+        marginTop: 10,
+    },
+    ctaButton: {
+        backgroundColor: '#f59e0b', // amber-500
+        paddingVertical: 10,
+        paddingHorizontal: 14,
+        borderRadius: 8,
+        marginTop: 12,
+        alignItems: 'center',
+    },
+    ctaButtonText: {
+        color: '#ffffff',
+        fontSize: 14,
+        fontWeight: '600',
+    },
+});
+--- END OF FILE: src/components/FtbImpactCard.tsx ---
 
 --- START OF FILE: src/components/HelpTooltip.tsx ---
 import React, { useState } from 'react';
@@ -22481,64 +22975,40 @@ import React, { useState } from 'react';
 import {
   Pressable,
   StyleSheet,
-  Switch,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import type { NonParentCarerInfo } from '../utils/calculator';
-import {
-  isWeb,
-  useResponsive,
-  webClickableStyles,
-  webInputStyles,
-} from '../utils/responsive';
+import { isWeb, webClickableStyles } from '../utils/responsive';
 import { HelpTooltip } from './HelpTooltip';
-
+import { BrandSwitch } from './ui/BrandSwitch';
 // ============================================================================
-// NonParentCarerSection - Toggle and care percentage input for Formula 4
+// NonParentCarerSection - Toggle for Formula 4 (NPC eligibility derived from
+// per-child care amounts in ChildRow)
 // ============================================================================
 
 export interface NonParentCarerSectionProps {
   nonParentCarer: NonParentCarerInfo;
   onNonParentCarerChange: (info: NonParentCarerInfo) => void;
-  error?: string;
 }
 
 export function NonParentCarerSection({
   nonParentCarer,
   onNonParentCarerChange,
-  error,
 }: NonParentCarerSectionProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const { isMobile } = useResponsive();
 
   const handleToggle = (enabled: boolean) => {
-    onNonParentCarerChange({
-      ...nonParentCarer,
-      enabled,
-      // Reset care percentage when disabling
-      carePercentage: enabled ? nonParentCarer.carePercentage || 35 : 0,
-    });
-  };
-
-  const handleCarePercentageChange = (text: string) => {
-    const value = parseInt(text.replace(/[^0-9]/g, '')) || 0;
-    onNonParentCarerChange({
-      ...nonParentCarer,
-      carePercentage: Math.min(100, value),
-    });
+    onNonParentCarerChange({ enabled });
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
         <View style={styles.toggleRow}>
-          <Switch
+          <BrandSwitch
             value={nonParentCarer.enabled}
             onValueChange={handleToggle}
-            trackColor={{ false: '#e2e8f0', true: '#93c5fd' }}
-            thumbColor={nonParentCarer.enabled ? '#2563EB' : '#94a3b8'}
             accessibilityLabel="Enable non-parent carer"
             accessibilityHint="Toggle if a non-parent such as a grandparent has care of the child"
           />
@@ -22557,13 +23027,13 @@ export function NonParentCarerSection({
                 isHovered && styles.labelHovered,
               ]}
             >
-              Non-parent carer
+              Non-parent carer (NPC)
             </Text>
             <Text style={styles.sublabel}>(e.g., grandparent)</Text>
           </Pressable>
         </View>
         <HelpTooltip
-          what="A non-parent carer (like a grandparent) who has at least 35% care of the child. Their income is not included in the calculation, but both parents may owe child support to them based on their care percentage."
+          what="A non-parent carer (like a grandparent) can receive child support payments. Enter their care nights for each child above. To be eligible, they must have at least 35% care (128 nights/year) of at least one child."
           why=""
           hideWhatLabel
           iconColor="#60a5fa"
@@ -22571,42 +23041,6 @@ export function NonParentCarerSection({
           iconBackgroundColor="#eff6ff"
         />
       </View>
-
-      {nonParentCarer.enabled && (
-        <View
-          style={[
-            styles.careInputContainer,
-            isMobile && styles.careInputContainerMobile,
-          ]}
-        >
-          <View style={styles.careInputRow}>
-            <Text style={styles.careLabel}>Care percentage:</Text>
-            <View style={styles.inputWrapper}>
-              <TextInput
-                style={[
-                  styles.careInput,
-                  webInputStyles,
-                  error && styles.careInputError,
-                ]}
-                value={nonParentCarer.carePercentage.toString()}
-                onChangeText={handleCarePercentageChange}
-                keyboardType="numeric"
-                placeholder="35"
-                placeholderTextColor="#94a3b8"
-                accessibilityLabel="Non-parent carer care percentage"
-                accessibilityHint="Percentage of care the non-parent carer has. Must be at least 35 percent"
-              />
-              <Text style={styles.percentSymbol}>%</Text>
-            </View>
-          </View>
-          {error && <Text style={styles.errorText}>{error}</Text>}
-          {!error && nonParentCarer.carePercentage < 35 && (
-            <Text style={styles.warningText}>
-              Non-parent carer must have at least 35% care
-            </Text>
-          )}
-        </View>
-      )}
     </View>
   );
 }
@@ -22646,71 +23080,14 @@ const styles = StyleSheet.create({
     color: '#94a3b8',
     fontWeight: '400',
   },
-  careInputContainer: {
-    marginTop: 12,
-    marginLeft: 50, // Align with toggle content
-    paddingLeft: 12,
-    borderLeftWidth: 2,
-    borderLeftColor: '#e2e8f0',
-  },
-  careInputContainerMobile: {
-    marginLeft: 0,
-    paddingLeft: 0,
-    borderLeftWidth: 0,
-    marginTop: 16,
-  },
-  careInputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  careLabel: {
-    fontSize: 13,
-    color: '#475569',
-    fontWeight: '500',
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  careInput: {
-    width: 60,
-    paddingHorizontal: 8,
-    paddingVertical: 8,
-    fontSize: 14,
-    textAlign: 'center',
-    color: '#1a202c',
-    borderWidth: 1.5,
-    borderColor: '#e2e8f0',
-    borderRadius: 6,
-    backgroundColor: '#ffffff',
-  },
-  careInputError: {
-    borderColor: '#ef4444',
-  },
-  percentSymbol: {
-    fontSize: 14,
-    color: '#64748b',
-    marginLeft: 4,
-    fontWeight: '500',
-  },
-  errorText: {
-    fontSize: 12,
-    color: '#ef4444',
-    marginTop: 6,
-  },
-  warningText: {
-    fontSize: 12,
-    color: '#f59e0b',
-    marginTop: 6,
-  },
 });
 --- END OF FILE: src/components/NonParentCarerSection.tsx ---
 
 --- START OF FILE: src/components/OtherCasesPopover.tsx ---
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { OtherCaseChild } from '../utils/calculator';
+import { deriveAgeRange } from '../utils/calculator';
 import {
   isWeb,
   useResponsive,
@@ -22733,6 +23110,7 @@ export interface OtherCasesPopoverProps {
 
 /**
  * Helper to convert count-based input to OtherCaseChild array
+ * Uses representative ages: 6 for under 13, 14 for 13+
  */
 function createOtherChildren(
   u13Count: number,
@@ -22742,28 +23120,31 @@ function createOtherChildren(
   for (let i = 0; i < u13Count; i++) {
     children.push({
       id: `other-u13-${i}-${Date.now()}`,
-      age: 'Under 13',
+      age: 6, // Representative age for "Under 13"
     });
   }
   for (let i = 0; i < plus13Count; i++) {
     children.push({
       id: `other-13plus-${i}-${Date.now()}`,
-      age: '13+',
+      age: 14, // Representative age for "13+"
     });
   }
   return children;
 }
 
 /**
- * Helper to count children by age from OtherCaseChild array
+ * Helper to count children by age range from OtherCaseChild array
  */
 function countByAge(children: OtherCaseChild[]): {
   u13: number;
   plus13: number;
 } {
   return {
-    u13: children.filter((c) => c.age === 'Under 13').length,
-    plus13: children.filter((c) => c.age === '13+').length,
+    u13: children.filter((c) => deriveAgeRange(c.age) === 'Under 13').length,
+    plus13: children.filter((c) => {
+      const range = deriveAgeRange(c.age);
+      return range === '13+' || range === '18+';
+    }).length,
   };
 }
 
@@ -22777,8 +23158,6 @@ export function OtherCasesPopover({
   const [isHovered, setIsHovered] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { isMobile } = useResponsive();
-  const drawerRef = useRef<View>(null);
-  const triggerRef = useRef<View>(null);
 
   const countsA = countByAge(multiCaseA.otherChildren);
   const countsB = countByAge(multiCaseB.otherChildren);
@@ -22807,27 +23186,6 @@ export function OtherCasesPopover({
     onChange(createOtherChildren(newCounts.u13, newCounts.plus13));
   };
 
-  useEffect(() => {
-    if (isWeb && isOpen) {
-      const handleClickOutside = (e: MouseEvent) => {
-        const target = e.target as Node;
-        const drawerNode = drawerRef.current as unknown as HTMLElement | null;
-        const triggerNode = triggerRef.current as unknown as HTMLElement | null;
-
-        if (drawerNode && drawerNode.contains(target)) {
-          return;
-        }
-        if (triggerNode && triggerNode.contains(target)) {
-          return;
-        }
-
-        setIsOpen(false);
-      };
-      document.addEventListener('mousedown', handleClickOutside);
-      return () =>
-        document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [isOpen]);
 
   return (
     <View
@@ -22844,7 +23202,6 @@ export function OtherCasesPopover({
       ]}
     >
       <View
-        ref={triggerRef}
         style={{
           flexShrink: 0,
           flexDirection: 'row',
@@ -22911,26 +23268,25 @@ export function OtherCasesPopover({
       </View>
 
       <View
-        ref={drawerRef}
         style={[
           popoverStyles.drawerContent,
           isOpen && popoverStyles.drawerContentOpen,
           isWeb &&
-            ({
-              width: isOpen
-                ? isMobile
-                  ? '100%'
-                  : compact
-                    ? '400px'
-                    : '450px'
-                : '0px',
-              height: isOpen ? 'auto' : '0px',
-              opacity: isOpen ? 1 : 0,
-              overflow: 'hidden' as never,
-              transition:
-                'width 0.3s ease-out, opacity 0.3s ease-out, height 0.3s' as never,
-              marginTop: isMobile && isOpen ? 8 : 0,
-            } as never),
+          ({
+            width: isOpen
+              ? isMobile
+                ? '100%'
+                : compact
+                  ? '400px'
+                  : '450px'
+              : '0px',
+            height: isOpen ? 'auto' : '0px',
+            opacity: isOpen ? 1 : 0,
+            overflow: 'hidden' as never,
+            transition:
+              'width 0.3s ease-out, opacity 0.3s ease-out, height 0.3s' as never,
+            marginTop: isMobile && isOpen ? 8 : 0,
+          } as never),
         ]}
       >
         <View
@@ -23088,7 +23444,6 @@ const popoverStyles = StyleSheet.create({
   },
   drawerContent: {
     overflow: 'hidden',
-    minHeight: 40,
   },
   drawerContentOpen: {},
   drawerInner: {
@@ -23458,7 +23813,7 @@ const styles = StyleSheet.create({
 --- END OF FILE: src/components/PrivacyPolicyLink.tsx ---
 
 --- START OF FILE: src/components/RelevantDependentsPopover.tsx ---
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import {
   isWeb,
@@ -23490,8 +23845,6 @@ export function RelevantDependentsPopover({
   const [isHovered, setIsHovered] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { isMobile } = useResponsive();
-  const drawerRef = useRef<View>(null);
-  const triggerRef = useRef<View>(null);
 
   const totalDeps = relDepA.u13 + relDepA.plus13 + relDepB.u13 + relDepB.plus13;
   const hasValues = totalDeps > 0;
@@ -23500,32 +23853,6 @@ export function RelevantDependentsPopover({
     setIsOpen(!isOpen);
   };
 
-  useEffect(() => {
-    if (isWeb && isOpen) {
-      const handleClickOutside = (e: MouseEvent) => {
-        const target = e.target as Node;
-
-        // Get the actual DOM nodes from the refs
-        const drawerNode = drawerRef.current as unknown as HTMLElement | null;
-        const triggerNode = triggerRef.current as unknown as HTMLElement | null;
-
-        // Check if click is inside drawer content
-        if (drawerNode && drawerNode.contains(target)) {
-          return;
-        }
-
-        // Check if click is on the trigger button
-        if (triggerNode && triggerNode.contains(target)) {
-          return;
-        }
-
-        setIsOpen(false);
-      };
-      document.addEventListener('mousedown', handleClickOutside);
-      return () =>
-        document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [isOpen]);
 
   // FIXED Web/Mobile Browser Drawer
   return (
@@ -23543,7 +23870,6 @@ export function RelevantDependentsPopover({
       ]}
     >
       <View
-        ref={triggerRef}
         style={{
           flexShrink: 0,
           flexDirection: 'row',
@@ -23610,27 +23936,26 @@ export function RelevantDependentsPopover({
       </View>
 
       <View
-        ref={drawerRef}
         style={[
           popoverStyles.drawerContent,
           isOpen && popoverStyles.drawerContentOpen,
           isWeb &&
-            ({
-              // Dynamic width: Full width on mobile, fixed on desktop
-              width: isOpen
-                ? isMobile
-                  ? '100%'
-                  : compact
+          ({
+            // Dynamic width: Full width on mobile, fixed on desktop
+            width: isOpen
+              ? isMobile
+                ? '100%'
+                : compact
                   ? '400px'
                   : '450px'
-                : '0px',
-              height: isOpen ? 'auto' : '0px', // Allow vertical expansion
-              opacity: isOpen ? 1 : 0,
-              overflow: 'hidden' as any,
-              transition:
-                'width 0.3s ease-out, opacity 0.3s ease-out, height 0.3s' as any,
-              marginTop: isMobile && isOpen ? 8 : 0, // Gap when stacked
-            } as any),
+              : '0px',
+            height: isOpen ? 'auto' : '0px', // Allow vertical expansion
+            opacity: isOpen ? 1 : 0,
+            overflow: 'hidden' as any,
+            transition:
+              'width 0.3s ease-out, opacity 0.3s ease-out, height 0.3s' as any,
+            marginTop: isMobile && isOpen ? 8 : 0, // Gap when stacked
+          } as any),
         ]}
       >
         <View
@@ -23809,7 +24134,6 @@ const popoverStyles = StyleSheet.create({
   // Inline drawer content - expands to the right
   drawerContent: {
     overflow: 'hidden',
-    minHeight: 40,
   },
   drawerContentOpen: {
     // Width and opacity are set dynamically via inline styles with transition
@@ -24781,7 +25105,7 @@ interface CardConfig {
 const CARD_CONFIGS: Record<ConversionCardVariant, CardConfig> = {
   low_assessment: {
     variant: 'low_assessment',
-    backgroundColor: '#fef3c7', // Amber-100 (warning/yellow theme)
+    backgroundColor: '#eff6ff', // Blue-50 (Brand Blue)
     headline: 'Is this amount too low?',
     body: "A Fixed or Minimum Rate often means the other parent's real income isn't being assessed. You may be able to force a 'Change of Assessment'.",
     buttonText: 'Check Hidden Income Eligibility',
@@ -24790,7 +25114,7 @@ const CARD_CONFIGS: Record<ConversionCardVariant, CardConfig> = {
   },
   payer_reversal: {
     variant: 'payer_reversal',
-    backgroundColor: '#fef3c7', // Amber-100 (warning/yellow theme)
+    backgroundColor: '#eff6ff', // Blue-50 (Brand Blue)
     headline: 'Should the other parent be the payer?',
     body: "Both you and the other parent have triggered fixed rate limits for different children. If the other parent has unreported income, they may owe you more than this assessment shows.",
     buttonText: 'Check Hidden Income Eligibility',
@@ -24799,7 +25123,7 @@ const CARD_CONFIGS: Record<ConversionCardVariant, CardConfig> = {
   },
   dispute_risk: {
     variant: 'dispute_risk',
-    backgroundColor: '#fff8e1', // Light amber tint (subtle alert background)
+    backgroundColor: '#eff6ff', // Blue-50 (Brand Blue)
     headline: 'Protect Your Care Percentage',
     body: 'You are in a high-risk zone for care disputes (35-65%). A small shift in nights can drastically change this assessment. Secure your arrangement now.',
     buttonText: 'Secure My Arrangement',
@@ -24817,7 +25141,7 @@ const CARD_CONFIGS: Record<ConversionCardVariant, CardConfig> = {
   },
   binding_agreement: {
     variant: 'binding_agreement',
-    backgroundColor: '#e2e8f0', // Platinum/Silver grey (slate-200) - solid but light
+    backgroundColor: '#eff6ff', // Blue-50 (Brand Blue)
     headline: 'Want Certainty?',
     body: 'Lock in this amount with a Binding Child Support Agreement to prevent future surprises or changes by the other parent.',
     buttonText: 'Discuss Agreements',
@@ -24978,15 +25302,6 @@ export function SmartConversionFooter({
     onBeforeNavigate,
   ]);
 
-  // Determine if this is a low assessment variant (low_assessment or payer_reversal - both use amber styling)
-  const isLowAssessment = cardVariant === 'low_assessment' || cardVariant === 'payer_reversal';
-  // Determine if this is the subtle alert variant (dispute_risk)
-  const isSubtleAlert = cardVariant === 'dispute_risk';
-  // Determine if this is the professional document variant (binding_agreement)
-  const isProfessionalDoc = cardVariant === 'binding_agreement';
-  // Determine if this is the high value variant (high_value)
-  const isHighValue = cardVariant === 'high_value';
-
   return (
     <View style={styles.container}>
       <Pressable
@@ -24994,10 +25309,6 @@ export function SmartConversionFooter({
         style={({ pressed }) => [
           styles.card,
           { backgroundColor: cardConfig.backgroundColor },
-          isLowAssessment && styles.lowAssessmentBorder,
-          isSubtleAlert && styles.subtleAlertBorder,
-          isProfessionalDoc && styles.professionalDocBorder,
-          isHighValue && styles.highValueBorder,
           pressed && styles.cardPressed,
         ]}
         disabled={isNavigating}
@@ -25009,61 +25320,23 @@ export function SmartConversionFooter({
           <View style={styles.textContainer}>
             {/* @ts-ignore - Web-only ARIA attributes */}
             <Text
-              style={[
-                styles.headline,
-                isLowAssessment && styles.headlineLowAssessment,
-                isSubtleAlert && styles.headlineDark,
-                isProfessionalDoc && styles.headlineProfessional,
-                isHighValue && styles.headlineHighValue,
-              ]}
+              style={styles.headline}
               accessibilityRole="header"
               aria-level="2"
             >
               {cardConfig.headline}
             </Text>
-            <Text
-              style={[
-                styles.body,
-                isLowAssessment && styles.bodyLowAssessment,
-                isSubtleAlert && styles.bodyDark,
-                isProfessionalDoc && styles.bodyProfessional,
-                isHighValue && styles.bodyHighValue,
-              ]}
-            >
+            <Text style={styles.body}>
               {cardConfig.body}
             </Text>
           </View>
         </View>
         <View style={styles.buttonContainer}>
-          <View
-            style={[
-              styles.button,
-              isLowAssessment && styles.buttonLowAssessment,
-              isSubtleAlert && styles.buttonSolid,
-              isProfessionalDoc && styles.buttonProfessional,
-              isHighValue && styles.buttonHighValue,
-            ]}
-          >
-            <Text
-              style={[
-                styles.buttonText,
-                isLowAssessment && styles.buttonTextLowAssessment,
-                isProfessionalDoc && styles.buttonTextProfessional,
-                isSubtleAlert && styles.buttonTextSolid,
-                isHighValue && styles.buttonTextHighValue,
-              ]}
-            >
+          <View style={styles.button}>
+            <Text style={styles.buttonText}>
               {cardConfig.buttonText}
             </Text>
-            <Text
-              style={[
-                styles.buttonArrow,
-                isLowAssessment && styles.buttonTextLowAssessment,
-                isSubtleAlert && styles.buttonTextSolid,
-                isProfessionalDoc && styles.buttonTextProfessional,
-                isHighValue && styles.buttonTextHighValue,
-              ]}
-            >
+            <Text style={styles.buttonArrow}>
               →
             </Text>
           </View>
@@ -25081,6 +25354,8 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
     padding: 20,
+    borderWidth: 1,
+    borderColor: '#3b82f6', // Blue-500 (Brand Blue border)
     ...shadowPresets.medium,
   },
   cardPressed: {
@@ -25098,21 +25373,20 @@ const styles = StyleSheet.create({
   headline: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#ffffff',
+    color: '#1e3a8a', // Blue-900 (Brand Blue headline)
     marginBottom: 8,
     lineHeight: 24,
   },
   body: {
     fontSize: 14,
-    color: '#ffffff',
-    opacity: 0.95,
+    color: '#374151', // Gray-700 (readable body text)
     lineHeight: 20,
   },
   buttonContainer: {
     alignItems: 'stretch',
   },
   button: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: '#2563eb', // Blue-600 (Brand Blue button)
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -25120,7 +25394,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: '#2563eb', // Blue-600
   },
   buttonText: {
     fontSize: 16,
@@ -25132,81 +25406,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#ffffff',
     fontWeight: '600',
-  },
-  // Low Assessment Variant Styles (for low_assessment)
-  lowAssessmentBorder: {
-    borderWidth: 1,
-    borderColor: '#f59e0b', // Amber-500 border
-  },
-  headlineLowAssessment: {
-    color: '#92400e', // Amber-800 for headline
-  },
-  bodyLowAssessment: {
-    color: '#78350f', // Amber-900 for body text
-    opacity: 1,
-  },
-  buttonLowAssessment: {
-    backgroundColor: '#f59e0b', // Amber-500 solid button
-    borderColor: '#f59e0b',
-  },
-  buttonTextLowAssessment: {
-    color: '#ffffff', // White text on amber button
-  },
-  // Subtle Alert Variant Styles (for dispute_risk)
-  subtleAlertBorder: {
-    borderWidth: 1,
-    borderColor: '#f59e0b', // Brand color border
-  },
-  headlineDark: {
-    color: '#111827', // Gray-900 for high readability
-  },
-  bodyDark: {
-    color: '#374151', // Gray-700 for body text
-    opacity: 1, // Remove the white opacity
-  },
-  buttonSolid: {
-    backgroundColor: '#f59e0b', // Solid brand color button
-    borderColor: '#f59e0b',
-  },
-  buttonTextSolid: {
-    color: '#ffffff', // White text on solid button
-  },
-  // Platinum/Silver Variant Styles (for binding_agreement)
-  professionalDocBorder: {
-    borderWidth: 0, // No border needed - grey background provides contrast
-  },
-  headlineProfessional: {
-    color: '#0f172a', // Dark slate (slate-900) for strong headline
-  },
-  bodyProfessional: {
-    color: '#334155', // Slate-700 for readable body text
-    opacity: 1,
-  },
-  buttonProfessional: {
-    backgroundColor: '#334155', // Dark slate/charcoal (slate-700) for high contrast
-    borderColor: '#334155',
-  },
-  buttonTextProfessional: {
-    color: '#ffffff', // White text on dark button
-  },
-  // High Value Variant Styles (for high_value)
-  highValueBorder: {
-    borderWidth: 1,
-    borderColor: '#3b82f6', // Solid brand blue border (blue-500)
-  },
-  headlineHighValue: {
-    color: '#1e3a8a', // blue-900 (matches step breakdown card headings)
-  },
-  bodyHighValue: {
-    color: '#374151', // High readability body text (gray-700)
-    opacity: 1, // Remove the white opacity
-  },
-  buttonHighValue: {
-    backgroundColor: '#2563eb', // Solid brand blue button (blue-600)
-    borderColor: '#2563eb',
-  },
-  buttonTextHighValue: {
-    color: '#ffffff', // White text on blue button
   },
 });
 --- END OF FILE: src/components/SmartConversionFooter.tsx ---
@@ -26000,6 +26199,8 @@ import {
     detectLowAssessmentTrigger,
     isFarLimitReached,
 } from '../../utils/zero-payment-detection';
+import { AdultChildMaintenanceCard } from '../results/AdultChildMaintenanceCard';
+import { Turning18Banner } from '../results/Turning18Banner';
 
 export interface AnnualRateBreakdownProps {
     results: CalculationResults;
@@ -26035,8 +26236,25 @@ export function AnnualRateBreakdown({
         // Use comprehensive detection for low assessment warning
         const { isLowAssessment } = detectLowAssessmentTrigger(results, formState);
 
+        // Check for adult children (18+) that need special cards
+        const adultChildren = results.childResults.filter((c) => c.isAdultChild);
+        // Check for children turning 18 (age 17) that need banners
+        const childrenTurning18 = results.childResults.filter((c) => c.isTurning18);
+
         return (
             <View style={styles.perChildGapBreakdown}>
+                {/* Show Adult Child Maintenance cards for 18+ children */}
+                {adultChildren.map((child, idx) => {
+                    const originalIndex = results.childResults.findIndex((c) => c === child);
+                    return (
+                        <AdultChildMaintenanceCard
+                            key={`adult-${originalIndex}`}
+                            childIndex={originalIndex}
+                            childAge={child.age}
+                        />
+                    );
+                })}
+
                 <View style={styles.perChildGapRow}>
                     <Text style={styles.perChildGapLabel}>
                         All children -{' '}
@@ -26050,6 +26268,15 @@ export function AnnualRateBreakdown({
                         {formatCurrency(totalMarAmount)}
                     </Text>
                 </View>
+
+                {/* Show Turning 18 banners for 17-year-olds */}
+                {childrenTurning18.map((child, idx) => {
+                    const originalIndex = results.childResults.findIndex((c) => c === child);
+                    return (
+                        <Turning18Banner key={`turn18-${originalIndex}`} childIndex={originalIndex} />
+                    );
+                })}
+
                 {isLowAssessment && (
                     <View style={styles.warningAlert}>
                         <Text style={styles.warningTitle}>
@@ -26085,8 +26312,25 @@ export function AnnualRateBreakdown({
         // Check if low assessment trigger applies (edge case: MAR/FAR negated by care)
         const { isLowAssessment } = detectLowAssessmentTrigger(results, formState);
 
+        // Check for adult children (18+) that need special cards
+        const adultChildren = results.childResults.filter((c) => c.isAdultChild);
+        // Check for children turning 18 (age 17) that need banners
+        const childrenTurning18 = results.childResults.filter((c) => c.isTurning18);
+
         return (
             <View style={styles.perChildGapBreakdown}>
+                {/* Show Adult Child Maintenance cards for 18+ children */}
+                {adultChildren.map((child, idx) => {
+                    const originalIndex = results.childResults.findIndex((c) => c === child);
+                    return (
+                        <AdultChildMaintenanceCard
+                            key={`adult-${originalIndex}`}
+                            childIndex={originalIndex}
+                            childAge={child.age}
+                        />
+                    );
+                })}
+
                 <View style={styles.perChildGapRow}>
                     <Text style={styles.perChildGapLabel}>
                         All children -{' '}
@@ -26096,6 +26340,15 @@ export function AnnualRateBreakdown({
                         $0
                     </Text>
                 </View>
+
+                {/* Show Turning 18 banners for 17-year-olds */}
+                {childrenTurning18.map((child, idx) => {
+                    const originalIndex = results.childResults.findIndex((c) => c === child);
+                    return (
+                        <Turning18Banner key={`turn18-${originalIndex}`} childIndex={originalIndex} />
+                    );
+                })}
+
                 {isLowAssessment && (
                     <View style={styles.warningAlert}>
                         <Text style={styles.warningTitle}>
@@ -26118,6 +26371,17 @@ export function AnnualRateBreakdown({
     return (
         <View style={styles.perChildGapBreakdown}>
             {results.childResults.map((child, index) => {
+                // Handle adult children (18+) - show information card instead of liability
+                if (child.isAdultChild) {
+                    return (
+                        <AdultChildMaintenanceCard
+                            key={index}
+                            childIndex={index}
+                            childAge={child.age}
+                        />
+                    );
+                }
+
                 // Determine which parent is paying for this child based on final liabilities
                 // When FAR/MAR is applied, the liability will be non-zero for the paying parent
                 const parentAOwesForChild = child.finalLiabilityA > 0;
@@ -26132,14 +26396,17 @@ export function AnnualRateBreakdown({
                         : 'No payment required';
 
                     return (
-                        <View key={index} style={styles.perChildGapRow}>
-                            <Text style={styles.perChildGapLabel}>
-                                Child {index + 1} -{' '}
-                                <Text style={{ color: theme.colors.textMuted }}>{displayText}</Text>
-                            </Text>
-                            <Text style={[styles.perChildGapValue, { color: theme.colors.textMuted }]}>
-                                $0
-                            </Text>
+                        <View key={index}>
+                            <View style={styles.perChildGapRow}>
+                                <Text style={styles.perChildGapLabel}>
+                                    Child {index + 1} -{' '}
+                                    <Text style={{ color: theme.colors.textMuted }}>{displayText}</Text>
+                                </Text>
+                                <Text style={[styles.perChildGapValue, { color: theme.colors.textMuted }]}>
+                                    $0
+                                </Text>
+                            </View>
+                            {child.isTurning18 && <Turning18Banner childIndex={index} />}
                         </View>
                     );
                 }
@@ -26200,6 +26467,7 @@ export function AnnualRateBreakdown({
                                 </Text>
                             </View>
                         )}
+                        {child.isTurning18 && <Turning18Banner childIndex={index} />}
                     </View>
                 );
             })}
@@ -26329,40 +26597,40 @@ const styles = StyleSheet.create({
     },
     npcPaymentDivider: {
         height: 1,
-        backgroundColor: '#c4b5fd', // Violet-300
+        backgroundColor: '#93c5fd', // Blue-300
         marginTop: 12,
         marginBottom: 8,
     },
     npcPaymentSection: {
-        backgroundColor: '#f5f3ff', // Violet-50
+        backgroundColor: '#eff6ff', // Blue-50
         borderRadius: 6,
         padding: 10,
         borderWidth: 1,
-        borderColor: '#ddd6fe', // Violet-200
+        borderColor: '#bfdbfe', // Blue-200
     },
     npcPaymentTitle: {
         fontSize: 12,
         fontWeight: '700',
-        color: '#5b21b6', // Violet-800
+        color: '#1e40af', // Blue-800
         textTransform: 'uppercase',
         letterSpacing: 0.5,
         marginBottom: 4,
     },
     npcPaymentExplanation: {
         fontSize: 11,
-        color: '#6d28d9', // Violet-700
+        color: '#1d4ed8', // Blue-700
         marginBottom: 8,
         lineHeight: 16,
     },
     npcPaymentLabel: {
         fontSize: 13,
-        color: '#5b21b6', // Violet-800
+        color: '#1e40af', // Blue-800
         fontWeight: '500',
     },
     npcPaymentValue: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#5b21b6', // Violet-800
+        color: '#1e40af', // Blue-800
     },
 });
 
@@ -27235,6 +27503,132 @@ const styles = StyleSheet.create({
 });
 --- END OF FILE: src/components/calculator/CalculatorFAQ.tsx ---
 
+--- START OF FILE: src/components/results/AdultChildMaintenanceCard.tsx ---
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { theme } from '../../theme';
+
+interface AdultChildMaintenanceCardProps {
+    childIndex: number;
+    childAge: number;
+}
+
+/**
+ * Information card displayed for children aged 18+ who are excluded from
+ * standard child support assessments. Provides information about Adult Child
+ * Maintenance via court order and a CTA to contact a lawyer.
+ */
+export function AdultChildMaintenanceCard({
+    childIndex,
+    childAge,
+}: AdultChildMaintenanceCardProps) {
+    const router = useRouter();
+
+    const handleContactLawyer = () => {
+        router.push({
+            pathname: '/lawyer-inquiry',
+            params: {
+                trigger: 'adult_child_maintenance',
+                complexityTriggers: JSON.stringify(['adult_child_maintenance']),
+            },
+        });
+    };
+
+    return (
+        <View style={styles.container}>
+            <View style={styles.headerRow}>
+                <Text style={styles.childLabel}>Child {childIndex + 1}</Text>
+                <View style={styles.ageBadge}>
+                    <Text style={styles.ageBadgeText}>Age {childAge}</Text>
+                </View>
+            </View>
+
+            <View style={styles.infoBox}>
+                <Text style={styles.infoTitle}>
+                    ⚠️ Adult Child (Age 18+)
+                </Text>
+                <Text style={styles.infoText}>
+                    Services Australia cannot assess children over 18. You may be eligible
+                    for Adult Child Maintenance via a Court Order if the child is in
+                    tertiary education or has a disability.
+                </Text>
+
+                <Pressable
+                    style={styles.ctaButton}
+                    onPress={handleContactLawyer}
+                    accessibilityRole="button"
+                    accessibilityLabel="Speak to a lawyer about adult child maintenance"
+                >
+                    <Text style={styles.ctaButtonText}>
+                        Speak to a Lawyer (Adult Maintenance)
+                    </Text>
+                </Pressable>
+            </View>
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        marginVertical: 4,
+    },
+    headerRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 8,
+    },
+    childLabel: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: theme.colors.textSecondary,
+    },
+    ageBadge: {
+        backgroundColor: '#e0e7ff', // Indigo-100
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        borderRadius: 12,
+    },
+    ageBadgeText: {
+        fontSize: 11,
+        fontWeight: '600',
+        color: '#4338ca', // Indigo-700
+    },
+    infoBox: {
+        backgroundColor: '#dbeafe', // Blue-100
+        borderWidth: 1,
+        borderColor: '#3b82f6', // Blue-500
+        borderRadius: 8,
+        padding: 12,
+    },
+    infoTitle: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#1e40af', // Blue-800
+        marginBottom: 8,
+    },
+    infoText: {
+        fontSize: 13,
+        color: '#1e3a8a', // Blue-900
+        lineHeight: 20,
+        marginBottom: 12,
+    },
+    ctaButton: {
+        backgroundColor: '#1e40af', // Blue-800
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        borderRadius: 6,
+        alignItems: 'center',
+    },
+    ctaButtonText: {
+        color: '#ffffff',
+        fontSize: 13,
+        fontWeight: '600',
+    },
+});
+--- END OF FILE: src/components/results/AdultChildMaintenanceCard.tsx ---
+
 --- START OF FILE: src/components/results/ResultsHero.tsx ---
 import React from 'react';
 import { Linking, Platform, StyleSheet, Text, View } from 'react-native';
@@ -27509,6 +27903,57 @@ const styles = StyleSheet.create({
   },
 });
 --- END OF FILE: src/components/results/ResultsHero.tsx ---
+
+--- START OF FILE: src/components/results/Turning18Banner.tsx ---
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+
+interface Turning18BannerProps {
+    childIndex: number;
+}
+
+/**
+ * Warning banner displayed for children aged 17, alerting users that
+ * child support generally stops at 18 and they should check eligibility
+ * for a School Year Extension.
+ */
+export function Turning18Banner({ childIndex }: Turning18BannerProps) {
+    return (
+        <View style={styles.banner}>
+            <Text style={styles.bannerText}>
+                <Text style={styles.bannerIcon}>⏰ </Text>
+                <Text style={styles.bannerLabel}>Turning 18 soon?</Text>
+                {' '}Child support generally stops at 18. Check your eligibility for a
+                'School Year Extension'.
+            </Text>
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    banner: {
+        backgroundColor: '#fef3c7', // Amber-100
+        borderWidth: 1,
+        borderColor: '#fbbf24', // Amber-400
+        borderRadius: 6,
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        marginTop: 6,
+    },
+    bannerIcon: {
+        fontSize: 12,
+    },
+    bannerLabel: {
+        fontWeight: '700',
+        color: '#92400e', // Amber-800
+    },
+    bannerText: {
+        fontSize: 12,
+        color: '#78350f', // Amber-900
+        lineHeight: 18,
+    },
+});
+--- END OF FILE: src/components/results/Turning18Banner.tsx ---
 
 --- START OF FILE: src/components/seo/NoIndex.tsx ---
 /**
@@ -28369,6 +28814,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AdditionalDetailsSection } from './components/AdditionalDetailsSection';
 import { ConsentSection } from './components/ConsentSection';
 import { EnrichmentView } from './components/EnrichmentView';
+import { FAQSection } from './components/FAQSection';
 import { FinancialSection } from './components/FinancialSection';
 import { FormHeader } from './components/FormHeader';
 import { PersonalInfoSection } from './components/PersonalInfoSection';
@@ -28415,11 +28861,11 @@ export default function LawyerInquiryScreen() {
   // Web container styles
   const webContainerStyle = isWeb
     ? {
-        maxWidth: MAX_FORM_WIDTH,
-        width: '100%' as const,
-        marginLeft: 'auto' as const,
-        marginRight: 'auto' as const,
-      }
+      maxWidth: MAX_FORM_WIDTH,
+      width: '100%' as const,
+      marginLeft: 'auto' as const,
+      marginRight: 'auto' as const,
+    }
     : {};
 
   // Render Success View
@@ -28538,6 +28984,19 @@ export default function LawyerInquiryScreen() {
             shouldShowCourtDate={form.shouldShowCourtDate}
             courtDate={form.courtDate}
             onCourtDateChange={form.handleCourtDateChange}
+            // PSI (Post-Separation Income) props
+            shouldShowPsiFields={form.shouldShowPsiFields}
+            separationDate={form.separationDate}
+            onSeparationDateChange={form.setSeparationDate}
+            cohabited6Months={form.cohabited6Months}
+            onCohabited6MonthsChange={form.setCohabited6Months}
+            showPsiWarning={form.showPsiWarning}
+            // International Jurisdiction props
+            shouldShowInternationalFields={form.shouldShowInternationalFields}
+            otherParentCountry={form.otherParentCountry}
+            onOtherParentCountryChange={form.setOtherParentCountry}
+            internationalWarning={form.internationalWarning}
+            // Common
             errors={form.errors}
             touched={form.touched}
             isSubmitting={form.isSubmitting}
@@ -28568,6 +29027,9 @@ export default function LawyerInquiryScreen() {
             buttonText={params.inquiryConfig.buttonText}
             onSubmit={form.handleSubmit}
           />
+
+          {/* Section 6: FAQ */}
+          <FAQSection />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -28740,14 +29202,14 @@ export function ConsentSection({
  * Includes optional Liability Estimator for Direct Enquiry users.
  */
 
+import { IncomeSupportModal } from '@/src/components/IncomeSupportModal';
 import {
     convertCareToPercentage,
     getChildCost,
     mapCareToCostPercent,
     type Child,
 } from '@/src/utils/child-support-calculations';
-import { SSA, MAX_PPS, MAR } from '@/src/utils/child-support-constants';
-import { IncomeSupportModal } from '@/src/components/IncomeSupportModal';
+import { MAR, MAX_PPS, SSA } from '@/src/utils/child-support-constants';
 import { isWeb } from '@/src/utils/responsive';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
@@ -28797,7 +29259,8 @@ export function EnrichmentView({
   // Per-child data for the liability estimator
   interface ChildData {
     id: number;
-    ageGroup: 'Under 13' | '13+';
+    /** Specific age of the child (0-25) */
+    age: number;
     nights: string; // String for TextInput compatibility
   }
   const [children, setChildren] = useState<ChildData[]>([]);
@@ -28816,7 +29279,7 @@ export function EnrichmentView({
       setChildren(
         Array.from({ length: childrenCount }, (_, i) => ({
           id: i + 1,
-          ageGroup: 'Under 13' as const,
+          age: 5, // Default to age 5 (Under 13)
           nights: '7', // Default to 7 nights (equal care)
         }))
       );
@@ -28869,7 +29332,7 @@ export function EnrichmentView({
       const carePercentB = 100 - carePercentA;
 
       return {
-        age: child.ageGroup,
+        age: child.age,
         careA: carePercentA,
         careB: carePercentB,
       };
@@ -28907,7 +29370,7 @@ export function EnrichmentView({
       const carePercentB = 100 - carePercentA;
 
       return {
-        age: child.ageGroup,
+        age: child.age,
         careA: carePercentA,
         careB: carePercentB,
       };
@@ -29344,45 +29807,24 @@ export function EnrichmentView({
                   <View key={child.id} style={estimatorStyles.childRow}>
                     <Text style={estimatorStyles.childLabel}>Child {child.id}</Text>
 
-                    {/* Age Toggle Buttons */}
+                    {/* Age Input */}
                     <View style={estimatorStyles.ageToggleRow}>
                       <Text style={estimatorStyles.ageToggleLabel}>Age:</Text>
-                      <View style={estimatorStyles.ageToggleButtons}>
-                        <Pressable
-                          style={[
-                            estimatorStyles.ageButton,
-                            child.ageGroup === 'Under 13' &&
-                              estimatorStyles.ageButtonActive,
-                          ]}
-                          onPress={() => updateChild(index, { ageGroup: 'Under 13' })}
-                        >
-                          <Text
-                            style={[
-                              estimatorStyles.ageButtonText,
-                              child.ageGroup === 'Under 13' &&
-                                estimatorStyles.ageButtonTextActive,
-                            ]}
-                          >
-                            Under 13
-                          </Text>
-                        </Pressable>
-                        <Pressable
-                          style={[
-                            estimatorStyles.ageButton,
-                            child.ageGroup === '13+' && estimatorStyles.ageButtonActive,
-                          ]}
-                          onPress={() => updateChild(index, { ageGroup: '13+' })}
-                        >
-                          <Text
-                            style={[
-                              estimatorStyles.ageButtonText,
-                              child.ageGroup === '13+' &&
-                                estimatorStyles.ageButtonTextActive,
-                            ]}
-                          >
-                            13+
-                          </Text>
-                        </Pressable>
+                      <View style={estimatorStyles.ageInputContainer}>
+                        <TextInput
+                          style={estimatorStyles.ageInput}
+                          value={child.age.toString()}
+                          onChangeText={(text) => {
+                            const age = parseInt(text.replace(/[^0-9]/g, '')) || 0;
+                            updateChild(index, { age: Math.min(25, Math.max(0, age)) });
+                          }}
+                          keyboardType="number-pad"
+                          maxLength={2}
+                          accessibilityLabel={`Age of child ${child.id}`}
+                        />
+                        <Text style={estimatorStyles.ageRangeHint}>
+                          {child.age >= 18 ? '(18+)' : child.age >= 13 ? '(13-17)' : '(0-12)'}
+                        </Text>
                       </View>
                     </View>
 
@@ -29593,6 +30035,29 @@ const estimatorStyles = StyleSheet.create({
   ageButtonTextActive: {
     color: '#ffffff',
   },
+  // Age input styles (new)
+  ageInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  ageInput: {
+    width: 50,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#1a202c',
+    borderWidth: 1,
+    borderColor: '#d1d5db', // grey-300
+    borderRadius: 6,
+    backgroundColor: '#ffffff',
+  },
+  ageRangeHint: {
+    fontSize: 12,
+    color: '#6b7280', // grey-500
+    fontWeight: '500',
+  },
   // Per-child row styles
   childRow: {
     marginTop: 12,
@@ -29677,6 +30142,76 @@ const datePickerStyles = StyleSheet.create({
 });
 --- END OF FILE: src/features/lawyer-inquiry/components/EnrichmentView.tsx ---
 
+--- START OF FILE: src/features/lawyer-inquiry/components/FAQSection.tsx ---
+/**
+ * FAQ Section Component
+ *
+ * Displays frequently asked questions in an accordion format.
+ * These FAQs match the FAQPage schema defined in app/lawyer-inquiry.tsx
+ */
+
+import Accordion from '@/src/components/ui/Accordion';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+
+const LAWYER_INQUIRY_FAQS = [
+    {
+        question: 'How do I request a child support review?',
+        answer:
+            'You can request a Change of Assessment through Services Australia if you believe special circumstances justify a different child support amount. Our form connects you with family law professionals who can advise on your eligibility.',
+    },
+    {
+        question: 'What is a Change of Assessment?',
+        answer:
+            'A Change of Assessment is an application to Services Australia to review your child support based on 10 special circumstances, such as high contact costs, hidden income, or property settlements.',
+    },
+    {
+        question: 'How long does a lawyer inquiry take?',
+        answer:
+            'After submitting your details, a family law professional will typically contact you within 1-2 business days to discuss your situation.',
+    },
+    {
+        question: 'Is my information confidential?',
+        answer:
+            'Yes. Your personal and financial information is encrypted and only shared with the legal professionals who will be reviewing your case.',
+    },
+];
+
+export function FAQSection() {
+    return (
+        <View style={styles.container}>
+            {/* @ts-ignore - Web-only ARIA attributes */}
+            <Text style={styles.title} accessibilityRole="header" aria-level="2">
+                Frequently Asked Questions
+            </Text>
+            {LAWYER_INQUIRY_FAQS.map((faq, index) => (
+                <Accordion key={index} title={faq.question}>
+                    <Text style={styles.answerText}>{faq.answer}</Text>
+                </Accordion>
+            ))}
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        marginTop: 24,
+        marginBottom: 16,
+    },
+    title: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#1e293b',
+        marginBottom: 16,
+    },
+    answerText: {
+        fontSize: 14,
+        lineHeight: 22,
+        color: '#475569',
+    },
+});
+--- END OF FILE: src/features/lawyer-inquiry/components/FAQSection.tsx ---
+
 --- START OF FILE: src/features/lawyer-inquiry/components/FinancialSection.tsx ---
 /**
  * Financial Section Component
@@ -29686,13 +30221,16 @@ const datePickerStyles = StyleSheet.create({
  */
 
 import DatePickerField from '@/src/components/ui/DatePickerField';
+import { searchCountries } from '@/src/utils/all-countries';
 import { isWeb } from '@/src/utils/responsive';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   LayoutAnimation,
   Platform,
   Pressable,
+  ScrollView,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -29741,6 +30279,19 @@ export function FinancialSection({
   shouldShowCourtDate,
   courtDate,
   onCourtDateChange,
+  // PSI props
+  shouldShowPsiFields,
+  separationDate,
+  onSeparationDateChange,
+  cohabited6Months,
+  onCohabited6MonthsChange,
+  showPsiWarning,
+  // International props
+  shouldShowInternationalFields,
+  otherParentCountry,
+  onOtherParentCountryChange,
+  internationalWarning,
+  // Common
   errors,
   touched,
   isSubmitting,
@@ -29748,6 +30299,13 @@ export function FinancialSection({
   onBlur,
 }: FinancialSectionProps) {
   const [isSummaryOpen, setIsSummaryOpen] = useState(true);
+  const [countrySearch, setCountrySearch] = useState('');
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+
+  // Filter countries based on search
+  const filteredCountries = useMemo(() => {
+    return searchCountries(countrySearch).slice(0, 10); // Limit to 10 results
+  }, [countrySearch]);
 
   const toggleSummary = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -30063,6 +30621,148 @@ export function FinancialSection({
           error={touched.courtDate ? errors.courtDate : undefined}
           disabled={isSubmitting}
         />
+      )}
+
+      {/* PSI (Post-Separation Income) Fields - Conditional */}
+      {shouldShowPsiFields && (
+        <View
+          style={financialStyles.financialSection}
+          accessibilityRole={'group' as any}
+          accessibilityLabel="Post-Separation Income Details"
+        >
+          <DatePickerField
+            label="Date of last separation *"
+            value={separationDate}
+            onChange={onSeparationDateChange}
+            error={touched.separationDate ? errors.separationDate : undefined}
+            disabled={isSubmitting}
+          />
+
+          <View style={financialStyles.switchRow}>
+            <Text style={financialStyles.switchLabel}>
+              Did you live together for at least 6 months before separating?
+            </Text>
+            <Switch
+              value={cohabited6Months}
+              onValueChange={onCohabited6MonthsChange}
+              disabled={isSubmitting}
+              trackColor={{ false: '#cbd5e1', true: '#93c5fd' }}
+              thumbColor={cohabited6Months ? '#2563eb' : '#94a3b8'}
+              accessibilityLabel="Lived together for 6 months"
+            />
+          </View>
+
+          {/* Amber Warning for >3 years */}
+          {showPsiWarning && (
+            <View style={financialStyles.warningBox}>
+              <Ionicons name="alert-circle" size={20} color="#d97706" />
+              <Text style={financialStyles.warningText}>
+                Note: Income exclusion is typically granted for the first 3
+                years after separation. Cases beyond this are harder to prove
+                but a lawyer can review your specific circumstances.
+              </Text>
+            </View>
+          )}
+        </View>
+      )}
+
+      {/* International Jurisdiction Fields - Conditional */}
+      {shouldShowInternationalFields && (
+        <View
+          style={financialStyles.financialSection}
+          accessibilityRole={'group' as any}
+          accessibilityLabel="International Jurisdiction Details"
+        >
+          <Text style={formStyles.fieldLabel}>
+            Other parent's country of habitual residence *
+          </Text>
+
+          {/* Country Search Input */}
+          <TextInput
+            style={[
+              formStyles.input,
+              touched.otherParentCountry &&
+              errors.otherParentCountry &&
+              formStyles.inputError,
+            ]}
+            placeholder="Search for a country..."
+            placeholderTextColor="#64748b"
+            value={otherParentCountry || countrySearch}
+            onChangeText={(text) => {
+              setCountrySearch(text);
+              if (otherParentCountry) {
+                onOtherParentCountryChange('');
+              }
+              setShowCountryDropdown(true);
+            }}
+            onFocus={() => setShowCountryDropdown(true)}
+            editable={!isSubmitting}
+            accessibilityLabel="Country search"
+            accessibilityHint="Type to search for a country"
+          />
+
+          {/* Country Dropdown */}
+          {showCountryDropdown && countrySearch.length > 0 && !otherParentCountry && (
+            <View style={financialStyles.countryDropdown}>
+              <ScrollView
+                style={financialStyles.countryDropdownScroll}
+                keyboardShouldPersistTaps="handled"
+                nestedScrollEnabled
+              >
+                {filteredCountries.map((country) => (
+                  <Pressable
+                    key={country}
+                    style={financialStyles.countryOption}
+                    onPress={() => {
+                      onOtherParentCountryChange(country);
+                      setCountrySearch('');
+                      setShowCountryDropdown(false);
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Select ${country}`}
+                  >
+                    <Text style={financialStyles.countryOptionText}>
+                      {country}
+                    </Text>
+                  </Pressable>
+                ))}
+                {filteredCountries.length === 0 && (
+                  <Text style={financialStyles.noResultsText}>
+                    No countries found
+                  </Text>
+                )}
+              </ScrollView>
+            </View>
+          )}
+
+          {touched.otherParentCountry && errors.otherParentCountry && (
+            <Text style={formStyles.errorText}>{errors.otherParentCountry}</Text>
+          )}
+
+          {/* Excluded Jurisdiction Warning (Red) */}
+          {internationalWarning === 'excluded' && (
+            <View style={financialStyles.errorBox}>
+              <Ionicons name="warning" size={20} color="#dc2626" />
+              <Text style={financialStyles.errorBoxText}>
+                Note: This is an Excluded Jurisdiction. An administrative
+                assessment is not possible, but you may be able to obtain an
+                Australian court order.
+              </Text>
+            </View>
+          )}
+
+          {/* Non-Reciprocating Warning (Amber) */}
+          {internationalWarning === 'non_reciprocating' && (
+            <View style={financialStyles.warningBox}>
+              <Ionicons name="alert-circle" size={20} color="#d97706" />
+              <Text style={financialStyles.warningText}>
+                Note: This appears to be a Non-Reciprocating Jurisdiction.
+                Australian child support assessments and court orders are
+                generally not enforceable in this country.
+              </Text>
+            </View>
+          )}
+        </View>
       )}
     </>
   );
@@ -30636,8 +31336,13 @@ export type { UseInquiryFormProps } from './useInquiryForm';
  * Manages all form state, validation, and submission logic.
  */
 
+import { sanitizeCountry } from '@/src/utils/all-countries';
 import { useAnalytics } from '@/src/utils/analytics';
 import { calculateLeadScore } from '@/src/utils/lead-scoring';
+import {
+  EXCLUDED_JURISDICTIONS,
+  RECIPROCATING_JURISDICTIONS,
+} from '@/src/utils/reciprocating-jurisdictions';
 import type { SpecialCircumstance } from '@/src/utils/special-circumstances';
 import {
   getSpecialCircumstanceById,
@@ -30709,6 +31414,13 @@ export function useInquiryForm(props: UseInquiryFormProps) {
   const [manualIncomeB, setManualIncomeB] = useState('');
   const [manualChildren, setManualChildren] = useState('');
 
+  // PSI (Post-Separation Income) field state
+  const [separationDate, setSeparationDate] = useState<Date | null>(null);
+  const [cohabited6Months, setCohabited6Months] = useState(false);
+
+  // International Jurisdiction field state
+  const [otherParentCountry, setOtherParentCountry] = useState('');
+
   // Validation state
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<FormTouched>({
@@ -30723,6 +31435,9 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     manualIncomeA: false,
     manualIncomeB: false,
     manualChildren: false,
+    separationDate: false,
+    cohabited6Months: false,
+    otherParentCountry: false,
   });
 
   // Submission state
@@ -30845,6 +31560,52 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     [props.reason, props.specialCircumstances]
   );
 
+  // PSI (Post-Separation Income) conditional fields
+  const shouldShowPsiFields = useMemo(
+    () =>
+      (props.specialCircumstances || []).includes('post_separation_income'),
+    [props.specialCircumstances]
+  );
+
+  // Show warning if separation date is more than 3 years ago
+  const showPsiWarning = useMemo(() => {
+    if (!separationDate || !shouldShowPsiFields) return false;
+
+    const threeYearsAgo = new Date();
+    threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 3);
+
+    return separationDate < threeYearsAgo;
+  }, [separationDate, shouldShowPsiFields]);
+
+  // International Jurisdiction conditional fields
+  const shouldShowInternationalFields = useMemo(
+    () =>
+      (props.specialCircumstances || []).includes('international_jurisdiction'),
+    [props.specialCircumstances]
+  );
+
+  // Determine international warning type based on selected country
+  const internationalWarning = useMemo((): 'excluded' | 'non_reciprocating' | null => {
+    if (!otherParentCountry || !shouldShowInternationalFields) return null;
+
+    const sanitized = sanitizeCountry(otherParentCountry);
+    if (!sanitized) return null;
+
+    // Check if excluded jurisdiction (case-insensitive match)
+    const isExcluded = EXCLUDED_JURISDICTIONS.some(
+      (j) => j.toLowerCase() === sanitized.toLowerCase()
+    );
+    if (isExcluded) return 'excluded';
+
+    // Check if reciprocating jurisdiction (case-insensitive match)
+    const isReciprocating = RECIPROCATING_JURISDICTIONS.some(
+      (j) => j.toLowerCase() === sanitized.toLowerCase()
+    );
+    if (!isReciprocating) return 'non_reciprocating';
+
+    return null; // Reciprocating - no warning
+  }, [otherParentCountry, shouldShowInternationalFields]);
+
   /**
    * Validate a single field
    */
@@ -30955,6 +31716,9 @@ export function useInquiryForm(props: UseInquiryFormProps) {
       manualIncomeA: true,
       manualIncomeB: true,
       manualChildren: true,
+      separationDate: true,
+      cohabited6Months: true,
+      otherParentCountry: true,
     });
 
     // Check if any errors exist
@@ -31166,8 +31930,8 @@ export function useInquiryForm(props: UseInquiryFormProps) {
           annual_liability: props.isDirectMode
             ? 0
             : props.liability
-            ? Number(parseFloat(props.liability).toFixed(2))
-            : 0,
+              ? Number(parseFloat(props.liability).toFixed(2))
+              : 0,
           has_phone: !!sanitizePhone(phone),
           message_length: sanitizeString(message).length,
           time_to_submit: timeToSubmit,
@@ -31237,28 +32001,28 @@ export function useInquiryForm(props: UseInquiryFormProps) {
         payer_role: props.isDirectMode
           ? null
           : props.payer === 'Parent A'
-          ? 'you'
-          : props.payer === 'Parent B'
-          ? 'other_parent'
-          : null,
+            ? 'you'
+            : props.payer === 'Parent B'
+              ? 'other_parent'
+              : null,
 
         // Care arrangement - null in Direct Mode
         care_data: props.isDirectMode
           ? null
           : props.careData.length > 0
-          ? props.careData
-          : null,
+            ? props.careData
+            : null,
 
         // Complexity data - Use 'direct_inquiry' trigger in Direct Mode
         complexity_trigger: props.isDirectMode
           ? ['direct_inquiry']
           : buildComplexityTriggers(
-              props.trigger,
-              props.specialCircumstances,
-              financialTags,
-              props.careData,
-              props.liability
-            ),
+            props.trigger,
+            props.specialCircumstances,
+            financialTags,
+            props.careData,
+            props.liability
+          ),
         complexity_reasons: props.isDirectMode
           ? props.reason
             ? [props.reason]
@@ -31287,6 +32051,24 @@ export function useInquiryForm(props: UseInquiryFormProps) {
         lead_score: scoreResult.score,
         score_category: scoreResult.category,
         scoring_factors: scoreResult.factors,
+
+        // Special circumstances additional data (PSI, international)
+        special_circumstances_data:
+          shouldShowPsiFields || shouldShowInternationalFields
+            ? {
+              // PSI fields (if applicable)
+              ...(shouldShowPsiFields && separationDate
+                ? { separation_date: separationDate.toISOString() }
+                : {}),
+              ...(shouldShowPsiFields
+                ? { cohabited_6_months: cohabited6Months }
+                : {}),
+              // International fields (if applicable)
+              ...(shouldShowInternationalFields && otherParentCountry
+                ? { other_parent_country: sanitizeCountry(otherParentCountry) }
+                : {}),
+            }
+            : null,
       };
 
       if (__DEV__)
@@ -31379,6 +32161,13 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     manualIncomeA,
     manualIncomeB,
     manualChildren,
+    // PSI fields
+    shouldShowPsiFields,
+    separationDate,
+    cohabited6Months,
+    // International fields
+    shouldShowInternationalFields,
+    otherParentCountry,
   ]);
 
   /**
@@ -31514,6 +32303,16 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     setEnrichmentPayerRole,
     setErrors,
 
+    // PSI state & setters
+    separationDate,
+    setSeparationDate,
+    cohabited6Months,
+    setCohabited6Months,
+
+    // International state & setters
+    otherParentCountry,
+    setOtherParentCountry,
+
     // Refs
     emailRef,
     phoneRef,
@@ -31523,6 +32322,12 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     validCircumstances,
     shouldShowCourtDate,
     shouldShowFinancialTags,
+    // PSI computed
+    shouldShowPsiFields,
+    showPsiWarning,
+    // International computed
+    shouldShowInternationalFields,
+    internationalWarning,
 
     // Handlers
     handleBlur,
@@ -32265,6 +33070,96 @@ export const financialStyles = StyleSheet.create({
   chipTextActive: {
     color: '#ffffff',
   },
+  // PSI Switch Row styles
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    gap: 12,
+  },
+  switchLabel: {
+    flex: 1,
+    fontSize: 14,
+    color: '#334155', // slate-700
+    lineHeight: 20,
+  },
+  // Warning box (amber) - for soft triage
+  warningBox: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    backgroundColor: '#fffbeb', // amber-50
+    borderWidth: 1,
+    borderColor: '#fcd34d', // amber-300
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 12,
+  },
+  warningText: {
+    flex: 1,
+    fontSize: 13,
+    color: '#92400e', // amber-800
+    lineHeight: 18,
+  },
+  // Error box (red) - for excluded jurisdictions
+  errorBox: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    backgroundColor: '#fef2f2', // red-50
+    borderWidth: 1,
+    borderColor: '#fecaca', // red-200
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 12,
+  },
+  errorBoxText: {
+    flex: 1,
+    fontSize: 13,
+    color: '#991b1b', // red-800
+    lineHeight: 18,
+  },
+  // Country dropdown styles
+  countryDropdown: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e2e8f0', // slate-200
+    borderRadius: 8,
+    marginTop: 4,
+    maxHeight: 200,
+    ...Platform.select({
+      web: {
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+      },
+    }),
+  },
+  countryDropdownScroll: {
+    maxHeight: 200,
+  },
+  countryOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9', // slate-100
+  },
+  countryOptionText: {
+    fontSize: 14,
+    color: '#334155', // slate-700
+  },
+  noResultsText: {
+    padding: 16,
+    fontSize: 14,
+    color: '#6b7280', // grey-500
+    textAlign: 'center',
+  },
 });
 
 // ============================================================================
@@ -32489,6 +33384,9 @@ export interface FormErrors {
   manualIncomeA?: string;
   manualIncomeB?: string;
   manualChildren?: string;
+  // PSI & International fields
+  separationDate?: string;
+  otherParentCountry?: string;
 }
 
 export interface FormTouched {
@@ -32503,6 +33401,10 @@ export interface FormTouched {
   manualIncomeA: boolean;
   manualIncomeB: boolean;
   manualChildren: boolean;
+  // PSI & International fields
+  separationDate: boolean;
+  cohabited6Months: boolean;
+  otherParentCountry: boolean;
 }
 
 // ============================================================================
@@ -32583,6 +33485,18 @@ export interface FinancialSectionProps {
   shouldShowCourtDate: boolean;
   courtDate: Date | null;
   onCourtDateChange: (date: Date | null) => void;
+  // PSI (Post-Separation Income) conditional fields
+  shouldShowPsiFields: boolean;
+  separationDate: Date | null;
+  onSeparationDateChange: (date: Date | null) => void;
+  cohabited6Months: boolean;
+  onCohabited6MonthsChange: (value: boolean) => void;
+  showPsiWarning: boolean;
+  // International Jurisdiction conditional fields
+  shouldShowInternationalFields: boolean;
+  otherParentCountry: string;
+  onOtherParentCountryChange: (country: string) => void;
+  internationalWarning: 'excluded' | 'non_reciprocating' | null;
   // Common
   errors: FormErrors;
   touched: FormTouched;
@@ -32900,6 +33814,7 @@ export function buildComplexityTriggers(
 --- START OF FILE: src/hooks/useCalculator.ts ---
 import { useCallback, useState } from 'react';
 import type {
+  AgeRange,
   CalculationResults,
   CalculatorInputs,
   ChildInput,
@@ -32908,8 +33823,9 @@ import type {
   NonParentCarerInfo,
   OtherCaseChild,
   PayerRole,
-  RelevantDependents,
+  RelevantDependents
 } from '../utils/calculator';
+import { deriveAgeRange } from '../utils/calculator';
 import {
   applyMultiCaseCap,
   calculateMultiCaseAllowance,
@@ -32961,7 +33877,7 @@ const initialFormState: CalculatorFormState = {
   multiCaseA: { otherChildren: [] },
   multiCaseB: { otherChildren: [] },
   // Non-parent carer support (Formula 4)
-  nonParentCarer: { enabled: false, carePercentage: 0 },
+  nonParentCarer: { enabled: false },
 };
 
 export function useCalculator() {
@@ -32980,7 +33896,7 @@ export function useCalculator() {
         ...prev.children,
         {
           id: `child-${Date.now()}-${Math.random()}`,
-          age: 'Under 13',
+          age: 5, // Default to age 5 (Under 13)
           careAmountA: 8,
           careAmountB: 6,
           carePeriod: 'fortnight',
@@ -33103,17 +34019,6 @@ export function useCalculator() {
       newErrors.multiCaseB = 'Maximum 10 children in other cases.';
     }
 
-    // Validate non-parent carer (Formula 4)
-    if (formState.nonParentCarer.enabled) {
-      if (formState.nonParentCarer.carePercentage < 35) {
-        newErrors.nonParentCarer =
-          'Non-parent carer must have at least 35% care.';
-      }
-      if (formState.nonParentCarer.carePercentage > 100) {
-        newErrors.nonParentCarer = 'Care percentage cannot exceed 100%.';
-      }
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [formState]);
@@ -33134,46 +34039,57 @@ export function useCalculator() {
       const ATI_A = incomeA;
       const ATI_B = incomeB;
 
-      // Convert children to calculation format
-      const children = formState.children.map((c) => ({
-        age: c.age as 'Under 13' | '13+',
-        careA: convertCareToPercentage(c.careAmountA, c.carePeriod),
-        careB: convertCareToPercentage(c.careAmountB, c.carePeriod),
-      }));
+      // Convert children to calculation format with derived age ranges
+      const children = formState.children.map((c) => {
+        const ageRange = deriveAgeRange(c.age);
+        return {
+          age: c.age,
+          ageRange,
+          careA: convertCareToPercentage(c.careAmountA, c.carePeriod),
+          careB: convertCareToPercentage(c.careAmountB, c.carePeriod),
+        };
+      });
 
       // Step 1: Create virtual children for relevant dependents
       // Virtual children have 0% care since they're only used for cost calculation
+      // Use representative ages: 6 for u13, 14 for plus13
       const relDepChildrenA: {
-        age: 'Under 13' | '13+';
+        age: number;
+        ageRange: AgeRange;
         careA: number;
         careB: number;
       }[] = [
-          ...Array(relDepA.u13).fill({
-            age: 'Under 13' as const,
+          ...Array(relDepA.u13).fill(null).map(() => ({
+            age: 6,
+            ageRange: 'Under 13' as AgeRange,
             careA: 0,
             careB: 0,
-          }),
-          ...Array(relDepA.plus13).fill({
-            age: '13+' as const,
+          })),
+          ...Array(relDepA.plus13).fill(null).map(() => ({
+            age: 14,
+            ageRange: '13+' as AgeRange,
             careA: 0,
             careB: 0,
-          }),
+          })),
         ];
       const relDepChildrenB: {
-        age: 'Under 13' | '13+';
+        age: number;
+        ageRange: AgeRange;
         careA: number;
         careB: number;
       }[] = [
-          ...Array(relDepB.u13).fill({
-            age: 'Under 13' as const,
+          ...Array(relDepB.u13).fill(null).map(() => ({
+            age: 6,
+            ageRange: 'Under 13' as AgeRange,
             careA: 0,
             careB: 0,
-          }),
-          ...Array(relDepB.plus13).fill({
-            age: '13+' as const,
+          })),
+          ...Array(relDepB.plus13).fill(null).map(() => ({
+            age: 14,
+            ageRange: '13+' as AgeRange,
             careA: 0,
             careB: 0,
-          }),
+          })),
         ];
 
       // Step 2-4: Calculate Child Support Income (CSI)
@@ -33223,12 +34139,15 @@ export function useCalculator() {
       const incomePercB = CCSI > 0 ? (CSI_B / CCSI) * 100 : 0;
 
       // Step 5: Calculate Total Cost of Children
+      // Adult children (18+) are excluded from Services Australia assessment
+      // They can only receive Adult Child Maintenance via court order
+      const assessableChildren = children.filter((c) => c.age < 18);
       const { cost: totalCost, bracketInfo: costBracketInfo } = getChildCost(
         selectedYear,
-        children,
+        assessableChildren,
         CCSI
       );
-      const costPerChild = children.length > 0 ? totalCost / children.length : 0;
+      const costPerChild = assessableChildren.length > 0 ? totalCost / assessableChildren.length : 0;
 
       // Step 6–8: Calculate individual liabilities
       let totalLiabilityA = 0;
@@ -33236,22 +34155,23 @@ export function useCalculator() {
 
       // Check if non-parent carer is enabled
       const hasNPC = formState.nonParentCarer.enabled;
-      const npcCarePercent = hasNPC ? formState.nonParentCarer.carePercentage : 0;
 
       const childResults = children.map((c, childIndex) => {
+        // Determine adult child status
+        const isAdultChild = c.age >= 18;
+        const isTurning18 = c.age === 17;
+
         const roundedCareA = roundCarePercentage(c.careA);
         const roundedCareB = roundCarePercentage(c.careB);
 
         // Handle NPC care (Formula 4)
-        // Get NPC care from the child input if available
+        // Get NPC care from the child input (defaults to 0 if not set)
         const childInput = formState.children[childIndex];
         const rawCareNPC = hasNPC
-          ? childInput?.careAmountNPC !== undefined
-            ? convertCareToPercentage(
-              childInput.careAmountNPC,
-              childInput.carePeriod
+          ? convertCareToPercentage(
+              childInput?.careAmountNPC ?? 0,
+              childInput?.carePeriod ?? 'fortnight'
             )
-            : npcCarePercent
           : 0;
         const roundedCareNPC = roundCarePercentage(rawCareNPC);
         const costPercNPC = mapCareToCostPercent(roundedCareNPC);
@@ -33263,26 +34183,30 @@ export function useCalculator() {
         const childSupportPercA = incomePercA - costPercA;
         const childSupportPercB = incomePercB - costPercB;
 
+        // Adult children (18+) are excluded from standard child support calculation
+        // They can only receive Adult Child Maintenance via court order
         let liabilityA = 0;
         let liabilityB = 0;
 
-        const positivePercA = Math.max(0, childSupportPercA);
-        const positivePercB = Math.max(0, childSupportPercB);
+        if (!isAdultChild) {
+          const positivePercA = Math.max(0, childSupportPercA);
+          const positivePercB = Math.max(0, childSupportPercB);
 
-        if (positivePercA > positivePercB) {
-          if (roundedCareB >= 35 || (hasNPC && roundedCareNPC >= 35)) {
-            liabilityA = (positivePercA / 100) * costPerChild;
-          }
-        } else if (positivePercB > positivePercA) {
-          if (roundedCareA >= 35 || (hasNPC && roundedCareNPC >= 35)) {
-            liabilityB = (positivePercB / 100) * costPerChild;
+          if (positivePercA > positivePercB) {
+            if (roundedCareB >= 35 || (hasNPC && roundedCareNPC >= 35)) {
+              liabilityA = (positivePercA / 100) * costPerChild;
+            }
+          } else if (positivePercB > positivePercA) {
+            if (roundedCareA >= 35 || (hasNPC && roundedCareNPC >= 35)) {
+              liabilityB = (positivePercB / 100) * costPerChild;
+            }
           }
         }
 
-        // Calculate liability to NPC (Formula 4)
+        // Calculate liability to NPC (Formula 4) - also skip for adult children
         let liabilityToNPC_A = 0;
         let liabilityToNPC_B = 0;
-        if (hasNPC && roundedCareNPC >= 35) {
+        if (!isAdultChild && hasNPC && roundedCareNPC >= 35) {
           // Each parent's liability to NPC = their child support % × child cost
           if (childSupportPercA > 0) {
             liabilityToNPC_A =
@@ -33294,12 +34218,19 @@ export function useCalculator() {
           }
         }
 
-        totalLiabilityA += liabilityA;
-        totalLiabilityB += liabilityB;
+        // Only add liability for assessable children (not adult children)
+        if (!isAdultChild) {
+          totalLiabilityA += liabilityA;
+          totalLiabilityB += liabilityB;
+        }
 
         return {
           ...c,
-          costPerChild,
+          // Adult child flags for UI
+          isAdultChild,
+          isTurning18,
+          // Cost per child is 0 for adult children (excluded from calculation)
+          costPerChild: isAdultChild ? 0 : costPerChild,
           roundedCareA,
           roundedCareB,
           costPercA,
@@ -33342,12 +34273,15 @@ export function useCalculator() {
       // Check if MAR applies at case level (once per case, not per child)
       // MAR criteria:
       // 1. Parent received income support payment
-      // 2. Parent has less than 14% care of ALL children
+      // 2. Parent has less than 14% care of ALL assessable children (not 18+)
       // 3. Parent's ATI is below the self-support amount
+      const assessableChildResults = childResults.filter((c) => !c.isAdultChild);
       const marAppliesA =
-        ATI_A < SSA && supportA && childResults.every((c) => c.roundedCareA < 14);
+        ATI_A < SSA && supportA && assessableChildResults.length > 0 &&
+        assessableChildResults.every((c) => c.roundedCareA < 14);
       const marAppliesB =
-        ATI_B < SSA && supportB && childResults.every((c) => c.roundedCareB < 14);
+        ATI_B < SSA && supportB && assessableChildResults.length > 0 &&
+        assessableChildResults.every((c) => c.roundedCareB < 14);
 
       if (marAppliesA) {
         MAR_A = MAR; // Set once for the entire case
@@ -33359,6 +34293,11 @@ export function useCalculator() {
       }
 
       childResults.forEach((child, index) => {
+        // Skip adult children - they're excluded from FAR/MAR
+        if (child.isAdultChild) {
+          return;
+        }
+
         const roundedCareA = child.roundedCareA;
         const roundedCareB = child.roundedCareB;
 
@@ -33369,8 +34308,8 @@ export function useCalculator() {
 
         // Check if MAR applies for this parent (already determined at case level)
         if (marAppliesA) {
-          // MAR is paid once per case, so divide by total children to show per-child breakdown
-          liabilityA = MAR / childResults.length;
+          // MAR is paid once per case, so divide by total assessable children to show per-child breakdown
+          liabilityA = MAR / assessableChildResults.length;
           marAppliedA = true;
         } else if (ATI_A < MAX_PPS && !supportA && roundedCareB >= 66) {
           // FAR is paid per child (up to 3 children)
@@ -33394,8 +34333,8 @@ export function useCalculator() {
 
         // Check if MAR applies for this parent (already determined at case level)
         if (marAppliesB) {
-          // MAR is paid once per case, so divide by total children to show per-child breakdown
-          liabilityB = MAR / childResults.length;
+          // MAR is paid once per case, so divide by total assessable children to show per-child breakdown
+          liabilityB = MAR / assessableChildResults.length;
           marAppliedB = true;
         } else if (ATI_B < MAX_PPS && !supportB && roundedCareA >= 66) {
           // FAR is paid per child (up to 3 children)
@@ -33749,7 +34688,7 @@ export function useCalculator() {
       multiCaseA: { otherChildren: [] },
       multiCaseB: { otherChildren: [] },
       // Non-parent carer support (Formula 4)
-      nonParentCarer: { enabled: false, carePercentage: 0 },
+      nonParentCarer: { enabled: false },
     });
     setResults(null);
     setErrors({});
@@ -33760,7 +34699,8 @@ export function useCalculator() {
 
   const getInputsForSave = useCallback((): CalculatorInputs => {
     const children = formState.children.map((c) => ({
-      age: c.age as 'Under 13' | '13+',
+      age: c.age,
+      ageRange: deriveAgeRange(c.age),
       careA: convertCareToPercentage(c.careAmountA, c.carePeriod),
       careB: convertCareToPercentage(c.careAmountB, c.carePeriod),
       careNPC:
@@ -37230,6 +38170,274 @@ export const theme = {
 };
 --- END OF FILE: src/theme.ts ---
 
+--- START OF FILE: src/utils/all-countries.ts ---
+/**
+ * Comprehensive list of all countries for international jurisdiction selection.
+ * Sorted alphabetically for easy navigation in dropdown/picker.
+ */
+
+export const ALL_COUNTRIES = [
+    'Afghanistan',
+    'Albania',
+    'Algeria',
+    'Andorra',
+    'Angola',
+    'Antigua and Barbuda',
+    'Argentina',
+    'Armenia',
+    'Australia',
+    'Austria',
+    'Azerbaijan',
+    'Bahamas',
+    'Bahrain',
+    'Bangladesh',
+    'Barbados',
+    'Belarus',
+    'Belgium',
+    'Belize',
+    'Benin',
+    'Bhutan',
+    'Bolivia',
+    'Bosnia and Herzegovina',
+    'Botswana',
+    'Brazil',
+    'Brunei Darussalam',
+    'Bulgaria',
+    'Burkina Faso',
+    'Burundi',
+    'Cambodia',
+    'Cameroon',
+    'Canada',
+    'Canada, except Quebec',
+    'Cape Verde',
+    'Central African Republic',
+    'Chad',
+    'Chile',
+    'China',
+    'Colombia',
+    'Comoros',
+    'Congo',
+    'Cook Islands',
+    'Costa Rica',
+    'Croatia',
+    'Cuba',
+    'Cyprus',
+    'Czech Republic',
+    'Democratic Republic of the Congo',
+    'Denmark',
+    'Djibouti',
+    'Dominica',
+    'Dominican Republic',
+    'East Timor',
+    'Ecuador',
+    'Egypt',
+    'El Salvador',
+    'Equatorial Guinea',
+    'Eritrea',
+    'Estonia',
+    'Eswatini',
+    'Ethiopia',
+    'Fiji',
+    'Finland',
+    'France',
+    'Gabon',
+    'Gambia',
+    'Georgia',
+    'Germany',
+    'Ghana',
+    'Greece',
+    'Grenada',
+    'Guatemala',
+    'Guinea',
+    'Guinea-Bissau',
+    'Guyana',
+    'Haiti',
+    'Holy See, The',
+    'Honduras',
+    'Hong Kong',
+    'Hungary',
+    'Iceland',
+    'India',
+    'Indonesia',
+    'Iran',
+    'Iraq',
+    'Ireland',
+    'Israel',
+    'Italy',
+    'Ivory Coast',
+    'Jamaica',
+    'Japan',
+    'Jordan',
+    'Kazakhstan',
+    'Kenya',
+    'Kiribati',
+    'Kosovo',
+    'Kuwait',
+    'Kyrgyzstan',
+    'Laos',
+    'Latvia',
+    'Lebanon',
+    'Lesotho',
+    'Liberia',
+    'Libya',
+    'Liechtenstein',
+    'Lithuania',
+    'Luxembourg',
+    'Madagascar',
+    'Malawi',
+    'Malaysia',
+    'Maldives',
+    'Mali',
+    'Malta',
+    'Marshall Islands',
+    'Mauritania',
+    'Mauritius',
+    'Mexico',
+    'Micronesia',
+    'Moldova',
+    'Monaco',
+    'Mongolia',
+    'Montenegro',
+    'Morocco',
+    'Mozambique',
+    'Myanmar',
+    'Namibia',
+    'Nauru',
+    'Nepal',
+    'Netherlands',
+    'New Zealand',
+    'Nicaragua',
+    'Niger',
+    'Nigeria',
+    'Niue',
+    'North Korea',
+    'North Macedonia',
+    'Norway',
+    'Oman',
+    'Pakistan',
+    'Palau',
+    'Palestine',
+    'Panama',
+    'Papua New Guinea',
+    'Paraguay',
+    'Peru',
+    'Philippines',
+    'Poland',
+    'Portugal',
+    'Qatar',
+    'Romania',
+    'Russia',
+    'Rwanda',
+    'Saint Kitts and Nevis',
+    'Saint Lucia',
+    'Saint Vincent and the Grenadines',
+    'Samoa',
+    'San Marino',
+    'Sao Tome and Principe',
+    'Saudi Arabia',
+    'Senegal',
+    'Serbia',
+    'Seychelles',
+    'Sierra Leone',
+    'Singapore',
+    'Slovakia',
+    'Slovenia',
+    'Solomon Islands',
+    'Somalia',
+    'South Africa',
+    'South Korea',
+    'South Sudan',
+    'Spain',
+    'Sri Lanka',
+    'Sudan',
+    'Suriname',
+    'Sweden',
+    'Switzerland',
+    'Syria',
+    'Taiwan',
+    'Tajikistan',
+    'Tanzania',
+    'Tanzania, except Zanzibar',
+    'Thailand',
+    'Togo',
+    'Tonga',
+    'Trinidad and Tobago',
+    'Tunisia',
+    'Turkey',
+    'Turkmenistan',
+    'Tuvalu',
+    'Uganda',
+    'Ukraine',
+    'United Arab Emirates',
+    'United Kingdom',
+    'United Kingdom, includes Alderney, Gibraltar, Guernsey, Isle of Man, Jersey, Sark',
+    'United States of America',
+    'Uruguay',
+    'Uzbekistan',
+    'Vanuatu',
+    'Venezuela',
+    'Vietnam',
+    'Yemen',
+    'Yukon, in Canada',
+    'Zambia',
+    'Zimbabwe',
+] as const;
+
+export type Country = (typeof ALL_COUNTRIES)[number];
+
+/**
+ * Check if a country string matches any entry in the countries list.
+ * Uses case-insensitive matching and handles partial matches.
+ *
+ * @param input - The user input string to search for
+ * @returns Array of matching countries, sorted by relevance
+ */
+export function searchCountries(input: string): string[] {
+    if (!input || input.trim().length === 0) {
+        return [...ALL_COUNTRIES];
+    }
+
+    const searchTerm = input.toLowerCase().trim();
+
+    // Filter countries that contain the search term
+    const matches = ALL_COUNTRIES.filter((country) =>
+        country.toLowerCase().includes(searchTerm)
+    );
+
+    // Sort: exact start matches first, then alphabetically
+    return matches.sort((a, b) => {
+        const aStartsWith = a.toLowerCase().startsWith(searchTerm);
+        const bStartsWith = b.toLowerCase().startsWith(searchTerm);
+
+        if (aStartsWith && !bStartsWith) return -1;
+        if (!aStartsWith && bStartsWith) return 1;
+        return a.localeCompare(b);
+    });
+}
+
+/**
+ * Sanitize and normalize a country string.
+ *
+ * @param country - The country string to sanitize
+ * @returns Sanitized country name or empty string if invalid
+ */
+export function sanitizeCountry(country: string | undefined | null): string {
+    if (!country || typeof country !== 'string') {
+        return '';
+    }
+
+    // Trim and normalize whitespace
+    const sanitized = country.trim().replace(/\s+/g, ' ');
+
+    // Validate it's a known country (case-insensitive match)
+    const match = ALL_COUNTRIES.find(
+        (c) => c.toLowerCase() === sanitized.toLowerCase()
+    );
+
+    return match || sanitized;
+}
+--- END OF FILE: src/utils/all-countries.ts ---
+
 --- START OF FILE: src/utils/analytics.ts ---
 // Analytics wrapper
 // - Web: Google Analytics (gtag.js)
@@ -37376,14 +38584,41 @@ export function useAnalytics() {
 --- END OF FILE: src/utils/analytics.ts ---
 
 --- START OF FILE: src/utils/calculator.ts ---
+/** Age range type used by the calculation engine */
+export type AgeRange = 'Under 13' | '13+' | '18+';
+
 export interface ChildInput {
   id: string;
-  age: 'Under 13' | '13+';
+  /** Specific age of the child (0-25) */
+  age: number;
   careAmountA: number;
   careAmountB: number;
   carePeriod: 'week' | 'fortnight' | 'year' | 'percent';
   /** Care amount for non-parent carer (Formula 4). Optional. */
   careAmountNPC?: number;
+}
+
+/**
+ * Derives the age range string from a specific age number.
+ * Used for backward compatibility with the calculation engine.
+ * 
+ * @param age - Specific age (0-25)
+ * @returns Age range string for calculation engine
+ */
+export function deriveAgeRange(age: number): AgeRange {
+  if (age >= 18) return '18+';
+  if (age >= 13) return '13+';
+  return 'Under 13';
+}
+
+/**
+ * Checks if a child is an adult (18+) for Adult Child Maintenance scenarios.
+ * 
+ * @param age - Specific age
+ * @returns true if child is 18 or older
+ */
+export function isAdultChild(age: number): boolean {
+  return age >= 18;
 }
 
 export interface RelevantDependents {
@@ -37397,7 +38632,10 @@ export interface CalculatorInputs {
   supportA: boolean;
   supportB: boolean;
   children: {
-    age: 'Under 13' | '13+';
+    /** Specific age of the child (0-25) */
+    age: number;
+    /** Derived age range for calculation engine */
+    ageRange: AgeRange;
     careA: number;
     careB: number;
     /** Care percentage for non-parent carer (Formula 4). Optional. */
@@ -37414,7 +38652,14 @@ export interface CalculatorInputs {
 }
 
 export interface ChildResult {
-  age: 'Under 13' | '13+';
+  /** Specific age of the child */
+  age: number;
+  /** Derived age range for calculation engine */
+  ageRange: AgeRange;
+  /** True if child is 18+ (excluded from standard calculation) */
+  isAdultChild: boolean;
+  /** True if child is 17 (included in calculation but with transition warning) */
+  isTurning18: boolean;
   careA: number;
   careB: number;
   costPerChild: number;
@@ -37514,7 +38759,8 @@ export interface FormErrors {
  */
 export interface OtherCaseChild {
   id: string;
-  age: 'Under 13' | '13+';
+  /** Specific age of the child (0-25) */
+  age: number;
 }
 
 /**
@@ -37528,10 +38774,10 @@ export interface MultiCaseInfo {
 /**
  * Non-parent carer information (Formula 4).
  * A non-parent carer (e.g., grandparent) must have at least 35% care.
+ * Eligibility is derived from per-child care amounts in ChildInput.careAmountNPC.
  */
 export interface NonParentCarerInfo {
   enabled: boolean;
-  carePercentage: number;
 }
 
 /**
@@ -37545,16 +38791,20 @@ export type PayerRole =
 --- END OF FILE: src/utils/calculator.ts ---
 
 --- START OF FILE: src/utils/child-support-calculations.ts ---
-import type { CostBracketInfo, OtherCaseChild } from './calculator';
+import type { AgeRange, CostBracketInfo, OtherCaseChild } from './calculator';
+import { deriveAgeRange } from './calculator';
 import {
-  AssessmentYear,
-  CARE_PERIOD_DAYS,
-  CarePeriod,
+    AssessmentYear,
+    CARE_PERIOD_DAYS,
+    CarePeriod,
 } from './child-support-constants';
 import { COTCBandValues, YEARLY_CONFIG } from './year-config';
 
 export interface Child {
-  age: 'Under 13' | '13+';
+  /** Specific age of the child (0-25) */
+  age: number;
+  /** Derived age range for calculation engine (computed from age) */
+  ageRange?: AgeRange;
   careA: number;
   careB: number;
 }
@@ -37569,6 +38819,7 @@ export interface ChildCostResult {
  * Returns both the cost and the bracket info for display purposes.
  *
  * Updated 2026-01-06: Now uses YEARLY_CONFIG for multi-year support.
+ * Updated 2026-01-11: Now accepts specific ages and derives age ranges.
  */
 export function getChildCost(
   year: AssessmentYear,
@@ -37597,9 +38848,25 @@ export function getChildCost(
     return emptyResult;
   }
 
-  // Determine age group
-  const hasYounger = children.some((c) => c.age === 'Under 13');
-  const hasOlder = children.some((c) => c.age === '13+');
+  // Derive age ranges from specific ages
+  const childrenWithRanges = children.map((c) => ({
+    ...c,
+    ageRange: c.ageRange ?? deriveAgeRange(c.age),
+  }));
+
+  // Filter out adult children (18+) from standard calculation
+  // Adult Child Maintenance is handled separately
+  const eligibleChildren = childrenWithRanges.filter((c) => c.ageRange !== '18+');
+  
+  if (eligibleChildren.length === 0) {
+    // All children are 18+ - return zero cost for standard calculation
+    // Adult Child Maintenance logic will be implemented separately
+    return emptyResult;
+  }
+
+  // Determine age group based on eligible children
+  const hasYounger = eligibleChildren.some((c) => c.ageRange === 'Under 13');
+  const hasOlder = eligibleChildren.some((c) => c.ageRange === '13+');
 
   let ageGroup: '0-12' | '13+' | 'mixed';
   if (hasYounger && hasOlder) {
@@ -37610,8 +38877,8 @@ export function getChildCost(
     ageGroup = '13+';
   }
 
-  // Determine child count key (cap at 3)
-  const childCount = Math.min(numChildren, 3) as 1 | 2 | 3;
+  // Determine child count key (cap at 3) - use eligible children count
+  const childCount = Math.min(eligibleChildren.length, 3) as 1 | 2 | 3;
 
   // Handle mixed age group for 1 child (not applicable - use younger rates)
   if (ageGroup === 'mixed' && childCount === 1) {
@@ -37744,14 +39011,14 @@ export function mapCareToCostPercent(care: number): number {
  *
  * @param year - Assessment year
  * @param parentCSI - The parent's individual Child Support Income (ATI - SSA)
- * @param currentCaseChildren - Children in the current case
- * @param otherCaseChildren - Children in other child support cases
+ * @param currentCaseChildren - Children in the current case (with specific ages)
+ * @param otherCaseChildren - Children in other child support cases (with specific ages)
  * @returns The multi-case allowance to deduct from the parent's income (rounded to nearest dollar)
  */
 export function calculateMultiCaseAllowance(
   year: AssessmentYear,
   parentCSI: number,
-  currentCaseChildren: { age: 'Under 13' | '13+' }[],
+  currentCaseChildren: { age: number }[],
   otherCaseChildren: OtherCaseChild[]
 ): number {
   if (otherCaseChildren.length === 0) return 0;
@@ -37767,6 +39034,7 @@ export function calculateMultiCaseAllowance(
       .fill(null)
       .map(() => ({
         age: otherChild.age,
+        ageRange: deriveAgeRange(otherChild.age),
         careA: 0,
         careB: 0,
       }));
@@ -37870,6 +39138,316 @@ export const SSA = defaultConfig.SELF_SUPPORT;
 /** MTAWE Income Cap (default: 2026) */
 export const MTAWE_CAP = defaultConfig.MTAWE_CAP;
 --- END OF FILE: src/utils/child-support-constants.ts ---
+
+--- START OF FILE: src/utils/coa-faqs.ts ---
+/**
+ * Change of Assessment FAQ Data
+ *
+ * Contains frequently asked questions for each of the 11 CoA reason pages.
+ * Used for both visible FAQ sections and FAQPage schema markup.
+ *
+ * @module coa-faqs
+ */
+
+export interface CoAFaq {
+    question: string;
+    answer: string;
+}
+
+/**
+ * FAQ data for all Change of Assessment reason pages
+ */
+export const COA_FAQ_DATA: Record<string, CoAFaq[]> = {
+    'high-costs-of-contact': [
+        {
+            question: 'Who can apply for Reason 1 (High Costs of Contact)?',
+            answer:
+                'Any parent who pays significant costs to maintain contact with their children can apply. This includes costs for travel, accommodation, and transportation when children live far away.',
+        },
+        {
+            question: 'What evidence do I need for high contact costs?',
+            answer:
+                'You should provide receipts, invoices, or bank statements showing travel expenses (flights, fuel, tolls), accommodation costs, and any other expenses directly related to maintaining contact with your children.',
+        },
+        {
+            question: 'How much can my child support be reduced under Reason 1?',
+            answer:
+                'The reduction depends on your specific circumstances. The Registrar will consider how much you spend on contact relative to your income and whether the costs are necessary and reasonable.',
+        },
+        {
+            question: 'Can I claim travel costs if I moved away?',
+            answer:
+                'Generally, if you voluntarily moved away from your children, it may be harder to claim high contact costs. The Registrar considers whether the distance was created by your own choice or due to circumstances beyond your control.',
+        },
+    ],
+
+    'special-needs-care-costs': [
+        {
+            question: 'Who can apply for Reason 2 (Special Needs Care Costs)?',
+            answer:
+                'Either parent can apply if their child has a disability, chronic illness, or special needs that require care costs beyond what the standard formula considers.',
+        },
+        {
+            question: 'What medical evidence do I need for a special needs claim?',
+            answer:
+                'You should provide medical reports, diagnosis letters from specialists, NDIS plans if applicable, and invoices showing the costs of therapies, equipment, medications, or specialist care.',
+        },
+        {
+            question: 'Does NDIS funding affect a Reason 2 application?',
+            answer:
+                'Yes. The Registrar will consider your NDIS package when assessing your claim. Out-of-pocket costs not covered by NDIS are most relevant for a Change of Assessment.',
+        },
+        {
+            question: 'Can both parents apply for special needs costs?',
+            answer:
+                'Yes, but typically the parent with primary care who incurs most costs applies. If both parents have significant costs, each can submit their own application with supporting evidence.',
+        },
+    ],
+
+    'high-costs-caring-educating-child': [
+        {
+            question: 'Can I claim private school fees under Reason 3?',
+            answer:
+                'Yes, private school fees are one of the most common grounds for Reason 3. However, you should show that both parents agreed to private schooling (especially if agreed before separation) or that it is in the child\'s best interests.',
+        },
+        {
+            question: 'What if the other parent refuses to pay school fees?',
+            answer:
+                'If you have evidence of a prior agreement (court order, financial agreement, emails, or texts), you may be able to apply for a Change of Assessment. The Registrar can order contribution even without the other parent\'s current agreement.',
+        },
+        {
+            question: 'Are extracurricular activities covered under Reason 3?',
+            answer:
+                'Yes, if the costs are substantial and both parents previously agreed to enrol the child in those activities. Representative sport, elite music programs, and competitive dance are common examples.',
+        },
+        {
+            question: 'What evidence do I need for education costs?',
+            answer:
+                'Provide school fee invoices, receipts for uniforms and books, evidence of prior parental agreement (emails, texts, court orders), and any tutor or program costs.',
+        },
+    ],
+
+    'childs-income-resources': [
+        {
+            question: 'When does a child\'s income affect child support?',
+            answer:
+                'A child\'s income or resources may affect child support when they are significant enough to reduce the child\'s need for parental financial support—for example, a substantial inheritance or trust fund.',
+        },
+        {
+            question: 'Does a teenager\'s part-time job affect child support?',
+            answer:
+                'Usually not, unless the income is substantial. Small part-time earnings (e.g., $50-100/week) are unlikely to affect the assessment, but significant income may be considered.',
+        },
+        {
+            question: 'Can trust funds or inheritances be considered?',
+            answer:
+                'Yes. If a child has access to a trust fund or received an inheritance that can be used for their expenses, this can be considered under Reason 4.',
+        },
+        {
+            question: 'What evidence do I need for a Reason 4 application?',
+            answer:
+                'Provide evidence of the child\'s income (payslips), bank statements, trust deeds, inheritance documentation, or any other proof of the child\'s financial resources.',
+        },
+    ],
+
+    'transferred-benefits': [
+        {
+            question: 'What counts as a transferred benefit under Reason 5?',
+            answer:
+                'Transferred benefits include lump sum payments made as part of a property settlement for the child, prepaid school fees, direct payment of medical expenses, or assets transferred into the child\'s name.',
+        },
+        {
+            question: 'Can property settlement payments reduce child support?',
+            answer:
+                'Yes, if you transferred money or property specifically for your child\'s benefit as part of a property settlement, this can be considered. You need to show the transfer was intended for the child, not just general spousal division.',
+        },
+        {
+            question: 'How long do transferred benefits affect child support?',
+            answer:
+                'The Registrar determines how long the benefit should offset payments based on the amount transferred and the child\'s ongoing needs. Large transfers may affect multiple years.',
+        },
+        {
+            question: 'What evidence do I need for transferred benefits?',
+            answer:
+                'Provide property settlement orders or agreements, receipts for prepaid expenses, bank statements showing transfers, and any documentation showing the transfer was for the child\'s benefit.',
+        },
+    ],
+
+    'high-childcare-costs': [
+        {
+            question: 'What childcare costs qualify under Reason 6?',
+            answer:
+                'Qualifying costs include long daycare, family daycare, before and after school care, vacation care programs, and in-home care (nannies) when necessary for work. Costs must be out-of-pocket after Child Care Subsidy.',
+        },
+        {
+            question: 'Does Child Care Subsidy affect a Reason 6 application?',
+            answer:
+                'Yes. The Registrar considers your out-of-pocket costs after the Child Care Subsidy. If your subsidy is low or you\'re ineligible, your case may be stronger.',
+        },
+        {
+            question: 'Can I claim nanny or au pair costs?',
+            answer:
+                'Yes, if you can demonstrate these are necessary for you to work and are reasonable for your situation. You should show why centre-based care is not suitable.',
+        },
+        {
+            question: 'What evidence do I need for childcare costs?',
+            answer:
+                'Provide childcare invoices showing the total cost and CCS received, your work schedule or contract showing hours worked, and evidence that childcare is necessary for employment.',
+        },
+    ],
+
+    'reduced-capacity-commitments': [
+        {
+            question: 'What commitments qualify under Reason 7?',
+            answer:
+                'Qualifying commitments include supporting children from another relationship, caring for a new partner who cannot work due to illness or disability, or supporting elderly parents you have a legal duty to maintain.',
+        },
+        {
+            question: 'Does a new partner reduce my child support obligation?',
+            answer:
+                'Not automatically. Only if your new partner cannot work (due to illness, disability, or caring responsibilities) and you are their sole source of support may this reduce your capacity to pay.',
+        },
+        {
+            question: 'How do children from another relationship affect my assessment?',
+            answer:
+                'If you have children from another relationship you support, either through another child support assessment or as resident children, this may reduce your capacity to pay for the children in this assessment.',
+        },
+        {
+            question: 'What evidence do I need for reduced capacity?',
+            answer:
+                'Provide medical certificates for an unwell partner, care responsibilities documentation, evidence of financial support provided to other dependants, and your living expense budget.',
+        },
+    ],
+
+    'income-property-resources': [
+        {
+            question: 'What if the other parent is hiding income?',
+            answer:
+                'Reason 8A allows you to apply if you believe the other parent has income, property, or resources not reflected in their tax return. This includes cash business income, company benefits, trust distributions, and investment income.',
+        },
+        {
+            question: 'Can lifestyle be used as evidence of hidden income?',
+            answer:
+                'Yes. If the other parent lives a lifestyle inconsistent with their declared income (expensive cars, holidays, properties), this can be evidence for a Reason 8A application.',
+        },
+        {
+            question: 'What if the other parent uses a company structure?',
+            answer:
+                'The Registrar can look through company structures to determine a parent\'s true financial position. Company cars, expense accounts, and retained profits may all be considered.',
+        },
+        {
+            question: 'What evidence do I need for hidden income claims?',
+            answer:
+                'Provide evidence of lifestyle (photos of cars, property, holidays), social media posts, business searches showing company ownership, and any documents suggesting undeclared income.',
+        },
+    ],
+
+    'earning-capacity': [
+        {
+            question: 'What is earning capacity?',
+            answer:
+                'Earning capacity is what a person could reasonably earn if they were working to their full potential, based on their qualifications, experience, health, and the job market in their area.',
+        },
+        {
+            question: 'Can child support be based on potential income rather than actual income?',
+            answer:
+                'Yes. Under Reason 8B, if a parent is deliberately underemployed or has reduced their income without good reason, the Registrar can assess child support based on their earning capacity rather than actual income.',
+        },
+        {
+            question: 'What if the other parent quit their job after separation?',
+            answer:
+                'If they quit without a good reason (such as illness or caring responsibilities), you may apply under Reason 8B. The Registrar will consider their work history, qualifications, and available jobs.',
+        },
+        {
+            question: 'What evidence do I need for an earning capacity claim?',
+            answer:
+                'Provide their work history (LinkedIn, resume), qualifications and degrees, job advertisements showing available positions in their field, and evidence of their previous income.',
+        },
+    ],
+
+    'duty-to-maintain-another': [
+        {
+            question: 'What is a duty to maintain another person?',
+            answer:
+                'A duty to maintain is a legal obligation to financially support someone, such as a court-ordered spousal maintenance payment to a former partner or legal obligation to support an elderly or disabled relative.',
+        },
+        {
+            question: 'How is Reason 9 different from Reason 7?',
+            answer:
+                'Reason 7 covers commitments that reduce your capacity (like supporting a new family), while Reason 9 specifically covers pre-existing legal obligations like court-ordered spousal maintenance from a previous relationship.',
+        },
+        {
+            question: 'Does spousal maintenance reduce child support?',
+            answer:
+                'Court-ordered spousal maintenance can be considered under Reason 9 if it significantly affects your capacity to pay child support. Voluntary payments may be harder to claim.',
+        },
+        {
+            question: 'What evidence do I need for a duty to maintain claim?',
+            answer:
+                'Provide court orders for spousal maintenance, payment records showing compliance, and evidence that the obligation is legally required (not voluntary).',
+        },
+    ],
+
+    'resident-child-responsibility': [
+        {
+            question: 'What is a resident child under Reason 10?',
+            answer:
+                'A resident child is a child who lives with you but is not your biological or legal child—for example, a stepchild whose other parent cannot provide support due to death, illness, or absence.',
+        },
+        {
+            question: 'Can stepchildren affect my child support obligation?',
+            answer:
+                'Yes, under specific conditions. The child must live with you primarily, you must have been with their parent for at least 2 years, and their other biological parent must be unable to support them.',
+        },
+        {
+            question: 'What if the stepchild\'s other parent is deceased?',
+            answer:
+                'If the other biological parent has passed away, you may be able to apply under Reason 10 if you have taken on responsibility for supporting the child and have been their parent\'s partner for 2+ years.',
+        },
+        {
+            question: 'What evidence do I need for a resident child claim?',
+            answer:
+                'Provide proof of your relationship duration (marriage certificate, lease agreements), death certificate if applicable, evidence the child lives with you, and documentation of the child\'s financial needs.',
+        },
+    ],
+};
+
+/**
+ * Gets FAQs for a specific Change of Assessment reason by its URL slug
+ *
+ * @param slug - The URL slug of the CoA reason
+ * @returns Array of FAQs for that reason, or empty array if not found
+ */
+export function getCoAFaqs(slug: string): CoAFaq[] {
+    return COA_FAQ_DATA[slug] ?? [];
+}
+
+/**
+ * Builds FAQPage schema markup for a CoA reason page
+ *
+ * @param slug - The URL slug of the CoA reason
+ * @returns FAQPage schema object for structured data
+ */
+export function buildCoAFaqSchema(slug: string) {
+    const faqs = getCoAFaqs(slug);
+
+    if (faqs.length === 0) {
+        return null;
+    }
+
+    return {
+        '@type': 'FAQPage',
+        mainEntity: faqs.map((faq) => ({
+            '@type': 'Question',
+            name: faq.question,
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: faq.answer,
+            },
+        })),
+    };
+}
+--- END OF FILE: src/utils/coa-faqs.ts ---
 
 --- START OF FILE: src/utils/coa-reasons.ts ---
 /**
@@ -39520,6 +41098,156 @@ export function formatCurrency(value: number | undefined | null): string {
 }
 --- END OF FILE: src/utils/formatters.ts ---
 
+--- START OF FILE: src/utils/ftb-logic.ts ---
+/**
+ * FTB (Family Tax Benefit) Logic for 2025-26 Financial Year
+ *
+ * Implements calculations for how Child Support affects Centrelink FTB payments.
+ * Used to drive lawyer inquiry conversions by highlighting financial impacts.
+ *
+ * @see https://www.servicesaustralia.gov.au/maintenance-income-test
+ */
+
+// ============================================================================
+// 2025-26 Financial Year Constants
+// ============================================================================
+
+/** FTB Part A Method 1 income limit */
+export const FTB_A_METHOD_1_LIMIT = 66722;
+
+/** FTB Part A Method 2 income limit */
+export const FTB_A_METHOD_2_LIMIT = 118771;
+
+/** Rough upper limit where FTB Part A hits $0 */
+export const FTB_A_CUTOFF_ESTIMATE = 135000;
+
+/** FTB Part B primary earner income limit ($120k hard cap) */
+export const FTB_B_PRIMARY_LIMIT = 120007;
+
+/** Maintenance Income Free Area - base amount for 1st child */
+export const MIFA_BASE = 2003.85;
+
+/** Maintenance Income Free Area - additional amount per extra child */
+export const MIFA_ADDITIONAL = 667.95;
+
+/** Maintenance Income Test taper rate (50c per $1 of child support) */
+export const MIT_TAPER = 0.50;
+
+// ============================================================================
+// Types
+// ============================================================================
+
+/**
+ * Result of Part B eligibility check
+ */
+export type PartBEligibilityResult =
+    | 'ELIGIBLE_VIA_DEDUCTION'  // The "Green Light" - deduction drops income below limit
+    | 'ELIGIBLE'                 // Standard eligibility (already under limit)
+    | 'INELIGIBLE';              // Income too high even after deduction
+
+// ============================================================================
+// Calculation Functions
+// ============================================================================
+
+/**
+ * Calculate how much FTB Part A a payee loses due to Child Support received.
+ *
+ * FTB Part A is reduced by 50 cents for each dollar of child support received
+ * above the Maintenance Income Free Area (MIFA).
+ *
+ * @param childSupportReceived - Annual child support received
+ * @param childCount - Number of children in the assessment
+ * @param myIncome - The receiver's (payee's) annual income
+ * @returns Annual FTB Part A reduction amount
+ *
+ * @example
+ * // Receive $10,000 CS with 2 children and income of $60,000
+ * calculatePartAReduction(10000, 2, 60000) // Returns ~$3,665
+ */
+export function calculatePartAReduction(
+    childSupportReceived: number,
+    childCount: number,
+    myIncome: number
+): number {
+    // Income Filter: If income is above the cutoff estimate, user is too wealthy
+    // to receive FTB Part A, so they can't lose it
+    if (myIncome > FTB_A_CUTOFF_ESTIMATE) {
+        return 0;
+    }
+
+    // Calculate the Maintenance Income Free Area threshold
+    // First child gets base amount, each additional child adds MIFA_ADDITIONAL
+    const threshold = MIFA_BASE + (MIFA_ADDITIONAL * Math.max(0, childCount - 1));
+
+    // Calculate the loss: 50c reduction per dollar above threshold
+    const loss = (childSupportReceived - threshold) * MIT_TAPER;
+
+    // Return 0 if no reduction (child support below threshold)
+    return Math.max(0, loss);
+}
+
+/**
+ * Check if a Payer becomes eligible for FTB Part B because
+ * Child Support Paid is deductible from assessable income.
+ *
+ * Child Support paid reduces the payer's assessable income for the
+ * FTB Part B income test, potentially bringing them under the $120k limit.
+ *
+ * @param childSupportPaid - Annual child support paid
+ * @param myIncome - The payer's annual income
+ * @returns Eligibility status for FTB Part B
+ *
+ * @example
+ * // Income of $130,000, paying $15,000 CS
+ * checkPartBEligibility(15000, 130000) // Returns "ELIGIBLE_VIA_DEDUCTION"
+ *
+ * @example
+ * // Income of $100,000, paying $5,000 CS
+ * checkPartBEligibility(5000, 100000) // Returns "ELIGIBLE"
+ */
+export function checkPartBEligibility(
+    childSupportPaid: number,
+    myIncome: number
+): PartBEligibilityResult {
+    // Calculate adjusted income after child support deduction
+    const adjustedIncome = myIncome - childSupportPaid;
+
+    // Check for "Green Light" scenario: was over limit, now under
+    if (myIncome > FTB_B_PRIMARY_LIMIT && adjustedIncome < FTB_B_PRIMARY_LIMIT) {
+        return 'ELIGIBLE_VIA_DEDUCTION';
+    }
+
+    // Standard eligibility: adjusted income under limit
+    if (adjustedIncome < FTB_B_PRIMARY_LIMIT) {
+        return 'ELIGIBLE';
+    }
+
+    // Income still too high even after deduction
+    return 'INELIGIBLE';
+}
+
+/**
+ * Check if a payer is "close" to FTB Part B eligibility.
+ * Used to show educational info about tax deductibility.
+ *
+ * @param myIncome - The payer's annual income
+ * @param childSupportPaid - Annual child support paid
+ * @param marginThreshold - How close to consider "near eligible" (default $15,000)
+ * @returns True if close to eligibility
+ */
+export function isCloseToPartBEligibility(
+    myIncome: number,
+    childSupportPaid: number,
+    marginThreshold: number = 15000
+): boolean {
+    const adjustedIncome = myIncome - childSupportPaid;
+    return (
+        adjustedIncome >= FTB_B_PRIMARY_LIMIT &&
+        adjustedIncome < FTB_B_PRIMARY_LIMIT + marginThreshold
+    );
+}
+--- END OF FILE: src/utils/ftb-logic.ts ---
+
 --- START OF FILE: src/utils/lead-scoring.ts ---
 /**
  * Lead Scoring System
@@ -39560,11 +41288,13 @@ export interface LeadScoreResult {
 // ============================================================================
 
 const SCORING_POINTS = {
-    COURT_DATE_URGENT: 10,      // Court date within 30 days
+    COURT_DATE_URGENT: 10,       // Court date within 30 days
+    INTERNATIONAL_JURISDICTION: 8, // International case - high complexity
     PROPERTY_SETTLEMENT: 8,      // Property settlement pending
     INCOME_ISSUES: 7,            // Hidden assets or cash business
     HIGH_VALUE_CASE: 6,          // Liability > $15,000
     MULTIPLE_COMPLEXITY: 5,      // 3+ special circumstances
+    POST_SEPARATION_INCOME: 5,   // PSI - common, valuable case
     SPECIAL_CIRCUMSTANCE: 4,     // Other special circumstance
     SHARED_CARE_DISPUTE: 3,      // Care arrangement 35-65%
     BINDING_AGREEMENT: 2,        // Interest in binding agreement
@@ -39606,6 +41336,20 @@ function isCourtDateUrgent(courtDate: Date | null | undefined): boolean {
  */
 function hasPropertySettlement(specialCircumstances: string[] = []): boolean {
     return specialCircumstances.includes(PROPERTY_SETTLEMENT_CIRCUMSTANCE);
+}
+
+/**
+ * Check if case has international jurisdiction complexity
+ */
+function hasInternationalJurisdiction(specialCircumstances: string[] = []): boolean {
+    return specialCircumstances.includes('international_jurisdiction');
+}
+
+/**
+ * Check if case has post-separation income claim
+ */
+function hasPostSeparationIncome(specialCircumstances: string[] = []): boolean {
+    return specialCircumstances.includes('post_separation_income');
 }
 
 /**
@@ -39686,10 +41430,22 @@ export function calculateLeadScore(input: LeadScoringInput): LeadScoreResult {
         factors.push('court_date_urgent');
     }
 
+    // International Jurisdiction (+8)
+    if (hasInternationalJurisdiction(input.specialCircumstances)) {
+        score += SCORING_POINTS.INTERNATIONAL_JURISDICTION;
+        factors.push('international_jurisdiction');
+    }
+
     // Property Settlement (+8)
     if (hasPropertySettlement(input.specialCircumstances)) {
         score += SCORING_POINTS.PROPERTY_SETTLEMENT;
         factors.push('property_settlement');
+    }
+
+    // Post-Separation Income (+5)
+    if (hasPostSeparationIncome(input.specialCircumstances)) {
+        score += SCORING_POINTS.POST_SEPARATION_INCOME;
+        factors.push('post_separation_income');
     }
 
     // Income Issues (+7)
@@ -40121,6 +41877,127 @@ export function getCapExplanation(
 }
 --- END OF FILE: src/utils/multi-case-rates.ts ---
 
+--- START OF FILE: src/utils/reciprocating-jurisdictions.ts ---
+/**
+ * List of reciprocating jurisdictions for child support assessment.
+ * These are countries that have an agreement with Australia regarding child support.
+ * 
+ * Source: Captured from reciprocating jurisdictions documentation (2026).
+ */
+export const RECIPROCATING_JURISDICTIONS = [
+    "Albania",
+    "Algeria",
+    "Andorra",
+    "Argentina",
+    "Austria",
+    "Barbados",
+    "Belarus",
+    "Belgium",
+    "Bosnia and Herzegovina",
+    "Brazil",
+    "Burkina Faso",
+    "Canada, except Quebec",
+    "Cape Verde",
+    "Central African Republic",
+    "Chile",
+    "Colombia",
+    "Croatia",
+    "Cyprus",
+    "Czech Republic",
+    "Denmark",
+    "Ecuador",
+    "Estonia",
+    "Fiji",
+    "Finland",
+    "France",
+    "Germany",
+    "Greece",
+    "Guatemala",
+    "Haiti",
+    "Holy See, The",
+    "Hong Kong",
+    "Hungary",
+    "India",
+    "Ireland",
+    "Italy",
+    "Kazakhstan",
+    "Kenya",
+    "Kyrgyzstan",
+    "Liberia",
+    "Lithuania",
+    "Luxembourg",
+    "Malawi",
+    "Malaysia",
+    "Malta",
+    "Mexico",
+    "Moldova",
+    "Monaco",
+    "Montenegro",
+    "Morocco",
+    "Nauru",
+    "Netherlands",
+    "New Zealand",
+    "Niger",
+    "North Macedonia",
+    "Norway",
+    "Pakistan",
+    "Philippines",
+    "Poland",
+    "Portugal",
+    "Romania",
+    "Serbia",
+    "Seychelles",
+    "Sierra Leone",
+    "Singapore",
+    "Slovakia",
+    "Slovenia",
+    "South Africa",
+    "Spain",
+    "Sri Lanka",
+    "Suriname",
+    "Sweden",
+    "Switzerland",
+    "Tanzania, except Zanzibar",
+    "Trinidad and Tobago",
+    "Tunisia",
+    "Turkey",
+    "Ukraine",
+    "United Kingdom, includes Alderney, Gibraltar, Guernsey, Isle of Man, Jersey, Sark",
+    "United States of America",
+    "Uruguay",
+    "Zambia",
+    "Zimbabwe"
+] as const;
+
+export type ReciprocatingJurisdiction = typeof RECIPROCATING_JURISDICTIONS[number];
+
+/**
+ * List of excluded jurisdictions.
+ * These are countries that can't accept Australian assessments.
+ * We can't make a child support assessment if the other parent lives in one of these countries.
+ * You may be able to get an Australian court order which we can send to the other country.
+ * 
+ * Source: Captured from excluded jurisdictions documentation (2026).
+ */
+export const EXCLUDED_JURISDICTIONS = [
+    "Brunei Darussalam",
+    "Cook Islands",
+    "Israel",
+    "Niue",
+    "Papua New Guinea",
+    "Samoa",
+    "Yukon, in Canada"
+] as const;
+
+export type ExcludedJurisdiction = typeof EXCLUDED_JURISDICTIONS[number];
+
+/**
+ * Non-reciprocating jurisdictions.
+ * These are any countries that aren't on the RECIPROCATING_JURISDICTIONS or EXCLUDED_JURISDICTIONS lists.
+ * We can't make a child support assessment. We also can't send an Australian court order to the other country.
+ */
+--- END OF FILE: src/utils/reciprocating-jurisdictions.ts ---
+
 --- START OF FILE: src/utils/responsive.ts ---
 /**
  * Responsive design utilities for web
@@ -40529,6 +42406,15 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   // Note: Court date reasons are now dynamic (e.g., court_12_Jan_2026)
   // See createCourtDateReasonId() function below
   {
+    id: 'post_separation_income',
+    label: 'I have earned extra income (second job/overtime) since we separated.',
+    description:
+      'Income from a pattern established after separation can be excluded from your ATI for up to 3 years.',
+    category: 'income',
+    priority: 2,
+    officialCodes: ['3.5'] as const,
+  },
+  {
     id: 'income_resources_not_reflected',
     label:
       'The other parent has income or assets not reflected in their tax return.',
@@ -40591,6 +42477,15 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
     category: 'other',
     priority: 3,
     officialCodes: ['5.2.11'] as const,
+  },
+  {
+    id: 'international_jurisdiction',
+    label: 'The other parent lives outside of Australia.',
+    description:
+      'International cases involve complex rules regarding reciprocating and excluded jurisdictions.',
+    category: 'other',
+    priority: 5,
+    officialCodes: ['1.5.1'] as const,
   },
   {
     id: 'child_resources',
@@ -41168,6 +43063,17 @@ export interface LeadSubmission {
   lead_score?: number;
   score_category?: string;
   scoring_factors?: string[];
+
+  // Special circumstances additional data (JSONB-compatible)
+  // Used for PSI and international jurisdiction fields
+  special_circumstances_data?: {
+    // PSI fields
+    separation_date?: string; // ISO date string (sensitive - privacy)
+    cohabited_6_months?: boolean;
+
+    // International fields
+    other_parent_country?: string;
+  } | null;
 }
 
 /**
@@ -41266,6 +43172,9 @@ export async function submitLead(lead: LeadSubmission): Promise<{
       lead_score: lead.lead_score,
       score_category: lead.score_category,
       scoring_factors: lead.scoring_factors,
+
+      // Special circumstances additional data (PSI, international)
+      special_circumstances_data: lead.special_circumstances_data,
     };
 
     // Insert lead into database and return the ID

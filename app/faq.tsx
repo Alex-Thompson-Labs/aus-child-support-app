@@ -24,6 +24,26 @@ const FAQ_DATA = [
                 question: 'What income is used for child support?',
                 answer: 'Child support uses your Adjusted Taxable Income (ATI), which includes taxable income, reportable fringe benefits, certain tax-free pensions, net investment losses, and reportable superannuation contributions.',
             },
+            {
+                question: 'What is the Self-Support Amount (SSA)?',
+                answer: 'The Self-Support Amount is one-third of the Male Total Average Weekly Earnings (MTAWE). This amount is deducted from each parent\'s ATI before calculating child support. In 2026, this is approximately $29,212 per year.',
+            },
+            {
+                question: 'How does the number of children affect child support?',
+                answer: 'More children generally means higher child support. The Costs of Children table uses age groups and combined parental income to determine the total cost, which increases with each additional child.',
+            },
+            {
+                question: 'What are relevant dependents and how do they affect my assessment?',
+                answer: 'Relevant dependents are other children you support who are not part of this child support case. Each relevant dependent reduces your child support income by a percentage (24% for one, 34% for two, 40% for three or more).',
+            },
+            {
+                question: 'How accurate is this calculator?',
+                answer: 'This calculator uses the exact formula and 2026 rates from Services Australia. However, special circumstances, care changes, or complex income situations may result in a different official assessment.',
+            },
+            {
+                question: 'How often should I recalculate child support?',
+                answer: 'You should recalculate when there are significant changes to income, care arrangements, or the number of children. Services Australia typically reassesses annually based on tax returns.',
+            },
         ],
     },
     // Change of Assessment FAQs
@@ -37,6 +57,30 @@ const FAQ_DATA = [
             {
                 question: 'When can I apply for a Change of Assessment?',
                 answer: 'You can apply when special circumstances mean the standard formula doesn\'t reflect your true situation. Common reasons include: the other parent has hidden income, you have high travel costs to see your children, or a property settlement affects your capacity to pay.',
+            },
+            {
+                question: 'What are the 10 reasons for a Change of Assessment?',
+                answer: 'The reasons include: (1) High costs of contact, (2) Special needs care costs, (3) High education costs, (4) Child\'s income, (5) Transferred benefits, (6) High childcare costs, (7) Reduced capacity, (8A) Hidden income/property, (8B) Earning capacity, (9) Legal duty to others, and (10) Resident child responsibility.',
+            },
+            {
+                question: 'How long does a Change of Assessment take?',
+                answer: 'A Change of Assessment typically takes 6-12 weeks from lodgement to decision. Complex cases involving hidden income or multiple reasons may take longer, especially if a conference is required.',
+            },
+            {
+                question: 'What evidence do I need for a Change of Assessment?',
+                answer: 'Evidence depends on the reason you\'re applying. Common documents include tax returns, receipts, medical reports, payslips, bank statements, and evidence of the other parent\'s lifestyle or assets.',
+            },
+            {
+                question: 'Can the other parent object to my application?',
+                answer: 'Yes. The other parent will be given an opportunity to respond to your application. They can provide their own evidence and attend a conference with the Registrar. Both parties have a chance to explain their situation.',
+            },
+            {
+                question: 'What happens after I lodge an application?',
+                answer: 'Services Australia will review your application, request any additional documents, and may schedule a conference call with both parties. A Registrar will make a decision based on all the evidence provided.',
+            },
+            {
+                question: 'Can I appeal a Change of Assessment decision?',
+                answer: 'Yes. If you disagree with the decision, you can object within 28 days or apply to the Social Security Appeals Tribunal (SSAT) for review. Legal advice can help you understand your options.',
             },
         ],
     },
@@ -55,6 +99,62 @@ const FAQ_DATA = [
             {
                 question: 'Is my information confidential?',
                 answer: 'Yes. Your personal and financial information is encrypted and only shared with the legal professionals who will be reviewing your case.',
+            },
+            {
+                question: 'How much does legal advice cost?',
+                answer: 'Initial consultations are often free or at a reduced rate. Costs for ongoing representation vary based on complexity. Many lawyers offer no-win, no-fee arrangements for child support matters.',
+            },
+            {
+                question: 'What can a lawyer help with in child support cases?',
+                answer: 'A lawyer can help with Change of Assessment applications, objections, SSAT appeals, binding child support agreements, and cases involving hidden income or complex financial structures.',
+            },
+            {
+                question: 'Do I need a lawyer for a Change of Assessment?',
+                answer: 'A lawyer is not required, but professional advice can help strengthen your case, especially for complex matters like Reason 8A (hidden income) or when the other parent has legal representation.',
+            },
+        ],
+    },
+    // Care Arrangements FAQs
+    {
+        category: 'Care Arrangements',
+        questions: [
+            {
+                question: 'How does split care affect child support?',
+                answer: 'Split care occurs when each parent has different children living with them primarily. Each child is assessed separately, and the parent with less care for each child typically pays support for that child.',
+            },
+            {
+                question: 'How are school holidays counted in care percentage?',
+                answer: 'Care is calculated over the entire year, including school holidays. If you have your children during school holidays, these nights are added to your total annual care calculation.',
+            },
+            {
+                question: 'What if the other parent doesn\'t follow the care arrangement?',
+                answer: 'If actual care differs from the assessed care by more than 14 nights per year, you can apply to Services Australia to update the assessment. Keep a record of actual care provided.',
+            },
+            {
+                question: 'What is the 14% threshold for care?',
+                answer: 'At 14% care (52 nights per year), your cost percentage begins to reduce your child support liability. Below 14%, you may still pay child support but receive no cost offset.',
+            },
+        ],
+    },
+    // Special Circumstances FAQs
+    {
+        category: 'Special Circumstances',
+        questions: [
+            {
+                question: 'When should I apply for a Change of Assessment?',
+                answer: 'Apply when the standard formula produces an unfair result due to special circumstances, such as: the other parent has unreported income, you have very high contact costs, or your child has special medical needs.',
+            },
+            {
+                question: 'Can I apply for multiple reasons at once?',
+                answer: 'Yes. You can list multiple reasons in one application. Many applicants combine Reason 8A (hidden income) with other financial reasons to present a complete picture of their situation.',
+            },
+            {
+                question: 'What happens after I\'m matched with a lawyer?',
+                answer: 'The lawyer will review your calculation, discuss your situation, and advise whether you have grounds for a Change of Assessment. They can help you prepare and lodge your application.',
+            },
+            {
+                question: 'Is there a priority for different reasons?',
+                answer: 'All 10 reasons are equally valid, but some are more common and have higher success rates. Reasons 8A (hidden income) and 1 (high contact costs) are frequently applied and have established precedents.',
             },
         ],
     },
@@ -91,7 +191,7 @@ export default function FAQPage() {
         <>
             <PageSEO
                 title="FAQ | Child Support Calculator Australia"
-                description="Frequently asked questions about Australian child support calculations, Change of Assessment applications, and connecting with family law professionals."
+                description="Frequently asked questions about Australian child support calculations, Change of Assessment applications, care arrangements, and connecting with family law professionals."
                 canonicalPath="/faq"
                 schema={faqSchema}
             />

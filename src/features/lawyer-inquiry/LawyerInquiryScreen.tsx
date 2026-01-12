@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AdditionalDetailsSection } from './components/AdditionalDetailsSection';
 import { ConsentSection } from './components/ConsentSection';
 import { EnrichmentView } from './components/EnrichmentView';
+import { FAQSection } from './components/FAQSection';
 import { FinancialSection } from './components/FinancialSection';
 import { FormHeader } from './components/FormHeader';
 import { PersonalInfoSection } from './components/PersonalInfoSection';
@@ -225,6 +226,9 @@ export default function LawyerInquiryScreen() {
             buttonText={params.inquiryConfig.buttonText}
             onSubmit={form.handleSubmit}
           />
+
+          {/* Section 6: FAQ */}
+          <FAQSection />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

@@ -11,7 +11,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PageSEO } from '../../src/components/seo/PageSEO';
+import Accordion from '../../src/components/ui/Accordion';
 import { Breadcrumb } from '../../src/components/ui/Breadcrumb';
+import { buildCoAFaqSchema, getCoAFaqs } from '../../src/utils/coa-faqs';
 import {
   COA_REASON_PAGES,
   getCoAReasonBySlug,
@@ -292,6 +294,21 @@ export default function ChangeOfAssessmentReasonPage() {
             </View>
           </View>
 
+          {/* FAQ Section */}
+          {getCoAFaqs(slug ?? '').length > 0 && (
+            <View style={styles.faqSection}>
+              {/* @ts-ignore - Web-only ARIA attributes */}
+              <Text style={styles.faqSectionTitle} accessibilityRole="header" aria-level="2">
+                Frequently Asked Questions
+              </Text>
+              {getCoAFaqs(slug ?? '').map((faq, index) => (
+                <Accordion key={index} title={faq.question}>
+                  <Text style={styles.faqText}>{faq.answer}</Text>
+                </Accordion>
+              ))}
+            </View>
+          )}
+
           {/* Disclaimer */}
           <View style={styles.disclaimer}>
             <Text style={styles.disclaimerText}>
@@ -310,8 +327,9 @@ export default function ChangeOfAssessmentReasonPage() {
  * Builds schema.org structured data for the page
  */
 function buildSchema(reason: CoAReasonPage) {
-  return {
-    '@context': 'https://schema.org',
+  const faqSchema = buildCoAFaqSchema(reason.slug);
+
+  const webPageSchema = {
     '@type': 'WebPage',
     name: reason.title,
     description: reason.metaDescription,
@@ -342,6 +360,14 @@ function buildSchema(reason: CoAReasonPage) {
         },
       ],
     },
+  };
+
+  // Return @graph with both WebPage and FAQPage schemas
+  return {
+    '@context': 'https://schema.org',
+    '@graph': faqSchema
+      ? [webPageSchema, faqSchema]
+      : [webPageSchema],
   };
 }
 
@@ -607,5 +633,22 @@ const styles = StyleSheet.create({
     color: '#475569',
     fontWeight: '500',
     maxWidth: 180,
+  },
+
+  // FAQ Section
+  faqSection: {
+    marginTop: 24,
+    marginBottom: 24,
+  },
+  faqSectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1e293b',
+    marginBottom: 16,
+  },
+  faqText: {
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#475569',
   },
 });
