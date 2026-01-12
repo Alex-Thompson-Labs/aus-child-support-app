@@ -37,7 +37,7 @@ interface CardConfig {
 const CARD_CONFIGS: Record<ConversionCardVariant, CardConfig> = {
   low_assessment: {
     variant: 'low_assessment',
-    backgroundColor: '#fef3c7', // Amber-100 (warning/yellow theme)
+    backgroundColor: '#eff6ff', // Blue-50 (Brand Blue)
     headline: 'Is this amount too low?',
     body: "A Fixed or Minimum Rate often means the other parent's real income isn't being assessed. You may be able to force a 'Change of Assessment'.",
     buttonText: 'Check Hidden Income Eligibility',
@@ -46,7 +46,7 @@ const CARD_CONFIGS: Record<ConversionCardVariant, CardConfig> = {
   },
   payer_reversal: {
     variant: 'payer_reversal',
-    backgroundColor: '#fef3c7', // Amber-100 (warning/yellow theme)
+    backgroundColor: '#eff6ff', // Blue-50 (Brand Blue)
     headline: 'Should the other parent be the payer?',
     body: "Both you and the other parent have triggered fixed rate limits for different children. If the other parent has unreported income, they may owe you more than this assessment shows.",
     buttonText: 'Check Hidden Income Eligibility',
@@ -55,7 +55,7 @@ const CARD_CONFIGS: Record<ConversionCardVariant, CardConfig> = {
   },
   dispute_risk: {
     variant: 'dispute_risk',
-    backgroundColor: '#fff8e1', // Light amber tint (subtle alert background)
+    backgroundColor: '#eff6ff', // Blue-50 (Brand Blue)
     headline: 'Protect Your Care Percentage',
     body: 'You are in a high-risk zone for care disputes (35-65%). A small shift in nights can drastically change this assessment. Secure your arrangement now.',
     buttonText: 'Secure My Arrangement',
@@ -73,7 +73,7 @@ const CARD_CONFIGS: Record<ConversionCardVariant, CardConfig> = {
   },
   binding_agreement: {
     variant: 'binding_agreement',
-    backgroundColor: '#e2e8f0', // Platinum/Silver grey (slate-200) - solid but light
+    backgroundColor: '#eff6ff', // Blue-50 (Brand Blue)
     headline: 'Want Certainty?',
     body: 'Lock in this amount with a Binding Child Support Agreement to prevent future surprises or changes by the other parent.',
     buttonText: 'Discuss Agreements',
@@ -234,15 +234,6 @@ export function SmartConversionFooter({
     onBeforeNavigate,
   ]);
 
-  // Determine if this is a low assessment variant (low_assessment or payer_reversal - both use amber styling)
-  const isLowAssessment = cardVariant === 'low_assessment' || cardVariant === 'payer_reversal';
-  // Determine if this is the subtle alert variant (dispute_risk)
-  const isSubtleAlert = cardVariant === 'dispute_risk';
-  // Determine if this is the professional document variant (binding_agreement)
-  const isProfessionalDoc = cardVariant === 'binding_agreement';
-  // Determine if this is the high value variant (high_value)
-  const isHighValue = cardVariant === 'high_value';
-
   return (
     <View style={styles.container}>
       <Pressable
@@ -250,10 +241,6 @@ export function SmartConversionFooter({
         style={({ pressed }) => [
           styles.card,
           { backgroundColor: cardConfig.backgroundColor },
-          isLowAssessment && styles.lowAssessmentBorder,
-          isSubtleAlert && styles.subtleAlertBorder,
-          isProfessionalDoc && styles.professionalDocBorder,
-          isHighValue && styles.highValueBorder,
           pressed && styles.cardPressed,
         ]}
         disabled={isNavigating}
@@ -265,61 +252,23 @@ export function SmartConversionFooter({
           <View style={styles.textContainer}>
             {/* @ts-ignore - Web-only ARIA attributes */}
             <Text
-              style={[
-                styles.headline,
-                isLowAssessment && styles.headlineLowAssessment,
-                isSubtleAlert && styles.headlineDark,
-                isProfessionalDoc && styles.headlineProfessional,
-                isHighValue && styles.headlineHighValue,
-              ]}
+              style={styles.headline}
               accessibilityRole="header"
               aria-level="2"
             >
               {cardConfig.headline}
             </Text>
-            <Text
-              style={[
-                styles.body,
-                isLowAssessment && styles.bodyLowAssessment,
-                isSubtleAlert && styles.bodyDark,
-                isProfessionalDoc && styles.bodyProfessional,
-                isHighValue && styles.bodyHighValue,
-              ]}
-            >
+            <Text style={styles.body}>
               {cardConfig.body}
             </Text>
           </View>
         </View>
         <View style={styles.buttonContainer}>
-          <View
-            style={[
-              styles.button,
-              isLowAssessment && styles.buttonLowAssessment,
-              isSubtleAlert && styles.buttonSolid,
-              isProfessionalDoc && styles.buttonProfessional,
-              isHighValue && styles.buttonHighValue,
-            ]}
-          >
-            <Text
-              style={[
-                styles.buttonText,
-                isLowAssessment && styles.buttonTextLowAssessment,
-                isProfessionalDoc && styles.buttonTextProfessional,
-                isSubtleAlert && styles.buttonTextSolid,
-                isHighValue && styles.buttonTextHighValue,
-              ]}
-            >
+          <View style={styles.button}>
+            <Text style={styles.buttonText}>
               {cardConfig.buttonText}
             </Text>
-            <Text
-              style={[
-                styles.buttonArrow,
-                isLowAssessment && styles.buttonTextLowAssessment,
-                isSubtleAlert && styles.buttonTextSolid,
-                isProfessionalDoc && styles.buttonTextProfessional,
-                isHighValue && styles.buttonTextHighValue,
-              ]}
-            >
+            <Text style={styles.buttonArrow}>
               →
             </Text>
           </View>
@@ -337,6 +286,8 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
     padding: 20,
+    borderWidth: 1,
+    borderColor: '#3b82f6', // Blue-500 (Brand Blue border)
     ...shadowPresets.medium,
   },
   cardPressed: {
@@ -354,21 +305,20 @@ const styles = StyleSheet.create({
   headline: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#ffffff',
+    color: '#1e3a8a', // Blue-900 (Brand Blue headline)
     marginBottom: 8,
     lineHeight: 24,
   },
   body: {
     fontSize: 14,
-    color: '#ffffff',
-    opacity: 0.95,
+    color: '#374151', // Gray-700 (readable body text)
     lineHeight: 20,
   },
   buttonContainer: {
     alignItems: 'stretch',
   },
   button: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: '#2563eb', // Blue-600 (Brand Blue button)
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -376,7 +326,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: '#2563eb', // Blue-600
   },
   buttonText: {
     fontSize: 16,
@@ -388,80 +338,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#ffffff',
     fontWeight: '600',
-  },
-  // Low Assessment Variant Styles (for low_assessment)
-  lowAssessmentBorder: {
-    borderWidth: 1,
-    borderColor: '#f59e0b', // Amber-500 border
-  },
-  headlineLowAssessment: {
-    color: '#92400e', // Amber-800 for headline
-  },
-  bodyLowAssessment: {
-    color: '#78350f', // Amber-900 for body text
-    opacity: 1,
-  },
-  buttonLowAssessment: {
-    backgroundColor: '#f59e0b', // Amber-500 solid button
-    borderColor: '#f59e0b',
-  },
-  buttonTextLowAssessment: {
-    color: '#ffffff', // White text on amber button
-  },
-  // Subtle Alert Variant Styles (for dispute_risk)
-  subtleAlertBorder: {
-    borderWidth: 1,
-    borderColor: '#f59e0b', // Brand color border
-  },
-  headlineDark: {
-    color: '#111827', // Gray-900 for high readability
-  },
-  bodyDark: {
-    color: '#374151', // Gray-700 for body text
-    opacity: 1, // Remove the white opacity
-  },
-  buttonSolid: {
-    backgroundColor: '#f59e0b', // Solid brand color button
-    borderColor: '#f59e0b',
-  },
-  buttonTextSolid: {
-    color: '#ffffff', // White text on solid button
-  },
-  // Platinum/Silver Variant Styles (for binding_agreement)
-  professionalDocBorder: {
-    borderWidth: 0, // No border needed - grey background provides contrast
-  },
-  headlineProfessional: {
-    color: '#0f172a', // Dark slate (slate-900) for strong headline
-  },
-  bodyProfessional: {
-    color: '#334155', // Slate-700 for readable body text
-    opacity: 1,
-  },
-  buttonProfessional: {
-    backgroundColor: '#334155', // Dark slate/charcoal (slate-700) for high contrast
-    borderColor: '#334155',
-  },
-  buttonTextProfessional: {
-    color: '#ffffff', // White text on dark button
-  },
-  // High Value Variant Styles (for high_value)
-  highValueBorder: {
-    borderWidth: 1,
-    borderColor: '#3b82f6', // Solid brand blue border (blue-500)
-  },
-  headlineHighValue: {
-    color: '#1e3a8a', // blue-900 (matches step breakdown card headings)
-  },
-  bodyHighValue: {
-    color: '#374151', // High readability body text (gray-700)
-    opacity: 1, // Remove the white opacity
-  },
-  buttonHighValue: {
-    backgroundColor: '#2563eb', // Solid brand blue button (blue-600)
-    borderColor: '#2563eb',
-  },
-  buttonTextHighValue: {
-    color: '#ffffff', // White text on blue button
   },
 });

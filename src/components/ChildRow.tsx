@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { ChildInput } from '../utils/calculator';
+
 import { CARE_PERIOD_DAYS } from '../utils/child-support-constants';
 import {
   isWeb,
@@ -10,6 +11,7 @@ import {
 } from '../utils/responsive';
 import { createShadow } from '../utils/shadow-styles';
 import { PeriodPicker } from './PeriodPicker';
+
 
 interface ChildRowProps {
   child: ChildInput;
@@ -32,10 +34,12 @@ export function ChildRow({
   const { isMobile } = useResponsive();
 
   // Local state for input values while editing
-  const [editingField, setEditingField] = useState<'A' | 'B' | 'NPC' | null>(
-    null
-  );
+  const [editingField, setEditingField] = useState<
+    'A' | 'B' | 'NPC' | 'Age' | null
+  >(null);
   const [localValue, setLocalValue] = useState('');
+
+
 
   const maxValue =
     child.carePeriod === 'week'
@@ -134,6 +138,31 @@ export function ChildRow({
     if (editingField === 'NPC') return localValue;
     const amount = child.careAmountNPC ?? 0;
     return amount === 0 ? '' : amount.toString();
+  };
+
+  // Age input handlers
+  const handleFocusAge = () => {
+    setEditingField('Age');
+    setLocalValue('');
+  };
+
+  const handleChangeAge = (text: string) => {
+    const cleanedText = text.replace(/[^0-9]/g, '').slice(0, 2);
+    setLocalValue(cleanedText);
+    const newAge = parseInt(cleanedText, 10) || 0;
+    onUpdate({ age: newAge });
+  };
+
+  const handleBlurAge = () => {
+    const newAge = parseInt(localValue, 10) || 0;
+    onUpdate({ age: newAge });
+    setEditingField(null);
+    setLocalValue('');
+  };
+
+  const getDisplayValueAge = () => {
+    if (editingField === 'Age') return localValue;
+    return child.age === 0 ? '' : child.age.toString();
   };
 
   const handlePeriodChange = (
@@ -272,58 +301,33 @@ export function ChildRow({
             />
           </View>
 
-          {/* Age Range Toggle */}
+          {/* Age Input */}
           <View
             style={[
               styles.toggleWithLabel,
               isMobile && styles.optionItemMobile,
             ]}
           >
-            <Text style={styles.toggleLabel}>Age Range</Text>
-            <View style={styles.toggleGroup}>
-              <Pressable
-                onPress={() => onUpdate({ age: 'Under 13' })}
-                style={[
-                  styles.toggleButton,
-                  styles.toggleButtonLeft,
-                  child.age === 'Under 13' && styles.toggleButtonActive,
-                  isWeb && webClickableStyles,
-                ]}
-                accessibilityRole="button"
-                accessibilityLabel="Select age under 13"
-                accessibilityState={{ selected: child.age === 'Under 13' }}
-              >
-                <Text
-                  style={[
-                    styles.toggleButtonText,
-                    child.age === 'Under 13' && styles.toggleButtonTextActive,
-                  ]}
-                >
-                  {'<13'}
-                </Text>
-              </Pressable>
-              <Pressable
-                onPress={() => onUpdate({ age: '13+' })}
-                style={[
-                  styles.toggleButton,
-                  styles.toggleButtonRight,
-                  child.age === '13+' && styles.toggleButtonActive13Plus,
-                  isWeb && webClickableStyles,
-                ]}
-                accessibilityRole="button"
-                accessibilityLabel="Select age 13 and over"
-                accessibilityState={{ selected: child.age === '13+' }}
-              >
-                <Text
-                  style={[
-                    styles.toggleButtonText,
-                    child.age === '13+' && styles.toggleButtonTextActive,
-                  ]}
-                >
-                  13+
-                </Text>
-              </Pressable>
-            </View>
+            <Text style={styles.toggleLabel}>Age</Text>
+            <TextInput
+              style={[
+                styles.careInput,
+                styles.ageInput,
+                isWeb && webInputStyles,
+              ]}
+              value={getDisplayValueAge()}
+              onChangeText={handleChangeAge}
+              onFocus={handleFocusAge}
+              onBlur={handleBlurAge}
+              placeholder="0"
+              keyboardType="number-pad"
+              maxLength={2}
+              placeholderTextColor="#64748b"
+              accessibilityLabel="Child's age"
+              accessibilityHint="Enter child's age in years"
+              {...(isWeb && { inputMode: 'numeric' as any })}
+            />
+
           </View>
         </View>
       </View>
@@ -360,8 +364,8 @@ const styles = StyleSheet.create({
     }),
     ...(isWeb
       ? {
-          scrollSnapAlign: 'start',
-        }
+        scrollSnapAlign: 'start',
+      }
       : {}),
   } as any,
   containerDesktop: {
@@ -430,6 +434,13 @@ const styles = StyleSheet.create({
   compactInput: {
     width: 70,
   },
+  ageInput: {
+    width: 56,
+    height: 32,
+    fontSize: 13,
+    paddingVertical: 0,
+    borderRadius: 6,
+  },
   headerLabelA: {
     fontSize: 12,
     fontWeight: '600',
@@ -465,6 +476,8 @@ const styles = StyleSheet.create({
   toggleWithLabel: {
     alignItems: 'center',
     gap: 4,
+    position: 'relative',
+    zIndex: 10,
   },
   toggleLabel: {
     fontSize: 10,
@@ -512,6 +525,7 @@ const styles = StyleSheet.create({
   toggleButtonTextActive: {
     color: '#ffffff', // white on blue
   },
+
   removeButton: {
     position: 'absolute',
     top: 4,
@@ -525,8 +539,8 @@ const styles = StyleSheet.create({
     zIndex: 10, // Ensure button stays on top
     ...(isWeb
       ? {
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-        }
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+      }
       : {}),
     ...createShadow({
       shadowColor: '#000',

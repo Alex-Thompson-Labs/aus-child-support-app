@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import type {
+  AgeRange,
   CalculationResults,
   CalculatorInputs,
   ChildInput,
@@ -8,8 +9,9 @@ import type {
   NonParentCarerInfo,
   OtherCaseChild,
   PayerRole,
-  RelevantDependents,
+  RelevantDependents
 } from '../utils/calculator';
+import { deriveAgeRange } from '../utils/calculator';
 import {
   applyMultiCaseCap,
   calculateMultiCaseAllowance,
@@ -61,7 +63,7 @@ const initialFormState: CalculatorFormState = {
   multiCaseA: { otherChildren: [] },
   multiCaseB: { otherChildren: [] },
   // Non-parent carer support (Formula 4)
-  nonParentCarer: { enabled: false, carePercentage: 0 },
+  nonParentCarer: { enabled: false },
 };
 
 export function useCalculator() {
@@ -80,7 +82,7 @@ export function useCalculator() {
         ...prev.children,
         {
           id: `child-${Date.now()}-${Math.random()}`,
-          age: 'Under 13',
+          age: 5, // Default to age 5 (Under 13)
           careAmountA: 8,
           careAmountB: 6,
           carePeriod: 'fortnight',
@@ -203,17 +205,6 @@ export function useCalculator() {
       newErrors.multiCaseB = 'Maximum 10 children in other cases.';
     }
 
-    // Validate non-parent carer (Formula 4)
-    if (formState.nonParentCarer.enabled) {
-      if (formState.nonParentCarer.carePercentage < 35) {
-        newErrors.nonParentCarer =
-          'Non-parent carer must have at least 35% care.';
-      }
-      if (formState.nonParentCarer.carePercentage > 100) {
-        newErrors.nonParentCarer = 'Care percentage cannot exceed 100%.';
-      }
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [formState]);
@@ -234,46 +225,57 @@ export function useCalculator() {
       const ATI_A = incomeA;
       const ATI_B = incomeB;
 
-      // Convert children to calculation format
-      const children = formState.children.map((c) => ({
-        age: c.age as 'Under 13' | '13+',
-        careA: convertCareToPercentage(c.careAmountA, c.carePeriod),
-        careB: convertCareToPercentage(c.careAmountB, c.carePeriod),
-      }));
+      // Convert children to calculation format with derived age ranges
+      const children = formState.children.map((c) => {
+        const ageRange = deriveAgeRange(c.age);
+        return {
+          age: c.age,
+          ageRange,
+          careA: convertCareToPercentage(c.careAmountA, c.carePeriod),
+          careB: convertCareToPercentage(c.careAmountB, c.carePeriod),
+        };
+      });
 
       // Step 1: Create virtual children for relevant dependents
       // Virtual children have 0% care since they're only used for cost calculation
+      // Use representative ages: 6 for u13, 14 for plus13
       const relDepChildrenA: {
-        age: 'Under 13' | '13+';
+        age: number;
+        ageRange: AgeRange;
         careA: number;
         careB: number;
       }[] = [
-          ...Array(relDepA.u13).fill({
-            age: 'Under 13' as const,
+          ...Array(relDepA.u13).fill(null).map(() => ({
+            age: 6,
+            ageRange: 'Under 13' as AgeRange,
             careA: 0,
             careB: 0,
-          }),
-          ...Array(relDepA.plus13).fill({
-            age: '13+' as const,
+          })),
+          ...Array(relDepA.plus13).fill(null).map(() => ({
+            age: 14,
+            ageRange: '13+' as AgeRange,
             careA: 0,
             careB: 0,
-          }),
+          })),
         ];
       const relDepChildrenB: {
-        age: 'Under 13' | '13+';
+        age: number;
+        ageRange: AgeRange;
         careA: number;
         careB: number;
       }[] = [
-          ...Array(relDepB.u13).fill({
-            age: 'Under 13' as const,
+          ...Array(relDepB.u13).fill(null).map(() => ({
+            age: 6,
+            ageRange: 'Under 13' as AgeRange,
             careA: 0,
             careB: 0,
-          }),
-          ...Array(relDepB.plus13).fill({
-            age: '13+' as const,
+          })),
+          ...Array(relDepB.plus13).fill(null).map(() => ({
+            age: 14,
+            ageRange: '13+' as AgeRange,
             careA: 0,
             careB: 0,
-          }),
+          })),
         ];
 
       // Step 2-4: Calculate Child Support Income (CSI)
@@ -323,12 +325,15 @@ export function useCalculator() {
       const incomePercB = CCSI > 0 ? (CSI_B / CCSI) * 100 : 0;
 
       // Step 5: Calculate Total Cost of Children
+      // Adult children (18+) are excluded from Services Australia assessment
+      // They can only receive Adult Child Maintenance via court order
+      const assessableChildren = children.filter((c) => c.age < 18);
       const { cost: totalCost, bracketInfo: costBracketInfo } = getChildCost(
         selectedYear,
-        children,
+        assessableChildren,
         CCSI
       );
-      const costPerChild = children.length > 0 ? totalCost / children.length : 0;
+      const costPerChild = assessableChildren.length > 0 ? totalCost / assessableChildren.length : 0;
 
       // Step 6–8: Calculate individual liabilities
       let totalLiabilityA = 0;
@@ -336,22 +341,23 @@ export function useCalculator() {
 
       // Check if non-parent carer is enabled
       const hasNPC = formState.nonParentCarer.enabled;
-      const npcCarePercent = hasNPC ? formState.nonParentCarer.carePercentage : 0;
 
       const childResults = children.map((c, childIndex) => {
+        // Determine adult child status
+        const isAdultChild = c.age >= 18;
+        const isTurning18 = c.age === 17;
+
         const roundedCareA = roundCarePercentage(c.careA);
         const roundedCareB = roundCarePercentage(c.careB);
 
         // Handle NPC care (Formula 4)
-        // Get NPC care from the child input if available
+        // Get NPC care from the child input (defaults to 0 if not set)
         const childInput = formState.children[childIndex];
         const rawCareNPC = hasNPC
-          ? childInput?.careAmountNPC !== undefined
-            ? convertCareToPercentage(
-              childInput.careAmountNPC,
-              childInput.carePeriod
+          ? convertCareToPercentage(
+              childInput?.careAmountNPC ?? 0,
+              childInput?.carePeriod ?? 'fortnight'
             )
-            : npcCarePercent
           : 0;
         const roundedCareNPC = roundCarePercentage(rawCareNPC);
         const costPercNPC = mapCareToCostPercent(roundedCareNPC);
@@ -363,26 +369,30 @@ export function useCalculator() {
         const childSupportPercA = incomePercA - costPercA;
         const childSupportPercB = incomePercB - costPercB;
 
+        // Adult children (18+) are excluded from standard child support calculation
+        // They can only receive Adult Child Maintenance via court order
         let liabilityA = 0;
         let liabilityB = 0;
 
-        const positivePercA = Math.max(0, childSupportPercA);
-        const positivePercB = Math.max(0, childSupportPercB);
+        if (!isAdultChild) {
+          const positivePercA = Math.max(0, childSupportPercA);
+          const positivePercB = Math.max(0, childSupportPercB);
 
-        if (positivePercA > positivePercB) {
-          if (roundedCareB >= 35 || (hasNPC && roundedCareNPC >= 35)) {
-            liabilityA = (positivePercA / 100) * costPerChild;
-          }
-        } else if (positivePercB > positivePercA) {
-          if (roundedCareA >= 35 || (hasNPC && roundedCareNPC >= 35)) {
-            liabilityB = (positivePercB / 100) * costPerChild;
+          if (positivePercA > positivePercB) {
+            if (roundedCareB >= 35 || (hasNPC && roundedCareNPC >= 35)) {
+              liabilityA = (positivePercA / 100) * costPerChild;
+            }
+          } else if (positivePercB > positivePercA) {
+            if (roundedCareA >= 35 || (hasNPC && roundedCareNPC >= 35)) {
+              liabilityB = (positivePercB / 100) * costPerChild;
+            }
           }
         }
 
-        // Calculate liability to NPC (Formula 4)
+        // Calculate liability to NPC (Formula 4) - also skip for adult children
         let liabilityToNPC_A = 0;
         let liabilityToNPC_B = 0;
-        if (hasNPC && roundedCareNPC >= 35) {
+        if (!isAdultChild && hasNPC && roundedCareNPC >= 35) {
           // Each parent's liability to NPC = their child support % × child cost
           if (childSupportPercA > 0) {
             liabilityToNPC_A =
@@ -394,12 +404,19 @@ export function useCalculator() {
           }
         }
 
-        totalLiabilityA += liabilityA;
-        totalLiabilityB += liabilityB;
+        // Only add liability for assessable children (not adult children)
+        if (!isAdultChild) {
+          totalLiabilityA += liabilityA;
+          totalLiabilityB += liabilityB;
+        }
 
         return {
           ...c,
-          costPerChild,
+          // Adult child flags for UI
+          isAdultChild,
+          isTurning18,
+          // Cost per child is 0 for adult children (excluded from calculation)
+          costPerChild: isAdultChild ? 0 : costPerChild,
           roundedCareA,
           roundedCareB,
           costPercA,
@@ -442,12 +459,15 @@ export function useCalculator() {
       // Check if MAR applies at case level (once per case, not per child)
       // MAR criteria:
       // 1. Parent received income support payment
-      // 2. Parent has less than 14% care of ALL children
+      // 2. Parent has less than 14% care of ALL assessable children (not 18+)
       // 3. Parent's ATI is below the self-support amount
+      const assessableChildResults = childResults.filter((c) => !c.isAdultChild);
       const marAppliesA =
-        ATI_A < SSA && supportA && childResults.every((c) => c.roundedCareA < 14);
+        ATI_A < SSA && supportA && assessableChildResults.length > 0 &&
+        assessableChildResults.every((c) => c.roundedCareA < 14);
       const marAppliesB =
-        ATI_B < SSA && supportB && childResults.every((c) => c.roundedCareB < 14);
+        ATI_B < SSA && supportB && assessableChildResults.length > 0 &&
+        assessableChildResults.every((c) => c.roundedCareB < 14);
 
       if (marAppliesA) {
         MAR_A = MAR; // Set once for the entire case
@@ -459,6 +479,11 @@ export function useCalculator() {
       }
 
       childResults.forEach((child, index) => {
+        // Skip adult children - they're excluded from FAR/MAR
+        if (child.isAdultChild) {
+          return;
+        }
+
         const roundedCareA = child.roundedCareA;
         const roundedCareB = child.roundedCareB;
 
@@ -469,8 +494,8 @@ export function useCalculator() {
 
         // Check if MAR applies for this parent (already determined at case level)
         if (marAppliesA) {
-          // MAR is paid once per case, so divide by total children to show per-child breakdown
-          liabilityA = MAR / childResults.length;
+          // MAR is paid once per case, so divide by total assessable children to show per-child breakdown
+          liabilityA = MAR / assessableChildResults.length;
           marAppliedA = true;
         } else if (ATI_A < MAX_PPS && !supportA && roundedCareB >= 66) {
           // FAR is paid per child (up to 3 children)
@@ -494,8 +519,8 @@ export function useCalculator() {
 
         // Check if MAR applies for this parent (already determined at case level)
         if (marAppliesB) {
-          // MAR is paid once per case, so divide by total children to show per-child breakdown
-          liabilityB = MAR / childResults.length;
+          // MAR is paid once per case, so divide by total assessable children to show per-child breakdown
+          liabilityB = MAR / assessableChildResults.length;
           marAppliedB = true;
         } else if (ATI_B < MAX_PPS && !supportB && roundedCareA >= 66) {
           // FAR is paid per child (up to 3 children)
@@ -849,7 +874,7 @@ export function useCalculator() {
       multiCaseA: { otherChildren: [] },
       multiCaseB: { otherChildren: [] },
       // Non-parent carer support (Formula 4)
-      nonParentCarer: { enabled: false, carePercentage: 0 },
+      nonParentCarer: { enabled: false },
     });
     setResults(null);
     setErrors({});
@@ -860,7 +885,8 @@ export function useCalculator() {
 
   const getInputsForSave = useCallback((): CalculatorInputs => {
     const children = formState.children.map((c) => ({
-      age: c.age as 'Under 13' | '13+',
+      age: c.age,
+      ageRange: deriveAgeRange(c.age),
       careA: convertCareToPercentage(c.careAmountA, c.carePeriod),
       careB: convertCareToPercentage(c.careAmountB, c.carePeriod),
       careNPC:

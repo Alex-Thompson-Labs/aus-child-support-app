@@ -5,14 +5,14 @@
  * Includes optional Liability Estimator for Direct Enquiry users.
  */
 
+import { IncomeSupportModal } from '@/src/components/IncomeSupportModal';
 import {
     convertCareToPercentage,
     getChildCost,
     mapCareToCostPercent,
     type Child,
 } from '@/src/utils/child-support-calculations';
-import { SSA, MAX_PPS, MAR } from '@/src/utils/child-support-constants';
-import { IncomeSupportModal } from '@/src/components/IncomeSupportModal';
+import { MAR, MAX_PPS, SSA } from '@/src/utils/child-support-constants';
 import { isWeb } from '@/src/utils/responsive';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
@@ -62,7 +62,8 @@ export function EnrichmentView({
   // Per-child data for the liability estimator
   interface ChildData {
     id: number;
-    ageGroup: 'Under 13' | '13+';
+    /** Specific age of the child (0-25) */
+    age: number;
     nights: string; // String for TextInput compatibility
   }
   const [children, setChildren] = useState<ChildData[]>([]);
@@ -81,7 +82,7 @@ export function EnrichmentView({
       setChildren(
         Array.from({ length: childrenCount }, (_, i) => ({
           id: i + 1,
-          ageGroup: 'Under 13' as const,
+          age: 5, // Default to age 5 (Under 13)
           nights: '7', // Default to 7 nights (equal care)
         }))
       );
@@ -134,7 +135,7 @@ export function EnrichmentView({
       const carePercentB = 100 - carePercentA;
 
       return {
-        age: child.ageGroup,
+        age: child.age,
         careA: carePercentA,
         careB: carePercentB,
       };
@@ -172,7 +173,7 @@ export function EnrichmentView({
       const carePercentB = 100 - carePercentA;
 
       return {
-        age: child.ageGroup,
+        age: child.age,
         careA: carePercentA,
         careB: carePercentB,
       };
@@ -609,45 +610,24 @@ export function EnrichmentView({
                   <View key={child.id} style={estimatorStyles.childRow}>
                     <Text style={estimatorStyles.childLabel}>Child {child.id}</Text>
 
-                    {/* Age Toggle Buttons */}
+                    {/* Age Input */}
                     <View style={estimatorStyles.ageToggleRow}>
                       <Text style={estimatorStyles.ageToggleLabel}>Age:</Text>
-                      <View style={estimatorStyles.ageToggleButtons}>
-                        <Pressable
-                          style={[
-                            estimatorStyles.ageButton,
-                            child.ageGroup === 'Under 13' &&
-                              estimatorStyles.ageButtonActive,
-                          ]}
-                          onPress={() => updateChild(index, { ageGroup: 'Under 13' })}
-                        >
-                          <Text
-                            style={[
-                              estimatorStyles.ageButtonText,
-                              child.ageGroup === 'Under 13' &&
-                                estimatorStyles.ageButtonTextActive,
-                            ]}
-                          >
-                            Under 13
-                          </Text>
-                        </Pressable>
-                        <Pressable
-                          style={[
-                            estimatorStyles.ageButton,
-                            child.ageGroup === '13+' && estimatorStyles.ageButtonActive,
-                          ]}
-                          onPress={() => updateChild(index, { ageGroup: '13+' })}
-                        >
-                          <Text
-                            style={[
-                              estimatorStyles.ageButtonText,
-                              child.ageGroup === '13+' &&
-                                estimatorStyles.ageButtonTextActive,
-                            ]}
-                          >
-                            13+
-                          </Text>
-                        </Pressable>
+                      <View style={estimatorStyles.ageInputContainer}>
+                        <TextInput
+                          style={estimatorStyles.ageInput}
+                          value={child.age.toString()}
+                          onChangeText={(text) => {
+                            const age = parseInt(text.replace(/[^0-9]/g, '')) || 0;
+                            updateChild(index, { age: Math.min(25, Math.max(0, age)) });
+                          }}
+                          keyboardType="number-pad"
+                          maxLength={2}
+                          accessibilityLabel={`Age of child ${child.id}`}
+                        />
+                        <Text style={estimatorStyles.ageRangeHint}>
+                          {child.age >= 18 ? '(18+)' : child.age >= 13 ? '(13-17)' : '(0-12)'}
+                        </Text>
                       </View>
                     </View>
 
@@ -857,6 +837,29 @@ const estimatorStyles = StyleSheet.create({
   },
   ageButtonTextActive: {
     color: '#ffffff',
+  },
+  // Age input styles (new)
+  ageInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  ageInput: {
+    width: 50,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#1a202c',
+    borderWidth: 1,
+    borderColor: '#d1d5db', // grey-300
+    borderRadius: 6,
+    backgroundColor: '#ffffff',
+  },
+  ageRangeHint: {
+    fontSize: 12,
+    color: '#6b7280', // grey-500
+    fontWeight: '500',
   },
   // Per-child row styles
   childRow: {

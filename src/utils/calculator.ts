@@ -1,11 +1,38 @@
+/** Age range type used by the calculation engine */
+export type AgeRange = 'Under 13' | '13+' | '18+';
+
 export interface ChildInput {
   id: string;
-  age: 'Under 13' | '13+';
+  /** Specific age of the child (0-25) */
+  age: number;
   careAmountA: number;
   careAmountB: number;
   carePeriod: 'week' | 'fortnight' | 'year' | 'percent';
   /** Care amount for non-parent carer (Formula 4). Optional. */
   careAmountNPC?: number;
+}
+
+/**
+ * Derives the age range string from a specific age number.
+ * Used for backward compatibility with the calculation engine.
+ * 
+ * @param age - Specific age (0-25)
+ * @returns Age range string for calculation engine
+ */
+export function deriveAgeRange(age: number): AgeRange {
+  if (age >= 18) return '18+';
+  if (age >= 13) return '13+';
+  return 'Under 13';
+}
+
+/**
+ * Checks if a child is an adult (18+) for Adult Child Maintenance scenarios.
+ * 
+ * @param age - Specific age
+ * @returns true if child is 18 or older
+ */
+export function isAdultChild(age: number): boolean {
+  return age >= 18;
 }
 
 export interface RelevantDependents {
@@ -19,7 +46,10 @@ export interface CalculatorInputs {
   supportA: boolean;
   supportB: boolean;
   children: {
-    age: 'Under 13' | '13+';
+    /** Specific age of the child (0-25) */
+    age: number;
+    /** Derived age range for calculation engine */
+    ageRange: AgeRange;
     careA: number;
     careB: number;
     /** Care percentage for non-parent carer (Formula 4). Optional. */
@@ -36,7 +66,14 @@ export interface CalculatorInputs {
 }
 
 export interface ChildResult {
-  age: 'Under 13' | '13+';
+  /** Specific age of the child */
+  age: number;
+  /** Derived age range for calculation engine */
+  ageRange: AgeRange;
+  /** True if child is 18+ (excluded from standard calculation) */
+  isAdultChild: boolean;
+  /** True if child is 17 (included in calculation but with transition warning) */
+  isTurning18: boolean;
   careA: number;
   careB: number;
   costPerChild: number;
@@ -136,7 +173,8 @@ export interface FormErrors {
  */
 export interface OtherCaseChild {
   id: string;
-  age: 'Under 13' | '13+';
+  /** Specific age of the child (0-25) */
+  age: number;
 }
 
 /**
@@ -150,10 +188,10 @@ export interface MultiCaseInfo {
 /**
  * Non-parent carer information (Formula 4).
  * A non-parent carer (e.g., grandparent) must have at least 35% care.
+ * Eligibility is derived from per-child care amounts in ChildInput.careAmountNPC.
  */
 export interface NonParentCarerInfo {
   enabled: boolean;
-  carePercentage: number;
 }
 
 /**

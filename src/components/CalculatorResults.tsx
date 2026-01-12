@@ -15,6 +15,7 @@ import type { ComplexityFormData } from '../utils/complexity-detection';
 import { formatCurrency } from '../utils/formatters';
 import { MAX_MODAL_WIDTH, useResponsive } from '../utils/responsive';
 import { shadowPresets } from '../utils/shadow-styles';
+import { FtbImpactCard } from './FtbImpactCard';
 import { getPayerText, ResultsHero } from './results/ResultsHero';
 import { SmartConversionFooter } from './SmartConversionFooter';
 import { SpecialCircumstancesPrompt } from './SpecialCircumstancesPrompt';
@@ -225,11 +226,10 @@ export function CalculatorResults({
   const [lastResultsKey, setLastResultsKey] = useState('');
 
   // Generate a unique key for the current results
-  const currentResultsKey = `${results.finalPaymentAmount}-${
-    results.payer
-  }-${results.childResults
-    .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
-    .join('-')}-${results.ATI_A}-${results.ATI_B}`;
+  const currentResultsKey = `${results.finalPaymentAmount}-${results.payer
+    }-${results.childResults
+      .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
+      .join('-')}-${results.ATI_A}-${results.ATI_B}`;
 
   // Update formData when results change, but preserve selected CoA reasons
   React.useEffect(() => {
@@ -261,10 +261,10 @@ export function CalculatorResults({
 
   const webModalContainerStyle = isWeb
     ? {
-        maxWidth: MAX_MODAL_WIDTH,
-        width: '100%' as const,
-        alignSelf: 'center' as const,
-      }
+      maxWidth: MAX_MODAL_WIDTH,
+      width: '100%' as const,
+      alignSelf: 'center' as const,
+    }
     : {};
 
   const renderBreakdownContent = () => (
@@ -286,11 +286,10 @@ export function CalculatorResults({
       />
 
       <SpecialCircumstancesPrompt
-        key={`${results.finalPaymentAmount}-${
-          results.payer
-        }-${results.childResults
-          .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
-          .join('-')}-${results.ATI_A}-${results.ATI_B}`}
+        key={`${results.finalPaymentAmount}-${results.payer
+          }-${results.childResults
+            .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
+            .join('-')}-${results.ATI_A}-${results.ATI_B}`}
         results={results}
         formData={localFormData}
         onNavigate={() => setIsExpanded(false)}
@@ -333,6 +332,13 @@ export function CalculatorResults({
         formData={localFormData}
         onBeforeNavigate={() => setIsExpanded(false)}
       />
+
+      {/* FTB Impact Card - Shows FTB Part A/B implications */}
+      <FtbImpactCard
+        results={results}
+        userIncome={results.ATI_A}
+        childCount={formData?.children?.length ?? results.childResults.length}
+      />
     </ScrollView>
   );
 
@@ -370,13 +376,12 @@ export function CalculatorResults({
             { paddingBottom: Math.max(insets.bottom, 12) },
           ]}
           accessibilityRole="button"
-          accessibilityLabel={`${
-            results.payer === 'Neither'
+          accessibilityLabel={`${results.payer === 'Neither'
               ? 'No payment required'
               : `${results.payer} pays ${formatCurrency(
-                  results.finalPaymentAmount
-                )} per year`
-          }. Tap to view full breakdown`}
+                results.finalPaymentAmount
+              )} per year`
+            }. Tap to view full breakdown`}
           accessibilityHint="Opens detailed calculation breakdown"
         >
           <View
@@ -405,18 +410,18 @@ export function CalculatorResults({
                 results.FAR_A,
                 results.FAR_B
               ) && (
-                <View style={styles.collapsedIncomeSupportBadge}>
-                  <Text style={styles.collapsedIncomeSupportText}>
-                    ✓{' '}
-                    {getIncomeSupportText(
-                      formData?.supportA ?? false,
-                      formData?.supportB ?? false,
-                      results.FAR_A,
-                      results.FAR_B
-                    )}
-                  </Text>
-                </View>
-              )}
+                  <View style={styles.collapsedIncomeSupportBadge}>
+                    <Text style={styles.collapsedIncomeSupportText}>
+                      ✓{' '}
+                      {getIncomeSupportText(
+                        formData?.supportA ?? false,
+                        formData?.supportB ?? false,
+                        results.FAR_A,
+                        results.FAR_B
+                      )}
+                    </Text>
+                  </View>
+                )}
             </View>
             <View style={styles.expandHint}>
               <Text style={styles.expandHintText}>Tap for breakdown ▲</Text>

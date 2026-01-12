@@ -155,22 +155,22 @@ export function RelevantDependentsPopover({
           popoverStyles.drawerContent,
           isOpen && popoverStyles.drawerContentOpen,
           isWeb &&
-            ({
-              // Dynamic width: Full width on mobile, fixed on desktop
-              width: isOpen
-                ? isMobile
-                  ? '100%'
-                  : compact
+          ({
+            // Dynamic width: Full width on mobile, fixed on desktop
+            width: isOpen
+              ? isMobile
+                ? '100%'
+                : compact
                   ? '400px'
                   : '450px'
-                : '0px',
-              height: isOpen ? 'auto' : '0px', // Allow vertical expansion
-              opacity: isOpen ? 1 : 0,
-              overflow: 'hidden' as any,
-              transition:
-                'width 0.3s ease-out, opacity 0.3s ease-out, height 0.3s' as any,
-              marginTop: isMobile && isOpen ? 8 : 0, // Gap when stacked
-            } as any),
+              : '0px',
+            height: isOpen ? 'auto' : '0px', // Allow vertical expansion
+            opacity: isOpen ? 1 : 0,
+            overflow: 'hidden' as any,
+            transition:
+              'width 0.3s ease-out, opacity 0.3s ease-out, height 0.3s' as any,
+            marginTop: isMobile && isOpen ? 8 : 0, // Gap when stacked
+          } as any),
         ]}
       >
         <View
@@ -349,7 +349,6 @@ const popoverStyles = StyleSheet.create({
   // Inline drawer content - expands to the right
   drawerContent: {
     overflow: 'hidden',
-    minHeight: 40,
   },
   drawerContentOpen: {
     // Width and opacity are set dynamically via inline styles with transition

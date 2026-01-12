@@ -1,13 +1,17 @@
-import type { CostBracketInfo, OtherCaseChild } from './calculator';
+import type { AgeRange, CostBracketInfo, OtherCaseChild } from './calculator';
+import { deriveAgeRange } from './calculator';
 import {
-  AssessmentYear,
-  CARE_PERIOD_DAYS,
-  CarePeriod,
+    AssessmentYear,
+    CARE_PERIOD_DAYS,
+    CarePeriod,
 } from './child-support-constants';
 import { COTCBandValues, YEARLY_CONFIG } from './year-config';
 
 export interface Child {
-  age: 'Under 13' | '13+';
+  /** Specific age of the child (0-25) */
+  age: number;
+  /** Derived age range for calculation engine (computed from age) */
+  ageRange?: AgeRange;
   careA: number;
   careB: number;
 }
@@ -22,6 +26,7 @@ export interface ChildCostResult {
  * Returns both the cost and the bracket info for display purposes.
  *
  * Updated 2026-01-06: Now uses YEARLY_CONFIG for multi-year support.
+ * Updated 2026-01-11: Now accepts specific ages and derives age ranges.
  */
 export function getChildCost(
   year: AssessmentYear,
@@ -50,9 +55,25 @@ export function getChildCost(
     return emptyResult;
   }
 
-  // Determine age group
-  const hasYounger = children.some((c) => c.age === 'Under 13');
-  const hasOlder = children.some((c) => c.age === '13+');
+  // Derive age ranges from specific ages
+  const childrenWithRanges = children.map((c) => ({
+    ...c,
+    ageRange: c.ageRange ?? deriveAgeRange(c.age),
+  }));
+
+  // Filter out adult children (18+) from standard calculation
+  // Adult Child Maintenance is handled separately
+  const eligibleChildren = childrenWithRanges.filter((c) => c.ageRange !== '18+');
+  
+  if (eligibleChildren.length === 0) {
+    // All children are 18+ - return zero cost for standard calculation
+    // Adult Child Maintenance logic will be implemented separately
+    return emptyResult;
+  }
+
+  // Determine age group based on eligible children
+  const hasYounger = eligibleChildren.some((c) => c.ageRange === 'Under 13');
+  const hasOlder = eligibleChildren.some((c) => c.ageRange === '13+');
 
   let ageGroup: '0-12' | '13+' | 'mixed';
   if (hasYounger && hasOlder) {
@@ -63,8 +84,8 @@ export function getChildCost(
     ageGroup = '13+';
   }
 
-  // Determine child count key (cap at 3)
-  const childCount = Math.min(numChildren, 3) as 1 | 2 | 3;
+  // Determine child count key (cap at 3) - use eligible children count
+  const childCount = Math.min(eligibleChildren.length, 3) as 1 | 2 | 3;
 
   // Handle mixed age group for 1 child (not applicable - use younger rates)
   if (ageGroup === 'mixed' && childCount === 1) {
@@ -197,14 +218,14 @@ export function mapCareToCostPercent(care: number): number {
  *
  * @param year - Assessment year
  * @param parentCSI - The parent's individual Child Support Income (ATI - SSA)
- * @param currentCaseChildren - Children in the current case
- * @param otherCaseChildren - Children in other child support cases
+ * @param currentCaseChildren - Children in the current case (with specific ages)
+ * @param otherCaseChildren - Children in other child support cases (with specific ages)
  * @returns The multi-case allowance to deduct from the parent's income (rounded to nearest dollar)
  */
 export function calculateMultiCaseAllowance(
   year: AssessmentYear,
   parentCSI: number,
-  currentCaseChildren: { age: 'Under 13' | '13+' }[],
+  currentCaseChildren: { age: number }[],
   otherCaseChildren: OtherCaseChild[]
 ): number {
   if (otherCaseChildren.length === 0) return 0;
@@ -220,6 +241,7 @@ export function calculateMultiCaseAllowance(
       .fill(null)
       .map(() => ({
         age: otherChild.age,
+        ageRange: deriveAgeRange(otherChild.age),
         careA: 0,
         careB: 0,
       }));

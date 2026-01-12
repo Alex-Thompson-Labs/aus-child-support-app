@@ -7,6 +7,8 @@ import {
     detectLowAssessmentTrigger,
     isFarLimitReached,
 } from '../../utils/zero-payment-detection';
+import { AdultChildMaintenanceCard } from '../results/AdultChildMaintenanceCard';
+import { Turning18Banner } from '../results/Turning18Banner';
 
 export interface AnnualRateBreakdownProps {
     results: CalculationResults;
@@ -125,6 +127,17 @@ export function AnnualRateBreakdown({
     return (
         <View style={styles.perChildGapBreakdown}>
             {results.childResults.map((child, index) => {
+                // Handle adult children (18+) - show information card instead of liability
+                if (child.isAdultChild) {
+                    return (
+                        <AdultChildMaintenanceCard
+                            key={index}
+                            childIndex={index}
+                            childAge={child.age}
+                        />
+                    );
+                }
+
                 // Determine which parent is paying for this child based on final liabilities
                 // When FAR/MAR is applied, the liability will be non-zero for the paying parent
                 const parentAOwesForChild = child.finalLiabilityA > 0;
@@ -139,14 +152,17 @@ export function AnnualRateBreakdown({
                         : 'No payment required';
 
                     return (
-                        <View key={index} style={styles.perChildGapRow}>
-                            <Text style={styles.perChildGapLabel}>
-                                Child {index + 1} -{' '}
-                                <Text style={{ color: theme.colors.textMuted }}>{displayText}</Text>
-                            </Text>
-                            <Text style={[styles.perChildGapValue, { color: theme.colors.textMuted }]}>
-                                $0
-                            </Text>
+                        <View key={index}>
+                            <View style={styles.perChildGapRow}>
+                                <Text style={styles.perChildGapLabel}>
+                                    Child {index + 1} -{' '}
+                                    <Text style={{ color: theme.colors.textMuted }}>{displayText}</Text>
+                                </Text>
+                                <Text style={[styles.perChildGapValue, { color: theme.colors.textMuted }]}>
+                                    $0
+                                </Text>
+                            </View>
+                            {child.isTurning18 && <Turning18Banner childIndex={index} />}
                         </View>
                     );
                 }
@@ -207,6 +223,7 @@ export function AnnualRateBreakdown({
                                 </Text>
                             </View>
                         )}
+                        {child.isTurning18 && <Turning18Banner childIndex={index} />}
                     </View>
                 );
             })}

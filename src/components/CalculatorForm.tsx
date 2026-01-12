@@ -294,7 +294,6 @@ export function CalculatorForm({
         <NonParentCarerSection
           nonParentCarer={nonParentCarer}
           onNonParentCarerChange={onNonParentCarerChange}
-          error={errors.nonParentCarer}
         />
       </View>
 

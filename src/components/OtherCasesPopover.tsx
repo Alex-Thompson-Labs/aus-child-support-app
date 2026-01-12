@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { OtherCaseChild } from '../utils/calculator';
+import { deriveAgeRange } from '../utils/calculator';
 import {
   isWeb,
   useResponsive,
@@ -23,6 +24,7 @@ export interface OtherCasesPopoverProps {
 
 /**
  * Helper to convert count-based input to OtherCaseChild array
+ * Uses representative ages: 6 for under 13, 14 for 13+
  */
 function createOtherChildren(
   u13Count: number,
@@ -32,28 +34,31 @@ function createOtherChildren(
   for (let i = 0; i < u13Count; i++) {
     children.push({
       id: `other-u13-${i}-${Date.now()}`,
-      age: 'Under 13',
+      age: 6, // Representative age for "Under 13"
     });
   }
   for (let i = 0; i < plus13Count; i++) {
     children.push({
       id: `other-13plus-${i}-${Date.now()}`,
-      age: '13+',
+      age: 14, // Representative age for "13+"
     });
   }
   return children;
 }
 
 /**
- * Helper to count children by age from OtherCaseChild array
+ * Helper to count children by age range from OtherCaseChild array
  */
 function countByAge(children: OtherCaseChild[]): {
   u13: number;
   plus13: number;
 } {
   return {
-    u13: children.filter((c) => c.age === 'Under 13').length,
-    plus13: children.filter((c) => c.age === '13+').length,
+    u13: children.filter((c) => deriveAgeRange(c.age) === 'Under 13').length,
+    plus13: children.filter((c) => {
+      const range = deriveAgeRange(c.age);
+      return range === '13+' || range === '18+';
+    }).length,
   };
 }
 
@@ -206,21 +211,21 @@ export function OtherCasesPopover({
           popoverStyles.drawerContent,
           isOpen && popoverStyles.drawerContentOpen,
           isWeb &&
-            ({
-              width: isOpen
-                ? isMobile
-                  ? '100%'
-                  : compact
-                    ? '400px'
-                    : '450px'
-                : '0px',
-              height: isOpen ? 'auto' : '0px',
-              opacity: isOpen ? 1 : 0,
-              overflow: 'hidden' as never,
-              transition:
-                'width 0.3s ease-out, opacity 0.3s ease-out, height 0.3s' as never,
-              marginTop: isMobile && isOpen ? 8 : 0,
-            } as never),
+          ({
+            width: isOpen
+              ? isMobile
+                ? '100%'
+                : compact
+                  ? '400px'
+                  : '450px'
+              : '0px',
+            height: isOpen ? 'auto' : '0px',
+            opacity: isOpen ? 1 : 0,
+            overflow: 'hidden' as never,
+            transition:
+              'width 0.3s ease-out, opacity 0.3s ease-out, height 0.3s' as never,
+            marginTop: isMobile && isOpen ? 8 : 0,
+          } as never),
         ]}
       >
         <View
@@ -378,7 +383,6 @@ const popoverStyles = StyleSheet.create({
   },
   drawerContent: {
     overflow: 'hidden',
-    minHeight: 40,
   },
   drawerContentOpen: {},
   drawerInner: {
