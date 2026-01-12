@@ -6,7 +6,8 @@
     "orientation": "portrait",
     "icon": "./public/favicon-rounded-white-bg.png",
     "scheme": "childsupportcalculator",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#ffffff",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
@@ -22,7 +23,8 @@
     "web": {
       "output": "static",
       "bundler": "metro",
-      "favicon": "./public/favicon-rounded-white-bg.png"
+      "favicon": "./public/favicon-rounded-white-bg.png",
+      "backgroundColor": "#ffffff"
     },
     "plugins": [
       [
