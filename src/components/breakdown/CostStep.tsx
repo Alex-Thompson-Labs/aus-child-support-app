@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useAppTheme } from '../../theme';
 import type { CalculationResults } from '../../utils/calculator';
 import { formatCurrency } from '../../utils/formatters';
 import { BreakdownStepCard } from '../BreakdownStepCard';
@@ -14,8 +15,9 @@ const formatPercent2dp = (num: number): string => {
 
 // Helper to format currency with 2 decimal places
 const formatCurrency2dp = (num: number): string => {
-    return `$${num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+    return `${num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 };
+
 
 interface CostStepProps {
     results: CalculationResults;
@@ -31,6 +33,36 @@ interface CostStepProps {
  * Step 7: Cost of Children (bracket calculation)
  */
 export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
+    const { colors } = useAppTheme();
+
+    const dynamicStyles = useMemo(() => ({
+        stepExplanation: { color: colors.textMuted },
+        careConversion: {
+            backgroundColor: colors.surfaceSubtle,
+            borderColor: colors.border,
+        },
+        gapCalculation: {
+            backgroundColor: colors.surfaceSubtle,
+            borderColor: colors.border,
+        },
+        bracketCalculation: {
+            backgroundColor: colors.surfaceSubtle,
+            borderColor: colors.border,
+        },
+        combinedCSIncomeLabel: { color: colors.textPrimary },
+        bracketTitle: { color: colors.textMuted },
+        bracketLabel: { color: colors.textMuted },
+        bracketValue: { color: colors.textPrimary },
+        bracketDivider: { backgroundColor: colors.border },
+        bracketTotalLabel: { color: colors.textPrimary },
+        bracketTotalValue: { color: colors.textPrimary },
+        // Tooltip colors
+        tooltipTitle: { color: colors.textPrimary },
+        tooltipText: { color: colors.textPrimary },
+        tooltipHighlight: { color: colors.userHighlight },
+        tooltipBorder: { borderBottomColor: colors.border },
+    }), [colors]);
+
     return (
         <>
             {/* Step 5: Cost Percentage - Per Child */}
@@ -52,13 +84,12 @@ export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
                         index === 0 ? (
                             <View style={{ paddingVertical: 8 }}>
                                 <Text
-                                    style={{
-                                        color: '#0f172a', // Slate 900
+                                    style={[{
                                         fontSize: 13,
                                         fontWeight: '600',
                                         marginBottom: 12,
                                         textAlign: 'center',
-                                    }}
+                                    }, dynamicStyles.tooltipTitle]}
                                 >
                                     Care Percentage → Cost Percentage
                                 </Text>
@@ -67,25 +98,23 @@ export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
                                     {COST_PERCENTAGE_TABLE.map((row, idx) => (
                                         <View
                                             key={idx}
-                                            style={{
+                                            style={[{
                                                 flexDirection: 'row',
                                                 justifyContent: 'space-between',
                                                 paddingVertical: 6,
                                                 borderBottomWidth: 1,
-                                                borderBottomColor: '#334155',
-                                            }}
+                                            }, dynamicStyles.tooltipBorder]}
                                         >
-                                            <Text style={{ color: '#0f172a', fontSize: 13, flex: 1 }}>
+                                            <Text style={[{ fontSize: 13, flex: 1 }, dynamicStyles.tooltipText]}>
                                                 {row.careRange}
                                             </Text>
                                             <Text
-                                                style={{
-                                                    color: '#3b82f6',
+                                                style={[{
                                                     fontSize: 13,
                                                     fontWeight: '600',
                                                     flex: 1,
                                                     textAlign: 'right',
-                                                }}
+                                                }, dynamicStyles.tooltipHighlight]}
                                             >
                                                 {row.costResult}
                                             </Text>
@@ -100,7 +129,7 @@ export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
                 >
                     <>
                         {index === 0 && (
-                            <Text style={[styles.stepExplanation, { lineHeight: 22 }]}>
+                            <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation, { lineHeight: 22 }]}>
                                 The care percentage is converted via a formula into a cost
                                 percentage. This figure reflects the share of the childs living
                                 costs that the parent covers directly while providing care.
@@ -111,6 +140,7 @@ export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
                         <View
                             style={[
                                 styles.careConversion,
+                                dynamicStyles.careConversion,
                                 { marginTop: index === 0 ? 12 : 4, padding: 12 },
                             ]}
                         >
@@ -152,7 +182,7 @@ export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
                 >
                     <>
                         {index === 0 && (
-                            <Text style={styles.stepExplanation}>
+                            <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
                                 A parent must pay child support when their share of income is
                                 higher than their share of costs. The difference between these
                                 two shares is called the child support percentage, which is then
@@ -160,7 +190,7 @@ export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
                             </Text>
                         )}
 
-                        <View style={styles.gapCalculation}>
+                        <View style={[styles.gapCalculation, dynamicStyles.gapCalculation]}>
                             <View style={styles.gapCards}>
                                 <GapAnalysisCard
                                     label="YOU"
@@ -223,7 +253,7 @@ export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
                 onToggle={() => onToggle('step7')}
             >
                 <>
-                    <Text style={styles.stepExplanation}>
+                    <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
                         The total cost of children for an assessment is calculated using
                         income brackets set by the Department of Social Services. Each
                         bracket has a base cost plus a percentage applied to income within
@@ -232,18 +262,19 @@ export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
 
                     {/* Bracket calculation */}
                     {results.costBracketInfo && (
-                        <View style={styles.bracketCalculation}>
+                        <View style={[styles.bracketCalculation, dynamicStyles.bracketCalculation]}>
                             {/* Combined income - moved inside box */}
                             <Text
                                 style={[
                                     styles.combinedCSIncomeLabel,
+                                    dynamicStyles.combinedCSIncomeLabel,
                                     { marginBottom: 12, fontSize: 12, textAlign: 'left' },
                                 ]}
                             >
                                 COMBINED CS INCOME - {formatCurrency(results.CCSI)}
                             </Text>
 
-                            <Text style={styles.bracketTitle}>
+                            <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>
                                 Your bracket:{' '}
                                 {formatCurrency(results.costBracketInfo.minIncome)} –{' '}
                                 {results.costBracketInfo.maxIncome
@@ -253,18 +284,18 @@ export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
 
                             <View style={styles.bracketFormula}>
                                 <View style={styles.bracketRow}>
-                                    <Text style={styles.bracketTitle}>Base amount</Text>
-                                    <Text style={styles.bracketTitle}>
+                                    <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>Base amount</Text>
+                                    <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>
                                         {formatCurrency(results.costBracketInfo.fixed)}
                                     </Text>
                                 </View>
                                 {results.costBracketInfo.rate > 0 && (
                                     <View style={styles.bracketRow}>
-                                        <Text style={styles.bracketLabel}>
+                                        <Text style={[styles.bracketLabel, dynamicStyles.bracketLabel]}>
                                             + {(results.costBracketInfo.rate * 100).toFixed(2)}% ×{' '}
                                             {formatCurrency(results.costBracketInfo.incomeInBracket)}
                                         </Text>
-                                        <Text style={styles.bracketValue}>
+                                        <Text style={[styles.bracketValue, dynamicStyles.bracketValue]}>
                                             +
                                             {formatCurrency2dp(
                                                 results.costBracketInfo.rate *
@@ -273,21 +304,21 @@ export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
                                         </Text>
                                     </View>
                                 )}
-                                <View style={styles.bracketDivider} />
+                                <View style={[styles.bracketDivider, dynamicStyles.bracketDivider]} />
                                 <View style={styles.bracketRow}>
-                                    <Text style={styles.bracketTotalLabel}>
+                                    <Text style={[styles.bracketTotalLabel, dynamicStyles.bracketTotalLabel]}>
                                         Total cost of children
                                     </Text>
-                                    <Text style={styles.bracketTotalValue}>
+                                    <Text style={[styles.bracketTotalValue, dynamicStyles.bracketTotalValue]}>
                                         {formatCurrency2dp(results.totalCost)}
                                     </Text>
                                 </View>
                                 {results.childResults.length > 0 && (
                                     <View style={styles.bracketRow}>
-                                        <Text style={styles.bracketTitle}>
+                                        <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>
                                             Cost per child ({results.childResults.length})
                                         </Text>
-                                        <Text style={styles.bracketTitle}>
+                                        <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>
                                             {formatCurrency2dp(
                                                 results.totalCost / results.childResults.length
                                             )}
@@ -306,7 +337,6 @@ export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
 const styles = StyleSheet.create({
     stepExplanation: {
         fontSize: 14,
-        color: '#64748b', // Slate 500
         lineHeight: 20,
         marginBottom: 12,
     },
@@ -315,7 +345,6 @@ const styles = StyleSheet.create({
     combinedCSIncomeLabel: {
         fontSize: 12,
         fontWeight: '700',
-        color: '#0f172a',
         letterSpacing: 0.5,
         textTransform: 'uppercase',
     },
@@ -323,11 +352,9 @@ const styles = StyleSheet.create({
     // Care to Cost conversion
     careConversion: {
         marginTop: 8,
-        backgroundColor: '#f8fafc', // Slate 50
         borderRadius: 8,
         padding: 10,
         borderWidth: 1,
-        borderColor: '#e2e8f0', // Slate 200
     },
     conversionCards: {
         flexDirection: 'row',
@@ -336,12 +363,10 @@ const styles = StyleSheet.create({
 
     // Gap calculation (THE KEY INSIGHT)
     gapCalculation: {
-        backgroundColor: '#f8fafc', // Slate 50
         borderRadius: 8,
         padding: 16,
         gap: 8,
         borderWidth: 1,
-        borderColor: '#e2e8f0', // Slate 200
     },
     gapCards: {
         flexDirection: 'row',
@@ -350,16 +375,13 @@ const styles = StyleSheet.create({
 
     // Bracket calculation
     bracketCalculation: {
-        backgroundColor: '#f8fafc', // Slate 50
         borderRadius: 8,
         padding: 10,
         borderWidth: 1,
-        borderColor: '#e2e8f0', // Slate 200
     },
     bracketTitle: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#64748b', // Slate 500
         marginBottom: 12,
     },
     bracketFormula: {
@@ -372,26 +394,21 @@ const styles = StyleSheet.create({
     },
     bracketLabel: {
         fontSize: 13,
-        color: '#64748b',
     },
     bracketValue: {
         fontSize: 13,
         fontWeight: '500',
-        color: '#0f172a', // Slate 900
     },
     bracketDivider: {
         height: 1,
-        backgroundColor: '#e2e8f0', // Slate 200
         marginVertical: 4,
     },
     bracketTotalLabel: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#0f172a',
     },
     bracketTotalValue: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#0f172a',
     },
 });

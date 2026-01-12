@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     },
     specialNoticeText: {
         fontSize: 13,
-        color: '#64748b', // Slate 500
+        color: '#64748b',
         lineHeight: 18,
         marginTop: 8,
     },

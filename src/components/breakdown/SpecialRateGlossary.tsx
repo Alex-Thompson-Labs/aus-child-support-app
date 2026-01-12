@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useAppTheme } from '../../theme';
 
 interface SpecialRateGlossaryProps {
     rateApplied: string;
@@ -11,6 +12,12 @@ interface SpecialRateGlossaryProps {
  */
 export function SpecialRateGlossary({ rateApplied }: SpecialRateGlossaryProps) {
     const [isExpanded, setIsExpanded] = useState(false);
+    const { colors } = useAppTheme();
+
+    const dynamicStyles = useMemo(() => ({
+        chevron: { color: colors.textMuted },
+        text: { color: colors.textMuted },
+    }), [colors]);
 
     if (rateApplied === 'None') {
         return null;
@@ -31,7 +38,7 @@ export function SpecialRateGlossary({ rateApplied }: SpecialRateGlossaryProps) {
                 accessibilityState={{ expanded: isExpanded }}
             >
                 <Text style={styles.specialNoticeTitle}>{title}</Text>
-                <Text style={styles.specialNoticeChevron}>
+                <Text style={[styles.specialNoticeChevron, dynamicStyles.chevron]}>
                     {isExpanded ? '▼' : '▶'}
                 </Text>
             </Pressable>
@@ -40,14 +47,14 @@ export function SpecialRateGlossary({ rateApplied }: SpecialRateGlossaryProps) {
                 <View style={styles.specialNoticeContent}>
                     {isFarRate ? (
                         <>
-                            <Text style={styles.specialNoticeText}>
+                            <Text style={[styles.specialNoticeText, dynamicStyles.text]}>
                                 The FAR is for low-income parents whose income doesn&apos;t
                                 reflect their capacity to pay. It is a way to prevent parents
                                 from reducing their payments by minimising their income. It is a
                                 rate paid per child (maximum 3) and requires three eligibility
                                 criteria be met:
                             </Text>
-                            <Text style={styles.specialNoticeText}>
+                            <Text style={[styles.specialNoticeText, dynamicStyles.text]}>
                                 {'\n'}1. The parent must have less than 35% care of the child.
                                 {'\n\n'}2. The income used in the assessment must be less than
                                 the pension Parenting Payment (single) maximum basic amount -
@@ -58,12 +65,12 @@ export function SpecialRateGlossary({ rateApplied }: SpecialRateGlossaryProps) {
                         </>
                     ) : (
                         <>
-                            <Text style={styles.specialNoticeText}>
+                            <Text style={[styles.specialNoticeText, dynamicStyles.text]}>
                                 The MAR is paid per case and is put in place for parents who
                                 wouldn&apos;t be able to afford a higher amount. It requires
                                 three eligibility criteria be met:
                             </Text>
-                            <Text style={styles.specialNoticeText}>
+                            <Text style={[styles.specialNoticeText, dynamicStyles.text]}>
                                 {'\n'}1. The parent must have received at least one income
                                 support payment in their ATI.
                                 {'\n\n'}2. The parent has less than 14% care of all children.
@@ -101,7 +108,6 @@ const styles = StyleSheet.create({
     },
     specialNoticeChevron: {
         fontSize: 14,
-        color: '#64748b',
         marginLeft: 8,
     },
     specialNoticeContent: {
@@ -109,7 +115,6 @@ const styles = StyleSheet.create({
     },
     specialNoticeText: {
         fontSize: 13,
-        color: '#64748b', // Slate 500
         lineHeight: 18,
     },
 });

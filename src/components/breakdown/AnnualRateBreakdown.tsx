@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { theme } from '../../theme';
+import { useAppTheme } from '../../theme';
 import type { CalculationResults } from '../../utils/calculator';
 import { formatCurrency } from '../../utils/formatters';
 import {
@@ -22,13 +22,28 @@ const formatPercent2dp = (num: number): string => {
 
 // Helper to format currency with 2 decimal places
 const formatCurrency2dp = (num: number): string => {
-    return `$${num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+    return `${num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 };
 
 export function AnnualRateBreakdown({
     results,
     formState,
 }: AnnualRateBreakdownProps) {
+    const { colors } = useAppTheme();
+
+    const dynamicStyles = useMemo(() => ({
+        container: {
+            backgroundColor: colors.surfaceSubtle,
+            borderColor: colors.border,
+        },
+        label: { color: colors.textMuted },
+        value: { color: colors.textSecondary },
+        divider: { backgroundColor: colors.border },
+        userHighlight: { color: colors.userHighlight },
+        textMuted: { color: colors.textMuted },
+        textPrimary: { color: colors.textPrimary },
+    }), [colors]);
+
     if (results.childResults.length === 0) return null;
 
     // Check if MAR is applied to any child
@@ -38,21 +53,14 @@ export function AnnualRateBreakdown({
 
     // If MAR is applied, show a single consolidated line
     if (hasAnyMar) {
-        const payingParentColor = theme.colors.textMuted;
         const totalMarAmount = results.finalPaymentAmount;
-
-        // Use comprehensive detection for low assessment warning
         const { isLowAssessment } = detectLowAssessmentTrigger(results, formState);
-
-        // Check for adult children (18+) that need special cards
         const adultChildren = results.childResults.filter((c) => c.isAdultChild);
-        // Check for children turning 18 (age 17) that need banners
         const childrenTurning18 = results.childResults.filter((c) => c.isTurning18);
 
         return (
-            <View style={styles.perChildGapBreakdown}>
-                {/* Show Adult Child Maintenance cards for 18+ children */}
-                {adultChildren.map((child, idx) => {
+            <View style={[styles.perChildGapBreakdown, dynamicStyles.container]}>
+                {adultChildren.map((child) => {
                     const originalIndex = results.childResults.findIndex((c) => c === child);
                     return (
                         <AdultChildMaintenanceCard
@@ -62,73 +70,47 @@ export function AnnualRateBreakdown({
                         />
                     );
                 })}
-
                 <View style={styles.perChildGapRow}>
-                    <Text style={styles.perChildGapLabel}>
-                        All children -{' '}
-                        <Text style={{ color: payingParentColor }}>
-                            Minimum annual rate
-                        </Text>
+                    <Text style={[styles.perChildGapLabel, dynamicStyles.label]}>
+                        All children - <Text style={dynamicStyles.textMuted}>Minimum annual rate</Text>
                     </Text>
-                    <Text
-                        style={[styles.perChildGapValue, { color: payingParentColor }]}
-                    >
+                    <Text style={[styles.perChildGapValue, dynamicStyles.textMuted]}>
                         {formatCurrency(totalMarAmount)}
                     </Text>
                 </View>
-
-                {/* Show Turning 18 banners for 17-year-olds */}
-                {childrenTurning18.map((child, idx) => {
+                {childrenTurning18.map((child) => {
                     const originalIndex = results.childResults.findIndex((c) => c === child);
-                    return (
-                        <Turning18Banner key={`turn18-${originalIndex}`} childIndex={originalIndex} />
-                    );
+                    return <Turning18Banner key={`turn18-${originalIndex}`} childIndex={originalIndex} />;
                 })}
-
                 {isLowAssessment && (
                     <View style={styles.warningAlert}>
-                        <Text style={styles.warningTitle}>
-                            ⚠️ Standard Formula Limit Detected
-                        </Text>
+                        <Text style={styles.warningTitle}>⚠️ Standard Formula Limit Detected</Text>
                         <Text style={styles.warningText}>
-                            This result is based on a default minimum or fixed rate. If
-                            the paying parent has lifestyle assets or hidden income, this
-                            figure may be incorrect.
+                            This result is based on a default minimum or fixed rate. If the paying parent has lifestyle assets or hidden income, this figure may be incorrect.
                         </Text>
                     </View>
                 )}
-                <View style={styles.perChildGapDivider} />
+                <View style={[styles.perChildGapDivider, dynamicStyles.divider]} />
             </View>
         );
     }
 
-    // Check if all children have no payment required
     const allChildrenNoPayment = results.childResults.every(
         (child) => child.finalLiabilityA === 0 && child.finalLiabilityB === 0
     );
 
-    // If all children have no payment, show consolidated line
     if (allChildrenNoPayment) {
-        // Check if any child is due to FAR limit being reached
         const hasFarLimit = results.childResults.some((child, index) =>
             isFarLimitReached(index, results, formState)
         );
-        const displayText = hasFarLimit
-            ? 'FAR limit reached'
-            : 'No payment required';
-
-        // Check if low assessment trigger applies (edge case: MAR/FAR negated by care)
+        const displayText = hasFarLimit ? 'FAR limit reached' : 'No payment required';
         const { isLowAssessment } = detectLowAssessmentTrigger(results, formState);
-
-        // Check for adult children (18+) that need special cards
         const adultChildren = results.childResults.filter((c) => c.isAdultChild);
-        // Check for children turning 18 (age 17) that need banners
         const childrenTurning18 = results.childResults.filter((c) => c.isTurning18);
 
         return (
-            <View style={styles.perChildGapBreakdown}>
-                {/* Show Adult Child Maintenance cards for 18+ children */}
-                {adultChildren.map((child, idx) => {
+            <View style={[styles.perChildGapBreakdown, dynamicStyles.container]}>
+                {adultChildren.map((child) => {
                     const originalIndex = results.childResults.findIndex((c) => c === child);
                     return (
                         <AdultChildMaintenanceCard
@@ -138,206 +120,110 @@ export function AnnualRateBreakdown({
                         />
                     );
                 })}
-
                 <View style={styles.perChildGapRow}>
-                    <Text style={styles.perChildGapLabel}>
-                        All children -{' '}
-                        <Text style={{ color: theme.colors.textMuted }}>{displayText}</Text>
+                    <Text style={[styles.perChildGapLabel, dynamicStyles.label]}>
+                        All children - <Text style={dynamicStyles.textMuted}>{displayText}</Text>
                     </Text>
-                    <Text style={[styles.perChildGapValue, { color: theme.colors.textMuted }]}>
-                        $0
-                    </Text>
+                    <Text style={[styles.perChildGapValue, dynamicStyles.textMuted]}>$0</Text>
                 </View>
-
-                {/* Show Turning 18 banners for 17-year-olds */}
-                {childrenTurning18.map((child, idx) => {
+                {childrenTurning18.map((child) => {
                     const originalIndex = results.childResults.findIndex((c) => c === child);
-                    return (
-                        <Turning18Banner key={`turn18-${originalIndex}`} childIndex={originalIndex} />
-                    );
+                    return <Turning18Banner key={`turn18-${originalIndex}`} childIndex={originalIndex} />;
                 })}
-
                 {isLowAssessment && (
                     <View style={styles.warningAlert}>
-                        <Text style={styles.warningTitle}>
-                            ⚠️ Standard Formula Limit Detected
-                        </Text>
+                        <Text style={styles.warningTitle}>⚠️ Standard Formula Limit Detected</Text>
                         <Text style={styles.warningText}>
-                            The other parent has low income that would trigger a minimum
-                            or fixed rate, but care arrangements have reduced their
-                            liability to $0. Hidden income or assets may mean this
-                            figure is incorrect.
+                            The other parent has low income that would trigger a minimum or fixed rate, but care arrangements have reduced their liability to $0. Hidden income or assets may mean this figure is incorrect.
                         </Text>
                     </View>
                 )}
-                <View style={styles.perChildGapDivider} />
+                <View style={[styles.perChildGapDivider, dynamicStyles.divider]} />
             </View>
         );
     }
 
-    // Otherwise, show per-child breakdown (original logic)
     return (
-        <View style={styles.perChildGapBreakdown}>
+        <View style={[styles.perChildGapBreakdown, dynamicStyles.container]}>
             {results.childResults.map((child, index) => {
-                // Handle adult children (18+) - show information card instead of liability
                 if (child.isAdultChild) {
-                    return (
-                        <AdultChildMaintenanceCard
-                            key={index}
-                            childIndex={index}
-                            childAge={child.age}
-                        />
-                    );
+                    return <AdultChildMaintenanceCard key={index} childIndex={index} childAge={child.age} />;
                 }
-
-                // Determine which parent is paying for this child based on final liabilities
-                // When FAR/MAR is applied, the liability will be non-zero for the paying parent
                 const parentAOwesForChild = child.finalLiabilityA > 0;
                 const parentBOwesForChild = child.finalLiabilityB > 0;
 
-                // If neither parent owes, show "No payment" explanation
                 if (!parentAOwesForChild && !parentBOwesForChild) {
-                    // Check if this is due to FAR limit being reached
                     const isFarLimit = isFarLimitReached(index, results, formState);
-                    const displayText = isFarLimit
-                        ? 'FAR limit reached'
-                        : 'No payment required';
-
+                    const displayText = isFarLimit ? 'FAR limit reached' : 'No payment required';
                     return (
                         <View key={index}>
                             <View style={styles.perChildGapRow}>
-                                <Text style={styles.perChildGapLabel}>
-                                    Child {index + 1} -{' '}
-                                    <Text style={{ color: theme.colors.textMuted }}>{displayText}</Text>
+                                <Text style={[styles.perChildGapLabel, dynamicStyles.label]}>
+                                    Child {index + 1} - <Text style={dynamicStyles.textMuted}>{displayText}</Text>
                                 </Text>
-                                <Text style={[styles.perChildGapValue, { color: theme.colors.textMuted }]}>
-                                    $0
-                                </Text>
+                                <Text style={[styles.perChildGapValue, dynamicStyles.textMuted]}>$0</Text>
                             </View>
                             {child.isTurning18 && <Turning18Banner childIndex={index} />}
                         </View>
                     );
                 }
 
-                // Determine color and values based on who actually pays (use final liability as source of truth)
                 const showForParentA = parentAOwesForChild;
-                // Use user highlight color when "You" (Parent A) is the payer
-                const payingParentColor = showForParentA ? theme.colors.userHighlight : theme.colors.textMuted;
-                const farApplied = showForParentA
-                    ? child.farAppliedA
-                    : child.farAppliedB;
-                const gapPercentage = showForParentA
-                    ? Math.max(0, child.childSupportPercA)
-                    : Math.max(0, child.childSupportPercB);
-                const liability = showForParentA
-                    ? child.finalLiabilityA
-                    : child.finalLiabilityB;
-
-                // Check if multi-case cap was applied
-                const multiCaseCapApplied = showForParentA
-                    ? child.multiCaseCapAppliedA
-                    : child.multiCaseCapAppliedB;
-                const multiCaseCap = showForParentA
-                    ? child.multiCaseCapA
-                    : child.multiCaseCapB;
+                const payingParentColor = showForParentA ? colors.userHighlight : colors.textMuted;
+                const farApplied = showForParentA ? child.farAppliedA : child.farAppliedB;
+                const gapPercentage = showForParentA ? Math.max(0, child.childSupportPercA) : Math.max(0, child.childSupportPercB);
+                const liability = showForParentA ? child.finalLiabilityA : child.finalLiabilityB;
+                const multiCaseCapApplied = showForParentA ? child.multiCaseCapAppliedA : child.multiCaseCapAppliedB;
+                const multiCaseCap = showForParentA ? child.multiCaseCapA : child.multiCaseCapB;
 
                 return (
                     <View key={index}>
                         <View style={styles.perChildGapRow}>
-                            <Text style={[styles.perChildGapLabel, { fontWeight: '700' }, showForParentA && { color: theme.colors.userHighlight }]}>
+                            <Text style={[styles.perChildGapLabel, { fontWeight: '700' }, showForParentA && dynamicStyles.userHighlight]}>
                                 {farApplied ? (
-                                    <>
-                                        Child {index + 1} -{' '}
-                                        <Text style={{ color: payingParentColor, fontWeight: '700' }}>
-                                            Fixed annual rate
-                                        </Text>
-                                    </>
+                                    <>Child {index + 1} - <Text style={{ color: payingParentColor, fontWeight: '700' }}>Fixed annual rate</Text></>
                                 ) : (
-                                    <>
-                                        Child {index + 1} -{' '}
-                                        <Text style={{ color: payingParentColor, fontWeight: '700' }}>
-                                            ({formatPercent2dp(gapPercentage)})
-                                        </Text>{' '}
-                                        × {formatCurrency2dp(child.costPerChild)}
-                                    </>
+                                    <>Child {index + 1} - <Text style={{ color: payingParentColor, fontWeight: '700' }}>({formatPercent2dp(gapPercentage)})</Text> × {formatCurrency2dp(child.costPerChild)}</>
                                 )}
                             </Text>
-                            <Text
-                                style={[styles.perChildGapValue, { color: payingParentColor, fontWeight: '700' }]}
-                            >
-                                {formatCurrency2dp(liability)}
-                            </Text>
+                            <Text style={[styles.perChildGapValue, { color: payingParentColor, fontWeight: '700' }]}>{formatCurrency2dp(liability)}</Text>
                         </View>
                         {multiCaseCapApplied && multiCaseCap !== undefined && (
                             <View style={styles.multiCaseCapBadge}>
-                                <Text style={styles.multiCaseCapBadgeText}>
-                                    Multi-case Cap
-                                </Text>
-                                <Text style={styles.multiCaseCapNote}>
-                                    Liability capped at {formatCurrency2dp(multiCaseCap)} (Solo Cost method)
-                                </Text>
+                                <Text style={styles.multiCaseCapBadgeText}>Multi-case Cap</Text>
+                                <Text style={styles.multiCaseCapNote}>Liability capped at {formatCurrency2dp(multiCaseCap)} (Solo Cost method)</Text>
                             </View>
                         )}
                         {child.isTurning18 && <Turning18Banner childIndex={index} />}
                     </View>
                 );
             })}
-
-            {/* Warning for FAR/MAR when user is receiver (including edge cases) */}
             {(() => {
-                // Use comprehensive detection for low assessment trigger
                 const { isLowAssessment } = detectLowAssessmentTrigger(results, formState);
                 if (isLowAssessment) {
                     return (
                         <View style={styles.warningAlert}>
-                            <Text style={styles.warningTitle}>
-                                ⚠️ Standard Formula Limit Detected
-                            </Text>
-                            <Text style={styles.warningText}>
-                                This result is based on a default minimum or fixed rate.
-                                If the paying parent has lifestyle assets or hidden
-                                income, this figure may be incorrect.
-                            </Text>
+                            <Text style={styles.warningTitle}>⚠️ Standard Formula Limit Detected</Text>
+                            <Text style={styles.warningText}>This result is based on a default minimum or fixed rate. If the paying parent has lifestyle assets or hidden income, this figure may be incorrect.</Text>
                         </View>
                     );
                 }
                 return null;
             })()}
-            <View style={styles.perChildGapDivider} />
-
-            {/* Total Annual Liability */}
+            <View style={[styles.perChildGapDivider, dynamicStyles.divider]} />
             <View style={styles.perChildGapRow}>
-                <Text style={[styles.perChildGapLabel, { fontWeight: '600', color: '#0f172a' }]}>
-                    Total Annual Liability
-                </Text>
-                <Text
-                    style={[
-                        styles.perChildGapValue,
-                        { fontWeight: '700', fontSize: 18 },
-                    ]}
-                >
-                    {formatCurrency2dp(results.finalPaymentAmount)}
-                </Text>
+                <Text style={[styles.perChildGapLabel, { fontWeight: '600' }, dynamicStyles.textPrimary]}>Total Annual Liability</Text>
+                <Text style={[styles.perChildGapValue, dynamicStyles.textPrimary, { fontWeight: '700', fontSize: 18 }]}>{formatCurrency2dp(results.finalPaymentAmount)}</Text>
             </View>
-
-            {/* Non-parent Carer Payment */}
             {results.paymentToNPC !== undefined && results.paymentToNPC > 0 && (
                 <>
                     <View style={styles.npcPaymentDivider} />
                     <View style={styles.npcPaymentSection}>
-                        <Text style={styles.npcPaymentTitle}>
-                            Non-Parent Carer Payment
-                        </Text>
-                        <Text style={styles.npcPaymentExplanation}>
-                            Both parents owe child support to the non-parent carer based on their care percentage.
-                        </Text>
+                        <Text style={styles.npcPaymentTitle}>Non-Parent Carer Payment</Text>
+                        <Text style={styles.npcPaymentExplanation}>Both parents owe child support to the non-parent carer based on their care percentage.</Text>
                         <View style={styles.perChildGapRow}>
-                            <Text style={styles.npcPaymentLabel}>
-                                Total to non-parent carer
-                            </Text>
-                            <Text style={styles.npcPaymentValue}>
-                                {formatCurrency2dp(results.paymentToNPC)}
-                            </Text>
+                            <Text style={styles.npcPaymentLabel}>Total to non-parent carer</Text>
+                            <Text style={styles.npcPaymentValue}>{formatCurrency2dp(results.paymentToNPC)}</Text>
                         </View>
                     </View>
                 </>
@@ -346,71 +232,50 @@ export function AnnualRateBreakdown({
     );
 }
 
+
 const styles = StyleSheet.create({
     perChildGapBreakdown: {
-        backgroundColor: theme.colors.surfaceSubtle,
         borderRadius: 8,
         padding: 10,
         marginBottom: 12,
         gap: 8,
         borderWidth: 1,
-        borderColor: theme.colors.border,
     },
     perChildGapRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
     },
-    perChildGapLabel: {
-        fontSize: 13,
-        color: theme.colors.textMuted,
-    },
-    perChildGapValue: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: theme.colors.textSecondary,
-    },
-    perChildGapDivider: {
-        height: 1,
-        backgroundColor: theme.colors.border,
-        marginTop: 4,
-    },
+    perChildGapLabel: { fontSize: 13 },
+    perChildGapValue: { fontSize: 14, fontWeight: '600' },
+    perChildGapDivider: { height: 1, marginTop: 4 },
     warningAlert: {
-        backgroundColor: '#fef3c7', // Amber-100
+        backgroundColor: '#fef3c7',
         borderWidth: 1,
-        borderColor: '#fbbf24', // Amber-400 (softer golden yellow)
+        borderColor: '#fbbf24',
         borderRadius: 8,
         padding: 12,
         marginTop: 8,
     },
-    warningTitle: {
-        fontSize: 13,
-        fontWeight: '600',
-        color: '#92400e', // Amber-800
-        marginBottom: 4,
-    },
-    warningText: {
-        fontSize: 12,
-        color: '#78350f', // Amber-900
-        lineHeight: 18,
-    },
+    warningTitle: { fontSize: 13, fontWeight: '600', color: '#92400e', marginBottom: 4 },
+    warningText: { fontSize: 12, color: '#78350f', lineHeight: 18 },
     multiCaseCapBadge: {
         marginTop: 6,
         flexDirection: 'row',
         alignItems: 'center',
         flexWrap: 'wrap',
         gap: 6,
-        backgroundColor: '#f5f3ff', // Violet-50
+        backgroundColor: '#f5f3ff',
         borderRadius: 6,
         padding: 8,
         borderWidth: 1,
-        borderColor: '#c4b5fd', // Violet-300
+        borderColor: '#c4b5fd',
     },
     multiCaseCapBadgeText: {
         fontSize: 10,
         fontWeight: '700',
-        color: '#7c3aed', // Violet-600
-        backgroundColor: '#ede9fe', // Violet-100
+        color: '#7c3aed',
+        backgroundColor: '#ede9fe',
         paddingHorizontal: 6,
         paddingVertical: 2,
         borderRadius: 4,
@@ -418,47 +283,24 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         letterSpacing: 0.5,
     },
-    multiCaseCapNote: {
-        fontSize: 11,
-        color: '#6d28d9', // Violet-700
-        flex: 1,
-    },
-    npcPaymentDivider: {
-        height: 1,
-        backgroundColor: '#93c5fd', // Blue-300
-        marginTop: 12,
-        marginBottom: 8,
-    },
+    multiCaseCapNote: { fontSize: 11, color: '#6d28d9', flex: 1 },
+    npcPaymentDivider: { height: 1, backgroundColor: '#93c5fd', marginTop: 12, marginBottom: 8 },
     npcPaymentSection: {
-        backgroundColor: '#eff6ff', // Blue-50
+        backgroundColor: '#eff6ff',
         borderRadius: 6,
         padding: 10,
         borderWidth: 1,
-        borderColor: '#bfdbfe', // Blue-200
+        borderColor: '#bfdbfe',
     },
     npcPaymentTitle: {
         fontSize: 12,
         fontWeight: '700',
-        color: '#1e40af', // Blue-800
+        color: '#1e40af',
         textTransform: 'uppercase',
         letterSpacing: 0.5,
         marginBottom: 4,
     },
-    npcPaymentExplanation: {
-        fontSize: 11,
-        color: '#1d4ed8', // Blue-700
-        marginBottom: 8,
-        lineHeight: 16,
-    },
-    npcPaymentLabel: {
-        fontSize: 13,
-        color: '#1e40af', // Blue-800
-        fontWeight: '500',
-    },
-    npcPaymentValue: {
-        fontSize: 14,
-        fontWeight: '700',
-        color: '#1e40af', // Blue-800
-    },
+    npcPaymentExplanation: { fontSize: 11, color: '#1d4ed8', marginBottom: 8, lineHeight: 16 },
+    npcPaymentLabel: { fontSize: 13, color: '#1e40af', fontWeight: '500' },
+    npcPaymentValue: { fontSize: 14, fontWeight: '700', color: '#1e40af' },
 });
-

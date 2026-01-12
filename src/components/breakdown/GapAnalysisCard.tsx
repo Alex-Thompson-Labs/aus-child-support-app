@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { theme } from '../../theme';
+import { useAppTheme } from '../../theme';
 
 export interface GapAnalysisCardProps {
     /** Label for the card ("PARENT A" or "PARENT B") */
@@ -43,17 +43,33 @@ export function GapAnalysisCard({
     isUserHighlighted = false,
     capExplanation,
 }: GapAnalysisCardProps) {
+    const { colors } = useAppTheme();
     const hasFixedRate = isFarApplied || isMarApplied;
     // Use userHighlight for "You" elements, textMuted for "Other Parent" elements
-    const highlightColor = isUserHighlighted ? theme.colors.userHighlight : theme.colors.textMuted;
+    const highlightColor = isUserHighlighted ? colors.userHighlight : colors.textMuted;
+
+    const dynamicStyles = useMemo(() => ({
+        card: {
+            backgroundColor: colors.surfaceSubtle,
+            borderColor: colors.border,
+        },
+        title: { color: highlightColor },
+        label: { color: colors.textMuted },
+        labelBold: { color: colors.textPrimary },
+        value: { color: colors.textSecondary },
+        valueMuted: { color: colors.textMuted },
+        valueHighlight: { color: colors.userHighlight },
+        divider: { backgroundColor: colors.border },
+        specialRateText: { color: colors.textMuted },
+    }), [colors, highlightColor]);
 
     if (hasFixedRate) {
         // Fixed rate view (FAR or MAR)
         return (
-            <View style={styles.gapCard}>
-                <Text style={[styles.gapCardTitle, highlightColor && { color: highlightColor }]}>{label}</Text>
+            <View style={[styles.gapCard, dynamicStyles.card]}>
+                <Text style={[styles.gapCardTitle, dynamicStyles.title]}>{label}</Text>
                 <View style={styles.gapCardSpecialRate}>
-                    <Text style={styles.gapCardSpecialRateText}>
+                    <Text style={[styles.gapCardSpecialRateText, dynamicStyles.specialRateText]}>
                         {isFarApplied
                             ? 'Fixed annual rate to apply - see below for details'
                             : 'Minimum annual rate applied'}
@@ -63,7 +79,7 @@ export function GapAnalysisCard({
                             styles.gapCardValue,
                             styles.gapCardValueHighlight,
                             { marginTop: 8 },
-                            highlightColor && { color: highlightColor },
+                            dynamicStyles.title,
                         ]}
                     >
                         {formatCurrency(fixedRateAmount)}
@@ -80,27 +96,27 @@ export function GapAnalysisCard({
 
     // Standard calculation view
     return (
-        <View style={styles.gapCard}>
-            <Text style={[styles.gapCardTitle, highlightColor && { color: highlightColor }]}>{label}</Text>
+        <View style={[styles.gapCard, dynamicStyles.card]}>
+            <Text style={[styles.gapCardTitle, dynamicStyles.title]}>{label}</Text>
             <View style={styles.gapCardRow}>
-                <Text style={styles.gapCardLabel}>Income %</Text>
-                <Text style={[styles.gapCardValue, { color: theme.colors.textMuted }]}>{formatPercent(incomePercent)}</Text>
+                <Text style={[styles.gapCardLabel, dynamicStyles.label]}>Income %</Text>
+                <Text style={[styles.gapCardValue, dynamicStyles.valueMuted]}>{formatPercent(incomePercent)}</Text>
             </View>
             <View style={styles.gapCardRow}>
-                <Text style={styles.gapCardLabel}>Cost %</Text>
-                <Text style={[styles.gapCardValue, { color: theme.colors.textMuted }]}>
+                <Text style={[styles.gapCardLabel, dynamicStyles.label]}>Cost %</Text>
+                <Text style={[styles.gapCardValue, dynamicStyles.valueMuted]}>
                     ({formatPercent(costPercent)})
                 </Text>
             </View>
-            <View style={styles.gapCardDivider} />
+            <View style={[styles.gapCardDivider, dynamicStyles.divider]} />
             <View style={[styles.gapCardRow, { marginBottom: 0 }]}>
-                <Text style={[styles.gapCardLabel, styles.gapCardLabelBold, highlightColor && { color: highlightColor }]}>CS %</Text>
+                <Text style={[styles.gapCardLabel, styles.gapCardLabelBold, dynamicStyles.title]}>CS %</Text>
                 <Text
                     style={[
                         styles.gapCardValue,
                         csPercent > 0 && !otherParentHasFixedRate && isUserHighlighted && styles.gapCardValueHighlight,
                         csPercent > 0 && !otherParentHasFixedRate && !isUserHighlighted && { fontWeight: '700', fontSize: 16 },
-                        highlightColor && { color: highlightColor },
+                        dynamicStyles.title,
                     ]}
                 >
                     {otherParentHasFixedRate
@@ -117,11 +133,9 @@ export function GapAnalysisCard({
 const styles = StyleSheet.create({
     gapCard: {
         flex: 1,
-        backgroundColor: theme.colors.surfaceSubtle,
         borderRadius: 8,
         padding: 10,
         borderWidth: 1,
-        borderColor: theme.colors.border,
     },
     gapCardTitle: {
         fontSize: 11,
@@ -129,7 +143,6 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         letterSpacing: 0.5,
         marginBottom: 10,
-        color: theme.colors.textSecondary,
     },
     gapCardRow: {
         flexDirection: 'row',
@@ -139,28 +152,23 @@ const styles = StyleSheet.create({
     },
     gapCardLabel: {
         fontSize: 12,
-        color: theme.colors.textMuted,
         flex: 1,
         paddingRight: 4,
     },
     gapCardLabelBold: {
         fontWeight: '700',
-        color: theme.colors.textPrimary,
     },
     gapCardValue: {
         fontSize: 13,
         fontWeight: '500',
-        color: theme.colors.textSecondary,
         textAlign: 'right',
     },
     gapCardValueHighlight: {
         fontSize: 16,
         fontWeight: '700',
-        color: theme.colors.userHighlight,
     },
     gapCardDivider: {
         height: 1,
-        backgroundColor: theme.colors.border,
         marginVertical: 6,
     },
     gapCardSpecialRate: {
@@ -168,7 +176,6 @@ const styles = StyleSheet.create({
     },
     gapCardSpecialRateText: {
         fontSize: 11,
-        color: theme.colors.textMuted,
         lineHeight: 15,
     },
     capNotice: {

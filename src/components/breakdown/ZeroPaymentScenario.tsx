@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useAppTheme } from '../../theme';
 import type { CalculationResults } from '../../utils/calculator';
 import { detectZeroPaymentScenario } from '../../utils/zero-payment-detection';
 
@@ -16,6 +17,12 @@ export function ZeroPaymentScenario({
     results,
     formState,
 }: ZeroPaymentScenarioProps) {
+    const { colors } = useAppTheme();
+
+    const dynamicStyles = useMemo(() => ({
+        text: { color: colors.textMuted },
+    }), [colors]);
+
     // Check if any child has zero payment from both parents
     const hasZeroPaymentChild = results.childResults.some(
         (child) => child.finalLiabilityA === 0 && child.finalLiabilityB === 0
@@ -32,19 +39,19 @@ export function ZeroPaymentScenario({
     }
 
     return (
-        <View style={[styles.specialNotice, { borderLeftColor: '#64748b' }]}>
-            <Text style={[styles.specialNoticeTitle, { color: '#64748b' }]}>
+        <View style={[styles.specialNotice, { borderLeftColor: colors.textMuted }]}>
+            <Text style={[styles.specialNoticeTitle, { color: colors.textMuted }]}>
                 ℹ️ {scenario.title}
             </Text>
             <View style={styles.specialNoticeContent}>
-                <Text style={styles.specialNoticeText}>{scenario.explanation}</Text>
+                <Text style={[styles.specialNoticeText, dynamicStyles.text]}>{scenario.explanation}</Text>
                 {scenario.details?.parentADetails && (
-                    <Text style={[styles.specialNoticeText, { marginTop: 8 }]}>
+                    <Text style={[styles.specialNoticeText, dynamicStyles.text, { marginTop: 8 }]}>
                         • Parent A: {scenario.details.parentADetails}
                     </Text>
                 )}
                 {scenario.details?.parentBDetails && (
-                    <Text style={[styles.specialNoticeText, { marginTop: 4 }]}>
+                    <Text style={[styles.specialNoticeText, dynamicStyles.text, { marginTop: 4 }]}>
                         • Parent B: {scenario.details.parentBDetails}
                     </Text>
                 )}
@@ -74,7 +81,6 @@ const styles = StyleSheet.create({
     },
     specialNoticeText: {
         fontSize: 13,
-        color: '#64748b', // Slate 500
         lineHeight: 18,
     },
 });

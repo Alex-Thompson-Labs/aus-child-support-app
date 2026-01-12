@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { theme } from '../../theme';
+import { useAppTheme } from '../../theme';
 import type { CalculationResults } from '../../utils/calculator';
 import { BreakdownStepCard } from '../BreakdownStepCard';
 import { PercentageBar } from './PercentageBar';
@@ -23,6 +23,15 @@ interface CareStepProps {
  * Renders one step card per child for multi-child scenarios.
  */
 export function CareStep({ results, isExpanded, onToggle }: CareStepProps) {
+    const { colors } = useAppTheme();
+
+    const dynamicStyles = useMemo(() => ({
+        stepExplanation: { color: colors.textMuted },
+        careHeaderLabel: { color: colors.textMuted },
+        userHighlight: { color: colors.userHighlight },
+        textMuted: { color: colors.textMuted },
+    }), [colors]);
+
     return (
         <>
             {results.childResults.map((child, index) => (
@@ -49,16 +58,16 @@ export function CareStep({ results, isExpanded, onToggle }: CareStepProps) {
                 >
                     <>
                         {index === 0 && (
-                            <Text style={[styles.stepExplanation, { lineHeight: 22 }]}>
+                            <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation, { lineHeight: 22 }]}>
                                 The number of nights each parent cares for the child over a year
                                 is converted into a care percentage.
                             </Text>
                         )}
 
                         <View style={styles.careComparison}>
-                            <Text style={styles.careHeaderLabel}>
-                                <Text style={{ color: theme.colors.userHighlight, fontWeight: '700' }}>YOU</Text> -{' '}
-                                <Text style={{ color: theme.colors.userHighlight, fontWeight: '700' }}>
+                            <Text style={[styles.careHeaderLabel, dynamicStyles.careHeaderLabel]}>
+                                <Text style={[dynamicStyles.userHighlight, { fontWeight: '700' }]}>YOU</Text> -{' '}
+                                <Text style={[dynamicStyles.userHighlight, { fontWeight: '700' }]}>
                                     {formatPercent2dp(child.roundedCareA)}
                                 </Text>
                             </Text>
@@ -68,9 +77,9 @@ export function CareStep({ results, isExpanded, onToggle }: CareStepProps) {
                                 percentB={child.roundedCareB}
                             />
 
-                            <Text style={[styles.careHeaderLabel, { textAlign: 'right' }]}>
-                                <Text style={{ color: theme.colors.textMuted, fontWeight: '700' }}>OTHER PARENT</Text> -{' '}
-                                <Text style={{ color: theme.colors.textMuted, fontWeight: '700' }}>
+                            <Text style={[styles.careHeaderLabel, dynamicStyles.careHeaderLabel, { textAlign: 'right' }]}>
+                                <Text style={[dynamicStyles.textMuted, { fontWeight: '700' }]}>OTHER PARENT</Text> -{' '}
+                                <Text style={[dynamicStyles.textMuted, { fontWeight: '700' }]}>
                                     {formatPercent2dp(child.roundedCareB)}
                                 </Text>
                             </Text>
@@ -85,7 +94,6 @@ export function CareStep({ results, isExpanded, onToggle }: CareStepProps) {
 const styles = StyleSheet.create({
     stepExplanation: {
         fontSize: 14,
-        color: '#64748b', // Slate 500
         lineHeight: 20,
         marginBottom: 12,
     },
@@ -97,7 +105,6 @@ const styles = StyleSheet.create({
     careHeaderLabel: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#64748b', // Slate 500
         letterSpacing: 0.5,
         textTransform: 'uppercase',
     },

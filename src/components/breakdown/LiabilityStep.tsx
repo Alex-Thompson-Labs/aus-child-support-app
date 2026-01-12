@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text } from 'react-native';
+import { useAppTheme } from '../../theme';
 import type { CalculationResults } from '../../utils/calculator';
 import { BreakdownStepCard } from '../BreakdownStepCard';
 import { AnnualRateBreakdown } from './AnnualRateBreakdown';
@@ -27,6 +28,12 @@ export function LiabilityStep({
     isExpanded,
     onToggle,
 }: LiabilityStepProps) {
+    const { colors } = useAppTheme();
+
+    const dynamicStyles = useMemo(() => ({
+        stepExplanation: { color: colors.textMuted },
+    }), [colors]);
+
     return (
         <BreakdownStepCard
             stepNumber={8}
@@ -35,7 +42,7 @@ export function LiabilityStep({
             onToggle={onToggle}
         >
             <>
-                <Text style={styles.stepExplanation}>
+                <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
                     The final annual liability is calculated by multiplying the Child
                     Support Percentage (
                     <Text style={{ fontWeight: '600' }}>STEP 6</Text>) by the total Cost
@@ -58,7 +65,6 @@ export function LiabilityStep({
 const styles = StyleSheet.create({
     stepExplanation: {
         fontSize: 14,
-        color: '#64748b', // Slate 500
         lineHeight: 20,
         marginBottom: 12,
     },

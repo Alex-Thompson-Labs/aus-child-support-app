@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { theme } from '../../theme';
+import { useAppTheme } from '../../theme';
 
 export interface PercentageBarProps {
     percentA: number;
@@ -8,10 +8,18 @@ export interface PercentageBarProps {
 }
 
 export function PercentageBar({ percentA, percentB }: PercentageBarProps) {
+    const { colors } = useAppTheme();
+
+    const dynamicStyles = useMemo(() => ({
+        visualBar: { backgroundColor: colors.border },
+        barSegmentA: { backgroundColor: colors.userHighlight },
+        barSegmentB: { backgroundColor: colors.border },
+    }), [colors]);
+
     return (
-        <View style={styles.visualBar}>
-            <View style={[styles.barSegmentA, { flex: percentA }]} />
-            <View style={[styles.barSegmentB, { flex: percentB }]} />
+        <View style={[styles.visualBar, dynamicStyles.visualBar]}>
+            <View style={[styles.barSegmentA, dynamicStyles.barSegmentA, { flex: percentA }]} />
+            <View style={[styles.barSegmentB, dynamicStyles.barSegmentB, { flex: percentB }]} />
         </View>
     );
 }
@@ -22,13 +30,7 @@ const styles = StyleSheet.create({
         height: 8,
         borderRadius: 4,
         overflow: 'hidden',
-        backgroundColor: theme.colors.border,
     },
-    barSegmentA: {
-        backgroundColor: theme.colors.userHighlight,
-    },
-    barSegmentB: {
-        backgroundColor: theme.colors.border,
-    },
+    barSegmentA: {},
+    barSegmentB: {},
 });
-
