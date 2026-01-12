@@ -290,8 +290,8 @@ export function ResultsSimpleExplanation({
         <BreakdownStepCard
           key={index}
           stepNumber={`4${results.childResults.length > 1
-              ? String.fromCharCode(97 + index)
-              : ''
+            ? String.fromCharCode(97 + index)
+            : ''
             }`}
           title={`CARE PERCENTAGE${results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''
             }`}
@@ -347,8 +347,8 @@ export function ResultsSimpleExplanation({
         <BreakdownStepCard
           key={index}
           stepNumber={`5${results.childResults.length > 1
-              ? String.fromCharCode(97 + index)
-              : ''
+            ? String.fromCharCode(97 + index)
+            : ''
             }`}
           title={`COST PERCENTAGE${results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''
             }`}
@@ -448,8 +448,8 @@ export function ResultsSimpleExplanation({
         <BreakdownStepCard
           key={index}
           stepNumber={`6${results.childResults.length > 1
-              ? String.fromCharCode(97 + index)
-              : ''
+            ? String.fromCharCode(97 + index)
+            : ''
             }`}
           title={`Child Support Percentage${results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''
             }`}
@@ -491,6 +491,13 @@ export function ResultsSimpleExplanation({
                   }
                   formatPercent={formatPercent2dp}
                   formatCurrency={formatCurrency}
+                  capExplanation={
+                    child.marAppliedA
+                      ? results.marCapExplanationA
+                      : child.farAppliedA
+                        ? results.farCapExplanationA
+                        : undefined
+                  }
                 />
                 <GapAnalysisCard
                   label="OTHER PARENT"
@@ -507,6 +514,13 @@ export function ResultsSimpleExplanation({
                   }
                   formatPercent={formatPercent2dp}
                   formatCurrency={formatCurrency}
+                  capExplanation={
+                    child.marAppliedB
+                      ? results.marCapExplanationB
+                      : child.farAppliedB
+                        ? results.farCapExplanationB
+                        : undefined
+                  }
                 />
               </View>
             </View>

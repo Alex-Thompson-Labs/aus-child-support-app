@@ -269,9 +269,12 @@ export function AnnualRateBreakdown({
                             </Text>
                         </View>
                         {multiCaseCapApplied && multiCaseCap !== undefined && (
-                            <View style={styles.multiCaseCapNote}>
-                                <Text style={styles.multiCaseCapText}>
-                                    Multi-case cap applied (capped at {formatCurrency2dp(multiCaseCap)})
+                            <View style={styles.multiCaseCapBadge}>
+                                <Text style={styles.multiCaseCapBadgeText}>
+                                    Multi-case Cap
+                                </Text>
+                                <Text style={styles.multiCaseCapNote}>
+                                    Liability capped at {formatCurrency2dp(multiCaseCap)} (Solo Cost method)
                                 </Text>
                             </View>
                         )}
@@ -391,17 +394,34 @@ const styles = StyleSheet.create({
         color: '#78350f', // Amber-900
         lineHeight: 18,
     },
-    multiCaseCapNote: {
-        marginTop: 4,
-        marginLeft: 8,
-        paddingLeft: 8,
-        borderLeftWidth: 2,
-        borderLeftColor: '#a78bfa', // Violet-400
+    multiCaseCapBadge: {
+        marginTop: 6,
+        flexDirection: 'row',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 6,
+        backgroundColor: '#f5f3ff', // Violet-50
+        borderRadius: 6,
+        padding: 8,
+        borderWidth: 1,
+        borderColor: '#c4b5fd', // Violet-300
     },
-    multiCaseCapText: {
-        fontSize: 11,
+    multiCaseCapBadgeText: {
+        fontSize: 10,
+        fontWeight: '700',
         color: '#7c3aed', // Violet-600
-        fontStyle: 'italic',
+        backgroundColor: '#ede9fe', // Violet-100
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 4,
+        overflow: 'hidden',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    multiCaseCapNote: {
+        fontSize: 11,
+        color: '#6d28d9', // Violet-700
+        flex: 1,
     },
     npcPaymentDivider: {
         height: 1,

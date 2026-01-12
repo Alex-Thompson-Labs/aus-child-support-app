@@ -166,19 +166,6 @@ export function OtherCasesPopover({
           iconBorderColor="#bfdbfe"
           iconBackgroundColor="#eff6ff"
         />
-        {hasValues && (
-          <Pressable
-            style={[popoverStyles.drawerClearButton, webClickableStyles]}
-            onPress={() => {
-              onMultiCaseAChange([]);
-              onMultiCaseBChange([]);
-            }}
-            accessibilityRole="button"
-            accessibilityLabel="Clear all other cases"
-          >
-            <Text style={popoverStyles.drawerClearButtonText}>×</Text>
-          </Pressable>
-        )}
       </View>
 
       <View
@@ -218,31 +205,31 @@ export function OtherCasesPopover({
               accessibilityRole={'group' as never}
               accessibilityLabel="Your children in other cases"
             >
-              <Text style={popoverStyles.drawerParentLabelYou}>YOU</Text>
               <View style={popoverStyles.drawerAgeInputs}>
-                <View style={popoverStyles.drawerAgeGroup}>
-                  <Text style={popoverStyles.drawerAgeLabel}>&lt;13</Text>
-                  <TextInput
-                    style={[popoverStyles.drawerInput, webInputStyles]}
-                    value={countsA.u13.toString()}
-                    onChangeText={(text) => handleCountChange('A', 'u13', text)}
-                    keyboardType="numeric"
-                    accessibilityLabel="Your children under 13 in other cases"
-                    accessibilityHint="Number of children under 13 from your other child support cases"
-                  />
-                </View>
-                <View style={popoverStyles.drawerAgeGroup}>
-                  <Text style={popoverStyles.drawerAgeLabel}>13+</Text>
-                  <TextInput
-                    style={[popoverStyles.drawerInput, webInputStyles]}
-                    value={countsA.plus13.toString()}
-                    onChangeText={(text) =>
-                      handleCountChange('A', 'plus13', text)
-                    }
-                    keyboardType="numeric"
-                    accessibilityLabel="Your children 13 and over in other cases"
-                    accessibilityHint="Number of children 13 and over from your other child support cases"
-                  />
+                <Text style={[popoverStyles.drawerAgeLabel, { marginBottom: 10 }]}>&lt;13</Text>
+                <View style={popoverStyles.drawerLabeledAgeGroup}>
+                  <Text style={popoverStyles.drawerParentLabelYou}>YOU</Text>
+                  <View style={popoverStyles.drawerInputRow}>
+                    <TextInput
+                      style={[popoverStyles.drawerInput, webInputStyles]}
+                      value={countsA.u13.toString()}
+                      onChangeText={(text) => handleCountChange('A', 'u13', text)}
+                      keyboardType="numeric"
+                      accessibilityLabel="Your children under 13 in other cases"
+                      accessibilityHint="Number of children under 13 from your other child support cases"
+                    />
+                    <Text style={popoverStyles.drawerAgeLabel}>13+</Text>
+                    <TextInput
+                      style={[popoverStyles.drawerInput, webInputStyles]}
+                      value={countsA.plus13.toString()}
+                      onChangeText={(text) =>
+                        handleCountChange('A', 'plus13', text)
+                      }
+                      keyboardType="numeric"
+                      accessibilityLabel="Your children 13 and over in other cases"
+                      accessibilityHint="Number of children 13 and over from your other child support cases"
+                    />
+                  </View>
                 </View>
               </View>
             </View>
@@ -256,39 +243,51 @@ export function OtherCasesPopover({
               accessibilityRole={'group' as never}
               accessibilityLabel="Other parent's children in other cases"
             >
-              <Text style={popoverStyles.drawerParentLabelOther}>
-                OTHER PARENT
-              </Text>
               <View style={popoverStyles.drawerAgeInputs}>
-                <View style={popoverStyles.drawerAgeGroup}>
-                  <Text style={popoverStyles.drawerAgeLabel}>&lt;13</Text>
-                  <TextInput
-                    style={[popoverStyles.drawerInput, webInputStyles]}
-                    value={countsB.u13.toString()}
-                    onChangeText={(text) => handleCountChange('B', 'u13', text)}
-                    keyboardType="numeric"
-                    accessibilityLabel="Other parent's children under 13 in other cases"
-                    accessibilityHint="Number of children under 13 from other parent's other child support cases"
-                  />
-                </View>
-                <View style={popoverStyles.drawerAgeGroup}>
-                  <Text style={popoverStyles.drawerAgeLabel}>13+</Text>
-                  <TextInput
-                    style={[popoverStyles.drawerInput, webInputStyles]}
-                    value={countsB.plus13.toString()}
-                    onChangeText={(text) =>
-                      handleCountChange('B', 'plus13', text)
-                    }
-                    keyboardType="numeric"
-                    accessibilityLabel="Other parent's children 13 and over in other cases"
-                    accessibilityHint="Number of children 13 and over from other parent's other child support cases"
-                  />
+                <Text style={[popoverStyles.drawerAgeLabel, { marginBottom: 10 }]}>&lt;13</Text>
+                <View style={popoverStyles.drawerLabeledAgeGroup}>
+                  <Text style={popoverStyles.drawerParentLabelOther}>OTHER PARENT</Text>
+                  <View style={popoverStyles.drawerInputRow}>
+                    <TextInput
+                      style={[popoverStyles.drawerInput, webInputStyles]}
+                      value={countsB.u13.toString()}
+                      onChangeText={(text) => handleCountChange('B', 'u13', text)}
+                      keyboardType="numeric"
+                      accessibilityLabel="Other parent's children under 13 in other cases"
+                      accessibilityHint="Number of children under 13 from other parent's other child support cases"
+                    />
+                    <Text style={popoverStyles.drawerAgeLabel}>13+</Text>
+                    <TextInput
+                      style={[popoverStyles.drawerInput, webInputStyles]}
+                      value={countsB.plus13.toString()}
+                      onChangeText={(text) =>
+                        handleCountChange('B', 'plus13', text)
+                      }
+                      keyboardType="numeric"
+                      accessibilityLabel="Other parent's children 13 and over in other cases"
+                      accessibilityHint="Number of children 13 and over from other parent's other child support cases"
+                    />
+                  </View>
                 </View>
               </View>
             </View>
           </View>
         </View>
       </View>
+
+      {hasValues && (
+        <Pressable
+          style={[popoverStyles.drawerClearButton, webClickableStyles]}
+          onPress={() => {
+            onMultiCaseAChange([]);
+            onMultiCaseBChange([]);
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Clear all other cases"
+        >
+          <Text style={popoverStyles.drawerClearButtonText}>×</Text>
+        </Pressable>
+      )}
     </View>
   );
 }
@@ -313,6 +312,7 @@ const popoverStyles = StyleSheet.create({
     borderColor: '#bfdbfe',
     borderRadius: 8,
     borderStyle: 'dashed',
+    minWidth: 170, // Match Rel. Dependents button width
   },
   triggerButtonHover: {
     ...(isWeb ? ({ backgroundColor: '#dbeafe' } as never) : {}),
@@ -331,6 +331,7 @@ const popoverStyles = StyleSheet.create({
     borderColor: '#bfdbfe',
     borderRadius: 6,
     borderStyle: 'dashed',
+    minWidth: 140, // Match Rel. Dependents button width
   },
   triggerButtonActive: {
     backgroundColor: '#eff6ff',
@@ -368,7 +369,7 @@ const popoverStyles = StyleSheet.create({
   },
   drawerInputsRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end', // Align to bottom so separator aligns with inputs
     gap: 12,
     flexShrink: 1,
   },
@@ -393,8 +394,18 @@ const popoverStyles = StyleSheet.create({
   },
   drawerAgeInputs: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end', // Align to bottom so labels don't affect input alignment
     gap: 6,
+  },
+  drawerLabeledAgeGroup: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 2,
+  },
+  drawerInputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   drawerAgeGroup: {
     flexDirection: 'row',
@@ -424,6 +435,7 @@ const popoverStyles = StyleSheet.create({
     height: 24,
     backgroundColor: '#e2e8f0',
     marginHorizontal: 4,
+    marginBottom: 4, // Align with input row center
   },
   drawerClearButton: {
     width: 24,

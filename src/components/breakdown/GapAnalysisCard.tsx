@@ -25,6 +25,8 @@ export interface GapAnalysisCardProps {
     formatCurrency: (num: number) => string;
     /** Apply user highlight color (for "You" elements) */
     isUserHighlighted?: boolean;
+    /** Optional explanation when MAR/FAR cap is applied (Formula 3/4) */
+    capExplanation?: string;
 }
 
 export function GapAnalysisCard({
@@ -39,6 +41,7 @@ export function GapAnalysisCard({
     formatPercent,
     formatCurrency,
     isUserHighlighted = false,
+    capExplanation,
 }: GapAnalysisCardProps) {
     const hasFixedRate = isFarApplied || isMarApplied;
     // Use userHighlight for "You" elements, textMuted for "Other Parent" elements
@@ -66,6 +69,11 @@ export function GapAnalysisCard({
                         {formatCurrency(fixedRateAmount)}
                     </Text>
                 </View>
+                {capExplanation && (
+                    <View style={styles.capNotice}>
+                        <Text style={styles.capNoticeText}>ⓘ {capExplanation}</Text>
+                    </View>
+                )}
             </View>
         );
     }
@@ -162,5 +170,18 @@ const styles = StyleSheet.create({
         fontSize: 11,
         color: theme.colors.textMuted,
         lineHeight: 15,
+    },
+    capNotice: {
+        marginTop: 8,
+        backgroundColor: '#fef3c7', // Amber-100
+        borderRadius: 4,
+        padding: 6,
+        borderWidth: 1,
+        borderColor: '#fbbf24', // Amber-400
+    },
+    capNoticeText: {
+        fontSize: 10,
+        color: '#92400e', // Amber-800
+        lineHeight: 14,
     },
 });

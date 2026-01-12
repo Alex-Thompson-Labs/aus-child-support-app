@@ -308,6 +308,11 @@ export function useCalculator() {
         formState.multiCaseB.otherChildren
       );
 
+      // Preliminary CSI = ATI - SSA - Relevant Dependent Allowance
+      // This is used for calculating Solo Cost in Multi-Case Cap (before Multi-Case Allowance deduction)
+      const preliminaryCSI_A = Math.max(0, ATI_A - SSA - relDepDeductibleA);
+      const preliminaryCSI_B = Math.max(0, ATI_B - SSA - relDepDeductibleB);
+
       // CSI = ATI - Relevant Dependents - SSA - Multi-case Allowance
       const CSI_A = Math.max(
         0,
@@ -355,9 +360,9 @@ export function useCalculator() {
         const childInput = formState.children[childIndex];
         const rawCareNPC = hasNPC
           ? convertCareToPercentage(
-              childInput?.careAmountNPC ?? 0,
-              childInput?.carePeriod ?? 'fortnight'
-            )
+            childInput?.careAmountNPC ?? 0,
+            childInput?.carePeriod ?? 'fortnight'
+          )
           : 0;
         const roundedCareNPC = roundCarePercentage(rawCareNPC);
         const costPercNPC = mapCareToCostPercent(roundedCareNPC);
@@ -559,13 +564,57 @@ export function useCalculator() {
         finalLiabilityA = 0;
         finalLiabilityB = 0;
 
+        /**
+         * Calculate Solo Cost per child for Multi-Case Cap.
+         * This calculates what the cost of all children (current + other cases)
+         * would be if only this parent's income were considered.
+         * Per legislation, the cap must be based on payer's individual income, not CCSI.
+         */
+        const calculateSoloCostPerChild = (
+          parentPreliminaryCSI: number,
+          otherCaseChildren: OtherCaseChild[]
+        ): number => {
+          // Create a combined list of all children (current case + other cases)
+          const allChildren = [
+            ...assessableChildren,
+            ...otherCaseChildren.map((oc) => ({
+              age: oc.age,
+              ageRange: deriveAgeRange(oc.age),
+              careA: 0,
+              careB: 0,
+            })),
+          ];
+
+          // Filter out adult children (18+)
+          const eligibleChildren = allChildren.filter(
+            (c) => deriveAgeRange(c.age) !== '18+'
+          );
+
+          if (eligibleChildren.length === 0) return 0;
+
+          // Calculate cost using only this parent's income (Solo Cost)
+          const { cost: totalSoloCost } = getChildCost(
+            selectedYear,
+            eligibleChildren,
+            parentPreliminaryCSI // Use parent's solo income, not CCSI
+          );
+
+          // Return per-child cost
+          return totalSoloCost / eligibleChildren.length;
+        };
+
         childResults.forEach((child) => {
           let adjustedLiabilityA = child.finalLiabilityA;
           let adjustedLiabilityB = child.finalLiabilityB;
 
           // Apply multi-case cap for Parent A
+          // Uses Solo Cost based on Parent A's Preliminary CSI (not CCSI)
           if (hasMultiCaseA && child.finalLiabilityA > 0) {
-            const capA = calculateMultiCaseCap(child.costPerChild, child.costPercA);
+            const soloCostPerChildA = calculateSoloCostPerChild(
+              preliminaryCSI_A,
+              formState.multiCaseA.otherChildren
+            );
+            const capA = calculateMultiCaseCap(soloCostPerChildA, child.costPercA);
             child.multiCaseCapA = capA;
             const capResult = applyMultiCaseCap(child.finalLiabilityA, capA);
             adjustedLiabilityA = capResult.liability;
@@ -576,8 +625,13 @@ export function useCalculator() {
           }
 
           // Apply multi-case cap for Parent B
+          // Uses Solo Cost based on Parent B's Preliminary CSI (not CCSI)
           if (hasMultiCaseB && child.finalLiabilityB > 0) {
-            const capB = calculateMultiCaseCap(child.costPerChild, child.costPercB);
+            const soloCostPerChildB = calculateSoloCostPerChild(
+              preliminaryCSI_B,
+              formState.multiCaseB.otherChildren
+            );
+            const capB = calculateMultiCaseCap(soloCostPerChildB, child.costPercB);
             child.multiCaseCapB = capB;
             const capResult = applyMultiCaseCap(child.finalLiabilityB, capB);
             adjustedLiabilityB = capResult.liability;
