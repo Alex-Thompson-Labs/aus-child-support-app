@@ -28,7 +28,7 @@ const softwareApplicationSchema = {
 
 export default function Root({ children }: PropsWithChildren) {
   return (
-    <html lang="en-AU">
+    <html lang="en-AU" style={{ backgroundColor: '#ffffff' }}>
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
@@ -36,6 +36,9 @@ export default function Root({ children }: PropsWithChildren) {
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
+        {/* Prevent black flash on initial load */}
+        <meta name="theme-color" content="#ffffff" />
+        <meta name="background-color" content="#ffffff" />
 
         {/* GLOBAL SOCIAL (STATIC) */}
         <meta property="og:site_name" content="AusChildSupport" />
@@ -70,6 +73,11 @@ export default function Root({ children }: PropsWithChildren) {
         <style
           dangerouslySetInnerHTML={{
             __html: `
+              /* CRITICAL: Prevent black flash - set background immediately */
+              html, body {
+                background-color: #ffffff !important;
+              }
+              
               /* Base styles for immediate render */
               * {
                 box-sizing: border-box;
@@ -81,9 +89,42 @@ export default function Root({ children }: PropsWithChildren) {
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                 -webkit-font-smoothing: antialiased;
                 -moz-osx-font-smoothing: grayscale;
-                background-color: #ffffff;
+                background-color: #ffffff !important;
                 color: #1f2937;
                 line-height: 1.5;
+              }
+              
+              /* Web splash screen - shown until React hydrates */
+              #expo-splash-screen {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: #ffffff;
+                z-index: 9999;
+                transition: opacity 0.3s ease-out;
+              }
+              
+              #expo-splash-screen.hidden {
+                opacity: 0;
+                pointer-events: none;
+              }
+              
+              #expo-splash-spinner {
+                width: 40px;
+                height: 40px;
+                border: 3px solid #e2e8f0;
+                border-top-color: #0a7ea4;
+                border-radius: 50%;
+                animation: expo-spin 1s linear infinite;
+              }
+              
+              @keyframes expo-spin {
+                to { transform: rotate(360deg); }
               }
               
               /* Header styles - critical for LCP */
@@ -139,6 +180,7 @@ export default function Root({ children }: PropsWithChildren) {
                 flex-direction: column;
                 align-items: center;
                 width: 100%;
+                background-color: #ffffff;
               }
               
               /* Center all direct children of root */
@@ -160,7 +202,9 @@ export default function Root({ children }: PropsWithChildren) {
 
         <ScrollViewStyleReset />
       </head>
-      <body>{children}</body>
+      <body style={{ backgroundColor: '#ffffff' }}>
+        {children}
+      </body>
     </html>
   );
 }
