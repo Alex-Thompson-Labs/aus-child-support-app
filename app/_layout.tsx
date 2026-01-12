@@ -1,12 +1,7 @@
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { LoadingFallback } from '@/src/components/ui/LoadingFallback';
 import { useClientOnly } from '@/src/hooks/useClientOnly';
 import { initPerformanceMonitoring } from '@/src/utils/web-vitals';
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from '@react-navigation/native';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Stack, usePathname } from 'expo-router';
@@ -25,7 +20,6 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const isClient = useClientOnly();
   const pathname = usePathname();
   const [appIsReady, setAppIsReady] = useState(false);
@@ -118,14 +112,17 @@ export default function RootLayout() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ffffff' }} onLayout={onLayoutRootView}>
+    <View
+      style={{ flex: 1, backgroundColor: '#ffffff' }}
+      onLayout={onLayoutRootView}
+    >
       <Suspense fallback={<LoadingFallback />}>
         {/* SEO: Dynamic Canonical Tag via Expo Head */}
         <Head>
           <link rel="canonical" href={canonicalUrl} />
         </Head>
 
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <ThemeProvider value={DefaultTheme}>
           <Stack
             screenOptions={{
               title: 'Child Support Calculator',
@@ -169,7 +166,7 @@ export default function RootLayout() {
               }}
             />
           </Stack>
-          <StatusBar style="auto" />
+          <StatusBar style="dark" />
           {Platform.OS === 'web' && <Analytics />}
           {Platform.OS === 'web' && <SpeedInsights />}
         </ThemeProvider>
