@@ -4,6 +4,7 @@
  * Mobile-optimized for use on phone
  */
 
+import { Colors } from '@/constants/theme';
 import {
   isWeb,
   MAX_CONTENT_WIDTH,
@@ -26,6 +27,9 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+// Use brand colors from theme
+const PRIMARY_COLOR = Colors.light.tint;
 
 type LeadStatus = 'new' | 'reviewing' | 'sent' | 'converted' | 'lost';
 
@@ -451,7 +455,7 @@ function formatDate(dateString?: string): string {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f172a', // slate-900
+    backgroundColor: Colors.light.background, // White background
   },
   contentWrapper: {
     flex: 1,
@@ -472,12 +476,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#1e293b',
+    borderBottomColor: '#e2e8f0', // Light border
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#ffffff',
+    color: Colors.light.text, // Dark text
   },
   headerSubtitle: {
     fontSize: 14,
@@ -487,7 +491,7 @@ const styles = StyleSheet.create({
   proposalsButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: '#2563eb',
+    backgroundColor: PRIMARY_COLOR, // Brand primary
     borderRadius: 6,
     marginRight: 8,
   },
@@ -499,11 +503,11 @@ const styles = StyleSheet.create({
   logoutButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: '#1e293b',
+    backgroundColor: '#f1f5f9', // Light gray
     borderRadius: 6,
   },
   logoutButtonText: {
-    color: '#e2e8f0',
+    color: Colors.light.text,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -512,12 +516,12 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   searchInput: {
-    backgroundColor: '#1e293b',
-    color: '#ffffff',
+    backgroundColor: '#f8fafc', // Off-white
+    color: Colors.light.text,
     borderRadius: 8,
     padding: 12,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#e2e8f0', // Light border
     fontSize: 15,
   },
   filtersContainer: {
@@ -528,15 +532,15 @@ const styles = StyleSheet.create({
   filterChip: {
     paddingHorizontal: 14,
     paddingVertical: 8,
-    backgroundColor: '#1e293b',
+    backgroundColor: '#f8fafc',
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#e2e8f0',
   },
   filterChipActive: {
-    backgroundColor: '#2563eb',
-    borderColor: '#2563eb',
+    backgroundColor: PRIMARY_COLOR,
+    borderColor: PRIMARY_COLOR,
   },
   filterChipText: {
     fontSize: 13,
@@ -560,15 +564,15 @@ const styles = StyleSheet.create({
   sortButton: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    backgroundColor: '#1e293b',
+    backgroundColor: '#f8fafc',
     borderRadius: 6,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#e2e8f0',
   },
   sortButtonActive: {
-    backgroundColor: '#334155',
-    borderColor: '#475569',
+    backgroundColor: '#e2e8f0',
+    borderColor: '#cbd5e1',
   },
   sortButtonText: {
     fontSize: 12,
@@ -576,7 +580,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   sortButtonTextActive: {
-    color: '#e2e8f0',
+    color: Colors.light.text,
   },
   leadsList: {
     flex: 1,
@@ -593,12 +597,12 @@ const styles = StyleSheet.create({
     color: '#64748b',
   },
   leadCard: {
-    backgroundColor: '#1e293b',
+    backgroundColor: '#ffffff',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#e2e8f0',
   },
   leadCardHeader: {
     flexDirection: 'row',
@@ -625,7 +629,7 @@ const styles = StyleSheet.create({
   leadName: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#ffffff',
+    color: Colors.light.text,
     marginBottom: 4,
   },
   leadLocation: {
@@ -641,7 +645,7 @@ const styles = StyleSheet.create({
   leadLiability: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#2563eb',
+    color: PRIMARY_COLOR,
   },
   leadDate: {
     fontSize: 13,
@@ -651,7 +655,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#334155',
+    borderTopColor: '#e2e8f0',
   },
   complexityBadgeText: {
     fontSize: 12,

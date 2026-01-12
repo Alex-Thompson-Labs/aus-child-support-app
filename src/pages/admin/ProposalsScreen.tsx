@@ -3,6 +3,7 @@
  * Manage partnership proposals - create, view analytics, copy links
  */
 
+import { Colors } from '@/constants/theme';
 import {
   isWeb,
   MAX_CONTENT_WIDTH,
@@ -28,6 +29,9 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+// Use brand colors from theme
+const PRIMARY_COLOR = Colors.light.tint;
 
 interface ProposalWithStats extends PartnershipProposal {
   view_count: number;
@@ -378,7 +382,7 @@ function formatDate(dateString: string): string {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f172a',
+    backgroundColor: Colors.light.background, // White background
   },
   contentWrapper: {
     flex: 1,
@@ -399,7 +403,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#1e293b',
+    borderBottomColor: '#e2e8f0', // Light border
   },
   headerLeft: {
     flexDirection: 'row',
@@ -409,18 +413,18 @@ const styles = StyleSheet.create({
   backButton: {
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: '#1e293b',
+    backgroundColor: '#f1f5f9', // Light gray
     borderRadius: 6,
   },
   backButtonText: {
-    color: '#e2e8f0',
+    color: Colors.light.text,
     fontSize: 14,
     fontWeight: '600',
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#ffffff',
+    color: Colors.light.text, // Dark text
   },
   headerSubtitle: {
     fontSize: 14,
@@ -430,12 +434,12 @@ const styles = StyleSheet.create({
   createSection: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#1e293b',
+    borderBottomColor: '#e2e8f0',
   },
   createTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#94a3b8',
+    color: '#64748b',
     marginBottom: 12,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -446,16 +450,16 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    backgroundColor: '#1e293b',
-    color: '#ffffff',
+    backgroundColor: '#f8fafc', // Off-white
+    color: Colors.light.text,
     borderRadius: 8,
     padding: 12,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#e2e8f0', // Light border
     fontSize: 15,
   },
   createButton: {
-    backgroundColor: '#2563eb',
+    backgroundColor: PRIMARY_COLOR, // Brand primary
     borderRadius: 8,
     paddingHorizontal: 20,
     paddingVertical: 12,
@@ -464,7 +468,7 @@ const styles = StyleSheet.create({
     minWidth: 80,
   },
   createButtonDisabled: {
-    backgroundColor: '#1e40af',
+    opacity: 0.6,
   },
   createButtonText: {
     color: '#ffffff',
@@ -488,16 +492,16 @@ const styles = StyleSheet.create({
   },
   emptyStateHint: {
     fontSize: 14,
-    color: '#475569',
+    color: '#64748b',
     marginTop: 8,
   },
   card: {
-    backgroundColor: '#1e293b',
+    backgroundColor: '#ffffff',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#e2e8f0',
   },
   cardHeader: {
     flexDirection: 'row',
@@ -508,7 +512,7 @@ const styles = StyleSheet.create({
   firmName: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#ffffff',
+    color: Colors.light.text,
     flex: 1,
   },
   statusBadge: {
@@ -520,7 +524,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#166534',
   },
   statusInactive: {
-    backgroundColor: '#475569',
+    backgroundColor: '#94a3b8',
   },
   statusText: {
     fontSize: 12,
@@ -539,7 +543,7 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#2563eb',
+    color: PRIMARY_COLOR,
   },
   statLabel: {
     fontSize: 12,
@@ -552,7 +556,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#334155',
+    borderTopColor: '#e2e8f0',
   },
   slug: {
     fontSize: 13,
@@ -560,13 +564,13 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
   copyButton: {
-    backgroundColor: '#334155',
+    backgroundColor: '#e2e8f0',
     borderRadius: 6,
     paddingHorizontal: 14,
     paddingVertical: 8,
   },
   copyButtonText: {
-    color: '#e2e8f0',
+    color: Colors.light.text,
     fontSize: 13,
     fontWeight: '600',
   },

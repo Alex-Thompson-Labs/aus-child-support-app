@@ -4,6 +4,7 @@
  * Mobile-optimized for phone use
  */
 
+import { Colors } from '@/constants/theme';
 import { exportLeadAsPDF } from '@/src/utils/exportLeadPDF';
 import {
   isWeb,
@@ -27,6 +28,9 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+// Use brand colors from theme
+const PRIMARY_COLOR = Colors.light.tint;
 
 type LeadStatus = 'new' | 'reviewing' | 'sent' | 'converted' | 'lost';
 
@@ -677,7 +681,7 @@ function getStatusBadgeStyle(status?: string) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f172a', // slate-900
+    backgroundColor: Colors.light.background, // White background
   },
   contentWrapper: {
     flex: 1,
@@ -698,7 +702,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#1e293b',
+    borderBottomColor: '#e2e8f0', // Light border
   },
   backButton: {
     paddingVertical: 8,
@@ -706,7 +710,7 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 16,
-    color: '#2563eb',
+    color: PRIMARY_COLOR, // Brand primary
     fontWeight: '600',
   },
   headerTitle: {
@@ -734,17 +738,17 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   section: {
-    backgroundColor: '#1e293b',
+    backgroundColor: '#ffffff',
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#e2e8f0',
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#e2e8f0',
+    color: Colors.light.text,
     marginBottom: 12,
   },
   infoRow: {
@@ -761,7 +765,7 @@ const styles = StyleSheet.create({
   },
   infoValue: {
     fontSize: 14,
-    color: '#ffffff',
+    color: Colors.light.text,
     fontWeight: '500',
     flex: 1,
     textAlign: 'right',
@@ -771,7 +775,7 @@ const styles = StyleSheet.create({
   },
   infoValueHighlight: {
     fontSize: 16,
-    color: '#2563eb',
+    color: PRIMARY_COLOR,
     fontWeight: '700',
     flex: 1,
     textAlign: 'right',
@@ -788,21 +792,21 @@ const styles = StyleSheet.create({
   },
   complexityText: {
     fontSize: 14,
-    color: '#e2e8f0',
+    color: Colors.light.text,
     flex: 1,
   },
   coaReasonCard: {
-    backgroundColor: '#0f172a',
+    backgroundColor: '#f8fafc',
     borderRadius: 8,
     padding: 12,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: '#475569',
+    borderColor: '#e2e8f0',
   },
   coaReasonLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#ffffff',
+    color: Colors.light.text,
     marginBottom: 4,
   },
   coaReasonDescription: {
@@ -817,17 +821,17 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontSize: 14,
-    color: '#e2e8f0',
+    color: Colors.light.text,
     lineHeight: 20,
   },
   notesInput: {
-    backgroundColor: '#0f172a',
-    color: '#ffffff',
+    backgroundColor: '#f8fafc',
+    color: Colors.light.text,
     borderRadius: 8,
     padding: 12,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#475569',
+    borderColor: '#e2e8f0',
     minHeight: 100,
     textAlignVertical: 'top',
     fontSize: 14,
@@ -839,12 +843,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   actionButtonPrimary: {
-    backgroundColor: '#2563eb',
+    backgroundColor: PRIMARY_COLOR,
   },
   actionButtonSecondary: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#2563eb',
+    borderColor: PRIMARY_COLOR,
   },
   actionButtonDanger: {
     backgroundColor: '#dc2626',
@@ -855,7 +859,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   actionButtonTextSecondary: {
-    color: '#2563eb',
+    color: PRIMARY_COLOR,
     fontSize: 15,
     fontWeight: '600',
   },
@@ -868,16 +872,16 @@ const styles = StyleSheet.create({
   statusButton: {
     flex: 1,
     minWidth: '45%',
-    backgroundColor: '#0f172a',
+    backgroundColor: '#f8fafc',
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#475569',
+    borderColor: '#e2e8f0',
   },
   statusButtonActive: {
-    backgroundColor: '#334155',
-    borderColor: '#64748b',
+    backgroundColor: '#e2e8f0',
+    borderColor: '#cbd5e1',
   },
   statusButtonText: {
     fontSize: 13,
@@ -885,19 +889,19 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   statusButtonTextActive: {
-    color: '#e2e8f0',
+    color: Colors.light.text,
   },
   dangerSection: {
     borderColor: '#dc2626',
   },
   dangerTitle: {
-    color: '#fca5a5',
+    color: '#dc2626',
   },
   metadata: {
     marginTop: 8,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: '#1e293b',
+    borderTopColor: '#e2e8f0',
   },
   metadataText: {
     fontSize: 12,

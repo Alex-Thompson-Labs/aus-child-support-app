@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
   downloadButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2563eb',
+    backgroundColor: '#0a7ea4', // Primary brand color
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 6,

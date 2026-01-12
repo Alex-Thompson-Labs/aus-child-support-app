@@ -4,6 +4,7 @@
  * Uses Supabase Auth with RLS policies
  */
 
+import { Colors } from '@/constants/theme';
 import {
   MAX_FORM_WIDTH,
   isWeb,
@@ -28,6 +29,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+// Use brand colors from theme
+const PRIMARY_COLOR = Colors.light.tint;
+
 export default function AdminLoginScreen() {
   const router = useRouter();
   const { isDesktop } = useResponsive();
@@ -38,10 +42,10 @@ export default function AdminLoginScreen() {
 
   const webContainerStyle = isWeb
     ? {
-        maxWidth: MAX_FORM_WIDTH,
-        width: '100%' as const,
-        alignSelf: 'center' as const,
-      }
+      maxWidth: MAX_FORM_WIDTH,
+      width: '100%' as const,
+      alignSelf: 'center' as const,
+    }
     : {};
 
   const handleLogin = async () => {
@@ -202,7 +206,7 @@ export default function AdminLoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f172a', // slate-900
+    backgroundColor: Colors.light.background, // White background
   },
   keyboardView: {
     flex: 1,
@@ -222,7 +226,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#ffffff',
+    color: Colors.light.text, // Dark text
     marginBottom: 8,
     textAlign: 'center',
   },
@@ -231,7 +235,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 14,
-    color: '#64748b', // slate-400
+    color: '#64748b',
     textAlign: 'center',
   },
   form: {
@@ -240,21 +244,21 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#e2e8f0', // slate-200
+    color: Colors.light.text,
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#1e293b', // slate-800
-    color: '#ffffff',
+    backgroundColor: '#f8fafc', // Off-white
+    color: Colors.light.text,
     borderRadius: 8,
     padding: 14,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#334155', // slate-700
+    borderColor: '#e2e8f0', // Light border
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#2563eb', // blue-600
+    backgroundColor: PRIMARY_COLOR, // Brand primary
     borderRadius: 8,
     paddingVertical: 16,
     alignItems: 'center',
@@ -274,7 +278,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 12,
-    color: '#64748b', // slate-500
+    color: '#64748b',
     textAlign: 'center',
     lineHeight: 18,
   },
