@@ -11,10 +11,14 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Stack, usePathname } from 'expo-router';
 import Head from 'expo-router/head';
-import { StatusBar } from 'expo-status-bar'; // <--- Make sure this line is present
-import { Suspense, useEffect } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import ReactGA from 'react-ga4';
-import { Platform } from 'react-native';
+import { Platform, View } from 'react-native';
+
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -24,6 +28,31 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const isClient = useClientOnly();
   const pathname = usePathname();
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  // Prepare the app by loading any required resources (fonts, assets, etc.)
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // Add any async resource loading here if needed (e.g., fonts)
+        // For now, we just mark as ready since fonts are loaded via expo config
+      } catch (e) {
+        console.warn('Error preparing app:', e);
+      } finally {
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
+  }, []);
+
+  // Callback to hide splash screen once the root view has performed layout
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) {
+      // Hide the splash screen once the app has rendered
+      await SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
 
   // SEO: Generate Canonical URL (Strip query params and trailing slashes)
   const siteUrl =
@@ -83,91 +112,98 @@ export default function RootLayout() {
     }
   }, [isClient, enableAnalytics]);
 
-  return (
-    <Suspense fallback={<LoadingFallback />}>
-      {/* SEO: Dynamic Canonical Tag via Expo Head */}
-      <Head>
-        <link rel="canonical" href={canonicalUrl} />
-      </Head>
+  // Don't render until app is ready - prevents visual flash
+  if (!appIsReady) {
+    return null;
+  }
 
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack
-          screenOptions={{
-            title: 'Child Support Calculator',
-          }}
-        >
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="modal"
-            options={{ presentation: 'modal', title: 'Modal' }}
-          />
-          <Stack.Screen
-            name="special-circumstances"
-            options={{
-              headerShown: false,
+  return (
+    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+      <Suspense fallback={<LoadingFallback />}>
+        {/* SEO: Dynamic Canonical Tag via Expo Head */}
+        <Head>
+          <link rel="canonical" href={canonicalUrl} />
+        </Head>
+
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack
+            screenOptions={{
+              title: 'Child Support Calculator',
             }}
-          />
-          <Stack.Screen
-            name="lawyer-inquiry"
-            options={{
-              presentation: 'modal',
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="admin/login"
-            options={{
-              presentation: 'modal',
-              title: 'Admin Login',
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="admin/dashboard"
-            options={{
-              title: 'Admin Dashboard',
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="admin/proposals"
-            options={{
-              title: 'Partnership Proposals',
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="admin/lead/[id]"
-            options={{
-              title: 'Lead Details',
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="admin/view-lead/[token]"
-            options={{
-              title: 'View Lead',
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="change-of-assessment/[reason-slug]"
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="partner/[slug]"
-            options={{
-              headerShown: false,
-              title: 'Partnership Proposal',
-            }}
-          />
-        </Stack>
-        <StatusBar style="auto" />
-        {Platform.OS === 'web' && <Analytics />}
-        {Platform.OS === 'web' && <SpeedInsights />}
-      </ThemeProvider>
-    </Suspense>
+          >
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="modal"
+              options={{ presentation: 'modal', title: 'Modal' }}
+            />
+            <Stack.Screen
+              name="special-circumstances"
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="lawyer-inquiry"
+              options={{
+                presentation: 'modal',
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="admin/login"
+              options={{
+                presentation: 'modal',
+                title: 'Admin Login',
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="admin/dashboard"
+              options={{
+                title: 'Admin Dashboard',
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="admin/proposals"
+              options={{
+                title: 'Partnership Proposals',
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="admin/lead/[id]"
+              options={{
+                title: 'Lead Details',
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="admin/view-lead/[token]"
+              options={{
+                title: 'View Lead',
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="change-of-assessment/[reason-slug]"
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="partner/[slug]"
+              options={{
+                headerShown: false,
+                title: 'Partnership Proposal',
+              }}
+            />
+          </Stack>
+          <StatusBar style="auto" />
+          {Platform.OS === 'web' && <Analytics />}
+          {Platform.OS === 'web' && <SpeedInsights />}
+        </ThemeProvider>
+      </Suspense>
+    </View>
   );
 }
