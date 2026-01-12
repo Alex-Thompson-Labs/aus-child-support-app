@@ -268,7 +268,7 @@ export function ChildRow({
             <View
               style={[styles.itemWrapper, isMobile && styles.parentItemMobile]}
             >
-              <Text style={styles.headerLabelNPC}>NON-PARENT CARER</Text>
+              <Text style={styles.headerLabelNPC}>NPC</Text>
               <TextInput
                 style={[
                   styles.careInput,
@@ -456,9 +456,9 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   headerLabelNPC: {
-    fontSize: 10, // Slightly smaller to fit longer text
+    fontSize: 12, // Same size as other header labels
     fontWeight: '600',
-    color: '#7c3aed', // violet-600 - distinct from parents
+    color: '#1e3a8a', // blue-900 (Dark Brand Blue) - matches "CARE" header
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },

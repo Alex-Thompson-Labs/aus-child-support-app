@@ -54,7 +54,7 @@ export function NonParentCarerSection({
                 isHovered && styles.labelHovered,
               ]}
             >
-              Non-parent carer
+              Non-parent carer (NPC)
             </Text>
             <Text style={styles.sublabel}>(e.g., grandparent)</Text>
           </Pressable>

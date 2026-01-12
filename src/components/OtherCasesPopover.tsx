@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { OtherCaseChild } from '../utils/calculator';
 import { deriveAgeRange } from '../utils/calculator';
@@ -72,8 +72,6 @@ export function OtherCasesPopover({
   const [isHovered, setIsHovered] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { isMobile } = useResponsive();
-  const drawerRef = useRef<View>(null);
-  const triggerRef = useRef<View>(null);
 
   const countsA = countByAge(multiCaseA.otherChildren);
   const countsB = countByAge(multiCaseB.otherChildren);
@@ -102,27 +100,6 @@ export function OtherCasesPopover({
     onChange(createOtherChildren(newCounts.u13, newCounts.plus13));
   };
 
-  useEffect(() => {
-    if (isWeb && isOpen) {
-      const handleClickOutside = (e: MouseEvent) => {
-        const target = e.target as Node;
-        const drawerNode = drawerRef.current as unknown as HTMLElement | null;
-        const triggerNode = triggerRef.current as unknown as HTMLElement | null;
-
-        if (drawerNode && drawerNode.contains(target)) {
-          return;
-        }
-        if (triggerNode && triggerNode.contains(target)) {
-          return;
-        }
-
-        setIsOpen(false);
-      };
-      document.addEventListener('mousedown', handleClickOutside);
-      return () =>
-        document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [isOpen]);
 
   return (
     <View
@@ -139,7 +116,6 @@ export function OtherCasesPopover({
       ]}
     >
       <View
-        ref={triggerRef}
         style={{
           flexShrink: 0,
           flexDirection: 'row',
@@ -206,7 +182,6 @@ export function OtherCasesPopover({
       </View>
 
       <View
-        ref={drawerRef}
         style={[
           popoverStyles.drawerContent,
           isOpen && popoverStyles.drawerContentOpen,

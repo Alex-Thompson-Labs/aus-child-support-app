@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import {
   isWeb,
@@ -30,8 +30,6 @@ export function RelevantDependentsPopover({
   const [isHovered, setIsHovered] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { isMobile } = useResponsive();
-  const drawerRef = useRef<View>(null);
-  const triggerRef = useRef<View>(null);
 
   const totalDeps = relDepA.u13 + relDepA.plus13 + relDepB.u13 + relDepB.plus13;
   const hasValues = totalDeps > 0;
@@ -40,32 +38,6 @@ export function RelevantDependentsPopover({
     setIsOpen(!isOpen);
   };
 
-  useEffect(() => {
-    if (isWeb && isOpen) {
-      const handleClickOutside = (e: MouseEvent) => {
-        const target = e.target as Node;
-
-        // Get the actual DOM nodes from the refs
-        const drawerNode = drawerRef.current as unknown as HTMLElement | null;
-        const triggerNode = triggerRef.current as unknown as HTMLElement | null;
-
-        // Check if click is inside drawer content
-        if (drawerNode && drawerNode.contains(target)) {
-          return;
-        }
-
-        // Check if click is on the trigger button
-        if (triggerNode && triggerNode.contains(target)) {
-          return;
-        }
-
-        setIsOpen(false);
-      };
-      document.addEventListener('mousedown', handleClickOutside);
-      return () =>
-        document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [isOpen]);
 
   // FIXED Web/Mobile Browser Drawer
   return (
@@ -83,7 +55,6 @@ export function RelevantDependentsPopover({
       ]}
     >
       <View
-        ref={triggerRef}
         style={{
           flexShrink: 0,
           flexDirection: 'row',
@@ -150,7 +121,6 @@ export function RelevantDependentsPopover({
       </View>
 
       <View
-        ref={drawerRef}
         style={[
           popoverStyles.drawerContent,
           isOpen && popoverStyles.drawerContentOpen,
