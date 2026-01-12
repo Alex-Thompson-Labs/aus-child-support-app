@@ -331,15 +331,14 @@ export function CalculatorScreen() {
           </View>
         </ScrollView>
 
-        {/* Results Overlay */}
-        {results && (
+        {/* Results Overlay - Hide entirely when inputs change (isStale) */}
+        {results && !isStale && (
           <View style={styles.resultsOverlay}>
             <View style={isDesktop ? styles.bodyContainer : styles.fullWidth}>
               <CalculatorResults
                 results={results}
                 formData={formState}
                 displayMode="modal"
-                isStale={isStale}
                 resetTimestamp={resetTimestamp}
               />
             </View>
