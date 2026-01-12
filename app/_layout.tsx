@@ -114,11 +114,11 @@ export default function RootLayout() {
 
   // Don't render until app is ready - prevents visual flash
   if (!appIsReady) {
-    return null;
+    return <LoadingFallback />;
   }
 
   return (
-    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+    <View style={{ flex: 1, backgroundColor: '#ffffff' }} onLayout={onLayoutRootView}>
       <Suspense fallback={<LoadingFallback />}>
         {/* SEO: Dynamic Canonical Tag via Expo Head */}
         <Head>
