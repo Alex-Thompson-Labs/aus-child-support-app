@@ -382,6 +382,15 @@ export function SpecialCircumstancesPrompt({
     setIsNavigating(true);
 
     try {
+      // Track inquiry_opened for funnel analytics
+      analytics.track('inquiry_opened', {
+        source: 'special_circumstances',
+        reason_count: selectedReasons.size,
+        most_important_category:
+          getHighestPriorityReason(Array.from(selectedReasons))?.category ?? null,
+        total_liability: results.finalPaymentAmount,
+      });
+      // Legacy event
       analytics.track('coa_button_clicked', {
         reasons_selected: JSON.stringify(Array.from(selectedReasons)),
         reason_count: selectedReasons.size,

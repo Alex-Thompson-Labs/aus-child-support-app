@@ -784,6 +784,24 @@ export function useInquiryForm(props: UseInquiryFormProps) {
           result.leadId
         );
 
+      // Track lead_submitted for funnel analytics (on success only)
+      try {
+        analytics.track('lead_submitted', {
+          lead_id: result.leadId ?? null,
+          trigger_type: props.isDirectMode
+            ? 'direct'
+            : props.trigger || 'unknown',
+          is_direct_mode: props.isDirectMode,
+          total_liability: props.isDirectMode
+            ? 0
+            : parseFloat(props.liability) || 0,
+          complexity_reason_count: props.specialCircumstances?.length ?? 0,
+          time_to_submit: timeToSubmit,
+        });
+      } catch (error) {
+        console.error('[LawyerInquiry] Analytics error (lead_submitted):', error);
+      }
+
       setIsSubmitting(false);
 
       // Check if this inquiry type should show enrichment flow

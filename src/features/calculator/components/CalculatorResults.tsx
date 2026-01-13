@@ -2,6 +2,7 @@ import { LazyLoadErrorBoundary } from '@/src/components/ui/LazyLoadErrorBoundary
 import { StepProgressIndicator } from '@/src/components/ui/StepProgressIndicator';
 import { SmartConversionFooter } from '@/src/features/conversion/components/SmartConversionFooter';
 import { SpecialCircumstancesPrompt } from '@/src/features/conversion/components/SpecialCircumstancesPrompt';
+import { useAnalytics } from '@/src/utils/analytics';
 import type { CalculationResults } from '@/src/utils/calculator';
 import {
     ComplexityFormData,
@@ -15,6 +16,7 @@ import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import {
     ActivityIndicator,
     Modal,
+    Platform,
     Pressable,
     ScrollView,
     StyleSheet,
@@ -204,6 +206,24 @@ export function CalculatorResults({
   calculatorStartTime,
 }: CalculatorResultsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const analytics = useAnalytics();
+  const hasTrackedResultsView = useRef(false);
+
+  // Track results_viewed event when results are first displayed (web only)
+  useEffect(() => {
+    if (Platform.OS === 'web' && results && !hasTrackedResultsView.current) {
+      hasTrackedResultsView.current = true;
+      analytics.track('results_viewed', {
+        total_liability: results.finalPaymentAmount,
+        payer: results.payer,
+      });
+    }
+  }, [results, analytics]);
+
+  // Reset tracking flag when results change significantly
+  useEffect(() => {
+    hasTrackedResultsView.current = false;
+  }, [results.finalPaymentAmount, results.payer]);
 
   // Listen for event to re-open breakdown modal when returning from lawyer inquiry
   React.useEffect(() => {

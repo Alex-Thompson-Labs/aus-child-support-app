@@ -1,12 +1,13 @@
-// Analytics wrapper
-// - Web: Google Analytics (gtag.js)
-// - Mobile (iOS/Android): Google Analytics (same as web)
+// Analytics wrapper using react-ga4
+// - Web: Google Analytics 4 via react-ga4
+// - Mobile (iOS/Android): Logging only (GA4 not supported natively)
 //
 // Usage in components:
 // import { useAnalytics } from '@/src/utils/analytics';
 // const analytics = useAnalytics();
 // analytics.track('event_name', { property: 'value' });
 
+import ReactGA from 'react-ga4';
 import { Platform } from 'react-native';
 
 /**
@@ -21,64 +22,44 @@ export type AnalyticsProperties = Record<string, AnalyticsPropertyValue>;
  */
 export type UserTraits = Record<string, AnalyticsPropertyValue>;
 
-// Flag to prevent console.warn spam when analytics not initialized
-let hasWarnedNotInitialized = false;
-
-/**
- * Log a warning once when analytics is not initialized
- */
-function warnNotInitialized(): void {
-  if (!hasWarnedNotInitialized) {
-    console.warn(
-      '[Analytics] Not initialized - events will only be logged to console'
-    );
-    hasWarnedNotInitialized = true;
-  }
-}
-
 // Check if we're on web platform
 const isWeb = Platform.OS === 'web';
 
 /**
- * Get the gtag function for Google Analytics (web only)
+ * Check if GA4 is initialized (web only)
  */
-function getGtag(): ((...args: unknown[]) => void) | null {
-  if (isWeb && typeof window !== 'undefined' && 'gtag' in window) {
-    return (window as unknown as { gtag: (...args: unknown[]) => void }).gtag;
-  }
-  return null;
+function isGA4Initialized(): boolean {
+  if (!isWeb || typeof window === 'undefined') return false;
+  // react-ga4 sets this internally after initialization
+  return ReactGA.isInitialized;
 }
 
 /**
- * Track event with Google Analytics
+ * Track event with Google Analytics 4 via react-ga4
  */
 function trackWithGA(event: string, properties?: AnalyticsProperties): void {
-  const gtag = getGtag();
-  if (gtag) {
-    gtag('event', event, properties || {});
-  } else {
-    warnNotInitialized();
+  if (isWeb && isGA4Initialized()) {
+    ReactGA.event(event, properties || {});
   }
 }
 
 /**
- * Set user ID with Google Analytics
+ * Set user ID with Google Analytics 4
  */
 function identifyWithGA(userId: string): void {
-  const gtag = getGtag();
-  if (gtag) {
-    gtag('set', { user_id: userId });
+  if (isWeb && isGA4Initialized()) {
+    ReactGA.set({ user_id: userId });
   }
 }
 
 /**
- * Track page view with Google Analytics
+ * Track page view with Google Analytics 4
  */
 function screenWithGA(name: string, properties?: AnalyticsProperties): void {
-  const gtag = getGtag();
-  if (gtag) {
-    gtag('event', 'page_view', {
-      page_title: name,
+  if (isWeb && isGA4Initialized()) {
+    ReactGA.send({
+      hitType: 'pageview',
+      page: name,
       ...properties,
     });
   }

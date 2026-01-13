@@ -1,4 +1,5 @@
 import { useAppTheme } from '@/src/theme';
+import { useAnalytics } from '@/src/utils/analytics';
 import type {
     ChildInput,
     FormErrors,
@@ -15,8 +16,8 @@ import {
     webInputStyles,
 } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
-import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useMemo, useRef } from 'react';
+import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ChildRow } from './ChildRow';
 import { HelpTooltip } from './HelpTooltip';
 import { NonParentCarerSection } from './NonParentCarerSection';
@@ -105,6 +106,18 @@ export function CalculatorForm({
 }: CalculatorFormProps) {
   const { isMobile, isDesktop } = useResponsive();
   const { colors } = useAppTheme();
+  const analytics = useAnalytics();
+
+  // Track calculator_start event once per session when user first interacts
+  const hasTrackedStart = useRef(false);
+  const trackCalculatorStart = () => {
+    if (!hasTrackedStart.current && Platform.OS === 'web') {
+      hasTrackedStart.current = true;
+      analytics.track('calculator_start', {
+        entry_point: 'calculator_form',
+      });
+    }
+  };
 
   // Memoized dynamic styles based on theme
   const dynamicStyles = useMemo(() => ({
@@ -262,6 +275,8 @@ export function CalculatorForm({
                   onIncomeAChange(parseInt(val) || 0);
                 }}
                 onFocus={(e) => {
+                  // Track calculator_start on first interaction
+                  trackCalculatorStart();
                   // Select all text on focus so typing replaces the value
                   if (isWeb && e.target) {
                     const target = e.target as unknown as HTMLInputElement;

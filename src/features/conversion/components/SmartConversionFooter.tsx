@@ -225,6 +225,15 @@ export function SmartConversionFooter({
     }
 
     if (isWeb) {
+      // Track inquiry_opened for funnel analytics
+      ReactGA.event('inquiry_opened', {
+        source: 'smart_footer',
+        card_variant: cardVariant,
+        payment_type: effectivePaymentType,
+        ab_variant: variantId,
+        total_liability: results.finalPaymentAmount,
+      });
+      // Legacy event for backwards compatibility
       ReactGA.event({
         category: 'Conversion',
         action: 'Smart_Footer_Click',
