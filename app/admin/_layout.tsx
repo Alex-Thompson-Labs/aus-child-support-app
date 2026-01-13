@@ -12,8 +12,13 @@ import { useCallback, useEffect, useState } from 'react';
 
 type AuthState = 'loading' | 'authenticated' | 'unauthenticated';
 
-// Admin email from environment variable (set in .env)
-const ADMIN_EMAIL = process.env.EXPO_PUBLIC_ADMIN_EMAIL?.toLowerCase();
+/**
+ * Check if user has admin role in app_metadata
+ * app_metadata can only be set server-side, making this secure
+ */
+function hasAdminRole(appMetadata: Record<string, unknown> | undefined): boolean {
+    return appMetadata?.role === 'admin';
+}
 
 export default function AdminLayout() {
     const pathname = usePathname();
@@ -32,9 +37,9 @@ export default function AdminLayout() {
                 return;
             }
 
-            // Verify admin email (configured via EXPO_PUBLIC_ADMIN_EMAIL)
-            if (!ADMIN_EMAIL || session.user.email?.toLowerCase() !== ADMIN_EMAIL) {
-                console.log('[AdminLayout] Not admin email - signing out');
+            // Verify admin role from app_metadata (set server-side only)
+            if (!hasAdminRole(session.user.app_metadata)) {
+                console.log('[AdminLayout] User does not have admin role - signing out');
                 await supabase.auth.signOut();
                 setAuthState('unauthenticated');
                 return;
@@ -62,7 +67,7 @@ export default function AdminLayout() {
                 console.log('[AdminLayout] Auth state change:', event);
 
                 if (event === 'SIGNED_IN' && session) {
-                    if (ADMIN_EMAIL && session.user.email?.toLowerCase() === ADMIN_EMAIL) {
+                    if (hasAdminRole(session.user.app_metadata)) {
                         setAuthState('authenticated');
                     } else {
                         setAuthState('unauthenticated');

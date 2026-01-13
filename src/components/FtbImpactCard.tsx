@@ -11,6 +11,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { CalculationResults } from '../utils/calculator';
+import { formatCurrency } from '../utils/formatters';
 import {
     calculatePartAReduction,
     checkPartBEligibility,
@@ -31,21 +32,6 @@ interface FtbImpactCardProps {
     childCount: number;
     /** Callback when CTA is pressed */
     onCtaPress?: () => void;
-}
-
-// ============================================================================
-// Currency Formatter
-// ============================================================================
-
-const currencyFormatter = new Intl.NumberFormat('en-AU', {
-    style: 'currency',
-    currency: 'AUD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-});
-
-function formatCurrency(amount: number): string {
-    return currencyFormatter.format(amount);
 }
 
 // ============================================================================

@@ -1,10 +1,11 @@
 import type { CalculationResults, ChildInput } from '../utils/calculator';
-import { convertCareToPercentage } from './child-support-calculations';
+import { convertCareToPercentage } from './care-utils';
+import { formatCurrency } from './formatters';
 import {
-  getHighestPriorityReason,
-  getSpecialCircumstanceById,
-  isCourtDateReason,
-  parseCourtDateFromReasonId,
+    getHighestPriorityReason,
+    getSpecialCircumstanceById,
+    isCourtDateReason,
+    parseCourtDateFromReasonId,
 } from './special-circumstances';
 
 /**
@@ -228,10 +229,10 @@ export function getAlertConfig(
     const courtDate = parseCourtDateFromReasonId(courtDateReasonId);
     const dateStr = courtDate
       ? courtDate.toLocaleDateString('en-AU', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-        })
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
       : '';
 
     return {
@@ -321,8 +322,8 @@ export function getAlertConfig(
         mostImportantReason.category === 'income'
           ? '💰'
           : mostImportantReason.category === 'child'
-          ? '👶'
-          : '🏡';
+            ? '👶'
+            : '🏡';
 
       // Check if this is a Reason 8A income suspicion case (hidden income)
       const isReason8A = mostImportantReason.officialCodes.includes('5.2.8');
@@ -367,9 +368,7 @@ export function getAlertConfig(
   if (flags.highValue) {
     return {
       title: '💰 High-Value Case',
-      message: `Your liability is $${Math.round(
-        results.finalPaymentAmount
-      ).toLocaleString()}/year. Cases over $15k benefit from verification.`,
+      message: `Your liability is ${formatCurrency(results.finalPaymentAmount)}/year. Cases over $15k benefit from verification.`,
       urgency: 'medium',
       buttonText: 'Request Review',
     };

@@ -9,12 +9,13 @@
 // Validation Constants
 // ============================================================================
 
+import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
+
 export const VALIDATION = {
   NAME_MIN_LENGTH: 2,
   NAME_MAX_LENGTH: 100,
   MESSAGE_MIN_LENGTH: 10,
   MESSAGE_MAX_LENGTH: 1000,
-  PHONE_REGEX: /^[\d\s\-+()]{8,20}$/,
   EMAIL_REGEX:
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/,
   // Simple email regex for basic validation (used in LawyerInquiryScreen)
@@ -55,18 +56,28 @@ export function sanitizeEmail(email: string): string {
 
 /**
  * Sanitize a phone number
- * Removes all non-digit characters except leading +
+ * Uses libphonenumber-js to parse and format to E.164 if valid.
+ * Fallback to removing non-digit characters (except leading +).
  *
  * @param phone - The phone number to sanitize
- * @returns Sanitized phone number with only digits and optional leading +
+ * @returns Sanitized phone number (E.164 format if valid, or cleaned string)
  *
  * @example
- * sanitizePhone('+61 (02) 1234-5678') // '+61021234567'
- * sanitizePhone('0412 345 678') // '0412345678'
+ * sanitizePhone('0412 345 678') // '+61412345678'
  */
 export function sanitizePhone(phone: string): string {
   const trimmed = phone.trim();
   if (!trimmed) return '';
+
+  try {
+    const phoneNumber = parsePhoneNumber(trimmed, 'AU');
+    if (phoneNumber && phoneNumber.isValid()) {
+      return phoneNumber.format('E.164');
+    }
+  } catch (error) {
+    // Ignore parsing errors and fall back to basic sanitization
+  }
+
   const hasPlus = trimmed.startsWith('+');
   const digitsOnly = trimmed.replace(/\D/g, '');
   return hasPlus ? `+${digitsOnly}` : digitsOnly;
@@ -127,8 +138,9 @@ export function validateEmailSimple(email: string): string | undefined {
 }
 
 /**
- * Validate a phone number
- * Phone is optional, but if provided must match the pattern
+ * Validate a phone number using libphonenumber-js
+ * Phone is optional, but if provided must match a valid phone number pattern.
+ * Defaults to 'AU' region if country code is missing.
  *
  * @param phone - The phone number to validate
  * @returns Error message if invalid, undefined if valid or empty
@@ -136,7 +148,8 @@ export function validateEmailSimple(email: string): string | undefined {
 export function validatePhone(phone: string): string | undefined {
   const trimmed = phone.trim();
   if (!trimmed) return undefined; // Optional field
-  if (!VALIDATION.PHONE_REGEX.test(trimmed)) {
+
+  if (!isValidPhoneNumber(trimmed, 'AU')) {
     return 'Please enter a valid phone number';
   }
   return undefined;

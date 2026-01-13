@@ -14,7 +14,7 @@ import {
     convertCareToPercentage,
     mapCareToCostPercent,
     roundCarePercentage
-} from './child-support-calculations';
+} from './care-utils';
 import type { AssessmentYear, CarePeriod } from './child-support-constants';
 
 // ============================================================================

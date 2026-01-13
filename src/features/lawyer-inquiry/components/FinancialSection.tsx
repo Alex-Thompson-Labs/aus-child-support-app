@@ -11,16 +11,16 @@ import { isWeb } from '@/src/utils/responsive';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import {
-  LayoutAnimation,
-  Platform,
-  Pressable,
-  ScrollView,
-  Switch,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  UIManager,
-  View,
+    LayoutAnimation,
+    Platform,
+    Pressable,
+    ScrollView,
+    Switch,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    UIManager,
+    View,
 } from 'react-native';
 import { FINANCIAL_TAG_OPTIONS } from '../config';
 import type { FinancialSectionProps } from '../types';
@@ -37,7 +37,7 @@ if (
 /**
  * Format currency for display
  */
-function formatCurrency(value: string): string {
+function formatCurrencyDisplay(value: string): string {
   const num = parseFloat(value);
   if (isNaN(num)) return '$0';
   return `$${Math.round(num).toLocaleString()}`;
@@ -143,13 +143,13 @@ export function FinancialSection({
               {payer === 'Parent A' ? 'You Pay:' : payer === 'Parent B' ? 'You Receive:' : 'Annual Liability:'}
             </Text>
             <Text style={financialStyles.summaryAmount}>
-              {formatCurrency(liability)}/year
+              {formatCurrencyDisplay(liability)}/year
             </Text>
           </View>
           <View style={financialStyles.summaryRow}>
             <Text style={financialStyles.summaryLabel}>Your Income:</Text>
             <Text style={financialStyles.summaryValue}>
-              {formatCurrency(incomeA)}
+              {formatCurrencyDisplay(incomeA)}
             </Text>
           </View>
           <View style={financialStyles.summaryRow}>
@@ -157,7 +157,7 @@ export function FinancialSection({
               Other Parent&apos;s Income:
             </Text>
             <Text style={financialStyles.summaryValue}>
-              {formatCurrency(incomeB)}
+              {formatCurrencyDisplay(incomeB)}
             </Text>
           </View>
 
@@ -431,6 +431,7 @@ export function FinancialSection({
             onChange={onSeparationDateChange}
             error={touched.separationDate ? errors.separationDate : undefined}
             disabled={isSubmitting}
+            pickMonthYear
           />
 
           <View style={financialStyles.switchRow}>

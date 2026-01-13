@@ -130,7 +130,7 @@ function getCategoryInfo(category: string): {
 /**
  * Generate HTML content for PDF
  */
-function generateLeadHTML(lead: LeadSubmission): string {
+function generateLeadHTML(lead: LeadSubmission, userId: string = 'system'): string {
   // Extract Special Circumstances from complexity_reasons array and convert IDs to full objects
   const circumstanceIds = lead.complexity_reasons || [];
   const specialCircumstances = circumstanceIds
@@ -270,14 +270,43 @@ function generateLeadHTML(lead: LeadSubmission): string {
             background: #ffffff;
             padding: 40px;
           }
+          .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 80px;
+            font-weight: 700;
+            color: rgba(229, 231, 235, 0.5);
+            pointer-events: none;
+            z-index: 9999;
+            white-space: nowrap;
+            text-align: center;
+            user-select: none;
+            width: 100%;
+          }
+          .watermark-text {
+            display: block;
+            font-size: 24px;
+            margin-top: 10px;
+            color: rgba(156, 163, 175, 0.5);
+          }
           @media print {
             body {
               padding: 20px;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
             }
           }
         </style>
       </head>
       <body>
+        <!-- Watermark -->
+        <div class="watermark">
+          CONFIDENTIAL
+          <span class="watermark-text">Exported by ${userId} on ${new Date().toLocaleString('en-AU')}</span>
+        </div>
+
         <!-- Header -->
         <div style="margin-bottom: 32px; padding-bottom: 24px; border-bottom: 4px solid #2563eb;">
           <h1 style="color: #1f2937; font-size: 28px; font-weight: 700; margin-bottom: 8px;">
@@ -312,9 +341,8 @@ function generateLeadHTML(lead: LeadSubmission): string {
                 <a href="mailto:${lead.parent_email}" style="color: #2563eb; text-decoration: none;">${lead.parent_email}</a>
               </p>
             </div>
-            ${
-              lead.parent_phone
-                ? `
+            ${lead.parent_phone
+      ? `
               <div style="margin-bottom: 12px;">
                 <strong style="color: #6b7280; font-size: 13px; display: block; margin-bottom: 4px;">Phone:</strong>
                 <p style="color: #1f2937; font-size: 14px;">
@@ -322,18 +350,17 @@ function generateLeadHTML(lead: LeadSubmission): string {
                 </p>
               </div>
             `
-                : ''
-            }
-            ${
-              lead.location
-                ? `
+      : ''
+    }
+            ${lead.location
+      ? `
               <div style="margin-bottom: 12px;">
                 <strong style="color: #6b7280; font-size: 13px; display: block; margin-bottom: 4px;">Location:</strong>
                 <p style="color: #1f2937; font-size: 14px;">${lead.location}</p>
               </div>
             `
-                : ''
-            }
+      : ''
+    }
             <div>
               <strong style="color: #6b7280; font-size: 13px; display: block; margin-bottom: 4px;">Submitted:</strong>
               <p style="color: #1f2937; font-size: 14px;">${formatDate(lead.created_at)}</p>
@@ -382,9 +409,8 @@ function generateLeadHTML(lead: LeadSubmission): string {
         ${complexityTriggersHTML}
 
         <!-- Parent Message -->
-        ${
-          lead.parent_message
-            ? `
+        ${lead.parent_message
+      ? `
           <div style="margin-bottom: 32px; page-break-inside: avoid;">
             <h2 style="color: #1f2937; font-size: 20px; font-weight: 700; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 3px solid #2563eb;">
               💬 Parent's Message
@@ -394,13 +420,12 @@ function generateLeadHTML(lead: LeadSubmission): string {
             </div>
           </div>
         `
-            : ''
-        }
+      : ''
+    }
 
         <!-- Admin Notes -->
-        ${
-          lead.notes
-            ? `
+        ${lead.notes
+      ? `
           <div style="margin-bottom: 32px; page-break-inside: avoid;">
             <h2 style="color: #1f2937; font-size: 20px; font-weight: 700; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 3px solid #64748b;">
               📝 Admin Notes
@@ -410,8 +435,8 @@ function generateLeadHTML(lead: LeadSubmission): string {
             </div>
           </div>
         `
-            : ''
-        }
+      : ''
+    }
 
         <!-- Footer -->
         <div style="margin-top: 40px; padding-top: 24px; border-top: 2px solid #e5e7eb; text-align: center;">
@@ -436,12 +461,12 @@ function generateLeadHTML(lead: LeadSubmission): string {
  * @param lead - Lead submission data to export
  * @returns Promise<void>
  */
-export async function exportLeadAsPDF(lead: LeadSubmission): Promise<void> {
+export async function exportLeadAsPDF(lead: LeadSubmission, userId: string = 'system'): Promise<void> {
   try {
     console.log('[ExportPDF] Generating PDF for lead:', lead.id);
 
     // Generate HTML content
-    const html = generateLeadHTML(lead);
+    const html = generateLeadHTML(lead, userId);
 
     if (Platform.OS === 'web') {
       // Web platform: Use print dialog or download as HTML

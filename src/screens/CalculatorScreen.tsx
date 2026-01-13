@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCalculator } from '../hooks/useCalculator';
-import { convertCareToPercentage } from '../utils/child-support-calculations';
+import { convertCareToPercentage } from '../utils/care-utils';
 import { getYearConstants } from '../utils/child-support-constants';
 import { useResponsive } from '../utils/responsive';
 import { shadowPresets } from '../utils/shadow-styles';

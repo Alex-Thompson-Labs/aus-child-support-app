@@ -4,6 +4,7 @@
  */
 
 import { exportLeadAsPDF } from '@/src/utils/exportLeadPDF';
+import { formatCurrency } from '@/src/utils/formatters';
 import { isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { LeadSubmission } from '@/src/utils/supabase';
 import React, { useState } from 'react';
@@ -104,19 +105,19 @@ export default function ViewLeadScreen() {
                 Est. Liability (Client Payer)
               </Text>
               <Text style={styles.infoValueHighlight}>
-                ${lead.annual_liability.toLocaleString('en-AU')}/yr
+                {formatCurrency(lead.annual_liability)}/yr
               </Text>
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Client Income</Text>
               <Text style={styles.infoValue}>
-                ${lead.income_parent_a.toLocaleString('en-AU')}
+                {formatCurrency(lead.income_parent_a)}
               </Text>
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Other Parent Income</Text>
               <Text style={styles.infoValue}>
-                ${lead.income_parent_b.toLocaleString('en-AU')}
+                {formatCurrency(lead.income_parent_b)}
               </Text>
             </View>
           </View>

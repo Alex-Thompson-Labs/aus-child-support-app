@@ -13,13 +13,16 @@ import type {
 } from '../utils/calculator';
 import { deriveAgeRange } from '../utils/calculator';
 import {
+  convertCareToPercentage,
+  getMaxCareForPeriod,
+  mapCareToCostPercent,
+  roundCarePercentage,
+} from '../utils/care-utils';
+import {
   applyMultiCaseCap,
   calculateMultiCaseAllowance,
   calculateMultiCaseCap,
-  convertCareToPercentage,
   getChildCost,
-  mapCareToCostPercent,
-  roundCarePercentage,
 } from '../utils/child-support-calculations';
 import {
   AssessmentYear,
@@ -157,14 +160,7 @@ export function useCalculator() {
 
     // Validate each child
     formState.children.forEach((child) => {
-      const maxValue =
-        child.carePeriod === 'week'
-          ? 7
-          : child.carePeriod === 'fortnight'
-            ? 14
-            : child.carePeriod === 'year'
-              ? 365
-              : 100; // percent
+      const maxValue = getMaxCareForPeriod(child.carePeriod);
 
       const isPercent = child.carePeriod === 'percent';
       const unitLabel = isPercent ? 'percentage' : 'nights';

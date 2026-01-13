@@ -20,11 +20,6 @@ const formatPercent2dp = (num: number): string => {
     return `${num.toFixed(2)}%`;
 };
 
-// Helper to format currency with 2 decimal places
-const formatCurrency2dp = (num: number): string => {
-    return `${num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
-};
-
 export function AnnualRateBreakdown({
     results,
     formState,
@@ -183,15 +178,15 @@ export function AnnualRateBreakdown({
                                 {farApplied ? (
                                     <>Child {index + 1} - <Text style={{ color: payingParentColor, fontWeight: '700' }}>Fixed annual rate</Text></>
                                 ) : (
-                                    <>Child {index + 1} - <Text style={{ color: payingParentColor, fontWeight: '700' }}>({formatPercent2dp(gapPercentage)})</Text> × {formatCurrency2dp(child.costPerChild)}</>
+                                    <>Child {index + 1} - <Text style={{ color: payingParentColor, fontWeight: '700' }}>({formatPercent2dp(gapPercentage)})</Text> × {formatCurrency(child.costPerChild)}</>
                                 )}
                             </Text>
-                            <Text style={[styles.perChildGapValue, { color: payingParentColor, fontWeight: '700' }]}>{formatCurrency2dp(liability)}</Text>
+                            <Text style={[styles.perChildGapValue, { color: payingParentColor, fontWeight: '700' }]}>{formatCurrency(liability)}</Text>
                         </View>
                         {multiCaseCapApplied && multiCaseCap !== undefined && (
                             <View style={styles.multiCaseCapBadge}>
                                 <Text style={styles.multiCaseCapBadgeText}>Multi-case Cap</Text>
-                                <Text style={styles.multiCaseCapNote}>Liability capped at {formatCurrency2dp(multiCaseCap)} (Solo Cost method)</Text>
+                                <Text style={styles.multiCaseCapNote}>Liability capped at {formatCurrency(multiCaseCap)} (Solo Cost method)</Text>
                             </View>
                         )}
                         {child.isTurning18 && <Turning18Banner childIndex={index} />}
@@ -213,7 +208,7 @@ export function AnnualRateBreakdown({
             <View style={[styles.perChildGapDivider, dynamicStyles.divider]} />
             <View style={styles.perChildGapRow}>
                 <Text style={[styles.perChildGapLabel, { fontWeight: '600' }, dynamicStyles.textPrimary]}>Total Annual Liability</Text>
-                <Text style={[styles.perChildGapValue, dynamicStyles.textPrimary, { fontWeight: '700', fontSize: 18 }]}>{formatCurrency2dp(results.finalPaymentAmount)}</Text>
+                <Text style={[styles.perChildGapValue, dynamicStyles.textPrimary, { fontWeight: '700', fontSize: 18 }]}>{formatCurrency(results.finalPaymentAmount)}</Text>
             </View>
             {results.paymentToNPC !== undefined && results.paymentToNPC > 0 && (
                 <>
@@ -223,7 +218,7 @@ export function AnnualRateBreakdown({
                         <Text style={styles.npcPaymentExplanation}>Both parents owe child support to the non-parent carer based on their care percentage.</Text>
                         <View style={styles.perChildGapRow}>
                             <Text style={styles.npcPaymentLabel}>Total to non-parent carer</Text>
-                            <Text style={styles.npcPaymentValue}>{formatCurrency2dp(results.paymentToNPC)}</Text>
+                            <Text style={styles.npcPaymentValue}>{formatCurrency(results.paymentToNPC)}</Text>
                         </View>
                     </View>
                 </>

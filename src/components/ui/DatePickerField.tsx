@@ -1,6 +1,16 @@
+import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import React, { useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import {
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View
+} from 'react-native';
 import { isWeb } from '../../utils/responsive';
 
 // ============================================================================
@@ -13,6 +23,7 @@ interface DatePickerFieldProps {
   onChange: (date: Date | null) => void;
   error?: string;
   disabled?: boolean;
+  pickMonthYear?: boolean;
 }
 
 // ============================================================================
@@ -20,33 +31,64 @@ interface DatePickerFieldProps {
 // ============================================================================
 
 /**
- * Format date as "DD/MM/YYYY" (Australian format, e.g., "31/12/2025")
+ * Format date as "DD/MM/YYYY" or "MM/YYYY" depending on mode
  */
-function formatDisplayDate(date: Date): string {
-  const day = String(date.getDate()).padStart(2, '0');
+function formatDisplayDate(date: Date, pickMonthYear = false): string {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
+
+  if (pickMonthYear) {
+    return `${month}/${year}`;
+  }
+
+  const day = String(date.getDate()).padStart(2, '0');
   return `${day}/${month}/${year}`;
 }
 
 /**
  * Convert Date to YYYY-MM-DD string for HTML input
+ * Note: We always use YYYY-MM-DD even for month picker to ensure type="date" fallback works
  */
-function dateToInputValue(date: Date): string {
+function dateToInputValue(date: Date, pickMonthYear = false): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
+
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
 
 /**
- * Convert YYYY-MM-DD string to Date object
+ * Convert YYYY-MM-DD (or YYYY-MM) string to Date object
  */
-function inputValueToDate(value: string): Date | null {
+function inputValueToDate(value: string, pickMonthYear = false): Date | null {
   if (!value) return null;
-  const date = new Date(value);
+
+  // If month picker (YYYY-MM), append day to make it parseable
+  // Note: type="date" will return YYYY-MM-DD so this check is just a safeguard
+  const dateStr = pickMonthYear && value.length === 7 ? `${value}-01` : value;
+
+  const date = new Date(dateStr);
   return isNaN(date.getTime()) ? null : date;
 }
+
+// ============================================================================
+// Constants
+// ============================================================================
+
+const MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 
 // ============================================================================
 // Component
@@ -58,9 +100,19 @@ export default function DatePickerField({
   onChange,
   error,
   disabled = false,
+  pickMonthYear = false,
 }: DatePickerFieldProps) {
-  // Show/hide native picker on mobile
+  // Show/hide picker (native or custom)
   const [showPicker, setShowPicker] = useState(false);
+
+  // Ref for the input trigger to calculate position
+  const triggerRef = useRef<View>(null);
+  const [popoverCoords, setPopoverCoords] = useState({ x: 0, y: 0, width: 0 });
+
+  // Custom Month/Year picker state
+  const [pickerYear, setPickerYear] = useState(
+    value ? value.getFullYear() : new Date().getFullYear()
+  );
 
   // Handle date change from native picker (iOS/Android)
   const handleNativeChange = (event: any, selectedDate?: Date) => {
@@ -79,25 +131,178 @@ export default function DatePickerField({
     }
   };
 
-  // Handle date change from web input
+  // Handle switching year in custom picker
+  const changeYear = (increment: number) => {
+    setPickerYear((prev) => prev + increment);
+  };
+
+  // Handle selecting a month in custom picker
+  const selectMonth = (monthIndex: number) => {
+    const newDate = new Date(pickerYear, monthIndex, 1);
+    onChange(newDate);
+    setShowPicker(false);
+  };
+
+  // Handle date change from web input (standard mode)
   const handleWebChange = (event: any) => {
     const inputValue = event.target.value;
-    const date = inputValueToDate(inputValue);
+    const date = inputValueToDate(inputValue, pickMonthYear);
     onChange(date);
   };
 
+  // Calculate position and open picker (Web MonthPicker)
+  const openWebMonthPicker = () => {
+    if (triggerRef.current) {
+      triggerRef.current.measure((x, y, width, height, pageX, pageY) => {
+        setPopoverCoords({
+          x: pageX,
+          y: pageY + height + 8, // 8px spacing
+          width: width
+        });
+        setPickerYear(value ? value.getFullYear() : new Date().getFullYear());
+        setShowPicker(true);
+      });
+    }
+  };
+
+  // Render the Custom Month/Year Picker Content
+  const renderMonthYearPickerContent = () => (
+    <View style={styles.pickerContent}>
+      {/* Header: Year Selector */}
+      <View style={styles.pickerHeader}>
+        <TouchableOpacity
+          onPress={() => changeYear(-1)}
+          style={styles.pickerArrow}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="chevron-back" size={24} color="#1e293b" />
+        </TouchableOpacity>
+        <Text style={styles.pickerYearText}>{pickerYear}</Text>
+        <TouchableOpacity
+          onPress={() => changeYear(1)}
+          style={styles.pickerArrow}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="chevron-forward" size={24} color="#1e293b" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Grid: Months */}
+      <View style={styles.monthsGrid}>
+        {MONTHS.map((month, index) => {
+          const isSelected =
+            value &&
+            value.getMonth() === index &&
+            value.getFullYear() === pickerYear;
+
+          return (
+            <TouchableOpacity
+              key={month}
+              style={[
+                styles.monthButton,
+                isSelected && styles.monthButtonActive,
+              ]}
+              onPress={() => selectMonth(index)}
+            >
+              <Text
+                style={[
+                  styles.monthText,
+                  isSelected && styles.monthTextActive,
+                ]}
+              >
+                {month}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
+  );
+
   // ========================================================================
-  // Web Rendering (Hidden date input + visible DD/MM/YYYY display)
+  // Web Rendering
   // ========================================================================
   if (isWeb) {
-    // Use lighter grey for placeholder (no value), dark for actual date
+    if (pickMonthYear) {
+      // Custom Month/Year Picker for Web
+      return (
+        <View
+          ref={triggerRef}
+          style={[styles.container, { width: 180, maxWidth: '100%' }]}
+          collapsable={false} // Ensure measurement works
+        >
+          <Text style={styles.label}>{label}</Text>
+          <Pressable
+            style={[
+              styles.input,
+              error && styles.inputError,
+              disabled && styles.inputDisabled,
+            ]}
+            onPress={() => {
+              if (!disabled) {
+                openWebMonthPicker();
+              }
+            }}
+            disabled={disabled}
+            accessibilityRole="button"
+            accessibilityLabel={label}
+            accessibilityHint="Click to select month and year"
+          >
+            <Text
+              style={[
+                styles.inputText,
+                !value && styles.inputPlaceholder,
+                disabled && styles.inputTextDisabled,
+              ]}
+            >
+              {value ? formatDisplayDate(value, true) : 'mm/yyyy'}
+            </Text>
+            <Ionicons name="calendar-outline" size={20} color="#64748b" style={{ marginLeft: 'auto' }} />
+          </Pressable>
+
+          {error && <Text style={styles.errorText} nativeID="date-error">{error}</Text>}
+
+          {/* Web Modal + Absolute Popover */}
+          {showPicker && (
+            <Modal
+              transparent={true}
+              visible={showPicker}
+              animationType="none"
+              onRequestClose={() => setShowPicker(false)}
+            >
+              <TouchableWithoutFeedback onPress={() => setShowPicker(false)}>
+                <View style={styles.modalOverlayTransparent}>
+                  <TouchableWithoutFeedback>
+                    <View
+                      style={[
+                        styles.webPopover,
+                        {
+                          position: 'absolute',
+                          top: popoverCoords.y,
+                          left: popoverCoords.x,
+                          // Ensure it stays on screen horizontally
+                          maxWidth: '90%'
+                        }
+                      ]}
+                    >
+                      {renderMonthYearPickerContent()}
+                    </View>
+                  </TouchableWithoutFeedback>
+                </View>
+              </TouchableWithoutFeedback>
+            </Modal>
+          )}
+        </View>
+      );
+    }
+
+    // Standard Date Picker for Web
     const textColor = value ? '#1a202c' : '#9ca3af';
 
     return (
       <View style={styles.container}>
         <Text style={styles.label}>{label}</Text>
         <div style={{ position: 'relative', width: '140px' }}>
-          {/* Hidden native date input for picker functionality */}
           <input
             type="date"
             value={value ? dateToInputValue(value) : ''}
@@ -116,7 +321,6 @@ export default function DatePickerField({
             aria-invalid={!!error}
             aria-describedby={error ? 'date-error' : undefined}
           />
-          {/* Visible display showing DD/MM/YYYY format */}
           <div
             style={{
               backgroundColor: '#ffffff',
@@ -149,7 +353,7 @@ export default function DatePickerField({
   }
 
   // ========================================================================
-  // Mobile Rendering (Pressable + Native Picker)
+  // Native Rendering (iOS/Android)
   // ========================================================================
   return (
     <View style={styles.container}>
@@ -160,7 +364,12 @@ export default function DatePickerField({
           error && styles.inputError,
           disabled && styles.inputDisabled,
         ]}
-        onPress={() => !disabled && setShowPicker(true)}
+        onPress={() => {
+          if (!disabled) {
+            setPickerYear(value ? value.getFullYear() : new Date().getFullYear());
+            setShowPicker(true);
+          }
+        }}
         disabled={disabled}
         accessible={true}
         accessibilityRole="button"
@@ -175,22 +384,46 @@ export default function DatePickerField({
             disabled && styles.inputTextDisabled,
           ]}
         >
-          {value ? formatDisplayDate(value) : 'Select date'}
+          {value ? formatDisplayDate(value, pickMonthYear) : 'Select date'}
         </Text>
+        {pickMonthYear && (
+          <Ionicons name="calendar-outline" size={20} color="#64748b" style={{ marginLeft: 'auto' }} />
+        )}
       </Pressable>
 
       {error && <Text style={styles.errorText}>{error}</Text>}
 
-      {/* Native Date Picker (iOS/Android) */}
+      {/* Render Appropriate Picker */}
       {showPicker && (
-        <DateTimePicker
-          value={value || new Date()}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={handleNativeChange}
-          maximumDate={new Date(2099, 11, 31)} // Reasonable max date
-          minimumDate={new Date(1900, 0, 1)} // Reasonable min date
-        />
+        pickMonthYear ? (
+          // Custom Modal for Month/Year Selection
+          <Modal
+            transparent
+            visible={showPicker}
+            animationType="fade"
+            onRequestClose={() => setShowPicker(false)}
+          >
+            <TouchableWithoutFeedback onPress={() => setShowPicker(false)}>
+              <View style={styles.modalOverlay}>
+                <TouchableWithoutFeedback>
+                  <View style={styles.modalContent}>
+                    {renderMonthYearPickerContent()}
+                  </View>
+                </TouchableWithoutFeedback>
+              </View>
+            </TouchableWithoutFeedback>
+          </Modal>
+        ) : (
+          // Standard Native Picker
+          <DateTimePicker
+            value={value || new Date()}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={handleNativeChange}
+            maximumDate={new Date(2099, 11, 31)}
+            minimumDate={new Date(1900, 0, 1)}
+          />
+        )
       )}
     </View>
   );
@@ -203,6 +436,7 @@ export default function DatePickerField({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 12,
+    position: 'relative',
   },
   label: {
     fontSize: 14,
@@ -216,7 +450,8 @@ const styles = StyleSheet.create({
     padding: 12,
     borderWidth: 1.5,
     borderColor: '#e2e8f0',
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
     minHeight: 48, // Touch target size
   },
   inputError: {
@@ -240,5 +475,93 @@ const styles = StyleSheet.create({
     color: '#ef4444',
     fontSize: 12,
     marginTop: 4,
+  },
+
+  // Custom Picker Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalOverlayTransparent: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 20,
+    width: '100%',
+    maxWidth: 320,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  webPopover: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 12,
+    width: 280, // Match typical date picker width
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  pickerContent: {
+    width: '100%',
+  },
+  pickerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+    paddingHorizontal: 4,
+  },
+  pickerArrow: {
+    padding: 4,
+  },
+  pickerYearText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#1e293b',
+  },
+  monthsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    justifyContent: 'space-between',
+  },
+  monthButton: {
+    width: '31%', // 3 columns
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 6,
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  monthButtonActive: {
+    backgroundColor: '#3b82f6', // blue-500
+    borderColor: '#3b82f6',
+  },
+  monthText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#64748b',
+  },
+  monthTextActive: {
+    color: '#ffffff', // White text on active
+    fontWeight: '600',
   },
 });

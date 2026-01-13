@@ -13,6 +13,7 @@
 
 import type { AssessmentYear } from './child-support-constants';
 import { getYearConstants } from './child-support-constants';
+import { formatCurrency } from './formatters';
 
 // ============================================================================
 // Types
@@ -106,7 +107,7 @@ export function applyMARMultiCaseCap(
         originalAmount,
         capApplied: true,
         capType: 'mar_3_case',
-        explanation: `Liability capped due to 3-case limit: (3 × $${MAR}) ÷ ${totalCases} cases = $${cappedAmount} per case`,
+        explanation: `Liability capped due to 3-case limit: (3 × ${formatCurrency(MAR)}) ÷ ${totalCases} cases = ${formatCurrency(cappedAmount)} per case`,
     };
 }
 
@@ -244,7 +245,7 @@ export function applyFARMultiChildCap(
         originalAmount: FAR,
         capApplied: true,
         capType: 'far_3_child',
-        explanation: `Liability capped due to 3-child limit: (3 × $${FAR}) ÷ ${totalChildren} children = $${cappedPerChild} per child`,
+        explanation: `Liability capped due to 3-child limit: (3 × ${formatCurrency(FAR)}) ÷ ${totalChildren} children = ${formatCurrency(cappedPerChild)} per child`,
     };
 }
 
@@ -325,7 +326,7 @@ export function calculateFAROffset(
             originalAmount: amountPayable,
             capApplied: true,
             capType: 'far_offset',
-            explanation: `FAR offset applied: $${amountPayable} payable - $${amountReceivable} receivable = $${Math.max(0, netAmount)} net`,
+            explanation: `FAR offset applied: ${formatCurrency(amountPayable)} payable - ${formatCurrency(amountReceivable)} receivable = ${formatCurrency(Math.max(0, netAmount))} net`,
         };
     }
 
@@ -369,7 +370,7 @@ export function getCapExplanation(
 
         case 'far_offset':
             return details?.amount !== undefined
-                ? `Your Fixed Annual Rate has been offset against support you are entitled to receive, resulting in a net amount of $${details.amount}.`
+                ? `Your Fixed Annual Rate has been offset against support you are entitled to receive, resulting in a net amount of ${formatCurrency(details.amount)}.`
                 : 'Your Fixed Annual Rate has been offset against support you are entitled to receive.';
 
         case 'none':

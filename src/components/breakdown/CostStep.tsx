@@ -13,11 +13,6 @@ const formatPercent2dp = (num: number): string => {
     return `${num.toFixed(2)}%`;
 };
 
-// Helper to format currency with 2 decimal places
-const formatCurrency2dp = (num: number): string => {
-    return `${num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
-};
-
 
 interface CostStepProps {
     results: CalculationResults;
@@ -297,7 +292,7 @@ export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
                                         </Text>
                                         <Text style={[styles.bracketValue, dynamicStyles.bracketValue]}>
                                             +
-                                            {formatCurrency2dp(
+                                            {formatCurrency(
                                                 results.costBracketInfo.rate *
                                                 results.costBracketInfo.incomeInBracket
                                             )}
@@ -310,7 +305,7 @@ export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
                                         Total cost of children
                                     </Text>
                                     <Text style={[styles.bracketTotalValue, dynamicStyles.bracketTotalValue]}>
-                                        {formatCurrency2dp(results.totalCost)}
+                                        {formatCurrency(results.totalCost)}
                                     </Text>
                                 </View>
                                 {results.childResults.length > 0 && (
@@ -319,7 +314,7 @@ export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
                                             Cost per child ({results.childResults.length})
                                         </Text>
                                         <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>
-                                            {formatCurrency2dp(
+                                            {formatCurrency(
                                                 results.totalCost / results.childResults.length
                                             )}
                                         </Text>

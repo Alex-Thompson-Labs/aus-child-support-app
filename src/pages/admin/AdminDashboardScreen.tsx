@@ -5,26 +5,27 @@
  */
 
 import { Colors } from '@/constants/theme';
+import { formatCurrency } from '@/src/utils/formatters';
 import {
-  isWeb,
-  MAX_CONTENT_WIDTH,
-  webClickableStyles,
-  webInputStyles,
+    isWeb,
+    MAX_CONTENT_WIDTH,
+    webClickableStyles,
+    webInputStyles,
 } from '@/src/utils/responsive';
 import { getSupabaseClient, type LeadSubmission } from '@/src/utils/supabase';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  Platform,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    ActivityIndicator,
+    Alert,
+    Platform,
+    Pressable,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -52,8 +53,9 @@ export default function AdminDashboardScreen() {
       // Lazy-load Supabase for data fetching
       const supabase = await getSupabaseClient();
 
+      // Use leads_decrypted view for automatic PII decryption
       const { data, error } = await supabase
-        .from('leads')
+        .from('leads_decrypted')
         .select('*')
         .is('deleted_at', null) // Exclude soft-deleted leads
         .order('created_at', { ascending: false });
@@ -388,7 +390,7 @@ export default function AdminDashboardScreen() {
 
                 <View style={styles.leadFooter}>
                   <Text style={styles.leadLiability}>
-                    ${lead.annual_liability.toLocaleString()}/yr
+                    {formatCurrency(lead.annual_liability)}/yr
                   </Text>
                   <Text style={styles.leadDate}>
                     {formatDate(lead.created_at)}

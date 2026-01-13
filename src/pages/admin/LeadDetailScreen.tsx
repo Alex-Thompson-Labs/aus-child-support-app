@@ -6,26 +6,27 @@
 
 import { Colors } from '@/constants/theme';
 import { exportLeadAsPDF } from '@/src/utils/exportLeadPDF';
+import { formatCurrency } from '@/src/utils/formatters';
 import {
-  isWeb,
-  MAX_CONTENT_WIDTH,
-  webClickableStyles,
-  webInputStyles,
+    isWeb,
+    MAX_CONTENT_WIDTH,
+    webClickableStyles,
+    webInputStyles,
 } from '@/src/utils/responsive';
 import { getSupabaseClient, type LeadSubmission } from '@/src/utils/supabase';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  Clipboard,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    ActivityIndicator,
+    Alert,
+    Clipboard,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -47,6 +48,7 @@ export default function LeadDetailScreen() {
   const [savingNotes, setSavingNotes] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [exportingPDF, setExportingPDF] = useState(false);
+  const [userEmail, setUserEmail] = useState<string>('system');
 
   useEffect(() => {
     const checkAuthAndLoadLead = async () => {
@@ -64,6 +66,8 @@ export default function LeadDetailScreen() {
         return;
       }
 
+      setUserEmail(session.user.email);
+
       await loadLead();
     };
 
@@ -74,8 +78,9 @@ export default function LeadDetailScreen() {
         // Lazy-load Supabase for data fetching
         const supabase = await getSupabaseClient();
 
+        // Use leads_decrypted view for automatic PII decryption
         const { data, error } = await supabase
-          .from('leads')
+          .from('leads_decrypted')
           .select('*')
           .eq('id', leadId)
           .single();
@@ -146,8 +151,8 @@ export default function LeadDetailScreen() {
 Details:
 Issue: ${primaryReason}
 Children: ${careInfo}
-Combined Income: $${combinedIncome.toLocaleString()}/year
-Est. Child Support: $${lead.annual_liability.toLocaleString()}/year (Parent ${payingParent} pays)
+Combined Income: ${formatCurrency(combinedIncome)}/year
+Est. Child Support: ${formatCurrency(lead.annual_liability)}/year (Parent ${payingParent} pays)
 Location: ${lead.location || 'Not specified'}${additionalTriggers}
 
 Interested? Reply YES to purchase this lead for $50.
@@ -267,7 +272,7 @@ auschildsupport.com`;
 
     try {
       setExportingPDF(true);
-      await exportLeadAsPDF(lead);
+      await exportLeadAsPDF(lead, userEmail);
 
       // Show success message
       if (Platform.OS === 'web') {
@@ -445,19 +450,19 @@ auschildsupport.com`;
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Annual Liability:</Text>
               <Text style={styles.infoValueHighlight}>
-                ${lead.annual_liability.toLocaleString()}/year
+                {formatCurrency(lead.annual_liability)}/year
               </Text>
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Parent A Income:</Text>
               <Text style={styles.infoValue}>
-                ${lead.income_parent_a.toLocaleString()}
+                {formatCurrency(lead.income_parent_a)}
               </Text>
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Parent B Income:</Text>
               <Text style={styles.infoValue}>
-                ${lead.income_parent_b.toLocaleString()}
+                {formatCurrency(lead.income_parent_b)}
               </Text>
             </View>
             <View style={styles.infoRow}>
