@@ -27,6 +27,7 @@ export function PersonalInfoSection({
   setPostcode,
   emailRef,
   phoneRef,
+  postcodeRef,
   messageRef,
 }: PersonalInfoSectionProps) {
   const { formStyles, colors } = useInquiryStyles();
@@ -109,6 +110,7 @@ export function PersonalInfoSection({
           onBlur={() => onBlur('phone')}
           keyboardType="phone-pad"
           returnKeyType="next"
+          onSubmitEditing={() => postcodeRef.current?.focus()}
           autoComplete="tel"
           textContentType="telephoneNumber"
           maxLength={20}
@@ -124,6 +126,7 @@ export function PersonalInfoSection({
       {/* Postcode Input */}
       <View style={formStyles.inputContainer}>
         <TextInput
+          ref={postcodeRef}
           style={[
             formStyles.input,
             touched.postcode && errors.postcode && formStyles.inputError,

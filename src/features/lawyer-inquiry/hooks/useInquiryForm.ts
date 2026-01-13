@@ -139,7 +139,12 @@ export function useInquiryForm(props: UseInquiryFormProps) {
   // Refs for input focus management
   const emailRef = useRef<TextInput>(null);
   const phoneRef = useRef<TextInput>(null);
+  const postcodeRef = useRef<TextInput>(null);
   const messageRef = useRef<TextInput>(null);
+  // Direct mode input refs
+  const manualIncomeARef = useRef<TextInput>(null);
+  const manualIncomeBRef = useRef<TextInput>(null);
+  const manualChildrenRef = useRef<TextInput>(null);
 
   // Track if component is mounted to prevent state updates/navigation after unmount
   const isMounted = useRef(true);
@@ -984,7 +989,12 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     // Refs
     emailRef,
     phoneRef,
+    postcodeRef,
     messageRef,
+    // Direct mode refs
+    manualIncomeARef,
+    manualIncomeBRef,
+    manualChildrenRef,
 
     // Computed
     validCircumstances,

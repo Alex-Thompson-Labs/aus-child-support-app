@@ -93,6 +93,7 @@ export interface PersonalInfoSectionProps {
   setPostcode: (v: string) => void;
   emailRef: React.RefObject<TextInput | null>;
   phoneRef: React.RefObject<TextInput | null>;
+  postcodeRef: React.RefObject<TextInput | null>;
   messageRef: React.RefObject<TextInput | null>;
 }
 
@@ -137,6 +138,10 @@ export interface FinancialSectionProps {
   otherParentCountry: string;
   onOtherParentCountryChange: (country: string) => void;
   internationalWarning: 'excluded' | 'non_reciprocating' | null;
+  // Refs for keyboard navigation (direct mode only)
+  manualIncomeARef?: React.RefObject<TextInput | null>;
+  manualIncomeBRef?: React.RefObject<TextInput | null>;
+  manualChildrenRef?: React.RefObject<TextInput | null>;
   // Common
   errors: FormErrors;
   touched: FormTouched;

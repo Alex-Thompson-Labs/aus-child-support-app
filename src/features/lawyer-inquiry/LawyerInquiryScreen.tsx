@@ -164,6 +164,7 @@ export default function LawyerInquiryScreen() {
             setPostcode={form.setPostcode}
             emailRef={form.emailRef}
             phoneRef={form.phoneRef}
+            postcodeRef={form.postcodeRef}
             messageRef={form.messageRef}
           />
 
@@ -207,6 +208,10 @@ export default function LawyerInquiryScreen() {
             otherParentCountry={form.otherParentCountry}
             onOtherParentCountryChange={form.setOtherParentCountry}
             internationalWarning={form.internationalWarning}
+            // Direct mode refs for keyboard navigation
+            manualIncomeARef={form.manualIncomeARef}
+            manualIncomeBRef={form.manualIncomeBRef}
+            manualChildrenRef={form.manualChildrenRef}
             // Common
             errors={form.errors}
             touched={form.touched}

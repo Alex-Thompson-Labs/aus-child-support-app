@@ -11,16 +11,16 @@ import { isWeb } from '@/src/utils/responsive';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import {
-    LayoutAnimation,
-    Platform,
-    Pressable,
-    ScrollView,
-    Switch,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    UIManager,
-    View,
+  LayoutAnimation,
+  Platform,
+  Pressable,
+  ScrollView,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  UIManager,
+  View,
 } from 'react-native';
 import { FINANCIAL_TAG_OPTIONS } from '../config';
 import type { FinancialSectionProps } from '../types';
@@ -76,6 +76,10 @@ export function FinancialSection({
   otherParentCountry,
   onOtherParentCountryChange,
   internationalWarning,
+  // Refs for keyboard navigation (direct mode only)
+  manualIncomeARef,
+  manualIncomeBRef,
+  manualChildrenRef,
   // Common
   errors,
   touched,
@@ -248,6 +252,7 @@ export function FinancialSection({
               Your Approximate Annual Income *
             </Text>
             <TextInput
+              ref={manualIncomeARef}
               style={[
                 formStyles.input,
                 touched.manualIncomeA &&
@@ -264,6 +269,7 @@ export function FinancialSection({
               onBlur={() => onBlur('manualIncomeA')}
               keyboardType="numeric"
               returnKeyType="next"
+              onSubmitEditing={() => manualIncomeBRef?.current?.focus()}
               editable={!isSubmitting}
               accessibilityLabel="Your approximate annual income"
               accessibilityHint="Enter your annual income before tax"
@@ -280,6 +286,7 @@ export function FinancialSection({
               Other Parent&apos;s Approximate Income *
             </Text>
             <TextInput
+              ref={manualIncomeBRef}
               style={[
                 formStyles.input,
                 touched.manualIncomeB &&
@@ -296,6 +303,7 @@ export function FinancialSection({
               onBlur={() => onBlur('manualIncomeB')}
               keyboardType="numeric"
               returnKeyType="next"
+              onSubmitEditing={() => manualChildrenRef?.current?.focus()}
               editable={!isSubmitting}
               accessibilityLabel="Other parent's approximate annual income"
               accessibilityHint="Enter the other parent's estimated annual income"
@@ -310,6 +318,7 @@ export function FinancialSection({
           <View style={formStyles.inputContainer}>
             <Text style={formStyles.fieldLabel}>Number of Children *</Text>
             <TextInput
+              ref={manualChildrenRef}
               style={[
                 formStyles.input,
                 touched.manualChildren &&
@@ -325,7 +334,7 @@ export function FinancialSection({
               }}
               onBlur={() => onBlur('manualChildren')}
               keyboardType="numeric"
-              returnKeyType="next"
+              returnKeyType="done"
               maxLength={2}
               editable={!isSubmitting}
               accessibilityLabel="Number of children"
