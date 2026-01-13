@@ -1,6 +1,7 @@
 import { SemanticColors } from '@/constants/theme';
 import { LoadingFallback } from '@/src/components/ui/LoadingFallback';
 import { useClientOnly } from '@/src/hooks/useClientOnly';
+import { initializeAnalytics } from '@/src/utils/analytics';
 import { initPerformanceMonitoring } from '@/src/utils/web-vitals';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Analytics } from '@vercel/analytics/react';
@@ -75,26 +76,27 @@ export default function RootLayout() {
 
         const requestIdleCallbackPolyfill =
           window.requestIdleCallback ||
-          function (cb: IdleRequestCallback) {
+          function (cb: IdleRequestCallback, ..._args: any[]) {
             return setTimeout(cb, 1);
           };
 
-        const idleCallbackId = requestIdleCallbackPolyfill(() => {
-          const timer = setTimeout(() => {
+        const idleCallbackId = requestIdleCallbackPolyfill(
+          () => {
             try {
-              ReactGA.initialize(gaMeasurementId);
+              // Use safe initialization wrapper
+              initializeAnalytics(gaMeasurementId);
+
               ReactGA.send({
                 hitType: 'pageview',
                 page: window.location.pathname,
               });
               console.log('Analytics initialized (deferred)');
             } catch (error) {
-              console.error('GA Initialization failed:', error);
+              console.error('GA Deferred Loading failed:', error);
             }
-          }, 2500);
-
-          return () => clearTimeout(timer);
-        });
+          },
+          { timeout: 5000 } as any
+        );
 
         return () => {
           const cancelIdleCallbackPolyfill =

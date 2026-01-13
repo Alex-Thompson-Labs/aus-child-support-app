@@ -268,7 +268,7 @@ export function detectLowAssessmentTrigger(
 
   // Check if Parent B meets FAR eligibility criteria for any child
   const farEligibleB =
-    results.ATI_B < results.MAX_PPS && // Low income (below MAX_PPS)
+    results.ATI_B < MAX_PPS && // Low income (below MAX_PPS)
     !formState.supportB; // Not on income support
 
   // Check if there are children where Parent A has ≥66% care (Parent B would owe FAR)
@@ -292,7 +292,7 @@ export function detectLowAssessmentTrigger(
     // Additional check: is there a reversal scenario?
     // Parent A must also be FAR-eligible for reversal
     const parentAFarEligible =
-      results.ATI_A < results.MAX_PPS && !formState.supportA;
+      results.ATI_A < MAX_PPS && !formState.supportA;
 
     if (parentAFarEligible && childrenWhereAMightOweFar.length > 0) {
       return {

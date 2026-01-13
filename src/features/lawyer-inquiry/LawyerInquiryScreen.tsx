@@ -182,8 +182,7 @@ export default function LawyerInquiryScreen() {
             payer={params.payer}
             incomeA={params.incomeA}
             incomeB={params.incomeB}
-            // eslint-disable-next-line react/no-children-prop
-            children={params.children}
+            dependentsList={params.children}
             careData={params.careData}
             manualIncomeA={form.manualIncomeA}
             manualIncomeB={form.manualIncomeB}

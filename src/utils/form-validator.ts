@@ -40,12 +40,25 @@ export const validateCalculatorForm = (formState: CalculatorFormState): FormErro
             newErrors[child.id] =
                 `Parent B ${unitLabel} cannot exceed ${maxValue}${unitSymbol} for ${child.carePeriod}.`;
         }
+
+        // Validate NPC care
+        const careNPC = formState.nonParentCarer.enabled ? (child.careAmountNPC ?? 0) : 0;
+        if (formState.nonParentCarer.enabled) {
+            if (careNPC < 0) {
+                newErrors[child.id] = `NPC ${unitLabel} must be 0 or more.`;
+            } else if (careNPC > maxValue) {
+                newErrors[child.id] =
+                    `NPC ${unitLabel} cannot exceed ${maxValue}${unitSymbol} for ${child.carePeriod}.`;
+            }
+        }
+
         // Validate sum
-        const total = child.careAmountA + child.careAmountB;
+        const total = child.careAmountA + child.careAmountB + careNPC;
         if (total > maxValue) {
             newErrors[child.id] =
                 `Total ${unitLabel} cannot exceed ${maxValue}${unitSymbol} per ${child.carePeriod}. Currently: ${total}${unitSymbol}`;
         }
+
     });
 
     // Validate dependents

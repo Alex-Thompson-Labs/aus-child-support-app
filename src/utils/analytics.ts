@@ -31,15 +31,43 @@ const isWeb = Platform.OS === 'web';
 function isGA4Initialized(): boolean {
   if (!isWeb || typeof window === 'undefined') return false;
   // react-ga4 sets this internally after initialization
-  return ReactGA.isInitialized;
+  // Adding try-catch significantly improves resilience against blocked scripts
+  try {
+    return ReactGA.isInitialized;
+  } catch (error) {
+    return false;
+  }
+}
+
+/**
+ * Initialize Google Analytics 4 safely
+ */
+export function initializeAnalytics(measurementId: string): void {
+  if (!isWeb || typeof window === 'undefined') return;
+
+  try {
+    if (!isGA4Initialized()) {
+      ReactGA.initialize(measurementId);
+      console.log('Analytics initialized');
+    }
+  } catch (error) {
+    console.warn('GA Initialization failed (likely blocked):', error);
+  }
 }
 
 /**
  * Track event with Google Analytics 4 via react-ga4
  */
 function trackWithGA(event: string, properties?: AnalyticsProperties): void {
-  if (isWeb && isGA4Initialized()) {
-    ReactGA.event(event, properties || {});
+  try {
+    if (isWeb && isGA4Initialized()) {
+      ReactGA.event(event, properties || {});
+    }
+  } catch (error) {
+    // Fail silently - analytics shouldn't break the app
+    if (__DEV__) {
+      console.warn('GA Track Event failed:', error);
+    }
   }
 }
 
@@ -47,8 +75,14 @@ function trackWithGA(event: string, properties?: AnalyticsProperties): void {
  * Set user ID with Google Analytics 4
  */
 function identifyWithGA(userId: string): void {
-  if (isWeb && isGA4Initialized()) {
-    ReactGA.set({ user_id: userId });
+  try {
+    if (isWeb && isGA4Initialized()) {
+      ReactGA.set({ user_id: userId });
+    }
+  } catch (error) {
+    if (__DEV__) {
+      console.warn('GA Identify failed:', error);
+    }
   }
 }
 
@@ -56,17 +90,25 @@ function identifyWithGA(userId: string): void {
  * Track page view with Google Analytics 4
  */
 function screenWithGA(name: string, properties?: AnalyticsProperties): void {
-  if (isWeb && isGA4Initialized()) {
-    ReactGA.send({
-      hitType: 'pageview',
-      page: name,
-      ...properties,
-    });
+  try {
+    if (isWeb && isGA4Initialized()) {
+      ReactGA.send({
+        hitType: 'pageview',
+        page: name,
+        ...properties,
+      });
+    }
+  } catch (error) {
+    if (__DEV__) {
+      console.warn('GA Screen View failed:', error);
+    }
   }
 }
 
 // Static Analytics object for use without hooks
 export const Analytics = {
+  initialize: (measurementId: string) => initializeAnalytics(measurementId),
+
   track: (event: string, properties?: AnalyticsProperties): void => {
     if (__DEV__) {
       console.log('[Analytics] Track event:', event, properties);

@@ -108,7 +108,7 @@ export interface FinancialSectionProps {
   payer: string; // "Parent A" (You Pay), "Parent B" (You Receive), or "Neither"
   incomeA: string;
   incomeB: string;
-  children: string;
+  dependentsList: string;
   careData: CareDataItem[];
   // Direct mode props
   manualIncomeA: string;

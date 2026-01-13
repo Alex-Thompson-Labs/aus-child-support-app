@@ -7,9 +7,9 @@
  * - multi-case-engine: Multi-case caps (Formula 3)
  */
 
-// Placeholder exports - will be populated as modules are created
-// export * from './rates-engine';
-// export * from './multi-case-engine';
+// Re-export rates engine
+export * from './rates-engine';
 
-export { };
+// Re-export multi-case engine
+export * from './multi-case-engine';
 

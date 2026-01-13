@@ -1,37 +1,38 @@
 import {
-    AgeRange,
     CalculationResults,
     CalculatorFormState,
-    OtherCaseChild,
-    PayerRole,
-    deriveAgeRange,
+    deriveAgeRange
 } from './calculator';
 import {
-    convertCareToPercentage,
-    mapCareToCostPercent,
-    roundCarePercentage,
+    convertCareToPercentage
 } from './care-utils';
 import {
-    applyMultiCaseCap,
-    calculateMultiCaseAllowance,
-    calculateMultiCaseCap,
-    getChildCost,
+    getChildCost
 } from './child-support-calculations';
 import {
     AssessmentYear,
     getYearConstants,
 } from './child-support-constants';
-import {
-    applyFARMultiChildCap,
-    applyMARMultiCaseCap,
-    checkMARCareNegation,
-} from './multi-case-rates';
 
-// Import from extracted module
+// Import from extracted modules
+import { applyMARFARCaps, applyMultiCaseCaps, applyRatesToChildren } from './engine';
 import { validateCalculatorForm } from './form-validator';
+import { calculateIncomes } from './income-calculator';
+import { calculateChildLiability } from './liability-calculator';
+import { resolvePayment } from './payment-resolver';
 
 // Re-export for backward compatibility
+export * from './engine';
 export { validateCalculatorForm } from './form-validator';
+export {
+    calculateCSI,
+    calculateIncomePercentages, calculateIncomes, createVirtualDependentChildren
+} from './income-calculator';
+export type { IncomeCalculationInput, IncomeCalculationResult } from './income-calculator';
+export { calculateChildLiability, calculateChildSupportPercentage, shouldPayLiability } from './liability-calculator';
+export type { LiabilityInput, LiabilityResult } from './liability-calculator';
+export { calculateNPCPayment, determinePayerRole, resolvePayment } from './payment-resolver';
+export type { PaymentResolutionInput, PaymentResolutionResult } from './payment-resolver';
 
 export const calculateChildSupport = (
     formState: CalculatorFormState,
@@ -46,12 +47,10 @@ export const calculateChildSupport = (
     // Get year-specific constants
     const { SSA, FAR, MAR, MAX_PPS } = getYearConstants(selectedYear);
 
-    const { incomeA, incomeB, relDepA, relDepB } = formState;
+    const { relDepA, relDepB } = formState;
     // Use overrides if provided, otherwise fall back to formState
     const supportA = overrides?.supportA ?? formState.supportA;
     const supportB = overrides?.supportB ?? formState.supportB;
-    const ATI_A = incomeA;
-    const ATI_B = incomeB;
 
     // Convert children to calculation format with derived age ranges
     const children = formState.children.map((c) => {
@@ -64,98 +63,33 @@ export const calculateChildSupport = (
         };
     });
 
-    // Step 1: Create virtual children for relevant dependents
-    // Virtual children have 0% care since they're only used for cost calculation
-    // Use representative ages: 6 for u13, 14 for plus13
-    const relDepChildrenA: {
-        age: number;
-        ageRange: AgeRange;
-        careA: number;
-        careB: number;
-    }[] = [
-            ...Array(relDepA.u13).fill(null).map(() => ({
-                age: 6,
-                ageRange: 'Under 13' as AgeRange,
-                careA: 0,
-                careB: 0,
-            })),
-            ...Array(relDepA.plus13).fill(null).map(() => ({
-                age: 14,
-                ageRange: '13+' as AgeRange,
-                careA: 0,
-                careB: 0,
-            })),
-        ];
-    const relDepChildrenB: {
-        age: number;
-        ageRange: AgeRange;
-        careA: number;
-        careB: number;
-    }[] = [
-            ...Array(relDepB.u13).fill(null).map(() => ({
-                age: 6,
-                ageRange: 'Under 13' as AgeRange,
-                careA: 0,
-                careB: 0,
-            })),
-            ...Array(relDepB.plus13).fill(null).map(() => ({
-                age: 14,
-                ageRange: '13+' as AgeRange,
-                careA: 0,
-                careB: 0,
-            })),
-        ];
-
-    // Step 2-4: Calculate Child Support Income (CSI)
-    const relDepDeductibleA = getChildCost(
+    // Calculate all income-related values using the extracted module
+    const incomeResults = calculateIncomes({
+        incomeA: formState.incomeA,
+        incomeB: formState.incomeB,
+        relDepA,
+        relDepB,
+        multiCaseChildrenA: formState.multiCaseA.otherChildren,
+        multiCaseChildrenB: formState.multiCaseB.otherChildren,
+        currentCaseChildren: children,
         selectedYear,
-        relDepChildrenA,
-        Math.max(0, ATI_A - SSA)
-    ).cost;
-    const relDepDeductibleB = getChildCost(
-        selectedYear,
-        relDepChildrenB,
-        Math.max(0, ATI_B - SSA)
-    ).cost;
+    });
 
-    // Step 2a: Calculate Multi-case Allowance (Formula 3)
-    // For parents with children in other child support cases
-    const rawCSI_A = Math.max(0, ATI_A - SSA);
-    const rawCSI_B = Math.max(0, ATI_B - SSA);
-
-    const multiCaseAllowanceA = calculateMultiCaseAllowance(
-        selectedYear,
-        rawCSI_A,
-        children,
-        formState.multiCaseA.otherChildren
-    );
-    const multiCaseAllowanceB = calculateMultiCaseAllowance(
-        selectedYear,
-        rawCSI_B,
-        children,
-        formState.multiCaseB.otherChildren
-    );
-
-    // Preliminary CSI = ATI - SSA - Relevant Dependent Allowance
-    // This is used for calculating Solo Cost in Multi-Case Cap (before Multi-Case Allowance deduction)
-    const preliminaryCSI_A = Math.max(0, ATI_A - SSA - relDepDeductibleA);
-    const preliminaryCSI_B = Math.max(0, ATI_B - SSA - relDepDeductibleB);
-
-    // CSI = ATI - Relevant Dependents - SSA - Multi-case Allowance
-    const CSI_A = Math.max(
-        0,
-        ATI_A - relDepDeductibleA - SSA - multiCaseAllowanceA
-    );
-    const CSI_B = Math.max(
-        0,
-        ATI_B - relDepDeductibleB - SSA - multiCaseAllowanceB
-    );
-
-    const CCSI = CSI_A + CSI_B; // Combined CSI (NPC income not included)
-
-    // Income Percentages
-    const incomePercA = CCSI > 0 ? (CSI_A / CCSI) * 100 : 0;
-    const incomePercB = CCSI > 0 ? (CSI_B / CCSI) * 100 : 0;
+    const {
+        ATI_A,
+        ATI_B,
+        relDepDeductibleA,
+        relDepDeductibleB,
+        preliminaryCSI_A,
+        preliminaryCSI_B,
+        CSI_A,
+        CSI_B,
+        CCSI,
+        incomePercA,
+        incomePercB,
+        multiCaseAllowanceA,
+        multiCaseAllowanceB,
+    } = incomeResults;
 
     // Step 5: Calculate Total Cost of Children
     // Adult children (18+) are excluded from Services Australia assessment
@@ -176,14 +110,6 @@ export const calculateChildSupport = (
     const hasNPC = formState.nonParentCarer.enabled;
 
     const childResults = children.map((c, childIndex) => {
-        // Determine adult child status
-        const isAdultChild = c.age >= 18;
-        const isTurning18 = c.age === 17;
-
-        const roundedCareA = roundCarePercentage(c.careA);
-        const roundedCareB = roundCarePercentage(c.careB);
-
-        // Handle NPC care (Formula 4)
         // Get NPC care from the child input (defaults to 0 if not set)
         const childInput = formState.children[childIndex];
         const rawCareNPC = hasNPC
@@ -192,50 +118,36 @@ export const calculateChildSupport = (
                 childInput?.carePeriod ?? 'fortnight'
             )
             : 0;
-        const roundedCareNPC = roundCarePercentage(rawCareNPC);
-        const costPercNPC = mapCareToCostPercent(roundedCareNPC);
 
-        const costPercA = mapCareToCostPercent(roundedCareA);
-        const costPercB = mapCareToCostPercent(roundedCareB);
+        // Calculate liability using the extracted module
+        const liabilityResult = calculateChildLiability({
+            age: c.age,
+            ageRange: c.ageRange,
+            careA: c.careA,
+            careB: c.careB,
+            careNPC: rawCareNPC,
+            incomePercA,
+            incomePercB,
+            costPerChild,
+            hasNPC,
+        });
 
-        // Child Support Percentage = Income % - Cost %
-        const childSupportPercA = incomePercA - costPercA;
-        const childSupportPercB = incomePercB - costPercB;
-
-        // Adult children (18+) are excluded from standard child support calculation
-        // They can only receive Adult Child Maintenance via court order
-        let liabilityA = 0;
-        let liabilityB = 0;
-
-        if (!isAdultChild) {
-            const positivePercA = Math.max(0, childSupportPercA);
-            const positivePercB = Math.max(0, childSupportPercB);
-
-            if (positivePercA > positivePercB) {
-                if (roundedCareB >= 35 || (hasNPC && roundedCareNPC >= 35)) {
-                    liabilityA = (positivePercA / 100) * costPerChild;
-                }
-            } else if (positivePercB > positivePercA) {
-                if (roundedCareA >= 35 || (hasNPC && roundedCareNPC >= 35)) {
-                    liabilityB = (positivePercB / 100) * costPerChild;
-                }
-            }
-        }
-
-        // Calculate liability to NPC (Formula 4) - also skip for adult children
-        let liabilityToNPC_A = 0;
-        let liabilityToNPC_B = 0;
-        if (!isAdultChild && hasNPC && roundedCareNPC >= 35) {
-            // Each parent's liability to NPC = their child support % × child cost
-            if (childSupportPercA > 0) {
-                liabilityToNPC_A =
-                    (childSupportPercA / 100) * costPerChild * (costPercNPC / 100);
-            }
-            if (childSupportPercB > 0) {
-                liabilityToNPC_B =
-                    (childSupportPercB / 100) * costPerChild * (costPercNPC / 100);
-            }
-        }
+        const {
+            roundedCareA,
+            roundedCareB,
+            roundedCareNPC,
+            costPercA,
+            costPercB,
+            costPercNPC,
+            childSupportPercA,
+            childSupportPercB,
+            liabilityA,
+            liabilityB,
+            liabilityToNPC_A,
+            liabilityToNPC_B,
+            isAdultChild,
+            isTurning18,
+        } = liabilityResult;
 
         // Only add liability for assessable children (not adult children)
         if (!isAdultChild) {
@@ -280,200 +192,60 @@ export const calculateChildSupport = (
     });
 
     // Step 9–10: Apply Fixed Annual Rate (FAR) or Minimum Annual Rate (MAR)
-    let FAR_A = 0,
-        FAR_B = 0,
-        MAR_A = 0,
-        MAR_B = 0;
-    let finalLiabilityA = 0;
-    let finalLiabilityB = 0;
-    let rateApplied = 'None';
-    const appliedRates: string[] = [];
-
-    // Check if MAR applies at case level (once per case, not per child)
-    // MAR criteria:
-    // 1. Parent received income support payment
-    // 2. Parent has less than 14% care of ALL assessable children (not 18+)
-    // 3. Parent's ATI is below the self-support amount
+    // Use the extracted rates-engine module
     const assessableChildResults = childResults.filter((c) => !c.isAdultChild);
-    const marAppliesA =
-        ATI_A < SSA && supportA && assessableChildResults.length > 0 &&
-        assessableChildResults.every((c) => c.roundedCareA < 14);
-    const marAppliesB =
-        ATI_B < SSA && supportB && assessableChildResults.length > 0 &&
-        assessableChildResults.every((c) => c.roundedCareB < 14);
 
-    if (marAppliesA) {
-        MAR_A = MAR; // Set once for the entire case
-        appliedRates.push('MAR (Parent A)');
-    }
-    if (marAppliesB) {
-        MAR_B = MAR; // Set once for the entire case
-        appliedRates.push('MAR (Parent B)');
-    }
-
-    childResults.forEach((child, index) => {
-        // Skip adult children - they're excluded from FAR/MAR
-        if (child.isAdultChild) {
-            return;
-        }
-
-        const roundedCareA = child.roundedCareA;
-        const roundedCareB = child.roundedCareB;
-
-        let liabilityA = child.liabilityA;
-        let appliedRateA: string | null = null;
-        let farAppliedA = false;
-        let marAppliedA = false;
-
-        // Check if MAR applies for this parent (already determined at case level)
-        if (marAppliesA) {
-            // MAR is paid once per case, so divide by total assessable children to show per-child breakdown
-            liabilityA = MAR / assessableChildResults.length;
-            marAppliedA = true;
-        } else if (ATI_A < MAX_PPS && !supportA && roundedCareB >= 66) {
-            // FAR is paid per child (up to 3 children)
-            if (FAR_A / FAR < 3) {
-                FAR_A += FAR;
-                liabilityA = FAR;
-                appliedRateA = `FAR (Parent A, Child ${index + 1})`;
-                farAppliedA = true;
-            }
-        }
-
-        if (appliedRateA) {
-            appliedRates.push(appliedRateA);
-        }
-        finalLiabilityA += liabilityA;
-
-        let liabilityB = child.liabilityB;
-        let appliedRateB: string | null = null;
-        let farAppliedB = false;
-        let marAppliedB = false;
-
-        // Check if MAR applies for this parent (already determined at case level)
-        if (marAppliesB) {
-            // MAR is paid once per case, so divide by total assessable children to show per-child breakdown
-            liabilityB = MAR / assessableChildResults.length;
-            marAppliedB = true;
-        } else if (ATI_B < MAX_PPS && !supportB && roundedCareA >= 66) {
-            // FAR is paid per child (up to 3 children)
-            if (FAR_B / FAR < 3) {
-                FAR_B += FAR;
-                liabilityB = FAR;
-                appliedRateB = `FAR (Parent B, Child ${index + 1})`;
-                farAppliedB = true;
-            }
-        }
-
-        if (appliedRateB) {
-            appliedRates.push(appliedRateB);
-        }
-        finalLiabilityB += liabilityB;
-
-        // Update child result with final liability and rate flags
-        child.finalLiabilityA = liabilityA;
-        child.finalLiabilityB = liabilityB;
-        child.farAppliedA = farAppliedA;
-        child.farAppliedB = farAppliedB;
-        child.marAppliedA = marAppliedA;
-        child.marAppliedB = marAppliedB;
+    const ratesResult = applyRatesToChildren({
+        childResults,
+        eligibilityA: {
+            ATI: ATI_A,
+            SSA,
+            MAX_PPS,
+            receivesSupport: supportA,
+            carePercentages: assessableChildResults.map(c => c.roundedCareA),
+            otherParentCarePercentages: assessableChildResults.map(c => c.roundedCareB),
+        },
+        eligibilityB: {
+            ATI: ATI_B,
+            SSA,
+            MAX_PPS,
+            receivesSupport: supportB,
+            carePercentages: assessableChildResults.map(c => c.roundedCareB),
+            otherParentCarePercentages: assessableChildResults.map(c => c.roundedCareA),
+        },
+        selectedYear,
+        assessableChildCount: assessableChildResults.length,
     });
+
+    let { FAR_A, FAR_B, MAR_A, MAR_B, finalLiabilityA, finalLiabilityB, rateApplied, appliedRates } = ratesResult;
 
     // Step 10a: Apply Multi-case Cap (Formula 3)
     // The cap limits liability for parents with children in other cases
-    let multiCaseCapAppliedA = false;
-    let multiCaseCapAppliedB = false;
-
     const hasMultiCaseA = formState.multiCaseA.otherChildren.length > 0;
     const hasMultiCaseB = formState.multiCaseB.otherChildren.length > 0;
 
+    let multiCaseCapAppliedA = false;
+    let multiCaseCapAppliedB = false;
+
     if (hasMultiCaseA || hasMultiCaseB) {
-        // Reset final liabilities to recalculate with caps
-        finalLiabilityA = 0;
-        finalLiabilityB = 0;
-
-        /**
-         * Calculate Solo Cost per child for Multi-Case Cap.
-         * This calculates what the cost of all children (current + other cases)
-         * would be if only this parent's income were considered.
-         * Per legislation, the cap must be based on payer's individual income, not CCSI.
-         */
-        const calculateSoloCostPerChild = (
-            parentPreliminaryCSI: number,
-            otherCaseChildren: OtherCaseChild[]
-        ): number => {
-            // Create a combined list of all children (current case + other cases)
-            const allChildren = [
-                ...assessableChildren,
-                ...otherCaseChildren.map((oc) => ({
-                    age: oc.age,
-                    ageRange: deriveAgeRange(oc.age),
-                    careA: 0,
-                    careB: 0,
-                })),
-            ];
-
-            // Filter out adult children (18+)
-            const eligibleChildren = allChildren.filter(
-                (c) => deriveAgeRange(c.age) !== '18+'
-            );
-
-            if (eligibleChildren.length === 0) return 0;
-
-            // Calculate cost using only this parent's income (Solo Cost)
-            const { cost: totalSoloCost } = getChildCost(
-                selectedYear,
-                eligibleChildren,
-                parentPreliminaryCSI // Use parent's solo income, not CCSI
-            );
-
-            // Return per-child cost
-            return totalSoloCost / eligibleChildren.length;
-        };
-
-        childResults.forEach((child) => {
-            let adjustedLiabilityA = child.finalLiabilityA;
-            let adjustedLiabilityB = child.finalLiabilityB;
-
-            // Apply multi-case cap for Parent A
-            // Uses Solo Cost based on Parent A's Preliminary CSI (not CCSI)
-            if (hasMultiCaseA && child.finalLiabilityA > 0) {
-                const soloCostPerChildA = calculateSoloCostPerChild(
-                    preliminaryCSI_A,
-                    formState.multiCaseA.otherChildren
-                );
-                const capA = calculateMultiCaseCap(soloCostPerChildA, child.costPercA);
-                child.multiCaseCapA = capA;
-                const capResult = applyMultiCaseCap(child.finalLiabilityA, capA);
-                adjustedLiabilityA = capResult.liability;
-                child.multiCaseCapAppliedA = capResult.capApplied;
-                if (capResult.capApplied) {
-                    multiCaseCapAppliedA = true;
-                }
-            }
-
-            // Apply multi-case cap for Parent B
-            // Uses Solo Cost based on Parent B's Preliminary CSI (not CCSI)
-            if (hasMultiCaseB && child.finalLiabilityB > 0) {
-                const soloCostPerChildB = calculateSoloCostPerChild(
-                    preliminaryCSI_B,
-                    formState.multiCaseB.otherChildren
-                );
-                const capB = calculateMultiCaseCap(soloCostPerChildB, child.costPercB);
-                child.multiCaseCapB = capB;
-                const capResult = applyMultiCaseCap(child.finalLiabilityB, capB);
-                adjustedLiabilityB = capResult.liability;
-                child.multiCaseCapAppliedB = capResult.capApplied;
-                if (capResult.capApplied) {
-                    multiCaseCapAppliedB = true;
-                }
-            }
-
-            child.finalLiabilityA = adjustedLiabilityA;
-            child.finalLiabilityB = adjustedLiabilityB;
-            finalLiabilityA += adjustedLiabilityA;
-            finalLiabilityB += adjustedLiabilityB;
+        // Apply multi-case caps using the extracted module
+        const capsResult = applyMultiCaseCaps({
+            childResults,
+            hasMultiCaseA,
+            hasMultiCaseB,
+            preliminaryCSI_A,
+            preliminaryCSI_B,
+            otherChildrenA: formState.multiCaseA.otherChildren,
+            otherChildrenB: formState.multiCaseB.otherChildren,
+            assessableChildren,
+            selectedYear,
         });
+
+        // Update results from caps
+        finalLiabilityA = capsResult.finalLiabilityA;
+        finalLiabilityB = capsResult.finalLiabilityB;
+        multiCaseCapAppliedA = capsResult.multiCaseCapAppliedA;
+        multiCaseCapAppliedB = capsResult.multiCaseCapAppliedB;
     }
 
     // Step 10b: Apply MAR/FAR Multi-Case Caps (Formula 3 & 4)
@@ -487,196 +259,56 @@ export const calculateChildSupport = (
     const totalCasesA = 1 + formState.multiCaseA.otherChildren.length;
     const totalCasesB = 1 + formState.multiCaseB.otherChildren.length;
 
-    // Apply MAR 3-case cap and care negation for Parent A
-    if (MAR_A > 0 && hasMultiCaseA) {
-        // Check care negation first (14% care of any child negates MAR)
-        const careNegationA = checkMARCareNegation({
-            carePercentages: childResults.map((c) => c.roundedCareA),
-        });
+    // Apply MAR/FAR caps using the extracted module
+    const marFarCapsResult = applyMARFARCaps({
+        childResults,
+        MAR_A,
+        MAR_B,
+        FAR_A,
+        FAR_B,
+        hasMultiCaseA,
+        hasMultiCaseB,
+        totalCasesA,
+        totalCasesB,
+        selectedYear,
+    });
 
-        if (careNegationA.capApplied) {
-            // MAR negated due to care threshold
-            MAR_A = 0;
-            marCapExplanationA = careNegationA.explanation;
-            // Update child results to reflect negated MAR
-            childResults.forEach((child) => {
-                if (child.marAppliedA) {
-                    finalLiabilityA -= child.finalLiabilityA;
-                    child.finalLiabilityA = 0;
-                }
-            });
-        } else if (totalCasesA > 3) {
-            // Apply 3-case cap
-            const marCapResultA = applyMARMultiCaseCap(selectedYear, totalCasesA);
-            if (marCapResultA.capApplied) {
-                const cappedMARPerCase = marCapResultA.cappedAmount;
-                marCapExplanationA = marCapResultA.explanation;
-                // Recalculate MAR liability with capped amount
-                finalLiabilityA = 0;
-                childResults.forEach((child) => {
-                    if (child.marAppliedA) {
-                        child.finalLiabilityA = cappedMARPerCase / childResults.length;
-                    }
-                    finalLiabilityA += child.finalLiabilityA;
-                });
-                MAR_A = cappedMARPerCase;
-            }
-        }
-    }
-
-    // Apply MAR 3-case cap and care negation for Parent B
-    if (MAR_B > 0 && hasMultiCaseB) {
-        const careNegationB = checkMARCareNegation({
-            carePercentages: childResults.map((c) => c.roundedCareB),
-        });
-
-        if (careNegationB.capApplied) {
-            MAR_B = 0;
-            marCapExplanationB = careNegationB.explanation;
-            childResults.forEach((child) => {
-                if (child.marAppliedB) {
-                    finalLiabilityB -= child.finalLiabilityB;
-                    child.finalLiabilityB = 0;
-                }
-            });
-        } else if (totalCasesB > 3) {
-            const marCapResultB = applyMARMultiCaseCap(selectedYear, totalCasesB);
-            if (marCapResultB.capApplied) {
-                const cappedMARPerCase = marCapResultB.cappedAmount;
-                marCapExplanationB = marCapResultB.explanation;
-                finalLiabilityB = 0;
-                childResults.forEach((child) => {
-                    if (child.marAppliedB) {
-                        child.finalLiabilityB = cappedMARPerCase / childResults.length;
-                    }
-                    finalLiabilityB += child.finalLiabilityB;
-                });
-                MAR_B = cappedMARPerCase;
-            }
-        }
-    }
-
-    // Apply FAR 3-child cap for Parent A
-    // Count total children FAR applies to (current case + other cases)
-    const farChildCountA = childResults.filter((c) => c.farAppliedA).length +
-        formState.multiCaseA.otherChildren.length;
-
-    if (FAR_A > 0 && farChildCountA > 3) {
-        const farCapResultA = applyFARMultiChildCap(selectedYear, farChildCountA);
-        if (farCapResultA.capApplied) {
-            const cappedFARPerChild = farCapResultA.cappedAmount;
-            farCapExplanationA = farCapResultA.explanation;
-            // Recalculate FAR liability with capped amount
-            finalLiabilityA = 0;
-            childResults.forEach((child) => {
-                if (child.farAppliedA) {
-                    child.finalLiabilityA = cappedFARPerChild;
-                }
-                finalLiabilityA += child.finalLiabilityA;
-            });
-            FAR_A = cappedFARPerChild * childResults.filter((c) => c.farAppliedA).length;
-        }
-    }
-
-    // Apply FAR 3-child cap for Parent B
-    const farChildCountB = childResults.filter((c) => c.farAppliedB).length +
-        formState.multiCaseB.otherChildren.length;
-
-    if (FAR_B > 0 && farChildCountB > 3) {
-        const farCapResultB = applyFARMultiChildCap(selectedYear, farChildCountB);
-        if (farCapResultB.capApplied) {
-            const cappedFARPerChild = farCapResultB.cappedAmount;
-            farCapExplanationB = farCapResultB.explanation;
-            finalLiabilityB = 0;
-            childResults.forEach((child) => {
-                if (child.farAppliedB) {
-                    child.finalLiabilityB = cappedFARPerChild;
-                }
-                finalLiabilityB += child.finalLiabilityB;
-            });
-            FAR_B = cappedFARPerChild * childResults.filter((c) => c.farAppliedB).length;
-        }
-    }
+    // Update results from MAR/FAR caps
+    finalLiabilityA = marFarCapsResult.finalLiabilityA;
+    finalLiabilityB = marFarCapsResult.finalLiabilityB;
+    MAR_A = marFarCapsResult.MAR_A;
+    MAR_B = marFarCapsResult.MAR_B;
+    FAR_A = marFarCapsResult.FAR_A;
+    FAR_B = marFarCapsResult.FAR_B;
+    marCapExplanationA = marFarCapsResult.marCapExplanationA;
+    marCapExplanationB = marFarCapsResult.marCapExplanationB;
+    farCapExplanationA = marFarCapsResult.farCapExplanationA;
+    farCapExplanationB = marFarCapsResult.farCapExplanationB;
 
     // Determine rate applied string
-    if (appliedRates.length > 0) {
-        const farA = appliedRates.filter((r) =>
-            r.startsWith('FAR (Parent A')
-        ).length;
-        const farB = appliedRates.filter((r) =>
-            r.startsWith('FAR (Parent B')
-        ).length;
-        const hasMarA = appliedRates.some((r) => r.startsWith('MAR (Parent A'));
-        const hasMarB = appliedRates.some((r) => r.startsWith('MAR (Parent B'));
+    // (Already calculated by rates-engine, but may be updated by multi-case caps below)
 
-        if (farA > 0 && farB > 0) {
-            rateApplied = 'FAR (Both Parents)';
-        } else if (farA > 0) {
-            rateApplied = `FAR (Parent A, ${farA} child${farA > 1 ? 'ren' : ''})`;
-        } else if (farB > 0) {
-            rateApplied = `FAR (Parent B, ${farB} child${farB > 1 ? 'ren' : ''})`;
-        } else if (hasMarA && hasMarB) {
-            rateApplied = 'MAR (Both Parents)';
-        } else if (hasMarA) {
-            rateApplied = 'MAR (Parent A)';
-        } else if (hasMarB) {
-            rateApplied = 'MAR (Parent B)';
-        }
-    }
+    // Final Payment Calculation - use extracted payment-resolver module
+    const paymentResult = resolvePayment({
+        finalLiabilityA,
+        finalLiabilityB,
+        FAR_A,
+        FAR_B,
+        MAR_A,
+        MAR_B,
+        rateApplied,
+        childResults,
+        hasNPC,
+    });
 
-    // Final Payment Calculation
-    let finalPayment = finalLiabilityA - finalLiabilityB;
-    let payer = finalPayment > 0 ? 'Parent A' : 'Parent B';
-    let receiver = finalPayment > 0 ? 'Parent B' : 'Parent A';
-    let finalPaymentAmount = Math.abs(finalPayment);
+    const { payer, receiver, finalPaymentAmount, payerRole, paymentToNPC } = paymentResult;
 
+    // Update rateApplied based on payment resolution
+    let finalRateApplied = rateApplied;
     if (rateApplied.startsWith('FAR') && FAR_A > 0 && FAR_B > 0) {
-        finalPayment = FAR_A - FAR_B;
-        payer = finalPayment > 0 ? 'Parent A' : 'Parent B';
-        receiver = finalPayment > 0 ? 'Parent B' : 'Parent A';
-        finalPaymentAmount = Math.abs(finalPayment);
-        rateApplied = 'FAR (Both)';
+        finalRateApplied = 'FAR (Both)';
     } else if (rateApplied.startsWith('MAR') && MAR_A > 0 && MAR_B > 0) {
-        finalPayment = MAR_A - MAR_B;
-        payer = 'N/A';
-        receiver = 'N/A';
-        finalPaymentAmount = 0;
-        rateApplied = 'MAR (Both)';
-    }
-
-    if (finalPaymentAmount === 0) {
-        payer = 'Neither';
-        receiver = 'Neither';
-    }
-
-    // Calculate total payment to NPC (Formula 4)
-    let paymentToNPC: number | undefined;
-    if (hasNPC) {
-        paymentToNPC = childResults.reduce(
-            (sum, child) =>
-                sum + (child.liabilityToNPC_A ?? 0) + (child.liabilityToNPC_B ?? 0),
-            0
-        );
-    }
-
-    // Determine payerRole
-    let payerRole: PayerRole = 'neither';
-    if (hasNPC && paymentToNPC && paymentToNPC > 0) {
-        const anyPayingA = childResults.some(
-            (c) => (c.liabilityToNPC_A ?? 0) > 0
-        );
-        const anyPayingB = childResults.some(
-            (c) => (c.liabilityToNPC_B ?? 0) > 0
-        );
-        if (anyPayingA && anyPayingB) {
-            payerRole = 'both_paying';
-        } else if (anyPayingA) {
-            payerRole = 'paying_parent';
-        } else if (anyPayingB) {
-            payerRole = 'receiving_parent';
-        }
-    } else if (finalPaymentAmount > 0) {
-        payerRole = payer === 'Parent A' ? 'paying_parent' : 'receiving_parent';
+        finalRateApplied = 'MAR (Both)';
     }
 
     return {
@@ -704,7 +336,7 @@ export const calculateChildSupport = (
         FAR_B,
         MAR_A,
         MAR_B,
-        rateApplied,
+        rateApplied: finalRateApplied,
         payer,
         receiver,
         finalPaymentAmount,

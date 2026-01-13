@@ -13,16 +13,16 @@ import { isWeb } from '@/src/utils/responsive';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import {
-    LayoutAnimation,
-    Platform,
-    Pressable,
-    ScrollView,
-    Switch,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    UIManager,
-    View,
+  LayoutAnimation,
+  Platform,
+  Pressable,
+  ScrollView,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  UIManager,
+  View,
 } from 'react-native';
 import { FINANCIAL_TAG_OPTIONS } from '../config';
 import type { FinancialSectionProps } from '../types';
@@ -51,7 +51,7 @@ export function FinancialSection({
   payer,
   incomeA,
   incomeB,
-  children,
+  dependentsList,
   careData,
   manualIncomeA,
   manualIncomeB,

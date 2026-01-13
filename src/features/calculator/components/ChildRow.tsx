@@ -21,6 +21,8 @@ interface ChildRowProps {
   totalChildren?: number;
   /** Show NPC (non-parent carer) care input when enabled */
   showNPCInput?: boolean;
+  /** Validation error message for this child */
+  error?: string;
 }
 
 export function ChildRow({
@@ -30,6 +32,7 @@ export function ChildRow({
   childIndex,
   totalChildren,
   showNPCInput = false,
+  error,
 }: ChildRowProps) {
   const { isMobile } = useResponsive();
 
@@ -337,6 +340,13 @@ export function ChildRow({
         <Text style={styles.warning}>
           Total ({totalCare}
           {periodLabel}) exceeds max ({maxValue})
+        </Text>
+      )}
+
+      {/* Validation Error */}
+      {!!error && (
+        <Text style={styles.warning}>
+          {error}
         </Text>
       )}
 

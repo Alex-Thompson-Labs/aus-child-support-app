@@ -4,7 +4,7 @@ import { useResponsive } from '@/src/utils/responsive';
 import { shadowPresets } from '@/src/utils/shadow-styles';
 import { detectLowAssessmentTrigger } from '@/src/utils/zero-payment-detection';
 import { useRouter } from 'expo-router';
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 import ReactGA from 'react-ga4';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -172,6 +172,10 @@ interface SmartConversionFooterProps {
   calculatorStartTime?: number;
 }
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// ... (existing imports)
+
 export function SmartConversionFooter({
   results,
   carePercentages,
@@ -184,9 +188,30 @@ export function SmartConversionFooter({
   const router = useRouter();
   const { isWeb } = useResponsive();
   const [isNavigating, setIsNavigating] = React.useState(false);
+  const [variantId, setVariantId] = React.useState<VariantId>('A');
 
-  // Initialize random variant on mount (A or B)
-  const variantId = useRef<VariantId>(Math.random() < 0.5 ? 'A' : 'B').current;
+  // Load or assign variant ID on mount
+  React.useEffect(() => {
+    const STORAGE_KEY = 'csc_ab_variant_footer';
+
+    async function loadVariant() {
+      try {
+        const stored = await AsyncStorage.getItem(STORAGE_KEY);
+        if (stored === 'A' || stored === 'B') {
+          setVariantId(stored as VariantId);
+        } else {
+          // Assign new variant if none exists
+          const newVariant = Math.random() < 0.5 ? 'A' : 'B';
+          setVariantId(newVariant);
+          await AsyncStorage.setItem(STORAGE_KEY, newVariant);
+        }
+      } catch (error) {
+        console.warn('Failed to load A/B variant:', error);
+      }
+    }
+
+    loadVariant();
+  }, []);
 
   // Determine effective payment type if not provided
   const effectivePaymentType: PaymentType = useMemo(() => {

@@ -1,19 +1,19 @@
 import { useAppTheme } from '@/src/theme';
 import { useAnalytics } from '@/src/utils/analytics';
 import type {
-    ChildInput,
-    FormErrors,
-    MultiCaseInfo,
-    NonParentCarerInfo,
-    OtherCaseChild,
+  ChildInput,
+  FormErrors,
+  MultiCaseInfo,
+  NonParentCarerInfo,
+  OtherCaseChild,
 } from '@/src/utils/calculator';
 import type { AssessmentYear } from '@/src/utils/child-support-constants';
 import {
-    MAX_CONTENT_WIDTH,
-    isWeb,
-    useResponsive,
-    webClickableStyles,
-    webInputStyles,
+  MAX_CONTENT_WIDTH,
+  isWeb,
+  useResponsive,
+  webClickableStyles,
+  webInputStyles,
 } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import React, { useMemo, useRef } from 'react';
@@ -411,6 +411,7 @@ export function CalculatorForm({
               onUpdate={(updates) => onUpdateChild(child.id, updates)}
               onRemove={() => onRemoveChild(child.id)}
               showNPCInput={nonParentCarer.enabled}
+              error={errors[child.id]}
             />
           ))}
         </View>

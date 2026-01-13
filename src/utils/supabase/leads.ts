@@ -1,5 +1,43 @@
 import { getSupabaseClient } from './client';
 
+/**
+ * Generates a UUID v4 string.
+ * Uses crypto.getRandomValues if available (web/modern runtimes),
+ * otherwise falls back to a Math.random implementation.
+ * This ensures compatibility with Expo Go and older Android/iOS runtimes
+ * where crypto.randomUUID might not be polyfilled.
+ */
+function generateUUID(): string {
+    // Check for modern crypto API (web/node)
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+        return crypto.randomUUID();
+    }
+
+    // Check for getRandomValues (some RN environments)
+    if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+        // @ts-ignore - TS might complain about Uint8Array in some incomplete env definitions
+        const buffer = new Uint8Array(16);
+        crypto.getRandomValues(buffer);
+
+        // Set version (4) and variant (RFC4122)
+        buffer[6] = (buffer[6] & 0x0f) | 0x40;
+        buffer[8] = (buffer[8] & 0x3f) | 0x80;
+
+        const hex = Array.from(buffer)
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+
+        return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    }
+
+    // Fallback for older environments
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        const r = (Math.random() * 16) | 0;
+        const v = c === 'x' ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+    });
+}
+
 // Type definitions for database tables
 export interface LeadSubmission {
     id?: string;
@@ -119,7 +157,7 @@ export async function submitLead(lead: LeadSubmission): Promise<{
 
         // Generate ID client-side to avoid needing SELECT permission on the table
         // This is necessary because anon users can INSERT but NOT SELECT (to prevent scraping)
-        const leadId = crypto.randomUUID();
+        const leadId = generateUUID();
 
         // Sanitize payload: explicitly list ONLY columns that exist in the database
         // This prevents errors from removed fields (e.g., preferred_contact)

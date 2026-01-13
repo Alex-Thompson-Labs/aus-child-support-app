@@ -8,13 +8,13 @@ import { sanitizeCountry } from '@/src/utils/all-countries';
 import { useAnalytics } from '@/src/utils/analytics';
 import { calculateLeadScore } from '@/src/utils/lead-scoring';
 import {
-    EXCLUDED_JURISDICTIONS,
-    RECIPROCATING_JURISDICTIONS,
+  EXCLUDED_JURISDICTIONS,
+  RECIPROCATING_JURISDICTIONS,
 } from '@/src/utils/reciprocating-jurisdictions';
 import type { SpecialCircumstance } from '@/src/utils/special-circumstances';
 import {
-    getSpecialCircumstanceById,
-    isCourtDateReason,
+  getSpecialCircumstanceById,
+  isCourtDateReason,
 } from '@/src/utils/special-circumstances';
 import type { LeadSubmission } from '@/src/utils/supabase';
 import { submitLead, updateLeadEnrichment } from '@/src/utils/supabase';
@@ -24,23 +24,25 @@ import { Alert, Platform, TextInput } from 'react-native';
 import { ENRICHMENT_INQUIRY_TYPES } from '../config';
 import type { CareDataItem, FormErrors, FormTouched } from '../types';
 import {
-    buildComplexityTriggers,
-    formatCourtDateForReasons,
-    sanitizeEmail,
-    sanitizePhone,
-    sanitizeString,
-    validateConsent,
-    validateCourtDate,
-    validateEmail,
-    validateFinancialTags,
-    validateManualChildren,
-    validateManualIncome,
-    validateMessage,
-    validateName,
-    validatePhone,
-    validatePostcode,
-    VALIDATION,
+  buildComplexityTriggers,
+  formatCourtDateForReasons,
+  sanitizeEmail,
+  sanitizePhone,
+  sanitizeString,
+  validateConsent,
+  validateCourtDate,
+  validateEmail,
+  validateFinancialTags,
+  validateManualChildren,
+  validateManualIncome,
+  validateMessage,
+  validateName,
+  validatePhone,
+  validatePostcode,
+  VALIDATION,
 } from '../validators';
+
+export type LeadFormValue = string | boolean | Date | null | string[];
 
 export interface UseInquiryFormProps {
   preFillMessage: string;
@@ -288,7 +290,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
   const validateField = useCallback(
     (
       field: keyof FormErrors,
-      value: string | boolean | Date | null
+      value: LeadFormValue
     ): string | undefined => {
       switch (field) {
         case 'name':
@@ -313,7 +315,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
           return validateCourtDate(value as Date | null, shouldShowCourtDate);
         case 'financialTags':
           return validateFinancialTags(
-            financialTags,
+            value as string[],
             props.specialCircumstances,
             props.reason
           );
@@ -425,7 +427,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     (field: keyof FormErrors) => {
       setTouched((prev) => ({ ...prev, [field]: true }));
 
-      let value: string | boolean | Date | null | string[] = '';
+      let value: LeadFormValue = '';
 
       switch (field) {
         case 'name':
@@ -464,8 +466,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
       }
 
       // Pass explicit value to validateField
-      // cast as any because validateField signature might not strictly match all types yet (like string[])
-      const error = validateField(field, value as any);
+      const error = validateField(field, value);
 
       setErrors((prev) => ({ ...prev, [field]: error }));
     },

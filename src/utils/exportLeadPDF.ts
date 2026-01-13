@@ -320,7 +320,7 @@ function generateLeadHTML(lead: LeadSubmission, userId: string = 'system'): stri
         <!-- Watermark -->
         <div class="watermark">
           CONFIDENTIAL
-          <span class="watermark-text">Exported by ${escapeHtml(userId)} on ${new Date().toLocaleString('en-AU')}</span>
+          <span class="watermark-text">Exported by ${escapeHtml(userId)} on ${new Date().toUTCString()}</span>
         </div>
 
         <!-- Header -->
