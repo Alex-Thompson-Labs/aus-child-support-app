@@ -24,6 +24,7 @@ import { CalculatorForm } from '../components/CalculatorForm';
 import { CalculatorResults } from '../components/CalculatorResults';
 import { IncomeSupportModal } from '../components/IncomeSupportModal';
 import { PrivacyPolicyLink } from '../components/PrivacyPolicyLink';
+import { StepProgressIndicator } from '../components/ui/StepProgressIndicator';
 
 export function CalculatorScreen() {
   const {
@@ -302,6 +303,14 @@ export function CalculatorScreen() {
           </View>
         </View>
 
+        {/* Progress Indicator */}
+        <View style={isDesktop ? styles.progressContainer : styles.progressContainerMobile}>
+          <StepProgressIndicator
+            currentStep={results && !isStale ? 2 : 1}
+            compact={!isDesktop}
+          />
+        </View>
+
         {/* Content */}
         <ScrollView
           style={styles.content}
@@ -460,5 +469,19 @@ const styles = StyleSheet.create({
   privacyFooterText: {
     fontSize: 12,
     color: '#64748b', // grey-500
+  },
+  progressContainer: {
+    width: '100%',
+    maxWidth: 850,
+    alignSelf: 'center',
+    backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  progressContainerMobile: {
+    width: '100%',
+    backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
   },
 });

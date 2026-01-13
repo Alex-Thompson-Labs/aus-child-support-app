@@ -5,10 +5,11 @@
  * Acts as a thin wrapper that composes all sub-components.
  */
 
+import { StepProgressIndicator } from '@/src/components/ui/StepProgressIndicator';
 import { PARTNERS, type PartnerKey } from '@/src/config/partners';
 import { isWeb, MAX_FORM_WIDTH } from '@/src/utils/responsive';
 import React from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AdditionalDetailsSection } from './components/AdditionalDetailsSection';
 import { ConsentSection } from './components/ConsentSection';
@@ -121,6 +122,11 @@ export default function LawyerInquiryScreen() {
       >
         {/* Trust Badge */}
         <TrustBadge />
+
+        {/* Progress Indicator - Step 3: Next Steps */}
+        <View style={{ backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
+          <StepProgressIndicator currentStep={3} compact />
+        </View>
 
         {/* Header with close button */}
         <FormHeader

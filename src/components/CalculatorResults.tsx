@@ -23,6 +23,7 @@ import { getPayerText, ResultsHero } from './results/ResultsHero';
 import { SmartConversionFooter } from './SmartConversionFooter';
 import { SpecialCircumstancesPrompt } from './SpecialCircumstancesPrompt';
 import { LazyLoadErrorBoundary } from './ui/LazyLoadErrorBoundary';
+import { StepProgressIndicator } from './ui/StepProgressIndicator';
 
 // ============================================================================
 // Event-based breakdown re-open signaling
@@ -542,6 +543,10 @@ export function CalculatorResults({
                 <Text style={styles.closeIcon}>✕</Text>
               </Pressable>
             </View>
+          </View>
+          {/* Progress Indicator - Step 2: Estimate */}
+          <View style={{ backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
+            <StepProgressIndicator currentStep={2} compact />
           </View>
           {renderBreakdownContent()}
         </View>
