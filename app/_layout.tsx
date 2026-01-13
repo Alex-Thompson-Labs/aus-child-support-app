@@ -2,7 +2,7 @@ import { SemanticColors } from '@/constants/theme';
 import { LoadingFallback } from '@/src/components/ui/LoadingFallback';
 import { useClientOnly } from '@/src/hooks/useClientOnly';
 import { initPerformanceMonitoring } from '@/src/utils/web-vitals';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Stack, usePathname } from 'expo-router';
@@ -11,7 +11,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import ReactGA from 'react-ga4';
-import { Platform, View, useColorScheme } from 'react-native';
+import { Platform, View } from 'react-native';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -24,9 +24,9 @@ export default function RootLayout() {
   const isClient = useClientOnly();
   const pathname = usePathname();
   const [appIsReady, setAppIsReady] = useState(false);
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const colors = isDark ? SemanticColors.dark : SemanticColors.light;
+  // Force light mode
+  const isDark = false;
+  const colors = SemanticColors.light;
 
   // Prepare the app by loading any required resources (fonts, assets, etc.)
   useEffect(() => {
@@ -126,7 +126,7 @@ export default function RootLayout() {
           <link rel="canonical" href={canonicalUrl} />
         </Head>
 
-        <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
+        <ThemeProvider value={DefaultTheme}>
           <Stack
             screenOptions={{
               title: 'Child Support Calculator',
@@ -170,7 +170,7 @@ export default function RootLayout() {
               }}
             />
           </Stack>
-          <StatusBar style={isDark ? 'light' : 'dark'} />
+          <StatusBar style="dark" />
           {Platform.OS === 'web' && <Analytics />}
           {Platform.OS === 'web' && <SpeedInsights />}
         </ThemeProvider>

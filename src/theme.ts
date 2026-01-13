@@ -1,5 +1,4 @@
 import { SemanticColors } from '@/constants/theme';
-import { useColorScheme } from 'react-native';
 
 /**
  * Hook to get the current theme colors based on system color scheme.
@@ -10,12 +9,10 @@ import { useColorScheme } from 'react-native';
  * <View style={{ backgroundColor: colors.cardBackground }} />
  */
 export function useAppTheme(): { colors: typeof SemanticColors.light; isDark: boolean } {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  
-  // Type assertion needed because TS sees light/dark as different literal types
-  const colors = (isDark ? SemanticColors.dark : SemanticColors.light) as typeof SemanticColors.light;
-  
+  // Force light mode
+  const isDark = false;
+  const colors = SemanticColors.light;
+
   return { colors, isDark };
 }
 
