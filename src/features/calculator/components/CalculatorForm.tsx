@@ -17,13 +17,16 @@ import {
 } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import React, { useMemo, useRef } from 'react';
-import { Platform, Pressable, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+
+import { BrandSwitch } from '@/src/components/ui/BrandSwitch';
 import { ChildRow } from './ChildRow';
 import { HelpTooltip } from './HelpTooltip';
 import { NonParentCarerSection } from './NonParentCarerSection';
 import { OtherCasesPopover } from './OtherCasesPopover';
 import { RelevantDependentsPopover } from './RelevantDependentsPopover';
 import { YearSelector } from './YearSelector';
+
 
 // ============================================================================
 // Component Documentation
@@ -115,6 +118,8 @@ export function CalculatorForm({
   const { isMobile, isDesktop } = useResponsive();
   const { colors } = useAppTheme();
   const analytics = useAnalytics();
+  const [isHappyHovered, setIsHappyHovered] = React.useState(false);
+
 
   // Track calculator_start event once per session when user first interacts
   const hasTrackedStart = useRef(false);
@@ -442,16 +447,33 @@ export function CalculatorForm({
 
         <View style={styles.disputeSection}>
           <View style={styles.switchRow}>
-            <Text style={[styles.switchLabel, dynamicStyles.label, { flex: 1 }]}>
-              Are you happy with this care arrangement?
-            </Text>
-            <Switch
+            <BrandSwitch
               value={!isCareDisputed}
               onValueChange={(happy) => onCareDisputeChange(!happy, happy ? undefined : (desiredCareNights || 0))}
-              trackColor={{ false: colors.textMuted, true: colors.primary }}
-              thumbColor={Platform.OS === 'android' ? '#ffffff' : undefined}
-              ios_backgroundColor={colors.textMuted}
+              accessibilityLabel="Are you happy with this care arrangement?"
             />
+            <Pressable
+              onPress={() => {
+                const happy = !isCareDisputed;
+                // Toggle: if currently happy (true), make unhappy (false).
+                // If currently unhappy (false), make happy (true).
+                const newHappy = !happy;
+                onCareDisputeChange(!newHappy, newHappy ? undefined : (desiredCareNights || 0));
+              }}
+              onHoverIn={() => setIsHappyHovered(true)}
+              onHoverOut={() => setIsHappyHovered(false)}
+              style={[styles.labelPressable, isWeb && webClickableStyles]}
+            >
+              <Text style={[
+                styles.switchLabel,
+                dynamicStyles.label,
+                !isCareDisputed && { color: colors.primary }, // Active state color
+                isHappyHovered && styles.labelHovered,
+                { flexShrink: 1 }
+              ]}>
+                Are you happy with this care arrangement?
+              </Text>
+            </Pressable>
           </View>
 
           {isCareDisputed && (
@@ -678,8 +700,16 @@ const styles = StyleSheet.create({
   switchRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 10,
     flexShrink: 0,
+  },
+  labelPressable: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  labelHovered: {
+    textDecorationLine: 'underline',
   },
   smallSwitch: {
     transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],

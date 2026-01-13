@@ -11,8 +11,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// Get __dirname equivalent for this module
-const __dirname = path.dirname(path.resolve());
+// __dirname is already defined in CommonJS
 
 // Configuration
 const SITE_URL = 'https://auschildsupport.com';

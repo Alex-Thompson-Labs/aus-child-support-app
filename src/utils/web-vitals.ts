@@ -62,39 +62,40 @@ export function trackWebVitals(onReport: (vitals: Partial<WebVitals>) => void) {
   // Dynamic import to avoid bundling on mobile
   // Wrapped in try-catch for better error handling during SSR/hydration
   try {
-    import('web-vitals')
-      .then((webVitalsModule) => {
-        // Safely destructure the module (using INP instead of deprecated FID)
-        const { onLCP, onINP, onCLS, onFCP, onTTFB } = webVitalsModule;
+    // import('web-vitals')
+    //   .then((webVitalsModule) => {
+    //     // Safely destructure the module (using INP instead of deprecated FID)
+    //     const { onLCP, onINP, onCLS, onFCP, onTTFB } = webVitalsModule;
 
-        if (typeof onLCP !== 'function') {
-          console.warn('[Web Vitals] Invalid module import');
-          return;
-        }
+    //     if (typeof onLCP !== 'function') {
+    //       console.warn('[Web Vitals] Invalid module import');
+    //       return;
+    //     }
 
-        onLCP((metric) => {
-          onReport({ lcp: metric.value });
-        });
+    //     onLCP((metric) => {
+    //       onReport({ lcp: metric.value });
+    //     });
 
-        onINP((metric) => {
-          onReport({ inp: metric.value });
-        });
+    //     onINP((metric) => {
+    //       onReport({ inp: metric.value });
+    //     });
 
-        onCLS((metric) => {
-          onReport({ cls: metric.value });
-        });
+    //     onCLS((metric) => {
+    //       onReport({ cls: metric.value });
+    //     });
 
-        onFCP((metric) => {
-          onReport({ fcp: metric.value });
-        });
+    //     onFCP((metric) => {
+    //       onReport({ fcp: metric.value });
+    //     });
 
-        onTTFB((metric) => {
-          onReport({ ttfb: metric.value });
-        });
-      })
-      .catch((error) => {
-        console.warn('[Web Vitals] Library not available:', error);
-      });
+    //     onTTFB((metric) => {
+    //       onReport({ ttfb: metric.value });
+    //     });
+    //   })
+    //   .catch((error) => {
+    //     console.warn('[Web Vitals] Library not available:', error);
+    //   });
+    console.warn('Web Vitals temporarily disabled for debugging');
   } catch (error) {
     console.warn('[Web Vitals] Failed to import:', error);
   }

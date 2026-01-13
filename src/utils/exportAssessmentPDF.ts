@@ -2,14 +2,13 @@
  * Assessment PDF Export Utility
  *
  * Generates professional PDF documents for calculator assessment results.
- * Uses @react-pdf/renderer for web platform.
- *
- * IMPORTANT: This is a web-only feature. Mobile platforms should continue
- * using expo-print for PDF generation.
+ * Uses expo-print to generate PDF from HTML content.
+ * Compatible with both Web (Browser Print) and Mobile (Native Print).
  */
 
-import { Platform } from 'react-native';
+import * as Print from 'expo-print';
 import type { CalculationResults } from './calculator';
+import { generateAssessmentHTML } from './generateAssessmentHTML';
 
 /**
  * Props for PDF generation
@@ -21,47 +20,33 @@ export interface ExportAssessmentPDFProps {
 }
 
 /**
- * Generate and download assessment PDF (web only)
+ * Generate and download/print assessment PDF
  *
- * Uses dynamic import to avoid bundling @react-pdf/renderer in the main chunk.
- * The library is ~200KB and only needed when user clicks export.
+ * Web: Opens browser print dialog (user selects "Save as PDF")
+ * Mobile: Opens native print preview (user shares/saves PDF)
  */
 export async function exportAssessmentPDF({
   results,
   supportA = false,
   supportB = false,
 }: ExportAssessmentPDFProps): Promise<void> {
-  if (Platform.OS !== 'web') {
-    console.warn('exportAssessmentPDF is only available on web platform');
-    return;
-  }
-
   try {
-    // Dynamic imports to reduce initial bundle size
-    const [{ pdf }, { AssessmentPDFDocument }] = await Promise.all([
-      import('@react-pdf/renderer'),
-      import('@/src/components/pdf/AssessmentPDFDocument'),
-    ]);
-
-    // Generate PDF blob
-    const doc = AssessmentPDFDocument({
+    const html = generateAssessmentHTML({
       results,
       supportA,
       supportB,
       generatedDate: new Date(),
     });
 
-    const blob = await pdf(doc).toBlob();
-
-    // Create download link
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'Assessment_Estimate.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    await Print.printAsync({
+      html,
+      // On iOS, we can optimize for A4. On web, it respects CSS Print media rules.
+      ...(process.env.EXPO_OS === 'ios' && {
+        width: 595, // A4 width in points
+        height: 842, // A4 height in points
+        orientation: Print.Orientation.portrait,
+      }),
+    });
   } catch (error) {
     console.error('Failed to generate PDF:', error);
     throw new Error('Failed to generate PDF. Please try again.');
@@ -70,7 +55,8 @@ export async function exportAssessmentPDF({
 
 /**
  * Check if PDF export is available on current platform
+ * Now available on all platforms via expo-print
  */
 export function isPDFExportAvailable(): boolean {
-  return Platform.OS === 'web';
+  return true;
 }
