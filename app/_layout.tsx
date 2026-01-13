@@ -2,10 +2,7 @@ import { SemanticColors } from '@/constants/theme';
 import { LoadingFallback } from '@/src/components/ui/LoadingFallback';
 import { useClientOnly } from '@/src/hooks/useClientOnly';
 import { initializeAnalytics } from '@/src/utils/analytics';
-import { initPerformanceMonitoring } from '@/src/utils/web-vitals';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Stack, usePathname } from 'expo-router';
 import Head from 'expo-router/head';
 import * as SplashScreen from 'expo-splash-screen';
@@ -107,7 +104,7 @@ export default function RootLayout() {
         };
       }
 
-      initPerformanceMonitoring();
+      // initPerformanceMonitoring();
     }
   }, [isClient, enableAnalytics]);
 
@@ -172,8 +169,8 @@ export default function RootLayout() {
             />
           </Stack>
           <StatusBar style="dark" />
-          {Platform.OS === 'web' && <Analytics />}
-          {Platform.OS === 'web' && <SpeedInsights />}
+          {/* {Platform.OS === 'web' && <Analytics />} */}
+          {/* {Platform.OS === 'web' && <SpeedInsights />} */}
         </ThemeProvider>
       </Suspense>
     </View>
