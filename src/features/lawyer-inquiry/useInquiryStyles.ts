@@ -49,7 +49,7 @@ export function useInquiryStyles() {
         flexDirection: 'column',
         paddingLeft: 20,
         paddingRight: 12,
-        paddingVertical: 2,
+        paddingVertical: 8,
         gap: 0,
         ...Platform.select({
           web: {
@@ -63,6 +63,7 @@ export function useInquiryStyles() {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+        minHeight: 44,
       },
       headerTitle: {
         fontSize: 18,
@@ -77,12 +78,12 @@ export function useInquiryStyles() {
         marginBottom: 8,
       },
       closeButton: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'transparent',
+        backgroundColor: colors.surfaceSubtle,
       },
       closeButtonText: {
         color: colors.primaryDark,

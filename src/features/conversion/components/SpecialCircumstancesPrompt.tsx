@@ -11,7 +11,7 @@ import {
     type SpecialCircumstance,
 } from '@/src/utils/special-circumstances';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import {
     Alert,
     Platform,
@@ -21,14 +21,302 @@ import {
     View,
 } from 'react-native';
 
+// Types
 interface SpecialCircumstancesPromptProps {
   results: CalculationResults;
   formData?: ComplexityFormData;
-  onNavigate: () => void; // Callback to close modal before navigation
-  onRequestInquiry?: () => void; // Callback to show inline inquiry panel (web mode)
-  onSpecialCircumstancesChange?: (reasons: string[]) => void; // Callback to notify parent of selected reasons
+  onNavigate: () => void;
+  onRequestInquiry?: () => void;
+  onSpecialCircumstancesChange?: (reasons: string[]) => void;
 }
 
+interface StepProps {
+  selectedReasons: Set<string>;
+  onToggle: (reasonId: string) => void;
+}
+
+type WizardStep = 'legal' | 'income' | 'costs' | 'summary';
+
+const STEPS: WizardStep[] = ['legal', 'income', 'costs', 'summary'];
+
+const STEP_TITLES: Record<WizardStep, string> = {
+  legal: 'Legal Matters',
+  income: "Other Parent's Financials",
+  costs: 'Costs & Other Factors',
+  summary: 'Review & Submit',
+};
+
+// Memoized Checkbox Component
+interface CheckboxItemProps {
+  reason: SpecialCircumstance;
+  isChecked: boolean;
+  onToggle: (id: string) => void;
+}
+
+const CheckboxItem = memo(function CheckboxItem({
+  reason,
+  isChecked,
+  onToggle,
+}: CheckboxItemProps) {
+  const handlePress = useCallback(() => onToggle(reason.id), [onToggle, reason.id]);
+
+  return (
+    <Pressable
+      style={[styles.checkboxRow, isWeb && webClickableStyles]}
+      onPress={handlePress}
+      accessible={true}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: isChecked }}
+      accessibilityLabel={reason.label}
+    >
+      <View style={[styles.checkbox, isChecked && styles.checkboxChecked]}>
+        {isChecked && <Text style={styles.checkboxCheck}>✓</Text>}
+      </View>
+      <View style={styles.checkboxLabelContainer}>
+        <Text style={styles.checkboxLabel}>{reason.label}</Text>
+        <HelpTooltip what={reason.description} why="" hideWhatLabel />
+      </View>
+    </Pressable>
+  );
+});
+
+// Progress Indicator
+interface ProgressIndicatorProps {
+  currentStep: number;
+  totalSteps: number;
+  stepTitle: string;
+}
+
+const ProgressIndicator = memo(function ProgressIndicator({
+  currentStep,
+  totalSteps,
+  stepTitle,
+}: ProgressIndicatorProps) {
+  return (
+    <View style={styles.progressContainer}>
+      <Text style={styles.progressText}>Step {currentStep} of {totalSteps}</Text>
+      <Text style={styles.stepTitle}>{stepTitle}</Text>
+      <View style={styles.progressBar}>
+        {Array.from({ length: totalSteps }).map((_, i) => (
+          <View
+            key={i}
+            style={[
+              styles.progressDot,
+              i < currentStep && styles.progressDotActive,
+              i === currentStep - 1 && styles.progressDotCurrent,
+            ]}
+          />
+        ))}
+      </View>
+    </View>
+  );
+});
+
+// Step: Legal
+const LegalStep = memo(function LegalStep({ selectedReasons, onToggle }: StepProps) {
+  const hasCourtDate = useMemo(
+    () => Array.from(selectedReasons).some((id) => isCourtDateReason(id)),
+    [selectedReasons]
+  );
+  const hasPropertySettlement = selectedReasons.has('property_settlement');
+
+  const handleCourtDateToggle = useCallback(() => {
+    if (hasCourtDate) {
+      Array.from(selectedReasons).forEach((id) => {
+        if (isCourtDateReason(id)) onToggle(id);
+      });
+    } else {
+      onToggle('court_date_pending');
+    }
+  }, [hasCourtDate, selectedReasons, onToggle]);
+
+  return (
+    <View style={styles.stepContent}>
+      <Text style={styles.stepDescription}>
+        Do you have any urgent legal matters that require immediate attention?
+      </Text>
+      <View style={styles.checkboxList}>
+        <Pressable
+          style={[styles.checkboxRow, isWeb && webClickableStyles]}
+          onPress={handleCourtDateToggle}
+          accessible={true}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: hasCourtDate }}
+        >
+          <View style={[styles.checkbox, hasCourtDate && styles.checkboxChecked]}>
+            {hasCourtDate && <Text style={styles.checkboxCheck}>✓</Text>}
+          </View>
+          <View style={styles.checkboxLabelContainer}>
+            <Text style={styles.checkboxLabel}>
+              I have an upcoming court hearing regarding child support.
+            </Text>
+            <HelpTooltip
+              what="Upcoming court dates are critical events. Professional legal preparation is strongly recommended."
+              why=""
+              hideWhatLabel
+            />
+          </View>
+        </Pressable>
+
+        <Pressable
+          style={[styles.checkboxRow, isWeb && webClickableStyles]}
+          onPress={() => onToggle('property_settlement')}
+          accessible={true}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: hasPropertySettlement }}
+        >
+          <View style={[styles.checkbox, hasPropertySettlement && styles.checkboxChecked]}>
+            {hasPropertySettlement && <Text style={styles.checkboxCheck}>✓</Text>}
+          </View>
+          <View style={styles.checkboxLabelContainer}>
+            <Text style={styles.checkboxLabel}>I have a property settlement pending.</Text>
+            <HelpTooltip
+              what="Pending property settlements can significantly affect child support obligations."
+              why=""
+              hideWhatLabel
+            />
+          </View>
+        </Pressable>
+      </View>
+    </View>
+  );
+});
+
+// Step: Income
+const IncomeStep = memo(function IncomeStep({ selectedReasons, onToggle }: StepProps) {
+  const incomeReasons = useMemo(
+    () => SPECIAL_CIRCUMSTANCES.filter((r) => r.category === 'income' && r.id !== 'hiding_income'),
+    []
+  );
+
+  return (
+    <View style={styles.stepContent}>
+      <Text style={styles.stepDescription}>
+        Are there concerns about the other parent&apos;s financial situation?
+      </Text>
+      <View style={styles.checkboxList}>
+        {incomeReasons.map((reason) => (
+          <CheckboxItem
+            key={reason.id}
+            reason={reason}
+            isChecked={selectedReasons.has(reason.id)}
+            onToggle={onToggle}
+          />
+        ))}
+      </View>
+    </View>
+  );
+});
+
+// Step: Costs
+const CostsStep = memo(function CostsStep({ selectedReasons, onToggle }: StepProps) {
+  const allReasons = useMemo(() => {
+    const child = SPECIAL_CIRCUMSTANCES.filter((r) => r.category === 'child');
+    const other = SPECIAL_CIRCUMSTANCES.filter(
+      (r) => r.category === 'other' && r.id !== 'property_settlement'
+    );
+    return [...child, ...other];
+  }, []);
+
+  return (
+    <View style={styles.stepContent}>
+      <Text style={styles.stepDescription}>
+        Are there any special costs or circumstances affecting your situation?
+      </Text>
+      <View style={styles.checkboxList}>
+        {allReasons.map((reason) => (
+          <CheckboxItem
+            key={reason.id}
+            reason={reason}
+            isChecked={selectedReasons.has(reason.id)}
+            onToggle={onToggle}
+          />
+        ))}
+      </View>
+    </View>
+  );
+});
+
+// Step: Summary
+interface SummaryStepProps extends StepProps {
+  onSubmit: () => void;
+  isSubmitting: boolean;
+}
+
+const SummaryStep = memo(function SummaryStep({
+  selectedReasons,
+  onSubmit,
+  isSubmitting,
+}: SummaryStepProps) {
+  const selectedList = useMemo(() => {
+    const reasons: SpecialCircumstance[] = [];
+    selectedReasons.forEach((id) => {
+      if (isCourtDateReason(id)) {
+        reasons.push({
+          id,
+          label: 'Upcoming court hearing regarding child support',
+          description: '',
+          category: 'urgent',
+          priority: 1,
+          officialCodes: [],
+        });
+      } else {
+        const found = SPECIAL_CIRCUMSTANCES.find((r) => r.id === id);
+        if (found) reasons.push(found);
+      }
+    });
+    return reasons;
+  }, [selectedReasons]);
+
+  if (selectedReasons.size === 0) {
+    return (
+      <View style={styles.stepContent}>
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyStateText}>
+            You haven&apos;t selected any special circumstances yet.
+          </Text>
+          <Text style={styles.emptyStateHint}>
+            Go back to previous steps to select any factors that apply.
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.stepContent}>
+      <Text style={styles.stepDescription}>
+        You&apos;ve selected {selectedReasons.size} circumstance
+        {selectedReasons.size === 1 ? '' : 's'} that may warrant legal review:
+      </Text>
+      <View style={styles.summaryList}>
+        {selectedList.map((reason) => (
+          <View key={reason.id} style={styles.summaryItem}>
+            <Text style={styles.summaryBullet}>•</Text>
+            <Text style={styles.summaryText}>{reason.label}</Text>
+          </View>
+        ))}
+      </View>
+      <Pressable
+        style={[
+          styles.submitButton,
+          isSubmitting && styles.submitButtonDisabled,
+          isWeb && !isSubmitting && webClickableStyles,
+        ]}
+        onPress={onSubmit}
+        disabled={isSubmitting}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel="Talk to a Lawyer About This"
+      >
+        <Text style={styles.submitButtonText}>Talk to a Lawyer About This</Text>
+      </Pressable>
+    </View>
+  );
+});
+
+
+// Main Wizard Component
 export function SpecialCircumstancesPrompt({
   results,
   formData,
@@ -36,77 +324,41 @@ export function SpecialCircumstancesPrompt({
   onRequestInquiry,
   onSpecialCircumstancesChange,
 }: SpecialCircumstancesPromptProps) {
-  // State management
-  const [selectedReasons, setSelectedReasons] = useState<Set<string>>(() => {
-    // Initialize from formData if available
-    return new Set(formData?.selectedCircumstances ?? []);
-  });
-  const [isNavigatingFromCoA, setIsNavigatingFromCoA] = useState(false);
+  const [selectedReasons, setSelectedReasons] = useState<Set<string>>(
+    () => new Set(formData?.selectedCircumstances ?? [])
+  );
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
 
-  const [hasPropertySettlement, setHasPropertySettlement] = useState(() => {
-    // Initialize from formData
-    return (
-      formData?.selectedCircumstances?.includes('property_settlement') ?? false
-    );
-  });
-
-  // Hooks
   const router = useRouter();
   const analytics = useAnalytics();
 
-  // Sync state with formData prop when it changes
   React.useEffect(() => {
-    const reasons = formData?.selectedCircumstances ?? [];
-    setSelectedReasons(new Set(reasons));
-
-    setHasPropertySettlement(reasons.includes('property_settlement'));
+    setSelectedReasons(new Set(formData?.selectedCircumstances ?? []));
   }, [formData?.selectedCircumstances]);
 
-  // Group reasons by category (excluding urgent and new high-priority items - now handled separately)
-  const incomeReasons = SPECIAL_CIRCUMSTANCES.filter(
-    (r) => r.category === 'income' && r.id !== 'hiding_income'
-  );
-  const childReasons = SPECIAL_CIRCUMSTANCES.filter(
-    (r) => r.category === 'child'
-  );
-  const otherReasons = SPECIAL_CIRCUMSTANCES.filter(
-    (r) => r.category === 'other' && r.id !== 'property_settlement'
-  );
+  const currentStep = STEPS[currentStepIndex];
+  const isFirstStep = currentStepIndex === 0;
+  const isLastStep = currentStepIndex === STEPS.length - 1;
 
-  // Determine button state - disabled if no reasons selected or navigating
-  // Note: Court date validation now happens in the input handler, so we don't need to check it here
-  const buttonDisabled = selectedReasons.size === 0 || isNavigatingFromCoA;
-
-  // Checkbox toggle handler
-  const handleCheckboxToggle = useCallback(
+  const handleToggle = useCallback(
     (reasonId: string) => {
-      // Functional setState prevents race conditions on rapid toggling
       setSelectedReasons((prev) => {
-        const next = new Set(prev); // Create new Set (immutability)
-        const wasChecked = next.has(reasonId);
+        const next = new Set(prev);
+        if (next.has(reasonId)) next.delete(reasonId);
+        else next.add(reasonId);
 
-        if (wasChecked) {
-          next.delete(reasonId);
-        } else {
-          next.add(reasonId);
-        }
+        onSpecialCircumstancesChange?.(Array.from(next));
 
-        // Notify parent of change
-        const reasonsArray = Array.from(next);
-        onSpecialCircumstancesChange?.(reasonsArray);
-
-        // Track analytics (debouncing handled by setTimeout)
         setTimeout(() => {
           try {
             analytics.track('coa_reason_toggled', {
               reason_id: reasonId,
-              is_checked: !wasChecked,
+              is_checked: next.has(reasonId),
               total_selected: next.size,
             });
-          } catch (error) {
-            console.error('[CoAPrompt] Analytics error:', error);
-          }
+          } catch {}
         }, 100);
 
         return next;
@@ -115,46 +367,39 @@ export function SpecialCircumstancesPrompt({
     [analytics, onSpecialCircumstancesChange]
   );
 
-  // Navigation handler
-  const handleNavigateToCoA = useCallback(() => {
-    if (isNavigatingFromCoA || selectedReasons.size === 0) {
-      return;
-    }
+  const handleNext = useCallback(() => {
+    if (!isLastStep) setCurrentStepIndex((p) => p + 1);
+  }, [isLastStep]);
 
-    setIsNavigatingFromCoA(true);
+  const handleBack = useCallback(() => {
+    if (!isFirstStep) setCurrentStepIndex((p) => p - 1);
+  }, [isFirstStep]);
 
-    // Track analytics
+  const handleSubmit = useCallback(() => {
+    if (isNavigating || selectedReasons.size === 0) return;
+    setIsNavigating(true);
+
     try {
       analytics.track('coa_button_clicked', {
         reasons_selected: JSON.stringify(Array.from(selectedReasons)),
         reason_count: selectedReasons.size,
         most_important_category:
-          getHighestPriorityReason(Array.from(selectedReasons))?.category ??
-          null,
+          getHighestPriorityReason(Array.from(selectedReasons))?.category ?? null,
         annual_liability: results.finalPaymentAmount,
       });
-    } catch (error) {
-      console.error('[CoAPrompt] Analytics error:', error);
-    }
+    } catch {}
 
-    // If onRequestInquiry callback exists (web inline mode), use it instead of navigation
     if (onRequestInquiry) {
-      // Call the callback to show inline inquiry panel
       onRequestInquiry();
-      // Reset navigation state
-      setTimeout(() => setIsNavigatingFromCoA(false), 500);
+      setTimeout(() => setIsNavigating(false), 500);
       return;
     }
 
-    // Otherwise, use navigation (mobile mode)
-    // Close modal first (via callback)
     onNavigate();
 
-    // Navigate after modal animation completes
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         try {
-          // Serialize care arrangement data for each child
           const careData = (formData?.children ?? []).map((_child, index) => ({
             index,
             careA: results.childResults[index]?.roundedCareA ?? 0,
@@ -164,7 +409,6 @@ export function SpecialCircumstancesPrompt({
           router.push({
             pathname: '/lawyer-inquiry',
             params: {
-              // Existing params
               liability: results.finalPaymentAmount.toString(),
               trigger: 'change_of_assessment',
               incomeA: results.ATI_A.toString(),
@@ -172,82 +416,49 @@ export function SpecialCircumstancesPrompt({
               children: (formData?.children?.length ?? 0).toString(),
               careData: JSON.stringify(careData),
               payer: results.payer,
-
-              // NEW CoA params
               specialCircumstances: JSON.stringify(Array.from(selectedReasons)),
               priorityCircumstance:
                 getHighestPriorityReason(Array.from(selectedReasons))?.id ?? '',
-              fromBreakdown: 'true', // Track that user came from breakdown modal
+              fromBreakdown: 'true',
             },
           });
         } catch (error) {
-          console.error('[CoAPrompt] Navigation failed:', error);
           if (Platform.OS === 'web') {
-            alert(
-              'Navigation Error\n\nUnable to open inquiry form. Please try again.'
-            );
+            alert('Navigation Error\n\nUnable to open inquiry form. Please try again.');
           } else {
-            Alert.alert(
-              'Navigation Error',
-              'Unable to open inquiry form. Please try again.'
-            );
+            Alert.alert('Navigation Error', 'Unable to open inquiry form. Please try again.');
           }
         } finally {
-          setTimeout(() => setIsNavigatingFromCoA(false), 500);
+          setTimeout(() => setIsNavigating(false), 500);
         }
       });
     });
-  }, [
-    isNavigatingFromCoA,
-    selectedReasons,
-    onNavigate,
-    onRequestInquiry,
-    router,
-    results,
-    formData,
-    analytics,
-  ]);
+  }, [isNavigating, selectedReasons, onNavigate, onRequestInquiry, router, results, formData, analytics]);
 
-  // Render checkbox for a reason
-  const renderCheckbox = (reason: SpecialCircumstance) => {
-    const isChecked = selectedReasons.has(reason.id);
-
-    return (
-      <Pressable
-        key={reason.id}
-        style={[styles.checkboxRow, isWeb && webClickableStyles]}
-        onPress={() => handleCheckboxToggle(reason.id)}
-        accessible={true}
-        accessibilityRole="checkbox"
-        accessibilityState={{ checked: isChecked }}
-        accessibilityLabel={reason.label}
-        accessibilityHint={`Double tap to ${isChecked ? 'uncheck' : 'check'}`}
-      >
-        <View style={[styles.checkbox, isChecked && styles.checkboxChecked]}>
-          {isChecked && <Text style={styles.checkboxCheck}>✓</Text>}
-        </View>
-        <View style={styles.checkboxLabelContainer}>
-          <Text style={styles.checkboxLabel}>{reason.label}</Text>
-          <HelpTooltip what={reason.description} why="" hideWhatLabel />
-        </View>
-      </Pressable>
-    );
+  const renderStepContent = () => {
+    const stepProps: StepProps = { selectedReasons, onToggle: handleToggle };
+    switch (currentStep) {
+      case 'legal':
+        return <LegalStep {...stepProps} />;
+      case 'income':
+        return <IncomeStep {...stepProps} />;
+      case 'costs':
+        return <CostsStep {...stepProps} />;
+      case 'summary':
+        return <SummaryStep {...stepProps} onSubmit={handleSubmit} isSubmitting={isNavigating} />;
+      default:
+        return null;
+    }
   };
 
   return (
     <View style={styles.coaContainer}>
-      {/* Header - Collapsible */}
       <Pressable
         style={[styles.coaHeader, isWeb && webClickableStyles]}
-        onPress={() => setIsExpanded(!isExpanded)}
+        onPress={() => setIsExpanded((p) => !p)}
         accessible={true}
         accessibilityRole="button"
-        accessibilityLabel={`Do special circumstances exist? ${isExpanded ? 'Collapse' : 'Expand'} section`}
-        accessibilityHint={
-          selectedReasons.size > 0
-            ? `${selectedReasons.size} selected`
-            : undefined
-        }
+        accessibilityLabel={`Do special circumstances exist? ${isExpanded ? 'Collapse' : 'Expand'}`}
       >
         <View style={styles.headerContent}>
           <View style={styles.titleRow}>
@@ -255,222 +466,71 @@ export function SpecialCircumstancesPrompt({
             <View style={styles.headerRight}>
               {!isExpanded && selectedReasons.size > 0 && (
                 <View style={styles.selectionBadge}>
-                  <Text style={styles.selectionBadgeText}>
-                    {selectedReasons.size} selected
-                  </Text>
+                  <Text style={styles.selectionBadgeText}>{selectedReasons.size} selected</Text>
                 </View>
               )}
-              <Text
-                style={[styles.chevron, isExpanded && styles.chevronExpanded]}
-              >
-                ›
-              </Text>
+              <Text style={[styles.chevron, isExpanded && styles.chevronExpanded]}>›</Text>
             </View>
           </View>
           <Text style={styles.coaDescription}>
-            Some situations are too complex for the standard calculator. If any
-            of these apply, a lawyer can help you request adjustments.
+            Some situations are too complex for the standard calculator. If any of these apply, a
+            lawyer can help you request adjustments.
           </Text>
         </View>
       </Pressable>
 
-      {/* Expanded Content */}
       {isExpanded && (
-        <View style={styles.categorySections}>
-          {/* Legal Section */}
-          <View style={styles.legalDeadlinesSection}>
-            <View style={styles.groupHeader}>
-              <Text style={[styles.groupTitle, { color: '#1e3a8a' }]}>
-                Legal
-              </Text>
-            </View>
-            <View style={styles.checkboxList}>
-              {/* Court Date Checkbox */}
+        <View style={styles.wizardContainer}>
+          <ProgressIndicator
+            currentStep={currentStepIndex + 1}
+            totalSteps={STEPS.length}
+            stepTitle={STEP_TITLES[currentStep]}
+          />
+          {renderStepContent()}
+          <View style={styles.navigationButtons}>
+            <Pressable
+              style={[
+                styles.navButton,
+                styles.backButton,
+                isFirstStep && styles.navButtonHidden,
+                isWeb && !isFirstStep && webClickableStyles,
+              ]}
+              onPress={handleBack}
+              disabled={isFirstStep}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Go to previous step"
+            >
+              <Text style={styles.backButtonText}>Back</Text>
+            </Pressable>
+            {!isLastStep ? (
               <Pressable
-                style={[styles.checkboxRow, isWeb && webClickableStyles]}
-                onPress={() => {
-                  const hasCourtDate = Array.from(selectedReasons).some((id) =>
-                    isCourtDateReason(id)
-                  );
-
-                  if (hasCourtDate) {
-                    // Remove court date reason
-                    setSelectedReasons((prev) => {
-                      const next = new Set(prev);
-                      Array.from(next).forEach((id) => {
-                        if (isCourtDateReason(id)) {
-                          next.delete(id);
-                        }
-                      });
-
-                      // Notify parent of change
-                      const reasonsArray = Array.from(next);
-                      onSpecialCircumstancesChange?.(reasonsArray);
-
-                      return next;
-                    });
-                  } else {
-                    // Add a placeholder court date reason (will be replaced with actual date in inquiry form)
-                    setSelectedReasons((prev) => {
-                      const next = new Set(prev);
-                      next.add('court_date_pending');
-
-                      // Notify parent of change
-                      const reasonsArray = Array.from(next);
-                      onSpecialCircumstancesChange?.(reasonsArray);
-
-                      return next;
-                    });
-                  }
-                }}
+                style={[styles.navButton, styles.nextButton, isWeb && webClickableStyles]}
+                onPress={handleNext}
                 accessible={true}
-                accessibilityRole="checkbox"
-                accessibilityState={{
-                  checked: Array.from(selectedReasons).some((id) =>
-                    isCourtDateReason(id)
-                  ),
-                }}
-                accessibilityLabel="I have an upcoming court hearing regarding child support."
-                accessibilityHint="Double tap to check if you have an upcoming court hearing regarding child support"
+                accessibilityRole="button"
+                accessibilityLabel="Go to next step"
               >
-                <View
-                  style={[
-                    styles.checkbox,
-                    Array.from(selectedReasons).some((id) =>
-                      isCourtDateReason(id)
-                    ) && styles.checkboxChecked,
-                  ]}
-                >
-                  {Array.from(selectedReasons).some((id) =>
-                    isCourtDateReason(id)
-                  ) && <Text style={styles.checkboxCheck}>✓</Text>}
-                </View>
-                <View style={styles.checkboxLabelContainer}>
-                  <Text style={styles.checkboxLabel}>
-                    I have an upcoming court hearing regarding child support.
-                  </Text>
-                  <HelpTooltip
-                    what="Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance."
-                    why=""
-                    hideWhatLabel
-                  />
-                </View>
+                <Text style={styles.nextButtonText}>Next</Text>
               </Pressable>
-
-              {/* Property Settlement Checkbox */}
-              <Pressable
-                style={[styles.checkboxRow, isWeb && webClickableStyles]}
-                onPress={() => {
-                  setHasPropertySettlement(!hasPropertySettlement);
-                  handleCheckboxToggle('property_settlement');
-                }}
-                accessible={true}
-                accessibilityRole="checkbox"
-                accessibilityState={{ checked: hasPropertySettlement }}
-              >
-                <View
-                  style={[
-                    styles.checkbox,
-                    hasPropertySettlement && styles.checkboxChecked,
-                  ]}
-                >
-                  {hasPropertySettlement && (
-                    <Text style={styles.checkboxCheck}>✓</Text>
-                  )}
-                </View>
-                <View style={styles.checkboxLabelContainer}>
-                  <Text style={styles.checkboxLabel}>
-                    I have a property settlement pending.
-                  </Text>
-                  <HelpTooltip
-                    what="Pending property settlements can significantly affect child support obligations. A lawyer can help ensure the settlement is properly considered in your assessment."
-                    why=""
-                    hideWhatLabel
-                  />
-                </View>
-              </Pressable>
-            </View>
+            ) : (
+              <View style={styles.navButtonSpacer} />
+            )}
           </View>
-
-          {/* Section Divider */}
-          <View style={styles.sectionDivider} />
-
-          {/* Income Issues Group */}
-          <View style={styles.reasonGroup}>
-            <View style={styles.groupHeader}>
-              <Text style={[styles.groupTitle, { color: '#1e3a8a' }]}>
-                The Other Parent&apos;s Financials
-              </Text>
-            </View>
-            <View style={styles.checkboxList}>
-              {/* Income Reasons */}
-              {incomeReasons.map(renderCheckbox)}
-            </View>
-          </View>
-
-          {/* Costs & Other Factors Group */}
-          {(childReasons.length > 0 || otherReasons.length > 0) && (
-            <>
-              {/* Section Divider */}
-              <View style={styles.sectionDivider} />
-
-              <View style={styles.reasonGroup}>
-                <View style={styles.groupHeader}>
-                  <Text style={[styles.groupTitle, { color: '#1e3a8a' }]}>
-                    Costs & Other Factors
-                  </Text>
-                </View>
-                <View style={styles.checkboxList}>
-                  {childReasons.map(renderCheckbox)}
-                  {otherReasons.map(renderCheckbox)}
-                </View>
-              </View>
-            </>
-          )}
-        </View>
-      )}
-
-      {/* Bottom section with button - Only shown when expanded */}
-      {isExpanded && (
-        <View style={styles.coaFooter}>
-          <Pressable
-            style={[
-              styles.coaButton,
-              buttonDisabled && styles.coaButtonDisabled,
-              isWeb && !buttonDisabled && webClickableStyles,
-            ]}
-            onPress={handleNavigateToCoA}
-            disabled={buttonDisabled}
-            accessible={true}
-            accessibilityRole="button"
-            accessibilityLabel="Talk to a Lawyer About This"
-            accessibilityHint={`${selectedReasons.size} reason${selectedReasons.size === 1 ? '' : 's'
-              } selected`}
-            accessibilityState={{ disabled: buttonDisabled }}
-          >
-            <Text style={styles.coaButtonText}>
-              Talk to a Lawyer About This
-            </Text>
-          </Pressable>
-          {selectedReasons.size > 0 && (
-            <Text style={styles.selectedCount}>
-              {selectedReasons.size} reason
-              {selectedReasons.size === 1 ? '' : 's'} selected
-            </Text>
-          )}
         </View>
       )}
     </View>
   );
 }
 
+
+// Styles
 const styles = StyleSheet.create({
-  // Container - Blueprint / Inverse Blue Style
   coaContainer: {
-    backgroundColor: '#eff6ff', // blue-50
+    backgroundColor: '#eff6ff',
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#bfdbfe', // blue-200
+    borderColor: '#bfdbfe',
     paddingTop: 16,
     paddingBottom: 24,
     paddingHorizontal: 24,
@@ -483,160 +543,89 @@ const styles = StyleSheet.create({
       elevation: 2,
     }),
   },
-
-  // Header
-  coaHeader: {
-    marginBottom: 0,
-  },
-  headerContent: {
-    width: '100%',
-  },
+  coaHeader: { marginBottom: 0 },
+  headerContent: { width: '100%' },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 8,
   },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  coaTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1e3a8a', // blue-900 (Dark Brand Blue)
-    flex: 1,
-  },
-  coaDescription: {
-    fontSize: 14,
-    color: '#475569', // slate-600 (dark blue-grey)
-    lineHeight: 21, // 1.5 line height
-  },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  coaTitle: { fontSize: 18, fontWeight: '600', color: '#1e3a8a', flex: 1 },
+  coaDescription: { fontSize: 14, color: '#475569', lineHeight: 21 },
   chevron: {
     fontSize: 24,
-    color: '#2563eb', // blue-600 (Brand Blue)
+    color: '#2563eb',
     fontWeight: '600',
     transform: [{ rotate: '90deg' }],
     marginLeft: 4,
   },
-  chevronExpanded: {
-    transform: [{ rotate: '270deg' }],
-  },
+  chevronExpanded: { transform: [{ rotate: '270deg' }] },
   selectionBadge: {
-    backgroundColor: '#dbeafe', // blue-100
+    backgroundColor: '#dbeafe',
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
-  selectionBadgeText: {
-    fontSize: 12,
-    color: '#1e40af', // blue-800
-    fontWeight: '600',
-  },
-
-  // Category sections
-  categorySections: {
-    gap: 10,
-    marginTop: 20,
-  },
-
-  // Groups
-  reasonGroup: {
-    marginBottom: 0,
-  },
-  groupHeader: {
-    flexDirection: 'row',
+  selectionBadgeText: { fontSize: 12, color: '#1e40af', fontWeight: '600' },
+  wizardContainer: { marginTop: 20 },
+  progressContainer: {
     alignItems: 'center',
     marginBottom: 20,
-    gap: 12,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
   },
-  groupTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-
-  // Checkbox list
-  checkboxList: {
-    gap: 8,
-  },
-
-  // Legal Deadlines Section
-  legalDeadlinesSection: {
-    marginBottom: 0,
-  },
-
-  // Section Divider
-  sectionDivider: {
-    height: 1,
-    backgroundColor: '#e2e8f0', // slate-200 (light grey)
-    marginVertical: 12, // more space between sections
-  },
-
-  // Checkboxes
-  checkboxRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
+  progressText: { fontSize: 12, color: '#64748b', fontWeight: '500', marginBottom: 4 },
+  stepTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
+  progressBar: { flexDirection: 'row', gap: 8 },
+  progressDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#cbd5e1' },
+  progressDotActive: { backgroundColor: '#93c5fd' },
+  progressDotCurrent: { backgroundColor: '#2563eb', width: 24 },
+  stepContent: { minHeight: 200 },
+  stepDescription: { fontSize: 14, color: '#475569', lineHeight: 21, marginBottom: 16 },
+  checkboxList: { gap: 12 },
+  checkboxRow: { flexDirection: 'row', alignItems: 'flex-start' },
   checkbox: {
     width: 20,
     height: 20,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: '#d1d5db', // grey-300
-    backgroundColor: '#ffffff', // white
+    borderColor: '#d1d5db',
+    backgroundColor: '#ffffff',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
-    marginTop: 4, // Align top of checkbox with top of text
+    marginTop: 4,
   },
-  checkboxChecked: {
-    backgroundColor: '#2563EB', // blue-600 (Brand Blue)
-    borderColor: '#2563EB',
-  },
-  checkboxCheck: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  checkboxLabelContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 8,
-  },
-  checkboxLabel: {
-    fontSize: 14,
-    color: '#475569', // slate-600 - matches description text
-    lineHeight: 20,
-    flex: 1,
-    paddingRight: 4,
-  },
-
-  // Footer
-  coaFooter: {
-    marginTop: 24,
-    gap: 12,
-  },
-  coaButton: {
-    backgroundColor: '#2563EB', // blue-600 (Brand Blue)
+  checkboxChecked: { backgroundColor: '#2563EB', borderColor: '#2563EB' },
+  checkboxCheck: { color: '#ffffff', fontSize: 14, fontWeight: '700' },
+  checkboxLabelContainer: { flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  checkboxLabel: { fontSize: 14, color: '#475569', lineHeight: 20, flex: 1, paddingRight: 4 },
+  summaryList: { backgroundColor: '#ffffff', borderRadius: 8, padding: 16, marginBottom: 20, gap: 8 },
+  summaryItem: { flexDirection: 'row', alignItems: 'flex-start' },
+  summaryBullet: { fontSize: 14, color: '#2563eb', marginRight: 8, fontWeight: '600' },
+  summaryText: { fontSize: 14, color: '#334155', flex: 1, lineHeight: 20 },
+  emptyState: { alignItems: 'center', paddingVertical: 32 },
+  emptyStateText: { fontSize: 15, color: '#64748b', textAlign: 'center', marginBottom: 8 },
+  emptyStateHint: { fontSize: 13, color: '#94a3b8', textAlign: 'center' },
+  navigationButtons: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 24, gap: 12 },
+  navButton: { flex: 1, paddingVertical: 12, paddingHorizontal: 20, borderRadius: 8, alignItems: 'center' },
+  navButtonHidden: { opacity: 0 },
+  navButtonSpacer: { flex: 1 },
+  backButton: { backgroundColor: '#f1f5f9', borderWidth: 1, borderColor: '#e2e8f0' },
+  backButtonText: { fontSize: 15, fontWeight: '600', color: '#475569' },
+  nextButton: { backgroundColor: '#2563eb' },
+  nextButtonText: { fontSize: 15, fontWeight: '600', color: '#ffffff' },
+  submitButton: {
+    backgroundColor: '#2563EB',
     borderRadius: 8,
     paddingVertical: 14,
     paddingHorizontal: 24,
     alignItems: 'center',
     width: '100%',
   },
-  coaButtonDisabled: {
-    backgroundColor: '#93c5fd', // blue-300
-  },
-  coaButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  selectedCount: {
-    fontSize: 14,
-    color: '#6b7280', // grey-500
-    textAlign: 'center',
-  },
+  submitButtonDisabled: { backgroundColor: '#93c5fd' },
+  submitButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
 });

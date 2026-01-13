@@ -53,7 +53,11 @@ export function FormHeader({ config, source, returnTo, fromBreakdown }: FormHead
         <View style={headerStyles.headerTitleRow}>
           <Text style={headerStyles.headerTitle}>{config.title}</Text>
           <Pressable
-            style={headerStyles.closeButton}
+            style={({ pressed }) => [
+              headerStyles.closeButton,
+              Platform.OS === 'web' && { cursor: 'pointer' as const },
+              pressed && { opacity: 0.7 },
+            ]}
             onPress={handleClose}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             accessible={true}
