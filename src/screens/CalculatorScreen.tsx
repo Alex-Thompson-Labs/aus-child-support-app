@@ -1,15 +1,15 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    Image,
-    KeyboardAvoidingView,
-    Linking,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  Image,
+  KeyboardAvoidingView,
+  Linking,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCalculator } from '../hooks/useCalculator';
@@ -20,6 +20,7 @@ import { shadowPresets } from '../utils/shadow-styles';
 
 // ✅ STANDARD IMPORTS (Reliable)
 import { CalculatorFAQ, CalculatorForm, CalculatorResults, IncomeSupportModal } from '@/src/features/calculator';
+import { Feather } from '@expo/vector-icons';
 import { PrivacyPolicyLink } from '../components/PrivacyPolicyLink';
 import { StepProgressIndicator } from '../components/ui/StepProgressIndicator';
 
@@ -326,6 +327,26 @@ export function CalculatorScreen() {
           accessibilityRole={'main' as any}
         >
           <View style={isDesktop ? styles.bodyContainer : styles.fullWidth}>
+            {/* AI Feature Card */}
+            <Pressable
+              style={({ pressed }) => [
+                styles.aiCard,
+                pressed && { opacity: 0.9, transform: [{ scale: 0.99 }] }
+              ]}
+              onPress={() => router.push('/court-order')}
+            >
+              <View style={styles.aiCardContent}>
+                <View style={styles.aiIconContainer}>
+                  <Feather name="file-text" size={24} color="white" />
+                </View>
+                <View style={styles.aiTextContainer}>
+                  <Text style={styles.aiTitle}>AI Court Order Interpreter</Text>
+                  <Text style={styles.aiDescription}>Upload your court orders to automatically calculate care nights.</Text>
+                </View>
+                <Feather name="chevron-right" size={20} color="#334155" />
+              </View>
+            </Pressable>
+
             {/* ✅ FORM RESTORED (No Suspense) */}
             <CalculatorForm {...formProps} isDesktopWeb={isDesktop} />
 
@@ -490,5 +511,41 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
     borderBottomColor: '#f1f5f9',
+  },
+  aiCard: {
+    backgroundColor: '#eff6ff', // blue-50
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#bfdbfe', // blue-200
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+  aiCardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    gap: 16,
+  },
+  aiIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#2563eb', // blue-600
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  aiTextContainer: {
+    flex: 1,
+  },
+  aiTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1e3a8a', // blue-900
+    marginBottom: 4,
+  },
+  aiDescription: {
+    fontSize: 13,
+    color: '#334155', // slate-700
+    lineHeight: 18,
   },
 });
