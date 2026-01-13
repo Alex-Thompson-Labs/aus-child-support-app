@@ -6,9 +6,9 @@
 
 import React from 'react';
 import { Text, TextInput, View } from 'react-native';
-import { formStyles } from '../styles';
-import { VALIDATION } from '../validators';
 import type { AdditionalDetailsSectionProps } from '../types';
+import { useInquiryStyles } from '../useInquiryStyles';
+import { VALIDATION } from '../validators';
 
 export function AdditionalDetailsSection({
   message,
@@ -21,6 +21,7 @@ export function AdditionalDetailsSection({
   onBlur,
   messageRef,
 }: AdditionalDetailsSectionProps) {
+  const { formStyles, colors } = useInquiryStyles();
   const isRequired = financialTags.includes('Other');
 
   return (
@@ -36,7 +37,7 @@ export function AdditionalDetailsSection({
           touched.message && errors.message && formStyles.inputError,
         ]}
         placeholder="Is there anything specific you want the lawyer to know?..."
-        placeholderTextColor="#94a3b8"
+        placeholderTextColor={colors.textMuted}
         value={message}
         onChangeText={(value) => onTextChange('message', value, setMessage)}
         onBlur={() => onBlur('message')}

@@ -1,17 +1,20 @@
 import React, { lazy, Suspense, useState } from 'react';
 import {
   ActivityIndicator,
-  DeviceEventEmitter,
   Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  View,
+  View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { CalculationResults } from '../utils/calculator';
-import type { ComplexityFormData } from '../utils/complexity-detection';
+import {
+  ComplexityFormData,
+  detectComplexity,
+} from '../utils/complexity-detection';
+import { eventBus } from '../utils/event-bus';
 import { formatCurrency } from '../utils/formatters';
 import { MAX_MODAL_WIDTH, useResponsive } from '../utils/responsive';
 import { shadowPresets } from '../utils/shadow-styles';
@@ -60,7 +63,7 @@ const ResultsSimpleExplanation = lazy(() =>
 
 export const OPEN_BREAKDOWN_EVENT = 'openBreakdownModal';
 export const triggerOpenBreakdown = () => {
-  DeviceEventEmitter.emit(OPEN_BREAKDOWN_EVENT);
+  eventBus.emit(OPEN_BREAKDOWN_EVENT);
 };
 
 // ============================================================================
@@ -201,14 +204,11 @@ export function CalculatorResults({
 
   // Listen for event to re-open breakdown modal when returning from lawyer inquiry
   React.useEffect(() => {
-    const subscription = DeviceEventEmitter.addListener(
-      OPEN_BREAKDOWN_EVENT,
-      () => {
-        console.log('[CalculatorResults] Received open breakdown event');
-        setIsExpanded(true);
-      }
-    );
-    return () => subscription.remove();
+    const unsubscribe = eventBus.subscribe(OPEN_BREAKDOWN_EVENT, () => {
+      console.log('[CalculatorResults] Received open breakdown event');
+      setIsExpanded(true);
+    });
+    return () => unsubscribe();
   }, []);
   const insets = useSafeAreaInsets();
   const { isWeb } = useResponsive();
@@ -226,10 +226,9 @@ export function CalculatorResults({
   const [lastResultsKey, setLastResultsKey] = useState('');
 
   // Generate a unique key for the current results
-  const currentResultsKey = `${results.finalPaymentAmount}-${results.payer
-    }-${results.childResults
-      .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
-      .join('-')}-${results.ATI_A}-${results.ATI_B}`;
+  const currentResultsKey = `${results.finalPaymentAmount}-${results.payer}-${results.childResults
+    .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
+    .join('-')}-${results.ATI_A}-${results.ATI_B}`;
 
   // Update formData when results change, but preserve selected CoA reasons
   React.useEffect(() => {
@@ -253,6 +252,11 @@ export function CalculatorResults({
       }));
     }
   }, [resetTimestamp]);
+
+  // Detected complexity flags - Memoized to prevent re-calculation on every render
+  const complexityFlags = React.useMemo(() => {
+    return detectComplexity(results, localFormData);
+  }, [results, localFormData]);
 
   // Check if any children exist in the calculation
   const hasChildren = formData?.children && formData.children.length > 0;
@@ -286,10 +290,7 @@ export function CalculatorResults({
       />
 
       <SpecialCircumstancesPrompt
-        key={`${results.finalPaymentAmount}-${results.payer
-          }-${results.childResults
-            .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
-            .join('-')}-${results.ATI_A}-${results.ATI_B}`}
+        key={currentResultsKey}
         results={results}
         formData={localFormData}
         onNavigate={() => setIsExpanded(false)}
@@ -376,12 +377,11 @@ export function CalculatorResults({
             { paddingBottom: Math.max(insets.bottom, 12) },
           ]}
           accessibilityRole="button"
-          accessibilityLabel={`${results.payer === 'Neither'
-              ? 'No payment required'
-              : `${results.payer} pays ${formatCurrency(
-                results.finalPaymentAmount
-              )} per year`
-            }. Tap to view full breakdown`}
+          accessibilityLabel={
+            results.payer === 'Neither'
+              ? 'No payment required. Tap to view full breakdown'
+              : `${results.payer} pays ${formatCurrency(results.finalPaymentAmount)} per year. Tap to view full breakdown`
+          }
           accessibilityHint="Opens detailed calculation breakdown"
         >
           <View

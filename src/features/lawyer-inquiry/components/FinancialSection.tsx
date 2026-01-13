@@ -11,20 +11,20 @@ import { isWeb } from '@/src/utils/responsive';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import {
-  LayoutAnimation,
-  Platform,
-  Pressable,
-  ScrollView,
-  Switch,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  UIManager,
-  View,
+    LayoutAnimation,
+    Platform,
+    Pressable,
+    ScrollView,
+    Switch,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    UIManager,
+    View,
 } from 'react-native';
 import { FINANCIAL_TAG_OPTIONS } from '../config';
-import { financialStyles, formStyles } from '../styles';
 import type { FinancialSectionProps } from '../types';
+import { useInquiryStyles } from '../useInquiryStyles';
 
 // Enable LayoutAnimation for Android
 if (
@@ -83,6 +83,7 @@ export function FinancialSection({
   onTextChange,
   onBlur,
 }: FinancialSectionProps) {
+  const { financialStyles, formStyles, colors } = useInquiryStyles();
   const [isSummaryOpen, setIsSummaryOpen] = useState(true);
   const [countrySearch, setCountrySearch] = useState('');
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
@@ -117,7 +118,7 @@ export function FinancialSection({
         <Ionicons
           name={isSummaryOpen ? 'chevron-down' : 'chevron-forward'}
           size={16}
-          color="#1e3a8a"
+          color={colors.primaryDark}
           style={{ marginLeft: 'auto' }}
         />
       </TouchableOpacity>
@@ -254,7 +255,7 @@ export function FinancialSection({
                 formStyles.inputError,
               ]}
               placeholder="e.g. 75000"
-              placeholderTextColor="#64748b"
+              placeholderTextColor={colors.textMuted}
               value={manualIncomeA}
               onChangeText={(text) => {
                 const val = text.replace(/[^0-9]/g, '');
@@ -286,7 +287,7 @@ export function FinancialSection({
                 formStyles.inputError,
               ]}
               placeholder="e.g. 60000"
-              placeholderTextColor="#64748b"
+              placeholderTextColor={colors.textMuted}
               value={manualIncomeB}
               onChangeText={(text) => {
                 const val = text.replace(/[^0-9]/g, '');
@@ -316,7 +317,7 @@ export function FinancialSection({
                 formStyles.inputError,
               ]}
               placeholder="e.g. 2"
-              placeholderTextColor="#64748b"
+              placeholderTextColor={colors.textMuted}
               value={manualChildren}
               onChangeText={(text) => {
                 const val = text.replace(/[^0-9]/g, '');
@@ -471,7 +472,7 @@ export function FinancialSection({
               formStyles.inputError,
             ]}
             placeholder="Search for a country..."
-            placeholderTextColor="#64748b"
+            placeholderTextColor={colors.textMuted}
             value={otherParentCountry || countrySearch}
             onChangeText={(text) => {
               setCountrySearch(text);

@@ -22,7 +22,7 @@ import { SuccessView } from './components/SuccessView';
 import { TrustBadge } from './components/TrustBadge';
 import { useInquiryForm } from './hooks/useInquiryForm';
 import { useRouteParams } from './hooks/useRouteParams';
-import { containerStyles } from './styles';
+import { useInquiryStyles } from './useInquiryStyles';
 
 /**
  * Get partner display name if the partner ID is valid.
@@ -37,6 +37,9 @@ function getPartnerName(partnerId: string | undefined): string | undefined {
 export default function LawyerInquiryScreen() {
   // Parse route parameters
   const params = useRouteParams();
+
+  // Get dynamic styles
+  const { containerStyles } = useInquiryStyles();
 
   // Initialize form state and handlers
   const form = useInquiryForm({

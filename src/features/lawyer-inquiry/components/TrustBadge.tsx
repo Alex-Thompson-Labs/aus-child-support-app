@@ -6,9 +6,11 @@
 
 import React from 'react';
 import { Text, View } from 'react-native';
-import { headerStyles } from '../styles';
+import { useInquiryStyles } from '../useInquiryStyles';
 
 export function TrustBadge() {
+  const { headerStyles } = useInquiryStyles();
+
   return (
     <View style={headerStyles.trustBadgeWrapper}>
       <View style={headerStyles.trustBadge}>

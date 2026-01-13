@@ -169,10 +169,17 @@ export function SmartConversionFooter({
   const [isNavigating, setIsNavigating] = React.useState(false);
 
   // Determine which card to show, passing formState for comprehensive edge case detection
-  const formState = formData
-    ? { supportA: formData.supportA ?? false, supportB: formData.supportB ?? false }
-    : undefined;
-  const cardVariant = determineCardVariant(results, carePercentages, formState);
+  const formState = React.useMemo(() => (formData
+    ? {
+      supportA: formData.supportA ?? false,
+      supportB: formData.supportB ?? false,
+    }
+    : undefined), [formData]);
+
+  const cardVariant = React.useMemo(() => {
+    return determineCardVariant(results, carePercentages, formState);
+  }, [results, carePercentages, formState]);
+
   const cardConfig = CARD_CONFIGS[cardVariant];
 
   /**

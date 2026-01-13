@@ -4,12 +4,12 @@
  * Form inputs for name, email, phone, and postcode.
  */
 
+import { isWeb } from '@/src/utils/responsive';
 import React from 'react';
 import { Text, TextInput, View } from 'react-native';
-import { isWeb } from '@/src/utils/responsive';
-import { formStyles } from '../styles';
-import { VALIDATION } from '../validators';
 import type { PersonalInfoSectionProps } from '../types';
+import { useInquiryStyles } from '../useInquiryStyles';
+import { VALIDATION } from '../validators';
 
 export function PersonalInfoSection({
   name,
@@ -29,6 +29,8 @@ export function PersonalInfoSection({
   phoneRef,
   messageRef,
 }: PersonalInfoSectionProps) {
+  const { formStyles, colors } = useInquiryStyles();
+
   return (
     <View
       accessibilityRole={'group' as any}
@@ -44,7 +46,7 @@ export function PersonalInfoSection({
             touched.name && errors.name && formStyles.inputError,
           ]}
           placeholder="Your Name *"
-          placeholderTextColor="#64748b"
+          placeholderTextColor={colors.placeholder}
           value={name}
           onChangeText={(value) => onTextChange('name', value, setName)}
           onBlur={() => onBlur('name')}
@@ -72,7 +74,7 @@ export function PersonalInfoSection({
             touched.email && errors.email && formStyles.inputError,
           ]}
           placeholder="Email *"
-          placeholderTextColor="#64748b"
+          placeholderTextColor={colors.placeholder}
           value={email}
           onChangeText={(value) => onTextChange('email', value, setEmail)}
           onBlur={() => onBlur('email')}
@@ -101,7 +103,7 @@ export function PersonalInfoSection({
             touched.phone && errors.phone && formStyles.inputError,
           ]}
           placeholder="Phone (optional)"
-          placeholderTextColor="#64748b"
+          placeholderTextColor={colors.placeholder}
           value={phone}
           onChangeText={(value) => onTextChange('phone', value, setPhone)}
           onBlur={() => onBlur('phone')}
@@ -127,7 +129,7 @@ export function PersonalInfoSection({
             touched.postcode && errors.postcode && formStyles.inputError,
           ]}
           placeholder="Postcode *"
-          placeholderTextColor="#64748b"
+          placeholderTextColor={colors.placeholder}
           value={postcode}
           onChangeText={(value) => onTextChange('postcode', value, setPostcode)}
           onBlur={() => onBlur('postcode')}

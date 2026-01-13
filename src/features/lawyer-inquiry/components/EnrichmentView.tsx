@@ -30,12 +30,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COURT_DATE_ENRICHMENT, getEnrichmentFactors } from '../config';
-import {
-    buttonStyles,
-    containerStyles,
-    enrichmentStyles,
-} from '../styles';
 import type { EnrichmentViewProps } from '../types';
+import { useInquiryStyles } from '../useInquiryStyles';
 
 export function EnrichmentView({
   reason,
@@ -52,6 +48,258 @@ export function EnrichmentView({
   onEnrichmentCourtDateChange,
   showSuccess,
 }: EnrichmentViewProps) {
+  const { containerStyles, enrichmentStyles, buttonStyles, colors, isDark } = useInquiryStyles();
+
+  // Dynamic styles for estimator and date picker
+  const estimatorStyles = React.useMemo(() => StyleSheet.create({
+    estimatorCard: {
+      backgroundColor: isDark ? '#1e3a5f' : '#eff6ff',
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 20,
+      borderWidth: 1,
+      borderColor: isDark ? '#3b82f6' : '#bfdbfe',
+    },
+    estimatorTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: isDark ? '#93c5fd' : '#1e40af',
+      marginBottom: 8,
+    },
+    estimatorDescription: {
+      fontSize: 14,
+      color: isDark ? '#60a5fa' : '#3b82f6',
+      marginBottom: 12,
+      lineHeight: 20,
+    },
+    getEstimateButton: {
+      backgroundColor: '#3b82f6',
+      borderRadius: 8,
+      paddingVertical: 12,
+      alignItems: 'center',
+    },
+    getEstimateText: {
+      color: '#ffffff',
+      fontSize: 15,
+      fontWeight: '600',
+    },
+    resultContainer: {
+      alignItems: 'center',
+    },
+    payerLabel: {
+      fontSize: 16,
+      fontWeight: '600',
+      marginBottom: 4,
+      color: isDark ? '#93c5fd' : '#1e40af',
+    },
+    resultAmount: {
+      fontSize: 28,
+      fontWeight: '700',
+      color: isDark ? '#93c5fd' : '#1e40af',
+      marginBottom: 12,
+    },
+    warningBox: {
+      backgroundColor: isDark ? '#422006' : '#fef3c7',
+      borderRadius: 8,
+      padding: 12,
+      marginBottom: 12,
+      borderWidth: 1,
+      borderColor: isDark ? '#a16207' : '#fcd34d',
+    },
+    warningText: {
+      fontSize: 13,
+      color: isDark ? '#fcd34d' : '#92400e',
+      lineHeight: 18,
+    },
+    warningBold: {
+      fontWeight: '700',
+    },
+    recalculateButton: {
+      paddingVertical: 8,
+    },
+    recalculateText: {
+      fontSize: 14,
+      color: '#3b82f6',
+      fontWeight: '500',
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+    },
+    modalContent: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 24,
+      width: '100%',
+      maxWidth: 400,
+    },
+    modalTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: colors.textSecondary,
+      marginBottom: 20,
+      textAlign: 'center',
+    },
+    inputGroup: {
+      marginBottom: 20,
+    },
+    inputLabel: {
+      fontSize: 15,
+      fontWeight: '500',
+      color: colors.textSecondary,
+      marginBottom: 10,
+      lineHeight: 22,
+    },
+    textInput: {
+      backgroundColor: colors.inputBackground,
+      borderWidth: 1,
+      borderColor: colors.inputBorder,
+      borderRadius: 8,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      fontSize: 16,
+      color: colors.inputText,
+    },
+    ageToggleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: 8,
+    },
+    ageToggleLabel: {
+      fontSize: 15,
+      color: colors.textMuted,
+    },
+    ageToggleButtons: {
+      flexDirection: 'row',
+      gap: 8,
+    },
+    ageButton: {
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 6,
+      backgroundColor: colors.surfaceSubtle,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    ageButtonActive: {
+      backgroundColor: '#3b82f6',
+      borderColor: '#3b82f6',
+    },
+    ageButtonText: {
+      fontSize: 14,
+      color: colors.textMuted,
+      fontWeight: '500',
+    },
+    ageButtonTextActive: {
+      color: '#ffffff',
+    },
+    ageInputContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    ageInput: {
+      width: 50,
+      paddingHorizontal: 8,
+      paddingVertical: 8,
+      fontSize: 16,
+      textAlign: 'center',
+      color: colors.inputText,
+      borderWidth: 1,
+      borderColor: colors.inputBorder,
+      borderRadius: 6,
+      backgroundColor: colors.inputBackground,
+    },
+    ageRangeHint: {
+      fontSize: 12,
+      color: colors.textMuted,
+      fontWeight: '500',
+    },
+    childRow: {
+      marginTop: 12,
+      paddingBottom: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.borderSubtle,
+    },
+    childLabel: {
+      fontSize: 15,
+      fontWeight: '600',
+      color: colors.textSecondary,
+      marginBottom: 8,
+    },
+    nightsInputRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: 8,
+    },
+    nightsLabel: {
+      fontSize: 15,
+      color: colors.textMuted,
+    },
+    nightsInput: {
+      width: 70,
+      height: 40,
+      backgroundColor: colors.inputBackground,
+      borderWidth: 1,
+      borderColor: colors.inputBorder,
+      borderRadius: 6,
+      paddingHorizontal: 12,
+      fontSize: 16,
+      textAlign: 'center',
+      color: colors.inputText,
+    },
+    modalButtons: {
+      gap: 12,
+      marginTop: 8,
+    },
+    cancelButton: {
+      paddingVertical: 14,
+      alignItems: 'center',
+    },
+    cancelButtonText: {
+      fontSize: 15,
+      color: colors.textMuted,
+      fontWeight: '500',
+    },
+  }), [colors, isDark]);
+
+  const datePickerStyles = React.useMemo(() => StyleSheet.create({
+    container: {
+      marginLeft: 36,
+      marginTop: 8,
+      marginBottom: 8,
+    },
+    input: {
+      backgroundColor: colors.inputBackground,
+      borderRadius: 8,
+      padding: 12,
+      borderWidth: 1.5,
+      borderColor: colors.inputBorder,
+      justifyContent: 'center',
+      minHeight: 48,
+    },
+    inputError: {
+      borderColor: colors.errorBorder,
+    },
+    inputText: {
+      fontSize: 16,
+      color: colors.inputText,
+    },
+    inputPlaceholder: {
+      color: colors.textMuted,
+    },
+    errorText: {
+      color: colors.error,
+      fontSize: 14,
+      marginTop: 4,
+    },
+  }), [colors]);
+
   // Calculator state
   const [showCalculator, setShowCalculator] = useState(false);
   // Mobile date picker state
@@ -490,11 +738,11 @@ export function EnrichmentView({
                           onChange={handleWebDateInputChange}
                           disabled={isUpdating}
                           style={{
-                            backgroundColor: '#ffffff',
-                            color: enrichmentCourtDate ? '#1a202c' : '#9ca3af',
+                            backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                            color: enrichmentCourtDate ? (isDark ? '#f1f5f9' : '#1a202c') : (isDark ? '#64748b' : '#9ca3af'),
                             borderRadius: '8px',
                             padding: '12px',
-                            border: `1.5px solid ${courtDateError ? '#ef4444' : '#e2e8f0'}`,
+                            border: `1.5px solid ${courtDateError ? (isDark ? '#ef4444' : '#ef4444') : (isDark ? '#475569' : '#e2e8f0')}`,
                             fontSize: '16px',
                             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                             width: '100%',
@@ -689,257 +937,3 @@ export function EnrichmentView({
     </SafeAreaView>
   );
 }
-
-// Styles for the estimator feature
-const estimatorStyles = StyleSheet.create({
-  estimatorCard: {
-    backgroundColor: '#eff6ff', // blue-50
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#bfdbfe', // blue-200
-  },
-  estimatorTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1e40af', // blue-800
-    marginBottom: 8,
-  },
-  estimatorDescription: {
-    fontSize: 14,
-    color: '#3b82f6', // blue-500
-    marginBottom: 12,
-    lineHeight: 20,
-  },
-  getEstimateButton: {
-    backgroundColor: '#3b82f6', // blue-500
-    borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  getEstimateText: {
-    color: '#ffffff',
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  resultContainer: {
-    alignItems: 'center',
-  },
-  payerLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
-    color: '#1e40af', // blue-800
-  },
-  resultAmount: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1e40af', // blue-800
-    marginBottom: 12,
-  },
-  warningBox: {
-    backgroundColor: '#fef3c7', // amber-100
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#fcd34d', // amber-300
-  },
-  warningText: {
-    fontSize: 13,
-    color: '#92400e', // amber-800
-    lineHeight: 18,
-  },
-  warningBold: {
-    fontWeight: '700',
-  },
-  recalculateButton: {
-    paddingVertical: 8,
-  },
-  recalculateText: {
-    fontSize: 14,
-    color: '#3b82f6', // blue-500
-    fontWeight: '500',
-  },
-  // Modal styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  modalContent: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 24,
-    width: '100%',
-    maxWidth: 400,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1a202c',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  inputLabel: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: '#374151', // grey-700
-    marginBottom: 10,
-    lineHeight: 22,
-  },
-  textInput: {
-    backgroundColor: '#f9fafb', // grey-50
-    borderWidth: 1,
-    borderColor: '#d1d5db', // grey-300
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: '#1a202c',
-  },
-  ageToggleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 8,
-  },
-  ageToggleLabel: {
-    fontSize: 15,
-    color: '#4b5563', // grey-600
-  },
-  ageToggleButtons: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  ageButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 6,
-    backgroundColor: '#f3f4f6', // grey-100
-    borderWidth: 1,
-    borderColor: '#d1d5db', // grey-300
-  },
-  ageButtonActive: {
-    backgroundColor: '#3b82f6', // blue-500
-    borderColor: '#3b82f6',
-  },
-  ageButtonText: {
-    fontSize: 14,
-    color: '#4b5563', // grey-600
-    fontWeight: '500',
-  },
-  ageButtonTextActive: {
-    color: '#ffffff',
-  },
-  // Age input styles (new)
-  ageInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  ageInput: {
-    width: 50,
-    paddingHorizontal: 8,
-    paddingVertical: 8,
-    fontSize: 16,
-    textAlign: 'center',
-    color: '#1a202c',
-    borderWidth: 1,
-    borderColor: '#d1d5db', // grey-300
-    borderRadius: 6,
-    backgroundColor: '#ffffff',
-  },
-  ageRangeHint: {
-    fontSize: 12,
-    color: '#6b7280', // grey-500
-    fontWeight: '500',
-  },
-  // Per-child row styles
-  childRow: {
-    marginTop: 12,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb', // grey-200
-  },
-  childLabel: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#374151', // grey-700
-    marginBottom: 8,
-  },
-  nightsInputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 8,
-  },
-  nightsLabel: {
-    fontSize: 15,
-    color: '#4b5563', // grey-600
-  },
-  nightsInput: {
-    width: 70,
-    height: 40,
-    backgroundColor: '#f9fafb', // grey-50
-    borderWidth: 1,
-    borderColor: '#d1d5db', // grey-300
-    borderRadius: 6,
-    paddingHorizontal: 12,
-    fontSize: 16,
-    textAlign: 'center',
-    color: '#1a202c',
-  },
-  modalButtons: {
-    gap: 12,
-    marginTop: 8,
-  },
-  cancelButton: {
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  cancelButtonText: {
-    fontSize: 15,
-    color: '#6b7280', // grey-500
-    fontWeight: '500',
-  },
-});
-
-// Styles for the date picker
-const datePickerStyles = StyleSheet.create({
-  container: {
-    marginLeft: 36, // Align with checkbox label
-    marginTop: 8,
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    padding: 12,
-    borderWidth: 1.5,
-    borderColor: '#e2e8f0',
-    justifyContent: 'center',
-    minHeight: 48,
-  },
-  inputError: {
-    borderColor: '#ef4444', // red-500
-  },
-  inputText: {
-    fontSize: 16,
-    color: '#1a202c',
-  },
-  inputPlaceholder: {
-    color: '#9ca3af', // grey-400 - lighter placeholder
-  },
-  errorText: {
-    color: '#ef4444', // red-500
-    fontSize: 14,
-    marginTop: 4,
-  },
-});

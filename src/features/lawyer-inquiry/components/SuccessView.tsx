@@ -8,7 +8,7 @@ import { useRouter } from 'expo-router';
 import React, { useCallback } from 'react';
 import { Linking, Platform, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { successStyles } from '../styles';
+import { useInquiryStyles } from '../useInquiryStyles';
 
 interface SuccessViewProps {
   returnTo?: string;
@@ -17,6 +17,7 @@ interface SuccessViewProps {
 
 export function SuccessView({ returnTo, partnerName }: SuccessViewProps) {
   const router = useRouter();
+  const { successStyles } = useInquiryStyles();
 
   const handleReturnToCalculator = useCallback(() => {
     try {

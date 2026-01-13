@@ -8,11 +8,12 @@ import { triggerOpenBreakdown } from '@/src/components/CalculatorResults';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
-import { headerStyles } from '../styles';
 import type { FormHeaderProps } from '../types';
+import { useInquiryStyles } from '../useInquiryStyles';
 
 export function FormHeader({ config, source, returnTo, fromBreakdown }: FormHeaderProps) {
   const router = useRouter();
+  const { headerStyles } = useInquiryStyles();
 
   const handleClose = () => {
     // Debug logging for troubleshooting

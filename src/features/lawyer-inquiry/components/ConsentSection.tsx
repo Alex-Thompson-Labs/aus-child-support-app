@@ -4,11 +4,11 @@
  * Consent checkbox, privacy policy link, and submit button.
  */
 
+import { PrivacyPolicyLink } from '@/src/components/PrivacyPolicyLink';
 import React from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
-import { PrivacyPolicyLink } from '@/src/components/PrivacyPolicyLink';
-import { checkboxStyles, buttonStyles, formStyles } from '../styles';
 import type { ConsentSectionProps } from '../types';
+import { useInquiryStyles } from '../useInquiryStyles';
 
 export function ConsentSection({
   consent,
@@ -19,6 +19,8 @@ export function ConsentSection({
   buttonText,
   onSubmit,
 }: ConsentSectionProps) {
+  const { checkboxStyles, buttonStyles, formStyles, colors } = useInquiryStyles();
+
   return (
     <>
       {/* Consent Checkbox */}
@@ -75,7 +77,7 @@ export function ConsentSection({
       >
         {isSubmitting ? (
           <View style={buttonStyles.buttonContent}>
-            <ActivityIndicator color="#ffffff" size="small" />
+            <ActivityIndicator color={colors.textInverse} size="small" />
             <Text style={buttonStyles.buttonText}>Submitting...</Text>
           </View>
         ) : (

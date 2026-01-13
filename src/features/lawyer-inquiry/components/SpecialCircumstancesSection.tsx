@@ -6,12 +6,14 @@
 
 import React from 'react';
 import { Text, View } from 'react-native';
-import { circumstancesStyles } from '../styles';
 import type { SpecialCircumstancesSectionProps } from '../types';
+import { useInquiryStyles } from '../useInquiryStyles';
 
 export function SpecialCircumstancesSection({
   circumstances,
 }: SpecialCircumstancesSectionProps) {
+  const { circumstancesStyles } = useInquiryStyles();
+
   if (circumstances.length === 0) {
     return null;
   }

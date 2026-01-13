@@ -6,7 +6,8 @@
  */
 
 import Accordion from '@/src/components/ui/Accordion';
-import React from 'react';
+import { useAppTheme } from '@/src/theme';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 const LAWYER_INQUIRY_FAQS = [
@@ -33,6 +34,26 @@ const LAWYER_INQUIRY_FAQS = [
 ];
 
 export function FAQSection() {
+    const { colors } = useAppTheme();
+
+    const styles = useMemo(() => StyleSheet.create({
+        container: {
+            marginTop: 24,
+            marginBottom: 16,
+        },
+        title: {
+            fontSize: 18,
+            fontWeight: '600',
+            color: colors.textSecondary,
+            marginBottom: 16,
+        },
+        answerText: {
+            fontSize: 14,
+            lineHeight: 22,
+            color: colors.textMuted,
+        },
+    }), [colors]);
+
     return (
         <View style={styles.container}>
             {/* @ts-ignore - Web-only ARIA attributes */}
@@ -47,21 +68,3 @@ export function FAQSection() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        marginTop: 24,
-        marginBottom: 16,
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#1e293b',
-        marginBottom: 16,
-    },
-    answerText: {
-        fontSize: 14,
-        lineHeight: 22,
-        color: '#475569',
-    },
-});
