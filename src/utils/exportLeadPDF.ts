@@ -130,6 +130,22 @@ function getCategoryInfo(category: string): {
 /**
  * Generate HTML content for PDF
  */
+/**
+ * Escape HTML special characters to prevent XSS
+ */
+function escapeHtml(unsafe: string | null | undefined): string {
+  if (!unsafe) return '';
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+/**
+ * Generate HTML content for PDF
+ */
 function generateLeadHTML(lead: LeadSubmission, userId: string = 'system'): string {
   // Extract Special Circumstances from complexity_reasons array and convert IDs to full objects
   const circumstanceIds = lead.complexity_reasons || [];
@@ -196,9 +212,9 @@ function generateLeadHTML(lead: LeadSubmission, userId: string = 'system'): stri
         <div style="margin-bottom: 16px; padding: 12px; background: #f9fafb; border-left: 4px solid ${categoryInfo.color}; border-radius: 4px;">
           <div style="display: flex; align-items: start; margin-bottom: 6px;">
             <span style="font-size: 18px; margin-right: 8px;">${categoryInfo.emoji}</span>
-            <strong style="color: #1f2937; font-size: 14px;">${r.label}</strong>
+            <strong style="color: #1f2937; font-size: 14px;">${escapeHtml(r.label)}</strong>
           </div>
-          <p style="color: #6b7280; font-size: 13px; margin: 6px 0 6px 26px; line-height: 1.5;">${r.description}</p>
+          <p style="color: #6b7280; font-size: 13px; margin: 6px 0 6px 26px; line-height: 1.5;">${escapeHtml(r.description)}</p>
           ${r.officialCodes ? `<p style="color: #6b7280; font-size: 11px; font-style: italic; margin: 4px 0 0 26px;">Official grounds: ${r.officialCodes}</p>` : ''}
         </div>
       `
@@ -243,7 +259,7 @@ function generateLeadHTML(lead: LeadSubmission, userId: string = 'system'): stri
       <h3 style="color: #1f2937; font-size: 16px; font-weight: 600; margin-bottom: 12px;">Complexity Triggers</h3>
       <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px; border-radius: 4px;">
         <ul style="margin: 0; padding-left: 20px; color: #92400e;">
-          ${lead.complexity_reasons.map((reason) => `<li style="margin-bottom: 4px;">${reason}</li>`).join('')}
+          ${lead.complexity_reasons.map((reason) => `<li style="margin-bottom: 4px;">${escapeHtml(reason)}</li>`).join('')}
         </ul>
       </div>
     </div>
@@ -256,7 +272,7 @@ function generateLeadHTML(lead: LeadSubmission, userId: string = 'system'): stri
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Lead Report - ${lead.parent_name}</title>
+        <title>Lead Report - ${escapeHtml(lead.parent_name)}</title>
         <style>
           * {
             margin: 0;
@@ -304,7 +320,7 @@ function generateLeadHTML(lead: LeadSubmission, userId: string = 'system'): stri
         <!-- Watermark -->
         <div class="watermark">
           CONFIDENTIAL
-          <span class="watermark-text">Exported by ${userId} on ${new Date().toLocaleString('en-AU')}</span>
+          <span class="watermark-text">Exported by ${escapeHtml(userId)} on ${new Date().toLocaleString('en-AU')}</span>
         </div>
 
         <!-- Header -->
@@ -317,7 +333,7 @@ function generateLeadHTML(lead: LeadSubmission, userId: string = 'system'): stri
               Generated: ${formatDate(new Date().toISOString())}
             </p>
             <div style="display: inline-block; padding: 6px 12px; background: ${getStatusColor(lead.status)}; color: white; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase;">
-              ${lead.status || 'new'}
+              ${escapeHtml(lead.status || 'new')}
             </div>
           </div>
           <p style="color: #6b7280; font-size: 12px; margin-top: 8px; font-family: monospace;">
@@ -333,12 +349,12 @@ function generateLeadHTML(lead: LeadSubmission, userId: string = 'system'): stri
           <div style="background: #f9fafb; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
             <div style="margin-bottom: 12px;">
               <strong style="color: #6b7280; font-size: 13px; display: block; margin-bottom: 4px;">Name:</strong>
-              <p style="color: #1f2937; font-size: 16px; font-weight: 600;">${lead.parent_name}</p>
+              <p style="color: #1f2937; font-size: 16px; font-weight: 600;">${escapeHtml(lead.parent_name)}</p>
             </div>
             <div style="margin-bottom: 12px;">
               <strong style="color: #6b7280; font-size: 13px; display: block; margin-bottom: 4px;">Email:</strong>
               <p style="color: #2563eb; font-size: 14px;">
-                <a href="mailto:${lead.parent_email}" style="color: #2563eb; text-decoration: none;">${lead.parent_email}</a>
+                <a href="mailto:${escapeHtml(lead.parent_email)}" style="color: #2563eb; text-decoration: none;">${escapeHtml(lead.parent_email)}</a>
               </p>
             </div>
             ${lead.parent_phone
@@ -346,7 +362,7 @@ function generateLeadHTML(lead: LeadSubmission, userId: string = 'system'): stri
               <div style="margin-bottom: 12px;">
                 <strong style="color: #6b7280; font-size: 13px; display: block; margin-bottom: 4px;">Phone:</strong>
                 <p style="color: #1f2937; font-size: 14px;">
-                  <a href="tel:${lead.parent_phone}" style="color: #2563eb; text-decoration: none;">${lead.parent_phone}</a>
+                  <a href="tel:${escapeHtml(lead.parent_phone)}" style="color: #2563eb; text-decoration: none;">${escapeHtml(lead.parent_phone)}</a>
                 </p>
               </div>
             `
@@ -356,7 +372,7 @@ function generateLeadHTML(lead: LeadSubmission, userId: string = 'system'): stri
       ? `
               <div style="margin-bottom: 12px;">
                 <strong style="color: #6b7280; font-size: 13px; display: block; margin-bottom: 4px;">Location:</strong>
-                <p style="color: #1f2937; font-size: 14px;">${lead.location}</p>
+                <p style="color: #1f2937; font-size: 14px;">${escapeHtml(lead.location)}</p>
               </div>
             `
       : ''
@@ -416,7 +432,7 @@ function generateLeadHTML(lead: LeadSubmission, userId: string = 'system'): stri
               💬 Parent's Message
             </h2>
             <div style="background: #f9fafb; padding: 20px; border-left: 4px solid #2563eb; border-radius: 4px;">
-              <p style="color: #374151; font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${lead.parent_message}</p>
+              <p style="color: #374151; font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${escapeHtml(lead.parent_message)}</p>
             </div>
           </div>
         `
@@ -431,7 +447,7 @@ function generateLeadHTML(lead: LeadSubmission, userId: string = 'system'): stri
               📝 Admin Notes
             </h2>
             <div style="background: #f1f5f9; padding: 20px; border-left: 4px solid #64748b; border-radius: 4px;">
-              <p style="color: #334155; font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${lead.notes}</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${escapeHtml(lead.notes)}</p>
             </div>
           </div>
         `

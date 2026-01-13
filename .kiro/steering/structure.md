@@ -20,14 +20,18 @@
 │   └── partner/[slug].tsx  # Partner landing pages
 │
 ├── src/                    # Domain logic (platform-agnostic)
-│   ├── components/         # React components
-│   │   ├── Calculator*.tsx # Form, Results, Summary
-│   │   ├── Smart*.tsx      # Conversion components
-│   │   ├── breakdown/      # Results breakdown cards
-│   │   ├── results/        # Results display components
+│   ├── components/         # Shared components
 │   │   ├── seo/            # SEO components (PageSEO, NoIndex)
 │   │   └── ui/             # Generic UI (Accordion, Breadcrumb, etc.)
 │   ├── features/           # Feature modules
+│   │   ├── calculator/     # Calculator feature
+│   │   │   ├── components/ # Form, Results, Breakdown components
+│   │   │   │   ├── breakdown/  # Step breakdown cards
+│   │   │   │   └── results/    # Results display components
+│   │   │   └── index.ts    # Public API exports
+│   │   ├── conversion/     # Lead conversion feature
+│   │   │   ├── components/ # SmartConversionFooter, SpecialCircumstancesPrompt
+│   │   │   └── index.ts    # Public API exports
 │   │   └── lawyer-inquiry/ # Inquiry form feature
 │   │       ├── components/ # Section components
 │   │       ├── hooks/      # Form hooks
@@ -77,6 +81,12 @@
 ### Feature Organization
 - Self-contained features in `src/features/`
 - Each feature has: components, hooks, types, config
+- Import from feature index: `import { CalculatorForm } from '@/src/features/calculator'`
+
+### Feature Modules
+- `calculator/` - Form inputs, results display, breakdown steps
+- `conversion/` - SmartConversionFooter, SpecialCircumstancesPrompt
+- `lawyer-inquiry/` - Lead capture form and validation
 
 ### Business Logic
 - Calculation formulas in `src/utils/child-support-*.ts`

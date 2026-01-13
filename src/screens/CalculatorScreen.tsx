@@ -1,15 +1,15 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Image,
-  KeyboardAvoidingView,
-  Linking,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Image,
+    KeyboardAvoidingView,
+    Linking,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCalculator } from '../hooks/useCalculator';
@@ -19,10 +19,7 @@ import { useResponsive } from '../utils/responsive';
 import { shadowPresets } from '../utils/shadow-styles';
 
 // ✅ STANDARD IMPORTS (Reliable)
-import { CalculatorFAQ } from '../components/calculator/CalculatorFAQ';
-import { CalculatorForm } from '../components/CalculatorForm';
-import { CalculatorResults } from '../components/CalculatorResults';
-import { IncomeSupportModal } from '../components/IncomeSupportModal';
+import { CalculatorFAQ, CalculatorForm, CalculatorResults, IncomeSupportModal } from '@/src/features/calculator';
 import { PrivacyPolicyLink } from '../components/PrivacyPolicyLink';
 import { StepProgressIndicator } from '../components/ui/StepProgressIndicator';
 

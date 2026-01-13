@@ -27,7 +27,7 @@ export function validatePostcode(postcode: string): string | undefined {
   const sanitized = postcode.trim();
 
   if (!sanitized) {
-    return 'Postcode is required';
+    return undefined;
   }
 
   // Australian postcode validation: exactly 4 digits
@@ -53,7 +53,17 @@ export function validateCourtDate(
     return 'Court date is required';
   }
 
-  // Date is already a valid Date object from the picker
+  // Check if date is in the past (allow today)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const checkDate = new Date(courtDate);
+  checkDate.setHours(0, 0, 0, 0);
+
+  if (checkDate < today) {
+    return 'Court date cannot be in the past';
+  }
+
   return undefined;
 }
 

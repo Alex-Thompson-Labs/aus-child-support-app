@@ -1,0 +1,123 @@
+/**
+ * Supabase Client Configuration
+ *
+ * LAZY-LOADED for optimal LCP performance.
+ * Supabase client is only initialized when actually needed (user action).
+ *
+ * Security:
+ * - Uses anon key (safe for client-side)
+ * - Row Level Security (RLS) policies control access
+ * - Anonymous users can only INSERT leads
+ * - Admin access requires authentication
+ */
+
+import type { SupabaseClient } from '@supabase/supabase-js';
+import Constants from 'expo-constants';
+
+// Cache the client instance once initialized
+let supabaseInstance: SupabaseClient | null = null;
+
+/**
+ * Get Supabase credentials from environment variables
+ */
+function getSupabaseCredentials() {
+    const supabaseUrl =
+        Constants.expoConfig?.extra?.supabaseUrl ||
+        process.env.EXPO_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey =
+        Constants.expoConfig?.extra?.supabaseAnonKey ||
+        process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+
+    return { supabaseUrl, supabaseAnonKey };
+}
+
+/**
+ * Lazily initialize Supabase client only when needed
+ * This prevents @supabase libraries from being loaded on initial page load
+ */
+export async function getSupabaseClient(): Promise<SupabaseClient> {
+    // Return cached instance if already initialized
+    if (supabaseInstance) {
+        return supabaseInstance;
+    }
+
+    // Dynamically import Supabase only when needed
+    const { createClient } = await import('@supabase/supabase-js');
+    const { supabaseUrl, supabaseAnonKey } = getSupabaseCredentials();
+
+    // Validate credentials
+    if (!supabaseUrl) {
+        console.error(
+            '[Supabase] Missing EXPO_PUBLIC_SUPABASE_URL environment variable'
+        );
+    }
+
+    if (!supabaseAnonKey) {
+        console.error(
+            '[Supabase] Missing EXPO_PUBLIC_SUPABASE_ANON_KEY environment variable'
+        );
+    }
+
+    // Create and cache Supabase client
+    supabaseInstance = createClient(supabaseUrl || '', supabaseAnonKey || '', {
+        auth: {
+            // Enable auth for admin panel
+            // Anonymous form submissions don't require auth
+            autoRefreshToken: true,
+            persistSession: true,
+            detectSessionInUrl: false,
+        },
+    });
+
+    console.log('[Supabase] Client initialized (lazy) with:', {
+        hasUrl: !!supabaseUrl,
+        hasKey: !!supabaseAnonKey,
+        url: supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'MISSING',
+    });
+
+    return supabaseInstance;
+}
+
+/**
+ * Get the Supabase client instance (for compatibility with existing code)
+ * WARNING: This will dynamically load Supabase libraries. Use sparingly.
+ */
+export const supabase = new Proxy({} as SupabaseClient, {
+    get: function (_target, prop) {
+        throw new Error(
+            `[Supabase] Direct access to 'supabase.${String(prop)}' is not allowed. ` +
+            `Use getSupabaseClient() instead for lazy loading.`
+        );
+    },
+});
+
+/**
+ * Check if Supabase is configured and accessible
+ */
+export async function checkSupabaseConnection(): Promise<boolean> {
+    const { supabaseUrl, supabaseAnonKey } = getSupabaseCredentials();
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+        console.error('[Supabase] Client not configured - missing credentials');
+        return false;
+    }
+
+    try {
+        // Lazy-load Supabase client for connection test
+        const supabaseClient = await getSupabaseClient();
+
+        // Try a simple query to test connection
+        const { error } = await supabaseClient.from('leads').select('id').limit(1);
+
+        if (error) {
+            console.error('[Supabase] Connection test failed:', error);
+            return false;
+        }
+
+        console.log('[Supabase] Connection test passed');
+        return true;
+    } catch (error) {
+        console.error('[Supabase] Connection test error:', error);
+        return false;
+    }
+}

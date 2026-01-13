@@ -5,30 +5,30 @@
  * Includes optional Liability Estimator for Direct Enquiry users.
  */
 
-import { IncomeSupportModal } from '@/src/components/IncomeSupportModal';
+import { IncomeSupportModal } from '@/src/features/calculator';
 import {
-  convertCareToPercentage,
-  mapCareToCostPercent,
+    convertCareToPercentage,
+    mapCareToCostPercent,
 } from '@/src/utils/care-utils';
 import {
-  getChildCost,
-  type Child,
+    getChildCost,
+    type Child,
 } from '@/src/utils/child-support-calculations';
 import { MAR, MAX_PPS, SSA } from '@/src/utils/child-support-constants';
 import { isWeb } from '@/src/utils/responsive';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    ActivityIndicator,
+    Alert,
+    Modal,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COURT_DATE_ENRICHMENT, getEnrichmentFactors } from '../config';

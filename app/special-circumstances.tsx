@@ -1,31 +1,31 @@
+import { PageSEO } from '@/src/components/seo/PageSEO';
+import Accordion from '@/src/components/ui/Accordion';
+import { HelpTooltip } from '@/src/features/calculator';
+import { useAnalytics } from '@/src/utils/analytics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  Linking,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Linking,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { HelpTooltip } from '../src/components/HelpTooltip';
-import { PageSEO } from '../src/components/seo/PageSEO';
-import Accordion from '../src/components/ui/Accordion';
-import { useAnalytics } from '../src/utils/analytics';
 import {
-  MAX_FORM_WIDTH,
-  isWeb,
-  webClickableStyles,
+    MAX_FORM_WIDTH,
+    isWeb,
+    webClickableStyles,
 } from '../src/utils/responsive';
 import { createShadow } from '../src/utils/shadow-styles';
 import {
-  SPECIAL_CIRCUMSTANCES,
-  getHighestPriorityReason,
-  isCourtDateReason,
-  isValidSpecialCircumstanceId,
-  type SpecialCircumstance,
+    SPECIAL_CIRCUMSTANCES,
+    getHighestPriorityReason,
+    isCourtDateReason,
+    isValidSpecialCircumstanceId,
+    type SpecialCircumstance,
 } from '../src/utils/special-circumstances';
 
 // ============================================================================

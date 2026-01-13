@@ -4,7 +4,7 @@
  * Displays the form title, subtitle, and close button.
  */
 
-import { triggerOpenBreakdown } from '@/src/components/CalculatorResults';
+import { triggerOpenBreakdown } from '@/src/features/calculator';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';

@@ -202,3 +202,18 @@ export type PayerRole =
   | 'receiving_parent'
   | 'both_paying'
   | 'neither';
+
+export interface CalculatorFormState {
+  incomeA: number;
+  incomeB: number;
+  supportA: boolean;
+  supportB: boolean;
+  children: ChildInput[];
+  relDepA: RelevantDependents;
+  relDepB: RelevantDependents;
+  // Multi-case support (Formula 3)
+  multiCaseA: MultiCaseInfo;
+  multiCaseB: MultiCaseInfo;
+  // Non-parent carer support (Formula 4)
+  nonParentCarer: NonParentCarerInfo;
+}
