@@ -134,11 +134,23 @@ export function RelevantDependentsPopover({
         <View
           style={[popoverStyles.drawerInner, isMobile && { paddingLeft: 0 }]}
         >
+          {/* Visually hidden description for screen readers */}
+          <Text
+            // @ts-ignore - Web-only nativeID for aria-describedby
+            nativeID="rel-deps-description"
+            style={popoverStyles.srOnly}
+            accessibilityRole="text"
+          >
+            Enter the number of dependent children from other relationships for each parent.
+            Split by age group: under 13 and 13 or older. These reduce assessed income.
+          </Text>
           <View
             style={[
               popoverStyles.drawerInputsRow,
               isMobile && { flexWrap: 'wrap', gap: 16 }, // Wrap inputs on mobile
             ]}
+            // @ts-ignore - Web-only aria attribute
+            aria-describedby="rel-deps-description"
           >
             {/* You */}
             <View
@@ -246,6 +258,20 @@ export function RelevantDependentsPopover({
 }
 
 const popoverStyles = StyleSheet.create({
+  // Visually hidden but accessible to screen readers
+  srOnly: {
+    position: 'absolute',
+    width: 1,
+    height: 1,
+    padding: 0,
+    margin: -1,
+    overflow: 'hidden',
+    // @ts-ignore - Web-only clip property
+    clip: 'rect(0, 0, 0, 0)',
+    // @ts-ignore - Web-only whiteSpace property
+    whiteSpace: 'nowrap',
+    borderWidth: 0,
+  },
   container: {
     position: 'relative',
     zIndex: 100,

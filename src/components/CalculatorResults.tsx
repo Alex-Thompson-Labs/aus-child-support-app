@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Modal,
@@ -263,6 +263,82 @@ export function CalculatorResults({
 
   const toggleExpand = () => setIsExpanded(!isExpanded);
 
+  // Focus trap refs for modal accessibility
+  const modalContainerRef = useRef<View>(null);
+  const triggerButtonRef = useRef<View>(null);
+  const closeButtonRef = useRef<View>(null);
+  const previousActiveElement = useRef<Element | null>(null);
+
+  // Focus trap effect - manages focus when modal opens/closes
+  useEffect(() => {
+    if (!isWeb) return;
+
+    if (isExpanded) {
+      // Store the currently focused element to restore later
+      previousActiveElement.current = document.activeElement;
+
+      // Focus the close button when modal opens (first focusable element)
+      requestAnimationFrame(() => {
+        const closeBtn = closeButtonRef.current as unknown as HTMLElement;
+        if (closeBtn?.focus) {
+          closeBtn.focus();
+        }
+      });
+    } else {
+      // Restore focus to trigger button when modal closes
+      requestAnimationFrame(() => {
+        const triggerBtn = triggerButtonRef.current as unknown as HTMLElement;
+        if (triggerBtn?.focus) {
+          triggerBtn.focus();
+        }
+      });
+    }
+  }, [isExpanded, isWeb]);
+
+  // Keyboard focus trap - using document event listener for web
+  useEffect(() => {
+    if (!isWeb || !isExpanded) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Close on Escape key
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setIsExpanded(false);
+        return;
+      }
+
+      // Trap Tab key within modal
+      if (event.key === 'Tab') {
+        const modalElement = modalContainerRef.current as unknown as HTMLElement;
+        if (!modalElement) return;
+
+        // Get all focusable elements within the modal
+        const focusableElements = modalElement.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]), [role="button"]'
+        );
+
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+        // Shift+Tab on first element -> move to last element
+        if (event.shiftKey && document.activeElement === firstElement) {
+          event.preventDefault();
+          lastElement.focus();
+        }
+        // Tab on last element -> move to first element
+        else if (!event.shiftKey && document.activeElement === lastElement) {
+          event.preventDefault();
+          firstElement.focus();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isExpanded, isWeb]);
+
   const webModalContainerStyle = isWeb
     ? {
       maxWidth: MAX_MODAL_WIDTH,
@@ -371,6 +447,7 @@ export function CalculatorResults({
     <>
       {!isExpanded && (
         <Pressable
+          ref={triggerButtonRef}
           onPress={toggleExpand}
           style={[
             styles.fixedBottomCardWrapper,
@@ -436,15 +513,27 @@ export function CalculatorResults({
         presentationStyle="fullScreen"
         onRequestClose={toggleExpand}
       >
-        <View style={[styles.expandedContainer, { paddingTop: insets.top }]}>
+        <View
+          ref={modalContainerRef}
+          style={[styles.expandedContainer, { paddingTop: insets.top }]}
+          // @ts-ignore - Web-only ARIA attributes
+          role="dialog"
+          aria-modal={true}
+          aria-labelledby="modal-title"
+        >
           <View style={styles.expandedHeader}>
             <View
               style={[styles.expandedHeaderContent, webModalContainerStyle]}
             >
-              <Text style={styles.expandedHeaderTitle}>
+              <Text
+                // @ts-ignore - Web-only id attribute
+                nativeID="modal-title"
+                style={styles.expandedHeaderTitle}
+              >
                 Assessment Breakdown
               </Text>
               <Pressable
+                ref={closeButtonRef}
                 onPress={toggleExpand}
                 style={styles.closeButton}
                 accessibilityRole="button"

@@ -194,11 +194,23 @@ export function OtherCasesPopover({
         <View
           style={[popoverStyles.drawerInner, isMobile && { paddingLeft: 0 }]}
         >
+          {/* Visually hidden description for screen readers */}
+          <Text
+            // @ts-ignore - Web-only nativeID for aria-describedby
+            nativeID="other-cases-description"
+            style={popoverStyles.srOnly}
+            accessibilityRole="text"
+          >
+            Enter the number of children from other child support cases for each parent.
+            Split by age group: under 13 and 13 or older. This calculates multi-case allowances.
+          </Text>
           <View
             style={[
               popoverStyles.drawerInputsRow,
               isMobile && { flexWrap: 'wrap', gap: 16 },
             ]}
+            // @ts-ignore - Web-only aria attribute
+            aria-describedby="other-cases-description"
           >
             {/* You */}
             <View
@@ -294,6 +306,20 @@ export function OtherCasesPopover({
 }
 
 const popoverStyles = StyleSheet.create({
+  // Visually hidden but accessible to screen readers
+  srOnly: {
+    position: 'absolute',
+    width: 1,
+    height: 1,
+    padding: 0,
+    margin: -1,
+    overflow: 'hidden',
+    // @ts-ignore - Web-only clip property
+    clip: 'rect(0, 0, 0, 0)',
+    // @ts-ignore - Web-only whiteSpace property
+    whiteSpace: 'nowrap',
+    borderWidth: 0,
+  },
   drawerContainer: {
     flexDirection: 'row',
     alignItems: 'center',

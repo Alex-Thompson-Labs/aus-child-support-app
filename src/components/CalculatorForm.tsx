@@ -2,19 +2,19 @@ import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useAppTheme } from '../theme';
 import type {
-    ChildInput,
-    FormErrors,
-    MultiCaseInfo,
-    NonParentCarerInfo,
-    OtherCaseChild,
+  ChildInput,
+  FormErrors,
+  MultiCaseInfo,
+  NonParentCarerInfo,
+  OtherCaseChild,
 } from '../utils/calculator';
 import type { AssessmentYear } from '../utils/child-support-constants';
 import {
-    MAX_CONTENT_WIDTH,
-    isWeb,
-    useResponsive,
-    webClickableStyles,
-    webInputStyles,
+  MAX_CONTENT_WIDTH,
+  isWeb,
+  useResponsive,
+  webClickableStyles,
+  webInputStyles,
 } from '../utils/responsive';
 import { createShadow } from '../utils/shadow-styles';
 import { ChildRow } from './ChildRow';
@@ -272,7 +272,7 @@ export function CalculatorForm({
                 placeholder="0"
                 placeholderTextColor={colors.placeholder}
                 accessibilityLabel="Parent A adjusted taxable income"
-                accessibilityHint="Enter Parent A's annual income in dollars"
+                accessibilityHint="Enter your annual gross income including super, fringe benefits, and investment losses"
               />
             </View>
           </View>
@@ -326,7 +326,7 @@ export function CalculatorForm({
                 placeholder="0"
                 placeholderTextColor={colors.placeholder}
                 accessibilityLabel="Parent B adjusted taxable income"
-                accessibilityHint="Enter Parent B's annual income in dollars"
+                accessibilityHint="Enter the other parent's annual gross income including super, fringe benefits, and investment losses"
               />
             </View>
           </View>
