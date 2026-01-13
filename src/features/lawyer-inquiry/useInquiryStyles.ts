@@ -6,6 +6,7 @@
  */
 
 import { useAppTheme } from '@/src/theme';
+import { MAX_CALCULATOR_WIDTH } from '@/src/utils/responsive';
 import { useMemo } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
@@ -52,7 +53,7 @@ export function useInquiryStyles() {
         gap: 0,
         ...Platform.select({
           web: {
-            maxWidth: 560,
+            maxWidth: MAX_CALCULATOR_WIDTH,
             width: '100%',
           },
           default: {},
@@ -104,7 +105,7 @@ export function useInquiryStyles() {
         gap: 6,
         ...Platform.select({
           web: {
-            maxWidth: 560,
+            maxWidth: MAX_CALCULATOR_WIDTH,
             width: '100%',
           },
           default: {},

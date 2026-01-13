@@ -20,6 +20,7 @@ export type Breakpoint = keyof typeof BREAKPOINTS;
 export const MAX_CONTENT_WIDTH = 680;
 export const MAX_FORM_WIDTH = 560;
 export const MAX_MODAL_WIDTH = 750; // Match calculator form desktopConstraint
+export const MAX_CALCULATOR_WIDTH = 850; // Main calculator page width - used for all 3 steps
 
 // Desktop two-column layout constants
 export const MAX_TWO_COLUMN_WIDTH = 1400; // Max container width for desktop

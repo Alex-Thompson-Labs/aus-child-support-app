@@ -46,7 +46,7 @@ interface Step {
 const STEPS: Step[] = [
     { number: 1, label: 'Inputs', shortLabel: 'Inputs' },
     { number: 2, label: 'Estimate', shortLabel: 'Estimate' },
-    { number: 3, label: 'Next Steps', shortLabel: 'Next' },
+    { number: 3, label: 'Next Steps', shortLabel: 'Next Steps' },
 ];
 
 export function StepProgressIndicator({

@@ -7,7 +7,7 @@
 
 import { StepProgressIndicator } from '@/src/components/ui/StepProgressIndicator';
 import { PARTNERS, type PartnerKey } from '@/src/config/partners';
-import { isWeb, MAX_FORM_WIDTH } from '@/src/utils/responsive';
+import { isWeb, MAX_CALCULATOR_WIDTH } from '@/src/utils/responsive';
 import React from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -64,7 +64,7 @@ export default function LawyerInquiryScreen() {
   // Web container styles
   const webContainerStyle = isWeb
     ? {
-      maxWidth: MAX_FORM_WIDTH,
+      maxWidth: MAX_CALCULATOR_WIDTH,
       width: '100%' as const,
       marginLeft: 'auto' as const,
       marginRight: 'auto' as const,

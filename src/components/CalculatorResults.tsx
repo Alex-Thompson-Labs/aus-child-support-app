@@ -16,7 +16,7 @@ import {
 } from '../utils/complexity-detection';
 import { eventBus } from '../utils/event-bus';
 import { formatCurrency } from '../utils/formatters';
-import { MAX_MODAL_WIDTH, useResponsive } from '../utils/responsive';
+import { MAX_CALCULATOR_WIDTH, useResponsive } from '../utils/responsive';
 import { shadowPresets } from '../utils/shadow-styles';
 import { FtbImpactCard } from './FtbImpactCard';
 import { getPayerText, ResultsHero } from './results/ResultsHero';
@@ -342,7 +342,7 @@ export function CalculatorResults({
 
   const webModalContainerStyle = isWeb
     ? {
-      maxWidth: MAX_MODAL_WIDTH,
+      maxWidth: MAX_CALCULATOR_WIDTH,
       width: '100%' as const,
       alignSelf: 'center' as const,
     }
