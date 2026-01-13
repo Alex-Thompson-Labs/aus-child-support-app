@@ -264,7 +264,9 @@ export function CalculatorForm({
                 onFocus={(e) => {
                   // Select all text on focus so typing replaces the value
                   if (isWeb && e.target) {
-                    (e.target as unknown as HTMLInputElement).select?.();
+                    const target = e.target as unknown as HTMLInputElement;
+                    // Small timeout ensures selection persists after focus event settles
+                    setTimeout(() => target.select?.(), 50);
                   }
                 }}
                 selectTextOnFocus={true}
@@ -318,7 +320,9 @@ export function CalculatorForm({
                 onFocus={(e) => {
                   // Select all text on focus so typing replaces the value
                   if (isWeb && e.target) {
-                    (e.target as unknown as HTMLInputElement).select?.();
+                    const target = e.target as unknown as HTMLInputElement;
+                    // Small timeout ensures selection persists after focus event settles
+                    setTimeout(() => target.select?.(), 50);
                   }
                 }}
                 selectTextOnFocus={true}
