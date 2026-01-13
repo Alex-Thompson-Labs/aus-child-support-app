@@ -1,28 +1,29 @@
+import {
+    COA_REASON_PAGES,
+    buildCoAFaqSchema,
+    getCoAFaqs,
+    getCoAReasonBySlug,
+    type CoAReasonPage,
+} from '@/src/data/coa';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
 import {
-  Linking,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Linking,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PageSEO } from '../../src/components/seo/PageSEO';
 import Accordion from '../../src/components/ui/Accordion';
 import { Breadcrumb } from '../../src/components/ui/Breadcrumb';
-import { buildCoAFaqSchema, getCoAFaqs } from '../../src/utils/coa-faqs';
 import {
-  COA_REASON_PAGES,
-  getCoAReasonBySlug,
-  type CoAReasonPage,
-} from '../../src/utils/coa-reasons';
-import {
-  MAX_FORM_WIDTH,
-  isWeb,
-  webClickableStyles,
+    MAX_FORM_WIDTH,
+    isWeb,
+    webClickableStyles,
 } from '../../src/utils/responsive';
 import { createShadow } from '../../src/utils/shadow-styles';
 

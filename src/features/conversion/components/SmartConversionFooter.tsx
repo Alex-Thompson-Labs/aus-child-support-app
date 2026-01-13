@@ -4,7 +4,7 @@ import { useResponsive } from '@/src/utils/responsive';
 import { shadowPresets } from '@/src/utils/shadow-styles';
 import { detectLowAssessmentTrigger } from '@/src/utils/zero-payment-detection';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useMemo, useRef } from 'react';
 import ReactGA from 'react-ga4';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -19,14 +19,11 @@ export type ConversionCardVariant =
   | 'binding_agreement';
 
 /**
- * Configuration for each card variant
+ * Configuration for each card variant (legacy/logic-based)
  */
 interface CardConfig {
   variant: ConversionCardVariant;
   backgroundColor: string;
-  headline: string;
-  body: string;
-  buttonText: string;
   complexityTrigger: string;
   preFillMessage: string;
 }
@@ -37,67 +34,98 @@ interface CardConfig {
 const CARD_CONFIGS: Record<ConversionCardVariant, CardConfig> = {
   low_assessment: {
     variant: 'low_assessment',
-    backgroundColor: '#eff6ff', // Blue-50 (Brand Blue)
-    headline: 'Is this amount too low?',
-    body: "A Fixed or Minimum Rate often means the other parent's real income isn't being assessed. You may be able to force a 'Change of Assessment'.",
-    buttonText: 'Check Hidden Income Eligibility',
+    backgroundColor: '#eff6ff', // Blue-50
     complexityTrigger: 'low_assessment',
     preFillMessage: 'I believe the other parent has hidden income or assets that should be assessed.',
   },
   payer_reversal: {
     variant: 'payer_reversal',
-    backgroundColor: '#eff6ff', // Blue-50 (Brand Blue)
-    headline: 'Should the other parent be the payer?',
-    body: "Both you and the other parent have triggered fixed rate limits for different children. If the other parent has unreported income, they may owe you more than this assessment shows.",
-    buttonText: 'Check Hidden Income Eligibility',
+    backgroundColor: '#eff6ff',
     complexityTrigger: 'payer_reversal',
     preFillMessage: 'I am being asked to pay, but I believe the other parent has hidden income that would reverse this outcome.',
   },
   dispute_risk: {
     variant: 'dispute_risk',
-    backgroundColor: '#eff6ff', // Blue-50 (Brand Blue)
-    headline: 'Protect Your Care Percentage',
-    body: 'You are in a high-risk zone for care disputes (35-65%). A small shift in nights can drastically change this assessment. Secure your arrangement now.',
-    buttonText: 'Secure My Arrangement',
+    backgroundColor: '#eff6ff',
     complexityTrigger: 'shared_care_dispute',
     preFillMessage: 'I am concerned about my care percentage changing.',
   },
   high_value: {
     variant: 'high_value',
-    backgroundColor: '#eff6ff', // Very light blue tint (blue-50)
-    headline: 'Verify Your Assessment',
-    body: 'Liability over $15,000 is considered high. Small errors in income data can cost you thousands. A legal review is recommended.',
-    buttonText: 'Request Review',
+    backgroundColor: '#eff6ff',
     complexityTrigger: 'high_value_case',
     preFillMessage: 'I want to review my assessment liability.',
   },
   binding_agreement: {
     variant: 'binding_agreement',
-    backgroundColor: '#eff6ff', // Blue-50 (Brand Blue)
-    headline: 'Want Certainty?',
-    body: 'Lock in this amount with a Binding Child Support Agreement to prevent future surprises or changes by the other parent.',
-    buttonText: 'Discuss Agreements',
+    backgroundColor: '#eff6ff',
     complexityTrigger: 'binding_agreement',
     preFillMessage: 'I am interested in a Binding Child Support Agreement.',
   },
 };
 
 /**
+ * New A/B Testing Types
+ */
+type PaymentType = 'payer' | 'payee' | 'neutral';
+type VariantId = 'A' | 'B';
+
+interface VariantCopy {
+  headline: string;
+  body: string;
+  buttonText: string;
+}
+
+/**
+ * A/B Variant Configuration
+ */
+const VARIANT_CONFIG: Record<PaymentType, Record<VariantId, VariantCopy>> = {
+  payer: {
+    A: {
+      headline: 'Review Assessment',
+      body: 'Ensure your assessment is accurate. Small errors in income data can cost you thousands.',
+      buttonText: 'Review Now',
+    },
+    B: {
+      headline: 'Minimize Unfair Payments',
+      body: 'Don\'t pay more than you should. Check if you are eligible for a reduction or reassessment.',
+      buttonText: 'Check Fairness',
+    },
+  },
+  payee: {
+    A: {
+      headline: 'Fair Share',
+      body: 'Ensure you are receiving the full amount you are entitled to based on real income.',
+      buttonText: 'Check Entitlement',
+    },
+    B: {
+      headline: 'Maximize Entitlement',
+      body: 'Don\'t miss out on financial support. Verify if the other parent is under-declaring income.',
+      buttonText: 'Maximize Support',
+    },
+  },
+  neutral: {
+    A: {
+      headline: 'Legal Review',
+      body: 'Get a professional review of your child support situation to ensure fairness.',
+      buttonText: 'Request Review',
+    },
+    B: {
+      headline: 'Legal Review',
+      body: 'Get a professional review of your child support situation to ensure fairness.',
+      buttonText: 'Request Review',
+    },
+  },
+};
+
+/**
  * Determines which card variant to show based on priority logic (waterfall)
- *
- * Priority 1: Low Assessment - User is Receiver AND (result is MAR/FAR OR would be but negated by care)
- * Priority 2: Dispute Risk - If care percentage is between 35% and 65%
- * Priority 3: High Value - If annual liability > $15,000
- * Priority 4: Binding Agreement - Default fallback
  */
 export function determineCardVariant(
   results: CalculationResults,
   carePercentages: number[],
   formState?: { supportA: boolean; supportB: boolean }
 ): ConversionCardVariant {
-  // Priority 0.5: Check for FAR reversal FIRST - User is PAYER due to both parents having FAR
-  // This must come before low_assessment check to avoid false positives
-  // When both parents have FAR applied and user ends up paying, show payer_reversal variant
   const userIsPayer = results.payer === 'Parent A';
   const bothHaveFar = results.FAR_A > 0 && results.FAR_B > 0;
   const isFarBoth = results.rateApplied.includes('FAR') && results.rateApplied.includes('Both');
@@ -106,24 +134,19 @@ export function determineCardVariant(
     return 'payer_reversal';
   }
 
-  // Priority 1: Check for Low Assessment trigger using comprehensive detection
-  // This covers edge cases where MAR/FAR is negated by care arrangements
   if (formState) {
     const { isLowAssessment } = detectLowAssessmentTrigger(results, formState);
     if (isLowAssessment) {
       return 'low_assessment';
     }
   } else {
-    // Fallback to simple check if formState not provided
     const userIsReceiver = results.payer === 'Parent B';
-    const isFarOrMar =
-      results.rateApplied.includes('FAR') || results.rateApplied.includes('MAR');
+    const isFarOrMar = results.rateApplied.includes('FAR') || results.rateApplied.includes('MAR');
     if (userIsReceiver && isFarOrMar) {
       return 'low_assessment';
     }
   }
 
-  // Priority 2: Check for shared care dispute (35-65% care for any child)
   const hasSharedCareDispute = carePercentages.some(
     (percentage) => percentage >= 35 && percentage <= 65
   );
@@ -132,99 +155,104 @@ export function determineCardVariant(
     return 'dispute_risk';
   }
 
-  // Priority 3: Check for high value case (annual liability > $15,000)
   if (results.finalPaymentAmount > 15000) {
     return 'high_value';
   }
 
-  // Priority 4: Default to binding agreement
   return 'binding_agreement';
 }
 
-/**
- * Props for SmartConversionFooter component
- */
 interface SmartConversionFooterProps {
   results: CalculationResults;
   carePercentages: number[];
   formData?: ComplexityFormData;
-  onBeforeNavigate?: () => void; // Callback to close modal before navigation
+  onBeforeNavigate?: () => void;
+  paymentType?: PaymentType;
+  onCtaPress?: (variantId: string) => void;
 }
 
-/**
- * Smart Conversion Footer Component
- *
- * Displays a single conversion card at the bottom of calculation results
- * based on priority logic. Drives leads to the lawyer inquiry form with
- * pre-filled complexity_trigger and message.
- */
 export function SmartConversionFooter({
   results,
   carePercentages,
   formData,
   onBeforeNavigate,
+  paymentType,
+  onCtaPress,
 }: SmartConversionFooterProps) {
   const router = useRouter();
   const { isWeb } = useResponsive();
   const [isNavigating, setIsNavigating] = React.useState(false);
 
-  // Determine which card to show, passing formState for comprehensive edge case detection
-  const formState = React.useMemo(() => (formData
+  // Initialize random variant on mount (A or B)
+  const variantId = useRef<VariantId>(Math.random() < 0.5 ? 'A' : 'B').current;
+
+  // Determine effective payment type if not provided
+  const effectivePaymentType: PaymentType = useMemo(() => {
+    if (paymentType) return paymentType;
+    // Default logic: Assume User is Parent A. If Parent A is payer, then 'payer'.
+    return results.payer === 'Parent A' ? 'payer' : 'payee';
+  }, [paymentType, results.payer]);
+
+  // Get A/B copy configuration
+  const copyConfig = VARIANT_CONFIG[effectivePaymentType][variantId];
+
+  // Determine logic-based trigger/config
+  const formState = useMemo(() => (formData
     ? {
       supportA: formData.supportA ?? false,
       supportB: formData.supportB ?? false,
     }
     : undefined), [formData]);
 
-  const cardVariant = React.useMemo(() => {
+  const cardVariant = useMemo(() => {
     return determineCardVariant(results, carePercentages, formState);
   }, [results, carePercentages, formState]);
 
-  const cardConfig = CARD_CONFIGS[cardVariant];
+  const logicConfig = CARD_CONFIGS[cardVariant];
 
-  /**
-   * Handle card button click - navigate to inquiry form with pre-filled data
-   */
   const handleCardClick = React.useCallback(() => {
     if (isNavigating) return;
     setIsNavigating(true);
 
-    // Close the modal immediately before navigation (if callback provided)
     if (onBeforeNavigate) {
       onBeforeNavigate();
     }
 
-    // Track conversion event
+    if (onCtaPress) {
+      onCtaPress(variantId);
+    }
+
     if (isWeb) {
       ReactGA.event({
         category: 'Conversion',
         action: 'Smart_Footer_Click',
-        label: cardVariant,
+        label: `${cardVariant}_${effectivePaymentType}_${variantId}`,
       });
     }
 
     requestAnimationFrame(() => {
-      // Prepare care data for the inquiry form
       const careData = (formData?.children ?? []).map((child, index) => ({
         index,
         careA: results.childResults[index]?.roundedCareA ?? 0,
         careB: results.childResults[index]?.roundedCareB ?? 0,
       }));
 
+      // Combine A/B copy with logic-based triggers
       router.push({
         pathname: '/lawyer-inquiry',
         params: {
           liability: results.finalPaymentAmount.toString(),
-          trigger: cardConfig.complexityTrigger,
-          complexityTriggers: JSON.stringify([cardConfig.complexityTrigger]),
+          trigger: logicConfig.complexityTrigger,
+          complexityTriggers: JSON.stringify([logicConfig.complexityTrigger]),
           incomeA: results.ATI_A.toString(),
           incomeB: results.ATI_B.toString(),
           children: (formData?.children?.length ?? 0).toString(),
           careData: JSON.stringify(careData),
-          preFillMessage: cardConfig.preFillMessage,
+          preFillMessage: logicConfig.preFillMessage,
           payer: results.payer,
           specialCircumstances: JSON.stringify(formData?.selectedCircumstances ?? []),
-          fromBreakdown: 'true', // Track that user came from breakdown modal
+          fromBreakdown: 'true',
+          abVariant: variantId, // Pass variant to form
         },
       });
 
@@ -236,9 +264,12 @@ export function SmartConversionFooter({
     results,
     formData,
     cardVariant,
-    cardConfig,
+    logicConfig,
     isWeb,
     onBeforeNavigate,
+    variantId,
+    effectivePaymentType,
+    onCtaPress,
   ]);
 
   return (
@@ -247,13 +278,13 @@ export function SmartConversionFooter({
         onPress={handleCardClick}
         style={({ pressed }) => [
           styles.card,
-          { backgroundColor: cardConfig.backgroundColor },
+          { backgroundColor: logicConfig.backgroundColor },
           pressed && styles.cardPressed,
         ]}
         disabled={isNavigating}
         accessible={true}
         accessibilityRole="button"
-        accessibilityLabel={`${cardConfig.headline}. ${cardConfig.buttonText}`}
+        accessibilityLabel={`${copyConfig.headline}. ${copyConfig.buttonText}`}
       >
         <View style={styles.cardContent}>
           <View style={styles.textContainer}>
@@ -263,17 +294,17 @@ export function SmartConversionFooter({
               accessibilityRole="header"
               aria-level="2"
             >
-              {cardConfig.headline}
+              {copyConfig.headline}
             </Text>
             <Text style={styles.body}>
-              {cardConfig.body}
+              {copyConfig.body}
             </Text>
           </View>
         </View>
         <View style={styles.buttonContainer}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>
-              {cardConfig.buttonText}
+              {copyConfig.buttonText}
             </Text>
             <Text style={styles.buttonArrow}>
               →
@@ -294,7 +325,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#3b82f6', // Blue-500 (Brand Blue border)
+    borderColor: '#3b82f6', // Blue-500
     ...shadowPresets.medium,
   },
   cardPressed: {
@@ -312,20 +343,20 @@ const styles = StyleSheet.create({
   headline: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1e3a8a', // Blue-900 (Brand Blue headline)
+    color: '#1e3a8a', // Blue-900
     marginBottom: 8,
     lineHeight: 24,
   },
   body: {
     fontSize: 14,
-    color: '#374151', // Gray-700 (readable body text)
+    color: '#374151', // Gray-700
     lineHeight: 20,
   },
   buttonContainer: {
     alignItems: 'stretch',
   },
   button: {
-    backgroundColor: '#2563eb', // Blue-600 (Brand Blue button)
+    backgroundColor: '#2563eb', // Blue-600
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -333,7 +364,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#2563eb', // Blue-600
+    borderColor: '#2563eb',
   },
   buttonText: {
     fontSize: 16,
