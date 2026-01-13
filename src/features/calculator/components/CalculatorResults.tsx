@@ -192,6 +192,7 @@ interface CalculatorResultsProps {
   displayMode?: 'modal' | 'inline';
   isStale?: boolean;
   resetTimestamp?: number;
+  calculatorStartTime?: number;
 }
 
 export function CalculatorResults({
@@ -200,6 +201,7 @@ export function CalculatorResults({
   displayMode = 'modal',
   isStale = false,
   resetTimestamp = 0,
+  calculatorStartTime,
 }: CalculatorResultsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -377,6 +379,7 @@ export function CalculatorResults({
             selectedCircumstances: reasons,
           }));
         }}
+        calculatorStartTime={calculatorStartTime}
       />
       {results && (
         <LazyLoadErrorBoundary>
@@ -409,6 +412,7 @@ export function CalculatorResults({
         )}
         formData={localFormData}
         onBeforeNavigate={() => setIsExpanded(false)}
+        calculatorStartTime={calculatorStartTime}
       />
 
       {/* FTB Impact Card - Shows FTB Part A/B implications */}

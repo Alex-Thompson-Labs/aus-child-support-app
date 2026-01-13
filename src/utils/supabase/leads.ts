@@ -69,6 +69,9 @@ export interface LeadSubmission {
         // International fields
         other_parent_country?: string;
     } | null;
+
+    // Time tracking (seconds from calculator mount to lead submission)
+    time_to_complete?: number;
 }
 
 /**
@@ -170,6 +173,9 @@ export async function submitLead(lead: LeadSubmission): Promise<{
 
             // Special circumstances additional data (PSI, international)
             special_circumstances_data: lead.special_circumstances_data,
+
+            // Time tracking
+            time_to_complete: lead.time_to_complete,
         };
 
         // Insert lead into database and return the ID

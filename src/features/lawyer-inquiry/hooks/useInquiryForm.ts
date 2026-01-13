@@ -8,13 +8,13 @@ import { sanitizeCountry } from '@/src/utils/all-countries';
 import { useAnalytics } from '@/src/utils/analytics';
 import { calculateLeadScore } from '@/src/utils/lead-scoring';
 import {
-  EXCLUDED_JURISDICTIONS,
-  RECIPROCATING_JURISDICTIONS,
+    EXCLUDED_JURISDICTIONS,
+    RECIPROCATING_JURISDICTIONS,
 } from '@/src/utils/reciprocating-jurisdictions';
 import type { SpecialCircumstance } from '@/src/utils/special-circumstances';
 import {
-  getSpecialCircumstanceById,
-  isCourtDateReason,
+    getSpecialCircumstanceById,
+    isCourtDateReason,
 } from '@/src/utils/special-circumstances';
 import type { LeadSubmission } from '@/src/utils/supabase';
 import { submitLead, updateLeadEnrichment } from '@/src/utils/supabase';
@@ -24,22 +24,22 @@ import { Alert, Platform, TextInput } from 'react-native';
 import { ENRICHMENT_INQUIRY_TYPES } from '../config';
 import type { CareDataItem, FormErrors, FormTouched } from '../types';
 import {
-  buildComplexityTriggers,
-  formatCourtDateForReasons,
-  sanitizeEmail,
-  sanitizePhone,
-  sanitizeString,
-  validateConsent,
-  validateCourtDate,
-  validateEmail,
-  validateFinancialTags,
-  validateManualChildren,
-  validateManualIncome,
-  validateMessage,
-  validateName,
-  validatePhone,
-  validatePostcode,
-  VALIDATION,
+    buildComplexityTriggers,
+    formatCourtDateForReasons,
+    sanitizeEmail,
+    sanitizePhone,
+    sanitizeString,
+    validateConsent,
+    validateCourtDate,
+    validateEmail,
+    validateFinancialTags,
+    validateManualChildren,
+    validateManualIncome,
+    validateMessage,
+    validateName,
+    validatePhone,
+    validatePostcode,
+    VALIDATION,
 } from '../validators';
 
 export interface UseInquiryFormProps {
@@ -59,6 +59,9 @@ export interface UseInquiryFormProps {
   hasParentingPlan: string | undefined;
   assessmentType: string | undefined;
   returnTo: string | undefined;
+
+  // Time tracking
+  calculatorStartTime: number | undefined;
 }
 
 export function useInquiryForm(props: UseInquiryFormProps) {
@@ -742,6 +745,12 @@ export function useInquiryForm(props: UseInquiryFormProps) {
                 : {}),
             }
             : null,
+
+        // Time tracking: seconds from calculator mount to form submission
+        // Uses calculatorStartTime if available (from calculator flow), otherwise form mount time
+        time_to_complete: props.calculatorStartTime
+          ? Math.round((Date.now() - props.calculatorStartTime) / 1000)
+          : timeToSubmit,
       };
 
       if (__DEV__)
@@ -841,6 +850,8 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     // International fields
     shouldShowInternationalFields,
     otherParentCountry,
+    // Time tracking
+    props.calculatorStartTime,
   ]);
 
   /**

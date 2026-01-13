@@ -169,6 +169,7 @@ interface SmartConversionFooterProps {
   onBeforeNavigate?: () => void;
   paymentType?: PaymentType;
   onCtaPress?: (variantId: string) => void;
+  calculatorStartTime?: number;
 }
 
 export function SmartConversionFooter({
@@ -178,6 +179,7 @@ export function SmartConversionFooter({
   onBeforeNavigate,
   paymentType,
   onCtaPress,
+  calculatorStartTime,
 }: SmartConversionFooterProps) {
   const router = useRouter();
   const { isWeb } = useResponsive();
@@ -253,6 +255,7 @@ export function SmartConversionFooter({
           specialCircumstances: JSON.stringify(formData?.selectedCircumstances ?? []),
           fromBreakdown: 'true',
           abVariant: variantId, // Pass variant to form
+          ...(calculatorStartTime && { calculatorStartTime: calculatorStartTime.toString() }),
         },
       });
 
@@ -270,6 +273,7 @@ export function SmartConversionFooter({
     variantId,
     effectivePaymentType,
     onCtaPress,
+    calculatorStartTime,
   ]);
 
   return (

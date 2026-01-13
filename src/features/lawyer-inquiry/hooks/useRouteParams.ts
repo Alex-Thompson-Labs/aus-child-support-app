@@ -35,6 +35,9 @@ export interface ParsedRouteParams {
   // Partner attribution (for partner-specific success messaging)
   partner: string | undefined; // Partner identifier from URL (e.g., "sage")
 
+  // Time tracking
+  calculatorStartTime: number | undefined; // Timestamp when calculator mounted
+
   // Computed values
   isDirectMode: boolean;
   inquiryConfig: InquiryTypeConfig;
@@ -114,6 +117,14 @@ export function useRouteParams(): ParsedRouteParams {
   const partner =
     typeof params.partner === 'string' ? params.partner : undefined;
 
+  // Parse calculator start time (for time_to_complete tracking)
+  const calculatorStartTime = useMemo(() => {
+    const raw = typeof params.calculatorStartTime === 'string' ? params.calculatorStartTime : undefined;
+    if (!raw) return undefined;
+    const parsed = parseInt(raw, 10);
+    return isNaN(parsed) ? undefined : parsed;
+  }, [params.calculatorStartTime]);
+
   // Detect Direct Mode: explicit mode=direct OR missing calculation data
   const isDirectMode = useMemo(() => {
     const explicitDirect = mode === 'direct';
@@ -182,6 +193,7 @@ export function useRouteParams(): ParsedRouteParams {
     hasParentingPlan,
     assessmentType,
     partner,
+    calculatorStartTime,
     isDirectMode,
     inquiryConfig,
     preFillMessage,

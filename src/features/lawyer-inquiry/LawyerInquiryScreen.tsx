@@ -59,6 +59,8 @@ export default function LawyerInquiryScreen() {
     hasParentingPlan: params.hasParentingPlan,
     assessmentType: params.assessmentType,
     returnTo: params.returnTo,
+    // Time tracking
+    calculatorStartTime: params.calculatorStartTime,
   });
 
   // Web container styles

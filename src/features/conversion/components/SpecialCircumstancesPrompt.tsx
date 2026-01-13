@@ -5,20 +5,20 @@ import type { ComplexityFormData } from '@/src/utils/complexity-detection';
 import { isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import {
-    SPECIAL_CIRCUMSTANCES,
-    getHighestPriorityReason,
-    isCourtDateReason,
-    type SpecialCircumstance,
+  SPECIAL_CIRCUMSTANCES,
+  getHighestPriorityReason,
+  isCourtDateReason,
+  type SpecialCircumstance,
 } from '@/src/utils/special-circumstances';
 import { useRouter } from 'expo-router';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import {
-    Alert,
-    Platform,
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
+  Alert,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
 // Types
@@ -28,6 +28,7 @@ interface SpecialCircumstancesPromptProps {
   onNavigate: () => void;
   onRequestInquiry?: () => void;
   onSpecialCircumstancesChange?: (reasons: string[]) => void;
+  calculatorStartTime?: number;
 }
 
 interface StepProps {
@@ -323,6 +324,7 @@ export function SpecialCircumstancesPrompt({
   onNavigate,
   onRequestInquiry,
   onSpecialCircumstancesChange,
+  calculatorStartTime,
 }: SpecialCircumstancesPromptProps) {
   const [selectedReasons, setSelectedReasons] = useState<Set<string>>(
     () => new Set(formData?.selectedCircumstances ?? [])
@@ -420,6 +422,7 @@ export function SpecialCircumstancesPrompt({
               priorityCircumstance:
                 getHighestPriorityReason(Array.from(selectedReasons))?.id ?? '',
               fromBreakdown: 'true',
+              ...(calculatorStartTime && { calculatorStartTime: calculatorStartTime.toString() }),
             },
           });
         } catch (error) {
@@ -433,7 +436,7 @@ export function SpecialCircumstancesPrompt({
         }
       });
     });
-  }, [isNavigating, selectedReasons, onNavigate, onRequestInquiry, router, results, formData, analytics]);
+  }, [isNavigating, selectedReasons, onNavigate, onRequestInquiry, router, results, formData, analytics, calculatorStartTime]);
 
   const renderStepContent = () => {
     const stepProps: StepProps = { selectedReasons, onToggle: handleToggle };

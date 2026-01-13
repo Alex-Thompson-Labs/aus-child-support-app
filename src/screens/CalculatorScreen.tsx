@@ -44,6 +44,9 @@ export function CalculatorScreen() {
     resetTimestamp,
   } = useCalculator();
 
+  // Capture calculator mount time for time_to_complete tracking
+  const calculatorStartTime = React.useRef<number>(Date.now()).current;
+
   const { isDesktop } = useResponsive();
   const params = useLocalSearchParams();
   const router = useRouter();
@@ -352,6 +355,7 @@ export function CalculatorScreen() {
                 formData={formState}
                 displayMode="modal"
                 resetTimestamp={resetTimestamp}
+                calculatorStartTime={calculatorStartTime}
               />
             </View>
           </View>
