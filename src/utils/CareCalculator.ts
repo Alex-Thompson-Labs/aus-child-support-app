@@ -49,6 +49,8 @@ export interface HolidayBlock {
 }
 
 export interface CourtOrderJSON {
+  start_date?: string; // YYYY-MM-DD
+  analysis_duration_months?: number; // 12 or 24
   cycle_length_days: number;
   base_pattern: BasePatternEntry[];
   special_overrides?: SpecialOverride[];
@@ -613,7 +615,7 @@ export class CareCalculator {
   }
 
   /**
-   * Run the full 730-day simulation
+   * Run the full simulation (days based on analysis_duration_months, approx 30 days per month)
    * Returns care percentages based strictly on midnight ownership
    */
   public calculate(): CareCalculationResult {
@@ -623,8 +625,16 @@ export class CareCalculator {
     let motherNights = 0;
     let fatherNights = 0;
 
-    // Generate 730 days starting from anchor date
-    for (let i = 0; i < SIMULATION_DAYS; i++) {
+    // Use the duration from JSON or default to 12 months.
+    // Convert months to approximate days. (12 months = 365, 24 months = 730)
+    // We use 365.25 to account for leap years over long periods, but for this tool:
+    // 12 months -> 365 days
+    // 24 months -> 730 days
+    const durationMonths = this.orderJson.analysis_duration_months || 12;
+    const simulationDays = durationMonths >= 24 ? 730 : 365;
+
+    // Generate days starting from anchor date
+    for (let i = 0; i < simulationDays; i++) {
       const currentDate = addDays(this.anchorDate, i);
       const assignment = this.calculateMidnightOwner(currentDate);
 
@@ -657,15 +667,17 @@ export class CareCalculator {
     }
 
     // Calculate percentages and annualized averages
-    const motherPercentage = (motherNights / SIMULATION_DAYS) * 100;
-    const fatherPercentage = (fatherNights / SIMULATION_DAYS) * 100;
+    const motherPercentage = (motherNights / simulationDays) * 100;
+    const fatherPercentage = (fatherNights / simulationDays) * 100;
 
-    // Annualized (730 days = 2 years, so divide by 2)
-    const motherNightsPerYear = Math.round(motherNights / 2);
-    const fatherNightsPerYear = Math.round(fatherNights / 2);
+    // Annualized calculation
+    // If 24 months (730 days), divide by 2. If 12 months (365 days), divide by 1.
+    const years = simulationDays / 365;
+    const motherNightsPerYear = Math.round(motherNights / years);
+    const fatherNightsPerYear = Math.round(fatherNights / years);
 
     return {
-      totalDays: SIMULATION_DAYS,
+      totalDays: simulationDays,
       motherNights,
       fatherNights,
       motherPercentage: Math.round(motherPercentage * 10) / 10,

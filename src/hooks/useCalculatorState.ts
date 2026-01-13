@@ -9,7 +9,13 @@ import {
 import { AssessmentYear } from '../utils/child-support-constants';
 
 const getInitialChildren = (): ChildInput[] => {
-    return [];
+    return [{
+        id: `child-default`,
+        age: 5, // Default to age 5 (Under 13)
+        careAmountA: 8,
+        careAmountB: 6,
+        carePeriod: 'fortnight',
+    }];
 };
 
 const initialFormState: CalculatorFormState = {

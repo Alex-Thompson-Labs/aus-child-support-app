@@ -13,7 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCalculator } from '../hooks/useCalculator';
 import { convertCareToPercentage } from '../utils/care-utils';
 import { getYearConstants } from '../utils/child-support-constants';
-import { useResponsive } from '../utils/responsive';
+import { MAX_CALCULATOR_WIDTH, useResponsive } from '../utils/responsive';
 
 // ✅ STANDARD IMPORTS (Reliable)
 import { CalculatorFAQ, CalculatorForm, CalculatorHeader, CalculatorResults, IncomeSupportModal } from '@/src/features/calculator';
@@ -263,6 +263,27 @@ export function CalculatorScreen() {
     isCareDisputed: formState.isCareDisputed,
     desiredCareNights: formState.desiredCareNights,
     onCareDisputeChange: updateCareDispute,
+    // AI Banner
+    aiCourtOrderBanner: (
+      <Pressable
+        style={({ pressed }) => [
+          styles.aiCard,
+          pressed && { opacity: 0.9, transform: [{ scale: 0.99 }] }
+        ]}
+        onPress={() => router.push('/court-order-tool')}
+      >
+        <View style={styles.aiCardContent}>
+          <View style={styles.aiIconContainer}>
+            <Feather name="file-text" size={24} color="white" />
+          </View>
+          <View style={styles.aiTextContainer}>
+            <Text style={styles.aiTitle}>AI Court Order Interpreter</Text>
+            <Text style={styles.aiDescription}>Upload your court orders to automatically calculate care nights.</Text>
+          </View>
+          <Feather name="chevron-right" size={20} color="#334155" />
+        </View>
+      </Pressable>
+    ),
   };
 
   return (
@@ -272,7 +293,7 @@ export function CalculatorScreen() {
         style={styles.keyboardView}
       >
         {/* Header */}
-        <CalculatorHeader />
+        <CalculatorHeader maxWidth={MAX_CALCULATOR_WIDTH} />
 
 
         {/* Progress Indicator */}
@@ -297,26 +318,6 @@ export function CalculatorScreen() {
           accessibilityRole={'main' as any}
         >
           <View style={isDesktop ? styles.bodyContainer : styles.fullWidth}>
-            {/* AI Feature Card */}
-            <Pressable
-              style={({ pressed }) => [
-                styles.aiCard,
-                pressed && { opacity: 0.9, transform: [{ scale: 0.99 }] }
-              ]}
-              onPress={() => router.push('/court-order-tool')}
-            >
-              <View style={styles.aiCardContent}>
-                <View style={styles.aiIconContainer}>
-                  <Feather name="file-text" size={24} color="white" />
-                </View>
-                <View style={styles.aiTextContainer}>
-                  <Text style={styles.aiTitle}>AI Court Order Interpreter</Text>
-                  <Text style={styles.aiDescription}>Upload your court orders to automatically calculate care nights.</Text>
-                </View>
-                <Feather name="chevron-right" size={20} color="#334155" />
-              </View>
-            </Pressable>
-
             {/* ✅ FORM RESTORED (No Suspense) */}
             <CalculatorForm {...formProps} isDesktopWeb={isDesktop} />
 

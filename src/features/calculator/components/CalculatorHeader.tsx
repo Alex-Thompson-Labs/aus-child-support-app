@@ -12,9 +12,10 @@ const BRAND_NAVY = '#1e3a8a';
 interface CalculatorHeaderProps {
     title?: string;
     showBackButton?: boolean;
+    maxWidth?: number;
 }
 
-export function CalculatorHeader({ title, showBackButton }: CalculatorHeaderProps) {
+export function CalculatorHeader({ title, showBackButton, maxWidth }: CalculatorHeaderProps) {
     const { isDesktop } = useResponsive();
     const router = useRouter();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -30,45 +31,18 @@ export function CalculatorHeader({ title, showBackButton }: CalculatorHeaderProp
         }
     };
 
-    // --- DESKTOP VIEW (Preserved) ---
-    /*
-    if (isDesktop) {
-        return (
-            // @ts-ignore - Web-only ARIA role
-            <View style={styles.header} accessibilityRole="banner">
-                <View style={styles.headerContainer}>
-                    <Image
-                        source={require('@/assets/images/webp/aus-child-support-logo-header-transparent.webp')}
-                        style={styles.logoDesktop}
-                        resizeMode="contain"
-                        accessibilityLabel="Australian Child Support Calculator"
-                    />
-
-                    <Pressable
-                        style={styles.blogButton}
-                        accessibilityRole="link"
-                        onPress={() => Linking.openURL('https://blog.auschildsupport.com')}
-                    >
-                        <Text style={styles.blogButtonText}>Blog</Text>
-                    </Pressable>
-                </View>
-            </View>
-        );
-    }
-    */
-
     // --- MOBILE VIEW (New Implementation) ---
     return (
         // @ts-ignore - Web-only ARIA role
         <View style={[styles.header, styles.mobileHeaderWrapper]} accessibilityRole="banner">
-            <View style={styles.mobileHeaderRow}>
+            <View style={[styles.mobileHeaderRow, maxWidth ? { maxWidth } : undefined]}>
                 {/* Left: Icon/Logo or Back Button */}
                 <View style={styles.leftElement}>
                     {showBackButton ? (
                         <Pressable
-                            onPress={() => router.canGoBack() ? router.back() : router.replace('/')}
+                            onPress={() => router.replace('/')}
                             accessibilityRole="button"
-                            accessibilityLabel="Go back"
+                            accessibilityLabel="Go back to calculator"
                             hitSlop={12}
                         >
                             <Feather name="arrow-left" size={24} color={BRAND_NAVY} />
@@ -99,7 +73,7 @@ export function CalculatorHeader({ title, showBackButton }: CalculatorHeaderProp
 
             {/* Mobile Dropdown Menu */}
             {isMenuOpen && (
-                <View style={styles.dropdownMenu}>
+                <View style={[styles.dropdownMenu, maxWidth ? { maxWidth } : undefined]}>
                     <MenuItem label="Blog" onPress={() => handleNavigation('https://blog.auschildsupport.com')} />
                     <MenuItem label="Court Order Tool" onPress={() => handleNavigation('/court-order-tool')} />
                     <MenuItem label="About" onPress={() => handleNavigation('/about')} />
@@ -153,6 +127,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         width: '100%',
+        maxWidth: 1280, // Constrain width on large screens
+        alignSelf: 'center',
     },
     // Desktop Styles
     logoDesktop: {
@@ -200,8 +176,8 @@ const styles = StyleSheet.create({
     dropdownMenu: {
         position: 'absolute',
         top: '100%',
-        left: 0,
-        right: 0,
+        width: '100%',
+        alignSelf: 'center',
         backgroundColor: '#ffffff',
         ...shadowPresets.card,
         borderBottomLeftRadius: 16,

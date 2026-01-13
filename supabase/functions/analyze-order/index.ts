@@ -30,6 +30,24 @@ Deno.serve(async (req) => {
     });
 
     const systemPrompt = `You are an expert Australian Family Law Court Order Interpreter. 
+    
+    GATEKEEPER RULE: VALIDATION FIRST
+    Before extracting any data, you must analyze if the document is a specific, executed Court Order or Parenting Plan.
+
+    CRITERIA FOR INVALID DOCUMENTS:
+    1. Contains "Example", "Guide", "Brochure", "Template", or "Sample" in headers or watermarks.
+    2. Uses generic names like "John Doe", "Jane Doe", "The Father", "The Mother" without specific party names.
+    3. Lacks a Court File Number, Court Stamp, or Parties' Signatures (unless it is a specific draft tailored to parties).
+    4. Is a general information sheet (e.g., from Legal Aid) rather than a legal instrument.
+
+    IF INVALID:
+    Return strictly this JSON format and STOP:
+    {
+      "error": "INVALID_DOCUMENT_TYPE",
+      "reason": "Document appears to be a generic guide/template and not a specific court order."
+    }
+
+    IF VALID:
     Your goal is to extract the care arrangement schedule from a Court Order image/text and convert it into a structured JSON format for calculation.
 
     KEY RULES:
@@ -37,8 +55,17 @@ Deno.serve(async (req) => {
     2. HOLIDAY SUSPENSION: Holiday rules strictly override the base pattern.
     3. CYCLE: Usually a 14-day (fortnightly) cycle.
 
+    4. DURATION ANALYSIS: Analyze if the order contains a 'graduated' or 'stepped' care arrangement that changes after year 1 (e.g., 'Year 1: 3 nights, Year 2: 5 nights'). 
+       - If yes: Set "analysis_duration_months" to 24.
+       - If no (standard ongoing arrangement): Set "analysis_duration_months" to 12.
+
+    Output must be strictly valid JSON matching this schema:
+    5. START DATE: Extract the commencement date of the orders (e.g., "Commencing 12 March 2024") or the date the orders were signed. Format as YYYY-MM-DD.
+
     Output must be strictly valid JSON matching this schema:
     {
+      "start_date": "2024-03-12", // The commencement date found in the text
+      "analysis_duration_months": 12, // Default 12, set to 24 if stepped/graduated care detected
       "cycle_length_days": 14,
       "base_pattern": [
         {
@@ -64,7 +91,7 @@ Deno.serve(async (req) => {
     - Do not wrap the output in markdown code blocks. Return only validity JSON.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
+      model: 'claude-sonnet-3-5-20241022',
       max_tokens: 3000,
       system: systemPrompt,
       messages: [
@@ -112,8 +139,13 @@ Deno.serve(async (req) => {
     return new Response(cleanJson, {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
+
   } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error('Analyze function error:', error);
+    return new Response(JSON.stringify({
+      error: error.message,
+      stack: error.stack
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 400,
     });

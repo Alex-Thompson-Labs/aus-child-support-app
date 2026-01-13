@@ -77,6 +77,8 @@ interface CalculatorFormProps {
   isCareDisputed: boolean;
   desiredCareNights?: number;
   onCareDisputeChange: (isDisputed: boolean, nights?: number) => void;
+  // AI Banner (optional)
+  aiCourtOrderBanner?: React.ReactNode;
 }
 
 export function CalculatorForm({
@@ -114,6 +116,8 @@ export function CalculatorForm({
   isCareDisputed,
   desiredCareNights,
   onCareDisputeChange,
+  // AI Banner
+  aiCourtOrderBanner,
 }: CalculatorFormProps) {
   const { isMobile, isDesktop } = useResponsive();
   const { colors } = useAppTheme();
@@ -415,6 +419,13 @@ export function CalculatorForm({
             hideWhatLabel
           />
         </View>
+
+        {/* AI Court Order Interpreter Banner */}
+        {aiCourtOrderBanner && (
+          <View style={{ marginBottom: 16 }}>
+            {aiCourtOrderBanner}
+          </View>
+        )}
 
         <View style={styles.childrenList}>
           {childrenData.map((child) => (

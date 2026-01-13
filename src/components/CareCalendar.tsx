@@ -8,20 +8,20 @@
  */
 
 import {
-    addDays,
-    format,
-    getDay,
-    getDaysInMonth,
-    startOfMonth,
+  addDays,
+  format,
+  getDay,
+  getDaysInMonth,
+  startOfMonth,
 } from 'date-fns';
 import React, { useMemo } from 'react';
 import { DimensionValue, Platform, ScrollView, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 
 import {
-    AustralianState,
-    CareParent,
-    DayAssignment,
-    getSchoolHolidays,
+  AustralianState,
+  CareParent,
+  DayAssignment,
+  getSchoolHolidays,
 } from '@/src/utils/CareCalculator';
 
 const MONTH_NAMES = [
@@ -31,28 +31,32 @@ const MONTH_NAMES = [
 
 const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-const FATHER_COLOR = '#60a5fa';
-const MOTHER_COLOR = '#f472b6';
+const FATHER_COLOR_DEFAULT = '#60a5fa';
+const MOTHER_COLOR_DEFAULT = '#f472b6';
 const HOLIDAY_INDICATOR = '#94a3b8';
 
 interface CareCalendarProps {
   year: number;
   assignments: DayAssignment[];
   state: AustralianState;
+  fatherColor?: string;
+  motherColor?: string;
 }
 
 interface DayCellProps {
   day: number;
   careWith: CareParent | null;
   isHoliday: boolean;
+  fatherColor: string;
+  motherColor: string;
 }
 
-function DayCell({ day, careWith, isHoliday }: DayCellProps) {
+function DayCell({ day, careWith, isHoliday, fatherColor, motherColor }: DayCellProps) {
   if (day === 0) {
     return <View style={viewStyles.dayCell} />;
   }
 
-  const backgroundColor = careWith === 'Father' ? FATHER_COLOR : MOTHER_COLOR;
+  const backgroundColor = careWith === 'Father' ? fatherColor : motherColor;
 
   return (
     <View style={viewStyles.dayCell}>
@@ -69,9 +73,11 @@ interface MonthGridProps {
   month: number;
   assignmentMap: Map<string, CareParent>;
   holidayDates: Set<string>;
+  fatherColor: string;
+  motherColor: string;
 }
 
-function MonthGrid({ year, month, assignmentMap, holidayDates }: MonthGridProps) {
+function MonthGrid({ year, month, assignmentMap, holidayDates, fatherColor, motherColor }: MonthGridProps) {
   const firstDay = startOfMonth(new Date(year, month, 1));
   const daysInMonth = getDaysInMonth(firstDay);
   const startDayOfWeek = getDay(firstDay);
@@ -110,13 +116,13 @@ function MonthGrid({ year, month, assignmentMap, holidayDates }: MonthGridProps)
         <View key={weekIndex} style={viewStyles.weekRow}>
           {week.map((day, dayIndex) => {
             if (day === 0) {
-              return <DayCell key={dayIndex} day={0} careWith={null} isHoliday={false} />;
+              return <DayCell key={dayIndex} day={0} careWith={null} isHoliday={false} fatherColor={fatherColor} motherColor={motherColor} />;
             }
             const dateStr = format(new Date(year, month, day), 'yyyy-MM-dd');
             const careWith = assignmentMap.get(dateStr) || 'Mother';
             const isHoliday = holidayDates.has(dateStr);
             return (
-              <DayCell key={dayIndex} day={day} careWith={careWith} isHoliday={isHoliday} />
+              <DayCell key={dayIndex} day={day} careWith={careWith} isHoliday={isHoliday} fatherColor={fatherColor} motherColor={motherColor} />
             );
           })}
         </View>
@@ -125,7 +131,13 @@ function MonthGrid({ year, month, assignmentMap, holidayDates }: MonthGridProps)
   );
 }
 
-export function CareCalendar({ year, assignments, state }: CareCalendarProps) {
+export function CareCalendar({
+  year,
+  assignments,
+  state,
+  fatherColor = FATHER_COLOR_DEFAULT,
+  motherColor = MOTHER_COLOR_DEFAULT
+}: CareCalendarProps) {
   const assignmentMap = useMemo(() => {
     const map = new Map<string, CareParent>();
     assignments.forEach((a) => {
@@ -153,11 +165,11 @@ export function CareCalendar({ year, assignments, state }: CareCalendarProps) {
         <Text style={textStyles.yearTitle}>Care Calendar {year}</Text>
         <View style={viewStyles.legend}>
           <View style={viewStyles.legendItem}>
-            <View style={[viewStyles.legendDot, { backgroundColor: FATHER_COLOR }]} />
+            <View style={[viewStyles.legendDot, { backgroundColor: fatherColor }]} />
             <Text style={textStyles.legendText}>Father</Text>
           </View>
           <View style={viewStyles.legendItem}>
-            <View style={[viewStyles.legendDot, { backgroundColor: MOTHER_COLOR }]} />
+            <View style={[viewStyles.legendDot, { backgroundColor: motherColor }]} />
             <Text style={textStyles.legendText}>Mother</Text>
           </View>
           <View style={viewStyles.legendItem}>
@@ -175,6 +187,8 @@ export function CareCalendar({ year, assignments, state }: CareCalendarProps) {
             month={month}
             assignmentMap={assignmentMap}
             holidayDates={holidayDates}
+            fatherColor={fatherColor}
+            motherColor={motherColor}
           />
         ))}
       </View>
@@ -190,7 +204,9 @@ export function generateCalendarHTML(
   motherNights: number,
   fatherNights: number,
   motherPercentage: number,
-  fatherPercentage: number
+  fatherPercentage: number,
+  fatherColor: string = FATHER_COLOR_DEFAULT,
+  motherColor: string = MOTHER_COLOR_DEFAULT
 ): string {
   const assignmentMap = new Map<string, CareParent>();
   assignments.forEach((a) => {
@@ -259,8 +275,8 @@ export function generateCalendarHTML(
     .legend { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
     .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #475569; }
     .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
-    .legend-dot.father { background: #60a5fa; }
-    .legend-dot.mother { background: #f472b6; }
+    .legend-dot.father { background: ${fatherColor}; }
+    .legend-dot.mother { background: ${motherColor}; }
     .legend-line { width: 12px; height: 3px; background: #94a3b8; }
     .months-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
     .month { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; }
@@ -270,8 +286,8 @@ export function generateCalendarHTML(
     .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
     .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 9px; font-weight: 500; color: #fff; position: relative; }
     .day-cell.empty { background: transparent; }
-    .day-cell.father { background: #60a5fa; }
-    .day-cell.mother { background: #f472b6; }
+    .day-cell.father { background: ${fatherColor}; }
+    .day-cell.mother { background: ${motherColor}; }
     .day-cell.holiday::after { content: ''; position: absolute; bottom: 1px; left: 25%; right: 25%; height: 2px; background: #475569; border-radius: 1px; }
     .footer { margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 10px; color: #94a3b8; }
   </style>

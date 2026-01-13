@@ -58,7 +58,7 @@ export default function ContactPage() {
       />
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         {/* Header */}
-        <CalculatorHeader title="Contact" showBackButton={true} />
+        <CalculatorHeader title="Contact" showBackButton={true} maxWidth={MAX_FORM_WIDTH} />
 
         <ScrollView
           style={styles.scrollView}

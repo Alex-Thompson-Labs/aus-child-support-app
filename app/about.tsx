@@ -47,7 +47,7 @@ export default function AboutPage() {
             />
             <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
                 {/* Header */}
-                <CalculatorHeader title="About Us" showBackButton={true} />
+                <CalculatorHeader title="About Us" showBackButton={true} maxWidth={MAX_FORM_WIDTH} />
 
                 <ScrollView
                     style={styles.scrollView}

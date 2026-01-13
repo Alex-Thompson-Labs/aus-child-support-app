@@ -1,27 +1,27 @@
 import { Feather } from '@expo/vector-icons';
-import { Picker } from '@react-native-picker/picker'; // Ensure this is installed
+import { isValid, parseISO } from 'date-fns';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Modal,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  Alert,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CareCalendar } from '../components/CareCalendar';
 import {
-    AustralianState,
-    calculateCareFromOrder,
-    CareCalculationResult,
-    CourtOrderJSON,
+  AustralianState,
+  calculateCareFromOrder,
+  CareCalculationResult,
+  CourtOrderJSON,
 } from '../utils/CareCalculator';
 import { generateCareCalendarPDF } from '../utils/pdfGenerator';
 import { supabase } from '../utils/supabase/client';
@@ -50,9 +50,14 @@ export default function CourtOrderToolScreen() {
   // Recalculate when state changes
   useEffect(() => {
     if (orderJson) {
+      const anchorDate =
+        orderJson.start_date && isValid(parseISO(orderJson.start_date))
+          ? parseISO(orderJson.start_date)
+          : new Date();
+
       const calcResult = calculateCareFromOrder(
         orderJson,
-        new Date(),
+        anchorDate,
         selectedState
       );
       setResult(calcResult);
@@ -147,13 +152,23 @@ export default function CourtOrderToolScreen() {
 
       if (!data) throw new Error('No data returned');
 
+      // Handle validation errors from the AI
+      if (data.error === 'INVALID_DOCUMENT_TYPE') {
+        throw new Error(data.reason || 'Invalid document type. Please upload a valid Court Order.');
+      }
+
       console.log('Analyzed JSON:', data);
       setOrderJson(data);
 
       // Run local calculation
+      const anchorDate =
+        data.start_date && isValid(parseISO(data.start_date))
+          ? parseISO(data.start_date)
+          : new Date();
+
       const calcResult = calculateCareFromOrder(
         data,
-        new Date(),
+        anchorDate,
         selectedState
       );
       setResult(calcResult);
@@ -228,20 +243,11 @@ export default function CourtOrderToolScreen() {
                 <Text style={styles.successTitle}>Analysis Complete</Text>
               </View>
 
-              {/* State Selector */}
-              <View style={styles.stateSelectorContainer}>
-                <Text style={styles.stateLabel}>School Holidays State:</Text>
-                <View style={styles.pickerWrapper}>
-                  <Picker
-                    selectedValue={selectedState}
-                    onValueChange={(itemValue) => setSelectedState(itemValue)}
-                    style={styles.picker}
-                  >
-                    {STATES.map((s) => (
-                      <Picker.Item key={s} label={s} value={s} />
-                    ))}
-                  </Picker>
-                </View>
+              <View style={styles.calculationDetails}>
+                <Text style={styles.detailText}>
+                  Calculation Duration: <Text style={{ fontWeight: 'bold' }}>{result.totalDays} Days</Text>
+                  {result.totalDays > 365 ? ' (2 Years)' : ' (1 Year)'}
+                </Text>
               </View>
 
               <View style={styles.statRow}>
@@ -353,8 +359,8 @@ export default function CourtOrderToolScreen() {
           </Pressable>
         </View>
         {result && (
-          <CareCalendar 
-            year={new Date().getFullYear()} 
+          <CareCalendar
+            year={new Date().getFullYear()}
             assignments={result.assignments}
             state={selectedState}
           />
@@ -565,5 +571,17 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     padding: 4,
+  },
+  calculationDetails: {
+    marginBottom: 16,
+    padding: 8,
+    backgroundColor: '#eff6ff',
+    borderRadius: 8,
+    alignItems: 'center',
+    width: '100%',
+  },
+  detailText: {
+    color: '#3b82f6',
+    fontSize: 14,
   },
 });
