@@ -6,6 +6,7 @@
  */
 
 import { LoadingFallback } from '@/src/components/ui/LoadingFallback';
+import { Env } from '@/src/config/env';
 import { getSupabaseClient } from '@/src/utils/supabase';
 import { Redirect, Slot, usePathname } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -37,8 +38,9 @@ export default function AdminLayout() {
                 return;
             }
 
-            // Verify admin role from app_metadata (set server-side only)
-            if (!hasAdminRole(session.user.app_metadata)) {
+            // Verify admin role from app_metadata OR explicit email whitelist
+            // This ensures the admin email always has access even if role is missing
+            if (!hasAdminRole(session.user.app_metadata) && session.user.email !== Env.ADMIN_EMAIL) {
                 console.log('[AdminLayout] User does not have admin role - signing out');
                 await supabase.auth.signOut();
                 setAuthState('unauthenticated');

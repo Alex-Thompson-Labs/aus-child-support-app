@@ -4,10 +4,9 @@
  * Message textarea for additional user notes.
  */
 
+import { FormField } from '@/src/components/ui/FormField';
 import React from 'react';
-import { Text, TextInput, View } from 'react-native';
 import type { AdditionalDetailsSectionProps } from '../types';
-import { useInquiryStyles } from '../useInquiryStyles';
 import { VALIDATION } from '../validators';
 
 export function AdditionalDetailsSection({
@@ -21,39 +20,26 @@ export function AdditionalDetailsSection({
   onBlur,
   messageRef,
 }: AdditionalDetailsSectionProps) {
-  const { formStyles, colors } = useInquiryStyles();
   const isRequired = financialTags.includes('Other');
 
   return (
-    <View style={formStyles.inputContainer}>
-      <Text style={formStyles.fieldLabel}>
-        Additional Details {isRequired ? '*' : '(Optional)'}
-      </Text>
-      <TextInput
-        ref={messageRef}
-        style={[
-          formStyles.input,
-          formStyles.textArea,
-          touched.message && errors.message && formStyles.inputError,
-        ]}
-        placeholder="Is there anything specific you want the lawyer to know?..."
-        placeholderTextColor={colors.textMuted}
-        value={message}
-        onChangeText={(value) => onTextChange('message', value, setMessage)}
-        onBlur={() => onBlur('message')}
-        multiline
-        numberOfLines={4}
-        maxLength={VALIDATION.MESSAGE_MAX_LENGTH}
-        editable={!isSubmitting}
-        accessibilityLabel="Additional details"
-        accessibilityHint="Enter any additional information you want to share"
-      />
-      <Text style={formStyles.charCount}>
-        {message.length}/{VALIDATION.MESSAGE_MAX_LENGTH}
-      </Text>
-      {touched.message && errors.message && (
-        <Text style={formStyles.errorText}>{errors.message}</Text>
-      )}
-    </View>
+    <FormField
+      ref={messageRef}
+      label={`Additional Details${isRequired ? '' : ' (Optional)'}`}
+      required={isRequired}
+      error={errors.message}
+      showError={touched.message && !!errors.message}
+      charCount={`${message.length}/${VALIDATION.MESSAGE_MAX_LENGTH}`}
+      placeholder="Is there anything specific you want the lawyer to know?..."
+      value={message}
+      onChangeText={(value: string) => onTextChange('message', value, setMessage)}
+      onBlur={() => onBlur('message')}
+      multiline
+      numberOfLines={4}
+      maxLength={VALIDATION.MESSAGE_MAX_LENGTH}
+      editable={!isSubmitting}
+      accessibilityLabel="Additional details"
+      accessibilityHint="Enter any additional information you want to share"
+    />
   );
 }

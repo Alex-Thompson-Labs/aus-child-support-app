@@ -3,6 +3,7 @@
  * FOR SCREENSHOT ONLY - UPDATED HEARING DATE
  */
 
+import { TrustBadges } from '@/src/components/ui/TrustBadges';
 import { exportLeadAsPDF } from '@/src/utils/exportLeadPDF';
 import { formatCurrency } from '@/src/utils/formatters';
 import { isWeb, webClickableStyles } from '@/src/utils/responsive';
@@ -64,11 +65,7 @@ export default function ViewLeadScreen() {
           <View style={styles.headerBox}>
             <View style={styles.headerTopRow}>
               <Text style={styles.headerTitle}>Client File</Text>
-              <View style={styles.secureBadge}>
-                <Text style={styles.secureBadgeText}>
-                  🔒 SECURE PARTNER PORTAL
-                </Text>
-              </View>
+              <TrustBadges variant="secure" text="SECURE PARTNER PORTAL" />
             </View>
             <Text style={styles.headerSubtitle}>
               <Text style={styles.headerRefBold}>Ref: #8921</Text> • Submitted
@@ -235,17 +232,6 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   headerTitle: { fontSize: 20, fontWeight: '800', color: '#0f172a' },
-  secureBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f8fafc',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  secureBadgeText: { fontSize: 9, color: '#64748b', fontWeight: '700' },
   headerSubtitle: { fontSize: 12, color: '#64748b' },
   headerRefBold: {
     fontWeight: '800',

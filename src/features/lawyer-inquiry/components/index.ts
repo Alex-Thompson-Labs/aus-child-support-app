@@ -2,12 +2,12 @@
  * Lawyer Inquiry Feature - Components
  */
 
-export { SuccessView } from './SuccessView';
+export { AdditionalDetailsSection } from './AdditionalDetailsSection';
+export { ConsentSection } from './ConsentSection';
 export { EnrichmentView } from './EnrichmentView';
-export { TrustBadge } from './TrustBadge';
+export { FinancialSection } from './FinancialSection';
 export { FormHeader } from './FormHeader';
 export { PersonalInfoSection } from './PersonalInfoSection';
 export { SpecialCircumstancesSection } from './SpecialCircumstancesSection';
-export { FinancialSection } from './FinancialSection';
-export { AdditionalDetailsSection } from './AdditionalDetailsSection';
-export { ConsentSection } from './ConsentSection';
+export { SuccessView } from './SuccessView';
+

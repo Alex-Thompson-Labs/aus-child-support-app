@@ -5,6 +5,7 @@
  */
 
 import { Colors } from '@/constants/theme';
+import { Env } from '@/src/config/env';
 import {
   MAX_FORM_WIDTH,
   isWeb,
@@ -68,8 +69,8 @@ export default function AdminLoginScreen() {
       return;
     }
 
-    // Only allow alex@auschildsupport.com
-    if (email.toLowerCase().trim() !== 'alex@auschildsupport.com') {
+    // Only allow admin email
+    if (email.toLowerCase().trim() !== Env.ADMIN_EMAIL.toLowerCase()) {
       if (Platform.OS === 'web') {
         alert('Unauthorized\n\nOnly admin account can access this area.');
       } else {
@@ -151,7 +152,7 @@ export default function AdminLoginScreen() {
             <Text style={styles.label}>Email</Text>
             <TextInput
               style={[styles.input, isWeb && webInputStyles]}
-              placeholder="alex@auschildsupport.com"
+              placeholder={Env.ADMIN_EMAIL}
               placeholderTextColor="#64748b"
               value={email}
               onChangeText={setEmail}

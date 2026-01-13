@@ -6,6 +6,8 @@
  */
 
 import DatePickerField from '@/src/components/ui/DatePickerField';
+import { FormField } from '@/src/components/ui/FormField';
+import { TrustBadges } from '@/src/components/ui/TrustBadges';
 import { searchCountries } from '@/src/utils/all-countries';
 import { isWeb } from '@/src/utils/responsive';
 import { Ionicons } from '@expo/vector-icons';
@@ -113,9 +115,7 @@ export function FinancialSection({
         accessibilityState={{ expanded: isSummaryOpen }}
         accessibilityLabel="Case Eligibility Check section, tap to expand or collapse"
       >
-        <View style={financialStyles.secureBadge}>
-          <Text style={financialStyles.secureBadgeText}>SECURE</Text>
-        </View>
+        <TrustBadges variant="secure" text="SECURE" icon="" />
         <Text style={financialStyles.financialSectionHeaderText}>
           Case Eligibility Check
         </Text>
@@ -247,104 +247,73 @@ export function FinancialSection({
           </Text>
 
           {/* Your Income Input */}
-          <View style={formStyles.inputContainer}>
-            <Text style={formStyles.fieldLabel}>
-              Your Approximate Annual Income *
-            </Text>
-            <TextInput
-              ref={manualIncomeARef}
-              style={[
-                formStyles.input,
-                touched.manualIncomeA &&
-                errors.manualIncomeA &&
-                formStyles.inputError,
-              ]}
-              placeholder="e.g. 75000"
-              placeholderTextColor={colors.textMuted}
-              value={manualIncomeA}
-              onChangeText={(text) => {
-                const val = text.replace(/[^0-9]/g, '');
-                onTextChange('manualIncomeA', val, setManualIncomeA);
-              }}
-              onBlur={() => onBlur('manualIncomeA')}
-              keyboardType="numeric"
-              returnKeyType="next"
-              onSubmitEditing={() => manualIncomeBRef?.current?.focus()}
-              editable={!isSubmitting}
-              accessibilityLabel="Your approximate annual income"
-              accessibilityHint="Enter your annual income before tax"
-              {...(isWeb && { inputMode: 'numeric' as any })}
-            />
-            {touched.manualIncomeA && errors.manualIncomeA && (
-              <Text style={formStyles.errorText}>{errors.manualIncomeA}</Text>
-            )}
-          </View>
+          <FormField
+            ref={manualIncomeARef}
+            label="Your Approximate Annual Income"
+            required
+            error={errors.manualIncomeA}
+            showError={touched.manualIncomeA && !!errors.manualIncomeA}
+            placeholder="e.g. 75000"
+            value={manualIncomeA}
+            onChangeText={(text: string) => {
+              const val = text.replace(/[^0-9]/g, '');
+              onTextChange('manualIncomeA', val, setManualIncomeA);
+            }}
+            onBlur={() => onBlur('manualIncomeA')}
+            keyboardType="numeric"
+            returnKeyType="next"
+            onSubmitEditing={() => manualIncomeBRef?.current?.focus()}
+            editable={!isSubmitting}
+            accessibilityLabel="Your approximate annual income"
+            accessibilityHint="Enter your annual income before tax"
+            {...(isWeb && { inputMode: 'numeric' as any })}
+          />
 
           {/* Other Parent's Income Input */}
-          <View style={formStyles.inputContainer}>
-            <Text style={formStyles.fieldLabel}>
-              Other Parent&apos;s Approximate Income *
-            </Text>
-            <TextInput
-              ref={manualIncomeBRef}
-              style={[
-                formStyles.input,
-                touched.manualIncomeB &&
-                errors.manualIncomeB &&
-                formStyles.inputError,
-              ]}
-              placeholder="e.g. 60000"
-              placeholderTextColor={colors.textMuted}
-              value={manualIncomeB}
-              onChangeText={(text) => {
-                const val = text.replace(/[^0-9]/g, '');
-                onTextChange('manualIncomeB', val, setManualIncomeB);
-              }}
-              onBlur={() => onBlur('manualIncomeB')}
-              keyboardType="numeric"
-              returnKeyType="next"
-              onSubmitEditing={() => manualChildrenRef?.current?.focus()}
-              editable={!isSubmitting}
-              accessibilityLabel="Other parent's approximate annual income"
-              accessibilityHint="Enter the other parent's estimated annual income"
-              {...(isWeb && { inputMode: 'numeric' as any })}
-            />
-            {touched.manualIncomeB && errors.manualIncomeB && (
-              <Text style={formStyles.errorText}>{errors.manualIncomeB}</Text>
-            )}
-          </View>
+          <FormField
+            ref={manualIncomeBRef}
+            label="Other Parent's Approximate Income"
+            required
+            error={errors.manualIncomeB}
+            showError={touched.manualIncomeB && !!errors.manualIncomeB}
+            placeholder="e.g. 60000"
+            value={manualIncomeB}
+            onChangeText={(text: string) => {
+              const val = text.replace(/[^0-9]/g, '');
+              onTextChange('manualIncomeB', val, setManualIncomeB);
+            }}
+            onBlur={() => onBlur('manualIncomeB')}
+            keyboardType="numeric"
+            returnKeyType="next"
+            onSubmitEditing={() => manualChildrenRef?.current?.focus()}
+            editable={!isSubmitting}
+            accessibilityLabel="Other parent's approximate annual income"
+            accessibilityHint="Enter the other parent's estimated annual income"
+            {...(isWeb && { inputMode: 'numeric' as any })}
+          />
 
           {/* Number of Children Input */}
-          <View style={formStyles.inputContainer}>
-            <Text style={formStyles.fieldLabel}>Number of Children *</Text>
-            <TextInput
-              ref={manualChildrenRef}
-              style={[
-                formStyles.input,
-                touched.manualChildren &&
-                errors.manualChildren &&
-                formStyles.inputError,
-              ]}
-              placeholder="e.g. 2"
-              placeholderTextColor={colors.textMuted}
-              value={manualChildren}
-              onChangeText={(text) => {
-                const val = text.replace(/[^0-9]/g, '');
-                onTextChange('manualChildren', val, setManualChildren);
-              }}
-              onBlur={() => onBlur('manualChildren')}
-              keyboardType="numeric"
-              returnKeyType="done"
-              maxLength={2}
-              editable={!isSubmitting}
-              accessibilityLabel="Number of children"
-              accessibilityHint="Enter the number of children involved"
-              {...(isWeb && { inputMode: 'numeric' as any })}
-            />
-            {touched.manualChildren && errors.manualChildren && (
-              <Text style={formStyles.errorText}>{errors.manualChildren}</Text>
-            )}
-          </View>
+          <FormField
+            ref={manualChildrenRef}
+            label="Number of Children"
+            required
+            error={errors.manualChildren}
+            showError={touched.manualChildren && !!errors.manualChildren}
+            placeholder="e.g. 2"
+            value={manualChildren}
+            onChangeText={(text: string) => {
+              const val = text.replace(/[^0-9]/g, '');
+              onTextChange('manualChildren', val, setManualChildren);
+            }}
+            onBlur={() => onBlur('manualChildren')}
+            keyboardType="numeric"
+            returnKeyType="done"
+            maxLength={2}
+            editable={!isSubmitting}
+            accessibilityLabel="Number of children"
+            accessibilityHint="Enter the number of children involved"
+            {...(isWeb && { inputMode: 'numeric' as any })}
+          />
         </View>
       ))}
 

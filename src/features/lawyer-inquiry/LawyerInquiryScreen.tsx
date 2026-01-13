@@ -6,6 +6,7 @@
  */
 
 import { StepProgressIndicator } from '@/src/components/ui/StepProgressIndicator';
+import { TrustBadges } from '@/src/components/ui/TrustBadges';
 import { PARTNERS, type PartnerKey } from '@/src/config/partners';
 import { isWeb, MAX_CALCULATOR_WIDTH } from '@/src/utils/responsive';
 import React from 'react';
@@ -20,7 +21,6 @@ import { FormHeader } from './components/FormHeader';
 import { PersonalInfoSection } from './components/PersonalInfoSection';
 import { SpecialCircumstancesSection } from './components/SpecialCircumstancesSection';
 import { SuccessView } from './components/SuccessView';
-import { TrustBadge } from './components/TrustBadge';
 import { useInquiryForm } from './hooks/useInquiryForm';
 import { useRouteParams } from './hooks/useRouteParams';
 import { useInquiryStyles } from './useInquiryStyles';
@@ -121,7 +121,7 @@ export default function LawyerInquiryScreen() {
         style={containerStyles.keyboardView}
       >
         {/* Trust Badge */}
-        <TrustBadge />
+        <TrustBadges variant="banner" />
 
         {/* Progress Indicator - Step 3: Next Steps */}
         <View style={[

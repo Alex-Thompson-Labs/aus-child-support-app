@@ -5,28 +5,29 @@
  */
 
 import { Colors } from '@/constants/theme';
+import { Env } from '@/src/config/env';
 import { exportLeadAsPDF } from '@/src/utils/exportLeadPDF';
 import { formatCurrency } from '@/src/utils/formatters';
 import {
-    isWeb,
-    MAX_CONTENT_WIDTH,
-    webClickableStyles,
-    webInputStyles,
+  isWeb,
+  MAX_CONTENT_WIDTH,
+  webClickableStyles,
+  webInputStyles,
 } from '@/src/utils/responsive';
 import { getSupabaseClient, type LeadSubmission } from '@/src/utils/supabase';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Clipboard,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  Alert,
+  Clipboard,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -60,7 +61,7 @@ export default function LeadDetailScreen() {
 
       if (
         !session ||
-        session.user.email?.toLowerCase() !== 'alex@auschildsupport.com'
+        session.user.email?.toLowerCase() !== Env.ADMIN_EMAIL.toLowerCase()
       ) {
         router.replace('/admin/login');
         return;
