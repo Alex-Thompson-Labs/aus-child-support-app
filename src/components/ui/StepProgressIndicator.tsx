@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import { useAppTheme } from '../../theme';
 
+
 export interface StepProgressIndicatorProps {
     /**
      * Current step (1-3)
@@ -35,6 +36,16 @@ export interface StepProgressIndicatorProps {
      * @default false
      */
     compact?: boolean;
+    /**
+     * Progress percentage for step 1 (0-100)
+     * Allows granular filling of the line between step 1 and 2
+     */
+    step1Progress?: number;
+    /**
+     * Progress percentage for step 2 (0-100)
+     * Allows granular filling of the line between step 2 and 3
+     */
+    step2Progress?: number;
 }
 
 interface Step {
@@ -53,6 +64,8 @@ export function StepProgressIndicator({
     currentStep,
     showLabels = true,
     compact = false,
+    step1Progress = 0,
+    step2Progress = 0,
 }: StepProgressIndicatorProps) {
     const { colors } = useAppTheme();
 
@@ -103,15 +116,37 @@ export function StepProgressIndicator({
         }
     };
 
-    const getConnectorStyle = (stepNumber: number) => {
-        const isAfterCurrent = stepNumber >= currentStep;
-        return {
+    const renderConnector = (stepNumber: number) => {
+        // Connector connects stepNumber and stepNumber + 1
+        const containerStyle = {
             flex: 1,
             height: compact ? 3 : 4,
-            backgroundColor: isAfterCurrent ? colors.border : colors.primary,
+            backgroundColor: colors.border,
             marginHorizontal: compact ? 4 : 8,
             borderRadius: 2,
+            overflow: 'hidden' as const,
         };
+
+        let fillPercent = 0;
+        if (currentStep > stepNumber) {
+            fillPercent = 100;
+        } else if (currentStep === stepNumber) {
+            if (stepNumber === 1) {
+                fillPercent = Math.min(100, Math.max(0, step1Progress));
+            } else if (stepNumber === 2) {
+                fillPercent = Math.min(100, Math.max(0, step2Progress));
+            }
+        }
+
+        return (
+            <View style={containerStyle}>
+                <View style={{
+                    width: `${fillPercent}%`,
+                    height: '100%',
+                    backgroundColor: colors.primary,
+                }} />
+            </View>
+        );
     };
 
     const renderCheckmark = () => (
@@ -170,7 +205,7 @@ export function StepProgressIndicator({
                             </View>
 
                             {/* Connector line */}
-                            {!isLast && <View style={getConnectorStyle(step.number)} />}
+                            {!isLast && renderConnector(step.number)}
                         </React.Fragment>
                     );
                 })}

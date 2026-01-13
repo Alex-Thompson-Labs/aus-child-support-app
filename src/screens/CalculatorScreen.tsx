@@ -303,11 +303,17 @@ export function CalculatorScreen() {
           </View>
         </View>
 
+
         {/* Progress Indicator */}
         <View style={isDesktop ? styles.progressContainer : styles.progressContainerMobile}>
           <StepProgressIndicator
-            currentStep={results && !isStale ? 2 : 1}
+            currentStep={1}
             compact={!isDesktop}
+            step1Progress={
+              (formState.incomeA > 0 ? 25 : 0) +
+              (formState.incomeB > 0 ? 25 : 0) +
+              (formState.children.length > 0 ? 50 : 0)
+            }
           />
         </View>
 

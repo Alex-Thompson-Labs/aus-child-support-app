@@ -549,7 +549,11 @@ export function CalculatorResults({
             { backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
             webModalContainerStyle,
           ]}>
-            <StepProgressIndicator currentStep={2} compact />
+            <StepProgressIndicator
+              currentStep={2}
+              compact
+              step2Progress={(localFormData.selectedCircumstances?.length ?? 0) > 0 ? 100 : 0}
+            />
           </View>
           {renderBreakdownContent()}
         </View>
