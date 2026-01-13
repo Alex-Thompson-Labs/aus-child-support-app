@@ -25,6 +25,7 @@ import {
   AssessmentYear,
   getYearConstants,
 } from '../utils/child-support-constants';
+import { triggerSuccessHaptic } from '../utils/haptics';
 import {
   applyFARMultiChildCap,
   applyMARMultiCaseCap,
@@ -909,6 +910,8 @@ export function useCalculator() {
         if (calculationResults) {
           setResults(calculationResults);
           setIsStale(false);
+          // Trigger haptic feedback on successful calculation (mobile only)
+          triggerSuccessHaptic();
         }
       }, 0);
     },

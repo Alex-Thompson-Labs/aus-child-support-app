@@ -95,6 +95,14 @@ export function useInquiryStyles() {
         borderBottomWidth: 1,
         borderBottomColor: isDark ? '#166534' : '#bbf7d0',
         alignItems: 'center',
+        ...Platform.select({
+          web: {
+            maxWidth: MAX_CALCULATOR_WIDTH,
+            width: '100%',
+            alignSelf: 'center',
+          },
+          default: {},
+        }),
       },
       trustBadge: {
         flexDirection: 'row',
