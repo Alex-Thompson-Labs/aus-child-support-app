@@ -124,7 +124,10 @@ export default function LawyerInquiryScreen() {
         <TrustBadge />
 
         {/* Progress Indicator - Step 3: Next Steps */}
-        <View style={{ backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
+        <View style={[
+          { backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
+          webContainerStyle,
+        ]}>
           <StepProgressIndicator currentStep={3} compact />
         </View>
 

@@ -545,7 +545,10 @@ export function CalculatorResults({
             </View>
           </View>
           {/* Progress Indicator - Step 2: Estimate */}
-          <View style={{ backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
+          <View style={[
+            { backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
+            webModalContainerStyle,
+          ]}>
             <StepProgressIndicator currentStep={2} compact />
           </View>
           {renderBreakdownContent()}
