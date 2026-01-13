@@ -5,27 +5,29 @@
  */
 
 import { Colors } from '@/constants/theme';
+import { LeadsTable } from '@/src/components/admin/LeadsTable';
+import { SummaryStatCard } from '@/src/components/admin/SummaryStatCard';
 import { formatCurrency } from '@/src/utils/formatters';
 import {
-    isWeb,
-    MAX_CONTENT_WIDTH,
-    webClickableStyles,
-    webInputStyles,
+  isWeb,
+  MAX_CONTENT_WIDTH,
+  webClickableStyles,
+  webInputStyles,
 } from '@/src/utils/responsive';
 import { getSupabaseClient, type LeadSubmission } from '@/src/utils/supabase';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Platform,
-    Pressable,
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  Alert,
+  Platform,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -44,7 +46,21 @@ export default function AdminDashboardScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | LeadStatus>('all');
-  const [sortBy, setSortBy] = useState<'date' | 'liability'>('date');
+  const [sortBy, setSortBy] = useState<'date' | 'liability' | 'income'>('date');
+
+  // Statistics
+  const totalLeads = leads.length;
+  const recentLeads = leads.filter(l => {
+    if (!l.created_at) return false;
+    const d = new Date(l.created_at);
+    const now = new Date();
+    return (now.getTime() - d.getTime()) < (7 * 24 * 60 * 60 * 1000);
+  }).length;
+
+  const avgIncome = leads.length > 0 ? leads.reduce((acc, curr) => {
+    const income = (curr.income_parent_a || 0) + (curr.income_parent_b || 0);
+    return acc + income;
+  }, 0) / leads.length : 0;
 
   const loadLeads = useCallback(async () => {
     try {
@@ -144,6 +160,12 @@ export default function AdminDashboardScreen() {
       );
     } else if (sortBy === 'liability') {
       filtered.sort((a, b) => b.annual_liability - a.annual_liability);
+    } else if (sortBy === 'income') {
+      filtered.sort((a, b) => {
+        const incA = (a.income_parent_a || 0) + (a.income_parent_b || 0);
+        const incB = (b.income_parent_a || 0) + (b.income_parent_b || 0);
+        return incB - incA;
+      });
     }
 
     setFilteredLeads(filtered);
@@ -307,6 +329,27 @@ export default function AdminDashboardScreen() {
           </ScrollView>
         </View>
 
+        {/* Summary Cards */}
+        <View style={styles.statsContainer}>
+          <SummaryStatCard
+            title="Total Leads"
+            value={totalLeads}
+            subtitle="All time"
+            style={{ marginRight: 12 }}
+          />
+          <SummaryStatCard
+            title="Last 7 Days"
+            value={recentLeads}
+            subtitle={`${recentLeads > 0 ? '+' : ''}${recentLeads} this week`}
+            style={{ marginRight: 12 }}
+          />
+          <SummaryStatCard
+            title="Avg Combined Income"
+            value={formatCurrency(avgIncome)}
+            subtitle="Per case"
+          />
+        </View>
+
         {/* Sort Options */}
         <View style={styles.sortContainer}>
           <Text style={styles.sortLabel}>Sort by:</Text>
@@ -342,6 +385,22 @@ export default function AdminDashboardScreen() {
               Liability
             </Text>
           </Pressable>
+          <Pressable
+            style={[
+              styles.sortButton,
+              sortBy === 'income' && styles.sortButtonActive,
+            ]}
+            onPress={() => setSortBy('income')}
+          >
+            <Text
+              style={[
+                styles.sortButtonText,
+                sortBy === 'income' && styles.sortButtonTextActive,
+              ]}
+            >
+              Income
+            </Text>
+          </Pressable>
         </View>
 
         {/* Leads List */}
@@ -363,50 +422,7 @@ export default function AdminDashboardScreen() {
               </Text>
             </View>
           ) : (
-            filteredLeads.map((lead) => (
-              <Pressable
-                key={lead.id}
-                style={[styles.leadCard, isWeb && webClickableStyles]}
-                onPress={() => handleLeadPress(lead)}
-              >
-                <View style={styles.leadCardHeader}>
-                  <Text style={styles.leadId}>Lead #{lead.id?.slice(0, 8)}</Text>
-                  <View
-                    style={[styles.statusBadge, getStatusBadgeStyle(lead.status)]}
-                  >
-                    <Text style={styles.statusBadgeText}>
-                      {lead.status || 'new'}
-                    </Text>
-                  </View>
-                </View>
-
-                <Text style={styles.leadName}>
-                  {getFirstName(lead.parent_name)}
-                </Text>
-
-                {lead.location && (
-                  <Text style={styles.leadLocation}>{lead.location}</Text>
-                )}
-
-                <View style={styles.leadFooter}>
-                  <Text style={styles.leadLiability}>
-                    {formatCurrency(lead.annual_liability)}/yr
-                  </Text>
-                  <Text style={styles.leadDate}>
-                    {formatDate(lead.created_at)}
-                  </Text>
-                </View>
-
-                {lead.complexity_reasons &&
-                  lead.complexity_reasons.length > 0 && (
-                    <View style={styles.complexityBadge}>
-                      <Text style={styles.complexityBadgeText}>
-                        {lead.complexity_reasons.length} complexity triggers
-                      </Text>
-                    </View>
-                  )}
-              </Pressable>
-            ))
+            <LeadsTable leads={filteredLeads} />
           )}
         </ScrollView>
       </View>
@@ -664,5 +680,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#f59e0b',
     fontWeight: '600',
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    padding: 16,
+    gap: 12,
   },
 });

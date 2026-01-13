@@ -5,8 +5,7 @@ import { SpecialCircumstancesPrompt } from '@/src/features/conversion/components
 import { useAnalytics } from '@/src/utils/analytics';
 import type { CalculationResults } from '@/src/utils/calculator';
 import {
-    ComplexityFormData,
-    detectComplexity,
+  ComplexityFormData,
 } from '@/src/utils/complexity-detection';
 import { eventBus } from '@/src/utils/event-bus';
 import { formatCurrency } from '@/src/utils/formatters';
@@ -14,17 +13,18 @@ import { MAX_CALCULATOR_WIDTH, useResponsive } from '@/src/utils/responsive';
 import { shadowPresets } from '@/src/utils/shadow-styles';
 import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import {
-    ActivityIndicator,
-    Modal,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View
+  ActivityIndicator,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FtbImpactCard } from './FtbImpactCard';
+import { PDFExportButton } from './results/PDFExportButton';
 import { getPayerText, ResultsHero } from './results/ResultsHero';
 
 // ============================================================================
@@ -155,8 +155,7 @@ export const triggerOpenBreakdown = () => {
  * - lastResultsKey: string - Tracks calculation changes to update formData
  *
  * Complexity Detection:
- * - Uses detectComplexity() utility with merged formData
- * - Detects: highValue, sharedCareDispute, specialCircumstances, bindingAgreement
+ * - Complexity logic is handled within SmartConversionFooter and SpecialCircumstancesPrompt
  * - Triggers used for navigation params and conversion messaging
  *
  * Navigation Behavior:
@@ -276,10 +275,7 @@ export function CalculatorResults({
     }
   }, [resetTimestamp]);
 
-  // Detected complexity flags - Memoized to prevent re-calculation on every render
-  const complexityFlags = React.useMemo(() => {
-    return detectComplexity(results, localFormData);
-  }, [results, localFormData]);
+
 
   // Check if any children exist in the calculation
   const hasChildren = formData?.children && formData.children.length > 0;

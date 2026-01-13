@@ -4,10 +4,10 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { CARE_PERIOD_DAYS } from '@/src/utils/child-support-constants';
 import {
-    isWeb,
-    useResponsive,
-    webClickableStyles,
-    webInputStyles,
+  isWeb,
+  useResponsive,
+  webClickableStyles,
+  webInputStyles,
 } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import { PeriodPicker } from './PeriodPicker';
@@ -339,6 +339,13 @@ export function ChildRow({
           {periodLabel}) exceeds max ({maxValue})
         </Text>
       )}
+
+      {/* Advisory when child is 17 */}
+      {child.age === 17 && (
+        <Text style={styles.advisory}>
+          Child is 17. Adult children (18+) are excluded from standard assessment.
+        </Text>
+      )}
     </View>
   );
 }
@@ -561,6 +568,12 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 11,
     color: '#dc2626', // red-600 - darker for readability
+    fontWeight: '500',
+  },
+  advisory: {
+    marginTop: 8,
+    fontSize: 11,
+    color: '#ea580c', // orange-600
     fontWeight: '500',
   },
 });

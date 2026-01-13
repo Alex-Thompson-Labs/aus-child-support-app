@@ -19,7 +19,9 @@
     "images:optimize": "node convert.js",
     "lint": "expo lint",
     "format": "prettier --write .",
-    "test": "echo 'No tests yet - add jest for Phase 2' && exit 0",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -80,7 +82,9 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
     "expo-atlas": "^0.4.0",
+    "fast-check": "^4.5.3",
     "jest": "~29.7.0",
+    "jest-expo": "^54.0.16",
     "lighthouse": "^13.0.1",
     "react-test-renderer": "19.1.0",
     "serve": "^14.2.5",
