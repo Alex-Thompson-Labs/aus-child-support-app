@@ -1,0 +1,230 @@
+import { useResponsive } from '@/src/utils/responsive';
+import { shadowPresets } from '@/src/utils/shadow-styles';
+import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+
+// Brand Blue from assessment breakdown
+const BRAND_NAVY = '#1e3a8a';
+
+// Basic back button for sub-pages
+interface CalculatorHeaderProps {
+    title?: string;
+    showBackButton?: boolean;
+}
+
+export function CalculatorHeader({ title, showBackButton }: CalculatorHeaderProps) {
+    const { isDesktop } = useResponsive();
+    const router = useRouter();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+    const handleNavigation = (route: string) => {
+        setIsMenuOpen(false);
+        if (route.startsWith('http')) {
+            Linking.openURL(route);
+        } else {
+            router.push(route as any);
+        }
+    };
+
+    // --- DESKTOP VIEW (Preserved) ---
+    /*
+    if (isDesktop) {
+        return (
+            // @ts-ignore - Web-only ARIA role
+            <View style={styles.header} accessibilityRole="banner">
+                <View style={styles.headerContainer}>
+                    <Image
+                        source={require('@/assets/images/webp/aus-child-support-logo-header-transparent.webp')}
+                        style={styles.logoDesktop}
+                        resizeMode="contain"
+                        accessibilityLabel="Australian Child Support Calculator"
+                    />
+
+                    <Pressable
+                        style={styles.blogButton}
+                        accessibilityRole="link"
+                        onPress={() => Linking.openURL('https://blog.auschildsupport.com')}
+                    >
+                        <Text style={styles.blogButtonText}>Blog</Text>
+                    </Pressable>
+                </View>
+            </View>
+        );
+    }
+    */
+
+    // --- MOBILE VIEW (New Implementation) ---
+    return (
+        // @ts-ignore - Web-only ARIA role
+        <View style={[styles.header, styles.mobileHeaderWrapper]} accessibilityRole="banner">
+            <View style={styles.mobileHeaderRow}>
+                {/* Left: Icon/Logo or Back Button */}
+                <View style={styles.leftElement}>
+                    {showBackButton ? (
+                        <Pressable
+                            onPress={() => router.canGoBack() ? router.back() : router.replace('/')}
+                            accessibilityRole="button"
+                            accessibilityLabel="Go back"
+                            hitSlop={12}
+                        >
+                            <Feather name="arrow-left" size={24} color={BRAND_NAVY} />
+                        </Pressable>
+                    ) : (
+                        <Image
+                            // Using the requested asset
+                            source={require('@/public/favicon-rounded-white-bg.png')}
+                            style={styles.iconMobile}
+                            resizeMode="contain"
+                        />
+                    )}
+                </View>
+
+                {/* Center: Title */}
+                <Text style={styles.centerTitle}>{title || 'Calculator'}</Text>
+
+                {/* Right: Hamburger */}
+                <Pressable
+                    style={styles.rightElement}
+                    onPress={toggleMenu}
+                    accessibilityRole="button"
+                    accessibilityLabel="Menu"
+                >
+                    <Feather name={isMenuOpen ? 'x' : 'menu'} size={28} color={BRAND_NAVY} />
+                </Pressable>
+            </View>
+
+            {/* Mobile Dropdown Menu */}
+            {isMenuOpen && (
+                <View style={styles.dropdownMenu}>
+                    <MenuItem label="Blog" onPress={() => handleNavigation('https://blog.auschildsupport.com')} />
+                    <MenuItem label="Court Order Tool" onPress={() => handleNavigation('/court-order-tool')} />
+                    <MenuItem label="About" onPress={() => handleNavigation('/about')} />
+                    <MenuItem label="Contact" onPress={() => handleNavigation('/contact')} />
+                    <MenuItem label="FAQ" onPress={() => handleNavigation('/faq')} />
+                </View>
+            )}
+        </View>
+    );
+}
+
+const MenuItem = ({ label, onPress }: { label: string; onPress: () => void }) => (
+    <Pressable
+        style={({ pressed }) => [
+            styles.menuItem,
+            pressed && styles.menuItemPressed
+        ]}
+        onPress={onPress}
+    >
+        <Text style={styles.menuItemText}>{label}</Text>
+        <Feather name="chevron-right" size={16} color="#94a3b8" />
+    </Pressable>
+);
+
+const styles = StyleSheet.create({
+    header: {
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
+        backgroundColor: '#ffffff',
+        width: '100%',
+        zIndex: 100, // Ensure header sits above content
+    },
+    mobileHeaderWrapper: {
+        // Relative positioning for absolute dropdown
+        position: 'relative',
+        zIndex: 2000,
+    },
+    headerContainer: {
+        width: '100%',
+        maxWidth: 850,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        alignSelf: 'center',
+        gap: 16,
+    },
+    mobileHeaderRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+    },
+    // Desktop Styles
+    logoDesktop: {
+        height: 52,
+        width: 286,
+        marginLeft: -35,
+        marginTop: -2,
+    },
+    blogButton: {
+        backgroundColor: '#0056b3',
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 20,
+        flexShrink: 0,
+        ...shadowPresets.small,
+    },
+    blogButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 14,
+    },
+    // Mobile Styles
+    leftElement: {
+        width: 40,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    iconMobile: {
+        width: 40,
+        height: 40,
+    },
+    centerTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: BRAND_NAVY,
+    },
+    rightElement: {
+        width: 40,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+    },
+    // Dropdown
+    dropdownMenu: {
+        position: 'absolute',
+        top: '100%',
+        left: 0,
+        right: 0,
+        backgroundColor: '#ffffff',
+        ...shadowPresets.card,
+        borderBottomLeftRadius: 16,
+        borderBottomRightRadius: 16,
+        paddingVertical: 8,
+        marginTop: 1, // Slight offset
+        zIndex: 2000,
+    },
+    menuItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f8fafc',
+    },
+    menuItemPressed: {
+        backgroundColor: '#f1f5f9',
+    },
+    menuItemText: {
+        fontSize: 16,
+        color: '#334155',
+        fontWeight: '500',
+    },
+});

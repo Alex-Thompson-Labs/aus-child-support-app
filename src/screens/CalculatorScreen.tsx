@@ -1,25 +1,22 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Image,
-  KeyboardAvoidingView,
-  Linking,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable, // Keep Pressable for AI card
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCalculator } from '../hooks/useCalculator';
 import { convertCareToPercentage } from '../utils/care-utils';
 import { getYearConstants } from '../utils/child-support-constants';
 import { useResponsive } from '../utils/responsive';
-import { shadowPresets } from '../utils/shadow-styles';
 
 // ✅ STANDARD IMPORTS (Reliable)
-import { CalculatorFAQ, CalculatorForm, CalculatorResults, IncomeSupportModal } from '@/src/features/calculator';
+import { CalculatorFAQ, CalculatorForm, CalculatorHeader, CalculatorResults, IncomeSupportModal } from '@/src/features/calculator';
 import { Feather } from '@expo/vector-icons';
 import { PrivacyPolicyLink } from '../components/PrivacyPolicyLink';
 import { StepProgressIndicator } from '../components/ui/StepProgressIndicator';
@@ -275,39 +272,7 @@ export function CalculatorScreen() {
         style={styles.keyboardView}
       >
         {/* Header */}
-        {/* @ts-ignore - Web-only ARIA role */}
-        <View style={styles.header} accessibilityRole="banner">
-          {/* SEO: Visually hidden H1 for search engines and screen readers */}
-          {/* @ts-ignore - Web-only ARIA attributes */}
-          <Text
-            style={styles.visuallyHidden}
-            accessibilityRole="header"
-            aria-level="1"
-          >
-            Child Support Calculator Australia 2026
-          </Text>
-
-          <View
-            style={isDesktop ? styles.headerContainer : styles.mobileHeaderRow}
-          >
-            <Image
-              source={require('../../assets/images/webp/aus-child-support-logo-header-transparent.webp')}
-              style={isDesktop ? styles.logoDesktop : styles.logoMobile}
-              resizeMode="contain"
-              accessibilityLabel="Australian Child Support Calculator"
-            />
-
-            <Pressable
-              style={styles.blogButton}
-              accessibilityRole="button"
-              onPress={() =>
-                Linking.openURL('https://blog.auschildsupport.com')
-              }
-            >
-              <Text style={styles.blogButtonText}>Blog</Text>
-            </Pressable>
-          </View>
-        </View>
+        <CalculatorHeader />
 
 
         {/* Progress Indicator */}
@@ -338,7 +303,7 @@ export function CalculatorScreen() {
                 styles.aiCard,
                 pressed && { opacity: 0.9, transform: [{ scale: 0.99 }] }
               ]}
-              onPress={() => router.push('/court-order')}
+              onPress={() => router.push('/court-order-tool')}
             >
               <View style={styles.aiCardContent}>
                 <View style={styles.aiIconContainer}>
@@ -415,43 +380,6 @@ const styles = StyleSheet.create({
     height: 1,
     overflow: 'hidden',
   },
-  header: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-    backgroundColor: '#ffffff',
-    width: '100%',
-    alignItems: 'center',
-  },
-  mobileHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-    gap: 8,
-  },
-  headerContainer: {
-    width: '100%',
-    maxWidth: 850,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    alignSelf: 'center',
-    gap: 16,
-  },
-  logoMobile: {
-    height: 52,
-    width: 286,
-    marginLeft: -45,
-    marginTop: -2,
-  },
-  logoDesktop: {
-    height: 52,
-    width: 286,
-    marginLeft: -35,
-    marginTop: -2,
-  },
   bodyContainer: {
     width: '100%',
     maxWidth: 850,
@@ -460,19 +388,6 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
     marginRight: 'auto',
     gap: 16,
-  },
-  blogButton: {
-    backgroundColor: '#0056b3',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    flexShrink: 0,
-    ...shadowPresets.small,
-  },
-  blogButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 14,
   },
   content: {
     flex: 1,

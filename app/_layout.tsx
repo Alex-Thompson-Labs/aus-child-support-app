@@ -141,6 +141,10 @@ export default function RootLayout() {
                 headerShown: false,
               }}
             />
+            <Stack.Screen name="about" options={{ headerShown: false }} />
+            <Stack.Screen name="contact" options={{ headerShown: false }} />
+            <Stack.Screen name="faq" options={{ headerShown: false }} />
+            <Stack.Screen name="court-order-tool" options={{ headerShown: false }} />
             <Stack.Screen
               name="lawyer-inquiry"
               options={{

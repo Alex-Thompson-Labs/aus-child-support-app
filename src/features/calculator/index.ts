@@ -46,3 +46,5 @@ export { SpecialRateGlossary } from './components/breakdown/SpecialRateGlossary'
 export { ZeroLiabilityNotice } from './components/breakdown/ZeroLiabilityNotice';
 export { ZeroPaymentScenario } from './components/breakdown/ZeroPaymentScenario';
 
+export { CalculatorHeader } from './components/CalculatorHeader';
+

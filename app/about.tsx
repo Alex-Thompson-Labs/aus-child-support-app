@@ -1,4 +1,5 @@
 import { PageSEO } from '@/src/components/seo/PageSEO';
+import { CalculatorHeader } from '@/src/features/calculator';
 import { MAX_FORM_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import { useRouter } from 'expo-router';
@@ -46,23 +47,7 @@ export default function AboutPage() {
             />
             <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
                 {/* Header */}
-                <View style={styles.header}>
-                    <Pressable
-                        style={[styles.backButton, isWeb && webClickableStyles]}
-                        onPress={() => {
-                            if (router.canGoBack()) {
-                                router.back();
-                            } else {
-                                router.replace('/');
-                            }
-                        }}
-                        accessible={true}
-                        accessibilityRole="button"
-                        accessibilityLabel="Go back"
-                    >
-                        <Text style={styles.backButtonText}>{'<'} Back</Text>
-                    </Pressable>
-                </View>
+                <CalculatorHeader title="About Us" showBackButton={true} />
 
                 <ScrollView
                     style={styles.scrollView}

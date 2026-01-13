@@ -1,4 +1,5 @@
 import { PageSEO } from '@/src/components/seo/PageSEO';
+import { CalculatorHeader } from '@/src/features/calculator';
 import {
   MAX_FORM_WIDTH,
   isWeb,
@@ -41,10 +42,10 @@ export default function ContactPage() {
 
   const webContainerStyle = isWeb
     ? {
-        maxWidth: MAX_FORM_WIDTH,
-        width: '100%' as const,
-        alignSelf: 'center' as const,
-      }
+      maxWidth: MAX_FORM_WIDTH,
+      width: '100%' as const,
+      alignSelf: 'center' as const,
+    }
     : {};
 
   return (
@@ -57,23 +58,7 @@ export default function ContactPage() {
       />
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         {/* Header */}
-        <View style={styles.header}>
-          <Pressable
-            style={[styles.backButton, isWeb && webClickableStyles]}
-            onPress={() => {
-              if (router.canGoBack()) {
-                router.back();
-              } else {
-                router.replace('/');
-              }
-            }}
-            accessible={true}
-            accessibilityRole="button"
-            accessibilityLabel="Go back"
-          >
-            <Text style={styles.backButtonText}>{'<'} Back</Text>
-          </Pressable>
-        </View>
+        <CalculatorHeader title="Contact" showBackButton={true} />
 
         <ScrollView
           style={styles.scrollView}

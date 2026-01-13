@@ -75,14 +75,23 @@ Deno.serve(async (req) => {
               type: 'text',
               text: 'Here is the court order. Extract the care schedule JSON.',
             },
-            {
-              type: 'image',
-              source: {
-                type: 'base64',
-                media_type: mediaType || 'image/jpeg',
-                data: fileBase64,
+            mediaType === 'application/pdf'
+              ? {
+                type: 'document',
+                source: {
+                  type: 'base64',
+                  media_type: 'application/pdf',
+                  data: fileBase64,
+                },
+              }
+              : {
+                type: 'image',
+                source: {
+                  type: 'base64',
+                  media_type: mediaType || 'image/jpeg',
+                  data: fileBase64,
+                },
               },
-            },
           ],
         },
       ],

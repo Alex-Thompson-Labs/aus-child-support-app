@@ -1,168 +1,341 @@
-import { format, getDay, getDaysInMonth, startOfMonth } from 'date-fns';
-import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { CareCalculationResult, DayAssignment } from '../utils/CareCalculator';
+/**
+ * CareCalendar Component
+ * 
+ * Renders a full year view (Jan-Dec) showing care distribution between parents.
+ * - Father's Care: Blue (#60a5fa)
+ * - Mother's Care: Pink (#f472b6)
+ * - School Holidays: Grey underline indicator
+ */
+
+import {
+    addDays,
+    format,
+    getDay,
+    getDaysInMonth,
+    startOfMonth,
+} from 'date-fns';
+import React, { useMemo } from 'react';
+import { DimensionValue, Platform, ScrollView, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+
+import {
+    AustralianState,
+    CareParent,
+    DayAssignment,
+    getSchoolHolidays,
+} from '@/src/utils/CareCalculator';
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
+
+const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+const FATHER_COLOR = '#60a5fa';
+const MOTHER_COLOR = '#f472b6';
+const HOLIDAY_INDICATOR = '#94a3b8';
 
 interface CareCalendarProps {
-    result: CareCalculationResult;
-    year: number;
+  year: number;
+  assignments: DayAssignment[];
+  state: AustralianState;
 }
 
-export const CareCalendar: React.FC<CareCalendarProps> = ({ result, year }) => {
-    const months = Array.from({ length: 12 }, (_, i) => i); // 0-11
+interface DayCellProps {
+  day: number;
+  careWith: CareParent | null;
+  isHoliday: boolean;
+}
 
-    // Map assignments by date string for easy lookup
-    const assignmentMap = React.useMemo(() => {
-        const map = new Map<string, DayAssignment>();
-        result.assignments.forEach(a => map.set(a.dateStr, a));
-        return map;
-    }, [result]);
+function DayCell({ day, careWith, isHoliday }: DayCellProps) {
+  if (day === 0) {
+    return <View style={viewStyles.dayCell} />;
+  }
 
-    const renderMonth = (monthIndex: number) => {
-        const date = new Date(year, monthIndex, 1);
-        const monthName = format(date, 'MMMM');
-        const daysInMonth = getDaysInMonth(date);
-        const startDay = getDay(startOfMonth(date)); // 0 = Sunday, 1 = Monday, etc.
+  const backgroundColor = careWith === 'Father' ? FATHER_COLOR : MOTHER_COLOR;
 
-        const days = [];
-        // Padding for empty days at start of month
-        for (let i = 0; i < startDay; i++) {
-            days.push(<View key={`pad-${i}`} style={styles.dayCell} />);
-        }
+  return (
+    <View style={viewStyles.dayCell}>
+      <View style={[viewStyles.dayCircle, { backgroundColor }]}>
+        <Text style={textStyles.dayText}>{day}</Text>
+      </View>
+      {isHoliday && <View style={viewStyles.holidayIndicator} />}
+    </View>
+  );
+}
 
-        // Actual days
-        for (let d = 1; d <= daysInMonth; d++) {
-            const currentDate = new Date(year, monthIndex, d);
-            const dateStr = format(currentDate, 'yyyy-MM-dd');
-            const assignment = assignmentMap.get(dateStr);
+interface MonthGridProps {
+  year: number;
+  month: number;
+  assignmentMap: Map<string, CareParent>;
+  holidayDates: Set<string>;
+}
 
-            // Colors
-            let backgroundColor = '#e2e8f0'; // default gray
-            if (assignment) {
-                if (assignment.midnightOwner === 'Father') backgroundColor = '#60a5fa'; // Blue
-                if (assignment.midnightOwner === 'Mother') backgroundColor = '#f472b6'; // Pink
+function MonthGrid({ year, month, assignmentMap, holidayDates }: MonthGridProps) {
+  const firstDay = startOfMonth(new Date(year, month, 1));
+  const daysInMonth = getDaysInMonth(firstDay);
+  const startDayOfWeek = getDay(firstDay);
+
+  const weeks: number[][] = [];
+  let currentWeek: number[] = [];
+
+  for (let i = 0; i < startDayOfWeek; i++) {
+    currentWeek.push(0);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    currentWeek.push(day);
+    if (currentWeek.length === 7) {
+      weeks.push(currentWeek);
+      currentWeek = [];
+    }
+  }
+
+  if (currentWeek.length > 0) {
+    while (currentWeek.length < 7) {
+      currentWeek.push(0);
+    }
+    weeks.push(currentWeek);
+  }
+
+  return (
+    <View style={viewStyles.monthContainer}>
+      <Text style={textStyles.monthTitle}>{MONTH_NAMES[month]}</Text>
+      <View style={viewStyles.dayLabelsRow}>
+        {DAY_LABELS.map((label, i) => (
+          <Text key={i} style={textStyles.dayLabel}>{label}</Text>
+        ))}
+      </View>
+      {weeks.map((week, weekIndex) => (
+        <View key={weekIndex} style={viewStyles.weekRow}>
+          {week.map((day, dayIndex) => {
+            if (day === 0) {
+              return <DayCell key={dayIndex} day={0} careWith={null} isHoliday={false} />;
             }
-
-            // Holiday styling
-            const isHoliday = assignment?.reason.startsWith('holiday:');
-            const borderColor = isHoliday ? '#f59e0b' : 'transparent'; // Amber border for holidays
-
-            days.push(
-                <View key={d} style={[styles.dayCell, { backgroundColor, borderColor, borderWidth: isHoliday ? 2 : 0 }]}>
-                    <Text style={styles.dayText}>{d}</Text>
-                </View>
+            const dateStr = format(new Date(year, month, day), 'yyyy-MM-dd');
+            const careWith = assignmentMap.get(dateStr) || 'Mother';
+            const isHoliday = holidayDates.has(dateStr);
+            return (
+              <DayCell key={dayIndex} day={day} careWith={careWith} isHoliday={isHoliday} />
             );
-        }
+          })}
+        </View>
+      ))}
+    </View>
+  );
+}
 
-        return (
-            <View key={monthIndex} style={styles.monthContainer}>
-                <Text style={styles.monthTitle}>{monthName}</Text>
-                <View style={styles.daysGrid}>
-                    {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-                        <Text key={i} style={styles.dayHeader}>{day}</Text>
-                    ))}
-                    {days}
-                </View>
-            </View>
-        );
-    };
+export function CareCalendar({ year, assignments, state }: CareCalendarProps) {
+  const assignmentMap = useMemo(() => {
+    const map = new Map<string, CareParent>();
+    assignments.forEach((a) => {
+      map.set(a.dateStr, a.midnightOwner);
+    });
+    return map;
+  }, [assignments]);
 
-    return (
-        <ScrollView style={styles.container}>
-            <Text style={styles.yearTitle}>Care Calendar {year}</Text>
-            <View style={styles.legendContainer}>
-                <View style={styles.legendItem}>
-                    <View style={[styles.legendColor, { backgroundColor: '#f472b6' }]} />
-                    <Text style={styles.legendText}>Mother</Text>
-                </View>
-                <View style={styles.legendItem}>
-                    <View style={[styles.legendColor, { backgroundColor: '#60a5fa' }]} />
-                    <Text style={styles.legendText}>Father</Text>
-                </View>
-                <View style={styles.legendItem}>
-                    <View style={[styles.legendColor, { borderColor: '#f59e0b', borderWidth: 2, backgroundColor: 'transparent' }]} />
-                    <Text style={styles.legendText}>Holiday Rule</Text>
-                </View>
-            </View>
-            <View style={styles.monthsWrapper}>
-                {months.map(m => renderMonth(m))}
-            </View>
-        </ScrollView>
-    );
-};
+  const holidayDates = useMemo(() => {
+    const holidays = getSchoolHolidays(year, state);
+    const dates = new Set<string>();
+    holidays.forEach((holiday) => {
+      let current = holiday.start;
+      while (current <= holiday.end) {
+        dates.add(format(current, 'yyyy-MM-dd'));
+        current = addDays(current, 1);
+      }
+    });
+    return dates;
+  }, [year, state]);
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        backgroundColor: 'white',
-    },
-    yearTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 16,
-        color: '#0f172a',
-    },
-    legendContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginBottom: 24,
-        gap: 16,
-    },
-    legendItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    legendColor: {
-        width: 16,
-        height: 16,
-        borderRadius: 4,
-        marginRight: 8,
-    },
-    legendText: {
-        fontSize: 14,
-        color: '#334155',
-    },
-    monthsWrapper: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        gap: 24,
-    },
-    monthContainer: {
-        width: 160,
-        marginBottom: 16,
-    },
-    monthTitle: {
-        fontSize: 14,
-        fontWeight: '600',
-        marginBottom: 8,
-        textAlign: 'center',
-        color: '#1e293b',
-    },
-    daysGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-    },
-    dayHeader: {
-        width: 22,
-        height: 22,
-        fontSize: 10, // Reduced font size
-        textAlign: 'center',
-        color: '#64748b',
-        fontWeight: '500',
-    },
-    dayCell: {
-        width: 22,
-        height: 22,
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 0.5,
-        borderRadius: 2,
-    },
-    dayText: {
-        fontSize: 8, // Reduced font size
-        color: 'rgba(0,0,0,0.7)',
-    },
+  return (
+    <ScrollView style={viewStyles.container} contentContainerStyle={viewStyles.contentContainer}>
+      <View style={viewStyles.header}>
+        <Text style={textStyles.yearTitle}>Care Calendar {year}</Text>
+        <View style={viewStyles.legend}>
+          <View style={viewStyles.legendItem}>
+            <View style={[viewStyles.legendDot, { backgroundColor: FATHER_COLOR }]} />
+            <Text style={textStyles.legendText}>Father</Text>
+          </View>
+          <View style={viewStyles.legendItem}>
+            <View style={[viewStyles.legendDot, { backgroundColor: MOTHER_COLOR }]} />
+            <Text style={textStyles.legendText}>Mother</Text>
+          </View>
+          <View style={viewStyles.legendItem}>
+            <View style={[viewStyles.legendLine, { backgroundColor: HOLIDAY_INDICATOR }]} />
+            <Text style={textStyles.legendText}>School Holiday</Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={viewStyles.monthsGrid}>
+        {Array.from({ length: 12 }, (_, month) => (
+          <MonthGrid
+            key={month}
+            year={year}
+            month={month}
+            assignmentMap={assignmentMap}
+            holidayDates={holidayDates}
+          />
+        ))}
+      </View>
+    </ScrollView>
+  );
+}
+
+// For PDF generation - returns HTML string
+export function generateCalendarHTML(
+  year: number,
+  assignments: DayAssignment[],
+  state: AustralianState,
+  motherNights: number,
+  fatherNights: number,
+  motherPercentage: number,
+  fatherPercentage: number
+): string {
+  const assignmentMap = new Map<string, CareParent>();
+  assignments.forEach((a) => {
+    assignmentMap.set(a.dateStr, a.midnightOwner);
+  });
+
+  const holidays = getSchoolHolidays(year, state);
+  const holidayDates = new Set<string>();
+  holidays.forEach((holiday) => {
+    let current = holiday.start;
+    while (current <= holiday.end) {
+      holidayDates.add(format(current, 'yyyy-MM-dd'));
+      current = addDays(current, 1);
+    }
+  });
+
+  const generateMonthHTML = (month: number): string => {
+    const firstDay = startOfMonth(new Date(year, month, 1));
+    const daysInMonth = getDaysInMonth(firstDay);
+    const startDayOfWeek = getDay(firstDay);
+
+    let html = `
+      <div class="month">
+        <div class="month-title">${MONTH_NAMES[month]}</div>
+        <div class="day-labels">
+          ${DAY_LABELS.map(l => `<div class="day-label">${l}</div>`).join('')}
+        </div>
+        <div class="days-grid">
+    `;
+
+    for (let i = 0; i < startDayOfWeek; i++) {
+      html += '<div class="day-cell empty"></div>';
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = format(new Date(year, month, day), 'yyyy-MM-dd');
+      const careWith = assignmentMap.get(dateStr) || 'Mother';
+      const isHoliday = holidayDates.has(dateStr);
+      const colorClass = careWith === 'Father' ? 'father' : 'mother';
+      const holidayClass = isHoliday ? 'holiday' : '';
+
+      html += `<div class="day-cell ${colorClass} ${holidayClass}"><span>${day}</span></div>`;
+    }
+
+    html += '</div></div>';
+    return html;
+  };
+
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Care Calendar ${year}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px; background: #fff; }
+    .header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #e2e8f0; }
+    .logo { font-size: 14px; color: #64748b; margin-bottom: 5px; }
+    .title { font-size: 24px; font-weight: 700; color: #1e293b; }
+    .subtitle { font-size: 14px; color: #64748b; margin-top: 5px; }
+    .summary { display: flex; justify-content: center; gap: 40px; margin-bottom: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; }
+    .summary-item { text-align: center; }
+    .summary-label { font-size: 12px; color: #64748b; }
+    .summary-value { font-size: 20px; font-weight: 700; color: #1e293b; }
+    .summary-nights { font-size: 11px; color: #94a3b8; }
+    .legend { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #475569; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .legend-dot.father { background: #60a5fa; }
+    .legend-dot.mother { background: #f472b6; }
+    .legend-line { width: 12px; height: 3px; background: #94a3b8; }
+    .months-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+    .month { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; }
+    .month-title { font-size: 12px; font-weight: 600; color: #1e293b; text-align: center; margin-bottom: 8px; }
+    .day-labels { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 4px; }
+    .day-label { font-size: 9px; color: #94a3b8; text-align: center; }
+    .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+    .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 9px; font-weight: 500; color: #fff; position: relative; }
+    .day-cell.empty { background: transparent; }
+    .day-cell.father { background: #60a5fa; }
+    .day-cell.mother { background: #f472b6; }
+    .day-cell.holiday::after { content: ''; position: absolute; bottom: 1px; left: 25%; right: 25%; height: 2px; background: #475569; border-radius: 1px; }
+    .footer { margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 10px; color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">Australian Child Support Calculator</div>
+    <div class="title">Care Calendar ${year}</div>
+    <div class="subtitle">State: ${state} | Generated: ${format(new Date(), 'dd MMM yyyy')}</div>
+  </div>
+  <div class="summary">
+    <div class="summary-item">
+      <div class="summary-label">Mother</div>
+      <div class="summary-value">${motherPercentage.toFixed(1)}%</div>
+      <div class="summary-nights">${Math.round(motherNights / 2)} nights/year</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-label">Father</div>
+      <div class="summary-value">${fatherPercentage.toFixed(1)}%</div>
+      <div class="summary-nights">${Math.round(fatherNights / 2)} nights/year</div>
+    </div>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot father"></div> Father's Care</div>
+    <div class="legend-item"><div class="legend-dot mother"></div> Mother's Care</div>
+    <div class="legend-item"><div class="legend-line"></div> School Holiday</div>
+  </div>
+  <div class="months-grid">${Array.from({ length: 12 }, (_, m) => generateMonthHTML(m)).join('')}</div>
+  <div class="footer">This is an estimate based on the interpreted court order. For official assessments, contact Services Australia.<br>auschildsupport.com</div>
+</body>
+</html>`;
+}
+
+// Separate view and text styles to avoid type conflicts
+const viewStyles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#ffffff' } as ViewStyle,
+  contentContainer: { padding: 16 } as ViewStyle,
+  header: { marginBottom: 20 } as ViewStyle,
+  legend: { flexDirection: 'row', justifyContent: 'center', gap: 20, flexWrap: 'wrap' } as ViewStyle,
+  legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 } as ViewStyle,
+  legendDot: { width: 14, height: 14, borderRadius: 7 } as ViewStyle,
+  legendLine: { width: 14, height: 3, borderRadius: 1.5 } as ViewStyle,
+  monthsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 16 } as ViewStyle,
+  monthContainer: {
+    width: (Platform.OS === 'web' ? '23%' : '48%') as DimensionValue,
+    minWidth: 150,
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 8,
+  } as ViewStyle,
+  dayLabelsRow: { flexDirection: 'row', marginBottom: 4 } as ViewStyle,
+  weekRow: { flexDirection: 'row' } as ViewStyle,
+  dayCell: { flex: 1, aspectRatio: 1, alignItems: 'center', justifyContent: 'center', padding: 2 } as ViewStyle,
+  dayCircle: { width: '90%', aspectRatio: 1, borderRadius: 100, alignItems: 'center', justifyContent: 'center' } as ViewStyle,
+  holidayIndicator: { position: 'absolute', bottom: 2, width: '50%', height: 2, backgroundColor: HOLIDAY_INDICATOR, borderRadius: 1 } as ViewStyle,
 });
+
+const textStyles = StyleSheet.create({
+  yearTitle: { fontSize: 22, fontWeight: '700', color: '#1e293b', textAlign: 'center', marginBottom: 12 } as TextStyle,
+  legendText: { fontSize: 12, color: '#475569' } as TextStyle,
+  monthTitle: { fontSize: 14, fontWeight: '600', color: '#1e293b', textAlign: 'center', marginBottom: 8 } as TextStyle,
+  dayLabel: { flex: 1, fontSize: 10, color: '#94a3b8', textAlign: 'center' } as TextStyle,
+  dayText: { fontSize: 10, fontWeight: '500', color: '#ffffff' } as TextStyle,
+});
+
+export default CareCalendar;

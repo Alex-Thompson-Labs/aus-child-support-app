@@ -5,23 +5,23 @@ import * as FileSystem from 'expo-file-system';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    ActivityIndicator,
+    Alert,
+    Modal,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CareCalendar } from '../components/CareCalendar';
 import {
-  AustralianState,
-  calculateCareFromOrder,
-  CareCalculationResult,
-  CourtOrderJSON,
+    AustralianState,
+    calculateCareFromOrder,
+    CareCalculationResult,
+    CourtOrderJSON,
 } from '../utils/CareCalculator';
 import { generateCareCalendarPDF } from '../utils/pdfGenerator';
 import { supabase } from '../utils/supabase/client';
@@ -61,16 +61,44 @@ export default function CourtOrderToolScreen() {
 
   const pickDocument = async () => {
     try {
+      console.log('Opening document picker...');
       const result = await DocumentPicker.getDocumentAsync({
         type: ['image/*', 'application/pdf'],
         copyToCacheDirectory: true,
       });
 
+      console.log('Picker result:', result);
+
       if (result.canceled) return;
 
       const asset = result.assets[0];
-      analyzeOrder(asset.uri, asset.mimeType ?? 'image/jpeg');
+      if (!asset) {
+        throw new Error('No file selected');
+      }
+
+      // Robust MIME type detection
+      let mimeType = asset.mimeType;
+
+      // If MIME type is missing or generic/octet-stream, try to infer from extension
+      if (!mimeType || mimeType === 'application/octet-stream') {
+        const filename = asset.name.toLowerCase();
+        if (filename.endsWith('.pdf')) {
+          mimeType = 'application/pdf';
+        } else if (filename.endsWith('.png')) {
+          mimeType = 'image/png';
+        } else if (filename.endsWith('.jpg') || filename.endsWith('.jpeg')) {
+          mimeType = 'image/jpeg';
+        } else {
+          // Fallback default
+          mimeType = 'image/jpeg';
+        }
+      }
+
+      console.log('Selected file:', asset.name, 'MIME:', mimeType);
+
+      await analyzeOrder(asset.uri, mimeType);
     } catch (err: any) {
+      console.error('Pick error:', err);
       Alert.alert('Error picking file', err.message);
     }
   };
@@ -81,9 +109,29 @@ export default function CourtOrderToolScreen() {
     setOrderJson(null);
 
     try {
-      const base64 = await FileSystem.readAsStringAsync(uri, {
-        encoding: 'base64',
-      });
+      let base64;
+
+      if (Platform.OS === 'web') {
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const result = reader.result as string;
+            // Split to remove the data:mime/type;base64, prefix
+            const base64Data = result.split(',')[1];
+            resolve(base64Data);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      } else {
+        base64 = await FileSystem.readAsStringAsync(uri, {
+          encoding: 'base64',
+        });
+      }
+
+      console.log('Sending to backend...', { mimeType, size: base64.length });
 
       const { data, error } = await supabase.functions.invoke('analyze-order', {
         body: {
@@ -92,14 +140,17 @@ export default function CourtOrderToolScreen() {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw error;
+      }
+
       if (!data) throw new Error('No data returned');
 
       console.log('Analyzed JSON:', data);
       setOrderJson(data);
 
       // Run local calculation
-      // useEffect will trigger calculation, but we can do initial one here too for immediate feedback
       const calcResult = calculateCareFromOrder(
         data,
         new Date(),
@@ -107,10 +158,10 @@ export default function CourtOrderToolScreen() {
       );
       setResult(calcResult);
     } catch (err: any) {
-      console.error(err);
+      console.error('Analysis error:', err);
       Alert.alert(
         'Analysis Failed',
-        'Could not interpret the file. Please try a clearer image or a different file.'
+        err.message || 'Could not interpret the file. Please try a clearer image or a different file.'
       );
     } finally {
       setLoading(false);
@@ -302,7 +353,11 @@ export default function CourtOrderToolScreen() {
           </Pressable>
         </View>
         {result && (
-          <CareCalendar result={result} year={new Date().getFullYear()} />
+          <CareCalendar 
+            year={new Date().getFullYear()} 
+            assignments={result.assignments}
+            state={selectedState}
+          />
         )}
       </Modal>
     </SafeAreaView>
