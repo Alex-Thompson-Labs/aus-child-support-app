@@ -215,5 +215,9 @@ export interface CalculatorFormState {
   multiCaseA: MultiCaseInfo;
   multiCaseB: MultiCaseInfo;
   // Non-parent carer support (Formula 4)
+
   nonParentCarer: NonParentCarerInfo;
+  // Care Dispute (Lead Gen Hook)
+  isCareDisputed: boolean;
+  desiredCareNights?: number;
 }

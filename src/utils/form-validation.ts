@@ -74,7 +74,7 @@ export function sanitizePhone(phone: string): string {
     if (phoneNumber && phoneNumber.isValid()) {
       return phoneNumber.format('E.164');
     }
-  } catch (error) {
+  } catch {
     // Ignore parsing errors and fall back to basic sanitization
   }
 

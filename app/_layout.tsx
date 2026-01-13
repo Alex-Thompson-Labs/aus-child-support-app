@@ -26,7 +26,6 @@ export default function RootLayout() {
   const pathname = usePathname();
   const [appIsReady, setAppIsReady] = useState(false);
   // Force light mode
-  const isDark = false;
   const colors = SemanticColors.light;
 
   // Prepare the app by loading any required resources (fonts, assets, etc.)

@@ -14,12 +14,14 @@
  */
 
 import {
-    addDays,
-    format,
-    getDay,
-    getMonth,
-    getYear,
-    isWithinInterval
+  addDays,
+  addYears,
+  format,
+  getDay,
+  getMonth,
+  getYear,
+  isWithinInterval,
+  parseISO
 } from 'date-fns';
 
 // ============================================================================
@@ -27,6 +29,7 @@ import {
 // ============================================================================
 
 export type CareParent = 'Mother' | 'Father';
+export type AustralianState = 'VIC' | 'NSW' | 'QLD' | 'WA' | 'SA' | 'TAS' | 'ACT' | 'NT';
 
 export interface BasePatternEntry {
   day: string; // 'Monday', 'Tuesday', etc.
@@ -78,9 +81,19 @@ export interface CareCalculationResult {
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const SIMULATION_DAYS = 730; // 2 years
 
+export const SCHOOL_TERMS_2026: Record<AustralianState, { start: string; end: string }[]> = {
+  VIC: [{ start: '2026-01-27', end: '2026-04-02' }, { start: '2026-04-20', end: '2026-06-26' }, { start: '2026-07-13', end: '2026-09-18' }, { start: '2026-10-05', end: '2026-12-18' }],
+  NSW: [{ start: '2026-01-27', end: '2026-04-02' }, { start: '2026-04-20', end: '2026-07-03' }, { start: '2026-07-20', end: '2026-09-25' }, { start: '2026-10-12', end: '2026-12-17' }],
+  QLD: [{ start: '2026-01-27', end: '2026-04-02' }, { start: '2026-04-20', end: '2026-06-26' }, { start: '2026-07-13', end: '2026-09-18' }, { start: '2026-10-06', end: '2026-12-11' }],
+  WA: [{ start: '2026-02-02', end: '2026-04-02' }, { start: '2026-04-20', end: '2026-07-03' }, { start: '2026-07-20', end: '2026-09-25' }, { start: '2026-10-12', end: '2026-12-17' }],
+  SA: [{ start: '2026-01-27', end: '2026-04-10' }, { start: '2026-04-27', end: '2026-07-03' }, { start: '2026-07-20', end: '2026-09-25' }, { start: '2026-10-12', end: '2026-12-11' }],
+  TAS: [{ start: '2026-02-05', end: '2026-04-17' }, { start: '2026-05-04', end: '2026-07-10' }, { start: '2026-07-27', end: '2026-10-02' }, { start: '2026-10-19', end: '2026-12-18' }],
+  ACT: [{ start: '2026-01-30', end: '2026-04-02' }, { start: '2026-04-21', end: '2026-07-03' }, { start: '2026-07-21', end: '2026-09-25' }, { start: '2026-10-13', end: '2026-12-18' }],
+  NT: [{ start: '2026-01-28', end: '2026-04-02' }, { start: '2026-04-13', end: '2026-06-19' }, { start: '2026-07-14', end: '2026-09-18' }, { start: '2026-10-05', end: '2026-12-11' }],
+};
+
 // ============================================================================
-// Australian School Holiday Dates (Mock Data)
-// Returns approximate school holiday periods for a given year
+// Australian School Holiday Dates (Real Data)
 // ============================================================================
 
 interface DateRange {
@@ -89,28 +102,81 @@ interface DateRange {
   name: string;
 }
 
-export function getSchoolHolidays(year: number): DateRange[] {
-  return [
-    // Term 1 holidays (April - ~2 weeks around Easter)
-    { start: new Date(year, 3, 5), end: new Date(year, 3, 21), name: 'April Holidays' },
-    // Term 2 holidays (July - ~2 weeks)
-    { start: new Date(year, 6, 1), end: new Date(year, 6, 14), name: 'July Holidays' },
-    // Term 3 holidays (September - ~2 weeks)
-    { start: new Date(year, 8, 21), end: new Date(year, 9, 6), name: 'September Holidays' },
-    // Summer holidays (Dec-Jan - ~6 weeks)
-    { start: new Date(year, 11, 18), end: new Date(year + 1, 0, 28), name: 'Summer Holidays' },
-    // Also include the tail end of previous year's summer holidays
-    { start: new Date(year - 1, 11, 18), end: new Date(year, 0, 28), name: 'Summer Holidays' },
-  ];
+/**
+ * Calculates school holidays from term dates.
+ * Holidays are the gaps between terms, plus the summer break.
+ */
+export function getSchoolHolidays(year: number, state: AustralianState = 'VIC'): DateRange[] {
+  // We only have 2026 hardcoded. For other years, we'll shift the 2026 dates.
+  // This is an approximation for non-2026 years but precise for 2026.
+
+  const terms2026 = SCHOOL_TERMS_2026[state];
+  const shiftYears = year - 2026;
+
+  const shiftedTerms = terms2026.map(term => ({
+    start: addYears(parseISO(term.start), shiftYears),
+    end: addYears(parseISO(term.end), shiftYears)
+  }));
+
+  const holidays: DateRange[] = [];
+
+  // 1. Autumn Holidays (Result of Gap between Term 1 and Term 2)
+  if (shiftedTerms[0] && shiftedTerms[1]) {
+    holidays.push({
+      start: addDays(shiftedTerms[0].end, 1),
+      end: addDays(shiftedTerms[1].start, -1),
+      name: 'Autumn Holidays'
+    });
+  }
+
+  // 2. Winter Holidays (Result of Gap between Term 2 and Term 3)
+  if (shiftedTerms[1] && shiftedTerms[2]) {
+    holidays.push({
+      start: addDays(shiftedTerms[1].end, 1),
+      end: addDays(shiftedTerms[2].start, -1),
+      name: 'Winter Holidays'
+    });
+  }
+
+  // 3. Spring Holidays (Result of Gap between Term 3 and Term 4)
+  if (shiftedTerms[2] && shiftedTerms[3]) {
+    holidays.push({
+      start: addDays(shiftedTerms[2].end, 1),
+      end: addDays(shiftedTerms[3].start, -1),
+      name: 'Spring Holidays'
+    });
+  }
+
+  // 4. Summer Holidays (After Term 4)
+  // We'll estimate this as ~6 weeks from end of Term 4
+  if (shiftedTerms[3]) {
+    holidays.push({
+      start: addDays(shiftedTerms[3].end, 1),
+      end: addDays(shiftedTerms[3].end, 42), // ~6 weeks
+      name: 'Summer Holidays'
+    });
+  }
+
+  // 5. Pre-Term 1 Summer Holidays (Start of year)
+  // We'll estimate this as ~3 weeks before Term 1 starts
+  if (shiftedTerms[0]) {
+    holidays.push({
+      start: addDays(shiftedTerms[0].start, -25),
+      end: addDays(shiftedTerms[0].start, -1),
+      name: 'Summer Holidays'
+    });
+  }
+
+  return holidays;
 }
 
 /**
  * Check if a date falls within any school holiday period
  */
-export function isSchoolHoliday(date: Date): { isHoliday: boolean; holidayName: string | null } {
+export function isSchoolHoliday(date: Date, state: AustralianState = 'VIC'): { isHoliday: boolean; holidayName: string | null } {
   const year = getYear(date);
-  const holidays = getSchoolHolidays(year);
-  
+  const holidays = getSchoolHolidays(year, state);
+
   for (const holiday of holidays) {
     if (isWithinInterval(date, { start: holiday.start, end: holiday.end })) {
       return { isHoliday: true, holidayName: holiday.name };
@@ -120,7 +186,7 @@ export function isSchoolHoliday(date: Date): { isHoliday: boolean; holidayName: 
 }
 
 // ============================================================================
-// Australian Public Holidays (Mock Data)
+// Australian Public Holidays (Mock Data - Enhanced)
 // ============================================================================
 
 interface PublicHoliday {
@@ -182,7 +248,7 @@ function getNthWeekdayOfMonth(year: number, month: number, weekday: number, n: n
 export function isPublicHoliday(date: Date): { isHoliday: boolean; holidayName: string | null } {
   const year = getYear(date);
   const dateStr = format(date, 'yyyy-MM-dd');
-  
+
   for (const holiday of PUBLIC_HOLIDAYS) {
     const holidayDate = holiday.getDate(year);
     if (format(holidayDate, 'yyyy-MM-dd') === dateStr) {
@@ -197,7 +263,7 @@ export function isPublicHoliday(date: Date): { isHoliday: boolean; holidayName: 
  */
 export function isLongWeekend(date: Date): boolean {
   const dayOfWeek = getDay(date);
-  
+
   // Check if this is a Saturday or Sunday before a Monday public holiday
   if (dayOfWeek === 6) { // Saturday
     const monday = addDays(date, 2);
@@ -238,9 +304,9 @@ function getWeekNumber(date: Date, anchorDate: Date, cycleLengthDays: number): 1
  */
 function isOvernightCare(notes?: string): boolean {
   if (!notes) return true; // No notes = assume overnight
-  
+
   const lower = notes.toLowerCase();
-  
+
   // Day-only patterns (NO overnight)
   if (lower.includes('9am-5pm') || lower.includes('9:00am-5:00pm')) return false;
   if (lower.includes('9am to 5pm') || lower.includes('9:00am to 5:00pm')) return false;
@@ -248,19 +314,19 @@ function isOvernightCare(notes?: string): boolean {
     // Pattern like "10am-4pm" or "10:00am to 4:00pm" - day only
     return false;
   }
-  
+
   // "Until X:XXpm" on the same day means they DON'T have midnight
   if (lower.includes('until') && lower.includes('pm') && !lower.includes('am')) {
     // e.g., "Until 5:00pm" - they leave before midnight
     return false;
   }
-  
+
   // "From X:XXam" means they START that day - check if it implies overnight
   if (lower.includes('from') && !lower.includes('until')) {
     // "From 9:00am" with no end time - assume they have overnight
     return true;
   }
-  
+
   return true; // Default to overnight if unclear
 }
 
@@ -287,14 +353,14 @@ function parseChristmasRule(date: Date, rule: string): ChristmasAssignment {
   const day = date.getDate();
   const year = getYear(date);
   const isEvenYear = year % 2 === 0;
-  
+
   // Only applies to Dec 24-26
   if (month !== 11 || day < 24 || day > 26) {
     return { applies: false, midnightOwner: null };
   }
-  
+
   const ruleLower = rule.toLowerCase();
-  
+
   // Parse "Even Years: Father 24-26 Dec. Odd Years: Mother."
   if (ruleLower.includes('even') && ruleLower.includes('odd')) {
     if (isEvenYear) {
@@ -311,7 +377,7 @@ function parseChristmasRule(date: Date, rule: string): ChristmasAssignment {
       return { applies: true, midnightOwner: 'Father' };
     }
   }
-  
+
   // Fallback: alternate by year
   return { applies: true, midnightOwner: isEvenYear ? 'Father' : 'Mother' };
 }
@@ -331,14 +397,14 @@ function parseSchoolHolidayRule(
   holidayPeriod: DateRange
 ): SchoolHolidayAssignment {
   const ruleLower = rule.toLowerCase();
-  
+
   // "Father has half of all holidays" - split the period
   if (ruleLower.includes('half')) {
     const start = holidayPeriod.start.getTime();
     const end = holidayPeriod.end.getTime();
     const midpoint = start + (end - start) / 2;
     const dateTime = date.getTime();
-    
+
     // First half to Father, second half to Mother (or vice versa based on rule)
     if (ruleLower.includes('father')) {
       return {
@@ -352,7 +418,7 @@ function parseSchoolHolidayRule(
       };
     }
   }
-  
+
   // Default: alternate weeks
   const dayInHoliday = Math.floor((date.getTime() - holidayPeriod.start.getTime()) / (1000 * 60 * 60 * 24));
   const weekInHoliday = Math.floor(dayInHoliday / 7);
@@ -369,12 +435,14 @@ function parseSchoolHolidayRule(
 export class CareCalculator {
   private orderJson: CourtOrderJSON;
   private anchorDate: Date;
-  
-  constructor(orderJson: CourtOrderJSON, anchorDate: Date) {
+  private state: AustralianState;
+
+  constructor(orderJson: CourtOrderJSON, anchorDate: Date, state: AustralianState) {
     this.orderJson = orderJson;
     this.anchorDate = anchorDate;
+    this.state = state;
   }
-  
+
   /**
    * STEP 1: Check if date falls within any holiday block
    * If yes, return the midnight owner based on holiday rules
@@ -384,7 +452,7 @@ export class CareCalculator {
     if (!this.orderJson.holiday_blocks) {
       return { isHoliday: false, midnightOwner: null, reason: '' };
     }
-    
+
     for (const block of this.orderJson.holiday_blocks) {
       // Christmas block
       if (block.event.toLowerCase() === 'christmas') {
@@ -393,47 +461,47 @@ export class CareCalculator {
           return { isHoliday: true, midnightOwner: result.midnightOwner, reason: 'holiday:Christmas' };
         }
       }
-      
+
       // School Holidays block
       if (block.event.toLowerCase() === 'school holidays') {
-        const schoolHolidayCheck = isSchoolHoliday(date);
+        const schoolHolidayCheck = isSchoolHoliday(date, this.state);
         if (schoolHolidayCheck.isHoliday) {
           // Find the specific holiday period for proper splitting
           const year = getYear(date);
-          const holidays = getSchoolHolidays(year);
-          const currentPeriod = holidays.find(h => 
+          const holidays = getSchoolHolidays(year, this.state);
+          const currentPeriod = holidays.find(h =>
             isWithinInterval(date, { start: h.start, end: h.end })
           );
-          
+
           if (currentPeriod) {
             const result = parseSchoolHolidayRule(date, block.rule, currentPeriod);
-            return { 
-              isHoliday: true, 
-              midnightOwner: result.midnightOwner, 
-              reason: `holiday:${schoolHolidayCheck.holidayName}` 
+            return {
+              isHoliday: true,
+              midnightOwner: result.midnightOwner,
+              reason: `holiday:${schoolHolidayCheck.holidayName}`
             };
           }
         }
       }
-      
+
       // Easter block (if specified separately)
       if (block.event.toLowerCase() === 'easter') {
         const easterCheck = isPublicHoliday(date);
         if (easterCheck.isHoliday && easterCheck.holidayName?.includes('Easter')) {
           const year = getYear(date);
           const isEvenYear = year % 2 === 0;
-          return { 
-            isHoliday: true, 
-            midnightOwner: isEvenYear ? 'Father' : 'Mother', 
-            reason: 'holiday:Easter' 
+          return {
+            isHoliday: true,
+            midnightOwner: isEvenYear ? 'Father' : 'Mother',
+            reason: 'holiday:Easter'
           };
         }
       }
     }
-    
+
     return { isHoliday: false, midnightOwner: null, reason: '' };
   }
-  
+
   /**
    * STEP 2: Check base pattern (only if NOT in a holiday block)
    * Determines midnight owner based on Week 1/Week 2 cycle
@@ -441,12 +509,12 @@ export class CareCalculator {
   private getBasePatternMidnightOwner(date: Date): { midnightOwner: CareParent; reason: string } {
     const dayName = getDayName(date);
     const weekNum = getWeekNumber(date, this.anchorDate, this.orderJson.cycle_length_days);
-    
+
     // Find matching pattern entry for this day/week
     const entry = this.orderJson.base_pattern.find(
       (p) => p.day === dayName && p.week === weekNum
     );
-    
+
     if (entry) {
       // Check if this is overnight care or just day contact
       if (isOvernightCare(entry.notes)) {
@@ -462,14 +530,14 @@ export class CareCalculator {
       }
       // Day-only contact - doesn't change midnight owner
     }
-    
+
     // Check if previous day's care extends overnight
     // e.g., Saturday "From 9:00am" implies overnight into Sunday
     const prevDayName = DAY_NAMES[(getDay(date) + 6) % 7];
     const prevEntry = this.orderJson.base_pattern.find(
       (p) => p.day === prevDayName && p.week === weekNum
     );
-    
+
     if (prevEntry && isOvernightCare(prevEntry.notes)) {
       // Check if the current day has an "Until" time that ends the stay
       const currentEntry = this.orderJson.base_pattern.find(
@@ -480,11 +548,11 @@ export class CareCalculator {
         return { midnightOwner: 'Mother', reason: 'base:default' };
       }
     }
-    
+
     // Default: Mother has midnight (common default in Australian orders)
     return { midnightOwner: 'Mother', reason: 'base:default' };
   }
-  
+
   /**
    * Special overrides (Mother's Day, Father's Day, Birthdays)
    * These are DAY-ONLY and do NOT change midnight ownership
@@ -494,35 +562,35 @@ export class CareCalculator {
     if (!this.orderJson.special_overrides) {
       return { hasOverride: false, event: null };
     }
-    
+
     const month = getMonth(date);
     const dayOfWeek = getDay(date);
     const dayOfMonth = date.getDate();
-    
+
     for (const override of this.orderJson.special_overrides) {
       // Mother's Day (2nd Sunday of May in Australia)
-      if (override.event.toLowerCase().includes('mother') && 
-          month === 4 && dayOfWeek === 0 && dayOfMonth >= 8 && dayOfMonth <= 14) {
+      if (override.event.toLowerCase().includes('mother') &&
+        month === 4 && dayOfWeek === 0 && dayOfMonth >= 8 && dayOfMonth <= 14) {
         return { hasOverride: true, event: "Mother's Day" };
       }
-      
+
       // Father's Day (1st Sunday of September in Australia)
-      if (override.event.toLowerCase().includes('father') && 
-          month === 8 && dayOfWeek === 0 && dayOfMonth >= 1 && dayOfMonth <= 7) {
+      if (override.event.toLowerCase().includes('father') &&
+        month === 8 && dayOfWeek === 0 && dayOfMonth >= 1 && dayOfMonth <= 7) {
         return { hasOverride: true, event: "Father's Day" };
       }
     }
-    
+
     return { hasOverride: false, event: null };
   }
-  
+
   /**
    * Calculate midnight owner for a single date
    * Implements strict hierarchy: Holiday > Base Pattern
    */
   private calculateMidnightOwner(date: Date): DayAssignment {
     const dateStr = format(date, 'yyyy-MM-dd');
-    
+
     // HIERARCHY STEP 1: Check holiday blocks (suspends base pattern)
     const holidayCheck = this.checkHolidayBlocks(date);
     if (holidayCheck.isHoliday && holidayCheck.midnightOwner) {
@@ -533,7 +601,7 @@ export class CareCalculator {
         reason: holidayCheck.reason,
       };
     }
-    
+
     // HIERARCHY STEP 2: Apply base pattern (only if not in holiday)
     const baseResult = this.getBasePatternMidnightOwner(date);
     return {
@@ -543,7 +611,7 @@ export class CareCalculator {
       reason: baseResult.reason,
     };
   }
-  
+
   /**
    * Run the full 730-day simulation
    * Returns care percentages based strictly on midnight ownership
@@ -551,29 +619,29 @@ export class CareCalculator {
   public calculate(): CareCalculationResult {
     const assignments: DayAssignment[] = [];
     const holidayAssignments: { event: string; year: number; care_with: CareParent }[] = [];
-    
+
     let motherNights = 0;
     let fatherNights = 0;
-    
+
     // Generate 730 days starting from anchor date
     for (let i = 0; i < SIMULATION_DAYS; i++) {
       const currentDate = addDays(this.anchorDate, i);
       const assignment = this.calculateMidnightOwner(currentDate);
-      
+
       assignments.push(assignment);
-      
+
       // Count nights based on midnight owner
       if (assignment.midnightOwner === 'Mother') {
         motherNights++;
       } else {
         fatherNights++;
       }
-      
+
       // Track holiday assignments for visual verification
       if (assignment.reason.startsWith('holiday:')) {
         const event = assignment.reason.replace('holiday:', '');
         const year = getYear(currentDate);
-        
+
         // Only add unique event/year combinations
         const existing = holidayAssignments.find(
           (h) => h.event === event && h.year === year
@@ -587,15 +655,15 @@ export class CareCalculator {
         }
       }
     }
-    
+
     // Calculate percentages and annualized averages
     const motherPercentage = (motherNights / SIMULATION_DAYS) * 100;
     const fatherPercentage = (fatherNights / SIMULATION_DAYS) * 100;
-    
+
     // Annualized (730 days = 2 years, so divide by 2)
     const motherNightsPerYear = Math.round(motherNights / 2);
     const fatherNightsPerYear = Math.round(fatherNights / 2);
-    
+
     return {
       totalDays: SIMULATION_DAYS,
       motherNights,
@@ -616,9 +684,10 @@ export class CareCalculator {
 
 export function calculateCareFromOrder(
   orderJson: CourtOrderJSON,
-  anchorDate: Date
+  anchorDate: Date,
+  state: AustralianState = 'VIC'
 ): CareCalculationResult {
-  const calculator = new CareCalculator(orderJson, anchorDate);
+  const calculator = new CareCalculator(orderJson, anchorDate, state);
   return calculator.calculate();
 }
 

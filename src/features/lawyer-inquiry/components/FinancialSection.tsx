@@ -128,194 +128,205 @@ export function FinancialSection({
       </TouchableOpacity>
 
       {/* Calculation Summary OR Direct Mode Manual Inputs - Collapsible */}
-      {isSummaryOpen && (!isDirectMode ? (
-        // Standard Mode: Show read-only Calculation Summary
-        <View
-          style={financialStyles.summaryCard}
-          accessibilityRole={'group' as any}
-          accessibilityLabel="Calculation Summary"
-        >
-          <Text style={financialStyles.summaryTitle}>
-            Your Calculation Summary
-          </Text>
-          <View style={financialStyles.summaryRow}>
-            <Text style={financialStyles.summaryLabelBold}>
-              {payer === 'Parent A' ? 'You Pay:' : payer === 'Parent B' ? 'You Receive:' : 'Annual Liability:'}
+      {isSummaryOpen &&
+        (!isDirectMode ? (
+          // Standard Mode: Show read-only Calculation Summary
+          <View
+            style={financialStyles.summaryCard}
+            accessibilityRole={'group' as any}
+            accessibilityLabel="Calculation Summary"
+          >
+            <Text style={financialStyles.summaryTitle}>
+              Your Calculation Summary
             </Text>
-            <Text style={financialStyles.summaryAmount}>
-              {formatCurrencyDisplay(liability)}/year
-            </Text>
-          </View>
-          <View style={financialStyles.summaryRow}>
-            <Text style={financialStyles.summaryLabel}>Your Income:</Text>
-            <Text style={financialStyles.summaryValue}>
-              {formatCurrencyDisplay(incomeA)}
-            </Text>
-          </View>
-          <View style={financialStyles.summaryRow}>
-            <Text style={financialStyles.summaryLabel}>
-              Other Parent&apos;s Income:
-            </Text>
-            <Text style={financialStyles.summaryValue}>
-              {formatCurrencyDisplay(incomeB)}
-            </Text>
-          </View>
+            <View style={financialStyles.summaryRow}>
+              <Text style={financialStyles.summaryLabelBold}>
+                {payer === 'Parent A'
+                  ? 'You Pay:'
+                  : payer === 'Parent B'
+                  ? 'You Receive:'
+                  : 'Annual Liability:'}
+              </Text>
+              <Text style={financialStyles.summaryAmount}>
+                {formatCurrencyDisplay(liability)}/year
+              </Text>
+            </View>
+            <View style={financialStyles.summaryRow}>
+              <Text style={financialStyles.summaryLabel}>Your Income:</Text>
+              <Text style={financialStyles.summaryValue}>
+                {formatCurrencyDisplay(incomeA)}
+              </Text>
+            </View>
+            <View style={financialStyles.summaryRow}>
+              <Text style={financialStyles.summaryLabel}>
+                Other Parent&apos;s Income:
+              </Text>
+              <Text style={financialStyles.summaryValue}>
+                {formatCurrencyDisplay(incomeB)}
+              </Text>
+            </View>
 
-          {/* Care Arrangement */}
-          {careData.length > 0 && (() => {
-            // Group children by identical care percentages
-            const groupedCare: { careA: number; careB: number; childIndices: number[] }[] = [];
-            careData.forEach((child, idx) => {
-              const existingGroup = groupedCare.find(
-                (g) => g.careA === child.careA && g.careB === child.careB
-              );
-              if (existingGroup) {
-                existingGroup.childIndices.push(idx + 1);
-              } else {
-                groupedCare.push({
-                  careA: child.careA,
-                  careB: child.careB,
-                  childIndices: [idx + 1],
-                });
-              }
-            });
-
-            const totalChildren = careData.length;
-            const childCountLabel = totalChildren === 1 ? '1 child' : `${totalChildren} children`;
-
-            // Format child label based on grouping
-            const formatChildLabel = (indices: number[]): string | null => {
-              // Single child total - no label needed
-              if (totalChildren === 1) {
-                return null;
-              }
-              // All children have same care
-              if (indices.length === totalChildren) {
-                return 'All children:';
-              }
-              // Subset of children
-              if (indices.length === 1) {
-                return `Child ${indices[0]}:`;
-              }
-              return `Children ${indices.join(', ')}:`;
-            };
-
-            return (
-              <>
-                <View style={financialStyles.summarySeparator} />
-                <Text style={financialStyles.summarySubtitle}>
-                  Care Arrangement – {childCountLabel}
-                </Text>
-                {groupedCare.map((group, idx) => {
-                  const label = formatChildLabel(group.childIndices);
-                  return (
-                    <View key={idx} style={financialStyles.careRow}>
-                      {label && (
-                        <Text style={financialStyles.careChildLabel}>
-                          {label}
-                        </Text>
-                      )}
-                      <View style={financialStyles.carePercentages}>
-                        <Text style={financialStyles.careValue}>
-                          You: {group.careA.toFixed(0)}%
-                        </Text>
-                        <Text style={financialStyles.careSeparator}>•</Text>
-                        <Text style={financialStyles.careValue}>
-                          Other Parent: {group.careB.toFixed(0)}%
-                        </Text>
-                      </View>
-                    </View>
+            {/* Care Arrangement */}
+            {careData.length > 0 &&
+              (() => {
+                // Group children by identical care percentages
+                const groupedCare: {
+                  careA: number;
+                  careB: number;
+                  childIndices: number[];
+                }[] = [];
+                careData.forEach((child, idx) => {
+                  const existingGroup = groupedCare.find(
+                    (g) => g.careA === child.careA && g.careB === child.careB
                   );
-                })}
-              </>
-            );
-          })()}
-        </View>
-      ) : (
-        // Direct Mode: Show manual income inputs
-        <View
-          style={financialStyles.directModeCard}
-          accessibilityRole={'group' as any}
-          accessibilityLabel="Financial Information"
-        >
-          <Text style={financialStyles.summaryTitle}>
-            Your Financial Information
-          </Text>
-          <Text style={financialStyles.directModeSubtitle}>
-            Please provide approximate income details to help the lawyer
-            understand your situation.
-          </Text>
+                  if (existingGroup) {
+                    existingGroup.childIndices.push(idx + 1);
+                  } else {
+                    groupedCare.push({
+                      careA: child.careA,
+                      careB: child.careB,
+                      childIndices: [idx + 1],
+                    });
+                  }
+                });
 
-          {/* Your Income Input */}
-          <FormField
-            ref={manualIncomeARef}
-            label="Your Approximate Annual Income"
-            required
-            error={errors.manualIncomeA}
-            showError={touched.manualIncomeA && !!errors.manualIncomeA}
-            placeholder="e.g. 75000"
-            value={manualIncomeA}
-            onChangeText={(text: string) => {
-              const val = text.replace(/[^0-9]/g, '');
-              onTextChange('manualIncomeA', val, setManualIncomeA);
-            }}
-            onBlur={() => onBlur('manualIncomeA')}
-            keyboardType="numeric"
-            returnKeyType="next"
-            onSubmitEditing={() => manualIncomeBRef?.current?.focus()}
-            editable={!isSubmitting}
-            accessibilityLabel="Your approximate annual income"
-            accessibilityHint="Enter your annual income before tax"
-            {...(isWeb && { inputMode: 'numeric' as any })}
-          />
+                const totalChildren = careData.length;
+                const childCountLabel =
+                  totalChildren === 1 ? '1 child' : `${totalChildren} children`;
 
-          {/* Other Parent's Income Input */}
-          <FormField
-            ref={manualIncomeBRef}
-            label="Other Parent's Approximate Income"
-            required
-            error={errors.manualIncomeB}
-            showError={touched.manualIncomeB && !!errors.manualIncomeB}
-            placeholder="e.g. 60000"
-            value={manualIncomeB}
-            onChangeText={(text: string) => {
-              const val = text.replace(/[^0-9]/g, '');
-              onTextChange('manualIncomeB', val, setManualIncomeB);
-            }}
-            onBlur={() => onBlur('manualIncomeB')}
-            keyboardType="numeric"
-            returnKeyType="next"
-            onSubmitEditing={() => manualChildrenRef?.current?.focus()}
-            editable={!isSubmitting}
-            accessibilityLabel="Other parent's approximate annual income"
-            accessibilityHint="Enter the other parent's estimated annual income"
-            {...(isWeb && { inputMode: 'numeric' as any })}
-          />
+                // Format child label based on grouping
+                const formatChildLabel = (indices: number[]): string | null => {
+                  // Single child total - no label needed
+                  if (totalChildren === 1) {
+                    return null;
+                  }
+                  // All children have same care
+                  if (indices.length === totalChildren) {
+                    return 'All children:';
+                  }
+                  // Subset of children
+                  if (indices.length === 1) {
+                    return `Child ${indices[0]}:`;
+                  }
+                  return `Children ${indices.join(', ')}:`;
+                };
 
-          {/* Number of Children Input */}
-          <FormField
-            ref={manualChildrenRef}
-            label="Number of Children"
-            required
-            error={errors.manualChildren}
-            showError={touched.manualChildren && !!errors.manualChildren}
-            placeholder="e.g. 2"
-            value={manualChildren}
-            onChangeText={(text: string) => {
-              const val = text.replace(/[^0-9]/g, '');
-              onTextChange('manualChildren', val, setManualChildren);
-            }}
-            onBlur={() => onBlur('manualChildren')}
-            keyboardType="numeric"
-            returnKeyType="done"
-            maxLength={2}
-            editable={!isSubmitting}
-            accessibilityLabel="Number of children"
-            accessibilityHint="Enter the number of children involved"
-            {...(isWeb && { inputMode: 'numeric' as any })}
-          />
-        </View>
-      ))}
+                return (
+                  <>
+                    <View style={financialStyles.summarySeparator} />
+                    <Text style={financialStyles.summarySubtitle}>
+                      Care Arrangement – {childCountLabel}
+                    </Text>
+                    {groupedCare.map((group, idx) => {
+                      const label = formatChildLabel(group.childIndices);
+                      return (
+                        <View key={idx} style={financialStyles.careRow}>
+                          {label && (
+                            <Text style={financialStyles.careChildLabel}>
+                              {label}
+                            </Text>
+                          )}
+                          <View style={financialStyles.carePercentages}>
+                            <Text style={financialStyles.careValue}>
+                              You: {group.careA.toFixed(0)}%
+                            </Text>
+                            <Text style={financialStyles.careSeparator}>•</Text>
+                            <Text style={financialStyles.careValue}>
+                              Other Parent: {group.careB.toFixed(0)}%
+                            </Text>
+                          </View>
+                        </View>
+                      );
+                    })}
+                  </>
+                );
+              })()}
+          </View>
+        ) : (
+          // Direct Mode: Show manual income inputs
+          <View
+            style={financialStyles.directModeCard}
+            accessibilityRole={'group' as any}
+            accessibilityLabel="Financial Information"
+          >
+            <Text style={financialStyles.summaryTitle}>
+              Your Financial Information
+            </Text>
+            <Text style={financialStyles.directModeSubtitle}>
+              Please provide approximate income details to help the lawyer
+              understand your situation.
+            </Text>
+
+            {/* Your Income Input */}
+            <FormField
+              ref={manualIncomeARef}
+              label="Your Approximate Annual Income"
+              required
+              error={errors.manualIncomeA}
+              showError={touched.manualIncomeA && !!errors.manualIncomeA}
+              placeholder="e.g. 75000"
+              value={manualIncomeA}
+              onChangeText={(text: string) => {
+                const val = text.replace(/[^0-9]/g, '');
+                onTextChange('manualIncomeA', val, setManualIncomeA);
+              }}
+              onBlur={() => onBlur('manualIncomeA')}
+              keyboardType="numeric"
+              returnKeyType="next"
+              onSubmitEditing={() => manualIncomeBRef?.current?.focus()}
+              editable={!isSubmitting}
+              accessibilityLabel="Your approximate annual income"
+              accessibilityHint="Enter your annual income before tax"
+              {...(isWeb && { inputMode: 'numeric' as any })}
+            />
+
+            {/* Other Parent's Income Input */}
+            <FormField
+              ref={manualIncomeBRef}
+              label="Other Parent's Approximate Income"
+              required
+              error={errors.manualIncomeB}
+              showError={touched.manualIncomeB && !!errors.manualIncomeB}
+              placeholder="e.g. 60000"
+              value={manualIncomeB}
+              onChangeText={(text: string) => {
+                const val = text.replace(/[^0-9]/g, '');
+                onTextChange('manualIncomeB', val, setManualIncomeB);
+              }}
+              onBlur={() => onBlur('manualIncomeB')}
+              keyboardType="numeric"
+              returnKeyType="next"
+              onSubmitEditing={() => manualChildrenRef?.current?.focus()}
+              editable={!isSubmitting}
+              accessibilityLabel="Other parent's approximate annual income"
+              accessibilityHint="Enter the other parent's estimated annual income"
+              {...(isWeb && { inputMode: 'numeric' as any })}
+            />
+
+            {/* Number of Children Input */}
+            <FormField
+              ref={manualChildrenRef}
+              label="Number of Children"
+              required
+              error={errors.manualChildren}
+              showError={touched.manualChildren && !!errors.manualChildren}
+              placeholder="e.g. 2"
+              value={manualChildren}
+              onChangeText={(text: string) => {
+                const val = text.replace(/[^0-9]/g, '');
+                onTextChange('manualChildren', val, setManualChildren);
+              }}
+              onBlur={() => onBlur('manualChildren')}
+              keyboardType="numeric"
+              returnKeyType="done"
+              maxLength={2}
+              editable={!isSubmitting}
+              accessibilityLabel="Number of children"
+              accessibilityHint="Enter the number of children involved"
+              {...(isWeb && { inputMode: 'numeric' as any })}
+            />
+          </View>
+        ))}
 
       {/* Financial Tags - Conditional */}
       {shouldShowFinancialTags && (
@@ -339,9 +350,9 @@ export function FinancialSection({
                     financialStyles.chip,
                     isSelected && financialStyles.chipActive,
                     touched.financialTags &&
-                    errors.financialTags &&
-                    !isSelected &&
-                    financialStyles.chipError,
+                      errors.financialTags &&
+                      !isSelected &&
+                      financialStyles.chipError,
                   ]}
                   onPress={() => {
                     let newTags;
@@ -439,7 +450,7 @@ export function FinancialSection({
           accessibilityLabel="International Jurisdiction Details"
         >
           <Text style={formStyles.fieldLabel}>
-            Other parent's country of habitual residence *
+            Other parent&apos;s country of habitual residence *
           </Text>
 
           {/* Country Search Input */}
@@ -447,8 +458,8 @@ export function FinancialSection({
             style={[
               formStyles.input,
               touched.otherParentCountry &&
-              errors.otherParentCountry &&
-              formStyles.inputError,
+                errors.otherParentCountry &&
+                formStyles.inputError,
             ]}
             placeholder="Search for a country..."
             placeholderTextColor={colors.textMuted}
@@ -467,41 +478,45 @@ export function FinancialSection({
           />
 
           {/* Country Dropdown */}
-          {showCountryDropdown && countrySearch.length > 0 && !otherParentCountry && (
-            <View style={financialStyles.countryDropdown}>
-              <ScrollView
-                style={financialStyles.countryDropdownScroll}
-                keyboardShouldPersistTaps="handled"
-                nestedScrollEnabled
-              >
-                {filteredCountries.map((country) => (
-                  <Pressable
-                    key={country}
-                    style={financialStyles.countryOption}
-                    onPress={() => {
-                      onOtherParentCountryChange(country);
-                      setCountrySearch('');
-                      setShowCountryDropdown(false);
-                    }}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Select ${country}`}
-                  >
-                    <Text style={financialStyles.countryOptionText}>
-                      {country}
+          {showCountryDropdown &&
+            countrySearch.length > 0 &&
+            !otherParentCountry && (
+              <View style={financialStyles.countryDropdown}>
+                <ScrollView
+                  style={financialStyles.countryDropdownScroll}
+                  keyboardShouldPersistTaps="handled"
+                  nestedScrollEnabled
+                >
+                  {filteredCountries.map((country) => (
+                    <Pressable
+                      key={country}
+                      style={financialStyles.countryOption}
+                      onPress={() => {
+                        onOtherParentCountryChange(country);
+                        setCountrySearch('');
+                        setShowCountryDropdown(false);
+                      }}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Select ${country}`}
+                    >
+                      <Text style={financialStyles.countryOptionText}>
+                        {country}
+                      </Text>
+                    </Pressable>
+                  ))}
+                  {filteredCountries.length === 0 && (
+                    <Text style={financialStyles.noResultsText}>
+                      No countries found
                     </Text>
-                  </Pressable>
-                ))}
-                {filteredCountries.length === 0 && (
-                  <Text style={financialStyles.noResultsText}>
-                    No countries found
-                  </Text>
-                )}
-              </ScrollView>
-            </View>
-          )}
+                  )}
+                </ScrollView>
+              </View>
+            )}
 
           {touched.otherParentCountry && errors.otherParentCountry && (
-            <Text style={formStyles.errorText}>{errors.otherParentCountry}</Text>
+            <Text style={formStyles.errorText}>
+              {errors.otherParentCountry}
+            </Text>
           )}
 
           {/* Excluded Jurisdiction Warning (Red) */}

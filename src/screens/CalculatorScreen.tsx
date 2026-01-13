@@ -40,6 +40,7 @@ export function CalculatorScreen() {
     updateMultiCaseA,
     updateMultiCaseB,
     updateNonParentCarer,
+    updateCareDispute,
     calculate,
     reset,
     resetTimestamp,
@@ -261,6 +262,10 @@ export function CalculatorScreen() {
     // Non-parent carer support (Formula 4)
     nonParentCarer: formState.nonParentCarer,
     onNonParentCarerChange: updateNonParentCarer,
+    // Care Dispute
+    isCareDisputed: formState.isCareDisputed,
+    desiredCareNights: formState.desiredCareNights,
+    onCareDisputeChange: updateCareDispute,
   };
 
   return (

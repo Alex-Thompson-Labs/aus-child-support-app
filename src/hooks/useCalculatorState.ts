@@ -25,6 +25,9 @@ const initialFormState: CalculatorFormState = {
     multiCaseB: { otherChildren: [] },
     // Non-parent carer support (Formula 4)
     nonParentCarer: { enabled: false },
+    // Care Dispute
+    isCareDisputed: false,
+    desiredCareNights: undefined,
 };
 
 export function useCalculatorState() {
@@ -101,6 +104,15 @@ export function useCalculatorState() {
         setIsStale(true);
     }, []);
 
+    const updateCareDispute = useCallback((isDisputed: boolean, nights?: number) => {
+        setFormState((prev) => ({
+            ...prev,
+            isCareDisputed: isDisputed,
+            desiredCareNights: nights,
+        }));
+        setIsStale(true);
+    }, []);
+
     const resetState = useCallback(() => {
         setFormState(initialFormState);
         setErrors({});
@@ -125,6 +137,7 @@ export function useCalculatorState() {
         updateMultiCaseA,
         updateMultiCaseB,
         updateNonParentCarer,
+        updateCareDispute,
         resetState,
     };
 }

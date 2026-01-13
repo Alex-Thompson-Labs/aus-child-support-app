@@ -8,6 +8,8 @@ import React, { useMemo } from 'react';
 import ReactGA from 'react-ga4';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 /**
  * Card variant types for the Smart Conversion Footer
  */
@@ -171,8 +173,6 @@ interface SmartConversionFooterProps {
   onCtaPress?: (variantId: string) => void;
   calculatorStartTime?: number;
 }
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // ... (existing imports)
 

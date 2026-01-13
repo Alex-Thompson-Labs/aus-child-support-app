@@ -1,28 +1,35 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { OpenAI } from "https://esm.sh/openai@4.20.1"
+import Anthropic from 'https://esm.sh/@anthropic-ai/sdk?target=deno';
+
+declare const Deno: {
+  env: {
+    get(key: string): string | undefined;
+  };
+  serve(handler: (req: Request) => Promise<Response> | Response): void;
+};
 
 const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
+};
 
-serve(async (req) => {
-    if (req.method === 'OPTIONS') {
-        return new Response('ok', { headers: corsHeaders })
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
+  try {
+    const { fileBase64, mediaType } = await req.json();
+
+    if (!fileBase64) {
+      throw new Error('No file content provided');
     }
 
-    try {
-        const { fileBase64, mediaType } = await req.json()
+    const anthropic = new Anthropic({
+      apiKey: Deno.env.get('ANTHROPIC_API_KEY'),
+    });
 
-        if (!fileBase64) {
-            throw new Error("No file content provided")
-        }
-
-        const openai = new OpenAI({
-            apiKey: Deno.env.get('OPENAI_API_KEY'),
-        })
-
-        const systemPrompt = `You are an expert Australian Family Law Court Order Interpreter. 
+    const systemPrompt = `You are an expert Australian Family Law Court Order Interpreter. 
     Your goal is to extract the care arrangement schedule from a Court Order image/text and convert it into a structured JSON format for calculation.
 
     KEY RULES:
@@ -54,39 +61,52 @@ serve(async (req) => {
     - Ensure EVERY day of the 14-day cycle is accounted for.
     - If a day is not explicitly mentioned, assign it to the primary carer (default to Mother if unclear, or infer from context).
     - Capture the specific "From X time" and "Until Y time" in the "notes" field.
-    - Do not wrap the output in markdown code blocks. Return only validity JSON.`
+    - Do not wrap the output in markdown code blocks. Return only validity JSON.`;
 
-        const completion = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: [
-                { role: "system", content: systemPrompt },
-                {
-                    role: "user",
-                    content: [
-                        { type: "text", text: "Here is the court order. Extract the care schedule JSON." },
-                        {
-                            type: "image_url",
-                            image_url: {
-                                url: `data:${mediaType || 'image/png'};base64,${fileBase64}`
-                            }
-                        }
-                    ]
-                },
-            ],
-            max_tokens: 3000,
-        })
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: 3000,
+      system: systemPrompt,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: 'Here is the court order. Extract the care schedule JSON.',
+            },
+            {
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: mediaType || 'image/jpeg',
+                data: fileBase64,
+              },
+            },
+          ],
+        },
+      ],
+    });
 
-        const result = completion.choices[0].message.content
-        const cleanJson = result.replace(/^```json\n?/, '').replace(/\n?```$/, '').trim()
-
-        return new Response(cleanJson, {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        })
-
-    } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 400,
-        })
+    // Safe extraction of text content
+    const contentBlock = message.content[0];
+    if (contentBlock.type !== 'text') {
+      throw new Error('Unexpected response type from Claude');
     }
-})
+
+    const result = contentBlock.text;
+    const cleanJson = result
+      .replace(/^```json\n?/, '')
+      .replace(/\n?```$/, '')
+      .trim();
+
+    return new Response(cleanJson, {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 400,
+    });
+  }
+});

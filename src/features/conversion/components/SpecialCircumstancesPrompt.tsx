@@ -59,13 +59,16 @@ const CheckboxItem = memo(function CheckboxItem({
   isChecked,
   onToggle,
 }: CheckboxItemProps) {
-  const handlePress = useCallback(() => onToggle(reason.id), [onToggle, reason.id]);
+  const handlePress = useCallback(
+    () => onToggle(reason.id),
+    [onToggle, reason.id]
+  );
 
   return (
     <Pressable
       style={[styles.checkboxRow, isWeb && webClickableStyles]}
       onPress={handlePress}
-      accessible={true}
+      accessible
       accessibilityRole="checkbox"
       accessibilityState={{ checked: isChecked }}
       accessibilityLabel={reason.label}
@@ -95,7 +98,9 @@ const ProgressIndicator = memo(function ProgressIndicator({
 }: ProgressIndicatorProps) {
   return (
     <View style={styles.progressContainer}>
-      <Text style={styles.progressText}>Step {currentStep} of {totalSteps}</Text>
+      <Text style={styles.progressText}>
+        Step {currentStep} of {totalSteps}
+      </Text>
       <Text style={styles.stepTitle}>{stepTitle}</Text>
       <View style={styles.progressBar}>
         {Array.from({ length: totalSteps }).map((_, i) => (
@@ -114,7 +119,10 @@ const ProgressIndicator = memo(function ProgressIndicator({
 });
 
 // Step: Legal
-const LegalStep = memo(function LegalStep({ selectedReasons, onToggle }: StepProps) {
+const LegalStep = memo(function LegalStep({
+  selectedReasons,
+  onToggle,
+}: StepProps) {
   const hasCourtDate = useMemo(
     () => Array.from(selectedReasons).some((id) => isCourtDateReason(id)),
     [selectedReasons]
@@ -140,11 +148,13 @@ const LegalStep = memo(function LegalStep({ selectedReasons, onToggle }: StepPro
         <Pressable
           style={[styles.checkboxRow, isWeb && webClickableStyles]}
           onPress={handleCourtDateToggle}
-          accessible={true}
+          accessible
           accessibilityRole="checkbox"
           accessibilityState={{ checked: hasCourtDate }}
         >
-          <View style={[styles.checkbox, hasCourtDate && styles.checkboxChecked]}>
+          <View
+            style={[styles.checkbox, hasCourtDate && styles.checkboxChecked]}
+          >
             {hasCourtDate && <Text style={styles.checkboxCheck}>✓</Text>}
           </View>
           <View style={styles.checkboxLabelContainer}>
@@ -162,15 +172,24 @@ const LegalStep = memo(function LegalStep({ selectedReasons, onToggle }: StepPro
         <Pressable
           style={[styles.checkboxRow, isWeb && webClickableStyles]}
           onPress={() => onToggle('property_settlement')}
-          accessible={true}
+          accessible
           accessibilityRole="checkbox"
           accessibilityState={{ checked: hasPropertySettlement }}
         >
-          <View style={[styles.checkbox, hasPropertySettlement && styles.checkboxChecked]}>
-            {hasPropertySettlement && <Text style={styles.checkboxCheck}>✓</Text>}
+          <View
+            style={[
+              styles.checkbox,
+              hasPropertySettlement && styles.checkboxChecked,
+            ]}
+          >
+            {hasPropertySettlement && (
+              <Text style={styles.checkboxCheck}>✓</Text>
+            )}
           </View>
           <View style={styles.checkboxLabelContainer}>
-            <Text style={styles.checkboxLabel}>I have a property settlement pending.</Text>
+            <Text style={styles.checkboxLabel}>
+              I have a property settlement pending.
+            </Text>
             <HelpTooltip
               what="Pending property settlements can significantly affect child support obligations."
               why=""
@@ -184,9 +203,16 @@ const LegalStep = memo(function LegalStep({ selectedReasons, onToggle }: StepPro
 });
 
 // Step: Income
-const IncomeStep = memo(function IncomeStep({ selectedReasons, onToggle }: StepProps) {
+const IncomeStep = memo(function IncomeStep({
+  selectedReasons,
+  onToggle,
+}: StepProps) {
   const incomeReasons = useMemo(
-    () => SPECIAL_CIRCUMSTANCES.filter((r) => r.category === 'income' && r.id !== 'hiding_income'),
+    () =>
+      SPECIAL_CIRCUMSTANCES.filter(
+        (r: SpecialCircumstance) =>
+          r.category === 'income' && r.id !== 'hiding_income'
+      ),
     []
   );
 
@@ -196,7 +222,7 @@ const IncomeStep = memo(function IncomeStep({ selectedReasons, onToggle }: StepP
         Are there concerns about the other parent&apos;s financial situation?
       </Text>
       <View style={styles.checkboxList}>
-        {incomeReasons.map((reason) => (
+        {incomeReasons.map((reason: SpecialCircumstance) => (
           <CheckboxItem
             key={reason.id}
             reason={reason}
@@ -210,11 +236,17 @@ const IncomeStep = memo(function IncomeStep({ selectedReasons, onToggle }: StepP
 });
 
 // Step: Costs
-const CostsStep = memo(function CostsStep({ selectedReasons, onToggle }: StepProps) {
+const CostsStep = memo(function CostsStep({
+  selectedReasons,
+  onToggle,
+}: StepProps) {
   const allReasons = useMemo(() => {
-    const child = SPECIAL_CIRCUMSTANCES.filter((r) => r.category === 'child');
+    const child = SPECIAL_CIRCUMSTANCES.filter(
+      (r: SpecialCircumstance) => r.category === 'child'
+    );
     const other = SPECIAL_CIRCUMSTANCES.filter(
-      (r) => r.category === 'other' && r.id !== 'property_settlement'
+      (r: SpecialCircumstance) =>
+        r.category === 'other' && r.id !== 'property_settlement'
     );
     return [...child, ...other];
   }, []);
@@ -262,7 +294,9 @@ const SummaryStep = memo(function SummaryStep({
           officialCodes: [],
         });
       } else {
-        const found = SPECIAL_CIRCUMSTANCES.find((r) => r.id === id);
+        const found = SPECIAL_CIRCUMSTANCES.find(
+          (r: SpecialCircumstance) => r.id === id
+        );
         if (found) reasons.push(found);
       }
     });
@@ -316,7 +350,6 @@ const SummaryStep = memo(function SummaryStep({
   );
 });
 
-
 // Main Wizard Component
 export function SpecialCircumstancesPrompt({
   results,
@@ -360,7 +393,9 @@ export function SpecialCircumstancesPrompt({
               is_checked: next.has(reasonId),
               total_selected: next.size,
             });
-          } catch {}
+          } catch {
+            // Ignore analytics errors
+          }
         }, 100);
 
         return next;
@@ -387,7 +422,8 @@ export function SpecialCircumstancesPrompt({
         source: 'special_circumstances',
         reason_count: selectedReasons.size,
         most_important_category:
-          getHighestPriorityReason(Array.from(selectedReasons))?.category ?? null,
+          getHighestPriorityReason(Array.from(selectedReasons))?.category ??
+          null,
         total_liability: results.finalPaymentAmount,
       });
       // Legacy event
@@ -395,10 +431,13 @@ export function SpecialCircumstancesPrompt({
         reasons_selected: JSON.stringify(Array.from(selectedReasons)),
         reason_count: selectedReasons.size,
         most_important_category:
-          getHighestPriorityReason(Array.from(selectedReasons))?.category ?? null,
+          getHighestPriorityReason(Array.from(selectedReasons))?.category ??
+          null,
         annual_liability: results.finalPaymentAmount,
       });
-    } catch {}
+    } catch {
+      // Ignore analytics errors
+    }
 
     if (onRequestInquiry) {
       onRequestInquiry();
@@ -411,11 +450,13 @@ export function SpecialCircumstancesPrompt({
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         try {
-          const careData = (formData?.children ?? []).map((_child, index) => ({
-            index,
-            careA: results.childResults[index]?.roundedCareA ?? 0,
-            careB: results.childResults[index]?.roundedCareB ?? 0,
-          }));
+          const careData = (formData?.children ?? []).map(
+            (_child: any, index: number) => ({
+              index,
+              careA: results.childResults[index]?.roundedCareA ?? 0,
+              careB: results.childResults[index]?.roundedCareB ?? 0,
+            })
+          );
 
           router.push({
             pathname: '/lawyer-inquiry',
@@ -431,21 +472,38 @@ export function SpecialCircumstancesPrompt({
               priorityCircumstance:
                 getHighestPriorityReason(Array.from(selectedReasons))?.id ?? '',
               fromBreakdown: 'true',
-              ...(calculatorStartTime && { calculatorStartTime: calculatorStartTime.toString() }),
+              ...(calculatorStartTime && {
+                calculatorStartTime: calculatorStartTime.toString(),
+              }),
             },
           });
-        } catch (error) {
+        } catch {
           if (Platform.OS === 'web') {
-            alert('Navigation Error\n\nUnable to open inquiry form. Please try again.');
+            alert(
+              'Navigation Error\n\nUnable to open inquiry form. Please try again.'
+            );
           } else {
-            Alert.alert('Navigation Error', 'Unable to open inquiry form. Please try again.');
+            Alert.alert(
+              'Navigation Error',
+              'Unable to open inquiry form. Please try again.'
+            );
           }
         } finally {
           setTimeout(() => setIsNavigating(false), 500);
         }
       });
     });
-  }, [isNavigating, selectedReasons, onNavigate, onRequestInquiry, router, results, formData, analytics, calculatorStartTime]);
+  }, [
+    isNavigating,
+    selectedReasons,
+    onNavigate,
+    onRequestInquiry,
+    router,
+    results,
+    formData,
+    analytics,
+    calculatorStartTime,
+  ]);
 
   const renderStepContent = () => {
     const stepProps: StepProps = { selectedReasons, onToggle: handleToggle };
@@ -457,7 +515,13 @@ export function SpecialCircumstancesPrompt({
       case 'costs':
         return <CostsStep {...stepProps} />;
       case 'summary':
-        return <SummaryStep {...stepProps} onSubmit={handleSubmit} isSubmitting={isNavigating} />;
+        return (
+          <SummaryStep
+            {...stepProps}
+            onSubmit={handleSubmit}
+            isSubmitting={isNavigating}
+          />
+        );
       default:
         return null;
     }
@@ -468,9 +532,11 @@ export function SpecialCircumstancesPrompt({
       <Pressable
         style={[styles.coaHeader, isWeb && webClickableStyles]}
         onPress={() => setIsExpanded((p) => !p)}
-        accessible={true}
+        accessible
         accessibilityRole="button"
-        accessibilityLabel={`Do special circumstances exist? ${isExpanded ? 'Collapse' : 'Expand'}`}
+        accessibilityLabel={`Do special circumstances exist? ${
+          isExpanded ? 'Collapse' : 'Expand'
+        }`}
       >
         <View style={styles.headerContent}>
           <View style={styles.titleRow}>
@@ -478,15 +544,21 @@ export function SpecialCircumstancesPrompt({
             <View style={styles.headerRight}>
               {!isExpanded && selectedReasons.size > 0 && (
                 <View style={styles.selectionBadge}>
-                  <Text style={styles.selectionBadgeText}>{selectedReasons.size} selected</Text>
+                  <Text style={styles.selectionBadgeText}>
+                    {selectedReasons.size} selected
+                  </Text>
                 </View>
               )}
-              <Text style={[styles.chevron, isExpanded && styles.chevronExpanded]}>›</Text>
+              <Text
+                style={[styles.chevron, isExpanded && styles.chevronExpanded]}
+              >
+                ›
+              </Text>
             </View>
           </View>
           <Text style={styles.coaDescription}>
-            Some situations are too complex for the standard calculator. If any of these apply, a
-            lawyer can help you request adjustments.
+            Some situations are too complex for the standard calculator. If any
+            of these apply, a lawyer can help you request adjustments.
           </Text>
         </View>
       </Pressable>
@@ -509,7 +581,7 @@ export function SpecialCircumstancesPrompt({
               ]}
               onPress={handleBack}
               disabled={isFirstStep}
-              accessible={true}
+              accessible
               accessibilityRole="button"
               accessibilityLabel="Go to previous step"
             >
@@ -517,9 +589,13 @@ export function SpecialCircumstancesPrompt({
             </Pressable>
             {!isLastStep ? (
               <Pressable
-                style={[styles.navButton, styles.nextButton, isWeb && webClickableStyles]}
+                style={[
+                  styles.navButton,
+                  styles.nextButton,
+                  isWeb && webClickableStyles,
+                ]}
                 onPress={handleNext}
-                accessible={true}
+                accessible
                 accessibilityRole="button"
                 accessibilityLabel="Go to next step"
               >
@@ -534,7 +610,6 @@ export function SpecialCircumstancesPrompt({
     </View>
   );
 }
-
 
 // Styles
 const styles = StyleSheet.create({
@@ -589,14 +664,34 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e2e8f0',
   },
-  progressText: { fontSize: 12, color: '#64748b', fontWeight: '500', marginBottom: 4 },
-  stepTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
+  progressText: {
+    fontSize: 12,
+    color: '#64748b',
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  stepTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1e3a8a',
+    marginBottom: 12,
+  },
   progressBar: { flexDirection: 'row', gap: 8 },
-  progressDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#cbd5e1' },
+  progressDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#cbd5e1',
+  },
   progressDotActive: { backgroundColor: '#93c5fd' },
   progressDotCurrent: { backgroundColor: '#2563eb', width: 24 },
   stepContent: { minHeight: 200 },
-  stepDescription: { fontSize: 14, color: '#475569', lineHeight: 21, marginBottom: 16 },
+  stepDescription: {
+    fontSize: 14,
+    color: '#475569',
+    lineHeight: 21,
+    marginBottom: 16,
+  },
   checkboxList: { gap: 12 },
   checkboxRow: { flexDirection: 'row', alignItems: 'flex-start' },
   checkbox: {
@@ -613,20 +708,62 @@ const styles = StyleSheet.create({
   },
   checkboxChecked: { backgroundColor: '#2563EB', borderColor: '#2563EB' },
   checkboxCheck: { color: '#ffffff', fontSize: 14, fontWeight: '700' },
-  checkboxLabelContainer: { flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
-  checkboxLabel: { fontSize: 14, color: '#475569', lineHeight: 20, flex: 1, paddingRight: 4 },
-  summaryList: { backgroundColor: '#ffffff', borderRadius: 8, padding: 16, marginBottom: 20, gap: 8 },
+  checkboxLabelContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  checkboxLabel: {
+    fontSize: 14,
+    color: '#475569',
+    lineHeight: 20,
+    flex: 1,
+    paddingRight: 4,
+  },
+  summaryList: {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 20,
+    gap: 8,
+  },
   summaryItem: { flexDirection: 'row', alignItems: 'flex-start' },
-  summaryBullet: { fontSize: 14, color: '#2563eb', marginRight: 8, fontWeight: '600' },
+  summaryBullet: {
+    fontSize: 14,
+    color: '#2563eb',
+    marginRight: 8,
+    fontWeight: '600',
+  },
   summaryText: { fontSize: 14, color: '#334155', flex: 1, lineHeight: 20 },
   emptyState: { alignItems: 'center', paddingVertical: 32 },
-  emptyStateText: { fontSize: 15, color: '#64748b', textAlign: 'center', marginBottom: 8 },
+  emptyStateText: {
+    fontSize: 15,
+    color: '#64748b',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
   emptyStateHint: { fontSize: 13, color: '#94a3b8', textAlign: 'center' },
-  navigationButtons: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 24, gap: 12 },
-  navButton: { flex: 1, paddingVertical: 12, paddingHorizontal: 20, borderRadius: 8, alignItems: 'center' },
+  navigationButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 24,
+    gap: 12,
+  },
+  navButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
   navButtonHidden: { opacity: 0 },
   navButtonSpacer: { flex: 1 },
-  backButton: { backgroundColor: '#f1f5f9', borderWidth: 1, borderColor: '#e2e8f0' },
+  backButton: {
+    backgroundColor: '#f1f5f9',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
   backButtonText: { fontSize: 15, fontWeight: '600', color: '#475569' },
   nextButton: { backgroundColor: '#2563eb' },
   nextButtonText: { fontSize: 15, fontWeight: '600', color: '#ffffff' },

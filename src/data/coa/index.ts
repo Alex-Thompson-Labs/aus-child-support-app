@@ -5,16 +5,16 @@
  */
 
 // Types
+// Import for helpers
+import { COA_FAQ_DATA } from './faqs';
+import { COA_REASON_PAGES } from './reasons';
+import type { CoAFaq, CoAReasonPage } from './types';
+
 export type { CoAFaq, CoAReasonPage } from './types';
 
 // Data
 export { COA_FAQ_DATA } from './faqs';
 export { COA_REASON_PAGES } from './reasons';
-
-// Import for helpers
-import { COA_FAQ_DATA } from './faqs';
-import { COA_REASON_PAGES } from './reasons';
-import type { CoAFaq, CoAReasonPage } from './types';
 
 /**
  * Gets a CoA reason page by its URL slug

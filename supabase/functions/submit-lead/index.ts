@@ -13,18 +13,16 @@
  */
 
 /* eslint-disable import/no-unresolved */
-// @ts-ignore - Deno HTTP imports are valid at runtime in Supabase Edge Functions
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-// @ts-ignore - Deno HTTP imports are valid at runtime in Supabase Edge Functions
-import * as jose from 'https://deno.land/x/jose@v4.14.4/index.ts';
-// @ts-ignore - Deno HTTP imports are valid at runtime in Supabase Edge Functions
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+import { createClient } from '@supabase/supabase-js';
+import * as jose from 'jose';
 /* eslint-enable import/no-unresolved */
 
 declare const Deno: {
   env: {
     get(key: string): string | undefined;
   };
+  serve(handler: (req: Request) => Promise<Response> | Response): void;
 };
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -223,7 +221,7 @@ async function sendNotificationEmail(
   }
 }
 
-serve(async (req: Request) => {
+Deno.serve(async (req: Request) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, {

@@ -1,4 +1,6 @@
 {
+  "deno.enable": true,
+  "deno.unstable": true,
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",

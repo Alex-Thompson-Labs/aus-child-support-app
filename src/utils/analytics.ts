@@ -34,7 +34,7 @@ function isGA4Initialized(): boolean {
   // Adding try-catch significantly improves resilience against blocked scripts
   try {
     return ReactGA.isInitialized;
-  } catch (error) {
+  } catch {
     return false;
   }
 }

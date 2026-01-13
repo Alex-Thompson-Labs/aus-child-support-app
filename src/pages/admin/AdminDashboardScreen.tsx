@@ -4,18 +4,8 @@
  * Mobile-optimized for use on phone
  */
 
-import { Colors } from '@/constants/theme';
-import { LeadsTable } from '@/src/components/admin/LeadsTable';
-import { SummaryStatCard } from '@/src/components/admin/SummaryStatCard';
-import { formatCurrency } from '@/src/utils/formatters';
-import {
-  isWeb,
-  MAX_CONTENT_WIDTH,
-  webClickableStyles,
-  webInputStyles,
-} from '@/src/utils/responsive';
-import { getSupabaseClient, type LeadSubmission } from '@/src/utils/supabase';
 import { useRouter } from 'expo-router';
+import process from 'node:process';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -30,6 +20,18 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '../../../constants/theme.ts';
+import { LeadsTable } from '../../components/admin/LeadsTable.tsx';
+import { SummaryStatCard } from '../../components/admin/SummaryStatCard.tsx';
+import { formatCurrency } from '../../utils/formatters.ts';
+import {
+  isWeb,
+  MAX_CONTENT_WIDTH,
+  webClickableStyles,
+  webInputStyles,
+} from '../../utils/responsive.ts';
+import { getSupabaseClient } from '../../utils/supabase/client.ts';
+import type { LeadSubmission } from '../../utils/supabase/leads.ts';
 
 // Use brand colors from theme
 const PRIMARY_COLOR = Colors.light.tint;
@@ -50,17 +52,21 @@ export default function AdminDashboardScreen() {
 
   // Statistics
   const totalLeads = leads.length;
-  const recentLeads = leads.filter(l => {
+  const recentLeads = leads.filter((l) => {
     if (!l.created_at) return false;
     const d = new Date(l.created_at);
     const now = new Date();
-    return (now.getTime() - d.getTime()) < (7 * 24 * 60 * 60 * 1000);
+    return now.getTime() - d.getTime() < 7 * 24 * 60 * 60 * 1000;
   }).length;
 
-  const avgIncome = leads.length > 0 ? leads.reduce((acc, curr) => {
-    const income = (curr.income_parent_a || 0) + (curr.income_parent_b || 0);
-    return acc + income;
-  }, 0) / leads.length : 0;
+  const avgIncome =
+    leads.length > 0
+      ? leads.reduce((acc, curr) => {
+          const income =
+            (curr.income_parent_a || 0) + (curr.income_parent_b || 0);
+          return acc + income;
+        }, 0) / leads.length
+      : 0;
 
   const loadLeads = useCallback(async () => {
     try {
@@ -177,10 +183,6 @@ export default function AdminDashboardScreen() {
     router.replace('/admin/login');
   };
 
-  const handleLeadPress = (lead: LeadSubmission) => {
-    router.push(`/admin/lead/${lead.id}`);
-  };
-
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -193,11 +195,13 @@ export default function AdminDashboardScreen() {
   }
 
   // Web container style for constrained width on desktop
-  const webContainerStyle = isWeb ? {
-    maxWidth: MAX_CONTENT_WIDTH,
-    width: '100%' as const,
-    alignSelf: 'center' as const,
-  } : {};
+  const webContainerStyle = isWeb
+    ? {
+        maxWidth: MAX_CONTENT_WIDTH,
+        width: '100%' as const,
+        alignSelf: 'center' as const,
+      }
+    : {};
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -289,7 +293,8 @@ export default function AdminDashboardScreen() {
                   statusFilter === 'reviewing' && styles.filterChipTextActive,
                 ]}
               >
-                Reviewing ({leads.filter((l) => l.status === 'reviewing').length})
+                Reviewing (
+                {leads.filter((l) => l.status === 'reviewing').length})
               </Text>
             </Pressable>
 
@@ -323,7 +328,8 @@ export default function AdminDashboardScreen() {
                   statusFilter === 'converted' && styles.filterChipTextActive,
                 ]}
               >
-                Converted ({leads.filter((l) => l.status === 'converted').length})
+                Converted (
+                {leads.filter((l) => l.status === 'converted').length})
               </Text>
             </Pressable>
           </ScrollView>
@@ -428,47 +434,6 @@ export default function AdminDashboardScreen() {
       </View>
     </SafeAreaView>
   );
-}
-
-// Helper functions
-function getStatusBadgeStyle(status?: string) {
-  switch (status) {
-    case 'new':
-      return { backgroundColor: '#3b82f6' }; // blue
-    case 'reviewing':
-      return { backgroundColor: '#f59e0b' }; // amber
-    case 'sent':
-      return { backgroundColor: '#8b5cf6' }; // purple
-    case 'converted':
-      return { backgroundColor: '#10b981' }; // green
-    case 'lost':
-      return { backgroundColor: '#64748b' }; // slate
-    default:
-      return { backgroundColor: '#3b82f6' }; // blue
-  }
-}
-
-function getFirstName(fullName: string): string {
-  return fullName.split(' ')[0];
-}
-
-function formatDate(dateString?: string): string {
-  if (!dateString) return 'Unknown date';
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffHours < 1) return 'Just now';
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return `${diffDays}d ago`;
-
-  return date.toLocaleDateString('en-AU', {
-    day: 'numeric',
-    month: 'short',
-  });
 }
 
 const styles = StyleSheet.create({

@@ -23,26 +23,26 @@ import { formatCurrency } from './formatters';
  * Type of rate cap that was applied.
  */
 export type CapType =
-    | 'mar_3_case'
-    | 'mar_care_negation'
-    | 'far_3_child'
-    | 'far_offset'
-    | 'none';
+  | 'mar_3_case'
+  | 'mar_care_negation'
+  | 'far_3_child'
+  | 'far_offset'
+  | 'none';
 
 /**
  * Result of applying multi-case caps to MAR or FAR.
  */
 export interface MultiCaseResult {
-    /** The capped/adjusted amount */
-    cappedAmount: number;
-    /** The original amount before capping */
-    originalAmount: number;
-    /** Whether a cap was applied */
-    capApplied: boolean;
-    /** Type of cap that was applied */
-    capType: CapType;
-    /** Human-readable explanation of why the cap was applied */
-    explanation: string;
+  /** The capped/adjusted amount */
+  cappedAmount: number;
+  /** The original amount before capping */
+  originalAmount: number;
+  /** Whether a cap was applied */
+  capApplied: boolean;
+  /** Type of cap that was applied */
+  capType: CapType;
+  /** Human-readable explanation of why the cap was applied */
+  explanation: string;
 }
 
 /**
@@ -50,22 +50,22 @@ export interface MultiCaseResult {
  * Used for Formula 4 multi-carer scenarios.
  */
 export interface CarerDistribution {
-    /** Identifier for the carer (e.g., 'parent_a', 'parent_b', 'npc') */
-    carerId: string;
-    /** The carer's care percentage */
-    carePercentage: number;
-    /** The carer's cost percentage (derived from care %) */
-    costPercentage: number;
-    /** The amount allocated to this carer */
-    amount: number;
+  /** Identifier for the carer (e.g., 'parent_a', 'parent_b', 'npc') */
+  carerId: string;
+  /** The carer's care percentage */
+  carePercentage: number;
+  /** The carer's cost percentage (derived from care %) */
+  costPercentage: number;
+  /** The amount allocated to this carer */
+  amount: number;
 }
 
 /**
  * Input for care information used in MAR negation checks.
  */
 export interface CareInfo {
-    /** Care percentage for each child */
-    carePercentages: number[];
+  /** Care percentage for each child */
+  carePercentages: number[];
 }
 
 // ============================================================================
@@ -83,32 +83,34 @@ export interface CareInfo {
  * @returns MultiCaseResult with capped amount and explanation
  */
 export function applyMARMultiCaseCap(
-    year: AssessmentYear,
-    totalCases: number
+  year: AssessmentYear,
+  totalCases: number
 ): MultiCaseResult {
-    const { MAR } = getYearConstants(year);
-    const originalAmount = MAR;
+  const { MAR } = getYearConstants(year);
+  const originalAmount = MAR;
 
-    if (totalCases <= 3) {
-        return {
-            cappedAmount: MAR,
-            originalAmount,
-            capApplied: false,
-            capType: 'none',
-            explanation: '',
-        };
-    }
-
-    // Cap at 3 × MAR, then divide by total cases
-    const cappedAmount = Math.round((MAR * 3) / totalCases);
-
+  if (totalCases <= 3) {
     return {
-        cappedAmount,
-        originalAmount,
-        capApplied: true,
-        capType: 'mar_3_case',
-        explanation: `Liability capped due to 3-case limit: (3 × ${formatCurrency(MAR)}) ÷ ${totalCases} cases = ${formatCurrency(cappedAmount)} per case`,
+      cappedAmount: MAR,
+      originalAmount,
+      capApplied: false,
+      capType: 'none',
+      explanation: '',
     };
+  }
+
+  // Cap at 3 × MAR, then divide by total cases
+  const cappedAmount = Math.round((MAR * 3) / totalCases);
+
+  return {
+    cappedAmount,
+    originalAmount,
+    capApplied: true,
+    capType: 'mar_3_case',
+    explanation: `Liability capped due to 3-case limit: (3 × ${formatCurrency(
+      MAR
+    )}) ÷ ${totalCases} cases = ${formatCurrency(cappedAmount)} per case`,
+  };
 }
 
 /**
@@ -119,15 +121,15 @@ export function applyMARMultiCaseCap(
  * @returns The proportional share for one case (rounded to nearest dollar)
  */
 export function calculateMARProportionalShare(
-    year: AssessmentYear,
-    totalCases: number
+  year: AssessmentYear,
+  totalCases: number
 ): number {
-    const { MAR } = getYearConstants(year);
+  const { MAR } = getYearConstants(year);
 
-    if (totalCases <= 0) return 0;
-    if (totalCases <= 3) return MAR;
+  if (totalCases <= 0) return 0;
+  if (totalCases <= 3) return MAR;
 
-    return Math.round((MAR * 3) / totalCases);
+  return Math.round((MAR * 3) / totalCases);
 }
 
 /**
@@ -140,28 +142,28 @@ export function calculateMARProportionalShare(
  * @returns MultiCaseResult indicating if MAR was negated
  */
 export function checkMARCareNegation(careInfo: CareInfo): MultiCaseResult {
-    const hasAtLeast14PercentCare = careInfo.carePercentages.some(
-        (care) => care >= 14
-    );
+  const hasAtLeast14PercentCare = careInfo.carePercentages.some(
+    (care) => care >= 14
+  );
 
-    if (hasAtLeast14PercentCare) {
-        return {
-            cappedAmount: 0,
-            originalAmount: 0, // Will be set by caller
-            capApplied: true,
-            capType: 'mar_care_negation',
-            explanation:
-                'MAR liability negated: parent has at least 14% care of a child in this assessment',
-        };
-    }
-
+  if (hasAtLeast14PercentCare) {
     return {
-        cappedAmount: 0,
-        originalAmount: 0,
-        capApplied: false,
-        capType: 'none',
-        explanation: '',
+      cappedAmount: 0,
+      originalAmount: 0, // Will be set by caller
+      capApplied: true,
+      capType: 'mar_care_negation',
+      explanation:
+        'MAR liability negated: parent has at least 14% care of a child in this assessment',
     };
+  }
+
+  return {
+    cappedAmount: 0,
+    originalAmount: 0,
+    capApplied: false,
+    capType: 'none',
+    explanation: '',
+  };
 }
 
 /**
@@ -176,33 +178,33 @@ export function checkMARCareNegation(careInfo: CareInfo): MultiCaseResult {
  * @returns Array of CarerDistribution objects
  */
 export function distributeMARToCarers(
-    amount: number,
-    carers: { carerId: string; carePercentage: number; costPercentage: number }[]
+  amount: number,
+  carers: { carerId: string; carePercentage: number; costPercentage: number }[]
 ): CarerDistribution[] {
-    if (carers.length === 0 || amount <= 0) {
-        return [];
-    }
+  if (carers.length === 0 || amount <= 0) {
+    return [];
+  }
 
-    // Find maximum care percentage
-    const maxCare = Math.max(...carers.map((c) => c.carePercentage));
+  // Find maximum care percentage
+  const maxCare = Math.max(...carers.map((c) => c.carePercentage));
 
-    // Find all carers with maximum care
-    const maxCareCarers = carers.filter((c) => c.carePercentage === maxCare);
+  // Find all carers with maximum care
+  const maxCareCarers = carers.filter((c) => c.carePercentage === maxCare);
 
-    if (maxCareCarers.length === 1) {
-        // Single carer with highest care gets full amount
-        return carers.map((c) => ({
-            ...c,
-            amount: c.carePercentage === maxCare ? Math.round(amount) : 0,
-        }));
-    } else {
-        // Multiple carers with equal highest care - split evenly
-        const splitAmount = Math.round(amount / maxCareCarers.length);
-        return carers.map((c) => ({
-            ...c,
-            amount: c.carePercentage === maxCare ? splitAmount : 0,
-        }));
-    }
+  if (maxCareCarers.length === 1) {
+    // Single carer with highest care gets full amount
+    return carers.map((c) => ({
+      ...c,
+      amount: c.carePercentage === maxCare ? Math.round(amount) : 0,
+    }));
+  } else {
+    // Multiple carers with equal highest care - split evenly
+    const splitAmount = Math.round(amount / maxCareCarers.length);
+    return carers.map((c) => ({
+      ...c,
+      amount: c.carePercentage === maxCare ? splitAmount : 0,
+    }));
+  }
 }
 
 // ============================================================================
@@ -220,33 +222,36 @@ export function distributeMARToCarers(
  * @returns MultiCaseResult with capped amount and explanation
  */
 export function applyFARMultiChildCap(
-    year: AssessmentYear,
-    totalChildren: number
+  year: AssessmentYear,
+  totalChildren: number
 ): MultiCaseResult {
-    const { FAR } = getYearConstants(year);
-    const originalAmount = FAR * Math.min(totalChildren, 3);
+  const { FAR } = getYearConstants(year);
+  const originalAmount = FAR * totalChildren;
 
-    if (totalChildren <= 3) {
-        return {
-            cappedAmount: FAR * totalChildren,
-            originalAmount: FAR * totalChildren,
-            capApplied: false,
-            capType: 'none',
-            explanation: '',
-        };
-    }
-
-    // Cap at 3 × FAR, then divide by total children
-    const cappedPerChild = Math.round((FAR * 3) / totalChildren);
-    const cappedTotal = cappedPerChild * totalChildren;
-
+  if (totalChildren <= 3) {
     return {
-        cappedAmount: cappedPerChild,
-        originalAmount: FAR,
-        capApplied: true,
-        capType: 'far_3_child',
-        explanation: `Liability capped due to 3-child limit: (3 × ${formatCurrency(FAR)}) ÷ ${totalChildren} children = ${formatCurrency(cappedPerChild)} per child`,
+      cappedAmount: FAR * totalChildren,
+      originalAmount: FAR * totalChildren,
+      capApplied: false,
+      capType: 'none',
+      explanation: '',
     };
+  }
+
+  // Cap at 3 × FAR, then divide by total children
+  const cappedPerChild = Math.round((FAR * 3) / totalChildren);
+
+  return {
+    cappedAmount: cappedPerChild,
+    originalAmount,
+    capApplied: true,
+    capType: 'far_3_child',
+    explanation: `Liability capped due to 3-child limit: (3 × ${formatCurrency(
+      FAR
+    )}) ÷ ${totalChildren} children = ${formatCurrency(
+      cappedPerChild
+    )} per child`,
+  };
 }
 
 /**
@@ -257,15 +262,15 @@ export function applyFARMultiChildCap(
  * @returns The proportional share per child (rounded to nearest dollar)
  */
 export function calculateFARProportionalShare(
-    year: AssessmentYear,
-    totalChildren: number
+  year: AssessmentYear,
+  totalChildren: number
 ): number {
-    const { FAR } = getYearConstants(year);
+  const { FAR } = getYearConstants(year);
 
-    if (totalChildren <= 0) return 0;
-    if (totalChildren <= 3) return FAR;
+  if (totalChildren <= 0) return 0;
+  if (totalChildren <= 3) return FAR;
 
-    return Math.round((FAR * 3) / totalChildren);
+  return Math.round((FAR * 3) / totalChildren);
 }
 
 /**
@@ -279,29 +284,29 @@ export function calculateFARProportionalShare(
  * @returns Array of CarerDistribution objects
  */
 export function distributeFARToCarers(
-    amount: number,
-    carers: { carerId: string; carePercentage: number; costPercentage: number }[]
+  amount: number,
+  carers: { carerId: string; carePercentage: number; costPercentage: number }[]
 ): CarerDistribution[] {
-    if (carers.length === 0 || amount <= 0) {
-        return [];
-    }
+  if (carers.length === 0 || amount <= 0) {
+    return [];
+  }
 
-    // Calculate total cost percentage for eligible carers (those with cost % > 0)
-    const totalCostPercent = carers.reduce((sum, c) => sum + c.costPercentage, 0);
+  // Calculate total cost percentage for eligible carers (those with cost % > 0)
+  const totalCostPercent = carers.reduce((sum, c) => sum + c.costPercentage, 0);
 
-    if (totalCostPercent <= 0) {
-        // No eligible carers, give full amount to first carer
-        return carers.map((c, i) => ({
-            ...c,
-            amount: i === 0 ? Math.round(amount) : 0,
-        }));
-    }
-
-    // Distribute proportionally by cost percentage
-    return carers.map((c) => ({
-        ...c,
-        amount: Math.round((c.costPercentage / totalCostPercent) * amount),
+  if (totalCostPercent <= 0) {
+    // No eligible carers, give full amount to first carer
+    return carers.map((c, i) => ({
+      ...c,
+      amount: i === 0 ? Math.round(amount) : 0,
     }));
+  }
+
+  // Distribute proportionally by cost percentage
+  return carers.map((c) => ({
+    ...c,
+    amount: Math.round((c.costPercentage / totalCostPercent) * amount),
+  }));
 }
 
 /**
@@ -315,28 +320,32 @@ export function distributeFARToCarers(
  * @returns MultiCaseResult with net amount and explanation
  */
 export function calculateFAROffset(
-    amountPayable: number,
-    amountReceivable: number
+  amountPayable: number,
+  amountReceivable: number
 ): MultiCaseResult {
-    const netAmount = amountPayable - amountReceivable;
+  const netAmount = amountPayable - amountReceivable;
 
-    if (amountPayable > 0 && amountReceivable > 0) {
-        return {
-            cappedAmount: Math.max(0, netAmount),
-            originalAmount: amountPayable,
-            capApplied: true,
-            capType: 'far_offset',
-            explanation: `FAR offset applied: ${formatCurrency(amountPayable)} payable - ${formatCurrency(amountReceivable)} receivable = ${formatCurrency(Math.max(0, netAmount))} net`,
-        };
-    }
-
+  if (amountPayable > 0 && amountReceivable > 0) {
     return {
-        cappedAmount: amountPayable,
-        originalAmount: amountPayable,
-        capApplied: false,
-        capType: 'none',
-        explanation: '',
+      cappedAmount: Math.max(0, netAmount),
+      originalAmount: amountPayable,
+      capApplied: true,
+      capType: 'far_offset',
+      explanation: `FAR offset applied: ${formatCurrency(
+        amountPayable
+      )} payable - ${formatCurrency(
+        amountReceivable
+      )} receivable = ${formatCurrency(Math.max(0, netAmount))} net`,
     };
+  }
+
+  return {
+    cappedAmount: amountPayable,
+    originalAmount: amountPayable,
+    capApplied: false,
+    capType: 'none',
+    explanation: '',
+  };
 }
 
 // ============================================================================
@@ -351,30 +360,32 @@ export function calculateFAROffset(
  * @returns A user-friendly explanation string
  */
 export function getCapExplanation(
-    capType: CapType,
-    details?: { cases?: number; children?: number; amount?: number }
+  capType: CapType,
+  details?: { cases?: number; children?: number; amount?: number }
 ): string {
-    switch (capType) {
-        case 'mar_3_case':
-            return details?.cases
-                ? `Your Minimum Annual Rate liability has been capped because you have ${details.cases} child support cases (more than 3). The maximum liability is 3 × the yearly MAR, shared proportionally across all cases.`
-                : 'Your Minimum Annual Rate liability has been capped due to the 3-case limit.';
+  switch (capType) {
+    case 'mar_3_case':
+      return details?.cases
+        ? `Your Minimum Annual Rate liability has been capped because you have ${details.cases} child support cases (more than 3). The maximum liability is 3 × the yearly MAR, shared proportionally across all cases.`
+        : 'Your Minimum Annual Rate liability has been capped due to the 3-case limit.';
 
-        case 'mar_care_negation':
-            return 'Your Minimum Annual Rate liability is $0 because you provide at least 14% care for a child in this assessment.';
+    case 'mar_care_negation':
+      return 'Your Minimum Annual Rate liability is $0 because you provide at least 14% care for a child in this assessment.';
 
-        case 'far_3_child':
-            return details?.children
-                ? `Your Fixed Annual Rate liability has been capped because you are liable for ${details.children} children (more than 3). The maximum liability is 3 × the yearly FAR, shared proportionally across all children.`
-                : 'Your Fixed Annual Rate liability has been capped due to the 3-child limit.';
+    case 'far_3_child':
+      return details?.children
+        ? `Your Fixed Annual Rate liability has been capped because you are liable for ${details.children} children (more than 3). The maximum liability is 3 × the yearly FAR, shared proportionally across all children.`
+        : 'Your Fixed Annual Rate liability has been capped due to the 3-child limit.';
 
-        case 'far_offset':
-            return details?.amount !== undefined
-                ? `Your Fixed Annual Rate has been offset against support you are entitled to receive, resulting in a net amount of ${formatCurrency(details.amount)}.`
-                : 'Your Fixed Annual Rate has been offset against support you are entitled to receive.';
+    case 'far_offset':
+      return details?.amount !== undefined
+        ? `Your Fixed Annual Rate has been offset against support you are entitled to receive, resulting in a net amount of ${formatCurrency(
+            details.amount
+          )}.`
+        : 'Your Fixed Annual Rate has been offset against support you are entitled to receive.';
 
-        case 'none':
-        default:
-            return '';
-    }
+    case 'none':
+    default:
+      return '';
+  }
 }

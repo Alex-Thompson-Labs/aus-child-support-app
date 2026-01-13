@@ -29,6 +29,7 @@ export function useCalculator() {
     updateMultiCaseA,
     updateMultiCaseB,
     updateNonParentCarer,
+    updateCareDispute,
     resetState
   } = useCalculatorState();
 
@@ -116,6 +117,7 @@ export function useCalculator() {
     updateMultiCaseA,
     updateMultiCaseB,
     updateNonParentCarer,
+    updateCareDispute,
     validateForm,
     calculate,
     reset,

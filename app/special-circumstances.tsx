@@ -1,32 +1,32 @@
-import { PageSEO } from '@/src/components/seo/PageSEO';
-import Accordion from '@/src/components/ui/Accordion';
-import { HelpTooltip } from '@/src/features/calculator';
-import { useAnalytics } from '@/src/utils/analytics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-    Linking,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  Linking,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { PageSEO } from '../src/components/seo/PageSEO.tsx';
+import Accordion from '../src/components/ui/Accordion.tsx';
+import { HelpTooltip } from '../src/features/calculator/index.ts';
+import { useAnalytics } from '../src/utils/analytics.ts';
 import {
-    MAX_FORM_WIDTH,
-    isWeb,
-    webClickableStyles,
-} from '../src/utils/responsive';
-import { createShadow } from '../src/utils/shadow-styles';
+  MAX_FORM_WIDTH,
+  isWeb,
+  webClickableStyles,
+} from '../src/utils/responsive.ts';
+import { createShadow } from '../src/utils/shadow-styles.ts';
 import {
-    SPECIAL_CIRCUMSTANCES,
-    getHighestPriorityReason,
-    isCourtDateReason,
-    isValidSpecialCircumstanceId,
-    type SpecialCircumstance,
-} from '../src/utils/special-circumstances';
+  SPECIAL_CIRCUMSTANCES,
+  getHighestPriorityReason,
+  isCourtDateReason,
+  isValidSpecialCircumstanceId,
+  type SpecialCircumstance,
+} from '../src/utils/special-circumstances.ts';
 
 // ============================================================================
 // Special Circumstances Standalone Screen
@@ -117,13 +117,15 @@ export default function SpecialCircumstancesScreen() {
 
   // Group reasons by category
   const incomeReasons = SPECIAL_CIRCUMSTANCES.filter(
-    (r) => r.category === 'income' && r.id !== 'hiding_income'
+    (r: SpecialCircumstance) =>
+      r.category === 'income' && r.id !== 'hiding_income'
   );
   const childReasons = SPECIAL_CIRCUMSTANCES.filter(
-    (r) => r.category === 'child'
+    (r: SpecialCircumstance) => r.category === 'child'
   );
   const otherReasons = SPECIAL_CIRCUMSTANCES.filter(
-    (r) => r.category === 'other' && r.id !== 'property_settlement'
+    (r: SpecialCircumstance) =>
+      r.category === 'other' && r.id !== 'property_settlement'
   );
 
   // Determine button state
@@ -206,7 +208,7 @@ export default function SpecialCircumstancesScreen() {
       console.error('[SpecialCircumstances] Navigation failed:', error);
       setIsNavigating(false);
     }
-  }, [isNavigating, selectedReasons, router, analytics]);
+  }, [isNavigating, selectedReasons, router, analytics, returnTo]);
 
   // Render checkbox for a reason
   const renderCheckbox = (reason: SpecialCircumstance) => {
@@ -217,7 +219,7 @@ export default function SpecialCircumstancesScreen() {
         key={reason.id}
         style={[styles.checkboxRow, isWeb && webClickableStyles]}
         onPress={() => handleCheckboxToggle(reason.id)}
-        accessible={true}
+        accessible
         accessibilityRole="checkbox"
         accessibilityState={{ checked: isChecked }}
         accessibilityLabel={reason.label}
@@ -237,10 +239,10 @@ export default function SpecialCircumstancesScreen() {
   // Web-specific container styles
   const webContainerStyle = isWeb
     ? {
-      maxWidth: MAX_FORM_WIDTH,
-      width: '100%' as const,
-      alignSelf: 'center' as const,
-    }
+        maxWidth: MAX_FORM_WIDTH,
+        width: '100%' as const,
+        alignSelf: 'center' as const,
+      }
     : {};
 
   return (
@@ -261,12 +263,14 @@ export default function SpecialCircumstancesScreen() {
               if (returnTo) {
                 if (returnTo.startsWith('http')) {
                   if (Platform.OS === 'web') {
-                    window.location.href = returnTo;
+                    (
+                      globalThis as unknown as { location: { href: string } }
+                    ).location.href = returnTo;
                   } else {
                     Linking.openURL(returnTo);
                   }
                 } else {
-                  // @ts-ignore
+                  // @ts-ignore: returnTo is string but router.push expects pathname
                   router.push(returnTo);
                 }
                 return;
@@ -278,7 +282,7 @@ export default function SpecialCircumstancesScreen() {
                 router.replace('/');
               }
             }}
-            accessible={true}
+            accessible
             accessibilityRole="button"
             accessibilityLabel="Close"
           >
@@ -293,11 +297,13 @@ export default function SpecialCircumstancesScreen() {
         >
           {/* Introduction Card */}
           <View style={styles.introCard}>
-            <Text style={styles.introTitle}>Do special circumstances exist?</Text>
+            <Text style={styles.introTitle}>
+              Do special circumstances exist?
+            </Text>
             <Text style={styles.introDescription}>
-              Some situations are too complex for the standard calculator. If any
-              of these apply, a lawyer can help you request adjustments to your
-              child support assessment.
+              Some situations are too complex for the standard calculator. If
+              any of these apply, a lawyer can help you request adjustments to
+              your child support assessment.
             </Text>
           </View>
 
@@ -315,8 +321,8 @@ export default function SpecialCircumstancesScreen() {
                 <Pressable
                   style={[styles.checkboxRow, isWeb && webClickableStyles]}
                   onPress={() => {
-                    const hasCourtDate = Array.from(selectedReasons).some((id) =>
-                      isCourtDateReason(id)
+                    const hasCourtDate = Array.from(selectedReasons).some(
+                      (id) => isCourtDateReason(id)
                     );
 
                     if (hasCourtDate) {
@@ -337,7 +343,7 @@ export default function SpecialCircumstancesScreen() {
                       });
                     }
                   }}
-                  accessible={true}
+                  accessible
                   accessibilityRole="checkbox"
                   accessibilityState={{
                     checked: Array.from(selectedReasons).some((id) =>
@@ -377,7 +383,7 @@ export default function SpecialCircumstancesScreen() {
                     setHasPropertySettlement(!hasPropertySettlement);
                     handleCheckboxToggle('property_settlement');
                   }}
-                  accessible={true}
+                  accessible
                   accessibilityRole="checkbox"
                   accessibilityState={{ checked: hasPropertySettlement }}
                 >
@@ -450,7 +456,7 @@ export default function SpecialCircumstancesScreen() {
               ]}
               onPress={handleContinue}
               disabled={buttonDisabled}
-              accessible={true}
+              accessible
               accessibilityRole="button"
               accessibilityLabel="Continue to speak with a lawyer"
               accessibilityState={{ disabled: buttonDisabled }}
@@ -473,30 +479,33 @@ export default function SpecialCircumstancesScreen() {
 
           {/* FAQ Section */}
           <View style={styles.faqSection}>
-            <Text style={styles.faqSectionTitle}>Frequently Asked Questions</Text>
+            <Text style={styles.faqSectionTitle}>
+              Frequently Asked Questions
+            </Text>
 
             <Accordion title="What are special circumstances in child support?">
               <Text style={styles.faqText}>
-                Special circumstances are situations that are too complex for the standard
-                child support calculator. These include issues with income reporting,
-                property settlements, high child care costs, or upcoming court hearings
-                that may affect your assessment.
+                Special circumstances are situations that are too complex for
+                the standard child support calculator. These include issues with
+                income reporting, property settlements, high child care costs,
+                or upcoming court hearings that may affect your assessment.
               </Text>
             </Accordion>
 
             <Accordion title="Can I select multiple special circumstances?">
               <Text style={styles.faqText}>
-                Yes, you can select multiple circumstances that apply to your situation.
-                The system will identify the highest priority circumstance to help match
-                you with appropriate legal assistance.
+                Yes, you can select multiple circumstances that apply to your
+                situation. The system will identify the highest priority
+                circumstance to help match you with appropriate legal
+                assistance.
               </Text>
             </Accordion>
 
             <Accordion title="What happens after I select my circumstances?">
               <Text style={styles.faqText}>
-                After selecting your circumstances, you will be directed to speak with
-                a family lawyer who can help you request adjustments to your child support
-                assessment through Services Australia.
+                After selecting your circumstances, you will be directed to
+                speak with a family lawyer who can help you request adjustments
+                to your child support assessment through Services Australia.
               </Text>
             </Accordion>
           </View>
