@@ -29,7 +29,7 @@ const LAWYER_INQUIRY_FAQS = [
     {
         question: 'Is my information confidential?',
         answer:
-            'Yes. Your personal and financial information is encrypted and only shared with the legal professionals who will be reviewing your case.',
+            'Yes. Your personal and financial information is securely transmitted and only shared with the legal professionals who will be reviewing your case.',
     },
 ];
 

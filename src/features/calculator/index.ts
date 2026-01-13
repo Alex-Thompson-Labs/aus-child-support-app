@@ -25,6 +25,7 @@ export { YearSelector } from './components/YearSelector';
 // Results sub-components
 export { FtbImpactCard } from './components/FtbImpactCard';
 export { AdultChildMaintenanceCard } from './components/results/AdultChildMaintenanceCard';
+export { PDFExportButton } from './components/results/PDFExportButton';
 export { ResultsHero, getPayerText } from './components/results/ResultsHero';
 export { Turning18Banner } from './components/results/Turning18Banner';
 

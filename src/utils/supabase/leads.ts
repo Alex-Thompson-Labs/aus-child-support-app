@@ -103,8 +103,6 @@ export async function submitLead(lead: LeadSubmission): Promise<{
 
         // Log what we're about to send (for debugging)
         console.log('[Supabase] Attempting to insert lead with data:', {
-            parent_name: lead.parent_name,
-            parent_email: lead.parent_email,
             has_phone: !!lead.parent_phone,
             income_parent_a: lead.income_parent_a,
             income_parent_b: lead.income_parent_b,
@@ -119,9 +117,14 @@ export async function submitLead(lead: LeadSubmission): Promise<{
         // Lazy-load Supabase client only when actually submitting
         const supabaseClient = await getSupabaseClient();
 
+        // Generate ID client-side to avoid needing SELECT permission on the table
+        // This is necessary because anon users can INSERT but NOT SELECT (to prevent scraping)
+        const leadId = crypto.randomUUID();
+
         // Sanitize payload: explicitly list ONLY columns that exist in the database
         // This prevents errors from removed fields (e.g., preferred_contact)
         const sanitizedPayload = {
+            id: leadId,
             // Parent contact
             parent_name: lead.parent_name,
             parent_email: lead.parent_email,
@@ -178,12 +181,11 @@ export async function submitLead(lead: LeadSubmission): Promise<{
             time_to_complete: lead.time_to_complete,
         };
 
-        // Insert lead into database and return the ID
-        const { data, error } = await supabaseClient
+        // Insert lead into database
+        // We do NOT use .select() because RLS prevents anon users from reading
+        const { error } = await supabaseClient
             .from('leads')
-            .insert([sanitizedPayload])
-            .select('id')
-            .single();
+            .insert([sanitizedPayload]);
 
         if (error) {
             console.error('[Supabase] Error inserting lead:', error);
@@ -199,11 +201,11 @@ export async function submitLead(lead: LeadSubmission): Promise<{
             };
         }
 
-        console.log('[Supabase] Lead submitted successfully. ID:', data?.id);
+        console.log('[Supabase] Lead submitted successfully. ID:', leadId);
 
         return {
             success: true,
-            leadId: data?.id,
+            leadId: leadId,
         };
     } catch (error) {
         console.error('[Supabase] Unexpected error submitting lead:', error);
@@ -231,51 +233,24 @@ export async function updateLeadEnrichment(
         // Lazy-load Supabase client
         const supabaseClient = await getSupabaseClient();
 
-        // Use RPC to append to array (avoids needing SELECT permission)
-        // This calls a Postgres function that concatenates arrays
+        // Use RPC to append to array AND update fields (avoids needing UPDATE permission)
+        // This calls a Postgres function that handles the data update securely
         const { error: updateError } = await supabaseClient.rpc(
             'append_complexity_reasons',
             {
                 lead_id: leadId,
                 new_reasons: enrichmentFactors,
+                annual_liability: annualLiability,
+                payer_role: payerRole,
             }
         );
 
         if (updateError) {
-            console.error('[Supabase] RPC error, falling back to direct update:', updateError);
-
-            // Fallback: Try direct update (requires UPDATE policy)
-            // This overwrites rather than appends, but at least saves the enrichment data
-            const { error: fallbackError } = await supabaseClient
-                .from('leads')
-                .update({
-                    complexity_reasons: enrichmentFactors,
-                    ...(annualLiability !== undefined && { enrichment_annual_liability: annualLiability }),
-                    ...(payerRole !== undefined && { enrichment_payer_role: payerRole }),
-                })
-                .eq('id', leadId);
-
-            if (fallbackError) {
-                console.error('[Supabase] Fallback update also failed:', fallbackError);
-                return {
-                    success: false,
-                    error: fallbackError.message || 'Failed to update lead',
-                };
-            }
-        } else if (annualLiability !== undefined || payerRole !== undefined) {
-            // RPC succeeded, but we still need to update the liability/payer separately
-            const { error: liabilityError } = await supabaseClient
-                .from('leads')
-                .update({
-                    ...(annualLiability !== undefined && { enrichment_annual_liability: annualLiability }),
-                    ...(payerRole !== undefined && { enrichment_payer_role: payerRole }),
-                })
-                .eq('id', leadId);
-
-            if (liabilityError) {
-                console.error('[Supabase] Failed to update liability/payer:', liabilityError);
-                // Don't fail the whole operation, enrichment factors were saved
-            }
+            console.error('[Supabase] RPC error:', updateError);
+            return {
+                success: false,
+                error: updateError.message || 'Failed to update lead enrichment',
+            };
         }
 
         console.log('[Supabase] Lead enrichment updated successfully. ID:', leadId);

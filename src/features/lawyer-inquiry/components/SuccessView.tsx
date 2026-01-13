@@ -53,7 +53,7 @@ export function SuccessView({ returnTo, partnerName }: SuccessViewProps) {
         {partnerName ? (
           <>
             <Text style={successStyles.successMessage}>
-              Your details have been securely encrypted and sent to{' '}
+              Your details have been securely transmitted to{' '}
               {partnerName} via our protected portal. They will contact you
               within 24 hours.
             </Text>

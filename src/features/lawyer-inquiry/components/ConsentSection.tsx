@@ -87,7 +87,7 @@ export function ConsentSection({
 
       {/* Confidentiality Disclaimer */}
       <Text style={buttonStyles.disclaimer}>
-        Your information is encrypted, strictly confidential, and used solely to
+        Your information is securely transmitted, strictly confidential, and used solely to
         connect you with legal assistance.
       </Text>
     </>

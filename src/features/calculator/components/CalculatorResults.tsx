@@ -557,15 +557,25 @@ export function CalculatorResults({
               >
                 Assessment Breakdown
               </Text>
-              <Pressable
-                ref={closeButtonRef}
-                onPress={toggleExpand}
-                style={styles.closeButton}
-                accessibilityRole="button"
-                accessibilityLabel="Close breakdown"
-              >
-                <Text style={styles.closeIcon}>✕</Text>
-              </Pressable>
+              <View style={styles.headerActions}>
+                {Platform.OS === 'web' && (
+                  <PDFExportButton
+                    results={results}
+                    supportA={formData?.supportA ?? false}
+                    supportB={formData?.supportB ?? false}
+                    variant="secondary"
+                  />
+                )}
+                <Pressable
+                  ref={closeButtonRef}
+                  onPress={toggleExpand}
+                  style={styles.closeButton}
+                  accessibilityRole="button"
+                  accessibilityLabel="Close breakdown"
+                >
+                  <Text style={styles.closeIcon}>✕</Text>
+                </Pressable>
+              </View>
             </View>
           </View>
           {/* Progress Indicator - Step 2: Estimate */}
@@ -667,6 +677,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700', // Bold for strong typography
     color: '#1e3a8a', // blue-900 (Dark Brand Blue)
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   closeButton: {
     width: 44,
