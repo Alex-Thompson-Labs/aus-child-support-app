@@ -44,6 +44,16 @@ export default function RootLayout() {
     }
 
     prepare();
+
+    // Safety fallback: Ensure splash screen hides after 5 seconds
+    // to prevent it from blocking user interactions if something hangs.
+    const timeout = setTimeout(() => {
+      SplashScreen.hideAsync().catch(() => {
+        // Ignore errors if already hidden
+      });
+    }, 5000);
+
+    return () => clearTimeout(timeout);
   }, []);
 
   // Callback to hide splash screen once the root view has performed layout
