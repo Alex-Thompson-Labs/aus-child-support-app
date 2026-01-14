@@ -1,5 +1,5 @@
 /**
- * Court Order Interpreter Tool
+ * Court Order Scanner Tool
  * 
  * Multi-step wizard that allows users to upload a Family Court Order,
  * parses it into structured data, and calculates care percentages.
@@ -59,8 +59,8 @@ const OTHER_PARENT_COLOR = '#94a3b8'; // Slate/Gray
 const courtOrderSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: 'Court Order Interpreter',
-  description: 'AI-powered tool to extract care schedules from Family Court Orders and calculate exact night counts for child support assessment.',
+  name: 'Court Order Scanner',
+  description: 'Scanner tool to extract care schedules from Family Court Orders and calculate exact night counts for child support assessment.',
   applicationCategory: 'LegalApplication',
   operatingSystem: 'Web, iOS, Android',
   offers: {
@@ -402,7 +402,7 @@ export default function CourtOrderToolScreen() {
         throw error;
       }
 
-      if (!data) throw new Error('No data returned from AI');
+      if (!data) throw new Error('No data returned from Scanner');
 
       if (data.error === 'INVALID_DOCUMENT_TYPE') {
         throw new Error(data.reason || 'Invalid document type. Please upload a valid Court Order.');
@@ -471,16 +471,16 @@ export default function CourtOrderToolScreen() {
   return (
     <>
       <PageSEO
-        title="Court Order Interpreter"
+        title="Import Care Schedule"
         description="Extract care schedule."
         canonicalPath="/court-order-tool"
         schema={courtOrderSchema}
       />
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-        <CalculatorHeader title="Court Order Interpreter" showBackButton={true} maxWidth={MAX_FORM_WIDTH} />
+        <CalculatorHeader title="Import Care Schedule" showBackButton={true} maxWidth={MAX_FORM_WIDTH} />
         <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, webContainerStyle]}>
-          <Text style={styles.pageTitle} accessibilityRole="header" aria-level="1">AI Court Order Interpreter</Text>
-          <Text style={styles.introText}>Upload a photo or PDF of your Parenting Orders. Our AI will extract the care schedule.</Text>
+          <Text style={styles.pageTitle} accessibilityRole="header" aria-level="1">Court Order Scanner</Text>
+          <Text style={styles.introText}>Upload a photo or PDF of your Parenting Orders. Our system will extract the care schedule.</Text>
 
           <View style={styles.stepIndicator}>
             {(['Upload', 'Details', 'Analyzing', 'Results'] as const).map((label, index) => {

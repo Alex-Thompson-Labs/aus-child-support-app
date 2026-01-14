@@ -48,51 +48,79 @@ Deno.serve(async (req) => {
     }
 
     IF VALID:
-    Your goal is to extract the care arrangement schedule from a Court Order image/text and convert it into a structured JSON format for calculation.
+    Your goal is to extract the **RULES** of the care arrangement into a strict JSON format.
+    
+    DO NOT CALCULATE TOTALS. DO NOT COUNT NIGHTS. ONLY EXTRACT RULES.
 
-    KEY RULES:
-    1. MIDNIGHT RULE: Care is determined by who has the child at 11:59 PM.
-    2. HOLIDAY SUSPENSION: Holiday rules strictly override the base pattern.
-    3. CYCLE: Usually a 14-day (fortnightly) cycle.
+    KEY CONCEPTS:
+    1. **Anchor Date**: The date the cycle begins (Commencement Date or Date of Signing). This is critical for determining Week 1 vs Week 2.
+    2. **Midnight Rule**: We care about who has the child at 11:59PM.
+    3. **Cycle**: Typically 14 days (Fortnightly).
 
-    4. DURATION ANALYSIS: Analyze if the order contains a 'graduated' or 'stepped' care arrangement that changes after year 1 (e.g., 'Year 1: 3 nights, Year 2: 5 nights'). 
-       - If yes: Set "analysis_duration_months" to 24.
-       - If no (standard ongoing arrangement): Set "analysis_duration_months" to 12.
+    CRITICAL: DENSE 14-DAY GRID REQUIREMENT
+    You MUST generate an array of EXACTLY 14 objects in base_pattern, representing Day 1 to Day 14 of the fortnight.
+    DO NOT skip any days. If a day is not explicitly mentioned in the order, assign it to the primary_parent.
+    
+    COMMENCEMENT DATE ALIGNMENT:
+    - Find the "Commencement Date" or "Orders start from" date in the document.
+    - Determine what day of the week that date falls on.
+    - Day 1 of the cycle starts on that weekday. Example: If orders commence on Wednesday 15th January, then Day 1 = Wednesday.
+    - Week 1 = Days 1-7, Week 2 = Days 8-14.
+    
+    DAY NAME FORMAT:
+    - day_name MUST be the full English day name in Title Case: "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+    - week_number MUST be an integer: 1 or 2 (not strings)
 
-    Output must be strictly valid JSON matching this schema:
-    5. START DATE: Extract the commencement date of the orders (e.g., "Commencing 12 March 2024") or the date the orders were signed. Format as YYYY-MM-DD.
-
-    Output must be strictly valid JSON matching this schema:
+    OUTPUT SCHEMA (Strict JSON):
     {
-      "start_date": "2024-03-12", // The commencement date found in the text
-      "analysis_duration_months": 12, // Default 12, set to 24 if stepped/graduated care detected
+      "start_date": "YYYY-MM-DD", // The specific commencement date. CRITICAL.
       "cycle_length_days": 14,
+      "primary_parent": "Mother" | "Father", // Who has care when not specified?
       "base_pattern": [
+        // EXACTLY 14 entries, one for each day. NO GAPS.
         {
-          "day": "Monday",
-          "week": 1,
-          "care_with": "Father" | "Mother",
-          "notes": "From 3pm" // critical: capture start/end times precisely
-        }
+          "day_number": 1, // Sequential 1-14
+          "day_name": "Wednesday", // Full name, Title Case (matches start_date weekday for day 1)
+          "week_number": 1, // Integer: 1 or 2
+          "overnight_care_owner": "Mother" | "Father", // Who has the child at 11:59PM?
+          "description": "With Mother" // Optional context
+        },
+        // ... continue for all 14 days
       ],
-      "holiday_blocks": [
-        {
-          "event": "Christmas",
-          "rule": "Father has even years 24-26 Dec"
-        }
-      ],
-      "special_overrides": []
+      "holiday_rules": {
+        "christmas": {
+            "applies": boolean,
+            "rule_type": "alternating" | "split" | "fixed" | "none", 
+            "details": "Father even years, Mother odd years" 
+        },
+        "school_holidays": {
+            "applies": boolean,
+            "rule_type": "half_half" | "alternating_blocks" | "none",
+            "details": "Half of all holidays"
+        } 
+      }
     }
 
-    IMPORTANT:
-    - Ensure EVERY day of the 14-day cycle is accounted for.
-    - If a day is not explicitly mentioned, assign it to the primary carer (default to Mother if unclear, or infer from context).
-    - Capture the specific "From X time" and "Until Y time" in the "notes" field.
-    - Do not wrap the output in markdown code blocks. Return only validity JSON.`;
+    EXTRACTION RULES:
+    - **Base Pattern**: If the order says "Father has alternate weekends from Fri 3pm to Sun 5pm", then:
+      - Fri night: Father
+      - Sat night: Father
+      - Sun night: Mother (because he returns child at 5pm, so Mother has 11:59pm)
+    - **Filling Gaps**: For any day not mentioned, assign overnight_care_owner to primary_parent.
+    - **Start Date**: Look for "Commencing on...", "Orders start from...". If not found, use the Date of Orders.
+    - **Changeover Days**: If Father picks up at 3pm Friday and returns Sunday 5pm, Friday and Saturday nights are Father's, Sunday night is Mother's.
+    
+    VALIDATION BEFORE OUTPUT:
+    - Verify base_pattern has exactly 14 entries
+    - Verify day_number runs 1 through 14 sequentially
+    - Verify week_number is 1 for days 1-7, and 2 for days 8-14
+    - Verify all day_name values are valid English weekday names in Title Case
+    `;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-3-5-20241022',
-      max_tokens: 3000,
+      model: 'claude-3-5-sonnet-20241022',
+      max_tokens: 4000,
+      temperature: 0,
       system: systemPrompt,
       messages: [
         {

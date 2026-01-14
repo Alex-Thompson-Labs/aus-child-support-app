@@ -335,7 +335,7 @@ export default function CourtOrderToolScreen() {
             <Text style={styles.debugTitle}>Extracted Schedule:</Text>
             {orderJson.base_pattern.map((p, i) => (
               <Text key={i} style={styles.debugText}>
-                Week {p.week} {p.day}: {p.care_with} ({p.notes || 'No notes'})
+                Week {p.week_number} {p.day_name}: {p.overnight_care_owner} ({p.description || 'No notes'})
               </Text>
             ))}
           </View>
