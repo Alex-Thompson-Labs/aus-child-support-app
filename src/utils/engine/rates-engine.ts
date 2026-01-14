@@ -131,9 +131,10 @@ export function checkFARApplies(
     return false;
   }
 
-  // Other parent must have 66%+ care of this specific child
-  const otherParentCare = otherParentCarePercentages[childIndex];
-  if (otherParentCare === undefined || otherParentCare < 66) {
+  // Parent must have less than 35% care of this specific child
+  // (In NPC cases, the other parent might also have 0% care, so checking other parent's care >= 66% is incorrect)
+  const carePercentage = input.carePercentages[childIndex];
+  if (carePercentage === undefined || carePercentage >= 35) {
     return false;
   }
 

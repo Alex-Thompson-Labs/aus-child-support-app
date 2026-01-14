@@ -46,8 +46,8 @@ export function AnnualRateBreakdown({
     const hasMarB = results.childResults.some((c) => c.marAppliedB);
     const hasAnyMar = hasMarA || hasMarB;
 
-    // If MAR is applied, show a single consolidated line
-    if (hasAnyMar) {
+    // If MAR is applied, show a single consolidated line (only if NO NPC payment involved)
+    if (hasAnyMar && (results.paymentToNPC ?? 0) === 0) {
         const totalMarAmount = results.finalPaymentAmount;
         const { isLowAssessment } = detectLowAssessmentTrigger(results, formState);
         const adultChildren = results.childResults.filter((c) => c.isAdultChild);
@@ -196,7 +196,15 @@ export function AnnualRateBreakdown({
                                         {/* Parent A Line */}
                                         <View style={[styles.perChildGapRow, { paddingLeft: 8 }]}>
                                             <Text style={[styles.npcPaymentLabel, { fontSize: 12, color: '#4b5563' }]}>
-                                                Your liability
+                                                Your liability {child.farAppliedA ? (
+                                                    <Text style={{ fontWeight: '700' }}>(Fixed annual rate)</Text>
+                                                ) : child.marAppliedA ? (
+                                                    <Text style={{ fontWeight: '700' }}>(Minimum annual rate)</Text>
+                                                ) : (
+                                                    <>
+                                                        <Text style={{ fontWeight: '700' }}>({formatPercent2dp(child.costPerChild > 0 ? (liabilityA / child.costPerChild) * 100 : 0)})</Text> × {formatCurrency(child.costPerChild)}
+                                                    </>
+                                                )}
                                             </Text>
                                             <Text style={[styles.npcPaymentValue, { fontSize: 13 }]}>{formatCurrency(liabilityA)}</Text>
                                         </View>
@@ -204,7 +212,15 @@ export function AnnualRateBreakdown({
                                         {/* Parent B Line */}
                                         <View style={[styles.perChildGapRow, { paddingLeft: 8 }]}>
                                             <Text style={[styles.npcPaymentLabel, { fontSize: 12, color: '#4b5563' }]}>
-                                                Other parent's liability
+                                                Other parent's liability {child.farAppliedB ? (
+                                                    <Text style={{ fontWeight: '700' }}>(Fixed annual rate)</Text>
+                                                ) : child.marAppliedB ? (
+                                                    <Text style={{ fontWeight: '700' }}>(Minimum annual rate)</Text>
+                                                ) : (
+                                                    <>
+                                                        <Text style={{ fontWeight: '700' }}>({formatPercent2dp(child.costPerChild > 0 ? (liabilityB / child.costPerChild) * 100 : 0)})</Text> × {formatCurrency(child.costPerChild)}
+                                                    </>
+                                                )}
                                             </Text>
                                             <Text style={[styles.npcPaymentValue, { fontSize: 13, color: '#6b7280' }]}>{formatCurrency(liabilityB)}</Text>
                                         </View>
@@ -280,9 +296,13 @@ export function AnnualRateBreakdown({
                 const payingParentColor = showForParentA ? colors.userHighlight : colors.textMuted;
                 const farApplied = showForParentA ? child.farAppliedA : child.farAppliedB;
 
+                const isMixedPayment = results.finalPaymentAmount > 0 && (results.paymentToNPC ?? 0) > 0;
+
+                // For mixed payments (Rule 3), the main row should only show liability to other parent
+                // The NPC liability is shown in the separate blue box
                 const liability = showForParentA
-                    ? child.finalLiabilityA + (child.liabilityToNPC_A ?? 0)
-                    : child.finalLiabilityB + (child.liabilityToNPC_B ?? 0);
+                    ? child.finalLiabilityA + (isMixedPayment ? 0 : (child.liabilityToNPC_A ?? 0))
+                    : child.finalLiabilityB + (isMixedPayment ? 0 : (child.liabilityToNPC_B ?? 0));
 
                 const gapPercentage = child.costPerChild > 0
                     ? (liability / child.costPerChild) * 100

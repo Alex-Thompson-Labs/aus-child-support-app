@@ -119,7 +119,7 @@ export function GapAnalysisCard({
                         dynamicStyles.title,
                     ]}
                 >
-                    {otherParentHasFixedRate
+                    {otherParentHasFixedRate && csPercent === 0
                         ? '—'
                         : formatPercent(csPercent)}
                 </Text>

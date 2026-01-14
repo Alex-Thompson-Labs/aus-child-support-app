@@ -85,12 +85,18 @@ export function ResultsHero({
   }
 
   if (results.finalPaymentAmount > 0) {
-    if (results.payer === 'Parent A' && npcLiabilityA > 0) {
-      heroAmount += npcLiabilityA;
-      breakdownText = `(${formatCurrency(results.finalPaymentAmount)} to parent, ${formatCurrency(npcLiabilityA)} to carer)`;
-    } else if (results.payer === 'Parent B' && npcLiabilityB > 0) {
-      heroAmount += npcLiabilityB;
-      breakdownText = `(${formatCurrency(results.finalPaymentAmount)} to parent, ${formatCurrency(npcLiabilityB)} to carer)`;
+    if (results.payer === 'Parent A') {
+      const npcPayment = npcLiabilityA;
+      if (npcPayment > 0) {
+        heroAmount += npcPayment;
+        breakdownText = `(${formatCurrency(results.finalPaymentAmount)} to parent, ${formatCurrency(npcPayment)} to carer)`;
+      }
+    } else if (results.payer === 'Parent B') {
+      const npcPayment = npcLiabilityB;
+      if (npcPayment > 0) {
+        heroAmount += npcPayment;
+        breakdownText = `(${formatCurrency(results.finalPaymentAmount)} to parent, ${formatCurrency(npcPayment)} to carer)`;
+      }
     }
   }
 
