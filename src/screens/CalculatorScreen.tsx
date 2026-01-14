@@ -1,11 +1,11 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { lazy, Suspense, useState } from 'react';
+import React, { useState } from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    View,
+  KeyboardAvoidingView,
+  Platform, // Keep Pressable for AI card
+  ScrollView,
+  StyleSheet,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCalculator } from '../hooks/useCalculator';
@@ -13,27 +13,10 @@ import { convertCareToPercentage } from '../utils/care-utils';
 import { getYearConstants } from '../utils/child-support-constants';
 import { MAX_CALCULATOR_WIDTH, useResponsive } from '../utils/responsive';
 
-// ✅ STANDARD IMPORTS - Critical for initial render (no lazy loading)
-import { CalculatorForm, CalculatorHeader } from '@/src/features/calculator';
+// ✅ STANDARD IMPORTS (Reliable)
+import { CalculatorFAQ, CalculatorForm, CalculatorHeader, CalculatorResults, IncomeSupportModal } from '@/src/features/calculator';
 import { PrivacyPolicyLink } from '../components/PrivacyPolicyLink';
 import { StepProgressIndicator } from '../components/ui/StepProgressIndicator';
-
-// ✅ LAZY LOAD: Secondary components that aren't needed for initial render
-const CalculatorResults = lazy(() =>
-  import('@/src/features/calculator/components/CalculatorResults').then((m) => ({
-    default: m.CalculatorResults,
-  }))
-);
-const CalculatorFAQ = lazy(() =>
-  import('@/src/features/calculator/components/CalculatorFAQ').then((m) => ({
-    default: m.CalculatorFAQ,
-  }))
-);
-const IncomeSupportModal = lazy(() =>
-  import('@/src/features/calculator/components/IncomeSupportModal').then((m) => ({
-    default: m.IncomeSupportModal,
-  }))
-);
 
 export function CalculatorScreen() {
   const {
@@ -332,13 +315,11 @@ export function CalculatorScreen() {
           accessibilityRole={'main' as any}
         >
           <View style={isDesktop ? styles.bodyContainer : styles.fullWidth}>
-            {/* ✅ FORM - No Suspense, renders immediately for SSG */}
+            {/* ✅ FORM RESTORED (No Suspense) */}
             <CalculatorForm {...formProps} isDesktopWeb={isDesktop} />
 
-            {/* FAQ Section - lazy loaded */}
-            <Suspense fallback={null}>
-              <CalculatorFAQ />
-            </Suspense>
+            {/* FAQ Section */}
+            <CalculatorFAQ />
 
             {/* Privacy Footer */}
             {/* @ts-ignore - Web-only ARIA role */}
@@ -356,30 +337,26 @@ export function CalculatorScreen() {
 
         {/* Results Overlay - Hide entirely when inputs change (isStale) */}
         {results && !isStale && (
-          <Suspense fallback={null}>
-            <View style={styles.resultsOverlay}>
-              <View style={isDesktop ? styles.bodyContainer : styles.fullWidth}>
-                <CalculatorResults
-                  results={results}
-                  formData={formState}
-                  displayMode="modal"
-                  resetTimestamp={resetTimestamp}
-                  calculatorStartTime={calculatorStartTime}
-                />
-              </View>
+          <View style={styles.resultsOverlay}>
+            <View style={isDesktop ? styles.bodyContainer : styles.fullWidth}>
+              <CalculatorResults
+                results={results}
+                formData={formState}
+                displayMode="modal"
+                resetTimestamp={resetTimestamp}
+                calculatorStartTime={calculatorStartTime}
+              />
             </View>
-          </Suspense>
+          </View>
         )}
 
-        {/* Income Support Modal - lazy loaded */}
-        <Suspense fallback={null}>
-          <IncomeSupportModal
-            visible={incomeSupportModalVisible}
-            parentName={pendingParent === 'A' ? 'You' : 'Other Parent'}
-            onYes={handleIncomeSupportYes}
-            onNo={handleIncomeSupportNo}
-          />
-        </Suspense>
+        {/* Income Support Modal */}
+        <IncomeSupportModal
+          visible={incomeSupportModalVisible}
+          parentName={pendingParent === 'A' ? 'You' : 'Other Parent'}
+          onYes={handleIncomeSupportYes}
+          onNo={handleIncomeSupportNo}
+        />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

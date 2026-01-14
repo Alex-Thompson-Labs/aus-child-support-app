@@ -1,87 +1,64 @@
 import { SemanticColors } from '@/constants/theme';
 import { LoadingFallback } from '@/src/components/ui/LoadingFallback';
 import { useClientOnly } from '@/src/hooks/useClientOnly';
+import { initializeAnalytics } from '@/src/utils/analytics';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, usePathname } from 'expo-router';
 import Head from 'expo-router/head';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { Suspense, useCallback, useEffect } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
+import ReactGA from 'react-ga4';
 import { Platform, View } from 'react-native';
 
 // Keep the splash screen visible while we fetch resources
 // Wrap in try-catch to prevent crashes on web static export
-if (Platform.OS !== 'web') {
-  SplashScreen.preventAutoHideAsync().catch(() => {
-    // Ignore errors - splash screen may not be available
-  });
+try {
+  SplashScreen.preventAutoHideAsync();
+} catch {
+  // Ignore errors - splash screen may not be available on web
 }
 
 export const unstable_settings = {
   anchor: '(tabs)',
 };
 
-// Lazy load analytics to reduce initial bundle
-let analyticsInitialized = false;
-
-function initAnalyticsDeferred() {
-  if (analyticsInitialized || Platform.OS !== 'web' || typeof window === 'undefined') {
-    return;
-  }
-  
-  const enableAnalytics = process.env.EXPO_PUBLIC_ENABLE_ANALYTICS !== 'false';
-  if (!enableAnalytics) return;
-
-  const gaMeasurementId = process.env.EXPO_PUBLIC_GA_MEASUREMENT_ID || 'G-53139BKGD7';
-
-  // Use requestIdleCallback for lowest priority loading
-  const requestIdleCallbackPolyfill =
-    window.requestIdleCallback ||
-    function (cb: IdleRequestCallback) {
-      return setTimeout(cb, 1);
-    };
-
-  requestIdleCallbackPolyfill(
-    async () => {
-      try {
-        // Dynamic import to avoid blocking initial load
-        const [{ initializeAnalytics }, ReactGA] = await Promise.all([
-          import('@/src/utils/analytics'),
-          import('react-ga4'),
-        ]);
-        
-        initializeAnalytics(gaMeasurementId);
-        ReactGA.default.send({
-          hitType: 'pageview',
-          page: window.location.pathname,
-        });
-        analyticsInitialized = true;
-        console.log('Analytics initialized (deferred)');
-      } catch (error) {
-        console.error('GA Deferred Loading failed:', error);
-      }
-    },
-    { timeout: 5000 } as any
-  );
-}
-
 export default function RootLayout() {
   const isClient = useClientOnly();
   const pathname = usePathname();
+  // Initialize appIsReady to true on web to allow SSG to render content
+  // On native, start false to show splash screen while loading
+  const [appIsReady, setAppIsReady] = useState(Platform.OS === 'web');
   // Force light mode
   const colors = SemanticColors.light;
 
+  // Prepare the app by loading any required resources (fonts, assets, etc.)
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // Add any async resource loading here if needed (e.g., fonts)
+        // For now, we just mark as ready since fonts are loaded via expo config
+      } catch (e) {
+        console.warn('Error preparing app:', e);
+      } finally {
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
+  }, []);
+
   // Callback to hide splash screen once the root view has performed layout
   const onLayoutRootView = useCallback(async () => {
-    if (Platform.OS !== 'web') {
-      // Hide the splash screen once the app has rendered (native only)
+    if (appIsReady) {
+      // Hide the splash screen once the app has rendered
       try {
         await SplashScreen.hideAsync();
       } catch {
-        // Ignore errors - splash screen may not be available
+        // Ignore errors - splash screen may not be available on web
       }
     }
-  }, []);
+  }, [appIsReady]);
 
   // SEO: Generate Canonical URL (Strip query params and trailing slashes)
   const siteUrl =
@@ -90,6 +67,9 @@ export default function RootLayout() {
   const normalizedPath = pathname === '/' ? '' : pathname.replace(/\/$/, '');
   const canonicalUrl = `${siteUrl}${normalizedPath}`;
 
+  // Define config constants
+  const enableAnalytics = process.env.EXPO_PUBLIC_ENABLE_ANALYTICS !== 'false';
+
   useEffect(() => {
     // Only run on web client where window is available
     if (Platform.OS === 'web' && isClient && typeof window !== 'undefined') {
@@ -97,9 +77,52 @@ export default function RootLayout() {
       document.title = 'Child Support Calculator';
 
       // OPTIMIZATION: Defer Analytics to improve LCP
-      initAnalyticsDeferred();
+      if (enableAnalytics) {
+        const gaMeasurementId =
+          process.env.EXPO_PUBLIC_GA_MEASUREMENT_ID || 'G-53139BKGD7';
+
+        const requestIdleCallbackPolyfill =
+          window.requestIdleCallback ||
+          function (cb: IdleRequestCallback, ..._args: any[]) {
+            return setTimeout(cb, 1);
+          };
+
+        const idleCallbackId = requestIdleCallbackPolyfill(
+          () => {
+            try {
+              // Use safe initialization wrapper
+              initializeAnalytics(gaMeasurementId);
+
+              ReactGA.send({
+                hitType: 'pageview',
+                page: window.location.pathname,
+              });
+              console.log('Analytics initialized (deferred)');
+            } catch (error) {
+              console.error('GA Deferred Loading failed:', error);
+            }
+          },
+          { timeout: 5000 } as any
+        );
+
+        return () => {
+          const cancelIdleCallbackPolyfill =
+            window.cancelIdleCallback ||
+            function (id: number) {
+              clearTimeout(id);
+            };
+          cancelIdleCallbackPolyfill(idleCallbackId);
+        };
+      }
+
+      // initPerformanceMonitoring();
     }
-  }, [isClient]);
+  }, [isClient, enableAnalytics]);
+
+  // Don't render until app is ready - prevents visual flash
+  if (!appIsReady) {
+    return <LoadingFallback />;
+  }
 
   return (
     <View
