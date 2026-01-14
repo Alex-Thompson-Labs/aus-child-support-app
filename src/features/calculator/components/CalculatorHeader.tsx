@@ -75,7 +75,7 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
             {isMenuOpen && (
                 <View style={[styles.dropdownMenu, maxWidth ? { maxWidth } : undefined]}>
                     <MenuItem label="Blog" onPress={() => handleNavigation('https://blog.auschildsupport.com')} />
-                    <MenuItem label="Court Order Scanner" onPress={() => handleNavigation('/court-order-tool')} />
+                    {/* <MenuItem label="Court Order Scanner" onPress={() => handleNavigation('/court-order-tool')} /> */}
                     <MenuItem label="About" onPress={() => handleNavigation('/about')} />
                     <MenuItem label="Contact" onPress={() => handleNavigation('/contact')} />
                     <MenuItem label="FAQ" onPress={() => handleNavigation('/faq')} />

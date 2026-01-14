@@ -1,13 +1,11 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
-    Pressable, // Keep Pressable for AI card
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  KeyboardAvoidingView,
+  Platform, // Keep Pressable for AI card
+  ScrollView,
+  StyleSheet,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCalculator } from '../hooks/useCalculator';
@@ -17,7 +15,6 @@ import { MAX_CALCULATOR_WIDTH, useResponsive } from '../utils/responsive';
 
 // ✅ STANDARD IMPORTS (Reliable)
 import { CalculatorFAQ, CalculatorForm, CalculatorHeader, CalculatorResults, IncomeSupportModal } from '@/src/features/calculator';
-import { Feather } from '@expo/vector-icons';
 import { PrivacyPolicyLink } from '../components/PrivacyPolicyLink';
 import { StepProgressIndicator } from '../components/ui/StepProgressIndicator';
 
@@ -264,7 +261,7 @@ export function CalculatorScreen() {
     desiredCareNights: formState.desiredCareNights,
     onCareDisputeChange: updateCareDispute,
     // AI Banner
-    aiCourtOrderBanner: (
+    aiCourtOrderBanner: null, /* (
       <Pressable
         style={({ pressed }) => [
           styles.aiCard,
@@ -283,7 +280,7 @@ export function CalculatorScreen() {
           <Feather name="chevron-right" size={20} color="#334155" />
         </View>
       </Pressable>
-    ),
+    ), */
   };
 
   return (

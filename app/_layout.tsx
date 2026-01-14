@@ -144,7 +144,7 @@ export default function RootLayout() {
             <Stack.Screen name="about" options={{ headerShown: false }} />
             <Stack.Screen name="contact" options={{ headerShown: false }} />
             <Stack.Screen name="faq" options={{ headerShown: false }} />
-            <Stack.Screen name="court-order-tool" options={{ headerShown: false }} />
+            <Stack.Screen name="court-order-tool" options={{ headerShown: false, drawerItemStyle: { display: 'none' } } as any} />
             <Stack.Screen
               name="lawyer-inquiry"
               options={{
