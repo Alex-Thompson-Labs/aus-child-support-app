@@ -114,16 +114,14 @@ export function GapAnalysisCard({
                 <Text
                     style={[
                         styles.gapCardValue,
-                        csPercent > 0 && !otherParentHasFixedRate && isUserHighlighted && styles.gapCardValueHighlight,
-                        csPercent > 0 && !otherParentHasFixedRate && !isUserHighlighted && { fontWeight: '700', fontSize: 16 },
+                        !otherParentHasFixedRate && isUserHighlighted && styles.gapCardValueHighlight,
+                        !otherParentHasFixedRate && !isUserHighlighted && { fontWeight: '700', fontSize: 16 },
                         dynamicStyles.title,
                     ]}
                 >
                     {otherParentHasFixedRate
                         ? '—'
-                        : csPercent > 0
-                            ? formatPercent(csPercent)
-                            : '—'}
+                        : formatPercent(csPercent)}
                 </Text>
             </View>
         </View>

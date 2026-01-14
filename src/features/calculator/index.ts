@@ -26,7 +26,7 @@ export { YearSelector } from './components/YearSelector';
 export { FtbImpactCard } from './components/FtbImpactCard';
 export { AdultChildMaintenanceCard } from './components/results/AdultChildMaintenanceCard';
 export { PDFExportButton } from './components/results/PDFExportButton';
-export { ResultsHero, getPayerText } from './components/results/ResultsHero';
+export { getPayerText, ResultsHero } from './components/results/ResultsHero';
 export { Turning18Banner } from './components/results/Turning18Banner';
 
 // Breakdown components
@@ -44,7 +44,7 @@ export { ParentComparisonCard } from './components/breakdown/ParentComparisonCar
 export { PercentageBar } from './components/breakdown/PercentageBar';
 export { SpecialRateGlossary } from './components/breakdown/SpecialRateGlossary';
 export { ZeroLiabilityNotice } from './components/breakdown/ZeroLiabilityNotice';
-export { ZeroPaymentScenario } from './components/breakdown/ZeroPaymentScenario';
+
 
 export { CalculatorHeader } from './components/CalculatorHeader';
 

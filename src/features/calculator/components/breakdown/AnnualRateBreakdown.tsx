@@ -1,12 +1,12 @@
 import { useAppTheme } from '@/src/theme';
 import type { CalculationResults } from '@/src/utils/calculator';
 import { formatCurrency } from '@/src/utils/formatters';
+import React, { useMemo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import {
     detectLowAssessmentTrigger,
     isFarLimitReached,
-} from '@/src/utils/zero-payment-detection';
-import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+} from '../../../../utils/zero-payment-detection';
 import { AdultChildMaintenanceCard } from '../results/AdultChildMaintenanceCard';
 import { Turning18Banner } from '../results/Turning18Banner';
 
@@ -91,7 +91,11 @@ export function AnnualRateBreakdown({
     }
 
     const allChildrenNoPayment = results.childResults.every(
-        (child) => child.finalLiabilityA === 0 && child.finalLiabilityB === 0
+        (child) =>
+            child.finalLiabilityA === 0 &&
+            child.finalLiabilityB === 0 &&
+            (child.liabilityToNPC_A ?? 0) === 0 &&
+            (child.liabilityToNPC_B ?? 0) === 0
     );
 
     if (allChildrenNoPayment) {
@@ -138,14 +142,123 @@ export function AnnualRateBreakdown({
         );
     }
 
+    const isOnlyNPCPayment = results.finalPaymentAmount === 0 && (results.paymentToNPC ?? 0) > 0;
+
+    if (isOnlyNPCPayment) {
+        const adultChildren = results.childResults.filter((c) => c.isAdultChild);
+        const childrenTurning18 = results.childResults.filter((c) => c.isTurning18);
+        const { isLowAssessment } = detectLowAssessmentTrigger(results, formState);
+
+        return (
+            <View style={[styles.perChildGapBreakdown, dynamicStyles.container]}>
+                {adultChildren.map((child) => {
+                    const originalIndex = results.childResults.findIndex((c) => c === child);
+                    return <AdultChildMaintenanceCard key={`adult-${originalIndex}`} childIndex={originalIndex} childAge={child.age} />;
+                })}
+                {childrenTurning18.map((child) => {
+                    const originalIndex = results.childResults.findIndex((c) => c === child);
+                    return <Turning18Banner key={`turn18-${originalIndex}`} childIndex={originalIndex} />;
+                })}
+                {isLowAssessment && (
+                    <View style={styles.warningAlert}>
+                        <Text style={styles.warningTitle}>⚠️ Standard Formula Limit Detected</Text>
+                        <Text style={styles.warningText}>
+                            This result is based on a default minimum or fixed rate. If the paying parent has lifestyle assets or hidden income, this figure may be incorrect.
+                        </Text>
+                    </View>
+                )}
+                <View style={[styles.npcPaymentSection, { marginTop: 0 }]}>
+                    <Text style={styles.npcPaymentTitle}>Non-Parent Carer Payment</Text>
+                    <Text style={styles.npcPaymentExplanation}>
+                        {results.payerRole === 'both_paying'
+                            ? 'Both parents owe child support to the non-parent carer based on their care percentage.'
+                            : results.payerRole === 'paying_parent'
+                                ? 'You owe child support to the non-parent carer based on your care percentage.'
+                                : results.payerRole === 'receiving_parent'
+                                    ? 'The other parent owes child support to the non-parent carer based on their care percentage.'
+                                    : 'Child support is owed to the non-parent carer.'}
+                    </Text>
+                    {results.childResults.map((child, index) => {
+                        const liabilityA = child.liabilityToNPC_A ?? 0;
+                        const liabilityB = child.liabilityToNPC_B ?? 0;
+
+                        // If no liability from either, skip
+                        if ((liabilityA + liabilityB) <= 0) return null;
+
+                        const isBothPaying = results.payerRole === 'both_paying';
+
+                        return (
+                            <View key={`npc-breakdown-${index}`} style={{ marginBottom: 4 }}>
+                                {isBothPaying ? (
+                                    <>
+                                        <Text style={[styles.npcPaymentLabel, { marginBottom: 2 }]}>Child {index + 1}</Text>
+
+                                        {/* Parent A Line */}
+                                        <View style={[styles.perChildGapRow, { paddingLeft: 8 }]}>
+                                            <Text style={[styles.npcPaymentLabel, { fontSize: 12, color: '#4b5563' }]}>
+                                                Your liability
+                                            </Text>
+                                            <Text style={[styles.npcPaymentValue, { fontSize: 13 }]}>{formatCurrency(liabilityA)}</Text>
+                                        </View>
+
+                                        {/* Parent B Line */}
+                                        <View style={[styles.perChildGapRow, { paddingLeft: 8 }]}>
+                                            <Text style={[styles.npcPaymentLabel, { fontSize: 12, color: '#4b5563' }]}>
+                                                Other parent's liability
+                                            </Text>
+                                            <Text style={[styles.npcPaymentValue, { fontSize: 13, color: '#6b7280' }]}>{formatCurrency(liabilityB)}</Text>
+                                        </View>
+                                    </>
+                                ) : (
+                                    <View style={styles.perChildGapRow}>
+                                        <Text style={styles.npcPaymentLabel}>
+                                            Child {index + 1} - <Text style={{ fontWeight: '700' }}>({formatPercent2dp(child.costPerChild > 0 ? ((liabilityA + liabilityB) / child.costPerChild) * 100 : 0)})</Text> × {formatCurrency(child.costPerChild)}
+                                        </Text>
+                                        <Text style={styles.npcPaymentValue}>{formatCurrency(liabilityA + liabilityB)}</Text>
+                                    </View>
+                                )}
+                            </View>
+                        );
+                    })}
+                    {results.childResults.filter(c => ((c.liabilityToNPC_A ?? 0) + (c.liabilityToNPC_B ?? 0)) > 0).length > 1 && (
+                        <>
+                            <View style={[styles.perChildGapDivider, { backgroundColor: '#93c5fd', marginVertical: 8 }]} />
+                            {results.payerRole === 'both_paying' ? (
+                                <>
+                                    <View style={styles.perChildGapRow}>
+                                        <Text style={styles.npcPaymentLabel}>Total you pay to carer</Text>
+                                        <Text style={styles.npcPaymentValue}>{formatCurrency(results.childResults.reduce((sum, c) => sum + (c.liabilityToNPC_A ?? 0), 0))}</Text>
+                                    </View>
+                                    <View style={[styles.perChildGapRow, { marginTop: 4 }]}>
+                                        <Text style={[styles.npcPaymentLabel, { color: '#6b7280' }]}>Total other parent pays to carer</Text>
+                                        <Text style={[styles.npcPaymentValue, { color: '#6b7280' }]}>{formatCurrency(results.childResults.reduce((sum, c) => sum + (c.liabilityToNPC_B ?? 0), 0))}</Text>
+                                    </View>
+                                </>
+                            ) : (
+                                <View style={styles.perChildGapRow}>
+                                    <Text style={styles.npcPaymentLabel}>Total to non-parent carer</Text>
+                                    <Text style={styles.npcPaymentValue}>{formatCurrency(results.paymentToNPC ?? 0)}</Text>
+                                </View>
+                            )}
+                        </>
+                    )}
+                </View>
+            </View>
+        );
+    }
+
     return (
         <View style={[styles.perChildGapBreakdown, dynamicStyles.container]}>
             {results.childResults.map((child, index) => {
                 if (child.isAdultChild) {
                     return <AdultChildMaintenanceCard key={index} childIndex={index} childAge={child.age} />;
                 }
-                const parentAOwesForChild = child.finalLiabilityA > 0;
-                const parentBOwesForChild = child.finalLiabilityB > 0;
+                // Check if either parent owes money (including NPC payments)
+                const parentAOwesNPC = (child.liabilityToNPC_A ?? 0) > 0;
+                const parentBOwesNPC = (child.liabilityToNPC_B ?? 0) > 0;
+
+                const parentAOwesForChild = child.finalLiabilityA > 0 || parentAOwesNPC;
+                const parentBOwesForChild = child.finalLiabilityB > 0 || parentBOwesNPC;
 
                 if (!parentAOwesForChild && !parentBOwesForChild) {
                     const isFarLimit = isFarLimitReached(index, results, formState);
@@ -166,8 +279,15 @@ export function AnnualRateBreakdown({
                 const showForParentA = parentAOwesForChild;
                 const payingParentColor = showForParentA ? colors.userHighlight : colors.textMuted;
                 const farApplied = showForParentA ? child.farAppliedA : child.farAppliedB;
-                const gapPercentage = showForParentA ? Math.max(0, child.childSupportPercA) : Math.max(0, child.childSupportPercB);
-                const liability = showForParentA ? child.finalLiabilityA : child.finalLiabilityB;
+
+                const liability = showForParentA
+                    ? child.finalLiabilityA + (child.liabilityToNPC_A ?? 0)
+                    : child.finalLiabilityB + (child.liabilityToNPC_B ?? 0);
+
+                const gapPercentage = child.costPerChild > 0
+                    ? (liability / child.costPerChild) * 100
+                    : 0;
+
                 const multiCaseCapApplied = showForParentA ? child.multiCaseCapAppliedA : child.multiCaseCapAppliedB;
                 const multiCaseCap = showForParentA ? child.multiCaseCapA : child.multiCaseCapB;
 
@@ -207,7 +327,11 @@ export function AnnualRateBreakdown({
             })()}
             <View style={[styles.perChildGapDivider, dynamicStyles.divider]} />
             <View style={styles.perChildGapRow}>
-                <Text style={[styles.perChildGapLabel, { fontWeight: '600' }, dynamicStyles.textPrimary]}>Total Annual Liability</Text>
+                <Text style={[styles.perChildGapLabel, { fontWeight: '600' }, dynamicStyles.textPrimary]}>
+                    {results.finalPaymentAmount > 0 && (results.paymentToNPC ?? 0) > 0
+                        ? 'Liability to other parent'
+                        : 'Total Annual Liability'}
+                </Text>
                 <Text style={[styles.perChildGapValue, dynamicStyles.textPrimary, { fontWeight: '700', fontSize: 18 }]}>{formatCurrency(results.finalPaymentAmount)}</Text>
             </View>
             {results.paymentToNPC !== undefined && results.paymentToNPC > 0 && (
@@ -215,7 +339,15 @@ export function AnnualRateBreakdown({
                     <View style={styles.npcPaymentDivider} />
                     <View style={styles.npcPaymentSection}>
                         <Text style={styles.npcPaymentTitle}>Non-Parent Carer Payment</Text>
-                        <Text style={styles.npcPaymentExplanation}>Both parents owe child support to the non-parent carer based on their care percentage.</Text>
+                        <Text style={styles.npcPaymentExplanation}>
+                            {results.payerRole === 'both_paying'
+                                ? 'Both parents owe child support to the non-parent carer based on their care percentage.'
+                                : results.payerRole === 'paying_parent'
+                                    ? 'You owe child support to the non-parent carer based on your care percentage.'
+                                    : results.payerRole === 'receiving_parent'
+                                        ? 'The other parent owes child support to the non-parent carer based on their care percentage.'
+                                        : 'Child support is owed to the non-parent carer.'}
+                        </Text>
                         <View style={styles.perChildGapRow}>
                             <Text style={styles.npcPaymentLabel}>Total to non-parent carer</Text>
                             <Text style={styles.npcPaymentValue}>{formatCurrency(results.paymentToNPC)}</Text>

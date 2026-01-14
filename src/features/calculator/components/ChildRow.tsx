@@ -74,34 +74,56 @@ export function ChildRow({
   const handleChangeA = (text: string) => {
     const cleanedText = text.replace(/[^0-9.]/g, '');
     setLocalValue(cleanedText);
-    // Auto-adjust other field in real-time
     const newAmountA = parseFloat(cleanedText) || 0;
-    const newAmountB = Math.max(0, maxValue - newAmountA);
-    onUpdate({ careAmountA: newAmountA, careAmountB: newAmountB });
+
+    // Only auto-adjust other parent if NPC is NOT enabled
+    if (!showNPCInput) {
+      const newAmountB = Math.max(0, maxValue - newAmountA);
+      onUpdate({ careAmountA: newAmountA, careAmountB: newAmountB });
+    } else {
+      onUpdate({ careAmountA: newAmountA });
+    }
   };
 
   const handleChangeB = (text: string) => {
     const cleanedText = text.replace(/[^0-9.]/g, '');
     setLocalValue(cleanedText);
-    // Auto-adjust other field in real-time
     const newAmountB = parseFloat(cleanedText) || 0;
-    const newAmountA = Math.max(0, maxValue - newAmountB);
-    onUpdate({ careAmountA: newAmountA, careAmountB: newAmountB });
+
+    // Only auto-adjust other parent if NPC is NOT enabled
+    if (!showNPCInput) {
+      const newAmountA = Math.max(0, maxValue - newAmountB);
+      onUpdate({ careAmountA: newAmountA, careAmountB: newAmountB });
+    } else {
+      onUpdate({ careAmountB: newAmountB });
+    }
   };
 
   // Blur handlers - commit value and auto-adjust the other field
   const handleBlurA = () => {
     const newAmountA = parseFloat(localValue) || 0;
-    const newAmountB = Math.max(0, maxValue - newAmountA);
-    onUpdate({ careAmountA: newAmountA, careAmountB: newAmountB });
+
+    if (!showNPCInput) {
+      const newAmountB = Math.max(0, maxValue - newAmountA);
+      onUpdate({ careAmountA: newAmountA, careAmountB: newAmountB });
+    } else {
+      onUpdate({ careAmountA: newAmountA });
+    }
+
     setEditingField(null);
     setLocalValue('');
   };
 
   const handleBlurB = () => {
     const newAmountB = parseFloat(localValue) || 0;
-    const newAmountA = Math.max(0, maxValue - newAmountB);
-    onUpdate({ careAmountA: newAmountA, careAmountB: newAmountB });
+
+    if (!showNPCInput) {
+      const newAmountA = Math.max(0, maxValue - newAmountB);
+      onUpdate({ careAmountA: newAmountA, careAmountB: newAmountB });
+    } else {
+      onUpdate({ careAmountB: newAmountB });
+    }
+
     setEditingField(null);
     setLocalValue('');
   };

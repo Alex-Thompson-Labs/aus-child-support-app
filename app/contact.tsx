@@ -82,7 +82,7 @@ export default function ContactPage() {
 
           {/* Legal Help Card */}
           <View style={styles.contactCard}>
-            <Text style={styles.cardIcon}>⚖️</Text>
+
             {/* @ts-ignore - Web-only ARIA attributes */}
             <Text
               style={styles.cardTitle}
@@ -107,7 +107,7 @@ export default function ContactPage() {
 
           {/* Blog Card */}
           <View style={styles.contactCard}>
-            <Text style={styles.cardIcon}>📚</Text>
+
             {/* @ts-ignore - Web-only ARIA attributes */}
             <Text
               style={styles.cardTitle}
@@ -134,7 +134,7 @@ export default function ContactPage() {
 
           {/* Calculator Card */}
           <View style={styles.contactCard}>
-            <Text style={styles.cardIcon}>🧮</Text>
+
             {/* @ts-ignore - Web-only ARIA attributes */}
             <Text
               style={styles.cardTitle}
@@ -228,10 +228,7 @@ const styles = StyleSheet.create({
       elevation: 2,
     }),
   },
-  cardIcon: {
-    fontSize: 32,
-    marginBottom: 12,
-  },
+
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',

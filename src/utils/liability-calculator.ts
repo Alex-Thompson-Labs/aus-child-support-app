@@ -127,38 +127,81 @@ export function calculateChildLiability(
   // They can only receive Adult Child Maintenance via court order
   let liabilityA = 0;
   let liabilityB = 0;
-
-  if (!isAdultChild) {
-    // Only positive child support percentages result in liability
-    const positivePercA = Math.max(0, childSupportPercA);
-    const positivePercB = Math.max(0, childSupportPercB);
-
-    // Determine who pays based on who has higher child support percentage
-    if (positivePercA > positivePercB) {
-      // Parent A pays to Parent B (or NPC)
-      if (shouldPayLiability(roundedCareB, roundedCareNPC, hasNPC)) {
-        liabilityA = (positivePercA / 100) * costPerChild;
-      }
-    } else if (positivePercB > positivePercA) {
-      // Parent B pays to Parent A (or NPC)
-      if (shouldPayLiability(roundedCareA, roundedCareNPC, hasNPC)) {
-        liabilityB = (positivePercB / 100) * costPerChild;
-      }
-    }
-  }
-
-  // Calculate liability to NPC (Formula 4) - also skip for adult children
   let liabilityToNPC_A = 0;
   let liabilityToNPC_B = 0;
-  if (!isAdultChild && hasNPC && roundedCareNPC >= 35) {
-    // Each parent's liability to NPC = their child support % × child cost × NPC cost %
-    if (childSupportPercA > 0) {
-      liabilityToNPC_A =
-        (childSupportPercA / 100) * costPerChild * (costPercNPC / 100);
+
+  if (!isAdultChild) {
+    // Only positive child support percentages result in liability (initially)
+    const csPercA = childSupportPercA;
+    const csPercB = childSupportPercB;
+
+    // Formula 2: Non-Parent Carer Case (NPC has >= 35% care)
+    if (hasNPC && roundedCareNPC >= 35) {
+      const isPositiveA = csPercA > 0;
+      const isPositiveB = csPercB > 0;
+
+      // Rule 1: Both parents have positive CS% -> Both pay NPC
+      if (isPositiveA && isPositiveB) {
+        liabilityToNPC_A = (csPercA / 100) * costPerChild;
+        liabilityToNPC_B = (csPercB / 100) * costPerChild;
+      }
+      // Rules 2 & 3: Parent A positive, Parent B negative/zero
+      else if (isPositiveA && !isPositiveB) {
+        // Calculate raw liability for A (the Payer)
+        const rawLiabilityA = (csPercA / 100) * costPerChild;
+
+        if (roundedCareB >= 35) {
+          // Rule 3: Parent B is negative but has shared care (>=35%)
+          // Parent A pays Parent B outcome of B's negative percentage
+          // Parent A pays NPC the balance
+          const entitlementB_Perc = Math.abs(csPercB);
+          const liabilityToParentB = (entitlementB_Perc / 100) * costPerChild;
+
+          liabilityA = liabilityToParentB; // Parent A pays Parent B
+          // Balance to NPC
+          liabilityToNPC_A = Math.max(0, rawLiabilityA - liabilityToParentB);
+        } else {
+          // Rule 2: Parent B is negative and has < shared care
+          // Parent A pays full liability to NPC
+          liabilityToNPC_A = rawLiabilityA;
+        }
+      }
+      // Rules 2 & 3: Parent B positive, Parent A negative/zero
+      else if (isPositiveB && !isPositiveA) {
+        const rawLiabilityB = (csPercB / 100) * costPerChild;
+
+        if (roundedCareA >= 35) {
+          // Rule 3: Parent A is negative but has shared care
+          const entitlementA_Perc = Math.abs(csPercA);
+          const liabilityToParentA = (entitlementA_Perc / 100) * costPerChild;
+
+          liabilityB = liabilityToParentA; // Parent B pays Parent A
+          liabilityToNPC_B = Math.max(0, rawLiabilityB - liabilityToParentA);
+        } else {
+          // Rule 2: Parent A is negative and < shared care
+          liabilityToNPC_B = rawLiabilityB;
+        }
+      }
     }
-    if (childSupportPercB > 0) {
-      liabilityToNPC_B =
-        (childSupportPercB / 100) * costPerChild * (costPercNPC / 100);
+    // Formula 1: Standard Case (No Eligible NPC)
+    else {
+      const positivePercA = Math.max(0, csPercA);
+      const positivePercB = Math.max(0, csPercB);
+
+      // Determine who pays based on who has higher child support percentage
+      if (positivePercA > positivePercB) {
+        // Parent A pays to Parent B
+        // (Check receiver care threshold, though typically if B is receiver they have care, 
+        // unlike NPC logic where "shouldPayLiability" checks thresholds)
+        if (shouldPayLiability(roundedCareB, roundedCareNPC, hasNPC)) {
+          liabilityA = (positivePercA / 100) * costPerChild;
+        }
+      } else if (positivePercB > positivePercA) {
+        // Parent B pays to Parent A
+        if (shouldPayLiability(roundedCareA, roundedCareNPC, hasNPC)) {
+          liabilityB = (positivePercB / 100) * costPerChild;
+        }
+      }
     }
   }
 

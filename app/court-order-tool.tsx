@@ -286,7 +286,7 @@ function StepResults({
         </View>
 
         <View style={styles.disclaimerBox}>
-          <Text style={styles.disclaimerTitle}>⚠️ Important Disclaimer</Text>
+          <Text style={styles.disclaimerTitle}>Important Disclaimer</Text>
           <Text style={styles.disclaimerText}>
             This is an estimate only, based on a 2-year projection of the care arrangement. Actual care percentages may vary due to changes in circumstances.
           </Text>

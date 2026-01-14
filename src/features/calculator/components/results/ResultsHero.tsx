@@ -48,10 +48,56 @@ export function ResultsHero({
   supportA = false,
   supportB = false,
 }: ResultsHeroProps) {
+  // Determine relevant payment amount (handle NPC-only cases)
+  let heroAmount = results.finalPaymentAmount;
+  let heroLabel = getPayerText(results.payer);
+
+  // Calculate NPC liabilities for each parent
+  const npcLiabilityA = results.childResults.reduce((sum, c) => sum + (c.liabilityToNPC_A ?? 0), 0);
+  const npcLiabilityB = results.childResults.reduce((sum, c) => sum + (c.liabilityToNPC_B ?? 0), 0);
+
+  // If standard transfer is $0 but there is a Non-Parent Carer payment, show that instead
+  if (heroAmount === 0 && (results.paymentToNPC ?? 0) > 0) {
+    heroAmount = results.paymentToNPC!;
+    switch (results.payerRole) {
+      case 'paying_parent':
+        heroLabel = 'You pay to NPC';
+        break;
+      case 'receiving_parent':
+        heroLabel = 'Other parent pays NPC';
+        break;
+      case 'both_paying':
+        // Formula 2 Rule 1: Both parents pay NPC
+        // We show the User's liability (Parent A) as the hero amount
+        heroLabel = 'You pay to NPC';
+        heroAmount = npcLiabilityA;
+        break;
+      default:
+        heroLabel = 'Payment to non-parent carer';
+    }
+  }
+
+  // Check for mixed payment (Payer pays both Parent and NPC)
+  let breakdownText: string | null = null;
+  // Also check for Rule 1 (Both paying NPC only) to set breakdown text
+  if (results.payerRole === 'both_paying' && results.finalPaymentAmount === 0) {
+    breakdownText = `(Other parent pays ${formatCurrency(npcLiabilityB)} to carer)`;
+  }
+
+  if (results.finalPaymentAmount > 0) {
+    if (results.payer === 'Parent A' && npcLiabilityA > 0) {
+      heroAmount += npcLiabilityA;
+      breakdownText = `(${formatCurrency(results.finalPaymentAmount)} to parent, ${formatCurrency(npcLiabilityA)} to carer)`;
+    } else if (results.payer === 'Parent B' && npcLiabilityB > 0) {
+      heroAmount += npcLiabilityB;
+      breakdownText = `(${formatCurrency(results.finalPaymentAmount)} to parent, ${formatCurrency(npcLiabilityB)} to carer)`;
+    }
+  }
+
   // Calculate payment amounts
-  const monthlyAmount = results.finalPaymentAmount / 12;
-  const fortnightlyAmount = results.finalPaymentAmount / 26;
-  const dailyAmount = results.finalPaymentAmount / 365;
+  const monthlyAmount = heroAmount / 12;
+  const fortnightlyAmount = heroAmount / 26;
+  const dailyAmount = heroAmount / 365;
 
   const isInline = variant === 'inline';
 
@@ -79,9 +125,12 @@ export function ResultsHero({
     return (
       <View style={styles.inlineHeroSection}>
         <Text style={[styles.expandedHeroAmount, isStale && styles.staleAmount]}>
-          {formatCurrency(results.finalPaymentAmount)}
+          {formatCurrency(heroAmount)}
         </Text>
         <Text style={styles.expandedHeroLabel}>per year</Text>
+        {breakdownText && (
+          <Text style={[styles.expandedSecondaryLabel, { color: '#6b7280', fontSize: 11, marginTop: 2 }]}>{breakdownText}</Text>
+        )}
       </View>
     );
   }
@@ -90,12 +139,19 @@ export function ResultsHero({
   return (
     <View style={styles.expandedHeroSection}>
       <Text style={styles.expandedHeroLabel}>
-        {getPayerText(results.payer)}
+        {heroLabel}
       </Text>
       <Text style={[styles.expandedHeroAmount, isStale && styles.staleAmount]}>
-        {formatCurrency(results.finalPaymentAmount)}
+        {formatCurrency(heroAmount)}
       </Text>
-      <Text style={styles.expandedHeroSubtext}>per year</Text>
+      <Text style={styles.expandedHeroSubtext}>
+        per year
+        {breakdownText && (
+          <Text style={{ fontSize: 13, opacity: 0.9 }}>
+            {'\n'}{breakdownText}
+          </Text>
+        )}
+      </Text>
       {incomeSupportText && (
         <View style={styles.incomeSupportBadge}>
           <Text style={styles.incomeSupportText}>✓ {incomeSupportText}</Text>

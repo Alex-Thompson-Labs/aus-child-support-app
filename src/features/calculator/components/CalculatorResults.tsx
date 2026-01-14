@@ -280,6 +280,28 @@ export function CalculatorResults({
   // Check if any children exist in the calculation
   const hasChildren = formData?.children && formData.children.length > 0;
 
+  // Determine relevant payment amount (handle NPC-only cases)
+  let displayAmount = results.finalPaymentAmount;
+  let displayLabel = getPayerText(results.payer);
+
+  // If standard transfer is $0 but there is a Non-Parent Carer payment, show that instead
+  if (displayAmount === 0 && (results.paymentToNPC ?? 0) > 0) {
+    displayAmount = results.paymentToNPC!;
+    switch (results.payerRole) {
+      case 'paying_parent':
+        displayLabel = 'You pay to NPC';
+        break;
+      case 'receiving_parent':
+        displayLabel = 'Other parent pays NPC';
+        break;
+      case 'both_paying':
+        displayLabel = 'Combined payment to NPC';
+        break;
+      default:
+        displayLabel = 'Payment to non-parent carer';
+    }
+  }
+
   const toggleExpand = () => setIsExpanded(!isExpanded);
 
   // Focus trap refs for modal accessibility
@@ -476,9 +498,7 @@ export function CalculatorResults({
           ]}
           accessibilityRole="button"
           accessibilityLabel={
-            results.payer === 'Neither'
-              ? 'No payment required. Tap to view full breakdown'
-              : `${results.payer} pays ${formatCurrency(results.finalPaymentAmount)} per year. Tap to view full breakdown`
+            `${displayLabel} ${formatCurrency(displayAmount)} per year. Tap to view full breakdown`
           }
           accessibilityHint="Opens detailed calculation breakdown"
         >
@@ -491,7 +511,7 @@ export function CalculatorResults({
             <View style={styles.collapsedContent}>
               <View style={styles.collapsedSummaryRow}>
                 <Text style={styles.collapsedLabel}>
-                  {getPayerText(results.payer)}
+                  {displayLabel}
                 </Text>
                 <Text
                   style={[
@@ -499,7 +519,7 @@ export function CalculatorResults({
                     isStale && styles.staleAmount,
                   ]}
                 >
-                  {formatCurrency(results.finalPaymentAmount)}
+                  {formatCurrency(displayAmount)}
                 </Text>
               </View>
               {getIncomeSupportText(

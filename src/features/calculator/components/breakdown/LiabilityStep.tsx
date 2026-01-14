@@ -5,7 +5,6 @@ import { StyleSheet, Text } from 'react-native';
 import { AnnualRateBreakdown } from './AnnualRateBreakdown';
 import { BreakdownStepCard } from './BreakdownStepCard';
 import { SpecialRateGlossary } from './SpecialRateGlossary';
-import { ZeroPaymentScenario } from './ZeroPaymentScenario';
 
 interface LiabilityStepProps {
     results: CalculationResults;
@@ -51,9 +50,6 @@ export function LiabilityStep({
 
                 {/* Per-child payment breakdown */}
                 <AnnualRateBreakdown results={results} formState={formState} />
-
-                {/* No payment explanation - shown when any child has no payment */}
-                <ZeroPaymentScenario results={results} formState={formState} />
 
                 {/* Optional: Special rates notice */}
                 <SpecialRateGlossary rateApplied={results.rateApplied} />

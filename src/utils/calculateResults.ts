@@ -25,26 +25,26 @@ export {
   calculateCSI,
   calculateIncomePercentages,
   calculateIncomes,
-  createVirtualDependentChildren,
+  createVirtualDependentChildren
 } from './income-calculator';
 export type {
   IncomeCalculationInput,
-  IncomeCalculationResult,
+  IncomeCalculationResult
 } from './income-calculator';
 export {
   calculateChildLiability,
   calculateChildSupportPercentage,
-  shouldPayLiability,
+  shouldPayLiability
 } from './liability-calculator';
 export type { LiabilityInput, LiabilityResult } from './liability-calculator';
 export {
   calculateNPCPayment,
   determinePayerRole,
-  resolvePayment,
+  resolvePayment
 } from './payment-resolver';
 export type {
   PaymentResolutionInput,
-  PaymentResolutionResult,
+  PaymentResolutionResult
 } from './payment-resolver';
 
 export const calculateChildSupport = (
@@ -128,9 +128,9 @@ export const calculateChildSupport = (
     const childInput = formState.children[childIndex];
     const rawCareNPC = hasNPC
       ? convertCareToPercentage(
-          childInput?.careAmountNPC ?? 0,
-          childInput?.carePeriod ?? 'fortnight'
-        )
+        childInput?.careAmountNPC ?? 0,
+        childInput?.carePeriod ?? 'fortnight'
+      )
       : 0;
 
     // Calculate liability using the extracted module
@@ -310,6 +310,28 @@ export const calculateChildSupport = (
   marCapExplanationB = marFarCapsResult.marCapExplanationB;
   farCapExplanationA = marFarCapsResult.farCapExplanationA;
   farCapExplanationB = marFarCapsResult.farCapExplanationB;
+
+  // Formula 2: If NPC exists and Rate (MAR/FAR) was applied, redirect liability to NPC
+  if (hasNPC) {
+    childResults.forEach((child) => {
+      if (!child.isAdultChild) {
+        // Parent A redirection
+        if (child.marAppliedA || child.farAppliedA) {
+          child.liabilityToNPC_A = child.finalLiabilityA;
+          child.finalLiabilityA = 0;
+        }
+        // Parent B redirection
+        if (child.marAppliedB || child.farAppliedB) {
+          child.liabilityToNPC_B = child.finalLiabilityB;
+          child.finalLiabilityB = 0;
+        }
+      }
+    });
+
+    // Re-sum final liabilities to parent (now likely 0 if full MAR/FAR moved to NPC)
+    finalLiabilityA = childResults.reduce((sum, c) => sum + c.finalLiabilityA, 0);
+    finalLiabilityB = childResults.reduce((sum, c) => sum + c.finalLiabilityB, 0);
+  }
 
   // Determine rate applied string
   // (Already calculated by rates-engine, but may be updated by multi-case caps below)
