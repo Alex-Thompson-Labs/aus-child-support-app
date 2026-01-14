@@ -6,11 +6,16 @@ import { Stack, usePathname } from 'expo-router';
 import Head from 'expo-router/head';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect } from 'react';
 import { Platform, View } from 'react-native';
 
 // Keep the splash screen visible while we fetch resources
-SplashScreen.preventAutoHideAsync();
+// Wrap in try-catch to prevent crashes on web static export
+if (Platform.OS !== 'web') {
+  SplashScreen.preventAutoHideAsync().catch(() => {
+    // Ignore errors - splash screen may not be available
+  });
+}
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -63,33 +68,20 @@ function initAnalyticsDeferred() {
 export default function RootLayout() {
   const isClient = useClientOnly();
   const pathname = usePathname();
-  const [appIsReady, setAppIsReady] = useState(false);
   // Force light mode
   const colors = SemanticColors.light;
 
-  // Prepare the app by loading any required resources (fonts, assets, etc.)
-  useEffect(() => {
-    async function prepare() {
-      try {
-        // Add any async resource loading here if needed (e.g., fonts)
-        // For now, we just mark as ready since fonts are loaded via expo config
-      } catch (e) {
-        console.warn('Error preparing app:', e);
-      } finally {
-        setAppIsReady(true);
-      }
-    }
-
-    prepare();
-  }, []);
-
   // Callback to hide splash screen once the root view has performed layout
   const onLayoutRootView = useCallback(async () => {
-    if (appIsReady) {
-      // Hide the splash screen once the app has rendered
-      await SplashScreen.hideAsync();
+    if (Platform.OS !== 'web') {
+      // Hide the splash screen once the app has rendered (native only)
+      try {
+        await SplashScreen.hideAsync();
+      } catch {
+        // Ignore errors - splash screen may not be available
+      }
     }
-  }, [appIsReady]);
+  }, []);
 
   // SEO: Generate Canonical URL (Strip query params and trailing slashes)
   const siteUrl =
@@ -108,11 +100,6 @@ export default function RootLayout() {
       initAnalyticsDeferred();
     }
   }, [isClient]);
-
-  // Don't render until app is ready - prevents visual flash
-  if (!appIsReady) {
-    return <LoadingFallback />;
-  }
 
   return (
     <View
