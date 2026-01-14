@@ -277,7 +277,7 @@ export function CalculatorScreen() {
             <Feather name="file-text" size={24} color="white" />
           </View>
           <View style={styles.aiTextContainer}>
-            <Text style={styles.aiTitle}>AI Court Order Interpreter</Text>
+            <Text style={styles.aiTitle}>Court Order Scanner</Text>
             <Text style={styles.aiDescription}>Upload your court orders to automatically calculate care nights.</Text>
           </View>
           <Feather name="chevron-right" size={20} color="#334155" />

@@ -48,77 +48,55 @@ Deno.serve(async (req) => {
     }
 
     IF VALID:
-    Your goal is to extract the **RULES** of the care arrangement into a strict JSON format.
-    
-    DO NOT CALCULATE TOTALS. DO NOT COUNT NIGHTS. ONLY EXTRACT RULES.
+    Your goal is to extract the care arrangement rules from the provided document into a strict JSON format.
 
-    KEY CONCEPTS:
-    1. **Anchor Date**: The date the cycle begins (Commencement Date or Date of Signing). This is critical for determining Week 1 vs Week 2.
-    2. **Midnight Rule**: We care about who has the child at 11:59PM.
-    3. **Cycle**: Typically 14 days (Fortnightly).
+    CRITICAL: ELIMINATE THE 100% CARE ERROR
+    The system is defaulting to 100% Mother because it fails to map the Father's specific overnight periods to the 14-day cycle correctly. You MUST provide a DENSE base_pattern with exactly 14 sequential entries.
 
-    CRITICAL: DENSE 14-DAY GRID REQUIREMENT
-    You MUST generate an array of EXACTLY 14 objects in base_pattern, representing Day 1 to Day 14 of the fortnight.
-    DO NOT skip any days. If a day is not explicitly mentioned in the order, assign it to the primary_parent.
-    
-    COMMENCEMENT DATE ALIGNMENT:
-    - Find the "Commencement Date" or "Orders start from" date in the document.
-    - Determine what day of the week that date falls on.
-    - Day 1 of the cycle starts on that weekday. Example: If orders commence on Wednesday 15th January, then Day 1 = Wednesday.
-    - Week 1 = Days 1-7, Week 2 = Days 8-14.
-    
-    DAY NAME FORMAT:
-    - day_name MUST be the full English day name in Title Case: "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
-    - week_number MUST be an integer: 1 or 2 (not strings)
+    1. START DATE & DAY 1 ANCHOR:
+       - Identify the "Commencement Date" (e.g., 14 January 2026).
+       - Determine the weekday of that date (14 Jan 2026 is a WEDNESDAY).
+       - Your "base_pattern" MUST start with Day 1 as WEDNESDAY. 
+       - You MUST list exactly 14 objects, representing Day 1 to Day 14 without gaps.
 
-    OUTPUT SCHEMA (Strict JSON):
+    2. THE MIDNIGHT RULE (CRITICAL):
+       - We only care about who has the child at 11:59 PM.
+       - "Conclusion of school" / "After school": Receiving parent HAS the night.
+       - "Commencement of school" / "Morning": Delivering parent does NOT have the night.
+       - Example Mapping:
+         * Week 1: Father has Wed Night and Thu Night. Mother has Fri Night.
+         * Week 2: Father has Fri Night, Sat Night, and Sun Night. Mother has Mon Night.
+
+    3. DENSE DATA REQUIREMENT:
+       - For every day NOT explicitly mentioned as being with the Father, you MUST set "overnight_care_owner": "Mother".
+       - This prevents the calculator from using carry-over logic that defaults to 100%.
+
+    OUTPUT SCHEMA (Strict JSON Only):
     {
-      "start_date": "YYYY-MM-DD", // The specific commencement date. CRITICAL.
+      "start_date": "YYYY-MM-DD",
       "cycle_length_days": 14,
-      "primary_parent": "Mother" | "Father", // Who has care when not specified?
+      "primary_parent": "Mother",
       "base_pattern": [
-        // EXACTLY 14 entries, one for each day. NO GAPS.
         {
-          "day_number": 1, // Sequential 1-14
-          "day_name": "Wednesday", // Full name, Title Case (matches start_date weekday for day 1)
-          "week_number": 1, // Integer: 1 or 2
-          "overnight_care_owner": "Mother" | "Father", // Who has the child at 11:59PM?
-          "description": "With Mother" // Optional context
-        },
-        // ... continue for all 14 days
+          "day_number": 1,
+          "day_name": "Wednesday",
+          "week_number": 1,
+          "overnight_care_owner": "Father",
+          "description": "From conclusion of school"
+        }
+        // ... continue for exactly 14 days
       ],
       "holiday_rules": {
-        "christmas": {
-            "applies": boolean,
-            "rule_type": "alternating" | "split" | "fixed" | "none", 
-            "details": "Father even years, Mother odd years" 
-        },
-        "school_holidays": {
-            "applies": boolean,
-            "rule_type": "half_half" | "alternating_blocks" | "none",
-            "details": "Half of all holidays"
-        } 
+        "christmas": { "applies": true, "rule_type": "alternating", "details": "Even years: Father from 3pm Xmas Eve to 11am Xmas Day" },
+        "school_holidays": { "applies": true, "rule_type": "alternating_blocks", "details": "Week-about basis (7 nights each)" }
       }
     }
 
-    EXTRACTION RULES:
-    - **Base Pattern**: If the order says "Father has alternate weekends from Fri 3pm to Sun 5pm", then:
-      - Fri night: Father
-      - Sat night: Father
-      - Sun night: Mother (because he returns child at 5pm, so Mother has 11:59pm)
-    - **Filling Gaps**: For any day not mentioned, assign overnight_care_owner to primary_parent.
-    - **Start Date**: Look for "Commencing on...", "Orders start from...". If not found, use the Date of Orders.
-    - **Changeover Days**: If Father picks up at 3pm Friday and returns Sunday 5pm, Friday and Saturday nights are Father's, Sunday night is Mother's.
-    
-    VALIDATION BEFORE OUTPUT:
-    - Verify base_pattern has exactly 14 entries
-    - Verify day_number runs 1 through 14 sequentially
-    - Verify week_number is 1 for days 1-7, and 2 for days 8-14
-    - Verify all day_name values are valid English weekday names in Title Case
+    Output ONLY the JSON object. No preamble or conversational text.
     `;
 
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-5-20250929',
       max_tokens: 4000,
       temperature: 0,
       system: systemPrompt,
@@ -128,7 +106,7 @@ Deno.serve(async (req) => {
           content: [
             {
               type: 'text',
-              text: 'Here is the court order. Extract the care schedule JSON.',
+              text: 'Here is the court order. Extract the care schedule JSON. Output ONLY JSON.',
             },
             mediaType === 'application/pdf'
               ? {
@@ -159,10 +137,10 @@ Deno.serve(async (req) => {
     }
 
     const result = contentBlock.text;
-    const cleanJson = result
-      .replace(/^```json\n?/, '')
-      .replace(/\n?```$/, '')
-      .trim();
+
+    // Improved extraction to handle any conversational text before/after JSON
+    const jsonMatch = result.match(/\{[\s\S]*\}/);
+    const cleanJson = jsonMatch ? jsonMatch[0] : result;
 
     return new Response(cleanJson, {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
