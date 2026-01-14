@@ -1,12 +1,10 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { lazy, Suspense, useState } from 'react';
 import {
-    ActivityIndicator,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
     StyleSheet,
-    Text,
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,12 +13,12 @@ import { convertCareToPercentage } from '../utils/care-utils';
 import { getYearConstants } from '../utils/child-support-constants';
 import { MAX_CALCULATOR_WIDTH, useResponsive } from '../utils/responsive';
 
-// ✅ CRITICAL: Lazy load heavy components to reduce initial bundle
-const CalculatorForm = lazy(() =>
-  import('@/src/features/calculator/components/CalculatorForm').then((m) => ({
-    default: m.CalculatorForm,
-  }))
-);
+// ✅ STANDARD IMPORTS - Critical for initial render (no lazy loading)
+import { CalculatorForm, CalculatorHeader } from '@/src/features/calculator';
+import { PrivacyPolicyLink } from '../components/PrivacyPolicyLink';
+import { StepProgressIndicator } from '../components/ui/StepProgressIndicator';
+
+// ✅ LAZY LOAD: Secondary components that aren't needed for initial render
 const CalculatorResults = lazy(() =>
   import('@/src/features/calculator/components/CalculatorResults').then((m) => ({
     default: m.CalculatorResults,
@@ -36,35 +34,6 @@ const IncomeSupportModal = lazy(() =>
     default: m.IncomeSupportModal,
   }))
 );
-
-// ✅ STANDARD IMPORTS (lightweight, needed immediately)
-import { CalculatorHeader } from '@/src/features/calculator';
-import { PrivacyPolicyLink } from '../components/PrivacyPolicyLink';
-import { StepProgressIndicator } from '../components/ui/StepProgressIndicator';
-
-// Loading fallback for lazy components
-function FormLoadingFallback() {
-  return (
-    <View style={loadingStyles.container}>
-      <ActivityIndicator size="large" color="#2563EB" />
-      <Text style={loadingStyles.text}>Loading calculator...</Text>
-    </View>
-  );
-}
-
-const loadingStyles = StyleSheet.create({
-  container: {
-    padding: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 300,
-  },
-  text: {
-    marginTop: 12,
-    color: '#64748b',
-    fontSize: 14,
-  },
-});
 
 export function CalculatorScreen() {
   const {
@@ -363,10 +332,8 @@ export function CalculatorScreen() {
           accessibilityRole={'main' as any}
         >
           <View style={isDesktop ? styles.bodyContainer : styles.fullWidth}>
-            {/* ✅ FORM with Suspense for lazy loading */}
-            <Suspense fallback={<FormLoadingFallback />}>
-              <CalculatorForm {...formProps} isDesktopWeb={isDesktop} />
-            </Suspense>
+            {/* ✅ FORM - No Suspense, renders immediately for SSG */}
+            <CalculatorForm {...formProps} isDesktopWeb={isDesktop} />
 
             {/* FAQ Section - lazy loaded */}
             <Suspense fallback={null}>
