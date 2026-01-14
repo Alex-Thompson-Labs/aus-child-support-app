@@ -1,11 +1,13 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { lazy, Suspense, useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform, // Keep Pressable for AI card
-  ScrollView,
-  StyleSheet,
-  View
+    ActivityIndicator,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCalculator } from '../hooks/useCalculator';
@@ -13,10 +15,56 @@ import { convertCareToPercentage } from '../utils/care-utils';
 import { getYearConstants } from '../utils/child-support-constants';
 import { MAX_CALCULATOR_WIDTH, useResponsive } from '../utils/responsive';
 
-// ✅ STANDARD IMPORTS (Reliable)
-import { CalculatorFAQ, CalculatorForm, CalculatorHeader, CalculatorResults, IncomeSupportModal } from '@/src/features/calculator';
+// ✅ CRITICAL: Lazy load heavy components to reduce initial bundle
+const CalculatorForm = lazy(() =>
+  import('@/src/features/calculator/components/CalculatorForm').then((m) => ({
+    default: m.CalculatorForm,
+  }))
+);
+const CalculatorResults = lazy(() =>
+  import('@/src/features/calculator/components/CalculatorResults').then((m) => ({
+    default: m.CalculatorResults,
+  }))
+);
+const CalculatorFAQ = lazy(() =>
+  import('@/src/features/calculator/components/CalculatorFAQ').then((m) => ({
+    default: m.CalculatorFAQ,
+  }))
+);
+const IncomeSupportModal = lazy(() =>
+  import('@/src/features/calculator/components/IncomeSupportModal').then((m) => ({
+    default: m.IncomeSupportModal,
+  }))
+);
+
+// ✅ STANDARD IMPORTS (lightweight, needed immediately)
+import { CalculatorHeader } from '@/src/features/calculator';
 import { PrivacyPolicyLink } from '../components/PrivacyPolicyLink';
 import { StepProgressIndicator } from '../components/ui/StepProgressIndicator';
+
+// Loading fallback for lazy components
+function FormLoadingFallback() {
+  return (
+    <View style={loadingStyles.container}>
+      <ActivityIndicator size="large" color="#2563EB" />
+      <Text style={loadingStyles.text}>Loading calculator...</Text>
+    </View>
+  );
+}
+
+const loadingStyles = StyleSheet.create({
+  container: {
+    padding: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 300,
+  },
+  text: {
+    marginTop: 12,
+    color: '#64748b',
+    fontSize: 14,
+  },
+});
 
 export function CalculatorScreen() {
   const {
@@ -315,11 +363,15 @@ export function CalculatorScreen() {
           accessibilityRole={'main' as any}
         >
           <View style={isDesktop ? styles.bodyContainer : styles.fullWidth}>
-            {/* ✅ FORM RESTORED (No Suspense) */}
-            <CalculatorForm {...formProps} isDesktopWeb={isDesktop} />
+            {/* ✅ FORM with Suspense for lazy loading */}
+            <Suspense fallback={<FormLoadingFallback />}>
+              <CalculatorForm {...formProps} isDesktopWeb={isDesktop} />
+            </Suspense>
 
-            {/* FAQ Section */}
-            <CalculatorFAQ />
+            {/* FAQ Section - lazy loaded */}
+            <Suspense fallback={null}>
+              <CalculatorFAQ />
+            </Suspense>
 
             {/* Privacy Footer */}
             {/* @ts-ignore - Web-only ARIA role */}
@@ -337,26 +389,30 @@ export function CalculatorScreen() {
 
         {/* Results Overlay - Hide entirely when inputs change (isStale) */}
         {results && !isStale && (
-          <View style={styles.resultsOverlay}>
-            <View style={isDesktop ? styles.bodyContainer : styles.fullWidth}>
-              <CalculatorResults
-                results={results}
-                formData={formState}
-                displayMode="modal"
-                resetTimestamp={resetTimestamp}
-                calculatorStartTime={calculatorStartTime}
-              />
+          <Suspense fallback={null}>
+            <View style={styles.resultsOverlay}>
+              <View style={isDesktop ? styles.bodyContainer : styles.fullWidth}>
+                <CalculatorResults
+                  results={results}
+                  formData={formState}
+                  displayMode="modal"
+                  resetTimestamp={resetTimestamp}
+                  calculatorStartTime={calculatorStartTime}
+                />
+              </View>
             </View>
-          </View>
+          </Suspense>
         )}
 
-        {/* Income Support Modal */}
-        <IncomeSupportModal
-          visible={incomeSupportModalVisible}
-          parentName={pendingParent === 'A' ? 'You' : 'Other Parent'}
-          onYes={handleIncomeSupportYes}
-          onNo={handleIncomeSupportNo}
-        />
+        {/* Income Support Modal - lazy loaded */}
+        <Suspense fallback={null}>
+          <IncomeSupportModal
+            visible={incomeSupportModalVisible}
+            parentName={pendingParent === 'A' ? 'You' : 'Other Parent'}
+            onYes={handleIncomeSupportYes}
+            onNo={handleIncomeSupportNo}
+          />
+        </Suspense>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

@@ -82,6 +82,12 @@ export default function Root({ children }: PropsWithChildren) {
                 padding: 0;
               }
               
+              /* Font display optimization */
+              @font-face {
+                font-family: system-ui;
+                font-display: swap;
+              }
+              
               body {
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                 -webkit-font-smoothing: antialiased;
@@ -89,6 +95,7 @@ export default function Root({ children }: PropsWithChildren) {
                 background-color: #ffffff;
                 color: #1f2937;
                 line-height: 1.5;
+                font-display: swap;
               }
               
               /* Header styles - critical for LCP */
@@ -150,6 +157,20 @@ export default function Root({ children }: PropsWithChildren) {
               #root > * {
                 width: 100%;
                 max-width: 100%;
+              }
+              
+              /* Reduce layout shift for cards */
+              .card-skeleton {
+                min-height: 200px;
+                background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                background-size: 200% 100%;
+                animation: shimmer 1.5s infinite;
+                border-radius: 12px;
+              }
+              
+              @keyframes shimmer {
+                0% { background-position: 200% 0; }
+                100% { background-position: -200% 0; }
               }
             `,
           }}
