@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import type {
-    CalculationResults,
-    CalculatorInputs,
+  CalculationResults,
+  CalculatorInputs,
 } from '../utils/calculator';
 import { deriveAgeRange } from '../utils/calculator';
 import { convertCareToPercentage } from '../utils/care-utils';
@@ -11,15 +11,7 @@ import { useCalculatorState } from './useCalculatorState';
 // Re-export types for backward compatibility
 export type { CalculatorFormState } from '../utils/calculator';
 
-// Lazy import for heavy calculation module - only loaded when calculate() is called
-let calculateModule: typeof import('../utils/calculateResults') | null = null;
-
-async function getCalculateModule() {
-  if (!calculateModule) {
-    calculateModule = await import('../utils/calculateResults');
-  }
-  return calculateModule;
-}
+import { calculateChildSupport, validateCalculatorForm } from '../utils/calculateResults';
 
 export function useCalculator() {
   const {
@@ -44,8 +36,7 @@ export function useCalculator() {
 
   const [results, setResults] = useState<CalculationResults | null>(null);
 
-  const validateForm = useCallback(async (): Promise<boolean> => {
-    const { validateCalculatorForm } = await getCalculateModule();
+  const validateForm = useCallback((): boolean => {
     const newErrors = validateCalculatorForm(formState);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -59,31 +50,22 @@ export function useCalculator() {
       // Ensure "stale" state is set synchronously to trigger any necessary pending UI updates
       setIsStale(true);
 
-      // Use async/await with dynamic import for code splitting
-      (async () => {
-        try {
-          const { calculateChildSupport, validateCalculatorForm } = await getCalculateModule();
-          
-          // Run validation and set errors in state
-          const newErrors = validateCalculatorForm(formState);
-          setErrors(newErrors);
+      // Run validation and set errors in state
+      const newErrors = validateCalculatorForm(formState);
+      setErrors(newErrors);
 
-          if (Object.keys(newErrors).length > 0) {
-            // Validation failed
-            return;
-          }
+      if (Object.keys(newErrors).length > 0) {
+        // Validation failed
+        return;
+      }
 
-          const calculationResults = calculateChildSupport(formState, selectedYear, overrides);
-          if (calculationResults) {
-            setResults(calculationResults);
-            setIsStale(false);
-            // Trigger haptic feedback on successful calculation (mobile only)
-            triggerSuccessHaptic();
-          }
-        } catch (error) {
-          console.error('Calculation error:', error);
-        }
-      })();
+      const calculationResults = calculateChildSupport(formState, selectedYear, overrides);
+      if (calculationResults) {
+        setResults(calculationResults);
+        setIsStale(false);
+        // Trigger haptic feedback on successful calculation (mobile only)
+        triggerSuccessHaptic();
+      }
     },
     [formState, selectedYear, setIsStale, setErrors]
   );
