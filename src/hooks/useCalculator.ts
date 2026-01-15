@@ -55,16 +55,22 @@ export function useCalculator() {
 
       if (Object.keys(newErrors).length > 0) {
         // Validation failed
+        setIsStale(false);
         return;
       }
 
-      const calculationResults = calculateChildSupport(formState, selectedYear, overrides);
-      if (calculationResults) {
-        setResults(calculationResults);
-        setIsStale(false);
-        // Trigger haptic feedback on successful calculation (mobile only)
-        triggerSuccessHaptic();
-      }
+      // Defer the heavy calculation to the next tick to allow UI to update (e.g., show loading spinner)
+      setTimeout(() => {
+        const calculationResults = calculateChildSupport(formState, selectedYear, overrides);
+        if (calculationResults) {
+          setResults(calculationResults);
+          setIsStale(false);
+          // Trigger haptic feedback on successful calculation (mobile only)
+          triggerSuccessHaptic();
+        } else {
+          setIsStale(false);
+        }
+      }, 0);
     },
     [formState, selectedYear, setIsStale, setErrors]
   );

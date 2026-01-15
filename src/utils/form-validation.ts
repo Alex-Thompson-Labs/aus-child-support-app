@@ -16,9 +16,10 @@ export const VALIDATION = {
   NAME_MAX_LENGTH: 100,
   MESSAGE_MAX_LENGTH: 1000,
   EMAIL_REGEX:
-    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/,
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/,
   // Simple email regex for basic validation (used in LawyerInquiryScreen)
-  EMAIL_REGEX_SIMPLE: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  // Requires a TLD of at least 2 characters (e.g., .com, .au)
+  EMAIL_REGEX_SIMPLE: /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/,
 } as const;
 
 // ============================================================================
