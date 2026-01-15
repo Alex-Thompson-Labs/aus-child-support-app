@@ -1,73 +1,26 @@
-import { LazyLoadErrorBoundary } from '@/src/components/ui/LazyLoadErrorBoundary';
 import { StepProgressIndicator } from '@/src/components/ui/StepProgressIndicator';
-import { SmartConversionFooter } from '@/src/features/conversion/components/SmartConversionFooter';
-import { SpecialCircumstancesPrompt } from '@/src/features/conversion/components/SpecialCircumstancesPrompt';
-import { useAnalytics } from '@/src/utils/analytics';
 import type { CalculationResults } from '@/src/utils/calculator';
 import {
     ComplexityFormData,
 } from '@/src/utils/complexity-detection';
-import { eventBus } from '@/src/utils/event-bus';
-import { formatCurrency } from '@/src/utils/formatters';
 import { MAX_CALCULATOR_WIDTH, useResponsive } from '@/src/utils/responsive';
-import { shadowPresets } from '@/src/utils/shadow-styles';
-import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
-    ActivityIndicator,
     Modal,
     Platform,
     Pressable,
-    ScrollView,
     StyleSheet,
     Text,
     View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FtbImpactCard } from './FtbImpactCard';
-import { PDFExportButton } from './results/PDFExportButton';
-import { getPayerText, ResultsHero } from './results/ResultsHero';
+import { ResultsHero } from './results/ResultsHero';
+import { ResultsInlineSummary } from './results/ResultsInlineSummary';
+import { ResultsModalContent } from './results/ResultsModalContent';
+import { useResultsNavigation } from './results/useResultsNavigation';
 
-// ============================================================================
-// Event-based breakdown re-open signaling
-// Used when returning from lawyer inquiry to re-open the breakdown modal
-// ============================================================================
-
-/**
- * Helper to generate income support indicator text for collapsed card
- */
-function getIncomeSupportText(
-  supportA: boolean,
-  supportB: boolean,
-  farA: number = 0,
-  farB: number = 0
-): string | null {
-  if (supportA && supportB) {
-    return 'Income support applied: You + Other Parent';
-  } else if (supportA) {
-    return 'Income support applied: You';
-  } else if (supportB) {
-    return 'Income support applied: Other Parent';
-  }
-  // Check if FAR is applied without income support
-  const isFixedAnnualRate = farA > 0 || farB > 0;
-  const isIncomeSupport = supportA || supportB;
-  if (isFixedAnnualRate && !isIncomeSupport) {
-    return 'Income support not applied: Fixed Annual Rate (FAR) assessment';
-  }
-  return null;
-}
-
-// Lazy load the named export
-const ResultsSimpleExplanation = lazy(() =>
-  import('./ResultsSimpleExplanation').then((module) => ({
-    default: module.ResultsSimpleExplanation,
-  }))
-);
-
-export const OPEN_BREAKDOWN_EVENT = 'openBreakdownModal';
-export const triggerOpenBreakdown = () => {
-  eventBus.emit(OPEN_BREAKDOWN_EVENT);
-};
+// Re-export event constants for backward compatibility
+export { OPEN_BREAKDOWN_EVENT, triggerOpenBreakdown } from '@/src/utils/event-bus';
 
 // ============================================================================
 // Component Documentation
@@ -204,120 +157,34 @@ export function CalculatorResults({
   resetTimestamp = 0,
   calculatorStartTime,
 }: CalculatorResultsProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const analytics = useAnalytics();
-  const hasTrackedResultsView = useRef(false);
-
-  // Track results_viewed event when results are first displayed (web only)
-  useEffect(() => {
-    if (Platform.OS === 'web' && results && !hasTrackedResultsView.current) {
-      hasTrackedResultsView.current = true;
-      analytics.track('results_viewed', {
-        total_liability: results.finalPaymentAmount,
-        payer: results.payer,
-      });
-    }
-  }, [results, analytics]);
-
-  // Reset tracking flag when results change significantly
-  useEffect(() => {
-    hasTrackedResultsView.current = false;
-  }, [results.finalPaymentAmount, results.payer]);
-
-  // Listen for event to re-open breakdown modal when returning from lawyer inquiry
-  React.useEffect(() => {
-    const unsubscribe = eventBus.subscribe(OPEN_BREAKDOWN_EVENT, () => {
-      console.log('[CalculatorResults] Received open breakdown event');
-      setIsExpanded(true);
-    });
-    return () => unsubscribe();
-  }, []);
   const insets = useSafeAreaInsets();
   const { isWeb, isDesktop } = useResponsive();
 
+  // Use custom hook for state and navigation logic
+  const {
+    isExpanded,
+    setIsExpanded,
+    toggleExpand,
+    localFormData,
+    setLocalFormData,
+    currentResultsKey,
+    modalContainerRef,
+    triggerButtonRef,
+    closeButtonRef,
+  } = useResultsNavigation({
+    results,
+    formData,
+    resetTimestamp,
+  });
+
   const isInlineMode = displayMode === 'inline';
-
-  // Track local form data updates (selected Special Circumstances)
-  // Preserve selections across navigation - only update children/support from props
-  const [localFormData, setLocalFormData] = useState<ComplexityFormData>(
-    () => ({
-      ...formData,
-      selectedCircumstances: formData?.selectedCircumstances ?? [],
-    })
-  );
-  const [lastResultsKey, setLastResultsKey] = useState('');
-
-  // Generate a unique key for the current results
-  const currentResultsKey = `${results.finalPaymentAmount}-${results.payer}-${results.childResults
-    .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
-    .join('-')}-${results.ATI_A}-${results.ATI_B}`;
-
-  // Update formData when results change, but preserve selected CoA reasons
-  React.useEffect(() => {
-    if (currentResultsKey !== lastResultsKey) {
-      setLocalFormData((prev) => ({
-        ...formData,
-        // Preserve selected Special Circumstances from previous state
-        selectedCircumstances:
-          prev.selectedCircumstances ?? formData?.selectedCircumstances ?? [],
-      }));
-      setLastResultsKey(currentResultsKey);
-    }
-  }, [currentResultsKey, lastResultsKey, formData]);
-
-  // Clear special circumstances when reset is explicitly called
-  React.useEffect(() => {
-    if (resetTimestamp > 0) {
-      setLocalFormData((prev) => ({
-        ...prev,
-        selectedCircumstances: [],
-      }));
-    }
-  }, [resetTimestamp]);
-
-
-
-  // Check if any children exist in the calculation
   const hasChildren = formData?.children && formData.children.length > 0;
-
-  // Determine relevant payment amount (handle NPC-only cases)
-  let displayAmount = results.finalPaymentAmount;
-  let displayLabel = getPayerText(results.payer);
-
-  // If standard transfer is $0 but there is a Non-Parent Carer payment, show that instead
-  if (displayAmount === 0 && (results.paymentToNPC ?? 0) > 0) {
-    displayAmount = results.paymentToNPC!;
-    switch (results.payerRole) {
-      case 'paying_parent':
-        displayLabel = 'You pay to NPC';
-        break;
-      case 'receiving_parent':
-        displayLabel = 'Other parent pays NPC';
-        break;
-      case 'both_paying':
-        displayLabel = 'Combined payment to NPC';
-        break;
-      default:
-        displayLabel = 'Payment to non-parent carer';
-    }
-  }
-
-  const toggleExpand = () => setIsExpanded(!isExpanded);
-
-  // Focus trap refs for modal accessibility
-  const modalContainerRef = useRef<View>(null);
-  const triggerButtonRef = useRef<View>(null);
-  const closeButtonRef = useRef<View>(null);
-  const previousActiveElement = useRef<Element | null>(null);
 
   // Focus trap effect - manages focus when modal opens/closes
   useEffect(() => {
     if (!isWeb) return;
 
     if (isExpanded) {
-      // Store the currently focused element to restore later
-      previousActiveElement.current = document.activeElement;
-
       // Focus the close button when modal opens (first focusable element)
       requestAnimationFrame(() => {
         const closeBtn = closeButtonRef.current as unknown as HTMLElement;
@@ -334,7 +201,7 @@ export function CalculatorResults({
         }
       });
     }
-  }, [isExpanded, isWeb]);
+  }, [isExpanded, isWeb, closeButtonRef, triggerButtonRef]);
 
   // Keyboard focus trap - using document event listener for web
   useEffect(() => {
@@ -388,92 +255,15 @@ export function CalculatorResults({
     }
     : {};
 
-  const renderBreakdownContent = () => (
-    <ScrollView
-      style={styles.expandedScrollView}
-      contentContainerStyle={[
-        styles.expandedContentContainer,
-        { paddingBottom: insets.bottom + 20 },
-        webModalContainerStyle,
-      ]}
-      showsVerticalScrollIndicator={true}
-    >
-      <ResultsHero
-        results={results}
-        isStale={isStale}
-        variant="modal"
-        supportA={formData?.supportA ?? false}
-        supportB={formData?.supportB ?? false}
-      />
+  // Handle special circumstances change
+  const handleSpecialCircumstancesChange = (reasons: string[]) => {
+    setLocalFormData((prev) => ({
+      ...prev,
+      selectedCircumstances: reasons,
+    }));
+  };
 
-      <SpecialCircumstancesPrompt
-        key={currentResultsKey}
-        results={results}
-        formData={localFormData}
-        onNavigate={() => setIsExpanded(false)}
-        onSpecialCircumstancesChange={(reasons) => {
-          setLocalFormData((prev) => ({
-            ...prev,
-            selectedCircumstances: reasons,
-          }));
-        }}
-        calculatorStartTime={calculatorStartTime}
-      />
-      {results && (
-        <LazyLoadErrorBoundary>
-          <Suspense
-            fallback={
-              <View style={{ padding: 20, alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#3b82f6" />
-                <Text style={{ marginTop: 10, color: '#64748b' }}>
-                  Loading breakdown...
-                </Text>
-              </View>
-            }
-          >
-            <ResultsSimpleExplanation
-              results={results}
-              formState={{
-                supportA: formData?.supportA ?? false,
-                supportB: formData?.supportB ?? false,
-              }}
-            />
-          </Suspense>
-        </LazyLoadErrorBoundary>
-      )}
-
-      {/* Smart Conversion Footer - Always show at bottom of results */}
-      <SmartConversionFooter
-        results={results}
-        carePercentages={results.childResults.map(
-          (child) => child.roundedCareA
-        )}
-        formData={localFormData}
-        onBeforeNavigate={() => setIsExpanded(false)}
-        calculatorStartTime={calculatorStartTime}
-      />
-
-      {/* PDF Export Button - Below conversion footer */}
-      {Platform.OS === 'web' && (
-        <View style={{ alignItems: 'center', paddingVertical: 8 }}>
-          <PDFExportButton
-            results={results}
-            supportA={formData?.supportA ?? false}
-            supportB={formData?.supportB ?? false}
-            variant="secondary"
-          />
-        </View>
-      )}
-
-      {/* FTB Impact Card - Shows FTB Part A/B implications */}
-      <FtbImpactCard
-        results={results}
-        userIncome={results.ATI_A}
-        childCount={formData?.children?.length ?? results.childResults.length}
-      />
-    </ScrollView>
-  );
-
+  // Inline mode: two-column layout
   if (isInlineMode) {
     return (
       <View style={styles.twoColumnLayout}>
@@ -486,9 +276,19 @@ export function CalculatorResults({
             supportB={formData?.supportB ?? false}
           />
         </View>
-        <ScrollView style={styles.rightColumn}>
-          {renderBreakdownContent()}
-        </ScrollView>
+        <View style={styles.rightColumn}>
+          <ResultsModalContent
+            results={results}
+            formData={formData}
+            localFormData={localFormData}
+            currentResultsKey={currentResultsKey}
+            isStale={isStale}
+            calculatorStartTime={calculatorStartTime}
+            isWeb={isWeb}
+            onCloseModal={() => setIsExpanded(false)}
+            onSpecialCircumstancesChange={handleSpecialCircumstancesChange}
+          />
+        </View>
       </View>
     );
   }
@@ -498,66 +298,21 @@ export function CalculatorResults({
     return null;
   }
 
+  // Modal mode: collapsed summary card + expandable modal
   return (
     <>
       {!isExpanded && (
-        <Pressable
-          ref={triggerButtonRef}
+        <ResultsInlineSummary
+          results={results}
+          supportA={formData?.supportA}
+          supportB={formData?.supportB}
+          isStale={isStale}
+          bottomInset={insets.bottom}
+          isWeb={isWeb}
+          isDesktop={isDesktop}
+          triggerButtonRef={triggerButtonRef}
           onPress={toggleExpand}
-          style={[
-            styles.fixedBottomCardWrapper,
-            { paddingBottom: Math.max(insets.bottom, isWeb && !isDesktop ? 80 : 12) },
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel={
-            `${displayLabel} ${formatCurrency(displayAmount)} per year. Tap to view full breakdown`
-          }
-          accessibilityHint="Opens detailed calculation breakdown"
-        >
-          <View
-            style={[styles.fixedBottomCard, { backgroundColor: '#3b82f6' }]}
-          >
-            <View style={styles.dragHandleContainer}>
-              <View style={styles.dragHandle} />
-            </View>
-            <View style={styles.collapsedContent}>
-              <View style={styles.collapsedSummaryRow}>
-                <Text style={styles.collapsedLabel}>
-                  {displayLabel}
-                </Text>
-                <Text
-                  style={[
-                    styles.collapsedAmountCondensed,
-                    isStale && styles.staleAmount,
-                  ]}
-                >
-                  {formatCurrency(displayAmount)}
-                </Text>
-              </View>
-              {getIncomeSupportText(
-                formData?.supportA ?? false,
-                formData?.supportB ?? false,
-                results.FAR_A,
-                results.FAR_B
-              ) && (
-                  <View style={styles.collapsedIncomeSupportBadge}>
-                    <Text style={styles.collapsedIncomeSupportText}>
-                      ✓{' '}
-                      {getIncomeSupportText(
-                        formData?.supportA ?? false,
-                        formData?.supportB ?? false,
-                        results.FAR_A,
-                        results.FAR_B
-                      )}
-                    </Text>
-                  </View>
-                )}
-            </View>
-            <View style={styles.expandHint}>
-              <Text style={styles.expandHintText}>Tap for breakdown ▲</Text>
-            </View>
-          </View>
-        </Pressable>
+        />
       )}
 
       <Modal
@@ -586,7 +341,6 @@ export function CalculatorResults({
                 Assessment Breakdown
               </Text>
               <View style={styles.headerActions}>
-
                 <Pressable
                   ref={closeButtonRef}
                   onPress={toggleExpand}
@@ -610,7 +364,17 @@ export function CalculatorResults({
               step2Progress={(localFormData.selectedCircumstances?.length ?? 0) > 0 ? 100 : 0}
             />
           </View>
-          {renderBreakdownContent()}
+          <ResultsModalContent
+            results={results}
+            formData={formData}
+            localFormData={localFormData}
+            currentResultsKey={currentResultsKey}
+            isStale={isStale}
+            calculatorStartTime={calculatorStartTime}
+            isWeb={isWeb}
+            onCloseModal={() => setIsExpanded(false)}
+            onSpecialCircumstancesChange={handleSpecialCircumstancesChange}
+          />
         </View>
       </Modal>
     </>
@@ -618,69 +382,10 @@ export function CalculatorResults({
 }
 
 const styles = StyleSheet.create({
-  fixedBottomCardWrapper: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    zIndex: 1000,
-    paddingHorizontal: 12, // Add horizontal padding for mobile
+  expandedContainer: { 
+    flex: 1, 
+    backgroundColor: '#f8fafc' 
   },
-  fixedBottomCard: {
-    width: '100%',
-    maxWidth: 750, // Matches the narrow form width exactly
-    minHeight: 85, // Fixed height to prevent CLS when content varies
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingBottom: 8,
-    marginBottom: 8, // Add margin to lift card above browser toolbar
-    ...shadowPresets.modal,
-    alignSelf: 'center', // Ensures it stays centered within its wrapper
-  },
-  collapsedContent: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 6,
-  },
-  collapsedSummaryRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-  },
-  collapsedIncomeSupportBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginTop: 6,
-  },
-  collapsedIncomeSupportText: {
-    color: '#ffffff',
-    fontSize: 11,
-    fontWeight: '600',
-  },
-  collapsedLabel: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  collapsedAmountCondensed: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    marginLeft: 6,
-  },
-  dragHandleContainer: { alignItems: 'center', paddingVertical: 6 },
-  dragHandle: {
-    width: 30,
-    height: 4,
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    borderRadius: 2,
-  },
-  expandHint: { alignItems: 'center', paddingBottom: 4 },
-  expandHintText: { color: '#ffffff', fontSize: 11, opacity: 0.8 },
-  expandedContainer: { flex: 1, backgroundColor: '#f8fafc' },
   expandedHeader: {
     padding: 4,
     paddingBottom: 4,
@@ -698,8 +403,8 @@ const styles = StyleSheet.create({
   },
   expandedHeaderTitle: {
     fontSize: 18,
-    fontWeight: '700', // Bold for strong typography
-    color: '#1e3a8a', // blue-900 (Dark Brand Blue)
+    fontWeight: '700',
+    color: '#1e3a8a',
   },
   headerActions: {
     flexDirection: 'row',
@@ -712,16 +417,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  closeIcon: { fontSize: 22, color: '#1e3a8a' }, // blue-900 (matches header title)
-  expandedScrollView: { flex: 1 },
-  expandedContentContainer: { padding: 16, gap: 16 },
-  staleAmount: {
-    textDecorationLine: 'line-through',
-    textDecorationColor: '#ef4444',
-    textDecorationStyle: 'solid',
-    opacity: 0.7,
+  closeIcon: { 
+    fontSize: 22, 
+    color: '#1e3a8a' 
   },
-  twoColumnLayout: { flexDirection: 'row', gap: 20 },
-  leftColumn: { flex: 1 },
-  rightColumn: { flex: 1.5 },
+  twoColumnLayout: { 
+    flexDirection: 'row', 
+    gap: 20 
+  },
+  leftColumn: { 
+    flex: 1 
+  },
+  rightColumn: { 
+    flex: 1.5 
+  },
 });

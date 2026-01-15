@@ -26,7 +26,7 @@ export function SuccessView({ returnTo, partnerName }: SuccessViewProps) {
         params: { reset: 'true' },
       });
     } catch (error) {
-      console.error('[SuccessView] Navigation error:', error);
+      // TODO: Replace with proper error reporting service
       router.replace('/');
     }
   }, [router]);
@@ -40,7 +40,7 @@ export function SuccessView({ returnTo, partnerName }: SuccessViewProps) {
     } else {
       // On native, use Linking for external URLs
       Linking.openURL(returnTo).catch((error) => {
-        console.error('[SuccessView] Failed to open URL:', error);
+        // TODO: Replace with proper error reporting service
       });
     }
   }, [returnTo]);

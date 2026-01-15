@@ -26,7 +26,7 @@ export class LazyLoadErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    console.error('[LazyLoadErrorBoundary] Caught error:', error, errorInfo);
+    // TODO: Replace with proper error reporting service
   }
 
   handleRetry = (): void => {

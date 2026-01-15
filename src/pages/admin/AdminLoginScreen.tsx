@@ -91,7 +91,7 @@ export default function AdminLoginScreen() {
       });
 
       if (error) {
-        console.error('[AdminLogin] Error:', error);
+        // TODO: Replace with proper error reporting service
         if (Platform.OS === 'web') {
           alert(`Login Failed\n\n${error.message}`);
         } else {
@@ -109,10 +109,9 @@ export default function AdminLoginScreen() {
         return;
       }
 
-      console.log('[AdminLogin] Success - navigating to dashboard');
       router.replace('/admin/dashboard');
     } catch (error) {
-      console.error('[AdminLogin] Unexpected error:', error);
+      // TODO: Replace with proper error reporting service
       if (Platform.OS === 'web') {
         alert(
           `Error\n\n${error instanceof Error ? error.message : 'Unknown error'}`

@@ -168,7 +168,7 @@ export function calculateCareFromOrder(
 ): import('./timeline-types').CareCalculationResult & { assignments: DayAssignment[]; holidayAssignments: { event: string; year: number; care_with: CareParent }[] } {
   // Return a placeholder result indicating the function is deprecated
   // The actual implementation has been removed per Requirements 7.1-7.5
-  console.warn('calculateCareFromOrder is deprecated. Use calculateCareFromTimeline with the new timeline architecture.');
+  // Deprecated function - use calculateCareFromTimeline instead
   
   return {
     totalDays: 0,

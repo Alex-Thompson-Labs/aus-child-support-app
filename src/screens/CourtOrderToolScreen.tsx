@@ -59,13 +59,11 @@ export default function CourtOrderToolScreen() {
 
   const pickDocument = async () => {
     try {
-      console.log('Opening document picker...');
       const result = await DocumentPicker.getDocumentAsync({
         type: ['image/*', 'application/pdf'],
         copyToCacheDirectory: true,
       });
 
-      console.log('Picker result:', result);
 
       if (result.canceled) return;
 
@@ -92,11 +90,10 @@ export default function CourtOrderToolScreen() {
         }
       }
 
-      console.log('Selected file:', asset.name, 'MIME:', mimeType);
 
       await analyzeOrder(asset.uri, mimeType);
     } catch (err: any) {
-      console.error('Pick error:', err);
+      // TODO: Replace with proper error reporting service
       Alert.alert('Error picking file', err.message);
     }
   };
@@ -130,7 +127,6 @@ export default function CourtOrderToolScreen() {
         });
       }
 
-      console.log('Sending to backend...', { mimeType, size: base64.length, year: selectedYear });
 
       // Pass year parameter to Edge Function (Requirements: 6.1)
       const { data, error } = await supabase.functions.invoke('analyze-order', {
@@ -142,7 +138,7 @@ export default function CourtOrderToolScreen() {
       });
 
       if (error) {
-        console.error('Supabase function error:', error);
+        // TODO: Replace with proper error reporting service
         throw error;
       }
 
@@ -158,14 +154,13 @@ export default function CourtOrderToolScreen() {
         throw new Error(data.reason || `Error: ${data.error}`);
       }
 
-      console.log('Timeline response:', data);
 
       // Validate the timeline (Requirements: 6.2, 6.3)
       const timelineData = data as TimelineResponse;
       const validation = validateTimeline(timelineData.timeline, timelineData.year);
       
       if (!validation.valid) {
-        console.error('Timeline validation errors:', validation.errors);
+        // TODO: Replace with proper error reporting service
         setValidationErrors(validation.errors);
         throw new Error('The generated timeline has validation errors. Please try again.');
       }
@@ -176,7 +171,7 @@ export default function CourtOrderToolScreen() {
       const calcResult = calculateCareFromTimeline(timelineData);
       setResult(calcResult);
     } catch (err: any) {
-      console.error('Analysis error:', err);
+      // TODO: Replace with proper error reporting service
       Alert.alert(
         'Analysis Failed',
         err.message || 'Could not interpret the file. Please try a clearer image or a different file.'

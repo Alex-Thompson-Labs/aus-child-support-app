@@ -357,7 +357,7 @@ export function parseCourtDateFromReasonId(id: string): Date | null {
 
     return parsed;
   } catch (error) {
-    console.error('[parseCourtDateFromReasonId] Error parsing date:', error);
+    // TODO: Replace with proper error reporting service
     return null;
   }
 }

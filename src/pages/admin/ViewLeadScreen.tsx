@@ -48,7 +48,7 @@ export default function ViewLeadScreen() {
       setIsExporting(true);
       await exportLeadAsPDF(lead);
     } catch (error) {
-      console.error(error);
+      // TODO: Replace with proper error reporting service
     } finally {
       setIsExporting(false);
     }

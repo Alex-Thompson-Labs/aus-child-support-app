@@ -89,7 +89,7 @@ export default function LeadDetailScreen() {
           .single();
 
         if (error) {
-          console.error('[LeadDetail] Error loading lead:', error);
+          // TODO: Replace with proper error reporting service
           if (Platform.OS === 'web') {
             alert(`Error Loading Lead\n\n${error.message}`);
           } else {
@@ -99,11 +99,10 @@ export default function LeadDetailScreen() {
           return;
         }
 
-        console.log('[LeadDetail] Loaded lead:', data.id);
         setLead(data);
         setNotes(data.notes || '');
       } catch (error) {
-        console.error('[LeadDetail] Unexpected error:', error);
+        // TODO: Replace with proper error reporting service
         router.back();
       } finally {
         setLoading(false);
@@ -175,7 +174,7 @@ auschildsupport.com`;
           );
         })
         .catch((err) => {
-          console.error('Failed to copy:', err);
+          // TODO: Replace with proper error reporting service
           alert('Copy Failed\n\nPlease copy the text manually.');
         });
     } else {
@@ -210,7 +209,7 @@ auschildsupport.com`;
         .eq('id', leadId);
 
       if (error) {
-        console.error('[LeadDetail] Error updating status:', error);
+        // TODO: Replace with proper error reporting service
         if (Platform.OS === 'web') {
           alert(`Error\n\n${error.message}`);
         } else {
@@ -228,7 +227,7 @@ auschildsupport.com`;
         Alert.alert('Status Updated', `Lead status changed to "${newStatus}"`);
       }
     } catch (error) {
-      console.error('[LeadDetail] Unexpected error:', error);
+      // TODO: Replace with proper error reporting service
     } finally {
       setUpdatingStatus(false);
     }
@@ -247,7 +246,7 @@ auschildsupport.com`;
         .eq('id', leadId);
 
       if (error) {
-        console.error('[LeadDetail] Error saving notes:', error);
+        // TODO: Replace with proper error reporting service
         if (Platform.OS === 'web') {
           alert(`Error\n\n${error.message}`);
         } else {
@@ -264,7 +263,7 @@ auschildsupport.com`;
         Alert.alert('Notes Saved', 'Your notes have been saved.');
       }
     } catch (error) {
-      console.error('[LeadDetail] Unexpected error:', error);
+      // TODO: Replace with proper error reporting service
     } finally {
       setSavingNotes(false);
     }
@@ -289,7 +288,7 @@ auschildsupport.com`;
         );
       }
     } catch (error) {
-      console.error('[LeadDetail] Error exporting PDF:', error);
+      // TODO: Replace with proper error reporting service
       if (Platform.OS === 'web') {
         alert(
           `Export Failed\n\n${error instanceof Error ? error.message : 'Unknown error occurred'
@@ -323,7 +322,7 @@ auschildsupport.com`;
         setTimeout(() => setCopiedPhone(false), 2000);
       }
     } catch (error) {
-      console.error('[LeadDetail] Error copying to clipboard:', error);
+      // TODO: Replace with proper error reporting service
       if (Platform.OS === 'web') {
         alert('Failed to copy to clipboard');
       } else {
@@ -353,7 +352,7 @@ auschildsupport.com`;
                   .eq('id', leadId);
 
                 if (error) {
-                  console.error('[LeadDetail] Error deleting lead:', error);
+                  // TODO: Replace with proper error reporting service
                   Alert.alert('Error', error.message);
                   return;
                 }
@@ -362,7 +361,7 @@ auschildsupport.com`;
                   { text: 'OK', onPress: () => router.back() },
                 ]);
               } catch (error) {
-                console.error('[LeadDetail] Unexpected error:', error);
+                // TODO: Replace with proper error reporting service
               }
             },
           },

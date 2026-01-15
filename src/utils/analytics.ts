@@ -70,10 +70,9 @@ export function initializeAnalytics(measurementId: string): void {
       ReactGA.initialize(measurementId);
       // Set cache flag after successful initialization
       isInitialized = true;
-      console.log('Analytics initialized');
     }
   } catch (error) {
-    console.warn('GA Initialization failed (likely blocked):', error);
+    // Analytics initialization failed - likely blocked by ad blocker
   }
 }
 
@@ -87,9 +86,6 @@ function trackWithGA(event: string, properties?: AnalyticsProperties): void {
     }
   } catch (error) {
     // Fail silently - analytics shouldn't break the app
-    if (__DEV__) {
-      console.warn('GA Track Event failed:', error);
-    }
   }
 }
 
@@ -102,9 +98,7 @@ function identifyWithGA(userId: string): void {
       ReactGA.set({ user_id: userId });
     }
   } catch (error) {
-    if (__DEV__) {
-      console.warn('GA Identify failed:', error);
-    }
+    // Fail silently - analytics shouldn't break the app
   }
 }
 
@@ -121,9 +115,7 @@ function screenWithGA(name: string, properties?: AnalyticsProperties): void {
       });
     }
   } catch (error) {
-    if (__DEV__) {
-      console.warn('GA Screen View failed:', error);
-    }
+    // Fail silently - analytics shouldn't break the app
   }
 }
 
@@ -132,23 +124,14 @@ export const Analytics = {
   initialize: (measurementId: string) => initializeAnalytics(measurementId),
 
   track: (event: string, properties?: AnalyticsProperties): void => {
-    if (__DEV__) {
-      console.log('[Analytics] Track event:', event, properties);
-    }
     trackWithGA(event, properties);
   },
 
   identify: (userId: string, traits?: UserTraits): void => {
-    if (__DEV__) {
-      console.log('[Analytics] Identify user:', userId, traits);
-    }
     identifyWithGA(userId);
   },
 
   screen: (name: string, properties?: AnalyticsProperties): void => {
-    if (__DEV__) {
-      console.log('[Analytics] Screen view:', name, properties);
-    }
     screenWithGA(name, properties);
   },
 };
@@ -157,23 +140,14 @@ export const Analytics = {
 export function useAnalytics() {
   return {
     track: (event: string, properties?: AnalyticsProperties): void => {
-      if (__DEV__) {
-        console.log('[Analytics] Track event:', event, properties);
-      }
       trackWithGA(event, properties);
     },
 
     identify: (userId: string, traits?: UserTraits): void => {
-      if (__DEV__) {
-        console.log('[Analytics] Identify user:', userId, traits);
-      }
       identifyWithGA(userId);
     },
 
     screen: (name: string, properties?: AnalyticsProperties): void => {
-      if (__DEV__) {
-        console.log('[Analytics] Screen view:', name, properties);
-      }
       screenWithGA(name, properties);
     },
   };

@@ -143,13 +143,6 @@ export function detectComplexity(
   const isHighValue = results.finalPaymentAmount > 15000;
 
   // Debug logging (only in dev)
-  if (__DEV__) {
-    console.log(
-      '[detectComplexity] Payment amount:',
-      results.finalPaymentAmount
-    );
-    console.log('[detectComplexity] Is high value (>15000):', isHighValue);
-  }
 
   // Check for shared care dispute (care percentage between 35-65% for any child)
   const hasSharedCareDispute =
@@ -178,21 +171,12 @@ export function detectComplexity(
   );
 
   if (__DEV__ && hasCourtDateSelected) {
-    console.log('[detectComplexity] Court date reason selected');
   }
 
   // Check for special circumstances via selected CoA reasons
   const hasSpecialCircumstances = selectedReasons.length > 0;
 
   if (__DEV__) {
-    console.log(
-      '[detectComplexity] Selected special circumstances:',
-      selectedReasons
-    );
-    console.log(
-      '[detectComplexity] Has special circumstances:',
-      hasSpecialCircumstances
-    );
   }
 
   return {
@@ -254,24 +238,8 @@ export function getAlertConfig(
     // Get the most important reason (based on priority)
     const mostImportantReason = getHighestPriorityReason(selectedIds);
 
-    if (__DEV__) {
-      console.log(
-        '[getAlertConfig] Selected complexity reason IDs:',
-        selectedIds
-      );
-      console.log(
-        '[getAlertConfig] Most important reason:',
-        mostImportantReason
-      );
-    }
-
     // Handle edge case: flag is true but no valid reasons found
     if (!mostImportantReason) {
-      if (__DEV__) {
-        console.warn(
-          '[getAlertConfig] specialCircumstances flag is true but no valid reasons found'
-        );
-      }
       // Fallback to generic message
       return {
         title: '📋 Special Circumstances Detected',

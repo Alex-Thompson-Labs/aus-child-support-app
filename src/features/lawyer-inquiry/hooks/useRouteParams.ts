@@ -74,7 +74,6 @@ export function useRouteParams(): ParsedRouteParams {
 
   // Debug logging
   if (__DEV__ || Platform.OS === 'web') {
-    console.log('[useRouteParams] fromBreakdown:', { raw: params.fromBreakdown, parsed: fromBreakdown });
   }
 
   // Parse source and returnTo for external navigation (blog integration)
@@ -155,8 +154,6 @@ export function useRouteParams(): ParsedRouteParams {
         ? JSON.parse(params.careData)
         : [];
     } catch (error) {
-      if (__DEV__)
-        console.error('[LawyerInquiry] Failed to parse careData:', error);
       return []; // Fallback to empty if parsing fails
     }
   }, [params.careData]);
@@ -168,11 +165,6 @@ export function useRouteParams(): ParsedRouteParams {
         ? (JSON.parse(params.specialCircumstances) as string[])
         : null;
     } catch (error) {
-      if (__DEV__)
-        console.error(
-          '[LawyerInquiry] Failed to parse specialCircumstances:',
-          error
-        );
       // Continue without pre-fill
       return null;
     }

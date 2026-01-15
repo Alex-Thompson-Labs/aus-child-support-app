@@ -72,7 +72,7 @@ export default function ProposalsScreen() {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('[Proposals] Error loading:', error);
+        // TODO: Replace with proper error reporting service
         if (Platform.OS === 'web') {
           alert(`Error Loading Proposals\n\n${error.message}`);
         } else {
@@ -107,7 +107,7 @@ export default function ProposalsScreen() {
 
       setProposals(proposalsWithStats);
     } catch (error) {
-      console.error('[Proposals] Unexpected error:', error);
+      // TODO: Replace with proper error reporting service
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -162,7 +162,7 @@ export default function ProposalsScreen() {
       });
 
       if (error) {
-        console.error('[Proposals] Error creating:', error);
+        // TODO: Replace with proper error reporting service
         if (Platform.OS === 'web') {
           alert(`Error Creating Proposal\n\n${error.message}`);
         } else {
@@ -174,7 +174,7 @@ export default function ProposalsScreen() {
       setNewFirmName('');
       loadProposals();
     } catch (error) {
-      console.error('[Proposals] Unexpected error:', error);
+      // TODO: Replace with proper error reporting service
     } finally {
       setCreating(false);
     }
@@ -194,7 +194,7 @@ export default function ProposalsScreen() {
         Alert.alert('Link', link);
       }
     } catch (error) {
-      console.error('[Proposals] Copy failed:', error);
+      // TODO: Replace with proper error reporting service
       Alert.alert('Link', link);
     }
   };
@@ -209,13 +209,13 @@ export default function ProposalsScreen() {
         .eq('id', proposal.id);
 
       if (error) {
-        console.error('[Proposals] Error toggling:', error);
+        // TODO: Replace with proper error reporting service
         return;
       }
 
       loadProposals();
     } catch (error) {
-      console.error('[Proposals] Unexpected error:', error);
+      // TODO: Replace with proper error reporting service
     }
   };
 

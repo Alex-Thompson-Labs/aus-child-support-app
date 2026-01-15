@@ -479,14 +479,12 @@ function generateLeadHTML(lead: LeadSubmission, userId: string = 'system'): stri
  */
 export async function exportLeadAsPDF(lead: LeadSubmission, userId: string = 'system'): Promise<void> {
   try {
-    console.log('[ExportPDF] Generating PDF for lead ID:', lead.id);
 
     // Generate HTML content
     const html = generateLeadHTML(lead, userId);
 
     if (Platform.OS === 'web') {
       // Web platform: Use print dialog or download as HTML
-      console.log('[ExportPDF] Using web platform export');
 
       // Open print dialog with the HTML content
       const printWindow = window.open('', '_blank');
@@ -505,13 +503,10 @@ export async function exportLeadAsPDF(lead: LeadSubmission, userId: string = 'sy
         printWindow.print();
       };
 
-      console.log('[ExportPDF] Print dialog opened');
       return;
     }
 
     // Mobile platforms: Use expo-print (dynamically imported)
-    console.log('[ExportPDF] Using expo-print for mobile');
-
     // Dynamic imports to avoid bundling in main chunk
     const [Print, Sharing] = await Promise.all([
       import('expo-print'),
@@ -529,13 +524,11 @@ export async function exportLeadAsPDF(lead: LeadSubmission, userId: string = 'sy
     }
 
     const { uri } = result;
-    console.log('[ExportPDF] PDF generated at:', uri);
 
     // Check if sharing is available
     const isAvailable = await Sharing.isAvailableAsync();
 
     if (!isAvailable) {
-      console.warn('[ExportPDF] Sharing not available on this platform');
       throw new Error('PDF sharing is not supported on this device');
     }
 
@@ -546,9 +539,8 @@ export async function exportLeadAsPDF(lead: LeadSubmission, userId: string = 'sy
       UTI: 'com.adobe.pdf',
     });
 
-    console.log('[ExportPDF] PDF shared successfully');
   } catch (error) {
-    console.error('[ExportPDF] Error generating PDF:', error);
+    // TODO: Replace with proper error reporting service
     throw error;
   }
 }

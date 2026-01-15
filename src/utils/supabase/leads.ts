@@ -25,7 +25,7 @@ function generateUUID(): string {
             return uuid;
         }
     } catch (error) {
-        console.warn('[UUID] expo-crypto.randomUUID() failed, trying fallback:', error);
+        // Fallback to web crypto API
     }
 
     // Method 2: Web Crypto API fallback (modern browsers, Node.js 15.6+)
@@ -36,13 +36,13 @@ function generateUUID(): string {
                 return uuid;
             }
         } catch (error) {
-            console.warn('[UUID] crypto.randomUUID() failed:', error);
+            // No secure UUID generator available
         }
     }
 
     // HARD ERROR - No insecure fallbacks
     // If we reach here, no secure UUID generator is available
-    console.error('[UUID] CRITICAL: All secure UUID generation methods failed');
+    // TODO: Replace with proper error reporting service
     throw new Error(
         'SECURITY ERROR: Unable to generate secure UUID. ' +
         'No cryptographically secure UUID generator is available in this environment. ' +
@@ -152,16 +152,6 @@ export async function submitLead(lead: LeadSubmission): Promise<{
             };
         }
 
-        // Log submission attempt (PII-free)
-        console.log('[Supabase] Attempting to insert lead with data:', {
-            has_phone: !!lead.parent_phone,
-            children_count: lead.children_count,
-            annual_liability: lead.annual_liability,
-            message_length: lead.parent_message?.length ?? 0,
-            consent_given: lead.consent_given,
-            complexity_reasons_count: lead.complexity_reasons.length,
-        });
-
         // Lazy-load Supabase client only when actually submitting
         const supabaseClient = await getSupabaseClient();
 
@@ -236,27 +226,19 @@ export async function submitLead(lead: LeadSubmission): Promise<{
             .insert([sanitizedPayload]);
 
         if (error) {
-            console.error('[Supabase] Error inserting lead:', error);
-            console.error('[Supabase] Error details:', {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code,
-            });
+            // TODO: Replace with proper error reporting service
             return {
                 success: false,
                 error: error.message || 'Failed to submit lead',
             };
         }
 
-        console.log('[Supabase] Lead submitted successfully. ID:', leadId);
-
         return {
             success: true,
             leadId: leadId,
         };
     } catch (error) {
-        console.error('[Supabase] Unexpected error submitting lead:', error);
+        // TODO: Replace with proper error reporting service
         return {
             success: false,
             error: error instanceof Error ? error.message : 'Unknown error occurred',
@@ -276,8 +258,6 @@ export async function updateLeadEnrichment(
     payerRole?: 'you' | 'other_parent' | null
 ): Promise<{ success: boolean; error?: string }> {
     try {
-        console.log('[Supabase] Updating lead enrichment for lead:', leadId);
-
         // Lazy-load Supabase client
         const supabaseClient = await getSupabaseClient();
 
@@ -294,17 +274,16 @@ export async function updateLeadEnrichment(
         );
 
         if (updateError) {
-            console.error('[Supabase] RPC error:', updateError);
+            // TODO: Replace with proper error reporting service
             return {
                 success: false,
                 error: updateError.message || 'Failed to update lead enrichment',
             };
         }
 
-        console.log('[Supabase] Lead enrichment updated successfully. ID:', leadId);
         return { success: true };
     } catch (error) {
-        console.error('[Supabase] Unexpected error updating lead enrichment:', error);
+        // TODO: Replace with proper error reporting service
         return {
             success: false,
             error: error instanceof Error ? error.message : 'Unknown error occurred',
@@ -376,7 +355,7 @@ export async function fetchPaginatedLeads(
         const { data, error, count } = await query;
 
         if (error) {
-            console.error('[Supabase] Error fetching paginated leads:', error);
+            // TODO: Replace with proper error reporting service
             return {
                 success: false,
                 error: error.message || 'Failed to fetch leads',
@@ -393,15 +372,13 @@ export async function fetchPaginatedLeads(
             });
         }
 
-        console.log(`[Supabase] Fetched ${sortedData.length} leads (page ${page}, total: ${count})`);
-
         return {
             success: true,
             leads: sortedData,
             totalCount: count || 0,
         };
     } catch (error) {
-        console.error('[Supabase] Unexpected error fetching paginated leads:', error);
+        // TODO: Replace with proper error reporting service
         return {
             success: false,
             error: error instanceof Error ? error.message : 'Unknown error occurred',

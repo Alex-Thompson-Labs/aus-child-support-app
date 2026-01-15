@@ -31,7 +31,6 @@ export async function exportAssessmentPDF({
   supportB = false,
 }: ExportAssessmentPDFProps): Promise<void> {
   try {
-    console.log('[PDF Export] Starting PDF generation...');
     const html = generateAssessmentHTML({
       results,
       supportA,
@@ -39,21 +38,17 @@ export async function exportAssessmentPDF({
       generatedDate: new Date(),
     });
     
-    console.log('[PDF Export] HTML generated, length:', html.length);
-    
     // Open HTML in new window for viewing and printing
     if (typeof window !== 'undefined') {
       const pdfWindow = window.open('', '_blank');
       if (pdfWindow) {
         pdfWindow.document.write(html);
         pdfWindow.document.close();
-        console.log('[PDF Export] Assessment opened in new window');
         return;
       }
     }
     
     // Fallback to print dialog if window.open fails
-    console.log('[PDF Export] Calling Print.printAsync...');
     await Print.printAsync({
       html,
       ...(process.env.EXPO_OS === 'ios' && {
@@ -62,11 +57,8 @@ export async function exportAssessmentPDF({
         orientation: Print.Orientation.portrait,
       }),
     });
-    
-    console.log('[PDF Export] Print dialog opened successfully');
   } catch (error) {
-    console.error('[PDF Export] Failed to generate PDF:', error);
-    console.error('[PDF Export] Error details:', JSON.stringify(error, null, 2));
+    // TODO: Replace with proper error reporting service
     throw new Error('Failed to generate PDF. Please try again.');
   }
 }

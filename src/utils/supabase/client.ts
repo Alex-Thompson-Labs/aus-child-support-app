@@ -62,15 +62,11 @@ export async function getSupabaseClient(): Promise<SupabaseClient> {
 
             // Validate credentials
             if (!supabaseUrl) {
-                console.error(
-                    '[Supabase] Missing EXPO_PUBLIC_SUPABASE_URL environment variable'
-                );
+                // TODO: Replace with proper error reporting service
             }
 
             if (!supabaseAnonKey) {
-                console.error(
-                    '[Supabase] Missing EXPO_PUBLIC_SUPABASE_ANON_KEY environment variable'
-                );
+                // TODO: Replace with proper error reporting service
             }
 
             // Create and cache Supabase client
@@ -82,12 +78,6 @@ export async function getSupabaseClient(): Promise<SupabaseClient> {
                     persistSession: true,
                     detectSessionInUrl: false,
                 },
-            });
-
-            console.log('[Supabase] Client initialized (lazy) with:', {
-                hasUrl: !!supabaseUrl,
-                hasKey: !!supabaseAnonKey,
-                url: supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'MISSING',
             });
 
             return supabaseInstance;
@@ -121,7 +111,7 @@ export async function checkSupabaseConnection(): Promise<boolean> {
     const { supabaseUrl, supabaseAnonKey } = getSupabaseCredentials();
 
     if (!supabaseUrl || !supabaseAnonKey) {
-        console.error('[Supabase] Client not configured - missing credentials');
+        // TODO: Replace with proper error reporting service
         return false;
     }
 
@@ -133,14 +123,13 @@ export async function checkSupabaseConnection(): Promise<boolean> {
         const { error } = await supabaseClient.from('leads').select('id').limit(1);
 
         if (error) {
-            console.error('[Supabase] Connection test failed:', error);
+            // TODO: Replace with proper error reporting service
             return false;
         }
 
-        console.log('[Supabase] Connection test passed');
         return true;
     } catch (error) {
-        console.error('[Supabase] Connection test error:', error);
+        // TODO: Replace with proper error reporting service
         return false;
     }
 }

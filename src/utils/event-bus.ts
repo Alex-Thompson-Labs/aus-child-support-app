@@ -25,3 +25,9 @@ class EventBus {
 }
 
 export const eventBus = new EventBus();
+
+// Event constants for breakdown modal
+export const OPEN_BREAKDOWN_EVENT = 'openBreakdownModal';
+export const triggerOpenBreakdown = () => {
+    eventBus.emit(OPEN_BREAKDOWN_EVENT);
+};

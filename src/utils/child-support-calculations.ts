@@ -53,7 +53,7 @@ export function getChildCost(
 
   const config = YEARLY_CONFIG[year];
   if (!config) {
-    console.error(`Missing configuration for year: ${year}`);
+    // TODO: Replace with proper error reporting service
     return emptyResult;
   }
 
@@ -111,9 +111,7 @@ export function getChildCost(
   }
 
   if (!values) {
-    console.error(
-      `Missing COTC values for: ${year}, ${ageGroup}, ${childCount}`
-    );
+    // TODO: Replace with proper error reporting service
     return emptyResult;
   }
 

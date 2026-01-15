@@ -64,12 +64,6 @@ export async function submitLeadWithPartner(
       partner_id: partnerId ?? null,
     };
 
-    console.log('[submit-lead] Submitting lead to edge function:', {
-      partner_id: partnerId ?? null,
-      has_phone: !!lead.parent_phone,
-      children_count: lead.children_count,
-      annual_liability: lead.annual_liability,
-    });
 
     // Use official Supabase SDK method for edge function invocation
     const { data, error } = await supabase.functions.invoke('submit-lead', {
@@ -77,10 +71,7 @@ export async function submitLeadWithPartner(
     });
 
     if (error) {
-      console.error('[submit-lead] Edge function error:', {
-        message: error.message,
-        context: error.context,
-      });
+      // TODO: Replace with proper error reporting service
       return {
         success: false,
         error: error.message || 'Submission failed',
@@ -89,24 +80,19 @@ export async function submitLeadWithPartner(
 
     // Check for application-level errors in response data
     if (data?.error) {
-      console.error('[submit-lead] Edge function returned error:', data.error);
+      // TODO: Replace with proper error reporting service
       return {
         success: false,
         error: data.error,
       };
     }
 
-    console.log('[submit-lead] Lead submitted successfully:', {
-      leadId: data?.leadId ?? data?.id,
-      partnerId: partnerId ?? null,
-    });
-
     return {
       success: true,
       leadId: data?.leadId ?? data?.id,
     };
   } catch (error) {
-    console.error('[submit-lead] Unexpected error:', error);
+    // TODO: Replace with proper error reporting service
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error occurred',

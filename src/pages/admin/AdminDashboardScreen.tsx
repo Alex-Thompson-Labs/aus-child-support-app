@@ -87,7 +87,7 @@ export default function AdminDashboardScreen() {
       });
 
       if (!result.success) {
-        console.error('[AdminDashboard] Error loading leads:', result.error);
+        // TODO: Replace with proper error reporting service
         if (Platform.OS === 'web') {
           alert(`Error Loading Leads\n\n${result.error}`);
         } else {
@@ -98,8 +98,6 @@ export default function AdminDashboardScreen() {
 
       const newLeads = result.leads || [];
       const total = result.totalCount || 0;
-
-      console.log(`[AdminDashboard] Loaded ${newLeads.length} leads (page ${page}, total: ${total})`);
 
       if (append) {
         // Append to existing leads for "load more"
@@ -115,7 +113,7 @@ export default function AdminDashboardScreen() {
       setCurrentPage(page);
       setHasMore((page + 1) * LEADS_PER_PAGE < total);
     } catch (error) {
-      console.error('[AdminDashboard] Unexpected error:', error);
+      // TODO: Replace with proper error reporting service
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -132,7 +130,6 @@ export default function AdminDashboardScreen() {
       } = await supabase.auth.getSession();
 
       if (!session) {
-        console.log('[AdminDashboard] No session - redirecting to login');
         router.replace('/admin/login');
         return;
       }
@@ -140,13 +137,11 @@ export default function AdminDashboardScreen() {
       // Verify it's the admin email (configured via EXPO_PUBLIC_ADMIN_EMAIL)
       const adminEmail = process.env.EXPO_PUBLIC_ADMIN_EMAIL?.toLowerCase();
       if (!adminEmail || session.user.email?.toLowerCase() !== adminEmail) {
-        console.log('[AdminDashboard] Not admin email - redirecting');
         await supabase.auth.signOut();
         router.replace('/admin/login');
         return;
       }
 
-      console.log('[AdminDashboard] Auth verified - loading leads');
       loadLeads();
     };
 
