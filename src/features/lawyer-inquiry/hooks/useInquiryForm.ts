@@ -17,7 +17,9 @@ import {
     isCourtDateReason,
 } from '@/src/utils/special-circumstances';
 import type { LeadSubmission } from '@/src/utils/supabase';
-import { submitLead, updateLeadEnrichment } from '@/src/utils/supabase';
+import { updateLeadEnrichment } from '@/src/utils/supabase';
+import { submitLeadWithPartner } from '@/src/utils/submit-lead';
+import type { PartnerKey } from '@/src/config/partners';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Linking, Platform, TextInput } from 'react-native';
@@ -61,6 +63,9 @@ export interface UseInquiryFormProps {
   hasParentingPlan: string | undefined;
   assessmentType: string | undefined;
   returnTo: string | undefined;
+
+  // Partner attribution (for ROI tracking)
+  partner: string | undefined;
 
   // Time tracking
   calculatorStartTime: number | undefined;
@@ -762,8 +767,10 @@ export function useInquiryForm(props: UseInquiryFormProps) {
       if (__DEV__)
         console.log('[LawyerInquiry] Submitting lead to Supabase...');
 
-      // Submit to Supabase
-      const result = await submitLead(leadSubmission);
+      // Submit to Supabase with partner attribution
+      // Cast partner to PartnerKey if valid, otherwise pass as null for non-partner leads
+      const partnerId = props.partner as PartnerKey | undefined;
+      const result = await submitLeadWithPartner(leadSubmission, partnerId ?? null);
 
       if (!result.success) {
         // Handle submission error
@@ -803,6 +810,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
             : parseFloat(props.liability) || 0,
           complexity_reason_count: props.specialCircumstances?.length ?? 0,
           time_to_submit: timeToSubmit,
+          partner_id: props.partner ?? null, // Track partner attribution for ROI
         });
       } catch (error) {
         console.error('[LawyerInquiry] Analytics error (lead_submitted):', error);
@@ -854,6 +862,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     props.hasParentingPlan,
     props.assessmentType,
     props.returnTo,
+    props.partner,
     analytics,
     validCircumstances,
     courtDate,

@@ -59,6 +59,8 @@ export default function LawyerInquiryScreen() {
     hasParentingPlan: params.hasParentingPlan,
     assessmentType: params.assessmentType,
     returnTo: params.returnTo,
+    // Partner attribution (for ROI tracking)
+    partner: params.partner,
     // Time tracking
     calculatorStartTime: params.calculatorStartTime,
   });

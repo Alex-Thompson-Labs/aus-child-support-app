@@ -1,30 +1,33 @@
 import { Feather } from '@expo/vector-icons';
-import { isValid, parseISO } from 'date-fns';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    ActivityIndicator,
+    Alert,
+    Modal,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CareCalendar } from '../components/CareCalendar';
-import {
-  AustralianState,
-  calculateCareFromOrder,
-  CareCalculationResult,
-  CourtOrderJSON,
-} from '../utils/CareCalculator';
+import { AustralianState } from '../utils/CareCalculator';
 import { generateCareCalendarPDF } from '../utils/pdfGenerator';
 import { supabase } from '../utils/supabase/client';
+import { calculateCareFromTimeline } from '../utils/timeline-aggregator';
+import {
+    CareCalculationResult,
+    TimelineResponse,
+} from '../utils/timeline-types';
+import {
+    validateTimeline,
+    ValidationError,
+} from '../utils/timeline-validator';
 
 const STATES: AustralianState[] = [
   'VIC',
@@ -37,32 +40,22 @@ const STATES: AustralianState[] = [
   'NT',
 ];
 
+// Default year for timeline generation
+const DEFAULT_YEAR = 2026;
+
 export default function CourtOrderToolScreen() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<CareCalculationResult | null>(null);
-  const [orderJson, setOrderJson] = useState<CourtOrderJSON | null>(null);
+  const [timelineResponse, setTimelineResponse] = useState<TimelineResponse | null>(null);
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
 
-  // New State
+  // State selector (kept for calendar display)
   const [selectedState, setSelectedState] = useState<AustralianState>('VIC');
   const [calendarVisible, setCalendarVisible] = useState(false);
-
-  // Recalculate when state changes
-  useEffect(() => {
-    if (orderJson) {
-      const anchorDate =
-        orderJson.start_date && isValid(parseISO(orderJson.start_date))
-          ? parseISO(orderJson.start_date)
-          : new Date();
-
-      const calcResult = calculateCareFromOrder(
-        orderJson,
-        anchorDate,
-        selectedState
-      );
-      setResult(calcResult);
-    }
-  }, [selectedState, orderJson]);
+  
+  // Year for timeline generation
+  const [selectedYear] = useState<number>(DEFAULT_YEAR);
 
   const pickDocument = async () => {
     try {
@@ -111,7 +104,8 @@ export default function CourtOrderToolScreen() {
   const analyzeOrder = async (uri: string, mimeType: string) => {
     setLoading(true);
     setResult(null);
-    setOrderJson(null);
+    setTimelineResponse(null);
+    setValidationErrors([]);
 
     try {
       let base64;
@@ -136,12 +130,14 @@ export default function CourtOrderToolScreen() {
         });
       }
 
-      console.log('Sending to backend...', { mimeType, size: base64.length });
+      console.log('Sending to backend...', { mimeType, size: base64.length, year: selectedYear });
 
+      // Pass year parameter to Edge Function (Requirements: 6.1)
       const { data, error } = await supabase.functions.invoke('analyze-order', {
         body: {
           fileBase64: base64,
           mediaType: mimeType,
+          year: selectedYear,
         },
       });
 
@@ -152,25 +148,32 @@ export default function CourtOrderToolScreen() {
 
       if (!data) throw new Error('No data returned');
 
-      // Handle validation errors from the AI
+      // Handle INVALID_DOCUMENT_TYPE errors (Requirements: 6.4)
       if (data.error === 'INVALID_DOCUMENT_TYPE') {
         throw new Error(data.reason || 'Invalid document type. Please upload a valid Court Order.');
       }
 
-      console.log('Analyzed JSON:', data);
-      setOrderJson(data);
+      // Handle other error types from the Edge Function
+      if (data.error) {
+        throw new Error(data.reason || `Error: ${data.error}`);
+      }
 
-      // Run local calculation
-      const anchorDate =
-        data.start_date && isValid(parseISO(data.start_date))
-          ? parseISO(data.start_date)
-          : new Date();
+      console.log('Timeline response:', data);
 
-      const calcResult = calculateCareFromOrder(
-        data,
-        anchorDate,
-        selectedState
-      );
+      // Validate the timeline (Requirements: 6.2, 6.3)
+      const timelineData = data as TimelineResponse;
+      const validation = validateTimeline(timelineData.timeline, timelineData.year);
+      
+      if (!validation.valid) {
+        console.error('Timeline validation errors:', validation.errors);
+        setValidationErrors(validation.errors);
+        throw new Error('The generated timeline has validation errors. Please try again.');
+      }
+
+      setTimelineResponse(timelineData);
+
+      // Use new timeline aggregator (Requirements: 6.2)
+      const calcResult = calculateCareFromTimeline(timelineData);
       setResult(calcResult);
     } catch (err: any) {
       console.error('Analysis error:', err);
@@ -188,7 +191,7 @@ export default function CourtOrderToolScreen() {
     try {
       await generateCareCalendarPDF(
         result,
-        new Date().getFullYear(),
+        selectedYear,
         selectedState
       );
     } catch (error: any) {
@@ -329,13 +332,31 @@ export default function CourtOrderToolScreen() {
           )}
         </View>
 
-        {/* Debug View for extracted pattern */}
-        {orderJson && (
+        {/* Debug View for timeline blocks (Requirements: 6.2) */}
+        {timelineResponse && (
           <View style={styles.debugBox}>
-            <Text style={styles.debugTitle}>Extracted Schedule:</Text>
-            {orderJson.base_pattern.map((p, i) => (
+            <Text style={styles.debugTitle}>Timeline Blocks ({timelineResponse.timeline.length} blocks):</Text>
+            <Text style={styles.debugText}>Year: {timelineResponse.year}</Text>
+            <Text style={styles.debugText}>Primary Parent: {timelineResponse.primary_parent === 'M' ? 'Mother' : 'Father'}</Text>
+            <Text style={[styles.debugText, { marginTop: 8, fontWeight: 'bold' }]}>First 10 blocks:</Text>
+            {timelineResponse.timeline.slice(0, 10).map((block, i) => (
               <Text key={i} style={styles.debugText}>
-                Week {p.week_number} {p.day_name}: {p.overnight_care_owner} ({p.description || 'No notes'})
+                {block[0]} → {block[1]} | {block[2] === 'M' ? 'Mother' : 'Father'} | {block[3]}
+              </Text>
+            ))}
+            {timelineResponse.timeline.length > 10 && (
+              <Text style={styles.debugText}>... and {timelineResponse.timeline.length - 10} more blocks</Text>
+            )}
+          </View>
+        )}
+
+        {/* Validation Errors Display (Requirements: 6.4) */}
+        {validationErrors.length > 0 && (
+          <View style={[styles.debugBox, { backgroundColor: '#fef2f2' }]}>
+            <Text style={[styles.debugTitle, { color: '#dc2626' }]}>Validation Errors:</Text>
+            {validationErrors.map((error, i) => (
+              <Text key={i} style={[styles.debugText, { color: '#dc2626' }]}>
+                [{error.code}] {error.message}
               </Text>
             ))}
           </View>
@@ -350,7 +371,7 @@ export default function CourtOrderToolScreen() {
         onRequestClose={() => setCalendarVisible(false)}
       >
         <View style={styles.modalHeader}>
-          <Text style={styles.modalTitle}>2026 Care Calendar</Text>
+          <Text style={styles.modalTitle}>{selectedYear} Care Calendar</Text>
           <Pressable
             onPress={() => setCalendarVisible(false)}
             style={styles.closeButton}
@@ -358,10 +379,10 @@ export default function CourtOrderToolScreen() {
             <Feather name="x" size={24} color="#334155" />
           </Pressable>
         </View>
-        {result && (
+        {result && timelineResponse && (
           <CareCalendar
-            year={new Date().getFullYear()}
-            assignments={result.assignments}
+            year={selectedYear}
+            timeline={timelineResponse.timeline}
             state={selectedState}
           />
         )}

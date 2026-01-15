@@ -1,49 +1,62 @@
 import { CalculationResults } from './calculator';
 
 // Helper functions
+/**
+ * Escape HTML special characters to prevent XSS
+ */
+function escapeHtml(unsafe: string | null | undefined): string {
+  if (!unsafe) return '';
+  return String(unsafe)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 function formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-AU', {
-        style: 'currency',
-        currency: 'AUD',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-    }).format(amount);
+  return new Intl.NumberFormat('en-AU', {
+    style: 'currency',
+    currency: 'AUD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
 }
 
 function formatDate(date: Date): string {
-    return date.toLocaleDateString('en-AU', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-    });
+  return date.toLocaleDateString('en-AU', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
 }
 
 function getPayerText(payer: string): string {
-    if (payer === 'Parent A') return 'You pay';
-    if (payer === 'Parent B') return 'Other parent pays';
-    if (payer === 'Neither') return 'No payment required';
-    return payer;
+  if (payer === 'Parent A') return 'You pay';
+  if (payer === 'Parent B') return 'Other parent pays';
+  if (payer === 'Neither') return 'No payment required';
+  return escapeHtml(payer);
 }
 
 export interface AssessmentHTMLProps {
-    results: CalculationResults;
-    supportA?: boolean;
-    supportB?: boolean;
-    generatedDate?: Date;
+  results: CalculationResults;
+  supportA?: boolean;
+  supportB?: boolean;
+  generatedDate?: Date;
 }
 
 export function generateAssessmentHTML({
-    results,
-    supportA = false,
-    supportB = false,
-    generatedDate = new Date(),
+  results,
+  supportA = false,
+  supportB = false,
+  generatedDate = new Date(),
 }: AssessmentHTMLProps): string {
-    const monthlyAmount = results.finalPaymentAmount / 12;
-    const fortnightlyAmount = results.finalPaymentAmount / 26;
-    const dailyAmount = results.finalPaymentAmount / 365;
+  const monthlyAmount = results.finalPaymentAmount / 12;
+  const fortnightlyAmount = results.finalPaymentAmount / 26;
+  const dailyAmount = results.finalPaymentAmount / 365;
 
-    // CSS Styles
-    const css = `
+  // CSS Styles
+  const css = `
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     
     body {
@@ -427,8 +440,8 @@ export function generateAssessmentHTML({
     }
   `;
 
-    // HTML Content
-    return `
+  // HTML Content
+  return `
     <!DOCTYPE html>
     <html>
       <head>
@@ -676,10 +689,10 @@ export function generateAssessmentHTML({
           </div>
           <div class="step-content">
             ${results.childResults.map((child, index) => {
-              const rateLabel = child.farAppliedA || child.farAppliedB ? 'Fixed Annual Rate' : 
-                               child.marAppliedA || child.marAppliedB ? 'Minimum Annual Rate' : 
-                               'Standard Rate';
-              return `
+    const rateLabel = child.farAppliedA || child.farAppliedB ? 'Fixed Annual Rate' :
+      child.marAppliedA || child.marAppliedB ? 'Minimum Annual Rate' :
+        'Standard Rate';
+    return `
               <div class="child-card">
                 <div class="child-header">Child ${index + 1} - ${rateLabel}</div>
                 <div class="step-formula">
@@ -689,7 +702,7 @@ export function generateAssessmentHTML({
                 </div>
               </div>
             `;
-            }).join('')}
+  }).join('')}
             ${results.rateApplied !== 'None' ? `
               <div style="margin: 12px 0; padding: 10px; background-color: #fef3c7; border-radius: 4px; font-size: 8pt; color: #92400e;">
                 <strong>Special Rate Applied:</strong> ${results.rateApplied}

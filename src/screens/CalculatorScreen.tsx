@@ -1,11 +1,14 @@
+import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform, // Keep Pressable for AI card
-  ScrollView,
-  StyleSheet,
-  View
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCalculator } from '../hooks/useCalculator';
@@ -259,7 +262,7 @@ export function CalculatorScreen() {
     // Care Dispute
 
     // AI Banner
-    aiCourtOrderBanner: null, /* (
+    aiCourtOrderBanner: (
       <Pressable
         style={({ pressed }) => [
           styles.aiCard,
@@ -278,7 +281,7 @@ export function CalculatorScreen() {
           <Feather name="chevron-right" size={20} color="#334155" />
         </View>
       </Pressable>
-    ), */
+    ),
   };
 
   // Calculate progress for children step

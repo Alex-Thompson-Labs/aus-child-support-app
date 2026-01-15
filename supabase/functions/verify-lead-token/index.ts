@@ -237,6 +237,28 @@ serve(async (req: Request) => {
       );
     }
 
+    // Check if the token has expired (7 days from creation)
+    const EXPIRATION_DAYS = 7;
+    const createdAt = new Date(leadResult.lead.created_at);
+    const now = new Date();
+    const daysSinceCreation = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
+
+    if (daysSinceCreation > EXPIRATION_DAYS) {
+      console.log(
+        `[verify-lead-token] Link expired for lead ${tokenResult.leadId}. Created: ${createdAt.toISOString()}, Days old: ${daysSinceCreation.toFixed(2)}`
+      );
+      return new Response(
+        JSON.stringify({
+          error: 'This link has expired. Magic links are valid for 7 days from creation.',
+          code: 'LINK_EXPIRED',
+        }),
+        {
+          status: 410, // 410 Gone - resource no longer available
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        }
+      );
+    }
+
     console.log('[verify-lead-token] Successfully verified token for lead:', tokenResult.leadId);
 
     return new Response(

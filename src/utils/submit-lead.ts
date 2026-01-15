@@ -2,11 +2,10 @@
  * Partner-aware lead submission utility.
  *
  * This module provides lead submission via Supabase Edge Function,
- * with support for partner attribution.
+ * with support for partner attribution for ROI tracking.
  *
- * IMPORTANT: This function is NOT yet integrated into the application.
- * The existing submitLead() from supabase.ts is still used.
- * This will be integrated in a later task.
+ * This is now the primary submission method used by the lawyer inquiry form.
+ * The legacy submitLead() from supabase.ts is kept for backward compatibility.
  */
 
 import Constants from 'expo-constants';
@@ -84,8 +83,6 @@ export async function submitLeadWithPartner(
 
     console.log('[submit-lead] Submitting lead to edge function:', {
       url: edgeFunctionUrl,
-      parent_name: lead.parent_name,
-      parent_email: lead.parent_email,
       partner_id: partnerId ?? null,
       has_phone: !!lead.parent_phone,
       children_count: lead.children_count,

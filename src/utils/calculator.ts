@@ -26,6 +26,27 @@ export function deriveAgeRange(age: number): AgeRange {
 }
 
 /**
+ * Memoized version of deriveAgeRange for performance optimization.
+ * Caches age range calculations to avoid repeated computation in calculation loops.
+ * 
+ * Cache is limited to ages 0-25 (valid range for child support calculations).
+ */
+const ageRangeCache = new Map<number, AgeRange>();
+
+export function deriveAgeRangeMemoized(age: number): AgeRange {
+  // Check cache first
+  const cached = ageRangeCache.get(age);
+  if (cached !== undefined) {
+    return cached;
+  }
+  
+  // Calculate and cache
+  const result = deriveAgeRange(age);
+  ageRangeCache.set(age, result);
+  return result;
+}
+
+/**
  * Checks if a child is an adult (18+) for Adult Child Maintenance scenarios.
  * 
  * @param age - Specific age

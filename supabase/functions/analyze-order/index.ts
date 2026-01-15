@@ -7,6 +7,37 @@ declare const Deno: {
   serve(handler: (req: Request) => Promise<Response> | Response): void;
 };
 
+/**
+ * VIC School Term Dates for 2026, 2027, 2028
+ * Used to inject school holiday context into the LLM prompt
+ */
+const TERM_DATES: Record<number, { VIC: Array<{ start: string; end: string }> }> = {
+  2026: {
+    VIC: [
+      { start: '2026-01-27', end: '2026-04-02' },
+      { start: '2026-04-20', end: '2026-06-26' },
+      { start: '2026-07-13', end: '2026-09-18' },
+      { start: '2026-10-05', end: '2026-12-18' }
+    ]
+  },
+  2027: {
+    VIC: [
+      { start: '2027-01-28', end: '2027-03-25' },
+      { start: '2027-04-12', end: '2027-06-25' },
+      { start: '2027-07-12', end: '2027-09-17' },
+      { start: '2027-10-04', end: '2027-12-17' }
+    ]
+  },
+  2028: {
+    VIC: [
+      { start: '2028-01-28', end: '2028-03-31' },
+      { start: '2028-04-18', end: '2028-06-30' },
+      { start: '2028-07-17', end: '2028-09-22' },
+      { start: '2028-10-09', end: '2028-12-21' }
+    ]
+  }
+};
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers':
@@ -19,85 +50,119 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { fileBase64, mediaType } = await req.json();
+    const { fileBase64, mediaType, year = 2026 } = await req.json();
 
     if (!fileBase64) {
       throw new Error('No file content provided');
     }
 
+    // Select term dates for the requested year (default to 2026 if not available)
+    const selectedYear = TERM_DATES[year] ? year : 2026;
+    const termDates = TERM_DATES[selectedYear].VIC;
+
     const anthropic = new Anthropic({
       apiKey: Deno.env.get('ANTHROPIC_API_KEY'),
     });
 
-    const systemPrompt = `You are an expert Australian Family Law Court Order Interpreter. 
-    
-    GATEKEEPER RULE: VALIDATION FIRST
-    Before extracting any data, you must analyze if the document is a specific, executed Court Order or Parenting Plan.
+    // Build school term dates context for the prompt
+    const termDatesContext = termDates
+      .map((term, i) => `Term ${i + 1}: ${term.start} to ${term.end}`)
+      .join('\n    ');
 
-    CRITERIA FOR INVALID DOCUMENTS:
-    1. Contains "Example", "Guide", "Brochure", "Template", or "Sample" in headers or watermarks.
-    2. Uses generic names like "John Doe", "Jane Doe", "The Father", "The Mother" without specific party names.
-    3. Lacks a Court File Number, Court Stamp, or Parties' Signatures (unless it is a specific draft tailored to parties).
-    4. Is a general information sheet (e.g., from Legal Aid) rather than a legal instrument.
-
-    IF INVALID:
-    Return strictly this JSON format and STOP:
-    {
-      "error": "INVALID_DOCUMENT_TYPE",
-      "reason": "Document appears to be a generic guide/template and not a specific court order."
+    // Derive school holiday periods from gaps between terms
+    const holidayPeriods: string[] = [];
+    holidayPeriods.push(`Summer Holiday: ${selectedYear}-01-01 to ${termDates[0].start} (before Term 1)`);
+    for (let i = 0; i < termDates.length - 1; i++) {
+      const holidayStart = termDates[i].end;
+      const holidayEnd = termDates[i + 1].start;
+      holidayPeriods.push(`Holiday ${i + 1}: ${holidayStart} to ${holidayEnd} (between Term ${i + 1} and ${i + 2})`);
     }
+    holidayPeriods.push(`Summer Holiday: ${termDates[termDates.length - 1].end} to ${selectedYear}-12-31 (after Term 4)`);
+    const holidayContext = holidayPeriods.join('\n    ');
 
-    IF VALID:
-    Your goal is to extract the care arrangement rules from the provided document into a strict JSON format.
+    const systemPrompt = `You are an expert Australian Family Law Court Order Interpreter specializing in generating precise care timelines.
 
-    CRITICAL: ELIMINATE THE 100% CARE ERROR
-    The system is defaulting to 100% Mother because it fails to map the Father's specific overnight periods to the 14-day cycle correctly. You MUST provide a DENSE base_pattern with exactly 14 sequential entries.
+GATEKEEPER RULE: VALIDATION FIRST
+Before generating any timeline, you must analyze if the document is a specific, executed Court Order or Parenting Plan.
 
-    1. START DATE & DAY 1 ANCHOR:
-       - Identify the "Commencement Date" (e.g., 14 January 2026).
-       - Determine the weekday of that date (14 Jan 2026 is a WEDNESDAY).
-       - Your "base_pattern" MUST start with Day 1 as WEDNESDAY. 
-       - You MUST list exactly 14 objects, representing Day 1 to Day 14 without gaps.
+CRITERIA FOR INVALID DOCUMENTS:
+1. Contains "Example", "Guide", "Brochure", "Template", or "Sample" in headers or watermarks.
+2. Uses generic names like "John Doe", "Jane Doe", "The Father", "The Mother" without specific party names.
+3. Lacks a Court File Number, Court Stamp, or Parties' Signatures (unless it is a specific draft tailored to parties).
+4. Is a general information sheet (e.g., from Legal Aid) rather than a legal instrument.
 
-    2. THE MIDNIGHT RULE (CRITICAL):
-       - We only care about who has the child at 11:59 PM.
-       - "Conclusion of school" / "After school": Receiving parent HAS the night.
-       - "Commencement of school" / "Morning": Delivering parent does NOT have the night.
-       - Example Mapping:
-         * Week 1: Father has Wed Night and Thu Night. Mother has Fri Night.
-         * Week 2: Father has Fri Night, Sat Night, and Sun Night. Mother has Mon Night.
+IF INVALID:
+Return strictly this JSON format and STOP:
+{
+  "error": "INVALID_DOCUMENT_TYPE",
+  "reason": "Document appears to be a generic guide/template and not a specific court order."
+}
 
-    3. DENSE DATA REQUIREMENT:
-       - For every day NOT explicitly mentioned as being with the Father, you MUST set "overnight_care_owner": "Mother".
-       - This prevents the calculator from using carry-over logic that defaults to 100%.
+IF VALID:
+Your goal is to generate a COMPLETE TIMELINE covering 100% of the year ${selectedYear}.
 
-    OUTPUT SCHEMA (Strict JSON Only):
-    {
-      "start_date": "YYYY-MM-DD",
-      "cycle_length_days": 14,
-      "primary_parent": "Mother",
-      "base_pattern": [
-        {
-          "day_number": 1,
-          "day_name": "Wednesday",
-          "week_number": 1,
-          "overnight_care_owner": "Father",
-          "description": "From conclusion of school"
-        }
-        // ... continue for exactly 14 days
-      ],
-      "holiday_rules": {
-        "christmas": { "applies": true, "rule_type": "alternating", "details": "Even years: Father from 3pm Xmas Eve to 11am Xmas Day" },
-        "school_holidays": { "applies": true, "rule_type": "alternating_blocks", "details": "Week-about basis (7 nights each)" }
-      }
-    }
+SCHOOL TERM DATES (VIC) for ${selectedYear}:
+    ${termDatesContext}
 
-    Output ONLY the JSON object. No preamble or conversational text.
-    `;
+SCHOOL HOLIDAY PERIODS for ${selectedYear}:
+    ${holidayContext}
+
+TIMELINE GENERATION RULES:
+
+1. CONTINUOUS COVERAGE (CRITICAL):
+   - The timeline MUST start at "${selectedYear}-01-01T00:00" and end at "${selectedYear}-12-31T23:59"
+   - There must be NO GAPS between blocks - the end time of one block must EXACTLY equal the start time of the next
+   - Every minute of the year must be assigned to exactly one parent
+
+2. TIMELINE BLOCK FORMAT:
+   Each block is a tuple: [start_iso, end_iso, parent_code, type_code]
+   - start_iso: ISO datetime with minute precision (e.g., "${selectedYear}-01-01T00:00")
+   - end_iso: ISO datetime with minute precision (e.g., "${selectedYear}-01-07T15:30")
+   - parent_code: "M" for Mother, "F" for Father
+   - type_code: "base" for regular schedule, "holiday" for school holidays, "christmas" for Christmas period
+
+3. INTERPRETING CARE TRANSITIONS:
+   - "Conclusion of school" / "After school" (typically 3:30 PM): Use T15:30
+   - "Commencement of school" / "Morning drop-off" (typically 8:30 AM): Use T08:30
+   - "3pm Christmas Eve": Use T15:00
+   - "11am Christmas Day": Use T11:00
+   - If no specific time mentioned, use T18:00 for evening transitions
+
+4. PRIMARY PARENT RULE:
+   - Identify who is the primary parent (usually Mother unless specified otherwise)
+   - Any time NOT explicitly assigned to the other parent goes to the primary parent
+   - This ensures 100% coverage
+
+5. TYPE CODE ASSIGNMENT:
+   - Use "christmas" for December 24-26 period
+   - Use "holiday" for all school holiday periods (see dates above)
+   - Use "base" for all school term periods
+
+OUTPUT SCHEMA (Strict JSON Only):
+{
+  "timeline": [
+    ["${selectedYear}-01-01T00:00", "${selectedYear}-01-03T15:30", "M", "holiday"],
+    ["${selectedYear}-01-03T15:30", "${selectedYear}-01-10T08:30", "F", "holiday"],
+    ...
+  ],
+  "year": ${selectedYear},
+  "primary_parent": "M"
+}
+
+VALIDATION CHECKLIST (verify before outputting):
+✓ First block starts at "${selectedYear}-01-01T00:00"
+✓ Last block ends at "${selectedYear}-12-31T23:59"
+✓ No gaps between consecutive blocks (end[i] === start[i+1])
+✓ All parent codes are "M" or "F"
+✓ All type codes are "base", "holiday", or "christmas"
+✓ ISO strings have minute precision (T00:00 format)
+
+Output ONLY the JSON object. No preamble or conversational text.
+`;
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-5-20250929',
-      max_tokens: 4000,
+      max_tokens: 8000,
       temperature: 0,
       system: systemPrompt,
       messages: [
@@ -106,7 +171,7 @@ Deno.serve(async (req) => {
           content: [
             {
               type: 'text',
-              text: 'Here is the court order. Extract the care schedule JSON. Output ONLY JSON.',
+              text: `Here is the court order. Generate a complete care timeline for ${selectedYear}. Output ONLY JSON.`,
             },
             mediaType === 'application/pdf'
               ? {

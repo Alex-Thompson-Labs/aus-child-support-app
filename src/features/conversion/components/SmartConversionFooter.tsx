@@ -8,8 +8,6 @@ import React, { useMemo } from 'react';
 import ReactGA from 'react-ga4';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 /**
  * Card variant types for the Smart Conversion Footer
  */
@@ -188,30 +186,16 @@ export function SmartConversionFooter({
   const router = useRouter();
   const { isWeb } = useResponsive();
   const [isNavigating, setIsNavigating] = React.useState(false);
-  const [variantId, setVariantId] = React.useState<VariantId>('A');
 
-  // Load or assign variant ID on mount
-  React.useEffect(() => {
-    const STORAGE_KEY = 'csc_ab_variant_footer';
+  /**
+   * Session-based A/B variant assignment
+   * Randomly assigns 'A' or 'B' on component mount
+   * Resets on each new session/refresh (not persisted to device)
+   */
+  const variantId = useMemo<VariantId>(() => {
+    return Math.random() < 0.5 ? 'A' : 'B';
+  }, []); // Empty dependency array ensures assignment happens once per mount
 
-    async function loadVariant() {
-      try {
-        const stored = await AsyncStorage.getItem(STORAGE_KEY);
-        if (stored === 'A' || stored === 'B') {
-          setVariantId(stored as VariantId);
-        } else {
-          // Assign new variant if none exists
-          const newVariant = Math.random() < 0.5 ? 'A' : 'B';
-          setVariantId(newVariant);
-          await AsyncStorage.setItem(STORAGE_KEY, newVariant);
-        }
-      } catch (error) {
-        console.warn('Failed to load A/B variant:', error);
-      }
-    }
-
-    loadVariant();
-  }, []);
 
   // Determine effective payment type if not provided
   const effectivePaymentType: PaymentType = useMemo(() => {

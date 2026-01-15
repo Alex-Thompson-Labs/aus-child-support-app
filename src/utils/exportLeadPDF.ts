@@ -215,7 +215,7 @@ function generateLeadHTML(lead: LeadSubmission, userId: string = 'system'): stri
             <strong style="color: #1f2937; font-size: 14px;">${escapeHtml(r.label)}</strong>
           </div>
           <p style="color: #6b7280; font-size: 13px; margin: 6px 0 6px 26px; line-height: 1.5;">${escapeHtml(r.description)}</p>
-          ${r.officialCodes ? `<p style="color: #6b7280; font-size: 11px; font-style: italic; margin: 4px 0 0 26px;">Official grounds: ${r.officialCodes}</p>` : ''}
+          ${r.officialCodes ? `<p style="color: #6b7280; font-size: 11px; font-style: italic; margin: 4px 0 0 26px;">Official grounds: ${escapeHtml(r.officialCodes)}</p>` : ''}
         </div>
       `
       )

@@ -1,5 +1,5 @@
 import type { AgeRange, ChildInput, CostBracketInfo, OtherCaseChild } from './calculator';
-import { deriveAgeRange } from './calculator';
+import { deriveAgeRange, deriveAgeRangeMemoized } from './calculator';
 import {
   AssessmentYear
 } from './child-support-constants';
@@ -57,10 +57,11 @@ export function getChildCost(
     return emptyResult;
   }
 
-  // Derive age ranges from specific ages
+  // Derive age ranges from specific ages using memoized function
+  // This optimization avoids repeated calculation of age ranges in loops
   const childrenWithRanges = children.map((c) => ({
     ...c,
-    ageRange: c.ageRange ?? deriveAgeRange(c.age),
+    ageRange: c.ageRange ?? deriveAgeRangeMemoized(c.age),
   }));
 
   // Filter out adult children (18+) from standard calculation
@@ -198,11 +199,13 @@ export function calculateMultiCaseAllowance(
   for (const otherChild of otherCaseChildren) {
     // Create virtual children all of same age as this other-case child
     // This implements the "Same Age" rule
+    // Use memoized age range to avoid recalculating for each virtual child
+    const ageRange = deriveAgeRangeMemoized(otherChild.age);
     const virtualChildren: Child[] = Array(totalChildCount)
       .fill(null)
       .map(() => ({
         age: otherChild.age,
-        ageRange: deriveAgeRange(otherChild.age),
+        ageRange: ageRange,
         careA: 0,
         careB: 0,
       }));

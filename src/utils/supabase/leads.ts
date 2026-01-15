@@ -1,21 +1,30 @@
 import { getSupabaseClient } from './client';
+import * as Crypto from 'expo-crypto';
 
 /**
- * Generates a UUID v4 string.
- * Uses crypto.getRandomValues if available (web/modern runtimes),
- * otherwise falls back to a Math.random implementation.
- * This ensures compatibility with Expo Go and older Android/iOS runtimes
- * where crypto.randomUUID might not be polyfilled.
+ * Generates a cryptographically secure UUID v4 string.
+ * 
+ * Security: Uses expo-crypto for secure random number generation on all platforms.
+ * This ensures that lead IDs cannot be predicted or guessed, which is critical for
+ * security as lead IDs are used to access sensitive personal information.
+ * 
+ * Fallback strategy:
+ * 1. Try crypto.randomUUID() (modern web browsers, Node.js 15.6+)
+ * 2. Try crypto.getRandomValues() (web, some React Native environments)
+ * 3. Use expo-crypto.getRandomBytes() (Expo/React Native - secure on all platforms)
+ * 4. If all fail, throw an error (NO INSECURE FALLBACK)
+ * 
+ * @throws {Error} If no secure random number generator is available
+ * @returns {string} A cryptographically secure UUID v4 string
  */
 function generateUUID(): string {
-    // Check for modern crypto API (web/node)
+    // Method 1: Modern crypto API (web/node)
     if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
         return crypto.randomUUID();
     }
 
-    // Check for getRandomValues (some RN environments)
+    // Method 2: crypto.getRandomValues (web, some RN environments)
     if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
-        // @ts-ignore - TS might complain about Uint8Array in some incomplete env definitions
         const buffer = new Uint8Array(16);
         crypto.getRandomValues(buffer);
 
@@ -30,12 +39,27 @@ function generateUUID(): string {
         return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
     }
 
-    // Fallback for older environments
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-        const r = (Math.random() * 16) | 0;
-        const v = c === 'x' ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-    });
+    // Method 3: expo-crypto (React Native - secure on all platforms)
+    try {
+        const randomBytes = Crypto.getRandomBytes(16);
+        
+        // Set version (4) and variant (RFC4122)
+        randomBytes[6] = (randomBytes[6] & 0x0f) | 0x40;
+        randomBytes[8] = (randomBytes[8] & 0x3f) | 0x80;
+
+        const hex = Array.from(randomBytes)
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+
+        return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    } catch (error) {
+        // If expo-crypto fails, throw an error instead of falling back to insecure method
+        console.error('[UUID] Failed to generate secure UUID:', error);
+        throw new Error(
+            'Unable to generate secure UUID. No cryptographically secure random number generator is available. ' +
+            'This is a security issue and lead submission cannot proceed without secure ID generation.'
+        );
+    }
 }
 
 // Type definitions for database tables

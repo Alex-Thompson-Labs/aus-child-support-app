@@ -1,7 +1,37 @@
 import { format, getDay, getDaysInMonth, startOfMonth } from 'date-fns';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
-import { AustralianState, CareCalculationResult } from './CareCalculator';
+import { AustralianState } from './CareCalculator';
+import { getParentAtTime } from './timeline-aggregator';
+import { CareCalculationResult, TimelineBlock } from './timeline-types';
+
+/**
+ * Helper to determine care at midnight for a specific date using the timeline.
+ */
+function getCareAtMidnight(timeline: TimelineBlock[], date: Date): 'Mother' | 'Father' {
+  // Check who has care at 23:59 (midnight rule)
+  const midnightCheck = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59);
+  const parent = getParentAtTime(timeline, midnightCheck);
+  return parent === 'M' ? 'Mother' : 'Father';
+}
+
+/**
+ * Helper to determine if a date falls within a holiday period based on timeline.
+ */
+function isHolidayPeriod(timeline: TimelineBlock[], date: Date): boolean {
+  const targetTime = date.getTime();
+  
+  for (const block of timeline) {
+    const [startStr, endStr, , type] = block;
+    const start = new Date(startStr.replace('T', ' '));
+    const end = new Date(endStr.replace('T', ' '));
+    
+    if (targetTime >= start.getTime() && targetTime < end.getTime()) {
+      return type === 'holiday' || type === 'christmas';
+    }
+  }
+  return false;
+}
 
 export async function generateCareCalendarPDF(
     result: CareCalculationResult,
@@ -9,6 +39,7 @@ export async function generateCareCalendarPDF(
     state: AustralianState
 ) {
     // 1. Prepare HTML Content
+    const timeline = result.timeline;
 
     // Helper to Render a Month Grid in HTML
     const renderMonthHTML = (monthIndex: number) => {
@@ -27,14 +58,13 @@ export async function generateCareCalendarPDF(
         // Days
         for (let d = 1; d <= daysInMonth; d++) {
             const currentDate = new Date(year, monthIndex, d);
-            const dateStr = format(currentDate, 'yyyy-MM-dd');
-            const assignment = result.assignments.find(a => a.dateStr === dateStr);
+            const careWith = getCareAtMidnight(timeline, currentDate);
 
             let bgClass = 'neutral';
-            if (assignment?.midnightOwner === 'Mother') bgClass = 'mother';
-            if (assignment?.midnightOwner === 'Father') bgClass = 'father';
+            if (careWith === 'Mother') bgClass = 'mother';
+            if (careWith === 'Father') bgClass = 'father';
 
-            const isHoliday = assignment?.reason.startsWith('holiday:') ? 'holiday' : '';
+            const isHoliday = isHolidayPeriod(timeline, currentDate) ? 'holiday' : '';
 
             daysHTML += `<div class="day-cell ${bgClass} ${isHoliday}">${d}</div>`;
         }

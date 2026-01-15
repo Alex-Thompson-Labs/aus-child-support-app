@@ -5,24 +5,28 @@
  * - Father's Care: Blue (#60a5fa)
  * - Mother's Care: Pink (#f472b6)
  * - School Holidays: Grey underline indicator
+ * 
+ * Updated to support the new Timeline architecture.
  */
 
 import {
-  addDays,
-  format,
-  getDay,
-  getDaysInMonth,
-  startOfMonth,
+    addDays,
+    format,
+    getDay,
+    getDaysInMonth,
+    startOfMonth,
 } from 'date-fns';
 import React, { useMemo } from 'react';
 import { DimensionValue, Platform, ScrollView, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 
 import {
-  AustralianState,
-  CareParent,
-  DayAssignment,
-  getSchoolHolidays,
+    AustralianState,
+    CareParent,
+    DayAssignment,
+    getSchoolHolidays,
 } from '@/src/utils/CareCalculator';
+import { getParentAtTime } from '@/src/utils/timeline-aggregator';
+import { TimelineBlock } from '@/src/utils/timeline-types';
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -37,7 +41,10 @@ const HOLIDAY_INDICATOR = '#94a3b8';
 
 interface CareCalendarProps {
   year: number;
-  assignments: DayAssignment[];
+  /** @deprecated Use timeline prop instead */
+  assignments?: DayAssignment[];
+  /** New timeline-based prop */
+  timeline?: TimelineBlock[];
   state: AustralianState;
   fatherColor?: string;
   motherColor?: string;
@@ -134,17 +141,35 @@ function MonthGrid({ year, month, assignmentMap, holidayDates, fatherColor, moth
 export function CareCalendar({
   year,
   assignments,
+  timeline,
   state,
   fatherColor = FATHER_COLOR_DEFAULT,
   motherColor = MOTHER_COLOR_DEFAULT
 }: CareCalendarProps) {
+  // Build assignment map from either timeline or legacy assignments
   const assignmentMap = useMemo(() => {
     const map = new Map<string, CareParent>();
-    assignments.forEach((a) => {
-      map.set(a.dateStr, a.midnightOwner);
-    });
+    
+    if (timeline && timeline.length > 0) {
+      // New timeline-based approach: determine care at 23:59 for each day
+      const totalDays = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0) ? 366 : 365;
+      for (let dayIndex = 0; dayIndex < totalDays; dayIndex++) {
+        const date = new Date(year, 0, 1 + dayIndex);
+        const dateStr = format(date, 'yyyy-MM-dd');
+        // Check who has care at 23:59 (midnight rule)
+        const midnightCheck = new Date(year, 0, 1 + dayIndex, 23, 59);
+        const parent = getParentAtTime(timeline, midnightCheck);
+        map.set(dateStr, parent === 'M' ? 'Mother' : 'Father');
+      }
+    } else if (assignments) {
+      // Legacy assignments-based approach
+      assignments.forEach((a) => {
+        map.set(a.dateStr, a.midnightOwner);
+      });
+    }
+    
     return map;
-  }, [assignments]);
+  }, [year, assignments, timeline]);
 
   const holidayDates = useMemo(() => {
     const holidays = getSchoolHolidays(year, state);
@@ -197,9 +222,10 @@ export function CareCalendar({
 }
 
 // For PDF generation - returns HTML string
+// Updated to support both legacy assignments and new timeline format
 export function generateCalendarHTML(
   year: number,
-  assignments: DayAssignment[],
+  timelineOrAssignments: TimelineBlock[] | DayAssignment[],
   state: AustralianState,
   motherNights: number,
   fatherNights: number,
@@ -208,10 +234,28 @@ export function generateCalendarHTML(
   fatherColor: string = FATHER_COLOR_DEFAULT,
   motherColor: string = MOTHER_COLOR_DEFAULT
 ): string {
+  // Build assignment map from either timeline or legacy assignments
   const assignmentMap = new Map<string, CareParent>();
-  assignments.forEach((a) => {
-    assignmentMap.set(a.dateStr, a.midnightOwner);
-  });
+  
+  // Check if it's a timeline (array of tuples) or assignments (array of objects)
+  if (timelineOrAssignments.length > 0 && Array.isArray(timelineOrAssignments[0])) {
+    // It's a timeline - convert to assignment map using midnight rule
+    const timeline = timelineOrAssignments as TimelineBlock[];
+    const totalDays = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0) ? 366 : 365;
+    for (let dayIndex = 0; dayIndex < totalDays; dayIndex++) {
+      const date = new Date(year, 0, 1 + dayIndex);
+      const dateStr = format(date, 'yyyy-MM-dd');
+      const midnightCheck = new Date(year, 0, 1 + dayIndex, 23, 59);
+      const parent = getParentAtTime(timeline, midnightCheck);
+      assignmentMap.set(dateStr, parent === 'M' ? 'Mother' : 'Father');
+    }
+  } else {
+    // It's legacy assignments
+    const assignments = timelineOrAssignments as DayAssignment[];
+    assignments.forEach((a) => {
+      assignmentMap.set(a.dateStr, a.midnightOwner);
+    });
+  }
 
   const holidays = getSchoolHolidays(year, state);
   const holidayDates = new Set<string>();

@@ -6,7 +6,6 @@
  */
 
 import { getSupabaseClient } from '@/src/utils/supabase/client';
-import { getYear } from 'date-fns';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -15,28 +14,26 @@ import * as Sharing from 'expo-sharing';
 import { CheckCircle, Download, FileText, Lock as LockIcon, Upload, User, Users } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View
+    ActivityIndicator,
+    Alert,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CareCalendar, generateCalendarHTML } from '@/src/components/CareCalendar';
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { CalculatorHeader } from '@/src/features/calculator';
-import {
-  AustralianState,
-  calculateCareFromOrder,
-  CareCalculationResult,
-  CourtOrderJSON,
-} from '@/src/utils/CareCalculator';
+import { AustralianState } from '@/src/utils/CareCalculator';
 import { isWeb, MAX_FORM_WIDTH } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
+import { calculateCareFromTimeline } from '@/src/utils/timeline-aggregator';
+import { CareCalculationResult, TimelineResponse } from '@/src/utils/timeline-types';
+import { validateTimeline, ValidationError } from '@/src/utils/timeline-validator';
 
 type WizardStep = 'upload' | 'state' | 'analyzing' | 'results';
 type UserRole = 'Father' | 'Mother';
@@ -216,20 +213,17 @@ function StepResults({
   result,
   onReset,
   selectedState,
-  anchorDate,
+  year,
   onDownloadPDF,
   userRole
 }: {
   result: CareCalculationResult;
   onReset: () => void;
   selectedState: AustralianState;
-  anchorDate: Date;
+  year: number;
   onDownloadPDF: () => void;
   userRole: UserRole;
 }) {
-  const year = getYear(anchorDate);
-  const yearAssignments = result.assignments.filter(a => getYear(a.date) === year);
-
   // Determine colors based on role
   const fatherColor = userRole === 'Father' ? USER_COLOR : OTHER_PARENT_COLOR;
   const motherColor = userRole === 'Mother' ? USER_COLOR : OTHER_PARENT_COLOR;
@@ -256,7 +250,7 @@ function StepResults({
           <Text style={styles.sectionTitle}>365-Day Care Calendar</Text>
           <CareCalendar
             year={year}
-            assignments={yearAssignments}
+            timeline={result.timeline}
             state={selectedState}
             fatherColor={fatherColor}
             motherColor={motherColor}
@@ -302,14 +296,15 @@ function StepResults({
 
 export default function CourtOrderToolScreen() {
   const [step, setStep] = useState<WizardStep>('upload');
-  const [anchorDate, setAnchorDate] = useState<Date>(new Date());
+  const [selectedYear, setSelectedYear] = useState<number>(2026);
   const [selectedState, setSelectedState] = useState<AustralianState>('VIC');
   const [userRole, setUserRole] = useState<UserRole>('Father');
   const [result, setResult] = useState<CareCalculationResult | null>(null);
   const [uploadedFile, setUploadedFile] = useState<{ uri: string; mimeType: string } | null>(null);
 
-  // State for logic
-  const [orderJson, setOrderJson] = useState<CourtOrderJSON | null>(null);
+  // State for timeline response
+  const [timelineResponse, setTimelineResponse] = useState<TimelineResponse | null>(null);
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
 
   const showAlert = useCallback((title: string, message: string) => {
     if (Platform.OS === 'web') {
@@ -350,6 +345,7 @@ export default function CourtOrderToolScreen() {
   const analyzeAndCalculate = async () => {
     if (!uploadedFile) return;
     setStep('analyzing');
+    setValidationErrors([]);
 
     try {
       // 1. Yield to UI loop to let spinner render
@@ -387,13 +383,14 @@ export default function CourtOrderToolScreen() {
         base64 = await FileSystem.readAsStringAsync(finalUri, { encoding: 'base64' });
       }
 
-      // 4. Call Supabase with JSON (Reliable)
-      console.log('Calling Supabase function with Base64...');
+      // 4. Call Supabase with JSON (Reliable) - pass year parameter
+      console.log('Calling Supabase function with Base64...', { year: selectedYear });
       const supabase = await getSupabaseClient();
       const { data, error } = await supabase.functions.invoke('analyze-order', {
         body: {
           fileBase64: base64,
           mediaType: uploadedFile.mimeType,
+          year: selectedYear,
         },
       });
 
@@ -408,18 +405,27 @@ export default function CourtOrderToolScreen() {
         throw new Error(data.reason || 'Invalid document type. Please upload a valid Court Order.');
       }
 
-      // 3. Process Result
-      console.log('Analysis successful:', data);
-      setOrderJson(data);
-
-      let currentAnchor = new Date();
-      if (data.start_date) {
-        currentAnchor = new Date(data.start_date + 'T00:00:00');
-        setAnchorDate(currentAnchor);
+      // Handle other error types
+      if (data.error) {
+        throw new Error(data.reason || `Error: ${data.error}`);
       }
 
-      // 4. Calculate
-      const calculationResult = calculateCareFromOrder(data, currentAnchor, selectedState);
+      // 5. Validate the timeline
+      console.log('Timeline response:', data);
+      const timelineData = data as TimelineResponse;
+      const validation = validateTimeline(timelineData.timeline, timelineData.year);
+      
+      if (!validation.valid) {
+        console.error('Timeline validation errors:', validation.errors);
+        setValidationErrors(validation.errors);
+        throw new Error('The generated timeline has validation errors. Please try again.');
+      }
+
+      setTimelineResponse(timelineData);
+      setSelectedYear(timelineData.year);
+
+      // 6. Calculate using new timeline aggregator
+      const calculationResult = calculateCareFromTimeline(timelineData);
       setResult(calculationResult);
       setStep('results');
 
@@ -433,15 +439,13 @@ export default function CourtOrderToolScreen() {
 
   const handleDownloadPDF = useCallback(async () => {
     if (!result) return;
-    const year = getYear(anchorDate);
-    const yearAssignments = result.assignments.filter(a => getYear(a.date) === year);
 
     // Pass dynamic colors
     const fatherColor = userRole === 'Father' ? USER_COLOR : OTHER_PARENT_COLOR;
     const motherColor = userRole === 'Mother' ? USER_COLOR : OTHER_PARENT_COLOR;
 
     const html = generateCalendarHTML(
-      year, yearAssignments, selectedState,
+      selectedYear, result.timeline, selectedState,
       result.motherNights, result.fatherNights,
       result.motherPercentage, result.fatherPercentage,
       fatherColor, motherColor
@@ -454,14 +458,15 @@ export default function CourtOrderToolScreen() {
       const { uri } = await Print.printToFileAsync({ html });
       await Sharing.shareAsync(uri, { mimeType: 'application/pdf', dialogTitle: 'Care Calendar', UTI: 'com.adobe.pdf' });
     }
-  }, [result, anchorDate, selectedState, userRole]);
+  }, [result, selectedYear, selectedState, userRole]);
 
   const handleReset = useCallback(() => {
     setStep('upload');
     setResult(null);
-    setOrderJson(null);
+    setTimelineResponse(null);
+    setValidationErrors([]);
     setUploadedFile(null);
-    setAnchorDate(new Date());
+    setSelectedYear(2026);
     setSelectedState('VIC');
     setUserRole('Father');
   }, []);
@@ -518,7 +523,7 @@ export default function CourtOrderToolScreen() {
                 result={result}
                 onReset={handleReset}
                 selectedState={selectedState}
-                anchorDate={anchorDate}
+                year={selectedYear}
                 onDownloadPDF={handleDownloadPDF}
                 userRole={userRole}
               />
