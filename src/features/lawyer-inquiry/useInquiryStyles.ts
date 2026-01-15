@@ -347,7 +347,7 @@ export function useInquiryStyles() {
         letterSpacing: 0.5,
       },
       summaryCard: {
-        backgroundColor: colors.surfaceSubtle,
+        backgroundColor: colors.surface,
         borderRadius: 12,
         paddingHorizontal: 16,
         paddingTop: 16,
@@ -357,7 +357,7 @@ export function useInquiryStyles() {
         borderColor: colors.border,
       },
       directModeCard: {
-        backgroundColor: colors.surfaceSubtle,
+        backgroundColor: colors.surface,
         borderRadius: 12,
         padding: 16,
         marginBottom: 24,

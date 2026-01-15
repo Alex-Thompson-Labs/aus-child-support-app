@@ -26,7 +26,7 @@ export const SemanticColors = {
   light: {
     // Core UI colors
     text: '#11181C',
-    background: '#fff',
+    background: '#f8fafc',
     tint: tintColorLight,
     icon: '#687076',
     tabIconDefault: '#687076',

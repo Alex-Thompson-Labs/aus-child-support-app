@@ -283,6 +283,24 @@ export function CalculatorScreen() {
     ), */
   };
 
+  // Calculate progress for children step
+  // Only show progress if user has modified the default child or added more children
+  const childrenProgress = React.useMemo(() => {
+    if (formState.children.length === 0) return 0;
+    if (formState.children.length > 1) return 50;
+
+    // Check if the single child is still in default state
+    const child = formState.children[0];
+    const isDefault =
+      child.age === 5 &&
+      child.careAmountA === 8 &&
+      child.careAmountB === 6 &&
+      child.carePeriod === 'fortnight';
+
+    // If exact default values, assume no user interaction yet
+    return isDefault ? 0 : 50;
+  }, [formState.children]);
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <KeyboardAvoidingView
@@ -301,7 +319,7 @@ export function CalculatorScreen() {
             step1Progress={
               (formState.incomeA > 0 ? 25 : 0) +
               (formState.incomeB > 0 ? 25 : 0) +
-              (formState.children.length > 0 ? 50 : 0)
+              childrenProgress
             }
           />
         </View>
@@ -365,7 +383,7 @@ export function CalculatorScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f8fafc',
   },
   keyboardView: {
     flex: 1,

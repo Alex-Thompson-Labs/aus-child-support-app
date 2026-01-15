@@ -233,7 +233,7 @@ export function CalculatorResults({
     return () => unsubscribe();
   }, []);
   const insets = useSafeAreaInsets();
-  const { isWeb } = useResponsive();
+  const { isWeb, isDesktop } = useResponsive();
 
   const isInlineMode = displayMode === 'inline';
 
@@ -494,7 +494,7 @@ export function CalculatorResults({
           onPress={toggleExpand}
           style={[
             styles.fixedBottomCardWrapper,
-            { paddingBottom: Math.max(insets.bottom, 12) },
+            { paddingBottom: Math.max(insets.bottom, isWeb && !isDesktop ? 80 : 12) },
           ]}
           accessibilityRole="button"
           accessibilityLabel={
@@ -673,7 +673,7 @@ const styles = StyleSheet.create({
   },
   expandHint: { alignItems: 'center', paddingBottom: 4 },
   expandHintText: { color: '#ffffff', fontSize: 11, opacity: 0.8 },
-  expandedContainer: { flex: 1, backgroundColor: '#f8f9fa' },
+  expandedContainer: { flex: 1, backgroundColor: '#f8fafc' },
   expandedHeader: {
     padding: 4,
     paddingBottom: 4,
