@@ -1,10 +1,10 @@
 import { PageSEO } from '@/src/components/seo/PageSEO';
+import Accordion from '@/src/components/ui/Accordion';
 import { CalculatorHeader } from '@/src/features/calculator';
 import { isWeb, MAX_CALCULATOR_WIDTH, webClickableStyles } from '@/src/utils/responsive';
-import { createShadow } from '@/src/utils/shadow-styles';
 import { useRouter } from 'expo-router';
-import React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Comprehensive FAQ data aggregated from all pages
@@ -179,6 +179,7 @@ const faqSchema = {
 
 export default function FAQPage() {
     const router = useRouter();
+    const [searchQuery, setSearchQuery] = useState('');
 
     const webContainerStyle = isWeb
         ? {
@@ -187,6 +188,36 @@ export default function FAQPage() {
             alignSelf: 'center' as const,
         }
         : {};
+
+    // Filter FAQ items based on search query
+    const filteredFAQData = useMemo(() => {
+        if (!searchQuery.trim()) {
+            return FAQ_DATA;
+        }
+
+        const query = searchQuery.toLowerCase();
+        
+        return FAQ_DATA.map((category) => ({
+            ...category,
+            questions: category.questions.filter((item) => {
+                const matchesQuestion = item.question.toLowerCase().includes(query);
+                const matchesAnswer = item.answer.toLowerCase().includes(query);
+                return matchesQuestion || matchesAnswer;
+            }),
+        })).filter((category) => category.questions.length > 0);
+    }, [searchQuery]);
+
+    // Check if search matches answer text (to auto-expand)
+    const shouldAutoExpand = (item: { question: string; answer: string }) => {
+        if (!searchQuery.trim()) return false;
+        const query = searchQuery.toLowerCase();
+        const matchesAnswer = item.answer.toLowerCase().includes(query);
+        const matchesQuestion = item.question.toLowerCase().includes(query);
+        // Auto-expand if answer matches but question doesn't
+        return matchesAnswer && !matchesQuestion;
+    };
+
+    const hasResults = filteredFAQData.length > 0;
 
     return (
         <>
@@ -214,8 +245,37 @@ export default function FAQPage() {
                         Find answers to common questions about child support in Australia.
                     </Text>
 
+                    {/* Search Bar */}
+                    <View style={styles.searchContainer}>
+                        <TextInput
+                            style={styles.searchInput}
+                            placeholder="Search FAQs..."
+                            placeholderTextColor="#94a3b8"
+                            value={searchQuery}
+                            onChangeText={setSearchQuery}
+                            accessibilityLabel="Search frequently asked questions"
+                            accessibilityRole="search"
+                        />
+                    </View>
+
+                    {/* No Results Message */}
+                    {!hasResults && (
+                        <View style={styles.noResultsContainer}>
+                            <Text style={styles.noResultsText}>
+                                No FAQs match your search. Try different keywords or{' '}
+                                <Text
+                                    style={styles.clearSearchLink}
+                                    onPress={() => setSearchQuery('')}
+                                >
+                                    clear your search
+                                </Text>
+                                .
+                            </Text>
+                        </View>
+                    )}
+
                     {/* FAQ Categories */}
-                    {FAQ_DATA.map((category) => (
+                    {filteredFAQData.map((category) => (
                         <View key={category.category} style={styles.categorySection}>
                             {/* @ts-ignore - Web-only ARIA attributes */}
                             <Text style={styles.categoryTitle} accessibilityRole="header" aria-level="2">
@@ -223,34 +283,39 @@ export default function FAQPage() {
                             </Text>
 
                             {category.questions.map((item, index) => (
-                                <View key={index} style={styles.faqItem}>
-                                    <Text style={styles.question}>{item.question}</Text>
+                                <Accordion
+                                    key={`${category.category}-${item.question}-${searchQuery}`}
+                                    title={item.question}
+                                    defaultOpen={shouldAutoExpand(item)}
+                                >
                                     <Text style={styles.answer}>{item.answer}</Text>
-                                </View>
+                                </Accordion>
                             ))}
                         </View>
                     ))}
 
                     {/* CTA Section */}
-                    <View style={styles.ctaSection}>
-                        <Text style={styles.ctaText}>Still have questions?</Text>
-                        <View style={styles.ctaButtons}>
-                            <Pressable
-                                style={[styles.primaryButton, isWeb && webClickableStyles]}
-                                onPress={() => router.push('/')}
-                                accessibilityRole="button"
-                            >
-                                <Text style={styles.primaryButtonText}>Try Calculator</Text>
-                            </Pressable>
-                            <Pressable
-                                style={[styles.secondaryButton, isWeb && webClickableStyles]}
-                                onPress={() => router.push('/lawyer-inquiry')}
-                                accessibilityRole="button"
-                            >
-                                <Text style={styles.secondaryButtonText}>Get Legal Help</Text>
-                            </Pressable>
+                    {hasResults && (
+                        <View style={styles.ctaSection}>
+                            <Text style={styles.ctaText}>Still have questions?</Text>
+                            <View style={styles.ctaButtons}>
+                                <Pressable
+                                    style={[styles.primaryButton, isWeb && webClickableStyles]}
+                                    onPress={() => router.push('/')}
+                                    accessibilityRole="button"
+                                >
+                                    <Text style={styles.primaryButtonText}>Try Calculator</Text>
+                                </Pressable>
+                                <Pressable
+                                    style={[styles.secondaryButton, isWeb && webClickableStyles]}
+                                    onPress={() => router.push('/lawyer-inquiry')}
+                                    accessibilityRole="button"
+                                >
+                                    <Text style={styles.secondaryButtonText}>Get Legal Help</Text>
+                                </Pressable>
+                            </View>
                         </View>
-                    </View>
+                    )}
                 </ScrollView>
             </SafeAreaView>
         </>
@@ -298,7 +363,44 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#475569',
         lineHeight: 24,
+        marginBottom: 16,
+    },
+    searchContainer: {
         marginBottom: 24,
+    },
+    searchInput: {
+        backgroundColor: '#ffffff',
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        fontSize: 16,
+        color: '#1e293b',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 3,
+        elevation: 1,
+    },
+    noResultsContainer: {
+        backgroundColor: '#fef3c7',
+        borderRadius: 12,
+        padding: 20,
+        marginBottom: 24,
+        borderWidth: 1,
+        borderColor: '#fbbf24',
+    },
+    noResultsText: {
+        fontSize: 15,
+        color: '#78350f',
+        lineHeight: 22,
+        textAlign: 'center',
+    },
+    clearSearchLink: {
+        color: '#2563EB',
+        fontWeight: '600',
+        textDecorationLine: 'underline',
     },
     categorySection: {
         marginBottom: 24,
@@ -311,27 +413,6 @@ const styles = StyleSheet.create({
         paddingBottom: 8,
         borderBottomWidth: 2,
         borderBottomColor: '#2563EB',
-    },
-    faqItem: {
-        backgroundColor: '#ffffff',
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 12,
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-        ...createShadow({
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.05,
-            shadowRadius: 3,
-            elevation: 1,
-        }),
-    },
-    question: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#1e293b',
-        marginBottom: 8,
     },
     answer: {
         fontSize: 15,
