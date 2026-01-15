@@ -31,24 +31,42 @@ export async function exportAssessmentPDF({
   supportB = false,
 }: ExportAssessmentPDFProps): Promise<void> {
   try {
+    console.log('[PDF Export] Starting PDF generation...');
     const html = generateAssessmentHTML({
       results,
       supportA,
       supportB,
       generatedDate: new Date(),
     });
-
+    
+    console.log('[PDF Export] HTML generated, length:', html.length);
+    
+    // Open HTML in new window for viewing and printing
+    if (typeof window !== 'undefined') {
+      const pdfWindow = window.open('', '_blank');
+      if (pdfWindow) {
+        pdfWindow.document.write(html);
+        pdfWindow.document.close();
+        console.log('[PDF Export] Assessment opened in new window');
+        return;
+      }
+    }
+    
+    // Fallback to print dialog if window.open fails
+    console.log('[PDF Export] Calling Print.printAsync...');
     await Print.printAsync({
       html,
-      // On iOS, we can optimize for A4. On web, it respects CSS Print media rules.
       ...(process.env.EXPO_OS === 'ios' && {
-        width: 595, // A4 width in points
-        height: 842, // A4 height in points
+        width: 595,
+        height: 842,
         orientation: Print.Orientation.portrait,
       }),
     });
+    
+    console.log('[PDF Export] Print dialog opened successfully');
   } catch (error) {
-    console.error('Failed to generate PDF:', error);
+    console.error('[PDF Export] Failed to generate PDF:', error);
+    console.error('[PDF Export] Error details:', JSON.stringify(error, null, 2));
     throw new Error('Failed to generate PDF. Please try again.');
   }
 }

@@ -20,7 +20,7 @@ import type { LeadSubmission } from '@/src/utils/supabase';
 import { submitLead, updateLeadEnrichment } from '@/src/utils/supabase';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Platform, TextInput } from 'react-native';
+import { Alert, Linking, Platform, TextInput } from 'react-native';
 import { ENRICHMENT_INQUIRY_TYPES } from '../config';
 import type { CareDataItem, FormErrors, FormTouched } from '../types';
 import {
@@ -546,6 +546,16 @@ export function useInquiryForm(props: UseInquiryFormProps) {
    * Navigate home helper
    */
   const navigateHome = useCallback(() => {
+    // Check for returnTo URL (e.g. from blog)
+    if (props.returnTo) {
+      if (Platform.OS === 'web') {
+        window.location.href = props.returnTo;
+      } else {
+        Linking.openURL(props.returnTo);
+      }
+      return;
+    }
+
     try {
       if (__DEV__)
         console.log('[LawyerInquiry] Navigating home with reset trigger...');
@@ -557,7 +567,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
       console.error('[LawyerInquiry] Navigation error:', error);
       router.replace('/');
     }
-  }, [router]);
+  }, [router, props.returnTo]);
 
   /**
    * Handle form submission

@@ -40,6 +40,7 @@ export function generateAssessmentHTML({
 }: AssessmentHTMLProps): string {
     const monthlyAmount = results.finalPaymentAmount / 12;
     const fortnightlyAmount = results.finalPaymentAmount / 26;
+    const dailyAmount = results.finalPaymentAmount / 365;
 
     // CSS Styles
     const css = `
@@ -50,9 +51,10 @@ export function generateAssessmentHTML({
       font-size: 10pt;
       color: #334155;
       line-height: 1.5;
-      margin: 0;
-      padding: 40px;
+      margin: 0 auto;
+      padding: 40px 20px;
       background-color: #ffffff;
+      max-width: 850px;
     }
 
     .header {
@@ -70,17 +72,17 @@ export function generateAssessmentHTML({
     }
 
     .brand-icon {
-      width: 32px;
-      height: 32px;
-      background-color: #2563eb;
-      border-radius: 6px;
+      width: 40px;
+      height: 40px;
       margin-right: 10px;
       display: flex;
       justify-content: center;
       align-items: center;
-      color: #ffffff;
-      font-size: 16pt;
-      font-weight: 700;
+    }
+
+    .brand-icon svg {
+      width: 100%;
+      height: 100%;
     }
 
     .brand-name {
@@ -247,70 +249,180 @@ export function generateAssessmentHTML({
       color: #2563eb;
     }
 
-    .footer {
-      position: absolute;
-      bottom: 30px;
-      left: 40px;
-      right: 40px;
+    .step-card {
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 12px;
+      page-break-inside: avoid;
     }
 
-    .footer-divider {
-      border-top: 1px solid #e2e8f0;
+    .step-header {
+      display: flex;
+      align-items: center;
       margin-bottom: 12px;
     }
 
-    .footer-content {
+    .step-number {
+      background-color: #2563eb;
+      color: #ffffff;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10pt;
+      font-weight: 600;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .step-title {
+      font-size: 10pt;
+      font-weight: 600;
+      color: #0f172a;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .step-content {
+      padding-left: 38px;
+    }
+
+    .step-row {
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
+      padding: 6px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .step-row:last-child {
+      border-bottom: none;
+    }
+
+    .step-label {
+      font-size: 9pt;
+      color: #64748b;
+    }
+
+    .step-value {
+      font-size: 9pt;
+      color: #0f172a;
+      font-weight: 500;
+    }
+
+    .step-formula {
+      background-color: #f8fafc;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 8pt;
+      color: #475569;
+      margin: 8px 0;
+      font-family: 'Courier New', monospace;
+    }
+
+    .percentage-bar {
+      display: flex;
+      height: 24px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+
+    .percentage-segment {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8pt;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .segment-a {
+      background-color: #2563eb;
+    }
+
+    .segment-b {
+      background-color: #64748b;
+    }
+
+    .child-card {
+      background-color: #f8fafc;
+      border-radius: 4px;
+      padding: 10px;
+      margin: 8px 0;
+    }
+
+    .child-header {
+      font-size: 9pt;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 2px solid #e2e8f0;
     }
 
     .disclaimer {
-      flex: 1;
-      padding-right: 20px;
+      background-color: #f8fafc;
+      padding: 16px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
     }
 
     .disclaimer-title {
-      font-size: 8pt;
+      font-size: 9pt;
       font-weight: 600;
       color: #64748b;
-      margin-bottom: 4px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .disclaimer-text {
-      font-size: 7pt;
-      color: #94a3b8;
-      line-height: 1.4;
-    }
-
-    .footer-right {
-      text-align: right;
-      white-space: nowrap;
+      font-size: 8pt;
+      color: #64748b;
+      line-height: 1.6;
     }
 
     .footer-brand {
-      font-size: 8pt;
+      text-align: center;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .footer-brand-name {
+      font-size: 9pt;
       font-weight: 600;
       color: #2563eb;
     }
 
     .footer-url {
-      font-size: 7pt;
+      font-size: 8pt;
       color: #64748b;
-      margin-top: 2px;
+      margin-top: 4px;
     }
 
     /* Print specific styles */
     @media print {
       body {
-        padding: 0;
+        padding: 20px;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
       .page-break { page-break-after: always; }
+      .step-card { page-break-inside: avoid; }
+      .child-card { page-break-inside: avoid; }
+      .special-circumstances-section { page-break-inside: avoid; }
       @page {
         size: A4;
-        margin: 2cm;
+        margin: 1.5cm;
       }
     }
   `;
@@ -327,7 +439,15 @@ export function generateAssessmentHTML({
       <body>
         <div class="header">
           <div class="brand-container">
-            <div class="brand-icon">A</div>
+            <div class="brand-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/>
+                <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/>
+                <path d="M7 21h10"/>
+                <path d="M12 3v18"/>
+                <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>
+              </svg>
+            </div>
             <div>
               <h1 class="brand-name">Aus Child Support Calculator</h1>
               <p class="brand-tagline">Services Australia 8-Step Formula</p>
@@ -346,114 +466,254 @@ export function generateAssessmentHTML({
           <div class="hero-secondary-row">
             <div class="hero-secondary-item">
               <div class="hero-secondary-value">${formatCurrency(monthlyAmount)}</div>
-              <div class="hero-secondary-label">per month</div>
+              <div class="hero-secondary-label">/month</div>
             </div>
             <div class="hero-secondary-item">
               <div class="hero-secondary-value">${formatCurrency(fortnightlyAmount)}</div>
-              <div class="hero-secondary-label">per fortnight</div>
+              <div class="hero-secondary-label">/fortnight</div>
+            </div>
+            <div class="hero-secondary-item">
+              <div class="hero-secondary-value">${formatCurrency(dailyAmount)}</div>
+              <div class="hero-secondary-label">/day</div>
+            </div>
+          </div>
+          ${supportA || supportB ? `
+            <div style="margin-top: 12px; font-size: 9pt; opacity: 0.9;">
+              ✓ Income support ${supportA && supportB ? 'applied: You + Other Parent' : supportA ? 'applied: You' : 'applied: Other Parent'}
+            </div>
+          ` : ''}
+        </div>
+
+        <div class="section-title">8-Step Assessment Breakdown</div>
+        <div style="font-size: 9pt; color: #64748b; margin-bottom: 16px;">
+          This estimate follows the official Services Australia formula. All steps are shown in expanded view.
+        </div>
+
+        <!-- STEP 1: Child Support Income -->
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-number">1</div>
+            <div class="step-title">Child Support Income</div>
+          </div>
+          <div class="step-content">
+            <div class="step-row">
+              <div class="step-label">Your Adjusted Taxable Income (ATI)</div>
+              <div class="step-value">${formatCurrency(results.ATI_A)}</div>
+            </div>
+            <div class="step-row">
+              <div class="step-label">Your Self-Support Amount (SSA)</div>
+              <div class="step-value">-${formatCurrency(results.SSA)}</div>
+            </div>
+            <div class="step-row">
+              <div class="step-label">Your Child Support Income (CSI)</div>
+              <div class="step-value">${formatCurrency(results.CSI_A)}</div>
+            </div>
+            <div style="height: 12px;"></div>
+            <div class="step-row">
+              <div class="step-label">Other Parent's ATI</div>
+              <div class="step-value">${formatCurrency(results.ATI_B)}</div>
+            </div>
+            <div class="step-row">
+              <div class="step-label">Other Parent's SSA</div>
+              <div class="step-value">-${formatCurrency(results.SSA)}</div>
+            </div>
+            <div class="step-row">
+              <div class="step-label">Other Parent's CSI</div>
+              <div class="step-value">${formatCurrency(results.CSI_B)}</div>
+            </div>
+            ${supportA || supportB ? `
+              <div style="margin-top: 12px; padding: 8px; background-color: #fef3c7; border-radius: 4px; font-size: 8pt; color: #92400e;">
+                <strong>Income Support Applied:</strong> ${supportA ? 'You receive' : ''} ${supportA && supportB ? ' and ' : ''} ${supportB ? 'Other Parent receives' : ''} income support. CSI is set to $0 for income support recipients.
+              </div>
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- STEP 2: Combined Child Support Income -->
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-number">2</div>
+            <div class="step-title">Combined Child Support Income</div>
+          </div>
+          <div class="step-content">
+            <div class="step-formula">
+              CCSI = Your CSI + Other Parent's CSI<br>
+              CCSI = ${formatCurrency(results.CSI_A)} + ${formatCurrency(results.CSI_B)} = ${formatCurrency(results.CCSI)}
+            </div>
+            <div class="step-row">
+              <div class="step-label">Combined Child Support Income (CCSI)</div>
+              <div class="step-value">${formatCurrency(results.CCSI)}</div>
             </div>
           </div>
         </div>
 
-        <div class="section-title">Income Summary</div>
-        <table>
-          <thead>
-            <tr>
-              <th>Description</th>
-              <th class="right">You (Parent A)</th>
-              <th class="right">Other Parent (B)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Adjusted Taxable Income</td>
-              <td class="right">${formatCurrency(results.ATI_A)}</td>
-              <td class="right">${formatCurrency(results.ATI_B)}</td>
-            </tr>
-            <tr>
-              <td>Child Support Income</td>
-              <td class="right">${formatCurrency(results.CSI_A)}</td>
-              <td class="right">${formatCurrency(results.CSI_B)}</td>
-            </tr>
-            <tr>
-              <td>Income Percentage</td>
-              <td class="right">${results.incomePercA.toFixed(1)}%</td>
-              <td class="right">${results.incomePercB.toFixed(1)}%</td>
-            </tr>
-            ${(supportA || supportB) ? `
-              <tr>
-                <td>Income Support</td>
-                <td class="right">${supportA ? 'Yes' : 'No'}</td>
-                <td class="right">${supportB ? 'Yes' : 'No'}</td>
-              </tr>
-            ` : ''}
-          </tbody>
-        </table>
-
-        ${results.childResults.length > 0 ? `
-          <div class="section-title">Care Arrangement</div>
-          <table>
-            <thead>
-              <tr>
-                <th>Child</th>
-                <th class="right">Your Care %</th>
-                <th class="right">Other Parent %</th>
-                <th class="right">Cost Share</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${results.childResults.map((child, index) => `
-                <tr>
-                  <td>Child ${index + 1} (Age ${child.age})</td>
-                  <td class="right">${child.roundedCareA}%</td>
-                  <td class="right">${child.roundedCareB}%</td>
-                  <td class="right">${formatCurrency(child.costPerChild)}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        ` : ''}
-
-        <div class="summary-box">
-          <div class="summary-row">
-            <div class="summary-label">Combined Child Support Income</div>
-            <div class="summary-value">${formatCurrency(results.CCSI)}</div>
+        <!-- STEP 3: Income Percentage -->
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-number">3</div>
+            <div class="step-title">Income Percentage</div>
           </div>
-          <div class="summary-row">
-            <div class="summary-label">Total Cost of Children</div>
-            <div class="summary-value">${formatCurrency(results.totalCost)}</div>
-          </div>
-          <div class="summary-row">
-            <div class="summary-label">Self-Support Amount (each parent)</div>
-            <div class="summary-value">${formatCurrency(results.SSA)}</div>
-          </div>
-          ${results.rateApplied !== 'None' ? `
-            <div class="summary-row">
-              <div class="summary-label">Rate Applied</div>
-              <div class="summary-value">${results.rateApplied}</div>
+          <div class="step-content">
+            <div class="step-formula">
+              Your % = (Your CSI ÷ CCSI) × 100<br>
+              Your % = (${formatCurrency(results.CSI_A)} ÷ ${formatCurrency(results.CCSI)}) × 100 = ${results.incomePercA.toFixed(1)}%
             </div>
-          ` : ''}
-          <div class="summary-row last">
-            <div class="summary-label bold">Annual Child Support Liability</div>
-            <div class="summary-value bold">${formatCurrency(results.finalPaymentAmount)}</div>
+            <div class="percentage-bar">
+              <div class="percentage-segment segment-a" style="width: ${results.incomePercA}%;">
+                You: ${results.incomePercA.toFixed(1)}%
+              </div>
+              <div class="percentage-segment segment-b" style="width: ${results.incomePercB}%;">
+                Other: ${results.incomePercB.toFixed(1)}%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: Care Percentage (per child) -->
+        ${results.childResults.map((child, index) => `
+          <div class="step-card">
+            <div class="step-header">
+              <div class="step-number">4${results.childResults.length > 1 ? String.fromCharCode(97 + index) : ''}</div>
+              <div class="step-title">Care Percentage - Child ${index + 1} (Age ${child.age})</div>
+            </div>
+            <div class="step-content">
+              <div class="step-row">
+                <div class="step-label">Your Care</div>
+                <div class="step-value">${child.roundedCareA}%</div>
+              </div>
+              <div class="step-row">
+                <div class="step-label">Other Parent's Care</div>
+                <div class="step-value">${child.roundedCareB}%</div>
+              </div>
+              <div class="percentage-bar">
+                <div class="percentage-segment segment-a" style="width: ${child.roundedCareA}%;">
+                  ${child.roundedCareA}%
+                </div>
+                <div class="percentage-segment segment-b" style="width: ${child.roundedCareB}%;">
+                  ${child.roundedCareB}%
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+
+        <!-- STEP 5: Cost Percentage (per child) -->
+        ${results.childResults.map((child, index) => `
+          <div class="step-card">
+            <div class="step-header">
+              <div class="step-number">5${results.childResults.length > 1 ? String.fromCharCode(97 + index) : ''}</div>
+              <div class="step-title">Cost Percentage - Child ${index + 1}</div>
+            </div>
+            <div class="step-content">
+              <div class="step-row">
+                <div class="step-label">Your Cost %</div>
+                <div class="step-value">${child.costPercA.toFixed(1)}%</div>
+              </div>
+              <div class="step-row">
+                <div class="step-label">Other Parent's Cost %</div>
+                <div class="step-value">${child.costPercB.toFixed(1)}%</div>
+              </div>
+              <div style="margin-top: 8px; font-size: 8pt; color: #64748b;">
+                Cost percentage is derived from care percentage using the Services Australia conversion table.
+              </div>
+            </div>
+          </div>
+        `).join('')}
+
+        <!-- STEP 6: Child Support Percentage (per child) -->
+        ${results.childResults.map((child, index) => `
+          <div class="step-card">
+            <div class="step-header">
+              <div class="step-number">6${results.childResults.length > 1 ? String.fromCharCode(97 + index) : ''}</div>
+              <div class="step-title">Child Support Percentage - Child ${index + 1}</div>
+            </div>
+            <div class="step-content">
+              <div class="step-formula">
+                CS% = Income% - Cost%<br>
+                Your CS% = ${results.incomePercA.toFixed(1)}% - ${child.costPercA.toFixed(1)}% = ${child.childSupportPercA.toFixed(1)}%<br>
+                Other CS% = ${results.incomePercB.toFixed(1)}% - ${child.costPercB.toFixed(1)}% = ${child.childSupportPercB.toFixed(1)}%
+              </div>
+              <div class="step-row">
+                <div class="step-label">Your CS%</div>
+                <div class="step-value">${child.childSupportPercA.toFixed(1)}%</div>
+              </div>
+              <div class="step-row">
+                <div class="step-label">Other Parent's CS%</div>
+                <div class="step-value">${child.childSupportPercB.toFixed(1)}%</div>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+
+        <!-- STEP 7: Cost of Children -->
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-number">7</div>
+            <div class="step-title">Cost of Children</div>
+          </div>
+          <div class="step-content">
+            ${results.childResults.map((child, index) => `
+              <div class="child-card">
+                <div class="child-header">Child ${index + 1} (Age ${child.age})</div>
+                <div class="step-row">
+                  <div class="step-label">Cost per child</div>
+                  <div class="step-value">${formatCurrency(child.costPerChild)}</div>
+                </div>
+              </div>
+            `).join('')}
+            <div class="step-row" style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #e2e8f0;">
+              <div class="step-label"><strong>Total Cost of Children</strong></div>
+              <div class="step-value"><strong>${formatCurrency(results.totalCost)}</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 8: Annual Rate -->
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-number">8</div>
+            <div class="step-title">Annual Rate</div>
+          </div>
+          <div class="step-content">
+            ${results.childResults.map((child, index) => {
+              const rateLabel = child.farAppliedA || child.farAppliedB ? 'Fixed Annual Rate' : 
+                               child.marAppliedA || child.marAppliedB ? 'Minimum Annual Rate' : 
+                               'Standard Rate';
+              return `
+              <div class="child-card">
+                <div class="child-header">Child ${index + 1} - ${rateLabel}</div>
+                <div class="step-formula">
+                  Annual Amount = Cost per Child × CS%<br>
+                  ${child.childSupportPercA >= 0 ? `Your liability = ${formatCurrency(child.costPerChild)} × ${child.childSupportPercA.toFixed(1)}% = ${formatCurrency(child.liabilityA)}` : ''}
+                  ${child.childSupportPercB >= 0 ? `<br>Other liability = ${formatCurrency(child.costPerChild)} × ${child.childSupportPercB.toFixed(1)}% = ${formatCurrency(child.liabilityB)}` : ''}
+                </div>
+              </div>
+            `;
+            }).join('')}
+            ${results.rateApplied !== 'None' ? `
+              <div style="margin: 12px 0; padding: 10px; background-color: #fef3c7; border-radius: 4px; font-size: 8pt; color: #92400e;">
+                <strong>Special Rate Applied:</strong> ${results.rateApplied}
+              </div>
+            ` : ''}
+            <div class="step-row" style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #e2e8f0;">
+              <div class="step-label"><strong>Total Annual Liability</strong></div>
+              <div class="step-value"><strong>${formatCurrency(results.finalPaymentAmount)}</strong></div>
+            </div>
           </div>
         </div>
 
         <div class="footer">
-          <div class="footer-divider"></div>
-          <div class="footer-content">
-            <div class="disclaimer">
-              <div class="disclaimer-title">GENERAL INFORMATION ONLY</div>
-              <div class="disclaimer-text">
-                This estimate is for general information purposes only and does not constitute legal or financial advice.
-                The calculation is based on the Services Australia 8-step formula and may not reflect your actual
-                assessment. For accurate assessments, contact Services Australia or consult a family law professional.
-              </div>
+          <div class="disclaimer">
+            <div class="disclaimer-title">General Information Only</div>
+            <div class="disclaimer-text">
+              This estimate is for general information purposes only and does not constitute legal or financial advice.
+              The calculation is based on the Services Australia 8-step formula and may not reflect your actual
+              assessment. For accurate assessments, contact Services Australia or consult a family law professional.
             </div>
-            <div class="footer-right">
-              <div class="footer-brand">Aus Child Support Calculator</div>
-              <div class="footer-url">auschildsupport.com</div>
-            </div>
+          </div>
+          <div class="footer-brand">
+            <div class="footer-brand-name">Aus Child Support Calculator</div>
+            <div class="footer-url">auschildsupport.com</div>
           </div>
         </div>
       </body>

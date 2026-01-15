@@ -19,7 +19,6 @@ import { createShadow } from '@/src/utils/shadow-styles';
 import React, { useMemo, useRef } from 'react';
 import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { BrandSwitch } from '@/src/components/ui/BrandSwitch';
 import { ChildRow } from './ChildRow';
 import { HelpTooltip } from './HelpTooltip';
 import { NonParentCarerSection } from './NonParentCarerSection';
@@ -74,9 +73,8 @@ interface CalculatorFormProps {
   nonParentCarer: NonParentCarerInfo;
   onNonParentCarerChange: (info: NonParentCarerInfo) => void;
   // Care Dispute
-  isCareDisputed: boolean;
-  desiredCareNights?: number;
-  onCareDisputeChange: (isDisputed: boolean, nights?: number) => void;
+  // Removed
+
   // AI Banner (optional)
   aiCourtOrderBanner?: React.ReactNode;
 }
@@ -113,16 +111,13 @@ export function CalculatorForm({
   nonParentCarer,
   onNonParentCarerChange,
   // Care Dispute
-  isCareDisputed,
-  desiredCareNights,
-  onCareDisputeChange,
-  // AI Banner
+
   aiCourtOrderBanner,
 }: CalculatorFormProps) {
   const { isMobile, isDesktop } = useResponsive();
   const { colors } = useAppTheme();
   const analytics = useAnalytics();
-  const [isHappyHovered, setIsHappyHovered] = React.useState(false);
+
 
 
   // Track calculator_start event once per session when user first interacts
@@ -453,70 +448,7 @@ export function CalculatorForm({
           <Text style={[styles.addChildButtonText, dynamicStyles.addChildButtonText]}>+ Add Child</Text>
         </Pressable>
 
-        {/* Lead Gen Hook: Care Dispute */}
-        <View style={[styles.divider, { backgroundColor: colors.cardBorder }]} />
 
-        <View style={styles.disputeSection}>
-          <View style={styles.switchRow}>
-            <BrandSwitch
-              value={!isCareDisputed}
-              onValueChange={(happy) => onCareDisputeChange(!happy, happy ? undefined : (desiredCareNights || 0))}
-              accessibilityLabel="Are you happy with this care arrangement?"
-            />
-            <Pressable
-              onPress={() => {
-                const happy = !isCareDisputed;
-                // Toggle: if currently happy (true), make unhappy (false).
-                // If currently unhappy (false), make happy (true).
-                const newHappy = !happy;
-                onCareDisputeChange(!newHappy, newHappy ? undefined : (desiredCareNights || 0));
-              }}
-              onHoverIn={() => setIsHappyHovered(true)}
-              onHoverOut={() => setIsHappyHovered(false)}
-              style={[styles.labelPressable, isWeb && webClickableStyles]}
-            >
-              <Text style={[
-                styles.switchLabel,
-                dynamicStyles.label,
-                !isCareDisputed && { color: colors.primary }, // Active state color
-                isHappyHovered && styles.labelHovered,
-                { flexShrink: 1 }
-              ]}>
-                Are you happy with this care arrangement?
-              </Text>
-            </Pressable>
-          </View>
-
-          {isCareDisputed && (
-            <View style={styles.disputeInputContainer}>
-              <Text style={[styles.label, dynamicStyles.label, { marginBottom: 8 }]}>
-                Desired Nights per Fortnight (You)
-              </Text>
-              <View style={[styles.currencyInputContainer, { width: inputWidth }]}>
-                <TextInput
-                  style={[
-                    styles.currencyInput,
-                    dynamicStyles.currencyInput,
-                    { width: inputWidth, paddingLeft: 12 }, // Remove currency padding
-                    isWeb && webInputStyles,
-                  ]}
-                  value={desiredCareNights !== undefined ? desiredCareNights.toString() : ''}
-                  onChangeText={(text) => {
-                    const val = text.replace(/[^0-9]/g, '');
-                    const num = parseInt(val);
-                    // Cap at 14 for fortnight
-                    const finalVal = isNaN(num) ? undefined : Math.min(Math.max(num, 0), 14);
-                    onCareDisputeChange(true, finalVal);
-                  }}
-                  keyboardType="numeric"
-                  placeholder="0-14"
-                  placeholderTextColor={colors.placeholder}
-                  accessibilityLabel="Desired care nights per fortnight"
-                />
-              </View>
-            </View>
-          )}
-        </View>
       </View>
 
       {/* Action Buttons */}

@@ -34,7 +34,7 @@ export function CalculatorScreen() {
     updateMultiCaseA,
     updateMultiCaseB,
     updateNonParentCarer,
-    updateCareDispute,
+
     calculate,
     reset,
     resetTimestamp,
@@ -257,9 +257,7 @@ export function CalculatorScreen() {
     nonParentCarer: formState.nonParentCarer,
     onNonParentCarerChange: updateNonParentCarer,
     // Care Dispute
-    isCareDisputed: formState.isCareDisputed,
-    desiredCareNights: formState.desiredCareNights,
-    onCareDisputeChange: updateCareDispute,
+
     // AI Banner
     aiCourtOrderBanner: null, /* (
       <Pressable

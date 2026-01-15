@@ -5,7 +5,7 @@ import { SpecialCircumstancesPrompt } from '@/src/features/conversion/components
 import { useAnalytics } from '@/src/utils/analytics';
 import type { CalculationResults } from '@/src/utils/calculator';
 import {
-  ComplexityFormData,
+    ComplexityFormData,
 } from '@/src/utils/complexity-detection';
 import { eventBus } from '@/src/utils/event-bus';
 import { formatCurrency } from '@/src/utils/formatters';
@@ -13,14 +13,14 @@ import { MAX_CALCULATOR_WIDTH, useResponsive } from '@/src/utils/responsive';
 import { shadowPresets } from '@/src/utils/shadow-styles';
 import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View
+    ActivityIndicator,
+    Modal,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FtbImpactCard } from './FtbImpactCard';
@@ -453,6 +453,18 @@ export function CalculatorResults({
         calculatorStartTime={calculatorStartTime}
       />
 
+      {/* PDF Export Button - Below conversion footer */}
+      {Platform.OS === 'web' && (
+        <View style={{ alignItems: 'center', paddingVertical: 8 }}>
+          <PDFExportButton
+            results={results}
+            supportA={formData?.supportA ?? false}
+            supportB={formData?.supportB ?? false}
+            variant="secondary"
+          />
+        </View>
+      )}
+
       {/* FTB Impact Card - Shows FTB Part A/B implications */}
       <FtbImpactCard
         results={results}
@@ -574,14 +586,7 @@ export function CalculatorResults({
                 Assessment Breakdown
               </Text>
               <View style={styles.headerActions}>
-                {Platform.OS === 'web' && (
-                  <PDFExportButton
-                    results={results}
-                    supportA={formData?.supportA ?? false}
-                    supportB={formData?.supportB ?? false}
-                    variant="secondary"
-                  />
-                )}
+
                 <Pressable
                   ref={closeButtonRef}
                   onPress={toggleExpand}
@@ -620,14 +625,16 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     zIndex: 1000,
+    paddingHorizontal: 12, // Add horizontal padding for mobile
   },
   fixedBottomCard: {
-    width: '94%',
+    width: '100%',
     maxWidth: 750, // Matches the narrow form width exactly
     minHeight: 85, // Fixed height to prevent CLS when content varies
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingBottom: 8,
+    marginBottom: 8, // Add margin to lift card above browser toolbar
     ...shadowPresets.modal,
     alignSelf: 'center', // Ensures it stays centered within its wrapper
   },
