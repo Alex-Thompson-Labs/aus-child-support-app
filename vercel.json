@@ -1,7 +1,6 @@
 {
   "buildCommand": "npx expo export --platform web --source-maps",
   "outputDirectory": "dist",
-  "framework": "other",
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
