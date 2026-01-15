@@ -17,6 +17,9 @@ import Constants from 'expo-constants';
 // Cache the client instance once initialized
 let supabaseInstance: SupabaseClient | null = null;
 
+// Initialization lock to prevent concurrent initialization attempts
+let initializationPromise: Promise<SupabaseClient> | null = null;
+
 /**
  * Get Supabase credentials from environment variables
  */
@@ -34,6 +37,10 @@ function getSupabaseCredentials() {
 /**
  * Lazily initialize Supabase client only when needed
  * This prevents @supabase libraries from being loaded on initial page load
+ * 
+ * Uses a mutex pattern to ensure that concurrent calls during app launch
+ * all wait for the same initialization promise rather than creating
+ * multiple client instances.
  */
 export async function getSupabaseClient(): Promise<SupabaseClient> {
     // Return cached instance if already initialized
@@ -41,41 +48,57 @@ export async function getSupabaseClient(): Promise<SupabaseClient> {
         return supabaseInstance;
     }
 
-    // Dynamically import Supabase only when needed
-    const { createClient } = await import('@supabase/supabase-js');
-    const { supabaseUrl, supabaseAnonKey } = getSupabaseCredentials();
-
-    // Validate credentials
-    if (!supabaseUrl) {
-        console.error(
-            '[Supabase] Missing EXPO_PUBLIC_SUPABASE_URL environment variable'
-        );
+    // If initialization is in progress, wait for it to complete
+    if (initializationPromise) {
+        return initializationPromise;
     }
 
-    if (!supabaseAnonKey) {
-        console.error(
-            '[Supabase] Missing EXPO_PUBLIC_SUPABASE_ANON_KEY environment variable'
-        );
-    }
+    // Start initialization and store the promise
+    initializationPromise = (async () => {
+        try {
+            // Dynamically import Supabase only when needed
+            const { createClient } = await import('@supabase/supabase-js');
+            const { supabaseUrl, supabaseAnonKey } = getSupabaseCredentials();
 
-    // Create and cache Supabase client
-    supabaseInstance = createClient(supabaseUrl || '', supabaseAnonKey || '', {
-        auth: {
-            // Enable auth for admin panel
-            // Anonymous form submissions don't require auth
-            autoRefreshToken: true,
-            persistSession: true,
-            detectSessionInUrl: false,
-        },
-    });
+            // Validate credentials
+            if (!supabaseUrl) {
+                console.error(
+                    '[Supabase] Missing EXPO_PUBLIC_SUPABASE_URL environment variable'
+                );
+            }
 
-    console.log('[Supabase] Client initialized (lazy) with:', {
-        hasUrl: !!supabaseUrl,
-        hasKey: !!supabaseAnonKey,
-        url: supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'MISSING',
-    });
+            if (!supabaseAnonKey) {
+                console.error(
+                    '[Supabase] Missing EXPO_PUBLIC_SUPABASE_ANON_KEY environment variable'
+                );
+            }
 
-    return supabaseInstance;
+            // Create and cache Supabase client
+            supabaseInstance = createClient(supabaseUrl || '', supabaseAnonKey || '', {
+                auth: {
+                    // Enable auth for admin panel
+                    // Anonymous form submissions don't require auth
+                    autoRefreshToken: true,
+                    persistSession: true,
+                    detectSessionInUrl: false,
+                },
+            });
+
+            console.log('[Supabase] Client initialized (lazy) with:', {
+                hasUrl: !!supabaseUrl,
+                hasKey: !!supabaseAnonKey,
+                url: supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'MISSING',
+            });
+
+            return supabaseInstance;
+        } catch (error) {
+            // Clear the initialization promise on error so retries can occur
+            initializationPromise = null;
+            throw error;
+        }
+    })();
+
+    return initializationPromise;
 }
 
 /**
