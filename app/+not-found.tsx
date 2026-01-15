@@ -1,9 +1,6 @@
 import { Link, Stack } from 'expo-router';
 import Head from 'expo-router/head';
-import { Platform, StyleSheet } from 'react-native';
-
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
 // Noindex component for SEO - prevents 404 page from being indexed
 const NoIndex = () => {
@@ -21,15 +18,15 @@ export default function NotFoundScreen() {
     <>
       <NoIndex />
       <Stack.Screen options={{ title: 'Page Not Found' }} />
-      <ThemedView style={styles.container}>
-        <ThemedText type="title">Page Not Found</ThemedText>
-        <ThemedText style={styles.message}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Page Not Found</Text>
+        <Text style={styles.message}>
           The page you&apos;re looking for doesn&apos;t exist or has been moved.
-        </ThemedText>
+        </Text>
         <Link href="/" style={styles.link}>
-          <ThemedText type="link">Return to Calculator</ThemedText>
+          <Text style={styles.linkText}>Return to Calculator</Text>
         </Link>
-      </ThemedView>
+      </View>
     </>
   );
 }
@@ -40,15 +37,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+    backgroundColor: '#ffffff',
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#0f172a',
+    marginBottom: 10,
   },
   message: {
     marginTop: 10,
     marginBottom: 20,
     textAlign: 'center',
     color: '#64748b',
+    fontSize: 16,
+    lineHeight: 24,
   },
   link: {
     marginTop: 15,
     paddingVertical: 15,
+  },
+  linkText: {
+    color: '#2563eb',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
