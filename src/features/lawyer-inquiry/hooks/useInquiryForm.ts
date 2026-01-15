@@ -8,13 +8,13 @@ import { sanitizeCountry } from '@/src/utils/all-countries';
 import { useAnalytics } from '@/src/utils/analytics';
 import { calculateLeadScore } from '@/src/utils/lead-scoring';
 import {
-  EXCLUDED_JURISDICTIONS,
-  RECIPROCATING_JURISDICTIONS,
+    EXCLUDED_JURISDICTIONS,
+    RECIPROCATING_JURISDICTIONS,
 } from '@/src/utils/reciprocating-jurisdictions';
 import type { SpecialCircumstance } from '@/src/utils/special-circumstances';
 import {
-  getSpecialCircumstanceById,
-  isCourtDateReason,
+    getSpecialCircumstanceById,
+    isCourtDateReason,
 } from '@/src/utils/special-circumstances';
 import type { LeadSubmission } from '@/src/utils/supabase';
 import { submitLead, updateLeadEnrichment } from '@/src/utils/supabase';
@@ -24,22 +24,22 @@ import { Alert, Linking, Platform, TextInput } from 'react-native';
 import { ENRICHMENT_INQUIRY_TYPES } from '../config';
 import type { CareDataItem, FormErrors, FormTouched } from '../types';
 import {
-  buildComplexityTriggers,
-  formatCourtDateForReasons,
-  sanitizeEmail,
-  sanitizePhone,
-  sanitizeString,
-  validateConsent,
-  validateCourtDate,
-  validateEmail,
-  validateFinancialTags,
-  validateManualChildren,
-  validateManualIncome,
-  validateMessage,
-  validateName,
-  validatePhone,
-  validatePostcode,
-  VALIDATION,
+    buildComplexityTriggers,
+    formatCourtDateForReasons,
+    sanitizeEmail,
+    sanitizePhone,
+    sanitizeString,
+    validateConsent,
+    validateCourtDate,
+    validateEmail,
+    validateFinancialTags,
+    validateManualChildren,
+    validateManualIncome,
+    validateMessage,
+    validateName,
+    validatePhone,
+    validatePostcode,
+    VALIDATION,
 } from '../validators';
 
 export type LeadFormValue = string | boolean | Date | null | string[];
@@ -135,11 +135,6 @@ export function useInquiryForm(props: UseInquiryFormProps) {
   const [enrichmentPayerRole, setEnrichmentPayerRole] = useState<
     'you' | 'other_parent' | null
   >(null);
-
-  // Court date for enrichment flow
-  const [enrichmentCourtDate, setEnrichmentCourtDate] = useState<Date | null>(
-    null
-  );
 
   // Refs for input focus management
   const emailRef = useRef<TextInput>(null);
@@ -914,24 +909,10 @@ export function useInquiryForm(props: UseInquiryFormProps) {
 
     setIsUpdatingEnrichment(true);
 
-    // Process factors - replace enrichment_court_date with dated version if date selected
-    const processedFactors = selectedEnrichmentFactors.map((factor) => {
-      if (factor === 'enrichment_court_date' && enrichmentCourtDate) {
-        // Format: enrichment_court_date_DD_MMM_YYYY (e.g., enrichment_court_date_12_feb_2026)
-        const day = enrichmentCourtDate.getDate();
-        const month = enrichmentCourtDate
-          .toLocaleString('en-AU', { month: 'short' })
-          .toLowerCase();
-        const year = enrichmentCourtDate.getFullYear();
-        return `enrichment_court_date_${day}_${month}_${year}`;
-      }
-      return factor;
-    });
-
     try {
       const result = await updateLeadEnrichment(
         currentLeadId,
-        processedFactors,
+        selectedEnrichmentFactors,
         enrichmentLiability ?? undefined,
         enrichmentPayerRole ?? undefined
       );
@@ -962,7 +943,6 @@ export function useInquiryForm(props: UseInquiryFormProps) {
   }, [
     currentLeadId,
     selectedEnrichmentFactors,
-    enrichmentCourtDate,
     enrichmentLiability,
     enrichmentPayerRole,
     navigateHome,
@@ -998,7 +978,6 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     selectedEnrichmentFactors,
     isUpdatingEnrichment,
     enrichmentLiability,
-    enrichmentCourtDate,
     enrichmentPayerRole,
 
     // Setters
@@ -1012,7 +991,6 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     setManualIncomeB,
     setManualChildren,
     setEnrichmentLiability,
-    setEnrichmentCourtDate,
     setEnrichmentPayerRole,
     setErrors,
 

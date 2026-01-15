@@ -108,8 +108,6 @@ export default function LawyerInquiryScreen() {
         }
         onLiabilityCalculated={form.setEnrichmentLiability}
         onPayerRoleCalculated={form.setEnrichmentPayerRole}
-        enrichmentCourtDate={form.enrichmentCourtDate}
-        onEnrichmentCourtDateChange={form.setEnrichmentCourtDate}
         showSuccess={form.showEnrichmentSuccess}
       />
     );

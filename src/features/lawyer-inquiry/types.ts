@@ -191,9 +191,6 @@ export interface EnrichmentViewProps {
   childrenCount: number;
   onLiabilityCalculated: (amount: number) => void;
   onPayerRoleCalculated: (payerRole: 'you' | 'other_parent' | null) => void;
-  // Court date for enrichment
-  enrichmentCourtDate: Date | null;
-  onEnrichmentCourtDateChange: (date: Date | null) => void;
   // Success state after enrichment submission
   showSuccess: boolean;
 }
