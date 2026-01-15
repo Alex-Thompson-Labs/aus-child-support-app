@@ -1,6 +1,6 @@
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { CalculatorHeader } from '@/src/features/calculator';
-import { MAX_FORM_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
+import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -31,7 +31,7 @@ export default function AboutPage() {
 
     const webContainerStyle = isWeb
         ? {
-            maxWidth: MAX_FORM_WIDTH,
+            maxWidth: MAX_CALCULATOR_WIDTH,
             width: '100%' as const,
             alignSelf: 'center' as const,
         }
@@ -47,7 +47,7 @@ export default function AboutPage() {
             />
             <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
                 {/* Header */}
-                <CalculatorHeader title="About Us" showBackButton={true} maxWidth={MAX_FORM_WIDTH} />
+                <CalculatorHeader title="About Us" showBackButton={true} maxWidth={MAX_CALCULATOR_WIDTH} />
 
                 <ScrollView
                     style={styles.scrollView}
@@ -66,9 +66,9 @@ export default function AboutPage() {
                             Our Mission
                         </Text>
                         <Text style={styles.bodyText}>
-                            We provide a free, accurate Australian child support calculator using the official
-                            Services Australia formula. Our goal is to help separated parents understand their
-                            estimated child support obligations before contacting Services Australia.
+                            We provide the only free Australian child support calculator that handles all six
+                            official formulas used by Services Australia. Our goal is to help separated parents
+                            understand their estimated child support obligations before contacting Services Australia.
                         </Text>
                     </View>
 
@@ -79,17 +79,22 @@ export default function AboutPage() {
                             How Our Calculator Works
                         </Text>
                         <Text style={styles.bodyText}>
-                            Our calculator implements the official 8-step formula used by Services Australia
-                            to calculate child support. This includes:
+                            Unlike basic calculators that only handle the standard formula, our calculator
+                            implements all six child support formulas used by Services Australia:
                         </Text>
                         <View style={styles.bulletList}>
-                            <Text style={styles.bulletItem}>• Combined income calculations</Text>
-                            <Text style={styles.bulletItem}>• Self-support amount deductions</Text>
-                            <Text style={styles.bulletItem}>• Cost of children tables (2026 rates)</Text>
-                            <Text style={styles.bulletItem}>• Care percentage adjustments</Text>
-                            <Text style={styles.bulletItem}>• Relevant dependent considerations</Text>
-                            <Text style={styles.bulletItem}>• Minimum and Fixed Annual Rate rules</Text>
+                            <Text style={styles.bulletItem}>• Formula 1: Basic formula (standard cases)</Text>
+                            <Text style={styles.bulletItem}>• Formula 2: Parent on minimum rate</Text>
+                            <Text style={styles.bulletItem}>• Formula 3: Both parents below self-support</Text>
+                            <Text style={styles.bulletItem}>• Formula 4: One parent below self-support</Text>
+                            <Text style={styles.bulletItem}>• Formula 5: Fixed annual rate</Text>
+                            <Text style={styles.bulletItem}>• Formula 6: Both parents on minimum/fixed rate</Text>
                         </View>
+                        <Text style={[styles.bodyText, { marginTop: 12 }]}>
+                            This comprehensive approach ensures accurate estimates regardless of your income
+                            situation, including the 2026 cost of children tables, care percentage adjustments,
+                            and relevant dependent considerations.
+                        </Text>
                     </View>
 
                     {/* Disclaimer Section */}
@@ -202,10 +207,10 @@ const styles = StyleSheet.create({
         paddingLeft: 8,
     },
     disclaimerCard: {
-        backgroundColor: '#fef3c7',
+        backgroundColor: '#eff6ff',
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#f59e0b',
+        borderColor: '#bfdbfe',
         padding: 20,
         marginBottom: 24,
         ...createShadow({
@@ -219,12 +224,12 @@ const styles = StyleSheet.create({
     disclaimerTitle: {
         fontSize: 18,
         fontWeight: '600',
-        color: '#92400e',
+        color: '#1e3a8a',
         marginBottom: 8,
     },
     disclaimerText: {
         fontSize: 15,
-        color: '#78350f',
+        color: '#1e40af',
         lineHeight: 24,
     },
     buttonRow: {

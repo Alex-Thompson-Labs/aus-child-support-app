@@ -1,6 +1,6 @@
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { CalculatorHeader } from '@/src/features/calculator';
-import { MAX_FORM_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
+import { isWeb, MAX_CALCULATOR_WIDTH, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -182,7 +182,7 @@ export default function FAQPage() {
 
     const webContainerStyle = isWeb
         ? {
-            maxWidth: MAX_FORM_WIDTH,
+            maxWidth: MAX_CALCULATOR_WIDTH,
             width: '100%' as const,
             alignSelf: 'center' as const,
         }
@@ -198,7 +198,7 @@ export default function FAQPage() {
             />
             <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
                 {/* Header */}
-                <CalculatorHeader title="FAQ" showBackButton={true} maxWidth={MAX_FORM_WIDTH} />
+                <CalculatorHeader title="FAQ" showBackButton={true} maxWidth={MAX_CALCULATOR_WIDTH} />
 
                 <ScrollView
                     style={styles.scrollView}

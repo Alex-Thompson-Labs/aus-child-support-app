@@ -1,20 +1,20 @@
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { CalculatorHeader } from '@/src/features/calculator';
 import {
-  MAX_FORM_WIDTH,
-  isWeb,
-  webClickableStyles,
+    isWeb,
+    MAX_CALCULATOR_WIDTH,
+    webClickableStyles
 } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
-  Linking,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Linking,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -42,7 +42,7 @@ export default function ContactPage() {
 
   const webContainerStyle = isWeb
     ? {
-      maxWidth: MAX_FORM_WIDTH,
+      maxWidth: MAX_CALCULATOR_WIDTH,
       width: '100%' as const,
       alignSelf: 'center' as const,
     }
@@ -58,7 +58,7 @@ export default function ContactPage() {
       />
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         {/* Header */}
-        <CalculatorHeader title="Contact" showBackButton={true} maxWidth={MAX_FORM_WIDTH} />
+        <CalculatorHeader title="Contact" showBackButton={true} maxWidth={MAX_CALCULATOR_WIDTH} />
 
         <ScrollView
           style={styles.scrollView}
