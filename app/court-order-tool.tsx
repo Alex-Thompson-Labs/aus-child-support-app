@@ -305,38 +305,6 @@ function StepResults({
           </View>
         </View>
 
-        {/* TEMPORARY DEBUG: Raw AI Output Dump */}
-        <View style={{ backgroundColor: '#fffbe6', borderColor: '#d97706', borderWidth: 2, marginBottom: 24, padding: 16, borderRadius: 12, width: '100%' }}>
-          <Text style={{ color: '#b45309', fontWeight: 'bold', fontSize: 16, marginBottom: 12 }}>
-            🔍 AI RAW JSON OUTPUT {timelineResponse ? '(DATA FOUND)' : '(NO DATA)'}
-          </Text>
-          {timelineResponse ? (
-            <ScrollView style={{ maxHeight: 400 }} nestedScrollEnabled>
-              <Pressable
-                onPress={() => {
-                  console.log('=== TIMELINE RESPONSE ===');
-                  console.log(JSON.stringify(timelineResponse, null, 2));
-                  Alert.alert("Copied to Console", "Check your terminal/debugger for the full JSON.");
-                }}
-              >
-                <Text
-                  style={{
-                    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-                    fontSize: 10,
-                    color: '#333',
-                  }}
-                >
-                  {JSON.stringify(timelineResponse, null, 2)}
-                </Text>
-              </Pressable>
-            </ScrollView>
-          ) : (
-            <Text style={{ color: '#dc2626', fontSize: 12 }}>
-              timelineResponse is null or undefined
-            </Text>
-          )}
-        </View>
-
         <View style={styles.calendarSection}>
           <Text style={styles.sectionTitle}>Care Calendar</Text>
           
