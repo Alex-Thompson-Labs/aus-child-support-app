@@ -1,16 +1,9 @@
 {
   "buildCommand": "npx expo export --platform web --source-maps",
   "outputDirectory": "dist",
-  "framework": null,
+  "framework": "other",
   "cleanUrls": true,
   "trailingSlash": false,
-  "redirects": [
-    {
-      "source": "/change-of-assessment/:slug(.*)&returnTo=:returnTo*",
-      "destination": "/change-of-assessment/:slug?returnTo=:returnTo",
-      "permanent": true
-    }
-  ],
   "rewrites": [
     {
       "source": "/admin/lead/:id",
@@ -19,6 +12,10 @@
     {
       "source": "/blog/:id",
       "destination": "/blog/[id].html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
@@ -28,10 +25,6 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
-        },
-        {
-          "key": "Content-Encoding",
-          "value": "gzip"
         }
       ]
     },
