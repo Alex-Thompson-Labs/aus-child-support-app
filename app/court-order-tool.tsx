@@ -377,7 +377,7 @@ function StepResults({
         <View style={styles.disclaimerBox}>
           <Text style={styles.disclaimerTitle}>Important Disclaimer</Text>
           <Text style={styles.disclaimerText}>
-            This is an estimate only, based on a 2-year projection of the care arrangement. Actual care percentages may vary due to changes in circumstances.
+            This is an estimate only. Actual care percentages may vary due to changes in circumstances.
           </Text>
           <Text style={styles.disclaimerText}>For official child support assessments, contact Services Australia.</Text>
         </View>
@@ -722,9 +722,9 @@ const styles = StyleSheet.create({
   fatherFill: { backgroundColor: '#60a5fa' },
   percentageBarLabels: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 },
   percentageBarLabel: { fontSize: 12, color: '#64748b' },
-  disclaimerBox: { backgroundColor: '#fef3c7', padding: 16, borderRadius: 12, width: '100%', marginBottom: 24 },
-  disclaimerTitle: { fontSize: 14, fontWeight: '600', color: '#92400e', marginBottom: 8 },
-  disclaimerText: { fontSize: 13, color: '#92400e', lineHeight: 18, marginBottom: 4 },
+  disclaimerBox: { backgroundColor: '#eff6ff', padding: 16, borderRadius: 12, width: '100%', marginBottom: 24, borderLeftWidth: 4, borderLeftColor: '#2563eb' },
+  disclaimerTitle: { fontSize: 14, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+  disclaimerText: { fontSize: 13, color: '#1e40af', lineHeight: 18, marginBottom: 4 },
   disclaimerBullet: { fontSize: 13, color: '#92400e', marginLeft: 8, lineHeight: 18 },
   resetButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#ffffff', paddingVertical: 12, paddingHorizontal: 20, borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0', gap: 6, marginTop: 8 },
   progressContainer: { width: '100%', maxWidth: 400, marginTop: 24, alignItems: 'center' },
