@@ -7,7 +7,6 @@ import { MAX_CALCULATOR_WIDTH, useResponsive } from '@/src/utils/responsive';
 import React, { useEffect } from 'react';
 import {
     Modal,
-    Platform,
     Pressable,
     StyleSheet,
     Text,
@@ -147,6 +146,7 @@ interface CalculatorResultsProps {
   isStale?: boolean;
   resetTimestamp?: number;
   calculatorStartTime?: number;
+  selectedYear?: number;
 }
 
 export function CalculatorResults({
@@ -156,6 +156,7 @@ export function CalculatorResults({
   isStale = false,
   resetTimestamp = 0,
   calculatorStartTime,
+  selectedYear = 2025,
 }: CalculatorResultsProps) {
   const insets = useSafeAreaInsets();
   const { isWeb, isDesktop } = useResponsive();
@@ -285,6 +286,7 @@ export function CalculatorResults({
             isStale={isStale}
             calculatorStartTime={calculatorStartTime}
             isWeb={isWeb}
+            selectedYear={selectedYear}
             onCloseModal={() => setIsExpanded(false)}
             onSpecialCircumstancesChange={handleSpecialCircumstancesChange}
           />
@@ -372,6 +374,7 @@ export function CalculatorResults({
             isStale={isStale}
             calculatorStartTime={calculatorStartTime}
             isWeb={isWeb}
+            selectedYear={selectedYear}
             onCloseModal={() => setIsExpanded(false)}
             onSpecialCircumstancesChange={handleSpecialCircumstancesChange}
           />

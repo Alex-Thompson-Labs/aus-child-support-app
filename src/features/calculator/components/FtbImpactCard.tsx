@@ -11,9 +11,9 @@
 import type { CalculationResults } from '@/src/utils/calculator';
 import { formatCurrency } from '@/src/utils/formatters';
 import {
-  calculatePartAReduction,
-  checkPartBEligibility,
-  isCloseToPartBEligibility,
+    calculatePartAReduction,
+    checkPartBEligibility,
+    isCloseToPartBEligibility,
 } from '@/src/utils/ftb-logic';
 import { shadowPresets } from '@/src/utils/shadow-styles';
 import React from 'react';
@@ -30,6 +30,8 @@ interface FtbImpactCardProps {
   userIncome: number;
   /** Number of children in assessment */
   childCount: number;
+  /** Financial year for FTB rate lookup (defaults to 2025) */
+  year?: number;
   /** Callback when CTA is pressed */
   onCtaPress?: () => void;
 }
@@ -50,6 +52,7 @@ export function FtbImpactCard({
   results,
   userIncome,
   childCount,
+  year = 2025,
   onCtaPress,
 }: FtbImpactCardProps): React.ReactElement | null {
   const isReceiver = results.payer === 'Parent B'; // User is Parent A, receives from B
@@ -68,7 +71,8 @@ export function FtbImpactCard({
     const partAReduction = calculatePartAReduction(
       childSupportAmount,
       childCount,
-      userIncome
+      userIncome,
+      year
     );
 
     if (partAReduction > 0) {
@@ -112,7 +116,7 @@ export function FtbImpactCard({
   // State B: User is Payer - Check Part B Eligibility
   // ========================================================================
   if (isPayer) {
-    const eligibility = checkPartBEligibility(childSupportAmount, userIncome);
+    const eligibility = checkPartBEligibility(childSupportAmount, userIncome, year);
 
     // "Green Light" scenario - deduction makes them eligible
     if (eligibility === 'ELIGIBLE_VIA_DEDUCTION') {
@@ -146,7 +150,7 @@ export function FtbImpactCard({
     // "Close to eligible" scenario - educational message
     if (
       eligibility === 'INELIGIBLE' &&
-      isCloseToPartBEligibility(userIncome, childSupportAmount)
+      isCloseToPartBEligibility(userIncome, childSupportAmount, year)
     ) {
       return (
         <View style={[styles.card, styles.infoCard]}>

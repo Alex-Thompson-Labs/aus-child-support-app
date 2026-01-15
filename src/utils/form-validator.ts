@@ -1,5 +1,5 @@
 import { CalculatorFormState, FormErrors } from './calculator';
-import { getMaxCareForPeriod } from './care-utils';
+import { getMaxCareForPeriod, validateTotalCare } from './care-utils';
 
 /**
  * Validates the calculator form state and returns any validation errors.
@@ -52,11 +52,16 @@ export const validateCalculatorForm = (formState: CalculatorFormState): FormErro
             }
         }
 
+
         // Validate sum
         const total = child.careAmountA + child.careAmountB + careNPC;
+
         if (total > maxValue) {
             newErrors[child.id] =
                 `Total ${unitLabel} cannot exceed ${maxValue}${unitSymbol} per ${child.carePeriod}. Currently: ${total}${unitSymbol}`;
+        } else if (!validateTotalCare(child.careAmountA, child.careAmountB + careNPC, child.carePeriod)) {
+            newErrors[child.id] =
+                `Total care must equal ${maxValue}${unitSymbol} per ${child.carePeriod} (365 days annually). Currently: ${total}${unitSymbol}`;
         }
 
     });

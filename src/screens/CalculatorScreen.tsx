@@ -2,13 +2,13 @@ import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCalculator } from '../hooks/useCalculator';
@@ -313,6 +313,7 @@ export function CalculatorScreen() {
                 displayMode="modal"
                 resetTimestamp={resetTimestamp}
                 calculatorStartTime={calculatorStartTime}
+                selectedYear={parseInt(selectedYear, 10)}
               />
             </View>
           </View>

@@ -18,12 +18,12 @@ import type { ComplexityFormData } from '@/src/utils/complexity-detection';
 import { MAX_CALCULATOR_WIDTH } from '@/src/utils/responsive';
 import React, { lazy, Suspense } from 'react';
 import {
-  ActivityIndicator,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    ActivityIndicator,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FtbImpactCard } from '../FtbImpactCard';
@@ -45,6 +45,7 @@ export interface ResultsModalContentProps {
   isStale?: boolean;
   calculatorStartTime?: number;
   isWeb: boolean;
+  selectedYear?: number;
   onCloseModal: () => void;
   onSpecialCircumstancesChange: (reasons: string[]) => void;
 }
@@ -57,6 +58,7 @@ export function ResultsModalContent({
   isStale = false,
   calculatorStartTime,
   isWeb,
+  selectedYear = 2025,
   onCloseModal,
   onSpecialCircumstancesChange,
 }: ResultsModalContentProps) {
@@ -146,6 +148,7 @@ export function ResultsModalContent({
         results={results}
         userIncome={results.ATI_A}
         childCount={formData?.children?.length ?? results.childResults.length}
+        year={selectedYear}
       />
     </ScrollView>
   );

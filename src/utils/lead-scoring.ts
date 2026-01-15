@@ -6,12 +6,19 @@
  * - Complexity (special circumstances)
  * - Value (liability amount)
  *
- * Scoring ranges:
+ * Scoring ranges (default):
  * - 10+ points: Premium lead
  * - 7-9 points: High-value lead
  * - 4-6 points: Standard qualified lead
  * - 2-3 points: Low-value lead
+ *
+ * Configuration can be overridden for A/B testing different scoring strategies.
  */
+
+import {
+    DEFAULT_SCORING_CONFIG,
+    ScoringConfig,
+} from '@/src/config/scoring-config';
 
 // ============================================================================
 // Types
@@ -33,43 +40,16 @@ export interface LeadScoreResult {
 }
 
 // ============================================================================
-// Scoring Constants
-// ============================================================================
-
-const SCORING_POINTS = {
-    COURT_DATE_URGENT: 10,       // Court date within 30 days
-    INTERNATIONAL_JURISDICTION: 8, // International case - high complexity
-    PROPERTY_SETTLEMENT: 8,      // Property settlement pending
-    INCOME_ISSUES: 7,            // Hidden assets or cash business
-    HIGH_VALUE_CASE: 6,          // Liability > $15,000
-    MULTIPLE_COMPLEXITY: 5,      // 3+ special circumstances
-    POST_SEPARATION_INCOME: 5,   // PSI - common, valuable case
-    SPECIAL_CIRCUMSTANCE: 4,     // Other special circumstance
-    SHARED_CARE_DISPUTE: 3,      // Care arrangement 35-65%
-    BINDING_AGREEMENT: 2,        // Interest in binding agreement
-} as const;
-
-// Thresholds
-const HIGH_VALUE_THRESHOLD = 15000;
-const COURT_DATE_URGENCY_DAYS = 30;
-const SHARED_CARE_MIN = 35;
-const SHARED_CARE_MAX = 65;
-const MULTIPLE_COMPLEXITY_THRESHOLD = 3;
-
-// Special circumstance that indicates property settlement
-const PROPERTY_SETTLEMENT_CIRCUMSTANCE = 'property_settlement_pending';
-
-// Financial tags that indicate income issues
-const INCOME_ISSUE_TAGS = ['Hidden Assets', 'Cash Business'];
-
-// ============================================================================
 // Scoring Functions
 // ============================================================================
 
 /**
- * Check if court date is within urgency window (30 days from now)
+ * Check if court date is within urgency window
  */
-function isCourtDateUrgent(courtDate: Date | null | undefined): boolean {
+function isCourtDateUrgent(
+    courtDate: Date | null | undefined,
+    config: ScoringConfig
+): boolean {
     if (!courtDate) return false;
 
     const now = new Date();
@@ -77,14 +57,17 @@ function isCourtDateUrgent(courtDate: Date | null | undefined): boolean {
         (courtDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
     );
 
-    return daysUntilCourt > 0 && daysUntilCourt <= COURT_DATE_URGENCY_DAYS;
+    return daysUntilCourt > 0 && daysUntilCourt <= config.thresholds.COURT_DATE_URGENCY_DAYS;
 }
 
 /**
  * Check if case has property settlement
  */
-function hasPropertySettlement(specialCircumstances: string[] = []): boolean {
-    return specialCircumstances.includes(PROPERTY_SETTLEMENT_CIRCUMSTANCE);
+function hasPropertySettlement(
+    specialCircumstances: string[] = [],
+    config: ScoringConfig
+): boolean {
+    return specialCircumstances.includes(config.propertySettlementCircumstance);
 }
 
 /**
@@ -104,37 +87,46 @@ function hasPostSeparationIncome(specialCircumstances: string[] = []): boolean {
 /**
  * Check if case has income issues
  */
-function hasIncomeIssues(financialTags: string[] = []): boolean {
-    return financialTags.some(tag => INCOME_ISSUE_TAGS.includes(tag));
+function hasIncomeIssues(
+    financialTags: string[] = [],
+    config: ScoringConfig
+): boolean {
+    return financialTags.some(tag => config.incomeIssueTags.includes(tag));
 }
 
 /**
- * Check if case is high-value (liability > $15k)
+ * Check if case is high-value based on configured threshold
  */
-function isHighValue(liability: number): boolean {
-    return liability > HIGH_VALUE_THRESHOLD;
+function isHighValue(liability: number, config: ScoringConfig): boolean {
+    return liability > config.thresholds.HIGH_VALUE_THRESHOLD;
 }
 
 /**
  * Check if case has multiple complexity factors
  */
-function hasMultipleComplexity(specialCircumstances: string[] = []): boolean {
-    return specialCircumstances.length >= MULTIPLE_COMPLEXITY_THRESHOLD;
+function hasMultipleComplexity(
+    specialCircumstances: string[] = [],
+    config: ScoringConfig
+): boolean {
+    return specialCircumstances.length >= config.thresholds.MULTIPLE_COMPLEXITY_THRESHOLD;
 }
 
 /**
- * Check if case has shared care dispute (any child with 35-65% care)
+ * Check if case has shared care dispute (any child with care % in configured range)
  */
 function hasSharedCareDispute(
-    careData: { careA: number; careB: number }[] = []
+    careData: { careA: number; careB: number }[] = [],
+    config: ScoringConfig
 ): boolean {
     return careData.some(child => {
         const careAPercent = child.careA;
         const careBPercent = child.careB;
 
         return (
-            (careAPercent >= SHARED_CARE_MIN && careAPercent <= SHARED_CARE_MAX) ||
-            (careBPercent >= SHARED_CARE_MIN && careBPercent <= SHARED_CARE_MAX)
+            (careAPercent >= config.thresholds.SHARED_CARE_MIN && 
+             careAPercent <= config.thresholds.SHARED_CARE_MAX) ||
+            (careBPercent >= config.thresholds.SHARED_CARE_MIN && 
+             careBPercent <= config.thresholds.SHARED_CARE_MAX)
         );
     });
 }
@@ -142,20 +134,26 @@ function hasSharedCareDispute(
 /**
  * Count non-property-settlement special circumstances
  */
-function countOtherSpecialCircumstances(specialCircumstances: string[] = []): number {
+function countOtherSpecialCircumstances(
+    specialCircumstances: string[] = [],
+    config: ScoringConfig
+): number {
     return specialCircumstances.filter(
-        sc => sc !== PROPERTY_SETTLEMENT_CIRCUMSTANCE
+        sc => sc !== config.propertySettlementCircumstance
     ).length;
 }
 
 /**
- * Determine score category based on total points
+ * Determine score category based on total points and configured thresholds
  */
-function getScoreCategory(score: number): LeadScoreResult['category'] {
-    if (score >= 10) return 'Premium';
-    if (score >= 7) return 'High-Value';
-    if (score >= 4) return 'Standard';
-    if (score >= 2) return 'Low-Value';
+function getScoreCategory(
+    score: number,
+    config: ScoringConfig
+): LeadScoreResult['category'] {
+    if (score >= config.categoryThresholds.PREMIUM) return 'Premium';
+    if (score >= config.categoryThresholds.HIGH_VALUE) return 'High-Value';
+    if (score >= config.categoryThresholds.STANDARD) return 'Standard';
+    if (score >= config.categoryThresholds.LOW_VALUE) return 'Low-Value';
     return 'Unscored';
 }
 
@@ -167,78 +165,93 @@ function getScoreCategory(score: number): LeadScoreResult['category'] {
  * Calculate lead score based on multiple factors
  *
  * @param input Lead data including special circumstances, court date, liability, etc.
+ * @param config Optional scoring configuration. Defaults to DEFAULT_SCORING_CONFIG.
+ *               Pass a custom config for A/B testing different scoring strategies.
  * @returns Score result with total points, category, and contributing factors
+ *
+ * @example
+ * // Use default scoring
+ * const result = calculateLeadScore(leadData);
+ *
+ * @example
+ * // Use custom scoring for A/B test
+ * import { VALUE_FOCUSED_CONFIG } from '@/src/config/scoring-config';
+ * const result = calculateLeadScore(leadData, VALUE_FOCUSED_CONFIG);
  */
-export function calculateLeadScore(input: LeadScoringInput): LeadScoreResult {
+export function calculateLeadScore(
+    input: LeadScoringInput,
+    config: ScoringConfig = DEFAULT_SCORING_CONFIG
+): LeadScoreResult {
     let score = 0;
     const factors: string[] = [];
 
-    // Court Date Urgent (+10)
-    if (isCourtDateUrgent(input.courtDate)) {
-        score += SCORING_POINTS.COURT_DATE_URGENT;
+    // Court Date Urgent
+    if (isCourtDateUrgent(input.courtDate, config)) {
+        score += config.points.COURT_DATE_URGENT;
         factors.push('court_date_urgent');
     }
 
-    // International Jurisdiction (+8)
+    // International Jurisdiction
     if (hasInternationalJurisdiction(input.specialCircumstances)) {
-        score += SCORING_POINTS.INTERNATIONAL_JURISDICTION;
+        score += config.points.INTERNATIONAL_JURISDICTION;
         factors.push('international_jurisdiction');
     }
 
-    // Property Settlement (+8)
-    if (hasPropertySettlement(input.specialCircumstances)) {
-        score += SCORING_POINTS.PROPERTY_SETTLEMENT;
+    // Property Settlement
+    if (hasPropertySettlement(input.specialCircumstances, config)) {
+        score += config.points.PROPERTY_SETTLEMENT;
         factors.push('property_settlement');
     }
 
-    // Post-Separation Income (+5)
+    // Post-Separation Income
     if (hasPostSeparationIncome(input.specialCircumstances)) {
-        score += SCORING_POINTS.POST_SEPARATION_INCOME;
+        score += config.points.POST_SEPARATION_INCOME;
         factors.push('post_separation_income');
     }
 
-    // Income Issues (+7)
-    if (hasIncomeIssues(input.financialTags)) {
-        score += SCORING_POINTS.INCOME_ISSUES;
+    // Income Issues
+    if (hasIncomeIssues(input.financialTags, config)) {
+        score += config.points.INCOME_ISSUES;
         factors.push('income_issues');
     }
 
-    // High-Value Case (+6)
-    if (isHighValue(input.liability)) {
-        score += SCORING_POINTS.HIGH_VALUE_CASE;
+    // High-Value Case
+    if (isHighValue(input.liability, config)) {
+        score += config.points.HIGH_VALUE_CASE;
         factors.push('high_value_case');
     }
 
-    // Multiple Complexity Factors (+5)
-    if (hasMultipleComplexity(input.specialCircumstances)) {
-        score += SCORING_POINTS.MULTIPLE_COMPLEXITY;
+    // Multiple Complexity Factors
+    if (hasMultipleComplexity(input.specialCircumstances, config)) {
+        score += config.points.MULTIPLE_COMPLEXITY;
         factors.push('multiple_complexity');
     }
 
-    // Other Special Circumstances (+4 each)
+    // Other Special Circumstances
     const otherCircumstances = countOtherSpecialCircumstances(
-        input.specialCircumstances
+        input.specialCircumstances,
+        config
     );
     if (otherCircumstances > 0) {
-        score += SCORING_POINTS.SPECIAL_CIRCUMSTANCE * otherCircumstances;
+        score += config.points.SPECIAL_CIRCUMSTANCE * otherCircumstances;
         factors.push('special_circumstances');
     }
 
-    // Shared Care Dispute (+3)
-    if (hasSharedCareDispute(input.careData)) {
-        score += SCORING_POINTS.SHARED_CARE_DISPUTE;
+    // Shared Care Dispute
+    if (hasSharedCareDispute(input.careData, config)) {
+        score += config.points.SHARED_CARE_DISPUTE;
         factors.push('shared_care_dispute');
     }
 
-    // Binding Agreement (+2)
+    // Binding Agreement
     if (input.bindingAgreement === true) {
-        score += SCORING_POINTS.BINDING_AGREEMENT;
+        score += config.points.BINDING_AGREEMENT;
         factors.push('binding_agreement');
     }
 
     return {
         score,
-        category: getScoreCategory(score),
+        category: getScoreCategory(score, config),
         factors,
     };
 }

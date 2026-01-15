@@ -54,10 +54,22 @@ export function mapCareToCostPercent(care: number): number {
     return 100; // More than primary care
 }
 
+
 /**
  * Validates non-parent carer care percentage.
  * Non-parent carers must have at least 35% care.
  */
 export function validateNonParentCarerCare(carePercentage: number): boolean {
     return carePercentage >= 35;
+}
+
+/**
+ * Validates that the total care amounts convert to 365 annual nights (within tolerance).
+ */
+export function validateTotalCare(careA: number, careB: number, period: CarePeriod): boolean {
+    const nightsA = (convertCareToPercentage(careA, period) / 100) * 365;
+    const nightsB = (convertCareToPercentage(careB, period) / 100) * 365;
+    const total = nightsA + nightsB;
+    // Tolerance of 0.5 seems reasonable
+    return Math.abs(total - 365) <= 0.5;
 }
