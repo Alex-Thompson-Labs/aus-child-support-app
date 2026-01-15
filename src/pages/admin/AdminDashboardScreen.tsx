@@ -31,12 +31,14 @@ import {
   webInputStyles,
 } from '../../utils/responsive.ts';
 import { getSupabaseClient } from '../../utils/supabase/client.ts';
-import type { LeadSubmission } from '../../utils/supabase/leads.ts';
+import { fetchPaginatedLeads, type LeadSubmission } from '../../utils/supabase/leads.ts';
 
 // Use brand colors from theme
 const PRIMARY_COLOR = Colors.light.tint;
 
 type LeadStatus = 'new' | 'reviewing' | 'sent' | 'converted' | 'lost';
+
+const LEADS_PER_PAGE = 20;
 
 export default function AdminDashboardScreen() {
   const router = useRouter();
@@ -49,6 +51,9 @@ export default function AdminDashboardScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | LeadStatus>('all');
   const [sortBy, setSortBy] = useState<'date' | 'liability' | 'income'>('date');
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
 
   // Statistics
   const totalLeads = leads.length;
@@ -68,40 +73,54 @@ export default function AdminDashboardScreen() {
         }, 0) / leads.length
       : 0;
 
-  const loadLeads = useCallback(async () => {
+  const loadLeads = useCallback(async (page: number = 0, append: boolean = false) => {
     try {
-      setLoading(true);
+      if (!append) {
+        setLoading(true);
+      }
 
-      // Lazy-load Supabase for data fetching
-      const supabase = await getSupabaseClient();
+      // Fetch paginated leads from server
+      const result = await fetchPaginatedLeads(page, LEADS_PER_PAGE, {
+        statusFilter: statusFilter,
+        sortBy: sortBy,
+        sortOrder: 'desc',
+      });
 
-      // Use leads_decrypted view for automatic PII decryption
-      const { data, error } = await supabase
-        .from('leads_decrypted')
-        .select('*')
-        .is('deleted_at', null) // Exclude soft-deleted leads
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('[AdminDashboard] Error loading leads:', error);
+      if (!result.success) {
+        console.error('[AdminDashboard] Error loading leads:', result.error);
         if (Platform.OS === 'web') {
-          alert(`Error Loading Leads\n\n${error.message}`);
+          alert(`Error Loading Leads\n\n${result.error}`);
         } else {
-          Alert.alert('Error Loading Leads', error.message);
+          Alert.alert('Error Loading Leads', result.error || 'Unknown error');
         }
         return;
       }
 
-      console.log(`[AdminDashboard] Loaded ${data?.length || 0} leads`);
-      setLeads(data || []);
-      setFilteredLeads(data || []);
+      const newLeads = result.leads || [];
+      const total = result.totalCount || 0;
+
+      console.log(`[AdminDashboard] Loaded ${newLeads.length} leads (page ${page}, total: ${total})`);
+
+      if (append) {
+        // Append to existing leads for "load more"
+        setLeads(prev => [...prev, ...newLeads]);
+        setFilteredLeads(prev => [...prev, ...newLeads]);
+      } else {
+        // Replace leads for initial load or refresh
+        setLeads(newLeads);
+        setFilteredLeads(newLeads);
+      }
+
+      setTotalCount(total);
+      setCurrentPage(page);
+      setHasMore((page + 1) * LEADS_PER_PAGE < total);
     } catch (error) {
       console.error('[AdminDashboard] Unexpected error:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [statusFilter, sortBy]);
 
   // Check authentication on mount
   useEffect(() => {
@@ -136,19 +155,25 @@ export default function AdminDashboardScreen() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    loadLeads();
+    loadLeads(0, false);
   }, [loadLeads]);
 
-  // Apply filters and search
+  const loadMoreLeads = useCallback(() => {
+    if (!loading && hasMore) {
+      loadLeads(currentPage + 1, true);
+    }
+  }, [loading, hasMore, currentPage, loadLeads]);
+
+  // When filters change, reset to page 0
+  useEffect(() => {
+    loadLeads(0, false);
+  }, [statusFilter, sortBy]);
+
+  // Apply client-side search filter (search is not done server-side for security)
   useEffect(() => {
     let filtered = [...leads];
 
-    // Status filter
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter((lead) => lead.status === statusFilter);
-    }
-
-    // Search query (name or email)
+    // Search query (name or email) - client-side only
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
       filtered = filtered.filter(
@@ -158,24 +183,8 @@ export default function AdminDashboardScreen() {
       );
     }
 
-    // Sort
-    if (sortBy === 'date') {
-      filtered.sort(
-        (a, b) =>
-          new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()
-      );
-    } else if (sortBy === 'liability') {
-      filtered.sort((a, b) => b.annual_liability - a.annual_liability);
-    } else if (sortBy === 'income') {
-      filtered.sort((a, b) => {
-        const incA = (a.income_parent_a || 0) + (a.income_parent_b || 0);
-        const incB = (b.income_parent_a || 0) + (b.income_parent_b || 0);
-        return incB - incA;
-      });
-    }
-
     setFilteredLeads(filtered);
-  }, [leads, statusFilter, searchQuery, sortBy]);
+  }, [leads, searchQuery]);
 
   const handleLogout = async () => {
     const supabase = await getSupabaseClient();
@@ -428,7 +437,31 @@ export default function AdminDashboardScreen() {
               </Text>
             </View>
           ) : (
-            <LeadsTable leads={filteredLeads} />
+            <>
+              <LeadsTable leads={filteredLeads} />
+              
+              {/* Pagination Info and Load More */}
+              <View style={styles.paginationContainer}>
+                <Text style={styles.paginationText}>
+                  Showing {filteredLeads.length} of {totalCount} leads
+                </Text>
+                {hasMore && !searchQuery && (
+                  <Pressable
+                    style={[styles.loadMoreButton, isWeb && webClickableStyles]}
+                    onPress={loadMoreLeads}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <ActivityIndicator size="small" color="#ffffff" />
+                    ) : (
+                      <Text style={styles.loadMoreButtonText}>
+                        Load More ({totalCount - filteredLeads.length} remaining)
+                      </Text>
+                    )}
+                  </Pressable>
+                )}
+              </View>
+            </>
           )}
         </ScrollView>
       </View>
@@ -650,5 +683,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 16,
     gap: 12,
+  },
+  paginationContainer: {
+    padding: 20,
+    alignItems: 'center',
+    gap: 12,
+  },
+  paginationText: {
+    fontSize: 14,
+    color: '#64748b',
+    textAlign: 'center',
+  },
+  loadMoreButton: {
+    backgroundColor: PRIMARY_COLOR,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    minWidth: 200,
+    alignItems: 'center',
+  },
+  loadMoreButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

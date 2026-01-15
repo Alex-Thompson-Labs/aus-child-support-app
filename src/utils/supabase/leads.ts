@@ -311,3 +311,100 @@ export async function updateLeadEnrichment(
         };
     }
 }
+
+/**
+ * Fetch paginated leads from the database
+ * 
+ * Implements server-side pagination to prevent loading all PII into client memory.
+ * Uses Supabase .range() to limit data transfer and improve performance.
+ * 
+ * @param page - Page number (0-indexed)
+ * @param limit - Number of leads per page (default: 20)
+ * @param options - Optional filtering and sorting options
+ * @returns Paginated leads data with total count
+ */
+export async function fetchPaginatedLeads(
+    page: number = 0,
+    limit: number = 20,
+    options?: {
+        statusFilter?: 'all' | 'new' | 'reviewing' | 'sent' | 'converted' | 'lost';
+        sortBy?: 'date' | 'liability' | 'income';
+        sortOrder?: 'asc' | 'desc';
+    }
+): Promise<{
+    success: boolean;
+    leads?: LeadSubmission[];
+    totalCount?: number;
+    error?: string;
+}> {
+    try {
+        // Lazy-load Supabase client
+        const supabaseClient = await getSupabaseClient();
+
+        // Calculate range for pagination
+        const startIndex = page * limit;
+        const endIndex = startIndex + limit - 1;
+
+        // Build query
+        let query = supabaseClient
+            .from('leads_decrypted')
+            .select('*', { count: 'exact' })
+            .is('deleted_at', null); // Exclude soft-deleted leads
+
+        // Apply status filter
+        if (options?.statusFilter && options.statusFilter !== 'all') {
+            query = query.eq('status', options.statusFilter);
+        }
+
+        // Apply sorting
+        const sortBy = options?.sortBy || 'date';
+        const sortOrder = options?.sortOrder || 'desc';
+        
+        if (sortBy === 'date') {
+            query = query.order('created_at', { ascending: sortOrder === 'asc' });
+        } else if (sortBy === 'liability') {
+            query = query.order('annual_liability', { ascending: sortOrder === 'asc' });
+        } else if (sortBy === 'income') {
+            // For income sorting, we need to sort by a calculated field
+            // This requires a database view or function, for now we'll fetch and sort client-side
+            query = query.order('created_at', { ascending: false });
+        }
+
+        // Apply pagination using range
+        query = query.range(startIndex, endIndex);
+
+        const { data, error, count } = await query;
+
+        if (error) {
+            console.error('[Supabase] Error fetching paginated leads:', error);
+            return {
+                success: false,
+                error: error.message || 'Failed to fetch leads',
+            };
+        }
+
+        // If sorting by income, do it client-side for this page
+        let sortedData = data || [];
+        if (sortBy === 'income' && sortedData.length > 0) {
+            sortedData = [...sortedData].sort((a, b) => {
+                const incA = (a.income_parent_a || 0) + (a.income_parent_b || 0);
+                const incB = (b.income_parent_a || 0) + (b.income_parent_b || 0);
+                return sortOrder === 'asc' ? incA - incB : incB - incA;
+            });
+        }
+
+        console.log(`[Supabase] Fetched ${sortedData.length} leads (page ${page}, total: ${count})`);
+
+        return {
+            success: true,
+            leads: sortedData,
+            totalCount: count || 0,
+        };
+    } catch (error) {
+        console.error('[Supabase] Unexpected error fetching paginated leads:', error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error occurred',
+        };
+    }
+}
