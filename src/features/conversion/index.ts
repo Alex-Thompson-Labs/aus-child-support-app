@@ -9,4 +9,5 @@
 export { SmartConversionFooter, determineCardVariant } from './components/SmartConversionFooter';
 export type { ConversionCardVariant } from './components/SmartConversionFooter';
 export { SpecialCircumstancesPrompt } from './components/SpecialCircumstancesPrompt';
+export { SpecialCircumstancesWizard } from './components/SpecialCircumstancesWizard';
 

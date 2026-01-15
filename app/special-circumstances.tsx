@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   Linking,
   Platform,
@@ -10,23 +10,16 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { PageSEO } from '../src/components/seo/PageSEO.tsx';
-import Accordion from '../src/components/ui/Accordion.tsx';
-import { HelpTooltip } from '../src/features/calculator/index.ts';
-import { useAnalytics } from '../src/utils/analytics.ts';
+import { PageSEO } from '../src/components/seo/PageSEO';
+import Accordion from '../src/components/ui/Accordion';
+import { SpecialCircumstancesWizard } from '../src/features/conversion';
+import { useAnalytics } from '../src/utils/analytics';
 import {
   MAX_FORM_WIDTH,
-  isWeb,
-  webClickableStyles,
-} from '../src/utils/responsive.ts';
-import { createShadow } from '../src/utils/shadow-styles.ts';
-import {
-  SPECIAL_CIRCUMSTANCES,
-  getHighestPriorityReason,
-  isCourtDateReason,
-  isValidSpecialCircumstanceId,
-  type SpecialCircumstance,
-} from '../src/utils/special-circumstances.ts';
+  isWeb
+} from '../src/utils/responsive';
+import { createShadow } from '../src/utils/shadow-styles';
+import { getHighestPriorityReason } from '../src/utils/special-circumstances';
 
 // ============================================================================
 // Special Circumstances Standalone Screen
@@ -40,8 +33,8 @@ import {
  *
  * Flow:
  * 1. User lands on /special-circumstances (from blog link)
- * 2. User selects applicable special circumstances
- * 3. User clicks "Continue" button
+ * 2. User selects applicable special circumstances using the wizard
+ * 3. User clicks submit in the wizard
  * 4. Navigates to /lawyer-inquiry with URL params:
  *    - mode=direct (triggers manual income inputs)
  *    - reason=special_circumstances
@@ -67,11 +60,10 @@ export default function SpecialCircumstancesScreen() {
   }, [rawReturnTo]);
 
   // State management
-  const [selectedReasons, setSelectedReasons] = useState<Set<string>>(
-    new Set()
+  const [selectedReasons, setSelectedReasons] = useState<string[]>(
+    preselect ? [preselect] : []
   );
   const [isNavigating, setIsNavigating] = useState(false);
-  const [hasPropertySettlement, setHasPropertySettlement] = useState(false);
 
   // PAGE SCHEMA: FAQ for Special Circumstances
   const faqSchema = {
@@ -104,69 +96,14 @@ export default function SpecialCircumstancesScreen() {
     ],
   };
 
-  // Handle preselect URL parameter (from CoA reason pages)
-  useEffect(() => {
-    if (preselect && isValidSpecialCircumstanceId(preselect)) {
-      setSelectedReasons(new Set([preselect]));
-      // Also set property settlement state if that's what's preselected
-      if (preselect === 'property_settlement') {
-        setHasPropertySettlement(true);
-      }
-    }
-  }, [preselect]);
-
-  // Group reasons by category
-  const incomeReasons = SPECIAL_CIRCUMSTANCES.filter(
-    (r: SpecialCircumstance) =>
-      r.category === 'income' && r.id !== 'hiding_income'
-  );
-  const childReasons = SPECIAL_CIRCUMSTANCES.filter(
-    (r: SpecialCircumstance) => r.category === 'child'
-  );
-  const otherReasons = SPECIAL_CIRCUMSTANCES.filter(
-    (r: SpecialCircumstance) =>
-      r.category === 'other' && r.id !== 'property_settlement'
-  );
-
-  // Determine button state
-  const buttonDisabled = selectedReasons.size === 0 || isNavigating;
-
-  // Checkbox toggle handler
-  const handleCheckboxToggle = useCallback(
-    (reasonId: string) => {
-      setSelectedReasons((prev) => {
-        const next = new Set(prev);
-        const wasChecked = next.has(reasonId);
-
-        if (wasChecked) {
-          next.delete(reasonId);
-        } else {
-          next.add(reasonId);
-        }
-
-        // Track analytics
-        setTimeout(() => {
-          try {
-            analytics.track('special_circumstances_reason_toggled', {
-              reason_id: reasonId,
-              is_checked: !wasChecked,
-              total_selected: next.size,
-              source: 'standalone_screen',
-            });
-          } catch (error) {
-            console.error('[SpecialCircumstances] Analytics error:', error);
-          }
-        }, 100);
-
-        return next;
-      });
-    },
-    [analytics]
-  );
+  // Handle changes from the wizard
+  const handleSpecialCircumstancesChange = useCallback((reasons: string[]) => {
+    setSelectedReasons(reasons);
+  }, []);
 
   // Navigation handler - redirects to lawyer inquiry with Direct Mode params
-  const handleContinue = useCallback(() => {
-    if (isNavigating || selectedReasons.size === 0) {
+  const handleSubmit = useCallback(() => {
+    if (isNavigating || selectedReasons.length === 0) {
       return;
     }
 
@@ -175,11 +112,10 @@ export default function SpecialCircumstancesScreen() {
     // Track analytics
     try {
       analytics.track('special_circumstances_continue_clicked', {
-        reasons_selected: JSON.stringify(Array.from(selectedReasons)),
-        reason_count: selectedReasons.size,
+        reasons_selected: JSON.stringify(selectedReasons),
+        reason_count: selectedReasons.length,
         most_important_category:
-          getHighestPriorityReason(Array.from(selectedReasons))?.category ??
-          null,
+          getHighestPriorityReason(selectedReasons)?.category ?? null,
         source: 'standalone_screen',
       });
     } catch (error) {
@@ -199,9 +135,9 @@ export default function SpecialCircumstancesScreen() {
           ...(returnTo ? { returnTo } : {}),
 
           // Special Circumstances data
-          specialCircumstances: JSON.stringify(Array.from(selectedReasons)),
+          specialCircumstances: JSON.stringify(selectedReasons),
           priorityCircumstance:
-            getHighestPriorityReason(Array.from(selectedReasons))?.id ?? '',
+            getHighestPriorityReason(selectedReasons)?.id ?? '',
         },
       });
     } catch (error) {
@@ -209,32 +145,6 @@ export default function SpecialCircumstancesScreen() {
       setIsNavigating(false);
     }
   }, [isNavigating, selectedReasons, router, analytics, returnTo]);
-
-  // Render checkbox for a reason
-  const renderCheckbox = (reason: SpecialCircumstance) => {
-    const isChecked = selectedReasons.has(reason.id);
-
-    return (
-      <Pressable
-        key={reason.id}
-        style={[styles.checkboxRow, isWeb && webClickableStyles]}
-        onPress={() => handleCheckboxToggle(reason.id)}
-        accessible
-        accessibilityRole="checkbox"
-        accessibilityState={{ checked: isChecked }}
-        accessibilityLabel={reason.label}
-        accessibilityHint={`Double tap to ${isChecked ? 'uncheck' : 'check'}`}
-      >
-        <View style={[styles.checkbox, isChecked && styles.checkboxChecked]}>
-          {isChecked && <Text style={styles.checkboxCheck}>✓</Text>}
-        </View>
-        <View style={styles.checkboxLabelContainer}>
-          <Text style={styles.checkboxLabel}>{reason.label}</Text>
-          <HelpTooltip what={reason.description} why="" hideWhatLabel />
-        </View>
-      </Pressable>
-    );
-  };
 
   // Web-specific container styles
   const webContainerStyle = isWeb
@@ -307,175 +217,14 @@ export default function SpecialCircumstancesScreen() {
             </Text>
           </View>
 
-          {/* Category Sections */}
-          <View style={styles.categorySections}>
-            {/* Legal Section */}
-            <View style={styles.reasonGroup}>
-              <View style={styles.groupHeader}>
-                <Text style={[styles.groupTitle, { color: '#1e3a8a' }]}>
-                  Legal
-                </Text>
-              </View>
-              <View style={styles.checkboxList}>
-                {/* Court Date Checkbox */}
-                <Pressable
-                  style={[styles.checkboxRow, isWeb && webClickableStyles]}
-                  onPress={() => {
-                    const hasCourtDate = Array.from(selectedReasons).some(
-                      (id) => isCourtDateReason(id)
-                    );
-
-                    if (hasCourtDate) {
-                      setSelectedReasons((prev) => {
-                        const next = new Set(prev);
-                        Array.from(next).forEach((id) => {
-                          if (isCourtDateReason(id)) {
-                            next.delete(id);
-                          }
-                        });
-                        return next;
-                      });
-                    } else {
-                      setSelectedReasons((prev) => {
-                        const next = new Set(prev);
-                        next.add('court_date_pending');
-                        return next;
-                      });
-                    }
-                  }}
-                  accessible
-                  accessibilityRole="checkbox"
-                  accessibilityState={{
-                    checked: Array.from(selectedReasons).some((id) =>
-                      isCourtDateReason(id)
-                    ),
-                  }}
-                  accessibilityLabel="I have an upcoming court hearing regarding child support."
-                >
-                  <View
-                    style={[
-                      styles.checkbox,
-                      Array.from(selectedReasons).some((id) =>
-                        isCourtDateReason(id)
-                      ) && styles.checkboxChecked,
-                    ]}
-                  >
-                    {Array.from(selectedReasons).some((id) =>
-                      isCourtDateReason(id)
-                    ) && <Text style={styles.checkboxCheck}>✓</Text>}
-                  </View>
-                  <View style={styles.checkboxLabelContainer}>
-                    <Text style={styles.checkboxLabel}>
-                      I have an upcoming court hearing regarding child support.
-                    </Text>
-                    <HelpTooltip
-                      what="Upcoming court dates are critical events. Professional legal preparation is strongly recommended."
-                      why=""
-                      hideWhatLabel
-                    />
-                  </View>
-                </Pressable>
-
-                {/* Property Settlement Checkbox */}
-                <Pressable
-                  style={[styles.checkboxRow, isWeb && webClickableStyles]}
-                  onPress={() => {
-                    setHasPropertySettlement(!hasPropertySettlement);
-                    handleCheckboxToggle('property_settlement');
-                  }}
-                  accessible
-                  accessibilityRole="checkbox"
-                  accessibilityState={{ checked: hasPropertySettlement }}
-                >
-                  <View
-                    style={[
-                      styles.checkbox,
-                      hasPropertySettlement && styles.checkboxChecked,
-                    ]}
-                  >
-                    {hasPropertySettlement && (
-                      <Text style={styles.checkboxCheck}>✓</Text>
-                    )}
-                  </View>
-                  <View style={styles.checkboxLabelContainer}>
-                    <Text style={styles.checkboxLabel}>
-                      I have a property settlement pending.
-                    </Text>
-                    <HelpTooltip
-                      what="Pending property settlements can significantly affect child support obligations."
-                      why=""
-                      hideWhatLabel
-                    />
-                  </View>
-                </Pressable>
-              </View>
-            </View>
-
-            {/* Section Divider */}
-            <View style={styles.sectionDivider} />
-
-            {/* Income Issues Group */}
-            <View style={styles.reasonGroup}>
-              <View style={styles.groupHeader}>
-                <Text style={[styles.groupTitle, { color: '#1e3a8a' }]}>
-                  The Other Parent&apos;s Financials
-                </Text>
-              </View>
-              <View style={styles.checkboxList}>
-                {incomeReasons.map(renderCheckbox)}
-              </View>
-            </View>
-
-            {/* Costs & Other Factors Group */}
-            {(childReasons.length > 0 || otherReasons.length > 0) && (
-              <>
-                <View style={styles.sectionDivider} />
-
-                <View style={styles.reasonGroup}>
-                  <View style={styles.groupHeader}>
-                    <Text style={[styles.groupTitle, { color: '#1e3a8a' }]}>
-                      Costs & Other Factors
-                    </Text>
-                  </View>
-                  <View style={styles.checkboxList}>
-                    {childReasons.map(renderCheckbox)}
-                    {otherReasons.map(renderCheckbox)}
-                  </View>
-                </View>
-              </>
-            )}
-          </View>
-
-          {/* Continue Button */}
-          <View style={styles.footer}>
-            <Pressable
-              style={[
-                styles.continueButton,
-                buttonDisabled && styles.continueButtonDisabled,
-                isWeb && !buttonDisabled && webClickableStyles,
-              ]}
-              onPress={handleContinue}
-              disabled={buttonDisabled}
-              accessible
-              accessibilityRole="button"
-              accessibilityLabel="Continue to speak with a lawyer"
-              accessibilityState={{ disabled: buttonDisabled }}
-            >
-              {isNavigating ? (
-                <Text style={styles.continueButtonText}>Loading...</Text>
-              ) : (
-                <Text style={styles.continueButtonText}>
-                  Continue to Speak with a Lawyer
-                </Text>
-              )}
-            </Pressable>
-            {selectedReasons.size > 0 && (
-              <Text style={styles.selectedCount}>
-                {selectedReasons.size} reason
-                {selectedReasons.size === 1 ? '' : 's'} selected
-              </Text>
-            )}
-          </View>
+          {/* Wizard Component */}
+          <SpecialCircumstancesWizard
+            initialSelectedReasons={selectedReasons}
+            onSpecialCircumstancesChange={handleSpecialCircumstancesChange}
+            onSubmit={handleSubmit}
+            isSubmitting={isNavigating}
+            isStandalone={true}
+          />
 
           {/* FAQ Section */}
           <View style={styles.faqSection}>
@@ -600,110 +349,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 22,
     color: '#475569',
-  },
-
-  // Category sections
-  categorySections: {
-    gap: 16,
-  },
-
-  // Groups
-  reasonGroup: {
-    marginBottom: 0,
-  },
-  groupHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-    gap: 12,
-  },
-  groupTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-
-  // Checkbox list
-  checkboxList: {
-    gap: 8,
-  },
-
-  // Section Divider
-  sectionDivider: {
-    height: 1,
-    backgroundColor: '#e2e8f0',
-    marginVertical: 6,
-  },
-
-  // Checkboxes
-  checkboxRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 8,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
-    borderWidth: 2,
-    borderColor: '#d1d5db',
-    backgroundColor: '#ffffff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  checkboxChecked: {
-    backgroundColor: '#2563EB',
-    borderColor: '#2563EB',
-  },
-  checkboxCheck: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  checkboxLabelContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 6,
-  },
-  checkboxLabel: {
-    fontSize: 14,
-    color: '#64748b', // Slate 500 - matches step explanation text
-    lineHeight: 20,
-    flex: 1,
-  },
-
-  // Footer with button
-  footer: {
-    marginTop: 32,
-    gap: 12,
-  },
-  continueButton: {
-    backgroundColor: '#2563EB',
-    borderRadius: 8,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    alignItems: 'center',
-    width: '100%',
-    ...createShadow({
-      shadowColor: '#2563EB',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 4,
-      elevation: 3,
-    }),
-  },
-  continueButtonDisabled: {
-    backgroundColor: '#93c5fd',
-  },
-  continueButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  selectedCount: {
-    fontSize: 14,
-    color: '#6b7280',
-    textAlign: 'center',
   },
 });
