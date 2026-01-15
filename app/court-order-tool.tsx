@@ -30,7 +30,7 @@ import { CareCalendar, generateCalendarHTML } from '@/src/components/CareCalenda
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { CalculatorHeader } from '@/src/features/calculator';
 import { AustralianState } from '@/src/utils/CareCalculator';
-import { isWeb, MAX_FORM_WIDTH } from '@/src/utils/responsive';
+import { isWeb, MAX_CALCULATOR_WIDTH } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import { calculateCareFromTimeline } from '@/src/utils/timeline-aggregator';
 import { CareCalculationResult, TimelineResponse } from '@/src/utils/timeline-types';
@@ -342,61 +342,13 @@ function StepResults({
         <View style={styles.calendarSection}>
           <Text style={styles.sectionTitle}>Care Calendar</Text>
           
-          {/* Year 1 */}
-          <Text style={styles.yearLabel}>{year}</Text>
-          {calculationStartMonth > 1 && calculationStartDay > 1 && (
-            <View style={styles.excludedNotice}>
-              <Text style={styles.excludedNoticeText}>
-                Days before {format(new Date(startDate), 'MMM d')} are not included in calculation
-              </Text>
-            </View>
-          )}
           <CareCalendar
             year={year}
             timeline={result.timeline}
             state={selectedState}
             fatherColor={fatherColor}
             motherColor={motherColor}
-            excludeBeforeDate={startDate.split('T')[0]}
-            excludeAfterDate={is2YearTimeline ? undefined : endDate.split('T')[0]}
           />
-          
-          {/* Year 2 if 2-year timeline */}
-          {is2YearTimeline && (
-            <>
-              <View style={{ height: 32 }} />
-              <Text style={styles.yearLabel}>{year + 1}</Text>
-              <CareCalendar
-                year={year + 1}
-                timeline={result.timeline}
-                state={selectedState}
-                fatherColor={fatherColor}
-                motherColor={motherColor}
-                excludeAfterDate={calculationEndYear === year + 2 ? undefined : endDate.split('T')[0]}
-              />
-              
-              {/* Final January if calculation extends into it */}
-              {calculationEndYear === year + 2 && calculationEndMonth === 1 && (
-                <>
-                  <View style={{ height: 32 }} />
-                  <Text style={styles.yearLabel}>{year + 2}</Text>
-                  <View style={styles.excludedNotice}>
-                    <Text style={styles.excludedNoticeText}>
-                      Days after {format(new Date(endDate), 'MMM d')} are not included in calculation
-                    </Text>
-                  </View>
-                  <CareCalendar
-                    year={year + 2}
-                    timeline={result.timeline}
-                    state={selectedState}
-                    fatherColor={fatherColor}
-                    motherColor={motherColor}
-                    excludeAfterDate={endDate.split('T')[0]}
-                  />
-                </>
-              )}
-            </>
-          )}
           
           <Pressable style={styles.downloadButton} onPress={onDownloadPDF}>
             <Download size={18} color="#ffffff" />
@@ -614,7 +566,7 @@ export default function CourtOrderToolScreen() {
     setUserRole('Father');
   }, []);
 
-  const webContainerStyle = isWeb ? { maxWidth: MAX_FORM_WIDTH, width: '100%' as const, alignSelf: 'center' as const } : {};
+  const webContainerStyle = isWeb ? { maxWidth: MAX_CALCULATOR_WIDTH, width: '100%' as const, alignSelf: 'center' as const } : {};
 
   return (
     <>
@@ -625,7 +577,7 @@ export default function CourtOrderToolScreen() {
         schema={courtOrderSchema}
       />
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-        <CalculatorHeader title="Import Care Schedule" showBackButton={true} maxWidth={MAX_FORM_WIDTH} />
+        <CalculatorHeader title="Import Care Schedule" showBackButton={true} maxWidth={MAX_CALCULATOR_WIDTH} />
         <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, webContainerStyle]}>
           <Text style={styles.pageTitle} accessibilityRole="header" aria-level="1">Court Order Scanner</Text>
           <Text style={styles.introText}>Upload a photo or PDF of your Parenting Orders. Our system will extract the care schedule.</Text>

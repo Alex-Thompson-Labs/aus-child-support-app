@@ -152,13 +152,13 @@ export function validateTimelineBlock(
 }
 
 /**
- * Validate that timeline covers the full year boundaries.
+ * Validate that timeline covers the required boundaries.
  *
- * Requirement 2.1: Timeline must cover January 1 00:00 to December 31 23:59.
- * Updated: Supports 2-year timelines for recurring patterns.
+ * Requirement 2.1: Timeline must start at order commencement date and end at the calculated end date.
+ * Updated: Supports 12-month and 24-month timelines calculated from order commencement date.
  *
  * @param timeline - Array of timeline blocks
- * @param year - The year to validate against
+ * @param year - The year to validate against (used for reference only)
  * @returns ValidationResult with valid flag and any errors
  */
 export function validateTimelineCoverage(
@@ -176,36 +176,30 @@ export function validateTimelineCoverage(
     return { valid: false, errors };
   }
 
-  // Expected boundaries - support 1-year, 2-year, and 2-year+partial timelines
-  const expectedStart = `${year}-01-01T00:00`;
-  const expectedEnd1Year = `${year}-12-31T23:59`;
-  const expectedEnd2Year = `${year + 1}-12-31T23:59`;
-
   // Get first and last blocks
   const firstBlock = timeline[0];
   const lastBlock = timeline[timeline.length - 1];
-
-  // Check start boundary
-  if (firstBlock[0] !== expectedStart) {
+  const actualEnd = lastBlock[1];
+  const actualEndTime = actualEnd.split('T')[1];
+  
+  // Timeline must end at 23:59
+  if (actualEndTime !== '23:59') {
     errors.push({
       code: 'INVALID_TIMELINE_BOUNDS',
-      message: `Timeline must start at ${expectedStart}`,
-      details: { expected: expectedStart, actual: firstBlock[0] }
+      message: `Timeline must end at 23:59`,
+      details: { expected: 'XX-XX-XXT23:59', actual: actualEnd }
     });
   }
-
-  // Check end boundary - accept 1-year, 2-year, or any date in year+2 (for mid-year starts)
-  const actualEnd = lastBlock[1];
-  const actualEndYear = parseInt(actualEnd.split('-')[0]);
-  const isValidEnd = actualEnd === expectedEnd1Year || 
-                     actualEnd === expectedEnd2Year || 
-                     actualEndYear === year + 2;
   
-  if (!isValidEnd) {
+  // Timeline must be within reasonable range (year to year+2)
+  const actualEndYear = parseInt(actualEnd.split('-')[0]);
+  const isValidEndYear = actualEndYear >= year && actualEndYear <= year + 2;
+  
+  if (!isValidEndYear) {
     errors.push({
       code: 'INVALID_TIMELINE_BOUNDS',
-      message: `Timeline must end at ${expectedEnd1Year} (1 year), ${expectedEnd2Year} (2 years), or any date in ${year + 2} (2-year from mid-year start)`,
-      details: { expected: `${expectedEnd1Year}, ${expectedEnd2Year}, or ${year + 2}-XX-XX`, actual: actualEnd }
+      message: `Timeline must end between ${year} and ${year + 2}`,
+      details: { expected: `${year}-XX-XX to ${year + 2}-XX-XX`, actual: actualEnd }
     });
   }
 

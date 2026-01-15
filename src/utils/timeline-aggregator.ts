@@ -107,7 +107,7 @@ export function getParentAtTime(timeline: TimelineBlock[], datetime: Date): Pare
  * Requirements: 4.2
  *
  * @param timeline - Array of timeline blocks
- * @param year - The year to count nights for
+ * @param year - The year to count nights for (used as starting point)
  * @returns Object with motherNights and fatherNights
  */
 export function countNightsPerParent(
@@ -120,12 +120,26 @@ export function countNightsPerParent(
   let motherNights = 0;
   let fatherNights = 0;
 
-  const totalDays = getTotalDaysInYear(year);
+  if (timeline.length === 0) {
+    return { motherNights: 0, fatherNights: 0 };
+  }
 
-  // Iterate through each day of the year
+  // Calculate actual timeline duration from first to last block
+  const firstBlock = timeline[0];
+  const lastBlock = timeline[timeline.length - 1];
+  const startDate = parseISOMinute(firstBlock[0]);
+  const endDate = parseISOMinute(lastBlock[1]);
+  
+  // Calculate number of days in the timeline
+  const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+
+  // Iterate through each day of the timeline
   for (let dayIndex = 0; dayIndex < totalDays; dayIndex++) {
     // Create datetime for 23:59 of this day
-    const date = new Date(year, 0, 1 + dayIndex, 23, 59);
+    const date = new Date(startDate);
+    date.setDate(date.getDate() + dayIndex);
+    date.setHours(23, 59, 0, 0);
+    
     const parent = getParentAtTime(timeline, date);
 
     if (parent === 'M') {
@@ -180,7 +194,16 @@ export function calculatePercentages(
  */
 export function calculateCareFromTimeline(response: TimelineResponse): CareCalculationResult {
   const { timeline, year } = response;
-  const totalDays = getTotalDaysInYear(year);
+  
+  // Calculate actual timeline duration
+  let totalDays = getTotalDaysInYear(year);
+  if (timeline.length > 0) {
+    const firstBlock = timeline[0];
+    const lastBlock = timeline[timeline.length - 1];
+    const startDate = parseISOMinute(firstBlock[0]);
+    const endDate = parseISOMinute(lastBlock[1]);
+    totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+  }
 
   // Count nights using midnight rule (Requirements: 4.2)
   const { motherNights, fatherNights } = countNightsPerParent(timeline, year);

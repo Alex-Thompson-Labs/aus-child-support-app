@@ -11,7 +11,7 @@ declare const Deno: {
  * VIC School Term Dates for 2026, 2027, 2028
  * Used to inject school holiday context into the LLM prompt
  */
-const TERM_DATES: Record<number, { VIC: Array<{ start: string; end: string }> }> = {
+const TERM_DATES: Record<number, { VIC: { start: string; end: string }[] }> = {
   2026: {
     VIC: [
       { start: '2026-01-27', end: '2026-04-02' },
@@ -105,15 +105,29 @@ GATEKEEPER RULE:
 1. If the document is a Template, Guide, or Brochure -> Return {"error": "INVALID_DOCUMENT_TYPE"}
 2. If valid -> Generate a PRECISE care timeline for ${selectedYear}.
 
-CRITICAL: TIMELINE BOUNDARIES
-- Timeline MUST start at ${selectedYear}-01-01T00:00
-- Timeline can end at EITHER:
-  * ${selectedYear}-12-31T23:59 (1 year) - if the pattern is simple and repeats annually
-  * The date that is exactly 2 years from the order commencement date at 23:59 (2 years) - if you need 2 years to show the full recurring pattern
-- For 2-year timelines: Calculate exactly 2 years from the order commencement date.
-  * Example: Order starts Jan 14, 2026 → Timeline ends Jan 13, 2028 at 23:59 (not Dec 31, 2027)
-  * Example: Order starts Apr 20, 2026 → Timeline ends Apr 19, 2028 at 23:59
-- Generate 2 years of data if the pattern requires it to accurately calculate care percentages (e.g., alternating Christmas arrangements).
+CRITICAL: TIMELINE BOUNDARIES - CALCULATE FROM ORDER COMMENCEMENT DATE
+- Timeline MUST start at the ORDER COMMENCEMENT DATE (not Jan 1)
+- Timeline MUST end at exactly 12 or 24 months from the ORDER COMMENCEMENT DATE
+- CALCULATION FORMULA:
+  * 12-month cycle: timeline_end_date = order_commencement_date + 365 days at 23:59
+  * 24-month cycle: timeline_end_date = order_commencement_date + 730 days at 23:59
+  
+EXAMPLES (FOLLOW THESE EXACTLY):
+  * Order starts 2026-02-06 → Timeline: 2026-02-06T00:00 to 2027-02-05T23:59 (12 months)
+  * Order starts 2026-02-06 → Timeline: 2026-02-06T00:00 to 2028-02-05T23:59 (24 months)
+  * Order starts 2026-01-14 → Timeline: 2026-01-14T00:00 to 2027-01-13T23:59 (12 months)
+  * Order starts 2026-03-20 → Timeline: 2026-03-20T00:00 to 2027-03-19T23:59 (12 months)
+
+DO NOT include any period before the order commencement date in the timeline.
+
+WHEN TO USE 24 MONTHS:
+- Alternating Christmas arrangements (even/odd years)
+- Alternating year patterns
+- Any pattern that doesn't repeat within 12 months
+
+WHEN TO USE 12 MONTHS:
+- Pattern repeats consistently every year
+- No alternating year-based arrangements
 
 You have been provided with the OFFICIAL School Calendar for Victoria.
 
@@ -166,25 +180,31 @@ VALID TYPE CODES:
 
 OUTPUT SCHEMA (JSON ONLY):
 You must include a "logic_check" to prove you calculated the nights correctly.
-The last block MUST end at:
-- ${selectedYear}-12-31T23:59 for 1-year timelines, OR
-- Exactly 2 years from order commencement date at 23:59 for 2-year timelines
-  (e.g., if order starts 2026-01-14, end at 2028-01-13T23:59)
+
+CRITICAL CALCULATION RULE:
+- Timeline MUST start at order_commencement_date (NOT Jan 1)
+- timeline_end_date = order_commencement_date + 365 days (for 12-month) OR + 730 days (for 24-month) at 23:59
+
+VALIDATION CHECK BEFORE OUTPUTTING:
+- If order_commencement_date is "2026-02-06" and timeline_duration is "12 months"
+  → First block starts "2026-02-06T00:00" and last block ends "2027-02-05T23:59"
+- If order_commencement_date is "2026-02-06" and timeline_duration is "24 months"  
+  → First block starts "2026-02-06T00:00" and last block ends "2028-02-05T23:59"
 
 {
   "logic_check": {
-    "order_commencement_date": "Date the order starts (e.g. 2026-01-14)",
-    "timeline_duration": "1 year or 2 years",
-    "timeline_end_date": "Date the timeline ends (e.g. 2028-01-13T23:59 for 2-year from Jan 14 start)",
-    "term_pattern_extracted": "User summary (e.g. Father: Wed-Fri Week1, Fri-Mon Week2)",
-    "term_nights_per_fortnight_calculation": "Wed+Thu (2) + Fri+Sat+Sun (3) = 5 nights per fortnight",
-    "holiday_pattern_extracted": "User summary (e.g. Week-about, 7 nights each)"
+    "order_commencement_date": "EXACT date the order starts (e.g. 2026-02-06)",
+    "timeline_duration": "12 months or 24 months",
+    "timeline_end_date": "order_commencement_date + 365 or 730 days at 23:59 (e.g. 2027-02-05T23:59 for 12-month from 2026-02-06)",
+    "term_pattern_extracted": "User summary (e.g. Week-about: Each parent has 7 consecutive nights)",
+    "term_nights_per_fortnight_calculation": "7 nights per week each parent = 7 nights per fortnight per parent",
+    "holiday_pattern_extracted": "User summary (e.g. Week-about continues during holidays)"
   },
   "timeline": [
-    ["${selectedYear}-01-01T00:00", "${selectedYear}-01-14T00:00", "M", "base"],
-    ["${selectedYear}-01-14T00:00", "${selectedYear}-01-15T15:30", "M", "base"],
+    ["2026-02-06T00:00", "2026-02-13T08:30", "F", "base"],
+    ["2026-02-13T08:30", "2026-02-20T08:30", "M", "base"],
     ...
-    ["2028-01-13T15:30", "2028-01-13T23:59", "M", "base"]
+    ["2027-02-05T15:30", "2027-02-05T23:59", "M", "base"]
   ],
   "year": ${selectedYear},
   "primary_parent": "M"

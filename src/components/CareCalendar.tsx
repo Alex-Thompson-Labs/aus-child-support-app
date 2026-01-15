@@ -171,13 +171,23 @@ export function CareCalendar({
     const map = new Map<string, CareParent>();
     
     if (timeline && timeline.length > 0) {
-      // New timeline-based approach: determine care at 23:59 for each day
-      const totalDays = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0) ? 366 : 365;
+      // New timeline-based approach: determine care at 23:59 for each day in the timeline
+      const firstBlock = timeline[0];
+      const lastBlock = timeline[timeline.length - 1];
+      const startDate = new Date(firstBlock[0]);
+      const endDate = new Date(lastBlock[1]);
+      
+      // Calculate total days in the timeline
+      const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      
       for (let dayIndex = 0; dayIndex < totalDays; dayIndex++) {
-        const date = new Date(year, 0, 1 + dayIndex);
+        const date = new Date(startDate);
+        date.setDate(date.getDate() + dayIndex);
         const dateStr = format(date, 'yyyy-MM-dd');
+        
         // Check who has care at 23:59 (midnight rule)
-        const midnightCheck = new Date(year, 0, 1 + dayIndex, 23, 59);
+        const midnightCheck = new Date(date);
+        midnightCheck.setHours(23, 59, 0, 0);
         const parent = getParentAtTime(timeline, midnightCheck);
         map.set(dateStr, parent === 'M' ? 'Mother' : 'Father');
       }
@@ -189,7 +199,7 @@ export function CareCalendar({
     }
     
     return map;
-  }, [year, assignments, timeline]);
+  }, [timeline, assignments]);
 
   const holidayDates = useMemo(() => {
     const holidays = getSchoolHolidays(year, state);
@@ -204,41 +214,100 @@ export function CareCalendar({
     return dates;
   }, [year, state]);
 
+  // Calculate which months to display based on timeline
+  const { startMonth, endMonth, startYear, endYear, showExclusionWarning } = useMemo(() => {
+    if (!timeline || timeline.length === 0) {
+      return { startMonth: 0, endMonth: 11, startYear: year, endYear: year, showExclusionWarning: false };
+    }
+
+    const firstBlock = timeline[0];
+    const lastBlock = timeline[timeline.length - 1];
+    const startDate = new Date(firstBlock[0]);
+    const endDate = new Date(lastBlock[1]);
+    
+    const startYear = startDate.getFullYear();
+    const endYear = endDate.getFullYear();
+    const startMonth = startDate.getMonth();
+    const endMonth = endDate.getMonth();
+    
+    // Show warning if timeline doesn't start at Jan 1
+    const showExclusionWarning = startMonth > 0 || startDate.getDate() > 1;
+
+    return { startMonth, endMonth, startYear, endYear, showExclusionWarning };
+  }, [timeline, year]);
+
+  // Generate array of months to display
+  const monthsToDisplay = useMemo(() => {
+    const months: Array<{ year: number; month: number }> = [];
+    
+    if (!timeline || timeline.length === 0) {
+      // Show all months for the year if no timeline
+      for (let m = 0; m < 12; m++) {
+        months.push({ year, month: m });
+      }
+      return months;
+    }
+
+    // Add months from start to end across years
+    let currentYear = startYear;
+    let currentMonth = startMonth;
+    
+    while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+      months.push({ year: currentYear, month: currentMonth });
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+    }
+    
+    return months;
+  }, [timeline, startMonth, endMonth, startYear, endYear]); // Removed 'year' from dependencies
+
   return (
     <ScrollView style={viewStyles.container} contentContainerStyle={viewStyles.contentContainer}>
-      <View style={viewStyles.header}>
-        <Text style={textStyles.yearTitle}>Care Calendar {year}</Text>
-        <View style={viewStyles.legend}>
-          <View style={viewStyles.legendItem}>
-            <View style={[viewStyles.legendDot, { backgroundColor: fatherColor }]} />
-            <Text style={textStyles.legendText}>Father</Text>
-          </View>
-          <View style={viewStyles.legendItem}>
-            <View style={[viewStyles.legendDot, { backgroundColor: motherColor }]} />
-            <Text style={textStyles.legendText}>Mother</Text>
-          </View>
-          <View style={viewStyles.legendItem}>
-            <View style={[viewStyles.legendLine, { backgroundColor: HOLIDAY_INDICATOR }]} />
-            <Text style={textStyles.legendText}>School Holiday</Text>
-          </View>
-        </View>
-      </View>
+      {/* Group months by year */}
+      {Array.from(new Set(monthsToDisplay.map(m => m.year))).sort().map(displayYear => {
+        const monthsForYear = monthsToDisplay.filter(m => m.year === displayYear);
+        
+        return (
+          <View key={displayYear}>
+            <View style={viewStyles.header}>
+              <Text style={textStyles.yearTitle}>Care Calendar {displayYear}</Text>
+              <View style={viewStyles.legend}>
+                <View style={viewStyles.legendItem}>
+                  <View style={[viewStyles.legendDot, { backgroundColor: fatherColor }]} />
+                  <Text style={textStyles.legendText}>Father</Text>
+                </View>
+                <View style={viewStyles.legendItem}>
+                  <View style={[viewStyles.legendDot, { backgroundColor: motherColor }]} />
+                  <Text style={textStyles.legendText}>Mother</Text>
+                </View>
+                <View style={viewStyles.legendItem}>
+                  <View style={[viewStyles.legendLine, { backgroundColor: HOLIDAY_INDICATOR }]} />
+                  <Text style={textStyles.legendText}>School Holiday</Text>
+                </View>
+              </View>
+            </View>
 
-      <View style={viewStyles.monthsGrid}>
-        {Array.from({ length: 12 }, (_, month) => (
-          <MonthGrid
-            key={month}
-            year={year}
-            month={month}
-            assignmentMap={assignmentMap}
-            holidayDates={holidayDates}
-            fatherColor={fatherColor}
-            motherColor={motherColor}
-            excludeBeforeDate={excludeBeforeDate}
-            excludeAfterDate={excludeAfterDate}
-          />
-        ))}
-      </View>
+            <View style={viewStyles.monthsGrid}>
+              {monthsForYear.map(({ year: monthYear, month }) => (
+                <MonthGrid
+                  key={`${monthYear}-${month}`}
+                  year={monthYear}
+                  month={month}
+                  assignmentMap={assignmentMap}
+                  holidayDates={holidayDates}
+                  fatherColor={fatherColor}
+                  motherColor={motherColor}
+                  excludeBeforeDate={excludeBeforeDate}
+                  excludeAfterDate={excludeAfterDate}
+                />
+              ))}
+            </View>
+          </View>
+        );
+      })}
     </ScrollView>
   );
 }
@@ -396,6 +465,14 @@ const viewStyles = StyleSheet.create({
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 } as ViewStyle,
   legendDot: { width: 14, height: 14, borderRadius: 7 } as ViewStyle,
   legendLine: { width: 14, height: 3, borderRadius: 1.5 } as ViewStyle,
+  warningBanner: { 
+    backgroundColor: '#fef3c7', 
+    borderRadius: 8, 
+    padding: 12, 
+    marginBottom: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#f59e0b'
+  } as ViewStyle,
   monthsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 16 } as ViewStyle,
   monthContainer: {
     width: (Platform.OS === 'web' ? '23%' : '48%') as DimensionValue,
@@ -415,6 +492,7 @@ const viewStyles = StyleSheet.create({
 const textStyles = StyleSheet.create({
   yearTitle: { fontSize: 22, fontWeight: '700', color: '#1e293b', textAlign: 'center', marginBottom: 12 } as TextStyle,
   legendText: { fontSize: 12, color: '#475569' } as TextStyle,
+  warningText: { fontSize: 13, color: '#92400e', textAlign: 'center' } as TextStyle,
   monthTitle: { fontSize: 14, fontWeight: '600', color: '#1e293b', textAlign: 'center', marginBottom: 8 } as TextStyle,
   dayLabel: { flex: 1, fontSize: 10, color: '#94a3b8', textAlign: 'center' } as TextStyle,
   dayText: { fontSize: 10, fontWeight: '500', color: '#ffffff' } as TextStyle,
