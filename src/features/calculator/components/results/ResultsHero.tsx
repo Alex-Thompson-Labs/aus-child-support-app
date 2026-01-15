@@ -130,13 +130,20 @@ export function ResultsHero({
   if (isInline) {
     return (
       <View style={styles.inlineHeroSection}>
-        <Text style={[styles.expandedHeroAmount, isStale && styles.staleAmount]}>
-          {formatCurrency(heroAmount)}
-        </Text>
-        <Text style={styles.expandedHeroLabel}>per year</Text>
-        {breakdownText && (
-          <Text style={[styles.expandedSecondaryLabel, { color: '#6b7280', fontSize: 11, marginTop: 2 }]}>{breakdownText}</Text>
-        )}
+        <View
+          accessibilityLiveRegion="polite"
+          // @ts-ignore - Web-only ARIA attribute
+          aria-live="polite"
+          accessibilityLabel={`${heroLabel}: ${formatCurrency(heroAmount)} per year`}
+        >
+          <Text style={[styles.expandedHeroAmount, isStale && styles.staleAmount]}>
+            {formatCurrency(heroAmount)}
+          </Text>
+          <Text style={styles.expandedHeroLabel}>per year</Text>
+          {breakdownText && (
+            <Text style={[styles.expandedSecondaryLabel, { color: '#6b7280', fontSize: 11, marginTop: 2 }]}>{breakdownText}</Text>
+          )}
+        </View>
       </View>
     );
   }
@@ -144,20 +151,28 @@ export function ResultsHero({
   // Modal variant: full hero with all details
   return (
     <View style={styles.expandedHeroSection}>
-      <Text style={styles.expandedHeroLabel}>
-        {heroLabel}
-      </Text>
-      <Text style={[styles.expandedHeroAmount, isStale && styles.staleAmount]}>
-        {formatCurrency(heroAmount)}
-      </Text>
-      <Text style={styles.expandedHeroSubtext}>
-        per year
-        {breakdownText && (
-          <Text style={{ fontSize: 13, opacity: 0.9 }}>
-            {'\n'}{breakdownText}
-          </Text>
-        )}
-      </Text>
+      <View
+        accessibilityLiveRegion="polite"
+        // @ts-ignore - Web-only ARIA attribute
+        aria-live="polite"
+        accessibilityLabel={`${heroLabel}: ${formatCurrency(heroAmount)} per year`}
+        style={styles.heroAmountContainer}
+      >
+        <Text style={styles.expandedHeroLabel}>
+          {heroLabel}
+        </Text>
+        <Text style={[styles.expandedHeroAmount, isStale && styles.staleAmount]}>
+          {formatCurrency(heroAmount)}
+        </Text>
+        <Text style={styles.expandedHeroSubtext}>
+          per year
+          {breakdownText && (
+            <Text style={{ fontSize: 13, opacity: 0.9 }}>
+              {'\n'}{breakdownText}
+            </Text>
+          )}
+        </Text>
+      </View>
       {incomeSupportText && (
         <View style={styles.incomeSupportBadge}>
           <Text style={styles.incomeSupportText}>✓ {incomeSupportText}</Text>
@@ -244,6 +259,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#3b82f6',
     ...shadowPresets.large,
+  },
+  heroAmountContainer: {
+    alignItems: 'center',
   },
   expandedHeroLabel: {
     color: '#ffffff',

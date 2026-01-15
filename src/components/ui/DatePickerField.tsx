@@ -231,7 +231,7 @@ export default function DatePickerField({
           style={[styles.container, { width: 180, maxWidth: '100%' }]}
           collapsable={false} // Ensure measurement works
         >
-          <Text style={styles.label}>{label}</Text>
+          <Text style={styles.label}>{label} (MM/YYYY)</Text>
           <Pressable
             style={[
               styles.input,
@@ -245,8 +245,9 @@ export default function DatePickerField({
             }}
             disabled={disabled}
             accessibilityRole="button"
-            accessibilityLabel={label}
-            accessibilityHint="Click to select month and year"
+            accessibilityLabel={`${label}, format MM/YYYY`}
+            accessibilityHint="Double tap to open month and year selector"
+            accessibilityState={{ disabled }}
           >
             <Text
               style={[
@@ -301,7 +302,7 @@ export default function DatePickerField({
 
     return (
       <View style={styles.container}>
-        <Text style={styles.label}>{label}</Text>
+        <Text style={styles.label}>{label} (DD/MM/YYYY)</Text>
         <div style={{ position: 'relative', width: '140px' }}>
           <input
             type="date"
@@ -317,7 +318,7 @@ export default function DatePickerField({
               opacity: 0,
               cursor: disabled ? 'not-allowed' : 'pointer',
             }}
-            aria-label={label}
+            aria-label={`${label}, format DD/MM/YYYY. Click to open system calendar`}
             aria-invalid={!!error}
             aria-describedby={error ? 'date-error' : undefined}
           />
@@ -357,7 +358,9 @@ export default function DatePickerField({
   // ========================================================================
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.label}>
+        {label} ({pickMonthYear ? 'MM/YYYY' : 'DD/MM/YYYY'})
+      </Text>
       <Pressable
         style={[
           styles.input,
@@ -373,8 +376,12 @@ export default function DatePickerField({
         disabled={disabled}
         accessible={true}
         accessibilityRole="button"
-        accessibilityLabel={label}
-        accessibilityHint="Tap to select a date"
+        accessibilityLabel={`${label}, format ${pickMonthYear ? 'MM/YYYY' : 'DD/MM/YYYY'}`}
+        accessibilityHint={
+          pickMonthYear
+            ? 'Double tap to open month and year selector'
+            : 'Double tap to open date picker'
+        }
         accessibilityState={{ disabled }}
       >
         <Text

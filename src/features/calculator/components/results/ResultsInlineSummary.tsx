@@ -113,7 +113,13 @@ export function ResultsInlineSummary({
           <View style={styles.dragHandle} />
         </View>
         <View style={styles.collapsedContent}>
-          <View style={styles.summaryRow}>
+          <View
+            style={styles.summaryRow}
+            accessibilityLiveRegion="polite"
+            // @ts-ignore - Web-only ARIA attribute
+            aria-live="polite"
+            accessibilityLabel={`${displayLabel} ${formatCurrency(displayAmount)} per year`}
+          >
             <Text style={styles.label}>{displayLabel}</Text>
             <Text
               style={[

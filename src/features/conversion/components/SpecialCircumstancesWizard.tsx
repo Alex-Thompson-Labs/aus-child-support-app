@@ -145,10 +145,17 @@ const LegalStep = memo(function LegalStep({
 
   return (
     <View style={styles.stepContent}>
-      <Text style={styles.stepDescription}>
+      <Text 
+        style={styles.stepDescription}
+        nativeID="legal-step-heading"
+      >
         Do you have any urgent legal matters that require immediate attention?
       </Text>
-      <View style={styles.checkboxList}>
+      <View 
+        style={styles.checkboxList}
+        role="group"
+        aria-labelledby="legal-step-heading"
+      >
         <Pressable
           style={[styles.checkboxRow, isWeb && webClickableStyles]}
           onPress={handleCourtDateToggle}
@@ -280,10 +287,17 @@ const IncomeStep = memo(function IncomeStep({
 
   return (
     <View style={styles.stepContent}>
-      <Text style={styles.stepDescription}>
+      <Text 
+        style={styles.stepDescription}
+        nativeID="income-step-heading"
+      >
         Are there concerns about the other parent&apos;s financial situation?
       </Text>
-      <View style={styles.checkboxList}>
+      <View 
+        style={styles.checkboxList}
+        role="group"
+        aria-labelledby="income-step-heading"
+      >
         {incomeReasons.map((reason: SpecialCircumstance) => (
           <CheckboxItem
             key={reason.id}
@@ -317,10 +331,17 @@ const CostsStep = memo(function CostsStep({
 
   return (
     <View style={styles.stepContent}>
-      <Text style={styles.stepDescription}>
+      <Text 
+        style={styles.stepDescription}
+        nativeID="costs-step-heading"
+      >
         Are there any special costs or circumstances affecting your situation?
       </Text>
-      <View style={styles.checkboxList}>
+      <View 
+        style={styles.checkboxList}
+        role="group"
+        aria-labelledby="costs-step-heading"
+      >
         {allReasons.map((reason) => (
           <CheckboxItem
             key={reason.id}

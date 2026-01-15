@@ -64,6 +64,24 @@ export const FormField = forwardRef<TextInput, FormFieldProps>(
 
     const hasError = showError && !!error;
 
+    // Generate unique IDs for error and helper text to support aria-describedby
+    const fieldId = React.useMemo(() => {
+      // Use the label or a random ID to ensure uniqueness
+      const sanitizedLabel = label.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      return `field-${sanitizedLabel}-${Math.random().toString(36).substr(2, 9)}`;
+    }, [label]);
+
+    const errorId = `${fieldId}-error`;
+    const helperId = `${fieldId}-helper`;
+
+    // Build aria-describedby string based on what's visible
+    const ariaDescribedBy = [
+      hasError ? errorId : null,
+      helperText ? helperId : null,
+    ]
+      .filter(Boolean)
+      .join(' ');
+
     return (
       <View style={[styles.container, containerStyle]}>
         <Text style={[styles.label, { color: colors.textSecondary }]}>
@@ -87,6 +105,9 @@ export const FormField = forwardRef<TextInput, FormFieldProps>(
             multiline={multiline}
             numberOfLines={multiline ? numberOfLines : undefined}
             textAlignVertical={multiline ? 'top' : 'center'}
+            // @ts-ignore - Web-only ARIA attribute
+            aria-describedby={ariaDescribedBy || undefined}
+            aria-invalid={hasError}
             {...textInputProps}
           />
         )}
@@ -94,7 +115,11 @@ export const FormField = forwardRef<TextInput, FormFieldProps>(
         {(charCount || helperText) && (
           <View style={styles.bottomRow}>
             {helperText && (
-              <Text style={[styles.helperText, { color: colors.textMuted }]}>
+              <Text
+                style={[styles.helperText, { color: colors.textMuted }]}
+                // @ts-ignore - Web-only attribute
+                nativeID={helperId}
+              >
                 {helperText}
               </Text>
             )}
@@ -107,7 +132,15 @@ export const FormField = forwardRef<TextInput, FormFieldProps>(
         )}
 
         {hasError && (
-          <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
+          <Text
+            style={[styles.errorText, { color: colors.error }]}
+            // @ts-ignore - Web-only attribute
+            nativeID={errorId}
+            accessibilityRole="alert"
+            accessibilityLive="polite"
+          >
+            {error}
+          </Text>
         )}
       </View>
     );

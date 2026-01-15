@@ -4,6 +4,7 @@ import { useResponsive } from '@/src/utils/responsive';
 import { shadowPresets } from '@/src/utils/shadow-styles';
 import { detectLowAssessmentTrigger } from '@/src/utils/zero-payment-detection';
 import { useRouter } from 'expo-router';
+import { ArrowRight } from 'lucide-react-native';
 import React, { useMemo } from 'react';
 import ReactGA from 'react-ga4';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -184,7 +185,7 @@ export function SmartConversionFooter({
   }, [results, carePercentages, formState]);
 
   const logicConfig = CARD_CONFIGS[cardVariant];
-  
+
   // Get trigger-specific copy
   const copyConfig = TRIGGER_COPY[logicConfig.complexityTrigger] || TRIGGER_COPY.high_value_case;
 
@@ -292,9 +293,7 @@ export function SmartConversionFooter({
             <Text style={styles.buttonText}>
               {copyConfig.buttonText}
             </Text>
-            <Text style={styles.buttonArrow}>
-              →
-            </Text>
+            <ArrowRight size={20} color="#ffffff" accessible={false} />
           </View>
         </View>
       </Pressable>
@@ -358,9 +357,5 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     marginRight: 8,
   },
-  buttonArrow: {
-    fontSize: 18,
-    color: '#ffffff',
-    fontWeight: '600',
-  },
+
 });

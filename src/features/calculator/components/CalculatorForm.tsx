@@ -302,11 +302,22 @@ export function CalculatorForm({
                 placeholderTextColor={colors.placeholder}
                 accessibilityLabel="Parent A adjusted taxable income"
                 accessibilityHint="Enter your annual gross income including super, fringe benefits, and investment losses"
+                // @ts-ignore - Web-only ARIA attribute
+                aria-describedby={errors.incomeA ? 'income-a-error' : undefined}
+                aria-invalid={!!errors.incomeA}
               />
             </View>
           </View>
           {errors.incomeA && (
-            <Text style={[styles.errorText, dynamicStyles.errorText]}>{errors.incomeA}</Text>
+            <Text
+              style={[styles.errorText, dynamicStyles.errorText]}
+              // @ts-ignore - Web-only attribute
+              nativeID="income-a-error"
+              accessibilityRole="alert"
+              accessibilityLive="polite"
+            >
+              {errors.incomeA}
+            </Text>
           )}
         </View>
 
@@ -358,11 +369,22 @@ export function CalculatorForm({
                 placeholderTextColor={colors.placeholder}
                 accessibilityLabel="Parent B adjusted taxable income"
                 accessibilityHint="Enter the other parent's annual gross income including super, fringe benefits, and investment losses"
+                // @ts-ignore - Web-only ARIA attribute
+                aria-describedby={errors.incomeB ? 'income-b-error' : undefined}
+                aria-invalid={!!errors.incomeB}
               />
             </View>
           </View>
           {errors.incomeB && (
-            <Text style={[styles.errorText, dynamicStyles.errorText]}>{errors.incomeB}</Text>
+            <Text
+              style={[styles.errorText, dynamicStyles.errorText]}
+              // @ts-ignore - Web-only attribute
+              nativeID="income-b-error"
+              accessibilityRole="alert"
+              accessibilityLive="polite"
+            >
+              {errors.incomeB}
+            </Text>
           )}
         </View>
 

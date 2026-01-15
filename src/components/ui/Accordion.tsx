@@ -1,13 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
-  LayoutAnimation,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  UIManager,
-  View,
+    LayoutAnimation,
+    Platform,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    UIManager,
+    View,
 } from 'react-native';
 import { theme } from '../../theme';
 
@@ -44,12 +44,20 @@ export default function Accordion({
         onPress={toggleOpen}
         style={styles.header}
         activeOpacity={0.7}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: isOpen }}
+        accessibilityLabel={title}
+        accessibilityHint={isOpen ? 'Double tap to collapse' : 'Double tap to expand'}
+        aria-expanded={isOpen}
       >
         <Text style={styles.title}>{title}</Text>
         <Ionicons
           name={isOpen ? 'chevron-up' : 'chevron-down'}
           size={20}
           color={theme.colors.textSecondary}
+          accessibilityElementsHidden={true}
+          importantForAccessibility="no"
         />
       </TouchableOpacity>
 
