@@ -75,7 +75,7 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
             {isMenuOpen && (
                 <View style={[styles.dropdownMenu, maxWidth ? { maxWidth } : undefined]}>
                     <MenuItem label="Blog" onPress={() => handleNavigation('https://blog.auschildsupport.com')} />
-                    <MenuItem label="Court Order Scanner" onPress={() => handleNavigation('/court-order-tool')} />
+                    <MenuItem label="Court Order Scanner" onPress={() => handleNavigation('/court-order-tool')} badge="BETA" />
                     <MenuItem label="About" onPress={() => handleNavigation('/about')} />
                     <MenuItem label="Contact" onPress={() => handleNavigation('/contact')} />
                     <MenuItem label="FAQ" onPress={() => handleNavigation('/faq')} />
@@ -85,7 +85,7 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
     );
 }
 
-const MenuItem = ({ label, onPress }: { label: string; onPress: () => void }) => (
+const MenuItem = ({ label, onPress, badge }: { label: string; onPress: () => void; badge?: string }) => (
     <Pressable
         style={({ pressed }) => [
             styles.menuItem,
@@ -93,7 +93,14 @@ const MenuItem = ({ label, onPress }: { label: string; onPress: () => void }) =>
         ]}
         onPress={onPress}
     >
-        <Text style={styles.menuItemText}>{label}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.menuItemText}>{label}</Text>
+            {badge && (
+                <View style={styles.badgeContainer}>
+                    <Text style={styles.badgeText}>{badge}</Text>
+                </View>
+            )}
+        </View>
         <Feather name="chevron-right" size={16} color="#94a3b8" />
     </Pressable>
 );
@@ -202,5 +209,17 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#334155',
         fontWeight: '500',
+    },
+    badgeContainer: {
+        backgroundColor: '#dbeafe', // light blue
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 4,
+        marginLeft: 8,
+    },
+    badgeText: {
+        color: '#1e3a8a', // BRAND_NAVY (dark blue)
+        fontSize: 10,
+        fontWeight: 'bold',
     },
 });

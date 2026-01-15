@@ -7,6 +7,7 @@
  * Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 8.1, 8.2, 8.3
  */
 
+import { roundCarePercentage } from './care-utils';
 import {
     CareCalculationResult,
     ParentCode,
@@ -178,8 +179,8 @@ export function calculatePercentages(
   const fatherPercentage = (fatherNights / totalNights) * 100;
 
   return {
-    motherPercentage: Math.round(motherPercentage * 100) / 100,
-    fatherPercentage: Math.round(fatherPercentage * 100) / 100,
+    motherPercentage: roundCarePercentage(motherPercentage),
+    fatherPercentage: roundCarePercentage(fatherPercentage),
   };
 }
 

@@ -157,6 +157,35 @@ export default function ContactPage() {
             </Pressable>
           </View>
 
+          {/* General Enquiries Card */}
+          <View style={styles.contactCard}>
+
+            {/* @ts-ignore - Web-only ARIA attributes */}
+            <Text
+              style={styles.cardTitle}
+              accessibilityRole="header"
+              aria-level="2"
+            >
+              General Enquiries
+            </Text>
+            <Text style={styles.cardDescription}>
+              Have a question about the website, found a bug, or just want to
+              say hello?
+            </Text>
+            <Pressable
+              style={[styles.secondaryButton, isWeb && webClickableStyles]}
+              onPress={() => {
+                const subject = encodeURIComponent('General Enquiry - AusChildSupport');
+                const mailtoUrl = `mailto:contact@auschildsupport.com?subject=${subject}`;
+                Linking.openURL(mailtoUrl);
+              }}
+              accessibilityRole="button"
+              accessibilityLabel="Email us"
+            >
+              <Text style={styles.secondaryButtonText}>Email Us</Text>
+            </Pressable>
+          </View>
+
           {/* Disclaimer */}
           <View style={styles.disclaimer}>
             <Text style={styles.disclaimerText}>

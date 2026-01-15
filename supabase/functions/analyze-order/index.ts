@@ -144,13 +144,35 @@ CRITICAL: ORDER COMMENCEMENT DATE
 - The HOLIDAY PATTERN applies ONLY during the school holiday periods listed above.
 - For any period BEFORE the order commencement date, assign care to the primary parent using type "base".
 
+CRITICAL: PRIMARY RESIDENCE AND CARE ALLOCATION
+1. **Identify Primary Parent**: Look for phrases like "The child shall live with [Parent]" or "primary residence with [Parent]"
+2. **Default Care**: When no specific time is allocated to the non-primary parent, care belongs to the PRIMARY PARENT
+3. **Short Visits vs Overnights**: 
+   - DINNER VISITS (e.g., "Wednesday 3:30pm to 7:00pm"): Child returns to PRIMARY PARENT after visit
+   - OVERNIGHT VISITS: Child stays with visiting parent through midnight (23:59)
+4. **Timeline Construction**:
+   - Start with PRIMARY PARENT having care
+   - Insert blocks for NON-PRIMARY PARENT only during their allocated time
+   - After each visit ends, care returns to PRIMARY PARENT
+   - Use "M" for Mother, "F" for Father (based on who actually has care, not their role)
+
 CRITICAL RULES FOR INTERPRETING "NIGHTS":
-The app calculates care based on **MIDNIGHTS**. You must ensure your timestamps explicitly exclude nights that belong to the other parent.
+The app calculates care based on **MIDNIGHTS** (who has care at 23:59). You must ensure your timestamps explicitly exclude nights that belong to the other parent.
 1. "Until Friday Morning" -> Block MUST end at **T08:30**. (This excludes Friday night).
 2. "Until Monday Morning" -> Block MUST end at **T08:30**. (This excludes Monday night).
 3. "Conclusion of School" -> Block starts at **T15:30**.
 4. "Commencement of School" -> Block ends at **T08:30**.
 5. **NEVER** extend a "Morning" drop-off to the afternoon.
+6. **DINNER VISITS**: If visit ends before midnight (e.g., 7:00pm), that night does NOT count for the visiting parent.
+
+EXAMPLE - DINNER VISIT PATTERN:
+Order says: "Child lives with Mother. Father has Wednesday 3:30pm-7:00pm"
+CORRECT Timeline:
+  ["2026-02-05T00:00", "2026-02-12T15:30", "M", "base"]  // Mother has care
+  ["2026-02-12T15:30", "2026-02-12T19:00", "F", "base"]  // Father's dinner visit
+  ["2026-02-12T19:00", "2026-02-19T15:30", "M", "base"]  // Back to Mother
+  
+At 23:59 on Feb 12, Mother has care (since 7:00pm), so Mother gets that night counted.
 
 THE "TWO-MODE" EXTRACTION:
 1. TERM PATTERN (Applies during [SCHOOL TERM DATES] AND any period between order commencement and Term 1 start):

@@ -15,14 +15,14 @@ import * as Sharing from 'expo-sharing';
 import { CheckCircle, Download, FileText, Lock as LockIcon, Upload, User, Users } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View
+  ActivityIndicator,
+  Alert,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -76,7 +76,7 @@ function StepUpload({ onUpload }: { onUpload: () => void }) {
       </View>
       <Text style={styles.stepTitle}>Upload Court Order</Text>
       <Text style={styles.stepDescription}>
-        Upload your Family Court Order document (PDF or image) and we&apos;ll extract the care arrangement details automatically.
+        Upload your Family Court Order PDF and we&apos;ll extract the care arrangement details automatically.
       </Text>
       <Pressable
         style={styles.primaryButton}
@@ -93,8 +93,6 @@ function StepUpload({ onUpload }: { onUpload: () => void }) {
           Private & Secure: Data is processed in real-time and never stored.
         </Text>
       </View>
-
-      <Text style={styles.supportedFormats}>Supported format: PDF</Text>
     </View>
   );
 }
@@ -382,8 +380,33 @@ function StepResults({
           <Text style={styles.disclaimerText}>For official child support assessments, contact Services Australia.</Text>
         </View>
         <Pressable style={styles.resetButton} onPress={onReset}>
-          <Text style={styles.secondaryButtonText}>Start New Calculation</Text>
+          <Text style={styles.secondaryButtonText}>Start New Conversion</Text>
         </Pressable>
+
+        {/* Beta Feedback Footer */}
+        <View style={styles.feedbackFooter}>
+          <Text style={styles.feedbackText}>
+            Is this result different from what you expected?{' '}
+            <Text
+              style={styles.feedbackLink}
+              onPress={() => {
+                const subject = encodeURIComponent('Beta Feedback: Court Order Scanner');
+                const body = encodeURIComponent('I scanned my court order and noticed an issue with...');
+                const mailtoUrl = `mailto:feedback@auschildsupport.com?subject=${subject}&body=${body}`;
+                
+                if (Platform.OS === 'web') {
+                  window.open(mailtoUrl, '_blank');
+                } else {
+                  import('react-native').then(({ Linking }) => {
+                    Linking.openURL(mailtoUrl);
+                  });
+                }
+              }}
+            >
+              Report an issue
+            </Text>
+          </Text>
+        </View>
       </View>
     </ScrollView>
   );
@@ -579,8 +602,18 @@ export default function CourtOrderToolScreen() {
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         <CalculatorHeader title="Import Care Schedule" showBackButton={true} maxWidth={MAX_CALCULATOR_WIDTH} />
         <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, webContainerStyle]}>
-          <Text style={styles.pageTitle} accessibilityRole="header" aria-level="1">Court Order Scanner</Text>
-          <Text style={styles.introText}>Upload a photo or PDF of your Parenting Orders. Our system will extract the care schedule.</Text>
+          <View style={styles.titleRow}>
+            <Text style={styles.pageTitle} accessibilityRole="header" aria-level="1">Court Order Scanner</Text>
+            <View style={styles.betaBadge}>
+              <Text style={styles.betaBadgeText}>BETA</Text>
+            </View>
+          </View>
+          
+          <View style={styles.betaDisclaimer}>
+            <Text style={styles.betaDisclaimerText}>
+              This tool is currently in Beta. While our system is highly accurate, real-world court orders vary significantly in formatting. Please review all extracted dates and care percentages carefully to ensure they match your documents.
+            </Text>
+          </View>
 
           <View style={styles.stepIndicator}>
             {(['Upload', 'Details', 'Analyzing', 'Results'] as const).map((label, index) => {
@@ -635,8 +668,13 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8f9fa' },
   scrollView: { flex: 1 },
   scrollContent: { padding: 16, paddingBottom: 32 },
-  pageTitle: { fontSize: 28, fontWeight: '700', color: '#1e293b', marginBottom: 12 },
-  introText: { fontSize: 16, color: '#475569', lineHeight: 24, marginBottom: 24 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
+  pageTitle: { fontSize: 28, fontWeight: '700', color: '#1e293b' },
+  betaBadge: { backgroundColor: '#dbeafe', paddingVertical: 4, paddingHorizontal: 12, borderRadius: 20, borderWidth: 1, borderColor: '#93c5fd' },
+  betaBadgeText: { fontSize: 11, fontWeight: '700', color: '#1e40af', letterSpacing: 0.5 },
+  introText: { fontSize: 16, color: '#475569', lineHeight: 24, marginBottom: 16 },
+  betaDisclaimer: { backgroundColor: '#eff6ff', padding: 14, borderRadius: 10, marginBottom: 24, borderLeftWidth: 3, borderLeftColor: '#3b82f6' },
+  betaDisclaimerText: { fontSize: 13, color: '#1e40af', lineHeight: 20 },
   stepIndicator: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#ffffff', borderRadius: 12, marginBottom: 24, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3, elevation: 1 }) },
   stepIndicatorItem: { alignItems: 'center', flex: 1 },
   stepDot: { width: 24, height: 24, borderRadius: 12, backgroundColor: '#e2e8f0', alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
@@ -735,4 +773,7 @@ const styles = StyleSheet.create({
   yearLabel: { fontSize: 18, fontWeight: '700', color: '#1e293b', marginBottom: 12, marginTop: 8 },
   excludedNotice: { backgroundColor: '#fef3c7', padding: 12, borderRadius: 8, marginBottom: 12, borderLeftWidth: 3, borderLeftColor: '#f59e0b' },
   excludedNoticeText: { fontSize: 13, color: '#92400e', lineHeight: 18 },
+  feedbackFooter: { marginTop: 24, paddingTop: 16, borderTopWidth: 1, borderTopColor: '#e2e8f0', alignItems: 'center', width: '100%' },
+  feedbackText: { fontSize: 12, color: '#64748b', textAlign: 'center', lineHeight: 18 },
+  feedbackLink: { color: '#64748b', textDecorationLine: 'underline', fontWeight: '500' },
 });
