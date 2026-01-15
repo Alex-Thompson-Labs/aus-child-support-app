@@ -9,7 +9,7 @@ import type {
     AgeRange,
     ChildResult
 } from './calculator';
-import { deriveAgeRange } from './calculator';
+import { deriveAgeRangeMemoized } from './calculator';
 import {
     convertCareToPercentage,
     mapCareToCostPercent,
@@ -73,7 +73,7 @@ export interface ChildResultsOutput {
 export function deriveChildren(children: ChildCalcInput[]): DerivedChild[] {
     return children.map((c) => ({
         age: c.age,
-        ageRange: deriveAgeRange(c.age),
+        ageRange: deriveAgeRangeMemoized(c.age),
         careA: convertCareToPercentage(c.careAmountA, c.carePeriod),
         careB: convertCareToPercentage(c.careAmountB, c.carePeriod),
     }));
@@ -99,7 +99,7 @@ export function calculateChildResults(input: ChildResultsInput): ChildResultsOut
     const childResults: ChildResult[] = children.map((childInput, childIndex) => {
         const c = {
             age: childInput.age,
-            ageRange: deriveAgeRange(childInput.age),
+            ageRange: deriveAgeRangeMemoized(childInput.age),
             careA: convertCareToPercentage(childInput.careAmountA, childInput.carePeriod),
             careB: convertCareToPercentage(childInput.careAmountB, childInput.carePeriod),
         };

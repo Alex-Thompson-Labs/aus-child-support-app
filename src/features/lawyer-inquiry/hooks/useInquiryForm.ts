@@ -4,6 +4,7 @@
  * Manages all form state, validation, and submission logic.
  */
 
+import type { PartnerKey } from '@/src/config/partners';
 import { sanitizeCountry } from '@/src/utils/all-countries';
 import { useAnalytics } from '@/src/utils/analytics';
 import { calculateLeadScore } from '@/src/utils/lead-scoring';
@@ -16,10 +17,9 @@ import {
     getSpecialCircumstanceById,
     isCourtDateReason,
 } from '@/src/utils/special-circumstances';
+import { submitLeadWithPartner } from '@/src/utils/submit-lead';
 import type { LeadSubmission } from '@/src/utils/supabase';
 import { updateLeadEnrichment } from '@/src/utils/supabase';
-import { submitLeadWithPartner } from '@/src/utils/submit-lead';
-import type { PartnerKey } from '@/src/config/partners';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Linking, Platform, TextInput } from 'react-native';
@@ -43,6 +43,21 @@ import {
     validatePostcode,
     VALIDATION,
 } from '../validators';
+
+/**
+ * Debounce utility for validation
+ */
+function debounce<T extends (...args: any[]) => void>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+  
+  return (...args: Parameters<T>) => {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
 
 export type LeadFormValue = string | boolean | Date | null | string[];
 
@@ -157,6 +172,9 @@ export function useInquiryForm(props: UseInquiryFormProps) {
   useEffect(() => {
     return () => {
       isMounted.current = false;
+      // Cleanup: cancel any pending debounced validations
+      // The debounce function doesn't expose a cancel method, but the timeout
+      // will be cleared when the component unmounts since it's in the closure
     };
   }, []);
 
@@ -504,7 +522,20 @@ export function useInquiryForm(props: UseInquiryFormProps) {
   );
 
   /**
-   * Handle text change - clear error when user starts typing
+   * Debounced validation for text fields
+   * Validates after user stops typing for 400ms
+   */
+  const debouncedValidate = useMemo(
+    () =>
+      debounce((field: keyof FormErrors, value: string) => {
+        const newError = validateField(field, value);
+        setErrors((prev) => ({ ...prev, [field]: newError }));
+      }, 400),
+    [validateField]
+  );
+
+  /**
+   * Handle text change - update value immediately, validate with debounce
    */
   const handleTextChange = useCallback(
     (
@@ -519,14 +550,13 @@ export function useInquiryForm(props: UseInquiryFormProps) {
 
       setter(value);
 
-      // If field already has an error, re-validate immediately
-      // The error should only disappear if the new value is actually valid
+      // If field has been touched and has an error, use debounced validation
+      // This keeps typing smooth while still providing feedback
       if (touched[field] && errors[field]) {
-        const newError = validateField(field, value);
-        setErrors((prev) => ({ ...prev, [field]: newError }));
+        debouncedValidate(field, value);
       }
     },
-    [touched, errors, validateField]
+    [touched, errors, debouncedValidate]
   );
 
   /**

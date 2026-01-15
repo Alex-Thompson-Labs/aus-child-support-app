@@ -1,7 +1,7 @@
 import {
   CalculationResults,
   CalculatorFormState,
-  deriveAgeRange,
+  deriveAgeRangeMemoized,
 } from './calculator';
 import { convertCareToPercentage } from './care-utils';
 import { getChildCost } from './child-support-calculations';
@@ -66,8 +66,9 @@ export const calculateChildSupport = (
   const supportB = overrides?.supportB ?? formState.supportB;
 
   // Convert children to calculation format with derived age ranges
+  // Use memoized version to avoid redundant calculations in loops
   const children = formState.children.map((c) => {
-    const ageRange = deriveAgeRange(c.age);
+    const ageRange = deriveAgeRangeMemoized(c.age);
     return {
       age: c.age,
       ageRange,
