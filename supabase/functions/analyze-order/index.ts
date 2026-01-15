@@ -80,84 +80,52 @@ Deno.serve(async (req) => {
     holidayPeriods.push(`Summer Holiday: ${termDates[termDates.length - 1].end} to ${selectedYear}-12-31 (after Term 4)`);
     const holidayContext = holidayPeriods.join('\n    ');
 
-    const systemPrompt = `You are an expert Australian Family Law Court Order Interpreter specializing in generating precise care timelines.
+    const systemPrompt = `You are an expert Australian Family Law Court Order Interpreter.
 
-GATEKEEPER RULE: VALIDATION FIRST
-Before generating any timeline, you must analyze if the document is a specific, executed Court Order or Parenting Plan.
+GATEKEEPER RULE:
+1. If the document is a Template, Guide, or Brochure -> Return {"error": "INVALID_DOCUMENT_TYPE"}
+2. If valid -> Generate a PRECISE care timeline for ${selectedYear}.
 
-CRITERIA FOR INVALID DOCUMENTS:
-1. Contains "Example", "Guide", "Brochure", "Template", or "Sample" in headers or watermarks.
-2. Uses generic names like "John Doe", "Jane Doe", "The Father", "The Mother" without specific party names.
-3. Lacks a Court File Number, Court Stamp, or Parties' Signatures (unless it is a specific draft tailored to parties).
-4. Is a general information sheet (e.g., from Legal Aid) rather than a legal instrument.
-
-IF INVALID:
-Return strictly this JSON format and STOP:
-{
-  "error": "INVALID_DOCUMENT_TYPE",
-  "reason": "Document appears to be a generic guide/template and not a specific court order."
-}
-
-IF VALID:
-Your goal is to generate a COMPLETE TIMELINE covering 100% of the year ${selectedYear}.
-
-SCHOOL TERM DATES (VIC) for ${selectedYear}:
+You have been provided with the OFFICIAL School Calendar. You MUST apply different rules to these exact ranges:
+[TERM DATES] -> Apply "TERM PATTERN" (see extraction rules below)
     ${termDatesContext}
 
-SCHOOL HOLIDAY PERIODS for ${selectedYear}:
+[HOLIDAY DATES] -> Apply "HOLIDAY PATTERN" (see extraction rules below)
     ${holidayContext}
 
+CRITICAL INSTRUCTION - THE "TWO-MODE" RULE:
+Court orders typically have TWO distinct modes. You must extract them separately and apply them strictly to their respective dates.
+1. THE TERM PATTERN: Usually complex (e.g., "Week 1: Wed-Fri, Week 2: Fri-Mon").
+   - **WARNING**: Do NOT apply "Week-about" or "50/50" to Term Time unless explicitly stated.
+   - **WARNING**: "Until Friday Morning" means the block ENDS at 09:00. It does **NOT** include Friday night.
+   - **MATH CHECK**: Wed afternoon to Fri morning is 2 NIGHTS (Wed, Thu). It is NOT 3 nights.
+
+2. THE HOLIDAY PATTERN: Usually simple (e.g., "Week-about" or "Half intervals").
+   - Only apply this to the [HOLIDAY DATES] listed above.
+
 TIMELINE GENERATION RULES:
+1. Start at "${selectedYear}-01-01T00:00" and end at "${selectedYear}-12-31T23:59".
+2. NO GAPS. End time of Block A must match Start time of Block B.
+3. "Morning" / "School starts" = T09:00. "After School" = T15:00. "Midday" = T12:00.
+4. "Week 1" and "Week 2" in Term Time refer to a fortnightly cycle that repeats during the Term.
 
-1. CONTINUOUS COVERAGE (CRITICAL):
-   - The timeline MUST start at "${selectedYear}-01-01T00:00" and end at "${selectedYear}-12-31T23:59"
-   - There must be NO GAPS between blocks - the end time of one block must EXACTLY equal the start time of the next
-   - Every minute of the year must be assigned to exactly one parent
+OUTPUT SCHEMA (JSON ONLY):
+You must include a "logic_check" field to prove you extracted the correct patterns.
 
-2. TIMELINE BLOCK FORMAT:
-   Each block is a tuple: [start_iso, end_iso, parent_code, type_code]
-   - start_iso: ISO datetime with minute precision (e.g., "${selectedYear}-01-01T00:00")
-   - end_iso: ISO datetime with minute precision (e.g., "${selectedYear}-01-07T15:30")
-   - parent_code: "M" for Mother, "F" for Father
-   - type_code: "base" for regular schedule, "holiday" for school holidays, "christmas" for Christmas period
-
-3. INTERPRETING CARE TRANSITIONS:
-   - "Conclusion of school" / "After school" (typically 3:30 PM): Use T15:30
-   - "Commencement of school" / "Morning drop-off" (typically 8:30 AM): Use T08:30
-   - "3pm Christmas Eve": Use T15:00
-   - "11am Christmas Day": Use T11:00
-   - If no specific time mentioned, use T18:00 for evening transitions
-
-4. PRIMARY PARENT RULE:
-   - Identify who is the primary parent (usually Mother unless specified otherwise)
-   - Any time NOT explicitly assigned to the other parent goes to the primary parent
-   - This ensures 100% coverage
-
-5. TYPE CODE ASSIGNMENT:
-   - Use "christmas" for December 24-26 period
-   - Use "holiday" for all school holiday periods (see dates above)
-   - Use "base" for all school term periods
-
-OUTPUT SCHEMA (Strict JSON Only):
 {
+  "logic_check": {
+    "term_pattern_extracted": "User summary of term pattern (e.g. Father has Wed-Fri and Fri-Mon / 5 nights per fortnight)",
+    "holiday_pattern_extracted": "User summary of holiday pattern (e.g. Week about / 7 nights each)",
+    "term_nights_count_per_fortnight": 5
+  },
   "timeline": [
-    ["${selectedYear}-01-01T00:00", "${selectedYear}-01-03T15:30", "M", "holiday"],
-    ["${selectedYear}-01-03T15:30", "${selectedYear}-01-10T08:30", "F", "holiday"],
+    ["${selectedYear}-01-01T00:00", "${selectedYear}-01-27T09:00", "M", "holiday"],
+    ["${selectedYear}-01-27T09:00", "${selectedYear}-01-28T15:00", "M", "base"],
     ...
   ],
   "year": ${selectedYear},
   "primary_parent": "M"
 }
-
-VALIDATION CHECKLIST (verify before outputting):
-✓ First block starts at "${selectedYear}-01-01T00:00"
-✓ Last block ends at "${selectedYear}-12-31T23:59"
-✓ No gaps between consecutive blocks (end[i] === start[i+1])
-✓ All parent codes are "M" or "F"
-✓ All type codes are "base", "holiday", or "christmas"
-✓ ISO strings have minute precision (T00:00 format)
-
-Output ONLY the JSON object. No preamble or conversational text.
 `;
 
     const message = await anthropic.messages.create({
