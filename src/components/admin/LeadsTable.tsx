@@ -2,36 +2,38 @@ import { Colors } from '@/constants/theme';
 import { formatCurrency } from '@/src/utils/formatters';
 import { isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { LeadSubmission } from '@/src/utils/supabase';
+import { FlashList } from '@shopify/flash-list';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface LeadsTableProps {
     leads: LeadSubmission[];
 }
 
+// Row height for consistent rendering
+const ROW_HEIGHT = 60;
+
 export const LeadsTable: React.FC<LeadsTableProps> = ({ leads }) => {
     const router = useRouter();
 
-    const handleLeadPress = (lead: LeadSubmission) => {
+    const handleLeadPress = useCallback((lead: LeadSubmission) => {
         router.push(`/admin/lead/${lead.id}`);
-    };
+    }, [router]);
 
-    const getPayerRoleDisplay = (lead: LeadSubmission) => {
+    const getPayerRoleDisplay = useCallback((lead: LeadSubmission) => {
         if (lead.payer_role === 'you') return 'Payer';
         if (lead.payer_role === 'other_parent') return 'Payee';
         // Fallback inference if payer_role is missing
-        if (lead.annual_liability > 0) return 'Payer'; // Assumes positive liability means user pays? (Need to verify logic, usually positive means liable)
+        if (lead.annual_liability > 0) return 'Payer';
         return 'Unknown';
-        // Logic: In the calc, we show "Annual Transfer" amount. Usually calculated as what 'parent A' pays 'parent B'.
-        // If payer_role is set, use it.
-    };
+    }, []);
 
-    const getCombinedIncome = (lead: LeadSubmission) => {
+    const getCombinedIncome = useCallback((lead: LeadSubmission) => {
         return (lead.income_parent_a || 0) + (lead.income_parent_b || 0);
-    };
+    }, []);
 
-    const formatDate = (dateString?: string) => {
+    const formatDate = useCallback((dateString?: string) => {
         if (!dateString) return '-';
         return new Date(dateString).toLocaleDateString('en-AU', {
             month: 'short',
@@ -39,69 +41,84 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({ leads }) => {
             hour: '2-digit',
             minute: '2-digit'
         });
-    };
+    }, []);
+
+    const renderItem = useCallback(({ item, index }: { item: LeadSubmission; index: number }) => {
+        const rowStyle = index % 2 === 0 ? styles.rowEven : styles.rowOdd;
+        const completedDate = item.created_at;
+
+        // Badge logic
+        const isAdultChild = item.complexity_reasons?.some(r => r.toLowerCase().includes('adult') || r.includes('18'));
+
+        return (
+            <Pressable
+                style={[styles.row, rowStyle, isWeb && webClickableStyles]}
+                onPress={() => handleLeadPress(item)}
+            >
+                <Text style={[styles.cell, styles.colDate]}>{formatDate(completedDate)}</Text>
+
+                <View style={styles.colName}>
+                    <Text style={styles.nameText} numberOfLines={1}>{item.parent_name}</Text>
+                    <Text style={styles.emailText} numberOfLines={1}>{item.parent_email}</Text>
+                </View>
+
+                <Text style={[styles.cell, styles.colRole]}>{getPayerRoleDisplay(item)}</Text>
+
+                <Text style={[styles.cell, styles.colIncome]}>
+                    {formatCurrency(getCombinedIncome(item))}
+                </Text>
+
+                <Text style={[styles.cell, styles.colChildren]}>{item.children_count}</Text>
+
+                <Text style={[styles.cell, styles.colResult, styles.resultText]}>
+                    {formatCurrency(item.annual_liability)}
+                </Text>
+
+                <View style={styles.colStatus}>
+                    <View style={[styles.statusBadge, getStatusColor(item.status)]}>
+                        <Text style={styles.statusText}>{item.status || 'new'}</Text>
+                    </View>
+                    {isAdultChild && (
+                        <View style={styles.tagBadge}>
+                            <Text style={styles.tagText}>A18</Text>
+                        </View>
+                    )}
+                </View>
+            </Pressable>
+        );
+    }, [handleLeadPress, formatDate, getPayerRoleDisplay, getCombinedIncome]);
+
+    const renderHeader = useCallback(() => (
+        <View style={styles.headerRow}>
+            <Text style={[styles.headerCell, styles.colDate]}>Date</Text>
+            <Text style={[styles.headerCell, styles.colName]}>Name / Email</Text>
+            <Text style={[styles.headerCell, styles.colRole]}>Role</Text>
+            <Text style={[styles.headerCell, styles.colIncome]}>Comb. Income</Text>
+            <Text style={[styles.headerCell, styles.colChildren]}>Kids</Text>
+            <Text style={[styles.headerCell, styles.colResult]}>Transfer</Text>
+            <Text style={[styles.headerCell, styles.colStatus]}>Status</Text>
+        </View>
+    ), []);
+
+    const keyExtractor = useCallback((item: LeadSubmission) => item.id || '', []);
+
+    const getItemType = useCallback((_item: LeadSubmission, index: number) => {
+        // Alternate between two types for striping
+        return index % 2 === 0 ? 'even' : 'odd';
+    }, []);
 
     return (
         <View style={styles.container}>
             <ScrollView horizontal showsHorizontalScrollIndicator={true} contentContainerStyle={{ minWidth: '100%' }}>
                 <View style={styles.table}>
-                    {/* Header Row */}
-                    <View style={styles.headerRow}>
-                        <Text style={[styles.headerCell, styles.colDate]}>Date</Text>
-                        <Text style={[styles.headerCell, styles.colName]}>Name / Email</Text>
-                        <Text style={[styles.headerCell, styles.colRole]}>Role</Text>
-                        <Text style={[styles.headerCell, styles.colIncome]}>Comb. Income</Text>
-                        <Text style={[styles.headerCell, styles.colChildren]}>Kids</Text>
-                        <Text style={[styles.headerCell, styles.colResult]}>Transfer</Text>
-                        <Text style={[styles.headerCell, styles.colStatus]}>Status</Text>
-                    </View>
-
-                    {/* Data Rows */}
-                    {leads.map((lead, index) => {
-                        const rowStyle = index % 2 === 0 ? styles.rowEven : styles.rowOdd;
-                        const completedDate = lead.created_at;
-
-                        // Badge logic
-                        const isAdultChild = lead.complexity_reasons?.some(r => r.toLowerCase().includes('adult') || r.includes('18'));
-
-                        return (
-                            <Pressable
-                                key={lead.id}
-                                style={[styles.row, rowStyle, isWeb && webClickableStyles]}
-                                onPress={() => handleLeadPress(lead)}
-                            >
-                                <Text style={[styles.cell, styles.colDate]}>{formatDate(completedDate)}</Text>
-
-                                <View style={styles.colName}>
-                                    <Text style={styles.nameText} numberOfLines={1}>{lead.parent_name}</Text>
-                                    <Text style={styles.emailText} numberOfLines={1}>{lead.parent_email}</Text>
-                                </View>
-
-                                <Text style={[styles.cell, styles.colRole]}>{getPayerRoleDisplay(lead)}</Text>
-
-                                <Text style={[styles.cell, styles.colIncome]}>
-                                    {formatCurrency(getCombinedIncome(lead))}
-                                </Text>
-
-                                <Text style={[styles.cell, styles.colChildren]}>{lead.children_count}</Text>
-
-                                <Text style={[styles.cell, styles.colResult, styles.resultText]}>
-                                    {formatCurrency(lead.annual_liability)}
-                                </Text>
-
-                                <View style={styles.colStatus}>
-                                    <View style={[styles.statusBadge, getStatusColor(lead.status)]}>
-                                        <Text style={styles.statusText}>{lead.status || 'new'}</Text>
-                                    </View>
-                                    {isAdultChild && (
-                                        <View style={styles.tagBadge}>
-                                            <Text style={styles.tagText}>A18</Text>
-                                        </View>
-                                    )}
-                                </View>
-                            </Pressable>
-                        );
-                    })}
+                    <FlashList
+                        data={leads}
+                        renderItem={renderItem}
+                        keyExtractor={keyExtractor}
+                        getItemType={getItemType}
+                        ListHeaderComponent={renderHeader}
+                        showsVerticalScrollIndicator={true}
+                    />
                 </View>
             </ScrollView>
         </View>
@@ -129,6 +146,7 @@ const styles = StyleSheet.create({
     },
     table: {
         minWidth: 800, // Ensure horizontal scroll on small screens
+        flex: 1,
     },
     headerRow: {
         flexDirection: 'row',
@@ -145,6 +163,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 16,
         alignItems: 'center',
+        minHeight: ROW_HEIGHT,
     },
     rowEven: {
         backgroundColor: '#ffffff',

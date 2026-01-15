@@ -1,5 +1,6 @@
 import { SemanticColors } from '@/constants/theme';
 import { LoadingFallback } from '@/src/components/ui/LoadingFallback';
+import { ABTestingProvider } from '@/src/contexts/ABTestingContext';
 import { useClientOnly } from '@/src/hooks/useClientOnly';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, usePathname } from 'expo-router';
@@ -101,7 +102,8 @@ export default function RootLayout() {
           <link rel="canonical" href={canonicalUrl} />
         </Head>
 
-        <ThemeProvider value={DefaultTheme}>
+        <ABTestingProvider>
+          <ThemeProvider value={DefaultTheme}>
           <Stack
             screenOptions={{
               title: 'Child Support Calculator',
@@ -152,7 +154,8 @@ export default function RootLayout() {
           <StatusBar style="dark" />
           {/* {Platform.OS === 'web' && <Analytics />} */}
           {/* {Platform.OS === 'web' && <SpeedInsights />} */}
-        </ThemeProvider>
+          </ThemeProvider>
+        </ABTestingProvider>
       </Suspense>
     </View>
   );
