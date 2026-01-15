@@ -542,7 +542,7 @@ export async function exportLeadAsPDF(lead: LeadSubmission, userId: string = 'sy
     // Share the PDF
     await Sharing.shareAsync(uri, {
       mimeType: 'application/pdf',
-      dialogTitle: `Lead Report - ${lead.parent_name}`,
+      dialogTitle: `Lead Report - ${escapeHtml(lead.parent_name)}`,
       UTI: 'com.adobe.pdf',
     });
 

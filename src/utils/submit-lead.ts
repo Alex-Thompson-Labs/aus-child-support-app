@@ -4,11 +4,14 @@
  * This module provides lead submission via Supabase Edge Function,
  * with support for partner attribution for ROI tracking.
  *
+ * Uses the official Supabase Client SDK's functions.invoke() method
+ * for secure, managed communication with edge functions.
+ *
  * This is now the primary submission method used by the lawyer inquiry form.
  * The legacy submitLead() from supabase.ts is kept for backward compatibility.
  */
 
-import Constants from 'expo-constants';
+import { getSupabaseClient } from './supabase/client';
 import type { LeadSubmission } from './supabase';
 import type { PartnerKey } from '@/src/config/partners';
 
@@ -22,22 +25,12 @@ export interface SubmitLeadResult {
   error?: string;
 }
 
-function getSupabaseUrl(): string | undefined {
-  return (
-    Constants.expoConfig?.extra?.supabaseUrl ||
-    process.env.EXPO_PUBLIC_SUPABASE_URL
-  );
-}
-
-function getSupabaseAnonKey(): string | undefined {
-  return (
-    Constants.expoConfig?.extra?.supabaseAnonKey ||
-    process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
-  );
-}
-
 /**
  * Submit a lead via Supabase Edge Function with partner attribution.
+ *
+ * Uses the official Supabase SDK's functions.invoke() method for secure
+ * communication with edge functions. The SDK handles proper URL construction,
+ * authentication headers, and error handling automatically.
  *
  * @param lead - Lead submission data
  * @param partnerId - Optional partner ID for attribution
@@ -63,18 +56,8 @@ export async function submitLeadWithPartner(
       };
     }
 
-    const supabaseUrl = getSupabaseUrl();
-    const supabaseAnonKey = getSupabaseAnonKey();
-
-    if (!supabaseUrl || !supabaseAnonKey) {
-      console.error('[submit-lead] Missing Supabase credentials');
-      return {
-        success: false,
-        error: 'Service configuration error',
-      };
-    }
-
-    const edgeFunctionUrl = `${supabaseUrl}/functions/v1/submit-lead`;
+    // Get Supabase client (lazy-loaded)
+    const supabase = await getSupabaseClient();
 
     const payload: SubmitLeadPayload = {
       ...lead,
@@ -88,47 +71,39 @@ export async function submitLeadWithPartner(
       annual_liability: lead.annual_liability,
     });
 
-    const response = await fetch(edgeFunctionUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${supabaseAnonKey}`,
-        apikey: supabaseAnonKey,
-      },
-      body: JSON.stringify(payload),
+    // Use official Supabase SDK method for edge function invocation
+    const { data, error } = await supabase.functions.invoke('submit-lead', {
+      body: payload,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
+    if (error) {
       console.error('[submit-lead] Edge function error:', {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorText,
+        message: error.message,
+        context: error.context,
       });
       return {
         success: false,
-        error: `Submission failed: ${response.statusText}`,
+        error: error.message || 'Submission failed',
       };
     }
 
-    const result = await response.json();
-
-    if (result.error) {
-      console.error('[submit-lead] Edge function returned error:', result.error);
+    // Check for application-level errors in response data
+    if (data?.error) {
+      console.error('[submit-lead] Edge function returned error:', data.error);
       return {
         success: false,
-        error: result.error,
+        error: data.error,
       };
     }
 
     console.log('[submit-lead] Lead submitted successfully:', {
-      leadId: result.leadId ?? result.id,
+      leadId: data?.leadId ?? data?.id,
       partnerId: partnerId ?? null,
     });
 
     return {
       success: true,
-      leadId: result.leadId ?? result.id,
+      leadId: data?.leadId ?? data?.id,
     };
   } catch (error) {
     console.error('[submit-lead] Unexpected error:', error);
