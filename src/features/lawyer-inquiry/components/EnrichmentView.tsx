@@ -280,9 +280,8 @@ export function EnrichmentView({
 
   // Income Support Modal Logic
   const [incomeSupportModalVisible, setIncomeSupportModalVisible] = useState(false);
-  const [pendingParent, setPendingParent] = useState<'A' | 'B' | null>(null);
-  const [needsPromptB, setNeedsPromptB] = useState(false);
-  const tempParentAResponseRef = React.useRef(false);
+  const [askParentA, setAskParentA] = useState(false);
+  const [askParentB, setAskParentB] = useState(false);
 
   // Initialize children data when modal opens
   const handleOpenCalculator = () => {
@@ -353,15 +352,10 @@ export function EnrichmentView({
     const promptA = needsIncomeSupportPrompt(incomes.parentA, 'careA', childrenForCalc);
     const promptB = needsIncomeSupportPrompt(incomes.parentB, 'careB', childrenForCalc);
 
-    if (promptA) {
-      // Need to ask about Parent A first
-      setPendingParent('A');
-      setNeedsPromptB(promptB); // Remember if we need to ask about B next
-      setIncomeSupportModalVisible(true);
-    } else if (promptB) {
-      // Only Parent B needs prompting
-      setPendingParent('B');
-      setNeedsPromptB(false);
+    if (promptA || promptB) {
+      // Show modal with both parents (if needed)
+      setAskParentA(promptA);
+      setAskParentB(promptB);
       setIncomeSupportModalVisible(true);
     } else {
       // Neither parent needs prompting - proceed with calculation
@@ -451,51 +445,11 @@ export function EnrichmentView({
   };
 
   /**
-   * Handle "Yes" response from the income support modal.
+   * Handle Continue from the income support modal.
    */
-  const handleIncomeSupportYes = () => {
-    if (pendingParent === 'A') {
-      if (needsPromptB) {
-        // Store Parent A's response in ref and ask about Parent B
-        tempParentAResponseRef.current = true;
-        setNeedsPromptB(false);
-        setPendingParent('B');
-      } else {
-        // Done prompting, run calculation
-        setIncomeSupportModalVisible(false);
-        setTimeout(() => setPendingParent(null), 200);
-        runCalculation(true, false);
-      }
-    } else if (pendingParent === 'B') {
-      setIncomeSupportModalVisible(false);
-      setTimeout(() => setPendingParent(null), 200);
-      // Use Parent A's stored response from ref, Parent B said Yes
-      runCalculation(tempParentAResponseRef.current, true);
-    }
-  };
-
-  /**
-   * Handle "No" response from the income support modal.
-   */
-  const handleIncomeSupportNo = () => {
-    if (pendingParent === 'A') {
-      if (needsPromptB) {
-        // Store Parent A's response in ref and ask about Parent B
-        tempParentAResponseRef.current = false;
-        setNeedsPromptB(false);
-        setPendingParent('B');
-      } else {
-        // Done prompting, run calculation
-        setIncomeSupportModalVisible(false);
-        setTimeout(() => setPendingParent(null), 200);
-        runCalculation(false, false);
-      }
-    } else if (pendingParent === 'B') {
-      setIncomeSupportModalVisible(false);
-      setTimeout(() => setPendingParent(null), 200);
-      // Use Parent A's stored response from ref, Parent B said No
-      runCalculation(tempParentAResponseRef.current, false);
-    }
+  const handleIncomeSupportContinue = (supportA: boolean, supportB: boolean) => {
+    setIncomeSupportModalVisible(false);
+    runCalculation(supportA, supportB);
   };
 
   // Format currency
@@ -719,9 +673,10 @@ export function EnrichmentView({
         {/* Income Support Modal */}
         <IncomeSupportModal
           visible={incomeSupportModalVisible}
-          parentName={pendingParent === 'A' ? 'You' : 'Other Parent'}
-          onYes={handleIncomeSupportYes}
-          onNo={handleIncomeSupportNo}
+          askParentA={askParentA}
+          askParentB={askParentB}
+          onContinue={handleIncomeSupportContinue}
+          onCancel={() => setIncomeSupportModalVisible(false)}
         />
       </View>
     </SafeAreaView>

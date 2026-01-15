@@ -24,6 +24,8 @@ interface SpecialCircumstancesPromptProps {
   onRequestInquiry?: () => void;
   onSpecialCircumstancesChange?: (reasons: string[]) => void;
   calculatorStartTime?: number;
+  specialCircumstances?: boolean;
+  sharedCareDispute?: boolean;
 }
 
 // Main Prompt Component (Collapsible wrapper for the wizard)
@@ -34,11 +36,16 @@ export function SpecialCircumstancesPrompt({
   onRequestInquiry,
   onSpecialCircumstancesChange,
   calculatorStartTime,
+  specialCircumstances = false,
+  sharedCareDispute = false,
 }: SpecialCircumstancesPromptProps) {
   const [selectedReasons, setSelectedReasons] = useState<string[]>(
     formData?.selectedCircumstances ?? []
   );
-  const [isExpanded, setIsExpanded] = useState(false);
+  // Auto-expand if any complexity flag is true
+  const [isExpanded, setIsExpanded] = useState(
+    specialCircumstances || sharedCareDispute
+  );
   const [isNavigating, setIsNavigating] = useState(false);
 
   const router = useRouter();

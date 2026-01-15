@@ -94,73 +94,64 @@ export function CalculatorScreen() {
   };
 
   // =========================================================================
-  // Income Support Modal Logic
+  // Income Support Modal Logic (Blocking step)
   // =========================================================================
   const [incomeSupportModalVisible, setIncomeSupportModalVisible] =
     useState(false);
-  const [pendingParent, setPendingParent] = useState<'A' | 'B' | null>(null);
-  // Track which parents need to be asked (for sequential prompting)
-  const [needsPromptB, setNeedsPromptB] = useState(false);
-  // Use a ref to store Parent A's response immediately (not subject to async state updates)
-  const tempParentAResponseRef = React.useRef(false);
+  const [askParentA, setAskParentA] = useState(false);
+  const [askParentB, setAskParentB] = useState(false);
 
   /**
-   * handleCalculate intercepts the calculate button press.
-   * If either parent's income is below the SSA threshold, shows
-   * the income support modal instead of calculating immediately.
+   * Helper to determine if a parent needs the income support prompt
+   */
+  const needsIncomeSupportPrompt = (
+    income: number,
+    careKey: 'careAmountA' | 'careAmountB'
+  ): boolean => {
+    const { SSA, MAX_PPS } = getYearConstants(selectedYear);
+    
+    // Check if parent has < 14% care for at least one child
+    const hasLessThan14Care = formState.children.some((child) => {
+      const carePercent = convertCareToPercentage(
+        child[careKey],
+        child.carePeriod
+      );
+      return carePercent < 14;
+    });
+
+    // Check if parent has < 35% care for at least one child
+    const hasLessThan35Care = formState.children.some((child) => {
+      const carePercent = convertCareToPercentage(
+        child[careKey],
+        child.carePeriod
+      );
+      return carePercent < 35;
+    });
+
+    // Rule 1: Income < SSA AND less than 14% care of at least one child
+    const rule1 = income < SSA && hasLessThan14Care;
+
+    // Rule 2: Income < MAX_PPS AND less than 35% care of at least one child
+    const rule2 = income < MAX_PPS && hasLessThan35Care;
+
+    return rule1 || rule2;
+  };
+
+  /**
+   * handleCalculate checks if income support modal needs to be shown BEFORE calculating.
+   * This is a BLOCKING step - results will not show until modal is completed or dismissed.
    */
   const handleCalculate = () => {
-    const { SSA, MAX_PPS } = getYearConstants(selectedYear);
-    const incomeA = formState.incomeA;
-    const incomeB = formState.incomeB;
+    const promptA = needsIncomeSupportPrompt(formState.incomeA, 'careAmountA');
+    const promptB = needsIncomeSupportPrompt(formState.incomeB, 'careAmountB');
 
-    // Helper to determine if a parent needs the income support prompt
-    const needsIncomeSupportPrompt = (
-      income: number,
-      careKey: 'careAmountA' | 'careAmountB'
-    ): boolean => {
-      // Check if parent has < 14% care for at least one child
-      const hasLessThan14Care = formState.children.some((child) => {
-        const carePercent = convertCareToPercentage(
-          child[careKey],
-          child.carePeriod
-        );
-        return carePercent < 14;
-      });
-
-      // Check if parent has < 35% care for at least one child
-      const hasLessThan35Care = formState.children.some((child) => {
-        const carePercent = convertCareToPercentage(
-          child[careKey],
-          child.carePeriod
-        );
-        return carePercent < 35;
-      });
-
-      // Rule 1: Income < SSA AND less than 14% care of at least one child
-      const rule1 = income < SSA && hasLessThan14Care;
-
-      // Rule 2: Income < MAX_PPS AND less than 35% care of at least one child
-      const rule2 = income < MAX_PPS && hasLessThan35Care;
-
-      return rule1 || rule2;
-    };
-
-    const promptA = needsIncomeSupportPrompt(incomeA, 'careAmountA');
-    const promptB = needsIncomeSupportPrompt(incomeB, 'careAmountB');
-
-    if (promptA) {
-      // Need to ask about Parent A first
-      setPendingParent('A');
-      setNeedsPromptB(promptB); // Remember if we need to ask about B next
-      setIncomeSupportModalVisible(true);
-    } else if (promptB) {
-      // Only Parent B needs prompting
-      setPendingParent('B');
-      setNeedsPromptB(false);
+    if (promptA || promptB) {
+      // Need to ask about income support - show modal BEFORE calculating
+      setAskParentA(promptA);
+      setAskParentB(promptB);
       setIncomeSupportModalVisible(true);
     } else {
-      // Neither parent needs prompting - proceed with calculation
+      // No income support needed - calculate immediately
       runCalculation(false, false);
     }
   };
@@ -176,57 +167,21 @@ export function CalculatorScreen() {
   };
 
   /**
-   * Handle "Yes" response from the income support modal.
+   * Handle Continue from the income support modal.
+   * This proceeds to show results with the selected support flags.
    */
-  const handleIncomeSupportYes = () => {
-    if (pendingParent === 'A') {
-      if (needsPromptB) {
-        // Store Parent A's response in ref (immediate, not async) and ask about Parent B
-        tempParentAResponseRef.current = true;
-        setNeedsPromptB(false);
-        setPendingParent('B');
-      } else {
-        // Done prompting, run calculation
-        // Parent B was not asked, so they don't receive income support
-        setIncomeSupportModalVisible(false);
-        // Delay clearing pendingParent to prevent flash during modal close animation
-        setTimeout(() => setPendingParent(null), 200);
-        runCalculation(true, false);
-      }
-    } else if (pendingParent === 'B') {
-      setIncomeSupportModalVisible(false);
-      // Delay clearing pendingParent to prevent flash during modal close animation
-      setTimeout(() => setPendingParent(null), 200);
-      // Use Parent A's stored response from ref, Parent B said Yes
-      runCalculation(tempParentAResponseRef.current, true);
-    }
+  const handleIncomeSupportContinue = (supportA: boolean, supportB: boolean) => {
+    setIncomeSupportModalVisible(false);
+    runCalculation(supportA, supportB);
   };
 
   /**
-   * Handle "No" response from the income support modal.
+   * Handle Cancel/Dismiss from the income support modal.
+   * This proceeds to show results without income support applied.
    */
-  const handleIncomeSupportNo = () => {
-    if (pendingParent === 'A') {
-      if (needsPromptB) {
-        // Store Parent A's response in ref (immediate, not async) and ask about Parent B
-        tempParentAResponseRef.current = false;
-        setNeedsPromptB(false);
-        setPendingParent('B');
-      } else {
-        // Done prompting, run calculation
-        // Parent B was not asked, so they don't receive income support
-        setIncomeSupportModalVisible(false);
-        // Delay clearing pendingParent to prevent flash during modal close animation
-        setTimeout(() => setPendingParent(null), 200);
-        runCalculation(false, false);
-      }
-    } else if (pendingParent === 'B') {
-      setIncomeSupportModalVisible(false);
-      // Delay clearing pendingParent to prevent flash during modal close animation
-      setTimeout(() => setPendingParent(null), 200);
-      // Use Parent A's stored response from ref, Parent B said No
-      runCalculation(tempParentAResponseRef.current, false);
-    }
+  const handleIncomeSupportCancel = () => {
+    setIncomeSupportModalVisible(false);
+    runCalculation(false, false);
   };
 
   const formProps = {
@@ -372,9 +327,10 @@ export function CalculatorScreen() {
         {/* Income Support Modal */}
         <IncomeSupportModal
           visible={incomeSupportModalVisible}
-          parentName={pendingParent === 'A' ? 'You' : 'Other Parent'}
-          onYes={handleIncomeSupportYes}
-          onNo={handleIncomeSupportNo}
+          askParentA={askParentA}
+          askParentB={askParentB}
+          onContinue={handleIncomeSupportContinue}
+          onCancel={handleIncomeSupportCancel}
         />
       </KeyboardAvoidingView>
     </SafeAreaView>

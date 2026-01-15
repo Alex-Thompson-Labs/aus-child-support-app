@@ -65,56 +65,42 @@ const CARD_CONFIGS: Record<ConversionCardVariant, CardConfig> = {
 };
 
 /**
- * New A/B Testing Types
+ * Trigger-specific copy configuration
  */
-type PaymentType = 'payer' | 'payee' | 'neutral';
-type VariantId = 'A' | 'B';
-
-interface VariantCopy {
+interface TriggerCopy {
   headline: string;
   body: string;
   buttonText: string;
 }
 
 /**
- * A/B Variant Configuration
+ * Urgent, trigger-specific messaging
  */
-const VARIANT_CONFIG: Record<PaymentType, Record<VariantId, VariantCopy>> = {
-  payer: {
-    A: {
-      headline: 'Review Assessment',
-      body: 'Ensure your assessment is accurate. Small errors in income data can cost you thousands.',
-      buttonText: 'Review Now',
-    },
-    B: {
-      headline: 'Minimize Unfair Payments',
-      body: 'Don\'t pay more than you should. Check if you are eligible for a reduction or reassessment.',
-      buttonText: 'Check Fairness',
-    },
+const TRIGGER_COPY: Record<string, TriggerCopy> = {
+  low_assessment: {
+    headline: 'Hidden Income Detected?',
+    body: 'If the other parent has undeclared income or assets, you may be entitled to more support.',
+    buttonText: 'Check Now',
   },
-  payee: {
-    A: {
-      headline: 'Fair Share',
-      body: 'Ensure you are receiving the full amount you are entitled to based on real income.',
-      buttonText: 'Check Entitlement',
-    },
-    B: {
-      headline: 'Maximize Entitlement',
-      body: 'Don\'t miss out on financial support. Verify if the other parent is under-declaring income.',
-      buttonText: 'Maximize Support',
-    },
+  shared_care_dispute: {
+    headline: 'Protect Your Care Percentage',
+    body: 'Small changes in care arrangements can significantly impact your assessment. Ensure your nights are accurately recorded.',
+    buttonText: 'Check Now',
   },
-  neutral: {
-    A: {
-      headline: 'Legal Review',
-      body: 'Get a professional review of your child support situation to ensure fairness.',
-      buttonText: 'Request Review',
-    },
-    B: {
-      headline: 'Legal Review',
-      body: 'Get a professional review of your child support situation to ensure fairness.',
-      buttonText: 'Request Review',
-    },
+  payer_reversal: {
+    headline: 'Assessment Reversal Likely',
+    body: 'You may be paying when you should be receiving. Hidden income in the other parent\'s assessment could reverse this outcome.',
+    buttonText: 'Check Now',
+  },
+  high_value_case: {
+    headline: 'Get Professional Review',
+    body: 'High-value assessments require expert review to ensure accuracy and fairness.',
+    buttonText: 'Review Now',
+  },
+  binding_agreement: {
+    headline: 'Get Professional Review',
+    body: 'Consider a Binding Child Support Agreement for certainty and control over your arrangement.',
+    buttonText: 'Review Now',
   },
 };
 
@@ -167,8 +153,7 @@ interface SmartConversionFooterProps {
   carePercentages: number[];
   formData?: ComplexityFormData;
   onBeforeNavigate?: () => void;
-  paymentType?: PaymentType;
-  onCtaPress?: (variantId: string) => void;
+  onCtaPress?: (trigger: string) => void;
   calculatorStartTime?: number;
 }
 
@@ -179,33 +164,12 @@ export function SmartConversionFooter({
   carePercentages,
   formData,
   onBeforeNavigate,
-  paymentType,
   onCtaPress,
   calculatorStartTime,
 }: SmartConversionFooterProps) {
   const router = useRouter();
   const { isWeb } = useResponsive();
   const [isNavigating, setIsNavigating] = React.useState(false);
-
-  /**
-   * Session-based A/B variant assignment
-   * Randomly assigns 'A' or 'B' on component mount
-   * Resets on each new session/refresh (not persisted to device)
-   */
-  const variantId = useMemo<VariantId>(() => {
-    return Math.random() < 0.5 ? 'A' : 'B';
-  }, []); // Empty dependency array ensures assignment happens once per mount
-
-
-  // Determine effective payment type if not provided
-  const effectivePaymentType: PaymentType = useMemo(() => {
-    if (paymentType) return paymentType;
-    // Default logic: Assume User is Parent A. If Parent A is payer, then 'payer'.
-    return results.payer === 'Parent A' ? 'payer' : 'payee';
-  }, [paymentType, results.payer]);
-
-  // Get A/B copy configuration
-  const copyConfig = VARIANT_CONFIG[effectivePaymentType][variantId];
 
   // Determine logic-based trigger/config
   const formState = useMemo(() => (formData
@@ -220,6 +184,9 @@ export function SmartConversionFooter({
   }, [results, carePercentages, formState]);
 
   const logicConfig = CARD_CONFIGS[cardVariant];
+  
+  // Get trigger-specific copy
+  const copyConfig = TRIGGER_COPY[logicConfig.complexityTrigger] || TRIGGER_COPY.high_value_case;
 
   const handleCardClick = React.useCallback(() => {
     if (isNavigating) return;
@@ -230,7 +197,7 @@ export function SmartConversionFooter({
     }
 
     if (onCtaPress) {
-      onCtaPress(variantId);
+      onCtaPress(logicConfig.complexityTrigger);
     }
 
     if (isWeb) {
@@ -238,15 +205,14 @@ export function SmartConversionFooter({
       ReactGA.event('inquiry_opened', {
         source: 'smart_footer',
         card_variant: cardVariant,
-        payment_type: effectivePaymentType,
-        ab_variant: variantId,
+        complexity_trigger: logicConfig.complexityTrigger,
         total_liability: results.finalPaymentAmount,
       });
       // Legacy event for backwards compatibility
       ReactGA.event({
         category: 'Conversion',
         action: 'Smart_Footer_Click',
-        label: `${cardVariant}_${effectivePaymentType}_${variantId}`,
+        label: `${cardVariant}_${logicConfig.complexityTrigger}`,
       });
     }
 
@@ -272,7 +238,6 @@ export function SmartConversionFooter({
           payer: results.payer,
           specialCircumstances: JSON.stringify(formData?.selectedCircumstances ?? []),
           fromBreakdown: 'true',
-          abVariant: variantId, // Pass variant to form
           ...(calculatorStartTime && { calculatorStartTime: calculatorStartTime.toString() }),
         },
       });
@@ -288,10 +253,9 @@ export function SmartConversionFooter({
     logicConfig,
     isWeb,
     onBeforeNavigate,
-    variantId,
-    effectivePaymentType,
     onCtaPress,
     calculatorStartTime,
+    copyConfig,
   ]);
 
   return (
