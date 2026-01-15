@@ -26,14 +26,33 @@ export type UserTraits = Record<string, AnalyticsPropertyValue>;
 const isWeb = Platform.OS === 'web';
 
 /**
+ * Module-level cache for initialization state
+ * Once GA4 is initialized successfully, we cache this to avoid
+ * repeated checks to ReactGA.isInitialized (which may involve
+ * native bridge calls or configuration validation)
+ */
+let isInitialized = false;
+
+/**
  * Check if GA4 is initialized (web only)
+ * Uses cached state after first successful initialization to avoid
+ * repeated native bridge checks or configuration validation
  */
 function isGA4Initialized(): boolean {
+  // Fast path: Return cached state if already initialized
+  if (isInitialized) return true;
+  
   if (!isWeb || typeof window === 'undefined') return false;
+  
   // react-ga4 sets this internally after initialization
   // Adding try-catch significantly improves resilience against blocked scripts
   try {
-    return ReactGA.isInitialized;
+    const initialized = ReactGA.isInitialized;
+    // Cache the positive result to avoid future checks
+    if (initialized) {
+      isInitialized = true;
+    }
+    return initialized;
   } catch {
     return false;
   }
@@ -41,6 +60,7 @@ function isGA4Initialized(): boolean {
 
 /**
  * Initialize Google Analytics 4 safely
+ * Sets the module-level cache after successful initialization
  */
 export function initializeAnalytics(measurementId: string): void {
   if (!isWeb || typeof window === 'undefined') return;
@@ -48,6 +68,8 @@ export function initializeAnalytics(measurementId: string): void {
   try {
     if (!isGA4Initialized()) {
       ReactGA.initialize(measurementId);
+      // Set cache flag after successful initialization
+      isInitialized = true;
       console.log('Analytics initialized');
     }
   } catch (error) {

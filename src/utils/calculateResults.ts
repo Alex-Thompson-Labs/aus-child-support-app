@@ -1,7 +1,7 @@
 import {
-  CalculationResults,
-  CalculatorFormState,
-  deriveAgeRangeMemoized,
+    CalculationResults,
+    CalculatorFormState,
+    deriveAgeRangeMemoized,
 } from './calculator';
 import { convertCareToPercentage } from './care-utils';
 import { getChildCost } from './child-support-calculations';
@@ -9,9 +9,9 @@ import { AssessmentYear, getYearConstants } from './child-support-constants';
 
 // Import from extracted modules
 import {
-  applyMARFARCaps,
-  applyMultiCaseCaps,
-  applyRatesToChildren,
+    applyMARFARCaps,
+    applyMultiCaseCaps,
+    applyRatesToChildren,
 } from './engine';
 import { validateCalculatorForm } from './form-validator';
 import { calculateIncomes } from './income-calculator';
@@ -22,29 +22,29 @@ import { resolvePayment } from './payment-resolver';
 export * from './engine';
 export { validateCalculatorForm } from './form-validator';
 export {
-  calculateCSI,
-  calculateIncomePercentages,
-  calculateIncomes,
-  createVirtualDependentChildren
+    calculateCSI,
+    calculateIncomePercentages,
+    calculateIncomes,
+    createVirtualDependentChildren
 } from './income-calculator';
 export type {
-  IncomeCalculationInput,
-  IncomeCalculationResult
+    IncomeCalculationInput,
+    IncomeCalculationResult
 } from './income-calculator';
 export {
-  calculateChildLiability,
-  calculateChildSupportPercentage,
-  shouldPayLiability
+    calculateChildLiability,
+    calculateChildSupportPercentage,
+    shouldPayLiability
 } from './liability-calculator';
 export type { LiabilityInput, LiabilityResult } from './liability-calculator';
 export {
-  calculateNPCPayment,
-  determinePayerRole,
-  resolvePayment
+    calculateNPCPayment,
+    determinePayerRole,
+    resolvePayment
 } from './payment-resolver';
 export type {
-  PaymentResolutionInput,
-  PaymentResolutionResult
+    PaymentResolutionInput,
+    PaymentResolutionResult
 } from './payment-resolver';
 
 export const calculateChildSupport = (
@@ -208,7 +208,22 @@ export const calculateChildSupport = (
 
   // Step 9–10: Apply Fixed Annual Rate (FAR) or Minimum Annual Rate (MAR)
   // Use the extracted rates-engine module
-  const assessableChildResults = childResults.filter((c) => !c.isAdultChild);
+  // Optimize: Single pass to filter and extract care percentages
+  const assessableChildResults: typeof childResults = [];
+  const carePercentagesA: number[] = [];
+  const carePercentagesB: number[] = [];
+  const otherParentCarePercentagesA: number[] = [];
+  const otherParentCarePercentagesB: number[] = [];
+
+  for (const child of childResults) {
+    if (!child.isAdultChild) {
+      assessableChildResults.push(child);
+      carePercentagesA.push(child.roundedCareA);
+      carePercentagesB.push(child.roundedCareB);
+      otherParentCarePercentagesA.push(child.roundedCareB);
+      otherParentCarePercentagesB.push(child.roundedCareA);
+    }
+  }
 
   const ratesResult = applyRatesToChildren({
     childResults,
@@ -217,20 +232,16 @@ export const calculateChildSupport = (
       SSA,
       MAX_PPS,
       receivesSupport: supportA,
-      carePercentages: assessableChildResults.map((c) => c.roundedCareA),
-      otherParentCarePercentages: assessableChildResults.map(
-        (c) => c.roundedCareB
-      ),
+      carePercentages: carePercentagesA,
+      otherParentCarePercentages: otherParentCarePercentagesA,
     },
     eligibilityB: {
       ATI: ATI_B,
       SSA,
       MAX_PPS,
       receivesSupport: supportB,
-      carePercentages: assessableChildResults.map((c) => c.roundedCareB),
-      otherParentCarePercentages: assessableChildResults.map(
-        (c) => c.roundedCareA
-      ),
+      carePercentages: carePercentagesB,
+      otherParentCarePercentages: otherParentCarePercentagesB,
     },
     selectedYear,
     assessableChildCount: assessableChildResults.length,
@@ -314,7 +325,11 @@ export const calculateChildSupport = (
 
   // Formula 2: If NPC exists and Rate (MAR/FAR) was applied, redirect liability to NPC
   if (hasNPC) {
-    childResults.forEach((child) => {
+    // Single pass: redirect liabilities and sum final liabilities
+    finalLiabilityA = 0;
+    finalLiabilityB = 0;
+
+    for (const child of childResults) {
       if (!child.isAdultChild) {
         // Parent A redirection
         if (child.marAppliedA || child.farAppliedA) {
@@ -326,12 +341,12 @@ export const calculateChildSupport = (
           child.liabilityToNPC_B = child.finalLiabilityB;
           child.finalLiabilityB = 0;
         }
+        
+        // Accumulate final liabilities in same pass
+        finalLiabilityA += child.finalLiabilityA;
+        finalLiabilityB += child.finalLiabilityB;
       }
-    });
-
-    // Re-sum final liabilities to parent (now likely 0 if full MAR/FAR moved to NPC)
-    finalLiabilityA = childResults.reduce((sum, c) => sum + c.finalLiabilityA, 0);
-    finalLiabilityB = childResults.reduce((sum, c) => sum + c.finalLiabilityB, 0);
+    }
   }
 
   // Determine rate applied string

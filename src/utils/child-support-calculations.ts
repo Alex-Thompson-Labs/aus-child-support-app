@@ -1,7 +1,7 @@
 import type { AgeRange, ChildInput, CostBracketInfo, OtherCaseChild } from './calculator';
-import { deriveAgeRange, deriveAgeRangeMemoized } from './calculator';
+import { deriveAgeRangeMemoized } from './calculator';
 import {
-  AssessmentYear
+    AssessmentYear
 } from './child-support-constants';
 import { COTCBandValues, YEARLY_CONFIG } from './year-config';
 
@@ -57,16 +57,26 @@ export function getChildCost(
     return emptyResult;
   }
 
-  // Derive age ranges from specific ages using memoized function
-  // This optimization avoids repeated calculation of age ranges in loops
-  const childrenWithRanges = children.map((c) => ({
-    ...c,
-    ageRange: c.ageRange ?? deriveAgeRangeMemoized(c.age),
-  }));
+  // Optimized: Single pass to derive age ranges, filter eligible children, and determine age groups
+  const eligibleChildren: (Child & { ageRange: AgeRange })[] = [];
+  let hasYounger = false;
+  let hasOlder = false;
 
-  // Filter out adult children (18+) from standard calculation
-  // Adult Child Maintenance is handled separately
-  const eligibleChildren = childrenWithRanges.filter((c) => c.ageRange !== '18+');
+  for (const c of children) {
+    const ageRange = c.ageRange ?? deriveAgeRangeMemoized(c.age);
+    
+    // Skip adult children (18+) from standard calculation
+    if (ageRange !== '18+') {
+      eligibleChildren.push({ ...c, ageRange });
+      
+      // Track age groups in same pass
+      if (ageRange === 'Under 13') {
+        hasYounger = true;
+      } else if (ageRange === '13+') {
+        hasOlder = true;
+      }
+    }
+  }
 
   if (eligibleChildren.length === 0) {
     // All children are 18+ - return zero cost for standard calculation
@@ -74,10 +84,7 @@ export function getChildCost(
     return emptyResult;
   }
 
-  // Determine age group based on eligible children
-  const hasYounger = eligibleChildren.some((c) => c.ageRange === 'Under 13');
-  const hasOlder = eligibleChildren.some((c) => c.ageRange === '13+');
-
+  // Determine age group based on flags set during iteration
   let ageGroup: '0-12' | '13+' | 'mixed';
   if (hasYounger && hasOlder) {
     ageGroup = 'mixed';
@@ -201,14 +208,17 @@ export function calculateMultiCaseAllowance(
     // This implements the "Same Age" rule
     // Use memoized age range to avoid recalculating for each virtual child
     const ageRange = deriveAgeRangeMemoized(otherChild.age);
-    const virtualChildren: Child[] = Array(totalChildCount)
-      .fill(null)
-      .map(() => ({
+    
+    // Optimized: Create array without fill().map() chain
+    const virtualChildren: Child[] = [];
+    for (let i = 0; i < totalChildCount; i++) {
+      virtualChildren.push({
         age: otherChild.age,
         ageRange: ageRange,
         careA: 0,
         careB: 0,
-      }));
+      });
+    }
 
     // Calculate cost using parent's individual CSI
     const { cost: totalCost } = getChildCost(year, virtualChildren, parentCSI);
