@@ -4,15 +4,15 @@ import * as FileSystem from 'expo-file-system';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    ActivityIndicator,
+    Alert,
+    Modal,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CareCalendar } from '../components/CareCalendar';
@@ -21,12 +21,12 @@ import { generateCareCalendarPDF } from '../utils/pdfGenerator';
 import { supabase } from '../utils/supabase/client';
 import { calculateCareFromTimeline } from '../utils/timeline-aggregator';
 import {
-  CareCalculationResult,
-  TimelineResponse,
+    CareCalculationResult,
+    TimelineResponse,
 } from '../utils/timeline-types';
 import {
-  validateTimeline,
-  ValidationError,
+    validateTimeline,
+    ValidationError,
 } from '../utils/timeline-validator';
 
 const STATES: AustralianState[] = [
@@ -276,6 +276,38 @@ export default function CourtOrderToolScreen() {
                     {result.fatherPercentage}%
                   </Text>
                 </View>
+              </View>
+
+              {/* TEMPORARY DEBUG: Raw AI Output Dump */}
+              <View style={{ backgroundColor: '#fffbe6', borderColor: '#d97706', borderWidth: 2, marginTop: 16, marginBottom: 16, padding: 12, borderRadius: 8 }}>
+                <Text style={{ color: '#b45309', fontWeight: 'bold', fontSize: 14, marginBottom: 8 }}>
+                  🔍 AI RAW JSON OUTPUT {timelineResponse ? '(DATA FOUND)' : '(NO DATA)'}
+                </Text>
+                {timelineResponse ? (
+                  <ScrollView style={{ maxHeight: 300 }} nestedScrollEnabled>
+                    <Pressable
+                      onPress={() => {
+                        console.log('=== TIMELINE RESPONSE ===');
+                        console.log(JSON.stringify(timelineResponse, null, 2));
+                        Alert.alert("Copied to Console", "Check your terminal/debugger for the full JSON.");
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+                          fontSize: 10,
+                          color: '#333',
+                        }}
+                      >
+                        {JSON.stringify(timelineResponse, null, 2)}
+                      </Text>
+                    </Pressable>
+                  </ScrollView>
+                ) : (
+                  <Text style={{ color: '#dc2626', fontSize: 12 }}>
+                    timelineResponse is null or undefined
+                  </Text>
+                )}
               </View>
 
               {/* New Data & Action Buttons */}

@@ -6,6 +6,7 @@
  */
 
 import { getSupabaseClient } from '@/src/utils/supabase/client';
+import { format } from 'date-fns';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -195,6 +196,32 @@ function StepState({
 }
 
 function StepAnalyzing() {
+  const [progress, setProgress] = React.useState(0);
+  const [stage, setStage] = React.useState('Uploading document...');
+
+  React.useEffect(() => {
+    // Simulate progress stages - spread across ~45 seconds to match actual processing time
+    const stages = [
+      { progress: 5, label: 'Uploading document...', delay: 500 },
+      { progress: 15, label: 'Reading court order...', delay: 3000 },
+      { progress: 25, label: 'Extracting care schedule...', delay: 8000 },
+      { progress: 40, label: 'Analyzing patterns...', delay: 15000 },
+      { progress: 55, label: 'Calculating nights...', delay: 22000 },
+      { progress: 70, label: 'Validating timeline...', delay: 30000 },
+      { progress: 85, label: 'Finalizing results...', delay: 38000 },
+      { progress: 95, label: 'Almost done...', delay: 42000 },
+    ];
+
+    const timers = stages.map(({ progress: p, label, delay }) =>
+      setTimeout(() => {
+        setProgress(p);
+        setStage(label);
+      }, delay)
+    );
+
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
   return (
     <View style={styles.stepContainer}>
       <View style={styles.loaderContainer}>
@@ -202,8 +229,18 @@ function StepAnalyzing() {
       </View>
       <Text style={styles.stepTitle}>Analyzing Order...</Text>
       <Text style={styles.stepDescription}>
-        We&apos;re processing your court order and calculating the care percentages based on your selections.
+        We&apos;re reading your court order and extracting the care schedule to calculate exact night counts.
       </Text>
+      
+      {/* Progress Bar */}
+      <View style={styles.progressContainer}>
+        <View style={styles.progressBarBackground}>
+          <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
+        </View>
+        <Text style={styles.progressText}>{stage}</Text>
+        <Text style={styles.progressPercentage}>{progress}%</Text>
+      </View>
+      
       <ActivityIndicator size="large" color="#2563EB" style={{ marginTop: 20 }} />
     </View>
   );
@@ -215,7 +252,8 @@ function StepResults({
   selectedState,
   year,
   onDownloadPDF,
-  userRole
+  userRole,
+  timelineResponse
 }: {
   result: CareCalculationResult;
   onReset: () => void;
@@ -223,15 +261,38 @@ function StepResults({
   year: number;
   onDownloadPDF: () => void;
   userRole: UserRole;
+  timelineResponse: TimelineResponse | null;
 }) {
   // Determine colors based on role
   const fatherColor = userRole === 'Father' ? USER_COLOR : OTHER_PARENT_COLOR;
   const motherColor = userRole === 'Mother' ? USER_COLOR : OTHER_PARENT_COLOR;
 
+  // Detect if this is a 2-year timeline and get the actual start/end dates
+  const is2YearTimeline = timelineResponse && 
+    result.timeline.length > 0 && 
+    result.timeline[result.timeline.length - 1][1].startsWith(`${year + 1}`);
+
+  // Extract actual calculation period from timeline
+  const startDate = result.timeline[0]?.[0] || `${year}-01-01T00:00`;
+  const endDate = result.timeline[result.timeline.length - 1]?.[1] || `${year}-12-31T23:59`;
+  
+  const calculationStartMonth = parseInt(startDate.split('-')[1]);
+  const calculationStartDay = parseInt(startDate.split('-')[2].split('T')[0]);
+  const calculationEndYear = parseInt(endDate.split('-')[0]);
+  const calculationEndMonth = parseInt(endDate.split('-')[1]);
+  const calculationEndDay = parseInt(endDate.split('-')[2].split('T')[0]);
+
+  const calculationDuration = is2YearTimeline ? '2-Year' : '1-Year';
+  const periodDescription = is2YearTimeline 
+    ? `${format(new Date(startDate), 'MMM d, yyyy')} - ${format(new Date(endDate), 'MMM d, yyyy')}`
+    : `${year} Full Year`;
+
   return (
     <ScrollView style={styles.resultsScroll} contentContainerStyle={styles.resultsContent}>
       <View style={styles.resultsContainer}>
         <Text style={styles.stepTitle}>Care Calculation Results</Text>
+        <Text style={styles.calculationDurationLabel}>{calculationDuration} Calculation</Text>
+        <Text style={styles.periodDescription}>{periodDescription}</Text>
         <View style={styles.resultsGrid}>
           {/* Dynamically order cards? Req says: "User ... in Brand Blue" */}
           <View style={[styles.resultCard, { backgroundColor: userRole === 'Mother' ? '#eff6ff' : '#f8f9fa', borderColor: userRole === 'Mother' ? '#bfdbfe' : '#e2e8f0', borderWidth: 1 }]}>
@@ -246,15 +307,97 @@ function StepResults({
           </View>
         </View>
 
+        {/* TEMPORARY DEBUG: Raw AI Output Dump */}
+        <View style={{ backgroundColor: '#fffbe6', borderColor: '#d97706', borderWidth: 2, marginBottom: 24, padding: 16, borderRadius: 12, width: '100%' }}>
+          <Text style={{ color: '#b45309', fontWeight: 'bold', fontSize: 16, marginBottom: 12 }}>
+            🔍 AI RAW JSON OUTPUT {timelineResponse ? '(DATA FOUND)' : '(NO DATA)'}
+          </Text>
+          {timelineResponse ? (
+            <ScrollView style={{ maxHeight: 400 }} nestedScrollEnabled>
+              <Pressable
+                onPress={() => {
+                  console.log('=== TIMELINE RESPONSE ===');
+                  console.log(JSON.stringify(timelineResponse, null, 2));
+                  Alert.alert("Copied to Console", "Check your terminal/debugger for the full JSON.");
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+                    fontSize: 10,
+                    color: '#333',
+                  }}
+                >
+                  {JSON.stringify(timelineResponse, null, 2)}
+                </Text>
+              </Pressable>
+            </ScrollView>
+          ) : (
+            <Text style={{ color: '#dc2626', fontSize: 12 }}>
+              timelineResponse is null or undefined
+            </Text>
+          )}
+        </View>
+
         <View style={styles.calendarSection}>
-          <Text style={styles.sectionTitle}>365-Day Care Calendar</Text>
+          <Text style={styles.sectionTitle}>Care Calendar</Text>
+          
+          {/* Year 1 */}
+          <Text style={styles.yearLabel}>{year}</Text>
+          {calculationStartMonth > 1 && calculationStartDay > 1 && (
+            <View style={styles.excludedNotice}>
+              <Text style={styles.excludedNoticeText}>
+                Days before {format(new Date(startDate), 'MMM d')} are not included in calculation
+              </Text>
+            </View>
+          )}
           <CareCalendar
             year={year}
             timeline={result.timeline}
             state={selectedState}
             fatherColor={fatherColor}
             motherColor={motherColor}
+            excludeBeforeDate={startDate.split('T')[0]}
+            excludeAfterDate={is2YearTimeline ? undefined : endDate.split('T')[0]}
           />
+          
+          {/* Year 2 if 2-year timeline */}
+          {is2YearTimeline && (
+            <>
+              <View style={{ height: 32 }} />
+              <Text style={styles.yearLabel}>{year + 1}</Text>
+              <CareCalendar
+                year={year + 1}
+                timeline={result.timeline}
+                state={selectedState}
+                fatherColor={fatherColor}
+                motherColor={motherColor}
+                excludeAfterDate={calculationEndYear === year + 2 ? undefined : endDate.split('T')[0]}
+              />
+              
+              {/* Final January if calculation extends into it */}
+              {calculationEndYear === year + 2 && calculationEndMonth === 1 && (
+                <>
+                  <View style={{ height: 32 }} />
+                  <Text style={styles.yearLabel}>{year + 2}</Text>
+                  <View style={styles.excludedNotice}>
+                    <Text style={styles.excludedNoticeText}>
+                      Days after {format(new Date(endDate), 'MMM d')} are not included in calculation
+                    </Text>
+                  </View>
+                  <CareCalendar
+                    year={year + 2}
+                    timeline={result.timeline}
+                    state={selectedState}
+                    fatherColor={fatherColor}
+                    motherColor={motherColor}
+                    excludeAfterDate={endDate.split('T')[0]}
+                  />
+                </>
+              )}
+            </>
+          )}
+          
           <Pressable style={styles.downloadButton} onPress={onDownloadPDF}>
             <Download size={18} color="#ffffff" />
             <Text style={styles.downloadButtonText}>Download Calendar PDF</Text>
@@ -526,6 +669,7 @@ export default function CourtOrderToolScreen() {
                 year={selectedYear}
                 onDownloadPDF={handleDownloadPDF}
                 userRole={userRole}
+                timelineResponse={timelineResponse}
               />
             )}
           </View>
@@ -592,6 +736,8 @@ const styles = StyleSheet.create({
   resultsScroll: { flex: 1 },
   resultsContent: { padding: 20, alignItems: 'center' },
   resultsContainer: { width: '100%', maxWidth: 600, alignItems: 'center' },
+  calculationDurationLabel: { fontSize: 13, color: '#64748b', marginBottom: 4, fontWeight: '500' },
+  periodDescription: { fontSize: 12, color: '#94a3b8', marginBottom: 16 },
   resultsGrid: { flexDirection: 'row', gap: 16, marginBottom: 24, width: '100%' },
   resultCard: { flex: 1, padding: 20, borderRadius: 16, alignItems: 'center', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 }) },
   motherCard: { backgroundColor: '#fce7f3' },
@@ -629,4 +775,12 @@ const styles = StyleSheet.create({
   disclaimerText: { fontSize: 13, color: '#92400e', lineHeight: 18, marginBottom: 4 },
   disclaimerBullet: { fontSize: 13, color: '#92400e', marginLeft: 8, lineHeight: 18 },
   resetButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#ffffff', paddingVertical: 12, paddingHorizontal: 20, borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0', gap: 6, marginTop: 8 },
+  progressContainer: { width: '100%', maxWidth: 400, marginTop: 24, alignItems: 'center' },
+  progressBarBackground: { width: '100%', height: 8, backgroundColor: '#e2e8f0', borderRadius: 4, overflow: 'hidden' },
+  progressBarFill: { height: '100%', backgroundColor: '#2563EB', borderRadius: 4 },
+  progressText: { fontSize: 14, color: '#475569', marginTop: 12, textAlign: 'center' },
+  progressPercentage: { fontSize: 12, color: '#94a3b8', marginTop: 4, fontWeight: '600' },
+  yearLabel: { fontSize: 18, fontWeight: '700', color: '#1e293b', marginBottom: 12, marginTop: 8 },
+  excludedNotice: { backgroundColor: '#fef3c7', padding: 12, borderRadius: 8, marginBottom: 12, borderLeftWidth: 3, borderLeftColor: '#f59e0b' },
+  excludedNoticeText: { fontSize: 13, color: '#92400e', lineHeight: 18 },
 });

@@ -48,6 +48,10 @@ interface CareCalendarProps {
   state: AustralianState;
   fatherColor?: string;
   motherColor?: string;
+  /** Optional: dates before this are excluded from calculation */
+  excludeBeforeDate?: string;
+  /** Optional: dates after this are excluded from calculation */
+  excludeAfterDate?: string;
 }
 
 interface DayCellProps {
@@ -56,11 +60,22 @@ interface DayCellProps {
   isHoliday: boolean;
   fatherColor: string;
   motherColor: string;
+  isExcluded?: boolean;
 }
 
-function DayCell({ day, careWith, isHoliday, fatherColor, motherColor }: DayCellProps) {
+function DayCell({ day, careWith, isHoliday, fatherColor, motherColor, isExcluded }: DayCellProps) {
   if (day === 0) {
     return <View style={viewStyles.dayCell} />;
+  }
+
+  if (isExcluded) {
+    return (
+      <View style={viewStyles.dayCell}>
+        <View style={[viewStyles.dayCircle, { backgroundColor: '#f1f5f9', opacity: 0.5 }]}>
+          <Text style={[textStyles.dayText, { color: '#94a3b8' }]}>{day}</Text>
+        </View>
+      </View>
+    );
   }
 
   const backgroundColor = careWith === 'Father' ? fatherColor : motherColor;
@@ -82,9 +97,11 @@ interface MonthGridProps {
   holidayDates: Set<string>;
   fatherColor: string;
   motherColor: string;
+  excludeBeforeDate?: string;
+  excludeAfterDate?: string;
 }
 
-function MonthGrid({ year, month, assignmentMap, holidayDates, fatherColor, motherColor }: MonthGridProps) {
+function MonthGrid({ year, month, assignmentMap, holidayDates, fatherColor, motherColor, excludeBeforeDate, excludeAfterDate }: MonthGridProps) {
   const firstDay = startOfMonth(new Date(year, month, 1));
   const daysInMonth = getDaysInMonth(firstDay);
   const startDayOfWeek = getDay(firstDay);
@@ -126,10 +143,11 @@ function MonthGrid({ year, month, assignmentMap, holidayDates, fatherColor, moth
               return <DayCell key={dayIndex} day={0} careWith={null} isHoliday={false} fatherColor={fatherColor} motherColor={motherColor} />;
             }
             const dateStr = format(new Date(year, month, day), 'yyyy-MM-dd');
+            const isExcluded = (excludeBeforeDate && dateStr < excludeBeforeDate) || (excludeAfterDate && dateStr > excludeAfterDate);
             const careWith = assignmentMap.get(dateStr) || 'Mother';
             const isHoliday = holidayDates.has(dateStr);
             return (
-              <DayCell key={dayIndex} day={day} careWith={careWith} isHoliday={isHoliday} fatherColor={fatherColor} motherColor={motherColor} />
+              <DayCell key={dayIndex} day={day} careWith={careWith} isHoliday={isHoliday} fatherColor={fatherColor} motherColor={motherColor} isExcluded={isExcluded} />
             );
           })}
         </View>
@@ -144,7 +162,9 @@ export function CareCalendar({
   timeline,
   state,
   fatherColor = FATHER_COLOR_DEFAULT,
-  motherColor = MOTHER_COLOR_DEFAULT
+  motherColor = MOTHER_COLOR_DEFAULT,
+  excludeBeforeDate,
+  excludeAfterDate
 }: CareCalendarProps) {
   // Build assignment map from either timeline or legacy assignments
   const assignmentMap = useMemo(() => {
@@ -214,6 +234,8 @@ export function CareCalendar({
             holidayDates={holidayDates}
             fatherColor={fatherColor}
             motherColor={motherColor}
+            excludeBeforeDate={excludeBeforeDate}
+            excludeAfterDate={excludeAfterDate}
           />
         ))}
       </View>
