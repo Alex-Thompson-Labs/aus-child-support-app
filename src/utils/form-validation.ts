@@ -14,10 +14,9 @@ import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
 export const VALIDATION = {
   NAME_MIN_LENGTH: 2,
   NAME_MAX_LENGTH: 100,
-  MESSAGE_MIN_LENGTH: 10,
   MESSAGE_MAX_LENGTH: 1000,
   EMAIL_REGEX:
-    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/,
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/,
   // Simple email regex for basic validation (used in LawyerInquiryScreen)
   EMAIL_REGEX_SIMPLE: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
 } as const;
@@ -164,9 +163,6 @@ export function validatePhone(phone: string): string | undefined {
 export function validateMessage(message: string): string | undefined {
   const sanitized = sanitizeString(message);
   if (!sanitized) return 'Message is required';
-  if (sanitized.length < VALIDATION.MESSAGE_MIN_LENGTH) {
-    return `Message must be at least ${VALIDATION.MESSAGE_MIN_LENGTH} characters`;
-  }
   if (sanitized.length > VALIDATION.MESSAGE_MAX_LENGTH) {
     return `Message must be less than ${VALIDATION.MESSAGE_MAX_LENGTH} characters`;
   }

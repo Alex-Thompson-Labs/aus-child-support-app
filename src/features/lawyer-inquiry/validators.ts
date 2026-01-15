@@ -157,12 +157,12 @@ export function validateMessage(
 
   // Message is only required when it's a hidden income form AND "Other" is selected
   if (isHiddenIncomeForm && financialTags.includes('Other')) {
-    if (!sanitized || sanitized.length < VALIDATION.MESSAGE_MIN_LENGTH) {
-      return 'Please provide a few more details so the lawyer can understand your situation (minimum 10 characters).';
+    if (!sanitized) {
+      return 'Please provide a few more details so the lawyer can understand your situation.';
     }
     // Check if message is identical to pre-filled message
     if (preFillMessage && sanitized === sanitizeString(preFillMessage)) {
-      return 'Please provide a few more details so the lawyer can understand your situation (minimum 10 characters).';
+      return 'Please provide a few more details so the lawyer can understand your situation.';
     }
   }
 

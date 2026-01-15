@@ -50,6 +50,8 @@ export default function LeadDetailScreen() {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [exportingPDF, setExportingPDF] = useState(false);
   const [userEmail, setUserEmail] = useState<string>('system');
+  const [copiedEmail, setCopiedEmail] = useState(false);
+  const [copiedPhone, setCopiedPhone] = useState(false);
 
   useEffect(() => {
     const checkAuthAndLoadLead = async () => {
@@ -304,6 +306,32 @@ auschildsupport.com`;
     }
   };
 
+  const copyToClipboard = async (text: string, type: 'email' | 'phone') => {
+    try {
+      if (Platform.OS === 'web' && navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        Clipboard.setString(text);
+      }
+
+      // Show visual feedback
+      if (type === 'email') {
+        setCopiedEmail(true);
+        setTimeout(() => setCopiedEmail(false), 2000);
+      } else {
+        setCopiedPhone(true);
+        setTimeout(() => setCopiedPhone(false), 2000);
+      }
+    } catch (error) {
+      console.error('[LeadDetail] Error copying to clipboard:', error);
+      if (Platform.OS === 'web') {
+        alert('Failed to copy to clipboard');
+      } else {
+        Alert.alert('Error', 'Failed to copy to clipboard');
+      }
+    }
+  };
+
   const deleteLead = () => {
     if (!lead) return;
 
@@ -427,14 +455,34 @@ auschildsupport.com`;
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Email:</Text>
-              <Text style={[styles.infoValue, styles.infoValueEmail]}>
-                {lead.parent_email}
-              </Text>
+              <View style={styles.infoValueWithButton}>
+                <Text style={[styles.infoValue, styles.infoValueEmail]}>
+                  {lead.parent_email}
+                </Text>
+                <Pressable
+                  style={[styles.copyButton, isWeb && webClickableStyles]}
+                  onPress={() => copyToClipboard(lead.parent_email, 'email')}
+                >
+                  <Text style={styles.copyIcon}>
+                    {copiedEmail ? '✓' : '📋'}
+                  </Text>
+                </Pressable>
+              </View>
             </View>
             {lead.parent_phone && (
               <View style={styles.infoRow}>
                 <Text style={styles.infoLabel}>Phone:</Text>
-                <Text style={styles.infoValue}>{lead.parent_phone}</Text>
+                <View style={styles.infoValueWithButton}>
+                  <Text style={styles.infoValue}>{lead.parent_phone}</Text>
+                  <Pressable
+                    style={[styles.copyButton, isWeb && webClickableStyles]}
+                    onPress={() => copyToClipboard(lead.parent_phone!, 'phone')}
+                  >
+                    <Text style={styles.copyIcon}>
+                      {copiedPhone ? '✓' : '📋'}
+                    </Text>
+                  </Pressable>
+                </View>
               </View>
             )}
             {lead.location && (
@@ -785,6 +833,23 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     flex: 1,
     textAlign: 'right',
+  },
+  infoValueWithButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: 8,
+  },
+  copyButton: {
+    padding: 6,
+    borderRadius: 6,
+    backgroundColor: '#f1f5f9',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  copyIcon: {
+    fontSize: 16,
   },
   complexityItem: {
     flexDirection: 'row',

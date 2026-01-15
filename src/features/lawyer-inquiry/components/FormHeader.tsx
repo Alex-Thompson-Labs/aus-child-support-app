@@ -4,7 +4,6 @@
  * Displays the form title, subtitle, and close button.
  */
 
-import { triggerOpenBreakdown } from '@/src/features/calculator';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
@@ -16,30 +15,13 @@ export function FormHeader({ config, source, returnTo, fromBreakdown }: FormHead
   const { headerStyles } = useInquiryStyles();
 
   const handleClose = () => {
-    // Debug logging for troubleshooting
-    if (__DEV__ || Platform.OS === 'web') {
-      console.log('[FormHeader] Close pressed:', { source, returnTo, fromBreakdown, platform: Platform.OS });
-    }
-
     // Only handle external redirects on web
     if (Platform.OS === 'web' && returnTo) {
-      // Explicit returnTo URL takes priority
-      console.log('[FormHeader] Redirecting to returnTo:', returnTo);
       window.location.href = returnTo;
       return;
     }
 
-    // If user came from Breakdown modal, trigger event and go back to preserve state
-    if (fromBreakdown) {
-      console.log('[FormHeader] Navigating back to breakdown');
-      router.back();
-      // Small delay to ensure navigation completes before triggering event
-      setTimeout(() => triggerOpenBreakdown(), 100);
-      return;
-    }
-
-    // Default behavior: navigate within the app
-    console.log('[FormHeader] Using default navigation');
+    // Standard internal navigation
     if (router.canGoBack()) {
       router.back();
     } else {
