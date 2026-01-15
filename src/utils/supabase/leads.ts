@@ -4,62 +4,51 @@ import * as Crypto from 'expo-crypto';
 /**
  * Generates a cryptographically secure UUID v4 string.
  * 
- * Security: Uses expo-crypto for secure random number generation on all platforms.
+ * Security: Uses expo-crypto.randomUUID() as the primary method, which provides
+ * cryptographically secure UUID generation on all platforms (iOS, Android, Web).
  * This ensures that lead IDs cannot be predicted or guessed, which is critical for
  * security as lead IDs are used to access sensitive personal information.
  * 
  * Fallback strategy:
- * 1. Try crypto.randomUUID() (modern web browsers, Node.js 15.6+)
- * 2. Try crypto.getRandomValues() (web, some React Native environments)
- * 3. Use expo-crypto.getRandomBytes() (Expo/React Native - secure on all platforms)
- * 4. If all fail, throw an error (NO INSECURE FALLBACK)
+ * 1. expo-crypto.randomUUID() (PRIMARY - secure on all platforms)
+ * 2. crypto.randomUUID() (Web fallback for modern browsers)
+ * 3. HARD ERROR - No insecure fallbacks allowed
  * 
- * @throws {Error} If no secure random number generator is available
+ * @throws {Error} If no secure UUID generator is available (fail-safe design)
  * @returns {string} A cryptographically secure UUID v4 string
  */
 function generateUUID(): string {
-    // Method 1: Modern crypto API (web/node)
-    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-        return crypto.randomUUID();
-    }
-
-    // Method 2: crypto.getRandomValues (web, some RN environments)
-    if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
-        const buffer = new Uint8Array(16);
-        crypto.getRandomValues(buffer);
-
-        // Set version (4) and variant (RFC4122)
-        buffer[6] = (buffer[6] & 0x0f) | 0x40;
-        buffer[8] = (buffer[8] & 0x3f) | 0x80;
-
-        const hex = Array.from(buffer)
-            .map(b => b.toString(16).padStart(2, '0'))
-            .join('');
-
-        return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
-    }
-
-    // Method 3: expo-crypto (React Native - secure on all platforms)
+    // Method 1: expo-crypto.randomUUID() (PRIMARY - works on iOS, Android, Web)
     try {
-        const randomBytes = Crypto.getRandomBytes(16);
-        
-        // Set version (4) and variant (RFC4122)
-        randomBytes[6] = (randomBytes[6] & 0x0f) | 0x40;
-        randomBytes[8] = (randomBytes[8] & 0x3f) | 0x80;
-
-        const hex = Array.from(randomBytes)
-            .map(b => b.toString(16).padStart(2, '0'))
-            .join('');
-
-        return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+        const uuid = Crypto.randomUUID();
+        if (uuid && typeof uuid === 'string' && uuid.length === 36) {
+            return uuid;
+        }
     } catch (error) {
-        // If expo-crypto fails, throw an error instead of falling back to insecure method
-        console.error('[UUID] Failed to generate secure UUID:', error);
-        throw new Error(
-            'Unable to generate secure UUID. No cryptographically secure random number generator is available. ' +
-            'This is a security issue and lead submission cannot proceed without secure ID generation.'
-        );
+        console.warn('[UUID] expo-crypto.randomUUID() failed, trying fallback:', error);
     }
+
+    // Method 2: Web Crypto API fallback (modern browsers, Node.js 15.6+)
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+        try {
+            const uuid = crypto.randomUUID();
+            if (uuid && typeof uuid === 'string' && uuid.length === 36) {
+                return uuid;
+            }
+        } catch (error) {
+            console.warn('[UUID] crypto.randomUUID() failed:', error);
+        }
+    }
+
+    // HARD ERROR - No insecure fallbacks
+    // If we reach here, no secure UUID generator is available
+    console.error('[UUID] CRITICAL: All secure UUID generation methods failed');
+    throw new Error(
+        'SECURITY ERROR: Unable to generate secure UUID. ' +
+        'No cryptographically secure UUID generator is available in this environment. ' +
+        'Lead submission cannot proceed without secure ID generation to protect user data. ' +
+        'This is a critical security issue that must be resolved before production use.'
+    );
 }
 
 // Type definitions for database tables
@@ -163,16 +152,13 @@ export async function submitLead(lead: LeadSubmission): Promise<{
             };
         }
 
-        // Log what we're about to send (for debugging)
+        // Log submission attempt (PII-free)
         console.log('[Supabase] Attempting to insert lead with data:', {
             has_phone: !!lead.parent_phone,
-            income_parent_a: lead.income_parent_a,
-            income_parent_b: lead.income_parent_b,
             children_count: lead.children_count,
             annual_liability: lead.annual_liability,
             message_length: lead.parent_message?.length ?? 0,
             consent_given: lead.consent_given,
-            complexity_trigger: lead.complexity_trigger,
             complexity_reasons_count: lead.complexity_reasons.length,
         });
 
@@ -290,7 +276,7 @@ export async function updateLeadEnrichment(
     payerRole?: 'you' | 'other_parent' | null
 ): Promise<{ success: boolean; error?: string }> {
     try {
-        console.log('[Supabase] Updating lead enrichment:', { leadId, enrichmentFactors, annualLiability, payerRole });
+        console.log('[Supabase] Updating lead enrichment for lead:', leadId);
 
         // Lazy-load Supabase client
         const supabaseClient = await getSupabaseClient();

@@ -82,7 +82,6 @@ export async function submitLeadWithPartner(
     };
 
     console.log('[submit-lead] Submitting lead to edge function:', {
-      url: edgeFunctionUrl,
       partner_id: partnerId ?? null,
       has_phone: !!lead.parent_phone,
       children_count: lead.children_count,

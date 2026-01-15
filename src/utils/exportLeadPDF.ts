@@ -479,7 +479,7 @@ function generateLeadHTML(lead: LeadSubmission, userId: string = 'system'): stri
  */
 export async function exportLeadAsPDF(lead: LeadSubmission, userId: string = 'system'): Promise<void> {
   try {
-    console.log('[ExportPDF] Generating PDF for lead:', lead.id);
+    console.log('[ExportPDF] Generating PDF for lead ID:', lead.id);
 
     // Generate HTML content
     const html = generateLeadHTML(lead, userId);

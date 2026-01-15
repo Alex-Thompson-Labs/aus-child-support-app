@@ -2,13 +2,13 @@ import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCalculator } from '../hooks/useCalculator';
@@ -109,7 +109,7 @@ export function CalculatorScreen() {
     careKey: 'careAmountA' | 'careAmountB'
   ): boolean => {
     const { SSA, MAX_PPS } = getYearConstants(selectedYear);
-    
+
     // Check if parent has < 14% care for at least one child
     const hasLessThan14Care = formState.children.some((child) => {
       const carePercent = convertCareToPercentage(
@@ -220,21 +220,15 @@ export function CalculatorScreen() {
     aiCourtOrderBanner: (
       <Pressable
         style={({ pressed }) => [
-          styles.aiCard,
-          pressed && { opacity: 0.9, transform: [{ scale: 0.99 }] }
+          styles.aiLinkButton,
+          pressed && { opacity: 0.7 }
         ]}
         onPress={() => router.push('/court-order-tool')}
+        accessibilityRole="button"
+        accessibilityLabel="Import care arrangements from court order"
       >
-        <View style={styles.aiCardContent}>
-          <View style={styles.aiIconContainer}>
-            <Feather name="file-text" size={24} color="white" />
-          </View>
-          <View style={styles.aiTextContainer}>
-            <Text style={styles.aiTitle}>Court Order Scanner</Text>
-            <Text style={styles.aiDescription}>Upload your court orders to automatically calculate care nights.</Text>
-          </View>
-          <Feather name="chevron-right" size={20} color="#334155" />
-        </View>
+        <Feather name="file-text" size={16} color="#2563eb" />
+        <Text style={styles.aiLinkText}>Import from Court Order</Text>
       </Pressable>
     ),
   };
@@ -405,40 +399,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#f1f5f9',
   },
-  aiCard: {
-    backgroundColor: '#eff6ff', // blue-50
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#bfdbfe', // blue-200
-    marginBottom: 16,
-    overflow: 'hidden',
-  },
-  aiCardContent: {
+  aiLinkButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    gap: 16,
+    gap: 8,
+    // Provide a large touch target but keep visual footprint small
+    paddingVertical: 8,
   },
-  aiIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#2563eb', // blue-600
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  aiTextContainer: {
-    flex: 1,
-  },
-  aiTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1e3a8a', // blue-900
-    marginBottom: 4,
-  },
-  aiDescription: {
-    fontSize: 13,
-    color: '#334155', // slate-700
-    lineHeight: 18,
+  aiLinkText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#2563eb', // blue-600
   },
 });
