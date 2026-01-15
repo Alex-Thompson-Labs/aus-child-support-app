@@ -62,9 +62,18 @@ const CheckboxItem = memo(function CheckboxItem({
       <View style={[styles.checkbox, isChecked && styles.checkboxChecked]}>
         {isChecked && <Text style={styles.checkboxCheck}>✓</Text>}
       </View>
-      <View style={styles.checkboxLabelContainer}>
-        <Text style={styles.checkboxLabel}>{reason.label}</Text>
-        <HelpTooltip what={reason.description} why="" hideWhatLabel />
+      <View style={styles.checkboxContent}>
+        <Text
+          style={styles.checkboxIcon}
+          accessibilityRole="image"
+          accessibilityLabel={`Icon for ${reason.label}`}
+        >
+          {reason.icon}
+        </Text>
+        <View style={styles.checkboxLabelContainer}>
+          <Text style={styles.checkboxLabel}>{reason.label}</Text>
+          <HelpTooltip what={reason.description} why="" hideWhatLabel />
+        </View>
       </View>
     </Pressable>
   );
@@ -152,15 +161,24 @@ const LegalStep = memo(function LegalStep({
           >
             {hasCourtDate && <Text style={styles.checkboxCheck}>✓</Text>}
           </View>
-          <View style={styles.checkboxLabelContainer}>
-            <Text style={styles.checkboxLabel}>
-              I have an upcoming court hearing regarding child support.
+          <View style={styles.checkboxContent}>
+            <Text
+              style={styles.checkboxIcon}
+              accessibilityRole="image"
+              accessibilityLabel="Icon for court hearing"
+            >
+              ⚖️
             </Text>
-            <HelpTooltip
-              what="Upcoming court dates are critical events. Professional legal preparation is strongly recommended."
-              why=""
-              hideWhatLabel
-            />
+            <View style={styles.checkboxLabelContainer}>
+              <Text style={styles.checkboxLabel}>
+                I have an upcoming court hearing regarding child support.
+              </Text>
+              <HelpTooltip
+                what="Upcoming court dates are critical events. Professional legal preparation is strongly recommended."
+                why=""
+                hideWhatLabel
+              />
+            </View>
           </View>
         </Pressable>
 
@@ -181,15 +199,24 @@ const LegalStep = memo(function LegalStep({
               <Text style={styles.checkboxCheck}>✓</Text>
             )}
           </View>
-          <View style={styles.checkboxLabelContainer}>
-            <Text style={styles.checkboxLabel}>
-              I have a property settlement pending.
+          <View style={styles.checkboxContent}>
+            <Text
+              style={styles.checkboxIcon}
+              accessibilityRole="image"
+              accessibilityLabel="Icon for property settlement"
+            >
+              🏡
             </Text>
-            <HelpTooltip
-              what="Pending property settlements can significantly affect child support obligations."
-              why=""
-              hideWhatLabel
-            />
+            <View style={styles.checkboxLabelContainer}>
+              <Text style={styles.checkboxLabel}>
+                I have a property settlement pending.
+              </Text>
+              <HelpTooltip
+                what="Pending property settlements can significantly affect child support obligations."
+                why=""
+                hideWhatLabel
+              />
+            </View>
           </View>
         </Pressable>
 
@@ -211,15 +238,24 @@ const LegalStep = memo(function LegalStep({
                 <Text style={styles.checkboxCheck}>✓</Text>
               )}
             </View>
-            <View style={styles.checkboxLabelContainer}>
-              <Text style={styles.checkboxLabel}>
-                {internationalJurisdictionReason.label}
+            <View style={styles.checkboxContent}>
+              <Text
+                style={styles.checkboxIcon}
+                accessibilityRole="image"
+                accessibilityLabel={`Icon for ${internationalJurisdictionReason.label}`}
+              >
+                {internationalJurisdictionReason.icon}
               </Text>
-              <HelpTooltip
-                what={internationalJurisdictionReason.description}
-                why=""
-                hideWhatLabel
-              />
+              <View style={styles.checkboxLabelContainer}>
+                <Text style={styles.checkboxLabel}>
+                  {internationalJurisdictionReason.label}
+                </Text>
+                <HelpTooltip
+                  what={internationalJurisdictionReason.description}
+                  why=""
+                  hideWhatLabel
+                />
+              </View>
             </View>
           </Pressable>
         )}
@@ -316,6 +352,7 @@ const SummaryStep = memo(function SummaryStep({
         reasons.push({
           id,
           label: 'Upcoming court hearing regarding child support',
+          icon: '⚖️',
           description: '',
           category: 'urgent',
           priority: 1,
@@ -325,7 +362,9 @@ const SummaryStep = memo(function SummaryStep({
         const found = SPECIAL_CIRCUMSTANCES.find(
           (r: SpecialCircumstance) => r.id === id
         );
-        if (found) reasons.push(found);
+        if (found) {
+          reasons.push(found);
+        }
       }
     });
     return reasons;
@@ -355,7 +394,13 @@ const SummaryStep = memo(function SummaryStep({
       <View style={styles.summaryList}>
         {selectedList.map((reason) => (
           <View key={reason.id} style={styles.summaryItem}>
-            <Text style={styles.summaryBullet}>•</Text>
+            <Text
+              style={styles.summaryIcon}
+              accessibilityRole="image"
+              accessibilityLabel={`Icon for ${reason.label}`}
+            >
+              {reason.icon}
+            </Text>
             <Text style={styles.summaryText}>{reason.label}</Text>
           </View>
         ))}
@@ -546,6 +591,17 @@ const styles = StyleSheet.create({
   },
   checkboxChecked: { backgroundColor: '#2563EB', borderColor: '#2563EB' },
   checkboxCheck: { color: '#ffffff', fontSize: 14, fontWeight: '700' },
+  checkboxContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  checkboxIcon: {
+    fontSize: 18,
+    lineHeight: 24,
+    marginTop: 2,
+  },
   checkboxLabelContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -566,12 +622,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     gap: 8,
   },
-  summaryItem: { flexDirection: 'row', alignItems: 'flex-start' },
-  summaryBullet: {
-    fontSize: 14,
-    color: '#2563eb',
-    marginRight: 8,
-    fontWeight: '600',
+  summaryItem: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  summaryIcon: {
+    fontSize: 16,
+    lineHeight: 20,
+    marginTop: 2,
   },
   summaryText: { fontSize: 14, color: '#334155', flex: 1, lineHeight: 20 },
   emptyState: { alignItems: 'center', paddingVertical: 32 },

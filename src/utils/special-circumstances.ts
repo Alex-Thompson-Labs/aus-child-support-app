@@ -21,6 +21,8 @@ export interface SpecialCircumstance {
   readonly id: string;
   /** User-facing label in plain language (problem-focused) */
   readonly label: string;
+  /** Icon/emoji for visual representation */
+  readonly icon: string;
   /** Description emphasizing complexity and why lawyer is needed */
   readonly description: string;
   /** Category for UI grouping: income issues, child-related, or other factors */
@@ -50,6 +52,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   {
     id: 'post_separation_income',
     label: 'I have earned extra income (second job/overtime) since we separated.',
+    icon: '💼',
     description:
       'Income from a pattern established after separation can be excluded from your ATI for up to 3 years.',
     category: 'income',
@@ -60,6 +63,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
     id: 'income_resources_not_reflected',
     label:
       'The other parent has income or assets not reflected in their tax return.',
+    icon: '💰',
     description:
       "When someone's tax return doesn't reflect their true financial position—such as hidden income, cash businesses, trust distributions, investment property, or other assets—a lawyer can help investigate and present evidence to the Registrar or the Court. This requires specialized knowledge of income sources, business structures, and non-taxable resources.",
     category: 'income',
@@ -69,6 +73,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   {
     id: 'earning_capacity',
     label: 'The other parent chooses to earn less than they are capable of.',
+    icon: '📉',
     description:
       'Earning capacity assessments are complex—lawyers know how to prove someone is deliberately underemployed or not working to their full potential. The Registrar needs specific evidence and legal arguments to adjust for earning capacity.',
     category: 'income',
@@ -78,6 +83,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   {
     id: 'school_fees',
     label: 'There are high costs for private school or special education.',
+    icon: '🎓',
     description:
       'Private school fees and special educational costs beyond standard assumptions require legal arguments for proper consideration in assessments.',
     category: 'child',
@@ -87,6 +93,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   {
     id: 'special_needs',
     label: 'My child(ren) has special needs or high care costs.',
+    icon: '👶',
     description:
       'Cases involving disability, medical conditions, or special educational needs require detailed documentation and legal expertise. Lawyers understand what evidence the Registrar requires and how to present care costs that exceed standard assumptions.',
     category: 'child',
@@ -96,6 +103,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   {
     id: 'contact_costs',
     label: 'I have high travel costs to spend time with my child(ren).',
+    icon: '✈️',
     description:
       'Significant travel costs for maintaining contact with children can be grounds for adjustment, but require proper documentation and legal presentation.',
     category: 'child',
@@ -105,6 +113,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   {
     id: 'high_childcare_costs',
     label: 'I have high childcare costs.',
+    icon: '🏫',
     description:
       'When childcare costs are significantly higher than what the standard formula accounts for—such as full-time daycare, before/after school care, or holiday programs—a lawyer can help present evidence for an adjustment.',
     category: 'child',
@@ -114,6 +123,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   {
     id: 'property_settlement',
     label: 'I have a property settlement pending.',
+    icon: '🏡',
     description:
       'Pending property settlements can significantly affect child support obligations. A lawyer can help ensure the settlement is properly considered in your assessment.',
     category: 'other',
@@ -123,6 +133,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   {
     id: 'international_jurisdiction',
     label: 'The other parent lives outside of Australia.',
+    icon: '🌏',
     description:
       'International cases involve complex rules regarding reciprocating and excluded jurisdictions.',
     category: 'other',
@@ -132,6 +143,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   {
     id: 'child_resources',
     label: 'My child(ren) has their own income or financial resources.',
+    icon: '💵',
     description:
       "When a child has their own income, assets, or financial resources, this can affect the fairness of the child support assessment. Lawyers understand how to present evidence of the child's resources and argue for appropriate adjustments.",
     category: 'other',
@@ -141,6 +153,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
   {
     id: 'duty_to_maintain',
     label: 'I have a duty to support another person or child.',
+    icon: '👨‍👩‍👧',
     description:
       'If you have a legal duty to maintain another person or child, or have necessary expenses supporting them, this can significantly affect your capacity to pay child support. This includes costs of caring for another child, high contact costs with another child, or support obligations to another person.',
     category: 'other',
@@ -395,6 +408,7 @@ export function getCourtDateReason(date: Date): SpecialCircumstance {
   return {
     id: createCourtDateReasonId(date),
     label: getCourtDateReasonLabel(date),
+    icon: '⚖️',
     description:
       'Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance.',
     category: 'urgent',

@@ -4,15 +4,15 @@ import * as FileSystem from 'expo-file-system';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Modal,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  Alert,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CareCalendar } from '../components/CareCalendar';
@@ -21,12 +21,12 @@ import { generateCareCalendarPDF } from '../utils/pdfGenerator';
 import { supabase } from '../utils/supabase/client';
 import { calculateCareFromTimeline } from '../utils/timeline-aggregator';
 import {
-    CareCalculationResult,
-    TimelineResponse,
+  CareCalculationResult,
+  TimelineResponse,
 } from '../utils/timeline-types';
 import {
-    validateTimeline,
-    ValidationError,
+  validateTimeline,
+  ValidationError,
 } from '../utils/timeline-validator';
 
 const STATES: AustralianState[] = [
@@ -53,7 +53,7 @@ export default function CourtOrderToolScreen() {
   // State selector (kept for calendar display)
   const [selectedState, setSelectedState] = useState<AustralianState>('VIC');
   const [calendarVisible, setCalendarVisible] = useState(false);
-  
+
   // Year for timeline generation
   const [selectedYear] = useState<number>(DEFAULT_YEAR);
 
@@ -158,7 +158,7 @@ export default function CourtOrderToolScreen() {
       // Validate the timeline (Requirements: 6.2, 6.3)
       const timelineData = data as TimelineResponse;
       const validation = validateTimeline(timelineData.timeline, timelineData.year);
-      
+
       if (!validation.valid) {
         // TODO: Replace with proper error reporting service
         setValidationErrors(validation.errors);
@@ -328,7 +328,7 @@ export default function CourtOrderToolScreen() {
         </View>
 
         {/* Debug View for timeline blocks (Requirements: 6.2) */}
-        {timelineResponse && (
+        {__DEV__ && timelineResponse && (
           <View style={styles.debugBox}>
             <Text style={styles.debugTitle}>Timeline Blocks ({timelineResponse.timeline.length} blocks):</Text>
             <Text style={styles.debugText}>Year: {timelineResponse.year}</Text>
@@ -346,7 +346,7 @@ export default function CourtOrderToolScreen() {
         )}
 
         {/* Validation Errors Display (Requirements: 6.4) */}
-        {validationErrors.length > 0 && (
+        {__DEV__ && validationErrors.length > 0 && (
           <View style={[styles.debugBox, { backgroundColor: '#fef2f2' }]}>
             <Text style={[styles.debugTitle, { color: '#dc2626' }]}>Validation Errors:</Text>
             {validationErrors.map((error, i) => (
