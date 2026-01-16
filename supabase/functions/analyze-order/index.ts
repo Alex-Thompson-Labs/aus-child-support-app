@@ -280,7 +280,132 @@ VALIDATION CHECK BEFORE OUTPUTTING:
     const jsonMatch = result.match(/\{[\s\S]*\}/);
     const cleanJson = jsonMatch ? jsonMatch[0] : result;
 
-    return new Response(cleanJson, {
+    // Parse the JSON to add opportunity detection
+    const parsedResult = JSON.parse(cleanJson);
+
+    // Extract raw text from the document for keyword scanning
+    const extractTextMessage = await anthropic.messages.create({
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: 4000,
+      temperature: 0,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: 'Extract all text from this document. Return ONLY the raw text content, no formatting or commentary.',
+            },
+            mediaType === 'application/pdf'
+              ? {
+                type: 'document',
+                source: {
+                  type: 'base64',
+                  media_type: 'application/pdf',
+                  data: fileBase64,
+                },
+              }
+              : {
+                type: 'image',
+                source: {
+                  type: 'base64',
+                  media_type: mediaType || 'image/jpeg',
+                  data: fileBase64,
+                },
+              },
+          ],
+        },
+      ],
+    });
+
+    const textBlock = extractTextMessage.content[0];
+    const documentText = textBlock.type === 'text' ? textBlock.text.toLowerCase() : '';
+
+    // Keyword detection logic
+    const opportunities: {
+      reason_id: number;
+      reason_title: string;
+      reason_description: string;
+      detected_keywords: string[];
+    }[] = [];
+
+    // Reason 1: Travel Costs
+    const travelKeywords = ['flights', 'airfare', 'interstate travel', 'airport', 'petrol expenses', 'travel costs', 'fuel costs'];
+    const detectedTravel = travelKeywords.filter(kw => documentText.includes(kw));
+    if (detectedTravel.length > 0) {
+      opportunities.push({
+        reason_id: 1,
+        reason_title: 'Travel Costs',
+        reason_description: 'Fuel, flights, and transport expenses for visits can often be claimed to lower your liability',
+        detected_keywords: detectedTravel,
+      });
+    }
+
+    // Reason 2: Medical & Special Needs Costs
+    const medicalKeywords = ['orthodontist', 'orthodontic', 'braces', 'psychologist', 'psychiatrist', 'speech therapy', 'occupational therapy', 'medical specialist', 'paediatrician', 'autism', 'adhd', 'ndis'];
+    const detectedMedical = medicalKeywords.filter(kw => documentText.includes(kw));
+    if (detectedMedical.length > 0) {
+      opportunities.push({
+        reason_id: 2,
+        reason_title: 'Medical & Special Needs Costs',
+        reason_description: 'Extra medical and therapy costs not covered by Medicare can reduce your payments',
+        detected_keywords: detectedMedical,
+      });
+    }
+
+    // Reason 3: Private School & Education Costs
+    const educationKeywords = ['private school', 'school fees', 'tuition fees', 'grammar school', 'catholic college', 'anglican', 'college fees', 'uniforms', 'levies', 'textbooks', 'extra-curricular', 'music tuition', 'private health'];
+    const detectedEducation = educationKeywords.filter(kw => documentText.includes(kw));
+    if (detectedEducation.length > 0) {
+      opportunities.push({
+        reason_id: 3,
+        reason_title: 'Private School & Education Costs',
+        reason_description: 'Private school fees and education expenses that the formula ignores can lower your liability',
+        detected_keywords: detectedEducation,
+      });
+    }
+
+    // Reason 6: High Child Care Costs
+    const childcareKeywords = ['child care', 'day care', 'creche', 'before school care', 'after school care', 'vacation care', 'nanny', 'au pair'];
+    const detectedChildcare = childcareKeywords.filter(kw => documentText.includes(kw));
+    if (detectedChildcare.length > 0) {
+      opportunities.push({
+        reason_id: 6,
+        reason_title: 'High Child Care Costs',
+        reason_description: 'Work-related child care expenses can be claimed to reduce your payments',
+        detected_keywords: detectedChildcare,
+      });
+    }
+
+    // Reason 8: Hidden Income / Financial Resources
+    // Safety check: exclude "trust account" and "held in trust"
+    const businessKeywords = ['pty ltd', 'proprietary limited', 'director', 'shareholder', 'dividends', 'business ownership', 'abn', 'distributions'];
+    const detectedBusiness = businessKeywords.filter(kw => documentText.includes(kw));
+    
+    // Special handling for trust keywords with safety check
+    const hasFamilyTrust = documentText.includes('family trust') && 
+                          !documentText.includes('trust account') && 
+                          !documentText.includes('held in trust');
+    const hasUnitTrust = documentText.includes('unit trust') && 
+                        !documentText.includes('trust account') && 
+                        !documentText.includes('held in trust');
+    
+    if (hasFamilyTrust) detectedBusiness.push('family trust');
+    if (hasUnitTrust) detectedBusiness.push('unit trust');
+    
+    if (detectedBusiness.length > 0) {
+      opportunities.push({
+        reason_id: 8,
+        reason_title: 'Hidden Income / Financial Resources',
+        reason_description: 'Business assets and trust structures that may suppress taxable income can be challenged',
+        detected_keywords: detectedBusiness,
+      });
+    }
+
+    // Add opportunities to the result
+    parsedResult.opportunities = opportunities;
+
+    return new Response(JSON.stringify(parsedResult), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 

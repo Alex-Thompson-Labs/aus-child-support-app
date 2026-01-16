@@ -10,20 +10,20 @@
  */
 
 import {
-    addDays,
-    format,
-    getDay,
-    getDaysInMonth,
-    startOfMonth,
+  addDays,
+  format,
+  getDay,
+  getDaysInMonth,
+  startOfMonth,
 } from 'date-fns';
 import React, { useMemo } from 'react';
 import { DimensionValue, Platform, ScrollView, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 
 import {
-    AustralianState,
-    CareParent,
-    DayAssignment,
-    getSchoolHolidays,
+  AustralianState,
+  CareParent,
+  DayAssignment,
+  getSchoolHolidays,
 } from '@/src/utils/CareCalculator';
 import { getParentAtTime } from '@/src/utils/timeline-aggregator';
 import { TimelineBlock } from '@/src/utils/timeline-types';
@@ -61,9 +61,10 @@ interface DayCellProps {
   fatherColor: string;
   motherColor: string;
   isExcluded?: boolean;
+  userColor: string; // The color of the selected user (blue)
 }
 
-function DayCell({ day, careWith, isHoliday, fatherColor, motherColor, isExcluded }: DayCellProps) {
+function DayCell({ day, careWith, isHoliday, fatherColor, motherColor, isExcluded, userColor }: DayCellProps) {
   if (day === 0) {
     return <View style={viewStyles.dayCell} />;
   }
@@ -78,14 +79,38 @@ function DayCell({ day, careWith, isHoliday, fatherColor, motherColor, isExclude
     );
   }
 
-  const backgroundColor = careWith === 'Father' ? fatherColor : motherColor;
+  if (isHoliday) {
+    // School holiday: light blue filled background (no parent indicator)
+    return (
+      <View style={viewStyles.dayCell}>
+        <View style={[
+          viewStyles.dayCircle, 
+          { 
+            backgroundColor: '#dbeafe', // Light blue background for holidays
+          }
+        ]}>
+          <Text style={[textStyles.dayText, { color: '#1e293b' }]}>{day}</Text>
+        </View>
+      </View>
+    );
+  }
 
+  // Regular day: outlined with parent's color (not filled)
+  const borderColor = careWith === 'Father' ? fatherColor : motherColor;
+  // Thicker border for the user's color (blue), thinner for the other parent
+  const borderWidth = borderColor === userColor ? 2.5 : 1.5;
   return (
     <View style={viewStyles.dayCell}>
-      <View style={[viewStyles.dayCircle, { backgroundColor }]}>
-        <Text style={textStyles.dayText}>{day}</Text>
+      <View style={[
+        viewStyles.dayCircle, 
+        { 
+          backgroundColor: 'transparent',
+          borderWidth: borderWidth,
+          borderColor: borderColor
+        }
+      ]}>
+        <Text style={[textStyles.dayText, { color: borderColor }]}>{day}</Text>
       </View>
-      {isHoliday && <View style={viewStyles.holidayIndicator} />}
     </View>
   );
 }
@@ -99,9 +124,10 @@ interface MonthGridProps {
   motherColor: string;
   excludeBeforeDate?: string;
   excludeAfterDate?: string;
+  userColor: string;
 }
 
-function MonthGrid({ year, month, assignmentMap, holidayDates, fatherColor, motherColor, excludeBeforeDate, excludeAfterDate }: MonthGridProps) {
+function MonthGrid({ year, month, assignmentMap, holidayDates, fatherColor, motherColor, excludeBeforeDate, excludeAfterDate, userColor }: MonthGridProps) {
   const firstDay = startOfMonth(new Date(year, month, 1));
   const daysInMonth = getDaysInMonth(firstDay);
   const startDayOfWeek = getDay(firstDay);
@@ -140,14 +166,14 @@ function MonthGrid({ year, month, assignmentMap, holidayDates, fatherColor, moth
         <View key={weekIndex} style={viewStyles.weekRow}>
           {week.map((day, dayIndex) => {
             if (day === 0) {
-              return <DayCell key={dayIndex} day={0} careWith={null} isHoliday={false} fatherColor={fatherColor} motherColor={motherColor} />;
+              return <DayCell key={dayIndex} day={0} careWith={null} isHoliday={false} fatherColor={fatherColor} motherColor={motherColor} userColor={userColor} />;
             }
             const dateStr = format(new Date(year, month, day), 'yyyy-MM-dd');
-            const isExcluded = (excludeBeforeDate && dateStr < excludeBeforeDate) || (excludeAfterDate && dateStr > excludeAfterDate);
+            const isExcluded = !!(excludeBeforeDate && dateStr < excludeBeforeDate) || !!(excludeAfterDate && dateStr > excludeAfterDate);
             const careWith = assignmentMap.get(dateStr) || 'Mother';
             const isHoliday = holidayDates.has(dateStr);
             return (
-              <DayCell key={dayIndex} day={day} careWith={careWith} isHoliday={isHoliday} fatherColor={fatherColor} motherColor={motherColor} isExcluded={isExcluded} />
+              <DayCell key={dayIndex} day={day} careWith={careWith} isHoliday={isHoliday} fatherColor={fatherColor} motherColor={motherColor} isExcluded={isExcluded} userColor={userColor} />
             );
           })}
         </View>
@@ -166,6 +192,10 @@ export function CareCalendar({
   excludeBeforeDate,
   excludeAfterDate
 }: CareCalendarProps) {
+  // Determine which color is the "user color" (the blue one)
+  // The user color is whichever one matches the default blue color
+  const userColor = fatherColor === FATHER_COLOR_DEFAULT ? fatherColor : motherColor;
+  
   // Build assignment map from either timeline or legacy assignments
   const assignmentMap = useMemo(() => {
     const map = new Map<string, CareParent>();
@@ -238,7 +268,7 @@ export function CareCalendar({
 
   // Generate array of months to display
   const monthsToDisplay = useMemo(() => {
-    const months: Array<{ year: number; month: number }> = [];
+    const months: { year: number; month: number }[] = [];
     
     if (!timeline || timeline.length === 0) {
       // Show all months for the year if no timeline
@@ -276,15 +306,15 @@ export function CareCalendar({
               <Text style={textStyles.yearTitle}>Care Calendar {displayYear}</Text>
               <View style={viewStyles.legend}>
                 <View style={viewStyles.legendItem}>
-                  <View style={[viewStyles.legendDot, { backgroundColor: fatherColor }]} />
+                  <View style={[viewStyles.legendCircle, { borderColor: fatherColor, borderWidth: fatherColor === userColor ? 2.5 : 1.5 }]} />
                   <Text style={textStyles.legendText}>Father</Text>
                 </View>
                 <View style={viewStyles.legendItem}>
-                  <View style={[viewStyles.legendDot, { backgroundColor: motherColor }]} />
+                  <View style={[viewStyles.legendCircle, { borderColor: motherColor, borderWidth: motherColor === userColor ? 2.5 : 1.5 }]} />
                   <Text style={textStyles.legendText}>Mother</Text>
                 </View>
                 <View style={viewStyles.legendItem}>
-                  <View style={[viewStyles.legendLine, { backgroundColor: HOLIDAY_INDICATOR }]} />
+                  <View style={[viewStyles.legendDot, { backgroundColor: '#dbeafe' }]} />
                   <Text style={textStyles.legendText}>School Holiday</Text>
                 </View>
               </View>
@@ -302,6 +332,7 @@ export function CareCalendar({
                   motherColor={motherColor}
                   excludeBeforeDate={excludeBeforeDate}
                   excludeAfterDate={excludeAfterDate}
+                  userColor={userColor}
                 />
               ))}
             </View>
@@ -328,17 +359,39 @@ export function generateCalendarHTML(
   // Build assignment map from either timeline or legacy assignments
   const assignmentMap = new Map<string, CareParent>();
   
+  // Determine the actual date range from the timeline
+  let startDate: Date;
+  let endDate: Date;
+  let yearsToDisplay: number[] = [year];
+  
   // Check if it's a timeline (array of tuples) or assignments (array of objects)
   if (timelineOrAssignments.length > 0 && Array.isArray(timelineOrAssignments[0])) {
     // It's a timeline - convert to assignment map using midnight rule
     const timeline = timelineOrAssignments as TimelineBlock[];
-    const totalDays = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0) ? 366 : 365;
+    const firstBlock = timeline[0];
+    const lastBlock = timeline[timeline.length - 1];
+    startDate = new Date(firstBlock[0]);
+    endDate = new Date(lastBlock[1]);
+    
+    // Calculate total days in the timeline
+    const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    
     for (let dayIndex = 0; dayIndex < totalDays; dayIndex++) {
-      const date = new Date(year, 0, 1 + dayIndex);
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + dayIndex);
       const dateStr = format(date, 'yyyy-MM-dd');
-      const midnightCheck = new Date(year, 0, 1 + dayIndex, 23, 59);
+      const midnightCheck = new Date(date);
+      midnightCheck.setHours(23, 59, 0, 0);
       const parent = getParentAtTime(timeline, midnightCheck);
       assignmentMap.set(dateStr, parent === 'M' ? 'Mother' : 'Father');
+    }
+    
+    // Determine which years to display
+    const startYear = startDate.getFullYear();
+    const endYear = endDate.getFullYear();
+    yearsToDisplay = [];
+    for (let y = startYear; y <= endYear; y++) {
+      yearsToDisplay.push(y);
     }
   } else {
     // It's legacy assignments
@@ -346,19 +399,24 @@ export function generateCalendarHTML(
     assignments.forEach((a) => {
       assignmentMap.set(a.dateStr, a.midnightOwner);
     });
+    startDate = new Date(year, 0, 1);
+    endDate = new Date(year, 11, 31);
   }
 
-  const holidays = getSchoolHolidays(year, state);
+  // Get holidays for all years in the timeline
   const holidayDates = new Set<string>();
-  holidays.forEach((holiday) => {
-    let current = holiday.start;
-    while (current <= holiday.end) {
-      holidayDates.add(format(current, 'yyyy-MM-dd'));
-      current = addDays(current, 1);
-    }
+  yearsToDisplay.forEach(y => {
+    const holidays = getSchoolHolidays(y, state);
+    holidays.forEach((holiday) => {
+      let current = holiday.start;
+      while (current <= holiday.end) {
+        holidayDates.add(format(current, 'yyyy-MM-dd'));
+        current = addDays(current, 1);
+      }
+    });
   });
 
-  const generateMonthHTML = (month: number): string => {
+  const generateMonthHTML = (year: number, month: number): string => {
     const firstDay = startOfMonth(new Date(year, month, 1));
     const daysInMonth = getDaysInMonth(firstDay);
     const startDayOfWeek = getDay(firstDay);
@@ -390,19 +448,54 @@ export function generateCalendarHTML(
     return html;
   };
 
+  // Generate months for all years
+  const startMonth = startDate.getMonth();
+  const endMonth = endDate.getMonth();
+  const startYear = startDate.getFullYear();
+  const endYear = endDate.getFullYear();
+  
+  const monthsHTML: string[] = [];
+  let currentYear = startYear;
+  let currentMonth = startMonth;
+  
+  while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+    monthsHTML.push(generateMonthHTML(currentYear, currentMonth));
+    currentMonth++;
+    if (currentMonth > 11) {
+      currentMonth = 0;
+      currentYear++;
+    }
+  }
+
+  // Determine title based on years
+  const titleYears = yearsToDisplay.length > 1 
+    ? `${yearsToDisplay[0]}-${yearsToDisplay[yearsToDisplay.length - 1]}`
+    : `${yearsToDisplay[0]}`;
+  
+  const periodDescription = yearsToDisplay.length > 1
+    ? `${format(startDate, 'MMM d, yyyy')} - ${format(endDate, 'MMM d, yyyy')}`
+    : `${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d, yyyy')}`;
+
   return `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Care Calendar ${year}</title>
+  <title>Care Calendar ${titleYears}</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px; background: #fff; }
+    @media print {
+      body { padding: 15px; }
+      .year-section { page-break-inside: avoid; break-inside: avoid; }
+      .year-title { page-break-after: avoid; break-after: avoid; }
+      .months-grid { page-break-inside: avoid; break-inside: avoid; }
+      .footer { page-break-inside: avoid; break-inside: avoid; }
+    }
     .header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #e2e8f0; }
     .logo { font-size: 14px; color: #64748b; margin-bottom: 5px; }
     .title { font-size: 24px; font-weight: 700; color: #1e293b; }
     .subtitle { font-size: 14px; color: #64748b; margin-top: 5px; }
-    .summary { display: flex; justify-content: center; gap: 40px; margin-bottom: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; }
+    .summary { display: flex; justify-content: center; gap: 40px; margin-bottom: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .summary-item { text-align: center; }
     .summary-label { font-size: 12px; color: #64748b; }
     .summary-value { font-size: 20px; font-weight: 700; color: #1e293b; }
@@ -410,28 +503,31 @@ export function generateCalendarHTML(
     .legend { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
     .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #475569; }
     .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
-    .legend-dot.father { background: ${fatherColor}; }
-    .legend-dot.mother { background: ${motherColor}; }
-    .legend-line { width: 12px; height: 3px; background: #94a3b8; }
-    .months-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+    .legend-dot.father { background: ${fatherColor}; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .legend-dot.mother { background: ${motherColor}; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .legend-line { width: 12px; height: 3px; background: #94a3b8; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .year-section { margin-bottom: 30px; page-break-inside: avoid; break-inside: avoid; }
+    .year-title { font-size: 20px; font-weight: 700; color: #1e293b; text-align: center; margin-bottom: 15px; padding-top: 20px; border-top: 2px solid #e2e8f0; page-break-after: avoid; break-after: avoid; }
+    .year-section:first-child .year-title { border-top: none; padding-top: 0; }
+    .months-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; page-break-inside: avoid; break-inside: avoid; }
     .month { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; }
     .month-title { font-size: 12px; font-weight: 600; color: #1e293b; text-align: center; margin-bottom: 8px; }
     .day-labels { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 4px; }
     .day-label { font-size: 9px; color: #94a3b8; text-align: center; }
     .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
-    .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 9px; font-weight: 500; color: #fff; position: relative; }
+    .day-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 9px; font-weight: 500; color: #fff; position: relative; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .day-cell.empty { background: transparent; }
-    .day-cell.father { background: ${fatherColor}; }
-    .day-cell.mother { background: ${motherColor}; }
+    .day-cell.father { background: ${fatherColor}; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .day-cell.mother { background: ${motherColor}; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .day-cell.holiday::after { content: ''; position: absolute; bottom: 1px; left: 25%; right: 25%; height: 2px; background: #475569; border-radius: 1px; }
-    .footer { margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 10px; color: #94a3b8; }
+    .footer { margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 10px; color: #94a3b8; page-break-inside: avoid; break-inside: avoid; }
   </style>
 </head>
 <body>
   <div class="header">
     <div class="logo">Australian Child Support Calculator</div>
-    <div class="title">Care Calendar ${year}</div>
-    <div class="subtitle">State: ${state} | Generated: ${format(new Date(), 'dd MMM yyyy')}</div>
+    <div class="title">Care Calendar ${titleYears}</div>
+    <div class="subtitle">Period: ${periodDescription} | State: ${state} | Generated: ${format(new Date(), 'dd MMM yyyy')}</div>
   </div>
   <div class="summary">
     <div class="summary-item">
@@ -450,7 +546,28 @@ export function generateCalendarHTML(
     <div class="legend-item"><div class="legend-dot mother"></div> Mother's Care</div>
     <div class="legend-item"><div class="legend-line"></div> School Holiday</div>
   </div>
-  <div class="months-grid">${Array.from({ length: 12 }, (_, m) => generateMonthHTML(m)).join('')}</div>
+  ${yearsToDisplay.map(y => {
+    const monthsForYear = monthsHTML.filter((_, idx) => {
+      // Calculate which year this month belongs to
+      let tempYear = startYear;
+      let tempMonth = startMonth;
+      for (let i = 0; i < idx; i++) {
+        tempMonth++;
+        if (tempMonth > 11) {
+          tempMonth = 0;
+          tempYear++;
+        }
+      }
+      return tempYear === y;
+    });
+    
+    return `
+      <div class="year-section">
+        ${yearsToDisplay.length > 1 ? `<div class="year-title">${y}</div>` : ''}
+        <div class="months-grid">${monthsForYear.join('')}</div>
+      </div>
+    `;
+  }).join('')}
   <div class="footer">This is an estimate based on the interpreted court order. For official assessments, contact Services Australia.<br>auschildsupport.com</div>
 </body>
 </html>`;
@@ -464,6 +581,7 @@ const viewStyles = StyleSheet.create({
   legend: { flexDirection: 'row', justifyContent: 'center', gap: 20, flexWrap: 'wrap' } as ViewStyle,
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 } as ViewStyle,
   legendDot: { width: 14, height: 14, borderRadius: 7 } as ViewStyle,
+  legendCircle: { width: 14, height: 14, borderRadius: 7, backgroundColor: 'transparent' } as ViewStyle,
   legendLine: { width: 14, height: 3, borderRadius: 1.5 } as ViewStyle,
   warningBanner: { 
     backgroundColor: '#fef3c7', 
@@ -473,7 +591,7 @@ const viewStyles = StyleSheet.create({
     borderLeftWidth: 4,
     borderLeftColor: '#f59e0b'
   } as ViewStyle,
-  monthsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 16 } as ViewStyle,
+  monthsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 0 } as ViewStyle,
   monthContainer: {
     width: (Platform.OS === 'web' ? '23%' : '48%') as DimensionValue,
     minWidth: 150,
@@ -484,9 +602,8 @@ const viewStyles = StyleSheet.create({
   } as ViewStyle,
   dayLabelsRow: { flexDirection: 'row', marginBottom: 4 } as ViewStyle,
   weekRow: { flexDirection: 'row' } as ViewStyle,
-  dayCell: { flex: 1, aspectRatio: 1, alignItems: 'center', justifyContent: 'center', padding: 2 } as ViewStyle,
-  dayCircle: { width: '90%', aspectRatio: 1, borderRadius: 100, alignItems: 'center', justifyContent: 'center' } as ViewStyle,
-  holidayIndicator: { position: 'absolute', bottom: 2, width: '50%', height: 2, backgroundColor: HOLIDAY_INDICATOR, borderRadius: 1 } as ViewStyle,
+  dayCell: { flex: 1, aspectRatio: 1, alignItems: 'center', justifyContent: 'center', padding: 0.5 } as ViewStyle,
+  dayCircle: { width: '100%', aspectRatio: 1, borderRadius: 100, alignItems: 'center', justifyContent: 'center' } as ViewStyle,
 });
 
 const textStyles = StyleSheet.create({
@@ -495,7 +612,7 @@ const textStyles = StyleSheet.create({
   warningText: { fontSize: 13, color: '#92400e', textAlign: 'center' } as TextStyle,
   monthTitle: { fontSize: 14, fontWeight: '600', color: '#1e293b', textAlign: 'center', marginBottom: 8 } as TextStyle,
   dayLabel: { flex: 1, fontSize: 10, color: '#94a3b8', textAlign: 'center' } as TextStyle,
-  dayText: { fontSize: 10, fontWeight: '500', color: '#ffffff' } as TextStyle,
+  dayText: { fontSize: 8, fontWeight: '500', color: '#ffffff' } as TextStyle,
 });
 
 export default CareCalendar;

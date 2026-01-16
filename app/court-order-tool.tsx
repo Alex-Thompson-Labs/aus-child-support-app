@@ -12,7 +12,7 @@ import * as FileSystem from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import { CheckCircle, Download, FileText, Lock as LockIcon, Upload, User, Users } from 'lucide-react-native';
+import { Download, FileText, Lock as LockIcon, Upload, User, Users } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
@@ -288,8 +288,7 @@ function StepResults({
   return (
     <ScrollView style={styles.resultsScroll} contentContainerStyle={styles.resultsContent}>
       <View style={styles.resultsContainer}>
-        <Text style={styles.stepTitle}>Care Calculation Results</Text>
-        <Text style={styles.calculationDurationLabel}>{calculationDuration} Calculation</Text>
+        <Text style={styles.stepTitle}>Court Order Conversion Results</Text>
         <Text style={styles.periodDescription}>{periodDescription}</Text>
         <View style={styles.resultsGrid}>
           {/* Dynamically order cards? Req says: "User ... in Brand Blue" */}
@@ -304,6 +303,57 @@ function StepResults({
             <Text style={styles.resultNights}>{result.fatherNightsPerYear} nights/year</Text>
           </View>
         </View>
+
+        {/* Change of Assessment Opportunities Card */}
+        {(timelineResponse?.opportunities && timelineResponse.opportunities.length > 0) || (result.dayVisitsCount && result.dayVisitsCount > 20) ? (
+          <View style={styles.opportunitiesCard}>
+            <View style={styles.opportunitiesHeader}>
+              <Text style={styles.opportunitiesTitle}>Potential Savings Detected</Text>
+            </View>
+            <Text style={styles.opportunitiesIntro}>
+              Your order includes expenses that are often ignored by the standard formula. You may be eligible to reduce your child support payments by claiming them:
+            </Text>
+            <View style={styles.opportunitiesList}>
+              {/* Day Visits Opportunity (Reason 1) */}
+              {result.dayVisitsCount && result.dayVisitsCount > 20 && (
+                <View style={styles.opportunityItem}>
+                  <Text style={styles.opportunityBullet}>•</Text>
+                  <View style={styles.opportunityContent}>
+                    <Text style={styles.opportunityTitle}>Travel Costs</Text>
+                    <Text style={styles.opportunityDescription}>
+                      You have {result.dayVisitsCount} day-only visits. While these count as 0 nights, the fuel and transport costs can often be claimed to lower your liability.
+                    </Text>
+                  </View>
+                </View>
+              )}
+              {/* Keyword-detected opportunities */}
+              {timelineResponse?.opportunities?.map((opp) => (
+                <View key={opp.reason_id} style={styles.opportunityItem}>
+                  <Text style={styles.opportunityBullet}>•</Text>
+                  <View style={styles.opportunityContent}>
+                    <Text style={styles.opportunityTitle}>{opp.reason_title}</Text>
+                    <Text style={styles.opportunityDescription}>{opp.reason_description}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+            <Pressable
+              style={styles.opportunitiesButton}
+              onPress={() => {
+                // Navigate to contact page
+                if (Platform.OS === 'web') {
+                  window.location.href = '/contact';
+                } else {
+                  import('expo-router').then(({ router }) => {
+                    router.push('/contact');
+                  });
+                }
+              }}
+            >
+              <Text style={styles.opportunitiesButtonText}>Check Eligibility</Text>
+            </Pressable>
+          </View>
+        ) : null}
 
         <View style={styles.calendarSection}>
           <Text style={styles.sectionTitle}>Care Calendar</Text>
@@ -562,20 +612,14 @@ export default function CourtOrderToolScreen() {
   return (
     <>
       <PageSEO
-        title="Import Care Schedule"
+        title="Court Order Scanner"
         description="Extract care schedule."
         canonicalPath="/court-order-tool"
         schema={courtOrderSchema}
       />
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-        <CalculatorHeader title="Import Care Schedule" showBackButton={true} maxWidth={MAX_CALCULATOR_WIDTH} />
+        <CalculatorHeader title="Court Order Scanner (BETA)" showBackButton={true} maxWidth={MAX_CALCULATOR_WIDTH} />
         <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, webContainerStyle]}>
-          <View style={styles.titleRow}>
-            <Text style={styles.pageTitle} accessibilityRole="header" aria-level="1">Court Order Scanner</Text>
-            <View style={styles.betaBadge}>
-              <Text style={styles.betaBadgeText}>BETA</Text>
-            </View>
-          </View>
           
           <View style={styles.betaDisclaimer}>
             <Text style={styles.betaDisclaimerText}>
@@ -583,21 +627,72 @@ export default function CourtOrderToolScreen() {
             </Text>
           </View>
 
-          <View style={styles.stepIndicator}>
-            {(['Upload', 'Details', 'Analyzing', 'Results'] as const).map((label, index) => {
-              const stepNames: WizardStep[] = ['upload', 'state', 'analyzing', 'results'];
-              const currentIndex = stepNames.indexOf(step);
-              const isActive = index === currentIndex;
-              const isComplete = index < currentIndex;
-              return (
-                <View key={label} style={styles.stepIndicatorItem}>
-                  <View style={[styles.stepDot, isActive && styles.stepDotActive, isComplete && styles.stepDotComplete]}>
-                    {isComplete && <CheckCircle size={12} color="#ffffff" />}
-                  </View>
-                  <Text style={[styles.stepLabel, isActive && styles.stepLabelActive, isComplete && styles.stepLabelComplete]}>{label}</Text>
-                </View>
-              );
-            })}
+          {/* Progress Indicator */}
+          <View style={styles.progressIndicatorContainer}>
+            {/* Track with circles and connectors */}
+            <View style={styles.progressTrack}>
+              {(['Upload', 'Details', 'Analyzing', 'Results'] as const).map((label, index) => {
+                const stepNames: WizardStep[] = ['upload', 'state', 'analyzing', 'results'];
+                const currentIndex = stepNames.indexOf(step);
+                const isActive = index === currentIndex;
+                const isComplete = index < currentIndex;
+                const isLast = index === 3;
+                
+                return (
+                  <React.Fragment key={label}>
+                    {/* Step Circle */}
+                    <View style={[
+                      styles.progressCircle,
+                      isComplete && styles.progressCircleComplete,
+                      isActive && styles.progressCircleActive,
+                    ]}>
+                      <Text style={[
+                        styles.progressNumber,
+                        (isComplete || isActive) && styles.progressNumberActive,
+                      ]}>
+                        {isComplete ? '✓' : index + 1}
+                      </Text>
+                    </View>
+                    
+                    {/* Connector Line */}
+                    {!isLast && (
+                      <View style={styles.progressConnector}>
+                        <View style={[
+                          styles.progressConnectorFill,
+                          isComplete && styles.progressConnectorFillComplete,
+                        ]} />
+                      </View>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </View>
+            
+            {/* Labels - positioned to align with circles */}
+            <View style={styles.progressLabelsRow}>
+              {(['Upload', 'Details', 'Analyzing', 'Results'] as const).map((label, index) => {
+                const stepNames: WizardStep[] = ['upload', 'state', 'analyzing', 'results'];
+                const currentIndex = stepNames.indexOf(step);
+                const isActive = index === currentIndex;
+                const isComplete = index < currentIndex;
+                const isLast = index === 3;
+                
+                return (
+                  <React.Fragment key={label}>
+                    <View style={styles.progressLabelContainer}>
+                      <Text style={[
+                        styles.progressLabel,
+                        isActive && styles.progressLabelActive,
+                        isComplete && styles.progressLabelComplete,
+                      ]}>
+                        {label}
+                      </Text>
+                    </View>
+                    {!isLast && <View style={styles.progressLabelSpacer} />}
+                  </React.Fragment>
+                );
+              })}
+            </View>
           </View>
 
           <View style={styles.content}>
@@ -643,14 +738,22 @@ const styles = StyleSheet.create({
   introText: { fontSize: 16, color: '#475569', lineHeight: 24, marginBottom: 16 },
   betaDisclaimer: { backgroundColor: '#eff6ff', padding: 14, borderRadius: 10, marginBottom: 24, borderLeftWidth: 3, borderLeftColor: '#3b82f6' },
   betaDisclaimerText: { fontSize: 13, color: '#1e40af', lineHeight: 20 },
-  stepIndicator: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#ffffff', borderRadius: 12, marginBottom: 24, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3, elevation: 1 }) },
-  stepIndicatorItem: { alignItems: 'center', flex: 1 },
-  stepDot: { width: 24, height: 24, borderRadius: 12, backgroundColor: '#e2e8f0', alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
-  stepDotActive: { backgroundColor: '#2563EB' },
-  stepDotComplete: { backgroundColor: '#2563EB' },
-  stepLabel: { fontSize: 10, color: '#64748b', textAlign: 'center' },
-  stepLabelActive: { color: '#2563EB', fontWeight: '600' },
-  stepLabelComplete: { color: '#2563EB' },
+  progressIndicatorContainer: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 24, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3, elevation: 1 }) },
+  progressTrack: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
+  progressCircle: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#f1f5f9', borderWidth: 2, borderColor: '#e2e8f0', alignItems: 'center', justifyContent: 'center' },
+  progressCircleComplete: { backgroundColor: '#2563EB', borderColor: '#2563EB' },
+  progressCircleActive: { backgroundColor: '#2563EB', borderWidth: 3, borderColor: '#1e40af' },
+  progressNumber: { fontSize: 14, fontWeight: '600', color: '#64748b' },
+  progressNumberActive: { color: '#ffffff' },
+  progressConnector: { flex: 1, height: 4, backgroundColor: '#e2e8f0', marginHorizontal: 8, borderRadius: 2, overflow: 'hidden' },
+  progressConnectorFill: { height: '100%', width: 0, backgroundColor: '#2563EB' },
+  progressConnectorFillComplete: { width: '100%' },
+  progressLabelsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
+  progressLabelContainer: { width: 32, alignItems: 'center' },
+  progressLabelSpacer: { flex: 1, marginHorizontal: 8 },
+  progressLabel: { fontSize: 11, color: '#94a3b8', textAlign: 'center' },
+  progressLabelActive: { color: '#2563EB', fontWeight: '600' },
+  progressLabelComplete: { color: '#64748b' },
   content: { minHeight: 400 },
   stepContainer: { flex: 1, padding: 20, alignItems: 'center', justifyContent: 'center' },
   iconContainer: { width: 96, height: 96, borderRadius: 48, backgroundColor: '#eff6ff', alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
@@ -744,4 +847,16 @@ const styles = StyleSheet.create({
   feedbackFooter: { marginTop: 24, paddingTop: 16, borderTopWidth: 1, borderTopColor: '#e2e8f0', alignItems: 'center', width: '100%' },
   feedbackText: { fontSize: 12, color: '#64748b', textAlign: 'center', lineHeight: 18 },
   feedbackLink: { color: '#64748b', textDecorationLine: 'underline', fontWeight: '500' },
+  opportunitiesCard: { backgroundColor: '#eff6ff', borderWidth: 1, borderColor: '#bfdbfe', borderRadius: 12, padding: 20, marginBottom: 24, width: '100%', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }) },
+  opportunitiesHeader: { marginBottom: 12 },
+  opportunitiesTitle: { fontSize: 18, fontWeight: '700', color: '#1e40af' },
+  opportunitiesIntro: { fontSize: 14, color: '#1e40af', lineHeight: 20, marginBottom: 16 },
+  opportunitiesList: { marginBottom: 16 },
+  opportunityItem: { flexDirection: 'row', marginBottom: 12, alignItems: 'flex-start' },
+  opportunityBullet: { fontSize: 16, color: '#2563EB', marginRight: 8, marginTop: 2 },
+  opportunityContent: { flex: 1 },
+  opportunityTitle: { fontSize: 15, fontWeight: '600', color: '#1e40af', marginBottom: 4 },
+  opportunityDescription: { fontSize: 13, color: '#3b82f6', lineHeight: 18 },
+  opportunitiesButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 20, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
+  opportunitiesButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
 });

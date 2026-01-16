@@ -30,6 +30,37 @@ export function parseISOMinute(isoString: string): Date {
 }
 
 /**
+ * Detect if a timeline block is a day visit (same calendar date).
+ * A day visit starts and ends on the same calendar date and contributes 0 nights.
+ *
+ * @param block - Timeline block to check
+ * @returns true if this is a day visit
+ */
+export function isDayVisit(block: TimelineBlock): boolean {
+  const [startStr, endStr] = block;
+  const start = parseISOMinute(startStr);
+  const end = parseISOMinute(endStr);
+  
+  // Check if start and end are on the same calendar date
+  return (
+    start.getFullYear() === end.getFullYear() &&
+    start.getMonth() === end.getMonth() &&
+    start.getDate() === end.getDate()
+  );
+}
+
+/**
+ * Count day visits in the timeline.
+ * Day visits are blocks that start and end on the same calendar date.
+ *
+ * @param timeline - Array of timeline blocks
+ * @returns Number of day visits
+ */
+export function countDayVisits(timeline: TimelineBlock[]): number {
+  return timeline.filter(block => isDayVisit(block)).length;
+}
+
+/**
  * Calculate duration in minutes between two dates.
  */
 export function calculateDurationMinutes(start: Date, end: Date): number {
@@ -206,6 +237,9 @@ export function calculateCareFromTimeline(response: TimelineResponse): CareCalcu
     totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
   }
 
+  // Count day visits (same-day blocks that contribute 0 nights)
+  const dayVisitsCount = countDayVisits(timeline);
+
   // Count nights using midnight rule (Requirements: 4.2)
   const { motherNights, fatherNights } = countNightsPerParent(timeline, year);
 
@@ -222,6 +256,7 @@ export function calculateCareFromTimeline(response: TimelineResponse): CareCalcu
     motherNightsPerYear: motherNights,
     fatherNightsPerYear: fatherNights,
     timeline,
+    dayVisitsCount,
   };
 }
 

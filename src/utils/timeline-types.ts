@@ -37,6 +37,16 @@ export type TypeCode = 'base' | 'holiday' | 'christmas';
 export type TimelineBlock = [string, string, ParentCode, TypeCode];
 
 /**
+ * Change of Assessment Opportunity detected from document keywords.
+ */
+export interface AssessmentOpportunity {
+  reason_id: number;
+  reason_title: string;
+  reason_description: string;
+  detected_keywords: string[];
+}
+
+/**
  * The complete timeline response from the LLM.
  *
  * Requirements:
@@ -49,6 +59,8 @@ export interface TimelineResponse {
   year: number;
   /** The primary parent (default care holder when not specified) */
   primary_parent: ParentCode;
+  /** Detected Change of Assessment opportunities (optional) */
+  opportunities?: AssessmentOpportunity[];
 }
 
 /**
@@ -82,6 +94,8 @@ export interface CareCalculationResult {
   fatherNightsPerYear: number;
   /** The original timeline blocks for calendar display */
   timeline: TimelineBlock[];
+  /** Number of day visits (same-day blocks that contribute 0 nights) */
+  dayVisitsCount?: number;
 }
 
 /**
