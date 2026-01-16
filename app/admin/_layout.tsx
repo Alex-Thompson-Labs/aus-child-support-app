@@ -69,9 +69,11 @@ export default function AdminLayout() {
                 console.log('[AdminLayout] Auth state change:', event);
 
                 if (event === 'SIGNED_IN' && session) {
-                    if (hasAdminRole(session.user.app_metadata)) {
+                    // Fix: Include email whitelist check to match checkAuth logic
+                    if (hasAdminRole(session.user.app_metadata) || session.user.email === Env.ADMIN_EMAIL) {
                         setAuthState('authenticated');
                     } else {
+                        console.log('[AdminLayout] Post-login role check failed');
                         setAuthState('unauthenticated');
                     }
                 } else if (event === 'SIGNED_OUT') {
