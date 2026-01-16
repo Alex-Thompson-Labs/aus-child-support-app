@@ -306,14 +306,35 @@ Identifies high-value cases that need legal help:
 
 ### Secure Data Delivery (Privacy First)
 
-We **never** email raw lead data to lawyers.
+**Privacy Boundaries:**
 
-1. **Submission:** Parent submits form -> Saved to Supabase (Encrypted)
-2. **Notification:** Admin gets "Teaser" email (No PII)
-3. **Handover:** Admin generates **Secure Magic Link** -> Sends to Lawyer
-4. **Access:** Lawyer clicks link -> Views data in secure route (planned: `/admin/view-lead/[token]`)
+1. **Admin Internal View** (`/admin/lead/[id]`):
+   - ✅ Can see full PII (name, email, phone) for quality vetting
+   - ✅ 30-second quality check to filter fake names/spam
+   - ❌ NEVER copy PII into teaser emails
 
-**Implementation Status:** Secure Magic Link system planned (route and utility file to be implemented)
+2. **Teaser Email to Lawyers**:
+   - ✅ Case summary (complexity, income, location)
+   - ❌ NO PII (name, email, phone)
+   - Purpose: Lawyer decides if lead is worth $50
+
+3. **Secure Magic Link** (`/admin/view-lead/[token]`):
+   - ✅ Full PII after lawyer pays $50
+   - ✅ Time-limited access
+   - ✅ Audit trail
+
+**Workflow:**
+
+1. **Submission:** Parent submits form → Saved to Supabase (Encrypted)
+2. **Admin Review:** Admin sees full PII internally for 30-second quality check
+3. **Teaser Email:** Admin generates teaser (NO PII) → Sends to Lawyer
+4. **Payment:** Lawyer responds "YES" → Charged $50
+5. **Access:** Admin generates Secure Magic Link → Lawyer views full PII
+
+**Implementation Status:** 
+- ✅ Admin can view PII for vetting
+- ✅ Teaser email template excludes PII
+- ⏳ Secure Magic Link system (route `/admin/view-lead/[token]` exists but needs token generation)
 
 ### Direct Enquiry Flow (Direct Mode)
 

@@ -11,9 +11,9 @@
  * The legacy submitLead() from supabase.ts is kept for backward compatibility.
  */
 
-import { getSupabaseClient } from './supabase/client';
-import type { LeadSubmission } from './supabase';
 import type { PartnerKey } from '@/src/config/partners';
+import type { LeadSubmission } from './supabase';
+import { getSupabaseClient } from './supabase/client';
 
 export interface SubmitLeadPayload extends LeadSubmission {
   partner_id?: PartnerKey | null;
@@ -26,11 +26,13 @@ export interface SubmitLeadResult {
 }
 
 /**
- * Submit a lead via Supabase Edge Function with partner attribution.
+ * Submit a lead via direct database insertion with partner attribution.
  *
- * Uses the official Supabase SDK's functions.invoke() method for secure
- * communication with edge functions. The SDK handles proper URL construction,
- * authentication headers, and error handling automatically.
+ * TEMPORARY: Using direct database insertion instead of edge function
+ * because edge function is returning 401 errors. This bypasses the
+ * magic link generation and email notification, but allows lead submission.
+ *
+ * TODO: Fix edge function authentication and switch back to edge function
  *
  * @param lead - Lead submission data
  * @param partnerId - Optional partner ID for attribution
@@ -59,38 +61,17 @@ export async function submitLeadWithPartner(
     // Get Supabase client (lazy-loaded)
     const supabase = await getSupabaseClient();
 
+    // Use direct database insertion (bypassing edge function for now)
+    const { submitLead } = await import('./supabase/leads');
+    
     const payload: SubmitLeadPayload = {
       ...lead,
       partner_id: partnerId ?? null,
     };
 
-
-    // Use official Supabase SDK method for edge function invocation
-    const { data, error } = await supabase.functions.invoke('submit-lead', {
-      body: payload,
-    });
-
-    if (error) {
-      // TODO: Replace with proper error reporting service
-      return {
-        success: false,
-        error: error.message || 'Submission failed',
-      };
-    }
-
-    // Check for application-level errors in response data
-    if (data?.error) {
-      // TODO: Replace with proper error reporting service
-      return {
-        success: false,
-        error: data.error,
-      };
-    }
-
-    return {
-      success: true,
-      leadId: data?.leadId ?? data?.id,
-    };
+    const result = await submitLead(payload);
+    
+    return result;
   } catch (error) {
     // TODO: Replace with proper error reporting service
     return {

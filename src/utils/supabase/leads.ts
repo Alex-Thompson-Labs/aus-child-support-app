@@ -1,5 +1,5 @@
-import { getSupabaseClient } from './client';
 import * as Crypto from 'expo-crypto';
+import { getSupabaseClient } from './client';
 
 /**
  * Generates a cryptographically secure UUID v4 string.
@@ -207,6 +207,9 @@ export async function submitLead(lead: LeadSubmission): Promise<{
             inquiry_type: lead.inquiry_type,
             referer_url: lead.referer_url,
 
+            // Partner attribution
+            partner_id: (lead as any).partner_id || null,
+
             // Lead scoring data
             lead_score: lead.lead_score,
             score_category: lead.score_category,
@@ -218,6 +221,14 @@ export async function submitLead(lead: LeadSubmission): Promise<{
             // Time tracking
             time_to_complete: lead.time_to_complete,
         };
+
+        // DEBUG: Log what we're about to send
+        console.log('[submitLead] Submitting lead:', {
+            id: leadId,
+            parent_name: sanitizedPayload.parent_name,
+            parent_email: sanitizedPayload.parent_email,
+            parent_phone: sanitizedPayload.parent_phone,
+        });
 
         // Insert lead into database
         // We do NOT use .select() because RLS prevents anon users from reading
@@ -324,9 +335,9 @@ export async function fetchPaginatedLeads(
         const startIndex = page * limit;
         const endIndex = startIndex + limit - 1;
 
-        // Build query
+        // Build query - use leads table directly (encryption not yet implemented)
         let query = supabaseClient
-            .from('leads_decrypted')
+            .from('leads')
             .select('*', { count: 'exact' })
             .is('deleted_at', null); // Exclude soft-deleted leads
 

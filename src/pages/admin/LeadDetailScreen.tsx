@@ -9,25 +9,25 @@ import { Env } from '@/src/config/env';
 import { exportLeadAsPDF } from '@/src/utils/exportLeadPDF';
 import { formatCurrency } from '@/src/utils/formatters';
 import {
-  isWeb,
-  MAX_CONTENT_WIDTH,
-  webClickableStyles,
-  webInputStyles,
+    isWeb,
+    MAX_CONTENT_WIDTH,
+    webClickableStyles,
+    webInputStyles,
 } from '@/src/utils/responsive';
 import { getSupabaseClient, type LeadSubmission } from '@/src/utils/supabase';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  Clipboard,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    ActivityIndicator,
+    Alert,
+    Clipboard,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -81,15 +81,16 @@ export default function LeadDetailScreen() {
         // Lazy-load Supabase for data fetching
         const supabase = await getSupabaseClient();
 
-        // Use leads_decrypted view for automatic PII decryption
+        // Query leads table directly (encryption not yet implemented)
         const { data, error } = await supabase
-          .from('leads_decrypted')
+          .from('leads')
           .select('*')
           .eq('id', leadId)
           .single();
 
         if (error) {
           // TODO: Replace with proper error reporting service
+          console.error('[LeadDetail] Query error:', error);
           if (Platform.OS === 'web') {
             alert(`Error Loading Lead\n\n${error.message}`);
           } else {
@@ -98,6 +99,14 @@ export default function LeadDetailScreen() {
           router.back();
           return;
         }
+
+        console.log('[LeadDetail] Loaded lead data:', {
+          id: data?.id,
+          parent_name: data?.parent_name,
+          parent_email: data?.parent_email,
+          parent_phone: data?.parent_phone,
+          location: data?.location,
+        });
 
         setLead(data);
         setNotes(data.notes || '');
@@ -114,6 +123,9 @@ export default function LeadDetailScreen() {
 
   const generateTeaserEmail = () => {
     if (!lead) return;
+
+    // PRIVACY BOUNDARY: This teaser email contains NO PII (name, email, phone)
+    // Only case summary data. Full PII is only shared via Secure Magic Link after payment.
 
     // Determine the primary issue/trigger
     const primaryReason =
