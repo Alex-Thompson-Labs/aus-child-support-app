@@ -16,7 +16,7 @@ const aboutSchema = {
     mainEntity: {
         '@type': 'Organization',
         name: 'AusChildSupport',
-        url: 'https://auschildsupport.com',
+        url: 'https://auschildsupport.com.au',
         description: 'Free Australian child support calculator using official Services Australia formulas.',
         foundingDate: '2024',
         areaServed: {
@@ -123,7 +123,7 @@ export default function AboutPage() {
                         <View style={styles.buttonRow}>
                             <Pressable
                                 style={[styles.primaryButton, isWeb && webClickableStyles]}
-                                onPress={() => Linking.openURL('https://blog.auschildsupport.com')}
+                                onPress={() => Linking.openURL('https://blog.auschildsupport.com.au')}
                                 accessibilityRole="button"
                                 accessibilityLabel="Visit our blog"
                             >

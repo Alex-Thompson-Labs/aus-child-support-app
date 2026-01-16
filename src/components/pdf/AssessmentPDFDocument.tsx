@@ -502,7 +502,7 @@ export function AssessmentPDFDocument({
             </View>
             <View style={styles.footerRight}>
               <Text style={styles.footerBrand}>Aus Child Support Calculator</Text>
-              <Text style={styles.footerUrl}>auschildsupport.com</Text>
+              <Text style={styles.footerUrl}>auschildsupport.com.au</Text>
               <Text
                 style={styles.pageNumber}
                 render={({ pageNumber, totalPages }: { pageNumber: number; totalPages: number }) => `Page ${pageNumber} of ${totalPages}`}

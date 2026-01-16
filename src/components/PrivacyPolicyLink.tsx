@@ -37,7 +37,7 @@ export function PrivacyPolicyLink({
   // Platform-aware URL: use relative path on web, absolute on native
   const privacyUrl = url || (isWeb
     ? '/privacy-policy.html'
-    : 'https://auschildsupport.com/privacy-policy.html');
+    : 'https://auschildsupport.com.au/privacy-policy.html');
 
   const webClickableStyles = isWeb
     ? {

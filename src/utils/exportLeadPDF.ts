@@ -460,7 +460,7 @@ function generateLeadHTML(lead: LeadSubmission, userId: string = 'system'): stri
             Australian Child Support Calculator
           </p>
           <p style="color: #6b7280; font-size: 12px;">
-            <a href="https://auschildsupport.com" style="color: #2563eb; text-decoration: none;">auschildsupport.com</a>
+            <a href="https://auschildsupport.com.au" style="color: #2563eb; text-decoration: none;">auschildsupport.com.au</a>
           </p>
           <p style="color: #d1d5db; font-size: 11px; margin-top: 8px;">
             This document is confidential and intended for authorized recipients only.

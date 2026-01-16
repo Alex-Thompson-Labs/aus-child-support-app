@@ -568,7 +568,7 @@ export function generateCalendarHTML(
       </div>
     `;
   }).join('')}
-  <div class="footer">This is an estimate based on the interpreted court order. For official assessments, contact Services Australia.<br>auschildsupport.com</div>
+  <div class="footer">This is an estimate based on the interpreted court order. For official assessments, contact Services Australia.<br>auschildsupport.com.au</div>
 </body>
 </html>`;
 }

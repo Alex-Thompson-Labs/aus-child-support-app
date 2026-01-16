@@ -11,10 +11,11 @@
 const fs = require('fs');
 const path = require('path');
 
-// __dirname is already defined in CommonJS
+// Get directory name for CommonJS
+const __dirname = path.dirname(require.main.filename);
 
 // Configuration
-const SITE_URL = 'https://auschildsupport.com';
+const SITE_URL = 'https://auschildsupport.com.au';
 const OUTPUT_PATH = path.join(__dirname, '../public/sitemap.xml');
 const APP_DIR = path.join(__dirname, '../app');
 

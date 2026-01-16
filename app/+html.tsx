@@ -58,14 +58,6 @@ export default function Root({ children }: PropsWithChildren) {
           href="/favicon-rounded-white-bg.png?v=4"
         />
 
-        {/* CRITICAL: Preload hero logo for faster LCP */}
-        <link
-          rel="preload"
-          as="image"
-          href="/assets/images/webp/aus-child-support-logo-header-transparent.webp"
-          type="image/webp"
-        />
-
         {/* CRITICAL CSS: Inline styles for above-the-fold content */}
         <style
           dangerouslySetInnerHTML={{

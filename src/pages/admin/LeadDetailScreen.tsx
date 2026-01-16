@@ -174,7 +174,7 @@ Lead ID: #${lead.id?.slice(0, 8)}
 
 ---
 Australian Child Support Calculator
-auschildsupport.com`;
+auschildsupport.com.au`;
 
     if (Platform.OS === 'web') {
       // Web: Use Clipboard API

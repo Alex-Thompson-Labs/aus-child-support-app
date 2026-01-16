@@ -5,28 +5,28 @@
 
 import { Colors } from '@/constants/theme';
 import {
-  isWeb,
-  MAX_CONTENT_WIDTH,
-  webClickableStyles,
-  webInputStyles,
+    isWeb,
+    MAX_CONTENT_WIDTH,
+    webClickableStyles,
+    webInputStyles,
 } from '@/src/utils/responsive';
 import {
-  getSupabaseClient,
-  type PartnershipProposal,
+    getSupabaseClient,
+    type PartnershipProposal,
 } from '@/src/utils/supabase';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  Platform,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    ActivityIndicator,
+    Alert,
+    Platform,
+    Pressable,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -182,7 +182,7 @@ export default function ProposalsScreen() {
 
   const handleCopyLink = async (slug: string) => {
     const baseUrl =
-      process.env.EXPO_PUBLIC_SITE_URL || 'https://auschildsupport.com';
+      process.env.EXPO_PUBLIC_SITE_URL || 'https://auschildsupport.com.au';
     const link = `${baseUrl}/partner/${slug}`;
 
     try {
