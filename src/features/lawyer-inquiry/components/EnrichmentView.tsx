@@ -495,7 +495,6 @@ export function EnrichmentView({
       <SafeAreaView style={containerStyles.container} edges={['top', 'bottom']}>
         <View style={enrichmentStyles.enrichmentContainer}>
           <View style={enrichmentStyles.enrichmentHeader}>
-            <Text style={enrichmentStyles.enrichmentIcon}>✓</Text>
             <Text style={enrichmentStyles.enrichmentTitle}>Case Updated!</Text>
           </View>
         </View>
@@ -508,7 +507,6 @@ export function EnrichmentView({
       <View style={enrichmentStyles.enrichmentContainer}>
         {/* Header */}
         <View style={enrichmentStyles.enrichmentHeader}>
-          <Text style={enrichmentStyles.enrichmentIcon}>✓</Text>
           <Text style={enrichmentStyles.enrichmentTitle}>Enquiry Sent!</Text>
         </View>
 
@@ -521,7 +519,7 @@ export function EnrichmentView({
         {/* Liability Estimator Card */}
         {childrenCount > 0 && (
           <View style={estimatorStyles.estimatorCard}>
-            <Text style={estimatorStyles.estimatorTitle}>💡 Want an Estimate?</Text>
+            <Text style={estimatorStyles.estimatorTitle}>Want an Estimate?</Text>
             <Text style={estimatorStyles.estimatorDescription}>
               Get a quick estimate of your child support while you wait for the lawyer.
             </Text>
@@ -535,7 +533,7 @@ export function EnrichmentView({
                 </Text>
                 <View style={estimatorStyles.warningBox}>
                   <Text style={estimatorStyles.warningText}>
-                    ⚠️ <Text style={estimatorStyles.warningBold}>WARNING:</Text> This estimate is a baseline formula. Your lawyer will help you identify legal grounds to adjust this figure based on your specific family circumstances.
+                    <Text style={estimatorStyles.warningBold}>WARNING:</Text> This estimate is a baseline formula. Your lawyer will help you identify legal grounds to adjust this figure based on your specific family circumstances.
                   </Text>
                 </View>
                 <Pressable
