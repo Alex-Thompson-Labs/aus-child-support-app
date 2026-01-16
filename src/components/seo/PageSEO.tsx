@@ -15,7 +15,7 @@ export const PageSEO: React.FC<PageSEOProps> = ({
   canonicalPath,
   schema,
 }) => {
-  const BASE_URL = 'https://auschildsupport.com';
+  const BASE_URL = 'https://auschildsupport.com.au';
   const fullUrl = `${BASE_URL}${canonicalPath}`;
 
   const defaultSchema = {

@@ -13,4 +13,4 @@ Disallow: /modal
 Disallow: /_sitemap
 
 # Sitemap
-Sitemap: https://auschildsupport.com/sitemap.xml
+Sitemap: https://auschildsupport.com.au/sitemap.xml

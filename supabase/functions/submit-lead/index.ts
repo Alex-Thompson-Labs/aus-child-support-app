@@ -30,7 +30,7 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const MAGIC_LINK_SECRET =
   Deno.env.get('MAGIC_LINK_SECRET') || 'fallback-secret-change-in-production';
-const SITE_URL = Deno.env.get('SITE_URL') || 'https://auschildsupport.com';
+const SITE_URL = Deno.env.get('SITE_URL') || 'https://auschildsupport.com.au';
 
 // Token expiration: 7 days
 const TOKEN_EXPIRATION_HOURS = 168;
@@ -39,13 +39,13 @@ const TOKEN_EXPIRATION_HOURS = 168;
 const PARTNER_EMAIL_ROUTES: Record<string, { to: string; cc?: string }> = {
   sage: {
     to: 'example@example.com',
-    cc: 'alex@auschildsupport.com',
+    cc: 'alex@auschildsupport.com.au',
   },
 };
 
 // Default routing for non-partner leads
 const DEFAULT_EMAIL_ROUTE: { to: string; cc?: string } = {
-  to: 'alex@auschildsupport.com',
+  to: 'alex@auschildsupport.com.au',
 };
 
 interface LeadPayload {
@@ -150,7 +150,7 @@ async function sendNotificationEmail(
     subject: string;
     html: string;
   } = {
-    from: 'Child Support Calculator <leads@auschildsupport.com>',
+    from: 'Child Support Calculator <leads@auschildsupport.com.au>',
     to: emailRoute.to,
     subject: `New High-Value Lead: ${primaryReason}`,
     html: `

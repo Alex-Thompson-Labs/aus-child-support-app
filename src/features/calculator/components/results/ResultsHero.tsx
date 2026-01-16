@@ -224,7 +224,7 @@ export function ResultsHero({
             accessibilityRole="link"
             style={styles.blogLink}
             onPress={() => {
-              const url = 'https://blog.auschildsupport.com/child-support-formula-australia/';
+              const url = 'https://blog.auschildsupport.com.au/child-support-formula-australia/';
               if (Platform.OS === 'web') {
                 window.open(url, '_blank');
               } else {
@@ -233,7 +233,7 @@ export function ResultsHero({
             }}
             {...(Platform.OS === 'web' && {
               // @ts-ignore - Web-only props for SEO
-              href: 'https://blog.auschildsupport.com/child-support-formula-australia/',
+              href: 'https://blog.auschildsupport.com.au/child-support-formula-australia/',
               target: '_blank',
               rel: 'noopener noreferrer',
             })}

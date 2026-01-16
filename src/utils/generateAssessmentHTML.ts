@@ -726,7 +726,7 @@ export function generateAssessmentHTML({
           </div>
           <div class="footer-brand">
             <div class="footer-brand-name">Aus Child Support Calculator</div>
-            <div class="footer-url">auschildsupport.com</div>
+            <div class="footer-url">auschildsupport.com.au</div>
           </div>
         </div>
       </body>

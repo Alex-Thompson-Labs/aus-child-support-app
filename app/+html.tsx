@@ -6,8 +6,8 @@ const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'AusChildSupport',
-  url: 'https://auschildsupport.com',
-  logo: 'https://auschildsupport.com/favicon-rounded-white-bg.png',
+  url: 'https://auschildsupport.com.au',
+  logo: 'https://auschildsupport.com.au/favicon-rounded-white-bg.png',
 };
 
 // GLOBAL SCHEMA: SoftwareApplication
