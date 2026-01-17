@@ -1,4 +1,5 @@
-import Anthropic from 'https://esm.sh/@anthropic-ai/sdk?target=deno';
+// Court Order Scanner using Google Gemini 2.0 Flash (free tier)
+import { GoogleGenerativeAI } from 'npm:@google/generative-ai@^0.21.0';
 
 declare const Deno: {
   env: {
@@ -56,20 +57,22 @@ Deno.serve(async (req) => {
       throw new Error('No file content provided');
     }
 
+    // Get Gemini API key
+    const apiKey = Deno.env.get('GEMINI_API_KEY');
+    if (!apiKey) {
+      throw new Error('GEMINI_API_KEY not set in environment. Please add it to your Supabase secrets.');
+    }
+
     // Select term dates for the requested year (default to 2026 if not available)
     const selectedYear = TERM_DATES[year] ? year : 2026;
     const termDatesYear1 = TERM_DATES[selectedYear].VIC;
     const termDatesYear2 = TERM_DATES[selectedYear + 1]?.VIC || [];
 
-    const anthropic = new Anthropic({
-      apiKey: Deno.env.get('ANTHROPIC_API_KEY'),
-    });
-
     // Build school term dates context for the prompt (include both years for 2-year timelines)
     let termDatesContext = `Year ${selectedYear}:\n    ` + termDatesYear1
       .map((term, i) => `Term ${i + 1}: ${term.start} to ${term.end}`)
       .join('\n    ');
-    
+
     if (termDatesYear2.length > 0) {
       termDatesContext += `\n\n  Year ${selectedYear + 1}:\n    ` + termDatesYear2
         .map((term, i) => `Term ${i + 1}: ${term.start} to ${term.end}`)
@@ -85,7 +88,7 @@ Deno.serve(async (req) => {
       holidayPeriods.push(`${selectedYear} Holiday ${i + 1}: ${holidayStart} to ${holidayEnd} (between Term ${i + 1} and ${i + 2})`);
     }
     holidayPeriods.push(`${selectedYear} Summer Holiday: ${termDatesYear1[termDatesYear1.length - 1].end} to ${selectedYear}-12-31 (after Term 4)`);
-    
+
     // Add Year 2 holidays if available
     if (termDatesYear2.length > 0) {
       holidayPeriods.push(`${selectedYear + 1} Summer Holiday: ${selectedYear + 1}-01-01 to ${termDatesYear2[0].start} (before Term 1)`);
@@ -96,7 +99,7 @@ Deno.serve(async (req) => {
       }
       holidayPeriods.push(`${selectedYear + 1} Summer Holiday: ${termDatesYear2[termDatesYear2.length - 1].end} to ${selectedYear + 1}-12-31 (after Term 4)`);
     }
-    
+
     const holidayContext = holidayPeriods.join('\n    ');
 
     const systemPrompt = `You are an expert Australian Family Law Court Order Interpreter.
@@ -233,93 +236,65 @@ VALIDATION CHECK BEFORE OUTPUTTING:
 }
 `;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
-      max_tokens: 8000,
-      temperature: 0,
-      system: systemPrompt,
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: `Here is the court order. Generate a complete care timeline for ${selectedYear}. Output ONLY JSON.`,
-            },
-            mediaType === 'application/pdf'
-              ? {
-                type: 'document',
-                source: {
-                  type: 'base64',
-                  media_type: 'application/pdf',
-                  data: fileBase64,
-                },
-              }
-              : {
-                type: 'image',
-                source: {
-                  type: 'base64',
-                  media_type: mediaType || 'image/jpeg',
-                  data: fileBase64,
-                },
-              },
-          ],
-        },
-      ],
+    console.log('Calling Gemini 2.0 Flash for analysis...');
+
+    // Initialize Gemini
+    const genAI = new GoogleGenerativeAI(apiKey);
+
+    // Map media type to Gemini-compatible format
+    const geminiMimeType = mediaType === 'application/pdf' ? 'application/pdf' : (mediaType || 'image/jpeg');
+
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.0-flash-exp',
+      generationConfig: {
+        temperature: 0,
+        responseMimeType: 'application/json',
+      },
     });
 
-    // Safe extraction of text content
-    const contentBlock = message.content[0];
-    if (contentBlock.type !== 'text') {
-      throw new Error('Unexpected response type from Claude');
-    }
+    // Create the content with inline data for the file
+    const result = await model.generateContent([
+      { text: systemPrompt },
+      { text: `Here is the court order. Generate a complete care timeline for ${selectedYear}. Output ONLY JSON.` },
+      {
+        inlineData: {
+          mimeType: geminiMimeType,
+          data: fileBase64,
+        },
+      },
+    ]);
 
-    const result = contentBlock.text;
+    const response = result.response;
+    const resultText = response.text();
 
     // Improved extraction to handle any conversational text before/after JSON
-    const jsonMatch = result.match(/\{[\s\S]*\}/);
-    const cleanJson = jsonMatch ? jsonMatch[0] : result;
+    const jsonMatch = resultText.match(/\{[\s\S]*\}/);
+    const cleanJson = jsonMatch ? jsonMatch[0] : resultText;
 
     // Parse the JSON to add opportunity detection
     const parsedResult = JSON.parse(cleanJson);
 
-    // Extract raw text from the document for keyword scanning
-    const extractTextMessage = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
-      max_tokens: 4000,
-      temperature: 0,
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: 'Extract all text from this document. Return ONLY the raw text content, no formatting or commentary.',
-            },
-            mediaType === 'application/pdf'
-              ? {
-                type: 'document',
-                source: {
-                  type: 'base64',
-                  media_type: 'application/pdf',
-                  data: fileBase64,
-                },
-              }
-              : {
-                type: 'image',
-                source: {
-                  type: 'base64',
-                  media_type: mediaType || 'image/jpeg',
-                  data: fileBase64,
-                },
-              },
-          ],
-        },
-      ],
+    // Extract text for keyword scanning using a second API call
+    console.log('Extracting text for keyword scanning...');
+
+    const textModel = genAI.getGenerativeModel({
+      model: 'gemini-2.0-flash-exp',
+      generationConfig: {
+        temperature: 0,
+      },
     });
 
-    const textBlock = extractTextMessage.content[0];
-    const documentText = textBlock.type === 'text' ? textBlock.text.toLowerCase() : '';
+    const textExtractionResult = await textModel.generateContent([
+      { text: 'Extract all text from this document. Return ONLY the raw text content, no formatting or commentary.' },
+      {
+        inlineData: {
+          mimeType: geminiMimeType,
+          data: fileBase64,
+        },
+      },
+    ]);
+
+    const documentText = textExtractionResult.response.text().toLowerCase();
 
     // Keyword detection logic
     const opportunities: {
@@ -378,21 +353,19 @@ VALIDATION CHECK BEFORE OUTPUTTING:
     }
 
     // Reason 8: Hidden Income / Financial Resources
-    // Safety check: exclude "trust account" and "held in trust"
     const businessKeywords = ['pty ltd', 'proprietary limited', 'director', 'shareholder', 'dividends', 'business ownership', 'abn', 'distributions'];
     const detectedBusiness = businessKeywords.filter(kw => documentText.includes(kw));
-    
-    // Special handling for trust keywords with safety check
-    const hasFamilyTrust = documentText.includes('family trust') && 
-                          !documentText.includes('trust account') && 
-                          !documentText.includes('held in trust');
-    const hasUnitTrust = documentText.includes('unit trust') && 
-                        !documentText.includes('trust account') && 
-                        !documentText.includes('held in trust');
-    
+
+    const hasFamilyTrust = documentText.includes('family trust') &&
+      !documentText.includes('trust account') &&
+      !documentText.includes('held in trust');
+    const hasUnitTrust = documentText.includes('unit trust') &&
+      !documentText.includes('trust account') &&
+      !documentText.includes('held in trust');
+
     if (hasFamilyTrust) detectedBusiness.push('family trust');
     if (hasUnitTrust) detectedBusiness.push('unit trust');
-    
+
     if (detectedBusiness.length > 0) {
       opportunities.push({
         reason_id: 8,

@@ -1,60 +1,81 @@
 # Court Order Analyzer - Gemini Implementation
 
-## Overview
 This edge function uses **Google Gemini 2.0 Flash** to analyze court orders and extract care schedules.
 
 ## Cost Comparison
-- **Previous (Claude Sonnet 4.5)**: ~$0.28 per scan
-- **Current (Gemini 2.0 Flash)**: ~$0.00 per scan (free tier: 1,500 requests/day)
-- **Savings**: ~99% cost reduction
 
-## Setup
+- **Gemini 2.0 Flash**: ~$0.00 per scan (free tier: 1,500 requests/day, 15 requests/minute)
+- **Claude Sonnet**: ~$0.28 per scan
+
+## Setup Instructions
 
 ### 1. Get Gemini API Key
-1. Go to [Google AI Studio](https://aistudio.google.com/app/apikey)
-2. Click "Get API Key"
-3. Create a new API key (free tier includes 1,500 requests/day)
+
+1. Visit: https://aistudio.google.com/app/apikey
+2. Click "Get API Key" → "Create API key in new project"
+3. Copy the key (starts with `AIza...`)
 
 ### 2. Add to Supabase Secrets
-```bash
-# Using Supabase CLI
-supabase secrets set GEMINI_API_KEY=your_api_key_here
 
-# Or via Supabase Dashboard
-# Project Settings > Edge Functions > Secrets
-# Add: GEMINI_API_KEY = your_api_key_here
+**Option A: Via Supabase Dashboard**
+1. Go to your Supabase project → Settings → Edge Functions → Secrets
+2. Add new secret:
+   - Name: `GEMINI_API_KEY`
+   - Value: Your API key from step 1
+
+**Option B: Via CLI**
+```bash
+supabase secrets set GEMINI_API_KEY=your_api_key_here
 ```
 
-### 3. Deploy
+### 3. Deploy the Function
+
 ```bash
 supabase functions deploy analyze-order
 ```
 
-## API Limits (Free Tier)
-- **Rate Limit**: 15 requests per minute
-- **Daily Limit**: 1,500 requests per day
-- **Input**: Up to 4M tokens per request
-- **Output**: Up to 8,192 tokens per request
+## Technical Details
 
-For production scale (>1,500 scans/day), you'll need to upgrade to paid tier:
-- **Paid**: $0.075 per 1M input tokens, $0.30 per 1M output tokens
-- Still ~95% cheaper than Claude
+- **Model**: `gemini-2.0-flash`
+- **JSON Mode**: Uses native `responseMimeType: 'application/json'` for reliable structured output
+- **Vision Support**: Handles both PDFs and images (JPEG, PNG)
+- **Two API Calls**: 
+  1. Main analysis for care timeline extraction
+  2. Text extraction for keyword/opportunity detection
 
-## Model Details
-- **Model**: `gemini-2.0-flash-exp`
-- **Temperature**: 0 (deterministic)
-- **Output Format**: JSON (enforced via `responseMimeType`)
+## Free Tier Limits
+
+| Metric | Limit |
+|--------|-------|
+| Requests per day | 1,500 |
+| Requests per minute | 15 |
+| Context window | 1M tokens |
+
+More than enough for beta/production use at typical volumes.
 
 ## Testing
-```bash
-# Test locally
-supabase functions serve analyze-order
 
-# Test with curl
-curl -X POST http://localhost:54321/functions/v1/analyze-order \
-  -H "Content-Type: application/json" \
-  -d '{"fileBase64": "...", "mediaType": "application/pdf", "year": 2026}'
+Test the function locally:
+
+```bash
+supabase functions serve analyze-order --env-file .env.local
 ```
 
-## Monitoring
-Check usage at: https://aistudio.google.com/app/apikey (click on your key)
+Make sure your `.env.local` contains:
+```
+GEMINI_API_KEY=AIza...your-key-here
+```
+
+## Troubleshooting
+
+### "GEMINI_API_KEY not set in environment"
+- Ensure you've added the secret via Supabase Dashboard or CLI
+- Redeploy the function after adding secrets
+
+### Rate limit errors
+- Free tier has 15 requests/minute limit
+- If you hit this, consider upgrading to paid tier or implementing request queuing
+
+### JSON parsing errors
+- The function uses Gemini's native JSON mode which should prevent malformed responses
+- If issues persist, check the raw response in logs

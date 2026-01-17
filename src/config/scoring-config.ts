@@ -11,6 +11,7 @@
 
 export interface ScoringPoints {
   COURT_DATE_URGENT: number;       // Court date within urgency window
+  COURT_DATE_FUTURE: number;       // Court date beyond urgency window
   INTERNATIONAL_JURISDICTION: number; // International case - high complexity
   PROPERTY_SETTLEMENT: number;      // Property settlement pending
   INCOME_ISSUES: number;            // Hidden assets or cash business
@@ -42,6 +43,7 @@ export interface ScoringConfig {
   thresholds: ScoringThresholds;
   categoryThresholds: ScoreCategoryThresholds;
   propertySettlementCircumstance: string;
+  highValueCircumstances: string[];  // Circumstances with specific high-value scores (excluded from generic +4)
   incomeIssueTags: string[];
 }
 
@@ -51,14 +53,15 @@ export interface ScoringConfig {
 
 export const DEFAULT_SCORING_POINTS: ScoringPoints = {
   COURT_DATE_URGENT: 10,
+  COURT_DATE_FUTURE: 5,
   INTERNATIONAL_JURISDICTION: 8,
   PROPERTY_SETTLEMENT: 8,
   INCOME_ISSUES: 7,
   HIGH_VALUE_CASE: 6,
+  SHARED_CARE_DISPUTE: 6,           // Increased from 3 to 6
   MULTIPLE_COMPLEXITY: 5,
   POST_SEPARATION_INCOME: 5,
   SPECIAL_CIRCUMSTANCE: 4,
-  SHARED_CARE_DISPUTE: 3,
   BINDING_AGREEMENT: 2,
 } as const;
 
@@ -82,6 +85,11 @@ export const DEFAULT_SCORING_CONFIG: ScoringConfig = {
   thresholds: DEFAULT_SCORING_THRESHOLDS,
   categoryThresholds: DEFAULT_CATEGORY_THRESHOLDS,
   propertySettlementCircumstance: 'property_settlement_pending',
+  highValueCircumstances: [
+    'property_settlement_pending',
+    'international_jurisdiction',
+    'post_separation_income',
+  ],
   incomeIssueTags: ['Hidden Assets', 'Cash Business'],
 } as const;
 
@@ -97,12 +105,14 @@ export const URGENCY_FOCUSED_CONFIG: ScoringConfig = {
   points: {
     ...DEFAULT_SCORING_POINTS,
     COURT_DATE_URGENT: 15,        // Increased from 10
+    COURT_DATE_FUTURE: 7,         // Increased from 5
     INTERNATIONAL_JURISDICTION: 10, // Increased from 8
   },
   thresholds: {
     ...DEFAULT_SCORING_THRESHOLDS,
     COURT_DATE_URGENCY_DAYS: 45,  // Extended window
   },
+  highValueCircumstances: DEFAULT_SCORING_CONFIG.highValueCircumstances,
 };
 
 /**
@@ -120,6 +130,7 @@ export const VALUE_FOCUSED_CONFIG: ScoringConfig = {
     ...DEFAULT_SCORING_THRESHOLDS,
     HIGH_VALUE_THRESHOLD: 12000,  // Lower threshold for "high value"
   },
+  highValueCircumstances: DEFAULT_SCORING_CONFIG.highValueCircumstances,
 };
 
 /**
@@ -132,4 +143,5 @@ export const COMPLEXITY_FOCUSED_CONFIG: ScoringConfig = {
     MULTIPLE_COMPLEXITY: 8,       // Increased from 5
     SPECIAL_CIRCUMSTANCE: 6,      // Increased from 4
   },
+  highValueCircumstances: DEFAULT_SCORING_CONFIG.highValueCircumstances,
 };

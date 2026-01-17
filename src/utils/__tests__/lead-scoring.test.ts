@@ -4,14 +4,12 @@
  * Tests for the refactored lead scoring system with configurable weights.
  */
 
-import { calculateLeadScore, LeadScoringInput } from '../lead-scoring';
 import {
-    DEFAULT_SCORING_CONFIG,
-    VALUE_FOCUSED_CONFIG,
-    URGENCY_FOCUSED_CONFIG,
     COMPLEXITY_FOCUSED_CONFIG,
-    ScoringConfig,
+    URGENCY_FOCUSED_CONFIG,
+    VALUE_FOCUSED_CONFIG
 } from '@/src/config/scoring-config';
+import { calculateLeadScore, LeadScoringInput } from '../lead-scoring';
 
 describe('calculateLeadScore', () => {
     const baseInput: LeadScoringInput = {
@@ -45,6 +43,20 @@ describe('calculateLeadScore', () => {
             expect(result.category).toBe('Premium');
         });
 
+        it('should score future court date beyond urgency window (5 points)', () => {
+            const futureDate = new Date();
+            futureDate.setDate(futureDate.getDate() + 60); // 60 days from now
+
+            const result = calculateLeadScore({
+                ...baseInput,
+                courtDate: futureDate,
+            });
+
+            expect(result.score).toBe(5);
+            expect(result.factors).toContain('court_date_future');
+            expect(result.category).toBe('Standard');
+        });
+
         it('should score high-value case (6 points)', () => {
             const result = calculateLeadScore({
                 ...baseInput,
@@ -67,30 +79,28 @@ describe('calculateLeadScore', () => {
             expect(result.category).toBe('High-Value');
         });
 
-        it('should score international jurisdiction (8 points)', () => {
+        it('should score international jurisdiction (8 points only)', () => {
             const result = calculateLeadScore({
                 ...baseInput,
                 specialCircumstances: ['international_jurisdiction'],
             });
 
-            // 8 for international + 4 for the special circumstance itself
-            expect(result.score).toBe(12);
+            // 8 for international (no generic +4 due to exclusion)
+            expect(result.score).toBe(8);
             expect(result.factors).toContain('international_jurisdiction');
-            expect(result.factors).toContain('special_circumstances');
-            expect(result.category).toBe('Premium');
+            expect(result.category).toBe('High-Value');
         });
 
-        it('should score post-separation income (5 points)', () => {
+        it('should score post-separation income (5 points only)', () => {
             const result = calculateLeadScore({
                 ...baseInput,
                 specialCircumstances: ['post_separation_income'],
             });
 
-            // 5 for PSI + 4 for the special circumstance itself
-            expect(result.score).toBe(9);
+            // 5 for PSI (no generic +4 due to exclusion)
+            expect(result.score).toBe(5);
             expect(result.factors).toContain('post_separation_income');
-            expect(result.factors).toContain('special_circumstances');
-            expect(result.category).toBe('High-Value');
+            expect(result.category).toBe('Standard');
         });
 
         it('should score income issues (7 points)', () => {
@@ -117,15 +127,15 @@ describe('calculateLeadScore', () => {
             expect(result.category).toBe('Premium');
         });
 
-        it('should score shared care dispute (3 points)', () => {
+        it('should score shared care dispute (6 points)', () => {
             const result = calculateLeadScore({
                 ...baseInput,
                 careData: [{ careA: 40, careB: 60 }], // Shared care
             });
 
-            expect(result.score).toBe(3);
+            expect(result.score).toBe(6);
             expect(result.factors).toContain('shared_care_dispute');
-            expect(result.category).toBe('Low-Value');
+            expect(result.category).toBe('Standard');
         });
 
         it('should score binding agreement (2 points)', () => {
@@ -152,9 +162,9 @@ describe('calculateLeadScore', () => {
                 bindingAgreement: true,
             });
 
-            // 10 (urgent) + 8 (property) + 5 (PSI) + 7 (income) + 6 (high value) + 3 (care) + 2 (binding)
-            // + 4 (PSI as other special circumstance, property_settlement_pending is excluded from "other")
-            expect(result.score).toBe(45);
+            // 10 (urgent) + 8 (property) + 5 (PSI) + 7 (income) + 6 (high value) + 6 (care) + 2 (binding)
+            // Property and PSI are excluded from generic +4 count
+            expect(result.score).toBe(44);
             expect(result.category).toBe('Premium');
         });
     });
@@ -225,6 +235,23 @@ describe('calculateLeadScore', () => {
                 URGENCY_FOCUSED_CONFIG
             );
             expect(urgencyResult.factors).toContain('court_date_urgent');
+        });
+
+        it('should use custom future court date scoring from URGENCY_FOCUSED_CONFIG', () => {
+            const futureDate = new Date();
+            futureDate.setDate(futureDate.getDate() + 60);
+
+            const result = calculateLeadScore(
+                {
+                    ...baseInput,
+                    courtDate: futureDate,
+                },
+                URGENCY_FOCUSED_CONFIG
+            );
+
+            // URGENCY_FOCUSED_CONFIG has COURT_DATE_FUTURE = 7 (instead of 5)
+            expect(result.score).toBe(7);
+            expect(result.factors).toContain('court_date_future');
         });
 
         it('should use custom scoring points from COMPLEXITY_FOCUSED_CONFIG', () => {
@@ -312,7 +339,7 @@ describe('calculateLeadScore', () => {
             expect(result.factors).not.toContain('court_date_urgent');
         });
 
-        it('should not score court date beyond urgency window', () => {
+        it('should score future court date beyond urgency window (5 points)', () => {
             const farFutureDate = new Date();
             farFutureDate.setDate(farFutureDate.getDate() + 100);
 
@@ -321,6 +348,8 @@ describe('calculateLeadScore', () => {
                 courtDate: farFutureDate,
             });
             expect(result.factors).not.toContain('court_date_urgent');
+            expect(result.factors).toContain('court_date_future');
+            expect(result.score).toBe(5);
         });
 
         it('should handle undefined optional fields', () => {

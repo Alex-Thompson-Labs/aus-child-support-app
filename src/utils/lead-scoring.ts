@@ -61,6 +61,23 @@ function isCourtDateUrgent(
 }
 
 /**
+ * Check if court date exists but is beyond urgency window
+ */
+function hasCourtDateFuture(
+    courtDate: Date | null | undefined,
+    config: ScoringConfig
+): boolean {
+    if (!courtDate) return false;
+
+    const now = new Date();
+    const daysUntilCourt = Math.ceil(
+        (courtDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    return daysUntilCourt > config.thresholds.COURT_DATE_URGENCY_DAYS;
+}
+
+/**
  * Check if case has property settlement
  */
 function hasPropertySettlement(
@@ -132,14 +149,18 @@ function hasSharedCareDispute(
 }
 
 /**
- * Count non-property-settlement special circumstances
+ * Count special circumstances that should receive generic +4 points
+ * Excludes high-value circumstances that have their own specific point values:
+ * - Property Settlement (+8)
+ * - International Jurisdiction (+8)
+ * - Post Separation Income (+5)
  */
-function countOtherSpecialCircumstances(
+function countGenericSpecialCircumstances(
     specialCircumstances: string[] = [],
     config: ScoringConfig
 ): number {
     return specialCircumstances.filter(
-        sc => sc !== config.propertySettlementCircumstance
+        sc => !config.highValueCircumstances.includes(sc)
     ).length;
 }
 
@@ -189,6 +210,10 @@ export function calculateLeadScore(
     if (isCourtDateUrgent(input.courtDate, config)) {
         score += config.points.COURT_DATE_URGENT;
         factors.push('court_date_urgent');
+    } else if (hasCourtDateFuture(input.courtDate, config)) {
+        // Court date beyond urgency window still indicates legal proceedings
+        score += config.points.COURT_DATE_FUTURE;
+        factors.push('court_date_future');
     }
 
     // International Jurisdiction
@@ -227,13 +252,14 @@ export function calculateLeadScore(
         factors.push('multiple_complexity');
     }
 
-    // Other Special Circumstances
-    const otherCircumstances = countOtherSpecialCircumstances(
+    // Other Special Circumstances (generic +4 points each)
+    // Excludes high-value circumstances with specific point values
+    const genericCircumstances = countGenericSpecialCircumstances(
         input.specialCircumstances,
         config
     );
-    if (otherCircumstances > 0) {
-        score += config.points.SPECIAL_CIRCUMSTANCE * otherCircumstances;
+    if (genericCircumstances > 0) {
+        score += config.points.SPECIAL_CIRCUMSTANCE * genericCircumstances;
         factors.push('special_circumstances');
     }
 
