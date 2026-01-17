@@ -47,7 +47,7 @@ export function EnrichmentView({
   onEnrichmentCountryChange,
   showSuccess,
 }: EnrichmentViewProps) {
-  const { containerStyles, enrichmentStyles, buttonStyles, colors, isDark } = useInquiryStyles();
+  const { containerStyles, enrichmentStyles, buttonStyles, successStyles, colors, isDark } = useInquiryStyles();
 
   // Dynamic styles for estimator
   const estimatorStyles = React.useMemo(() => StyleSheet.create({
@@ -519,8 +519,11 @@ export function EnrichmentView({
       <SafeAreaView style={containerStyles.container} edges={['top', 'bottom']}>
         <View style={enrichmentStyles.enrichmentContainer}>
           <View style={enrichmentStyles.enrichmentHeader}>
-            <Text style={enrichmentStyles.enrichmentIcon}>✓</Text>
-            <Text style={enrichmentStyles.enrichmentTitle}>Case Updated!</Text>
+            <Text style={successStyles.successIcon}>✓</Text>
+            <Text style={successStyles.successTitle}>Case Updated!</Text>
+            <Text style={successStyles.successMessage}>
+              Your additional information has been saved and will help the lawyer prepare for your case.
+            </Text>
           </View>
         </View>
       </SafeAreaView>
