@@ -7,16 +7,30 @@ import {
 } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Linking,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+
+// Topic options for the contact form
+const TOPIC_OPTIONS = [
+  'Website Bug or Issue',
+  'Feature Request',
+  'Calculator Question',
+  'Partnership Opportunity',
+  'General Feedback',
+  'Other',
+];
 
 // Schema.org structured data for Contact page
 const contactSchema = {
@@ -40,6 +54,19 @@ const contactSchema = {
 export default function ContactPage() {
   const router = useRouter();
 
+  // Contact form modal state
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    topic: '',
+    message: '',
+  });
+  const [showTopicDropdown, setShowTopicDropdown] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
   const webContainerStyle = isWeb
     ? {
         maxWidth: MAX_CALCULATOR_WIDTH,
@@ -47,6 +74,47 @@ export default function ContactPage() {
         alignSelf: 'center' as const,
       }
     : {};
+
+  const handleSubmitContact = async () => {
+    // Validate form
+    if (!formData.name || !formData.email || !formData.topic || !formData.message) {
+      setSubmitError('Please fill in all fields');
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setSubmitError('Please enter a valid email address');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      // For now, construct a mailto link as fallback
+      // In production, you'd send this to a backend API
+      const subject = encodeURIComponent(`${formData.topic} - ${formData.name}`);
+      const body = encodeURIComponent(
+        `Name: ${formData.name}\nEmail: ${formData.email}\nTopic: ${formData.topic}\n\nMessage:\n${formData.message}`
+      );
+      const mailtoUrl = `mailto:contact@auschildsupport.com?subject=${subject}&body=${body}`;
+
+      await Linking.openURL(mailtoUrl);
+
+      setSubmitSuccess(true);
+      setTimeout(() => {
+        setShowContactModal(false);
+        setSubmitSuccess(false);
+        setFormData({ name: '', email: '', topic: '', message: '' });
+      }, 2000);
+    } catch (error) {
+      setSubmitError('Unable to send message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <>
@@ -174,17 +242,29 @@ export default function ContactPage() {
             </Text>
             <Pressable
               style={[styles.secondaryButton, isWeb && webClickableStyles]}
-              onPress={() => {
-                const subject = encodeURIComponent(
-                  'General Enquiry - AusChildSupport'
-                );
-                const mailtoUrl = `mailto:contact@auschildsupport.com?subject=${subject}`;
-                Linking.openURL(mailtoUrl);
-              }}
+              onPress={() => setShowContactModal(true)}
               accessibilityRole="button"
-              accessibilityLabel="Email us"
+              accessibilityLabel="Contact us"
             >
-              <Text style={styles.secondaryButtonText}>Email Us</Text>
+              <Text style={styles.secondaryButtonText}>Contact Us</Text>
+            </Pressable>
+
+            {/* Disclaimer */}
+            <View style={styles.cardDisclaimer}>
+              <Text style={styles.cardDisclaimerText}>
+                We aim to respond within 48 hours. Please note we cannot provide
+                legal advice via email.
+              </Text>
+            </View>
+
+            {/* FAQ Link */}
+            <Pressable
+              style={styles.faqLink}
+              onPress={() => router.push('/faq')}
+              accessibilityRole="button"
+              accessibilityLabel="View frequently asked questions"
+            >
+              <Text style={styles.faqLinkText}>Frequently Asked Questions →</Text>
             </Pressable>
           </View>
 
@@ -196,6 +276,171 @@ export default function ContactPage() {
             </Text>
           </View>
         </ScrollView>
+
+        {/* Contact Form Modal */}
+        <Modal
+          visible={showContactModal}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={() => setShowContactModal(false)}
+        >
+          <TouchableWithoutFeedback onPress={() => setShowContactModal(false)}>
+            <View style={modalStyles.modalOverlay}>
+              <TouchableWithoutFeedback>
+                <View style={modalStyles.modalContent}>
+                  <ScrollView showsVerticalScrollIndicator={false}>
+                    {/* Modal Header */}
+                    <View style={modalStyles.modalHeader}>
+                      <Text style={modalStyles.modalTitle}>Contact Us</Text>
+                      <Pressable
+                        onPress={() => setShowContactModal(false)}
+                        style={modalStyles.closeButton}
+                        accessibilityRole="button"
+                        accessibilityLabel="Close contact form"
+                      >
+                        <Ionicons name="close" size={24} color="#64748b" />
+                      </Pressable>
+                    </View>
+
+                    {submitSuccess ? (
+                      // Success Message
+                      <View style={modalStyles.successContainer}>
+                        <Ionicons name="checkmark-circle" size={64} color="#10b981" />
+                        <Text style={modalStyles.successTitle}>Message Sent!</Text>
+                        <Text style={modalStyles.successText}>
+                          Thank you for contacting us. We'll get back to you soon.
+                        </Text>
+                      </View>
+                    ) : (
+                      <>
+                        {/* Form Fields */}
+                        <View style={modalStyles.formGroup}>
+                          <Text style={modalStyles.label}>Name *</Text>
+                          <TextInput
+                            style={modalStyles.input}
+                            placeholder="Your name"
+                            placeholderTextColor="#94a3b8"
+                            value={formData.name}
+                            onChangeText={(text) =>
+                              setFormData({ ...formData, name: text })
+                            }
+                            editable={!isSubmitting}
+                          />
+                        </View>
+
+                        <View style={modalStyles.formGroup}>
+                          <Text style={modalStyles.label}>Email *</Text>
+                          <TextInput
+                            style={modalStyles.input}
+                            placeholder="your.email@example.com"
+                            placeholderTextColor="#94a3b8"
+                            value={formData.email}
+                            onChangeText={(text) =>
+                              setFormData({ ...formData, email: text })
+                            }
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            editable={!isSubmitting}
+                          />
+                        </View>
+
+                        <View style={modalStyles.formGroup}>
+                          <Text style={modalStyles.label}>Topic *</Text>
+                          <Pressable
+                            style={modalStyles.dropdownButton}
+                            onPress={() => setShowTopicDropdown(!showTopicDropdown)}
+                            disabled={isSubmitting}
+                          >
+                            <Text
+                              style={[
+                                modalStyles.dropdownButtonText,
+                                !formData.topic && modalStyles.dropdownPlaceholder,
+                              ]}
+                            >
+                              {formData.topic || 'Select a topic'}
+                            </Text>
+                            <Ionicons
+                              name={showTopicDropdown ? 'chevron-up' : 'chevron-down'}
+                              size={20}
+                              color="#64748b"
+                            />
+                          </Pressable>
+
+                          {showTopicDropdown && (
+                            <View style={modalStyles.dropdownMenu}>
+                              {TOPIC_OPTIONS.map((topic) => (
+                                <Pressable
+                                  key={topic}
+                                  style={modalStyles.dropdownItem}
+                                  onPress={() => {
+                                    setFormData({ ...formData, topic });
+                                    setShowTopicDropdown(false);
+                                  }}
+                                >
+                                  <Text style={modalStyles.dropdownItemText}>
+                                    {topic}
+                                  </Text>
+                                </Pressable>
+                              ))}
+                            </View>
+                          )}
+                        </View>
+
+                        <View style={modalStyles.formGroup}>
+                          <Text style={modalStyles.label}>Message *</Text>
+                          <TextInput
+                            style={[modalStyles.input, modalStyles.textArea]}
+                            placeholder="Tell us more about your enquiry..."
+                            placeholderTextColor="#94a3b8"
+                            value={formData.message}
+                            onChangeText={(text) =>
+                              setFormData({ ...formData, message: text })
+                            }
+                            multiline
+                            numberOfLines={6}
+                            textAlignVertical="top"
+                            editable={!isSubmitting}
+                          />
+                        </View>
+
+                        {/* Error Message */}
+                        {submitError && (
+                          <View style={modalStyles.errorContainer}>
+                            <Ionicons name="warning" size={20} color="#dc2626" />
+                            <Text style={modalStyles.errorText}>{submitError}</Text>
+                          </View>
+                        )}
+
+                        {/* Disclaimer */}
+                        <View style={modalStyles.disclaimerBox}>
+                          <Text style={modalStyles.disclaimerBoxText}>
+                            We aim to respond within 48 hours. Please note we cannot
+                            provide legal advice via email.
+                          </Text>
+                        </View>
+
+                        {/* Submit Button */}
+                        <Pressable
+                          style={[
+                            modalStyles.submitButton,
+                            isSubmitting && modalStyles.submitButtonDisabled,
+                            isWeb && !isSubmitting && webClickableStyles,
+                          ]}
+                          onPress={handleSubmitContact}
+                          disabled={isSubmitting}
+                        >
+                          <Text style={modalStyles.submitButtonText}>
+                            {isSubmitting ? 'Sending...' : 'Send Message'}
+                          </Text>
+                        </Pressable>
+                      </>
+                    )}
+                  </ScrollView>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
       </SafeAreaView>
     </>
   );
@@ -314,5 +559,199 @@ const styles = StyleSheet.create({
     color: '#64748b',
     lineHeight: 20,
     textAlign: 'center',
+  },
+  cardDisclaimer: {
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#e2e8f0',
+  },
+  cardDisclaimerText: {
+    fontSize: 13,
+    color: '#64748b',
+    lineHeight: 19,
+    textAlign: 'center',
+  },
+  faqLink: {
+    marginTop: 12,
+    paddingVertical: 8,
+    alignItems: 'center',
+  },
+  faqLinkText: {
+    fontSize: 14,
+    color: '#2563EB',
+    fontWeight: '600',
+    textDecorationLine: 'underline',
+  },
+});
+
+// Modal styles
+const modalStyles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    maxWidth: 500,
+    maxHeight: '90%',
+    ...createShadow({
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.15,
+      shadowRadius: 12,
+      elevation: 5,
+    }),
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#1e293b',
+  },
+  closeButton: {
+    padding: 4,
+  },
+  formGroup: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#475569',
+    marginBottom: 8,
+  },
+  input: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: '#1e293b',
+  },
+  textArea: {
+    minHeight: 120,
+    paddingTop: 12,
+  },
+  dropdownButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  dropdownButtonText: {
+    fontSize: 16,
+    color: '#1e293b',
+  },
+  dropdownPlaceholder: {
+    color: '#94a3b8',
+  },
+  dropdownMenu: {
+    marginTop: 8,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 8,
+    ...createShadow({
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    }),
+  },
+  dropdownItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  dropdownItemText: {
+    fontSize: 15,
+    color: '#475569',
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#fef2f2',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+  },
+  errorText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#dc2626',
+    lineHeight: 20,
+  },
+  disclaimerBox: {
+    backgroundColor: '#f1f5f9',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 20,
+  },
+  disclaimerBoxText: {
+    fontSize: 13,
+    color: '#64748b',
+    lineHeight: 19,
+    textAlign: 'center',
+  },
+  submitButton: {
+    backgroundColor: '#2563EB',
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: 'center',
+    ...createShadow({
+      shadowColor: '#2563EB',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      elevation: 3,
+    }),
+  },
+  submitButtonDisabled: {
+    backgroundColor: '#93c5fd',
+    opacity: 0.7,
+  },
+  submitButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  successContainer: {
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  successTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#10b981',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  successText: {
+    fontSize: 16,
+    color: '#475569',
+    textAlign: 'center',
+    lineHeight: 24,
   },
 });

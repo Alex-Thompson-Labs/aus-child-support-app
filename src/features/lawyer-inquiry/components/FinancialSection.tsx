@@ -14,28 +14,16 @@ import { isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import {
-    LayoutAnimation,
-    Platform,
     Pressable,
     ScrollView,
     StyleSheet,
     Text,
     TextInput,
-    TouchableOpacity,
-    UIManager,
     View,
 } from 'react-native';
 import { FINANCIAL_TAG_OPTIONS } from '../config';
 import type { FinancialSectionProps } from '../types';
 import { useInquiryStyles } from '../useInquiryStyles';
-
-// Enable LayoutAnimation for Android
-if (
-  Platform.OS === 'android' &&
-  UIManager.setLayoutAnimationEnabledExperimental
-) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 
 /**
  * Format currency for display
@@ -91,7 +79,6 @@ export function FinancialSection({
   onBlur,
 }: FinancialSectionProps) {
   const { financialStyles, formStyles, colors } = useInquiryStyles();
-  const [isSummaryOpen, setIsSummaryOpen] = useState(true);
   const [countrySearch, setCountrySearch] = useState('');
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [isPsiLabelHovered, setIsPsiLabelHovered] = useState(false);
@@ -101,37 +88,22 @@ export function FinancialSection({
     return searchCountries(countrySearch).slice(0, 10); // Limit to 10 results
   }, [countrySearch]);
 
-  const toggleSummary = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setIsSummaryOpen(!isSummaryOpen);
-  };
-
   return (
     <>
-      {/* Section Header - Collapsible */}
-      <TouchableOpacity
-        onPress={toggleSummary}
+      {/* Section Header */}
+      <View
         style={financialStyles.financialSectionHeader}
-        activeOpacity={0.7}
-        accessibilityRole="button"
-        accessibilityState={{ expanded: isSummaryOpen }}
-        accessibilityLabel="Case Eligibility Check section, tap to expand or collapse"
+        accessibilityRole="header"
+        accessibilityLabel="Case Eligibility Check section"
       >
         <TrustBadges variant="secure" text="SECURE" icon="" />
         <Text style={financialStyles.financialSectionHeaderText}>
           Case Eligibility Check
         </Text>
-        <Ionicons
-          name={isSummaryOpen ? 'chevron-down' : 'chevron-forward'}
-          size={16}
-          color={colors.primaryDark}
-          style={{ marginLeft: 'auto' }}
-        />
-      </TouchableOpacity>
+      </View>
 
-      {/* Calculation Summary OR Direct Mode Manual Inputs - Collapsible */}
-      {isSummaryOpen &&
-        (!isDirectMode ? (
+      {/* Calculation Summary OR Direct Mode Manual Inputs */}
+      {!isDirectMode ? (
           // Standard Mode: Show read-only Calculation Summary
           <View
             style={financialStyles.summaryCard}
@@ -328,7 +300,7 @@ export function FinancialSection({
               {...(isWeb && { inputMode: 'numeric' as any })}
             />
           </View>
-        ))}
+        )}
 
       {/* Financial Tags - Conditional */}
       {shouldShowFinancialTags && (
