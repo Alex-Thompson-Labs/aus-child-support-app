@@ -1,4 +1,7 @@
 import { HelpTooltip } from '@/src/features/calculator/components/HelpTooltip';
+import DatePickerField from '@/src/components/ui/DatePickerField';
+import { formatCourtDateForReasons } from '@/src/features/lawyer-inquiry/validators';
+import { searchCountries } from '@/src/utils/all-countries';
 import { isWeb, webClickableStyles } from '@/src/utils/responsive';
 import {
     SPECIAL_CIRCUMSTANCES,
@@ -6,7 +9,7 @@ import {
     type SpecialCircumstance,
 } from '@/src/utils/special-circumstances';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 // Types
 interface SpecialCircumstancesWizardProps {
@@ -15,11 +18,16 @@ interface SpecialCircumstancesWizardProps {
   onSubmit: () => void;
   isSubmitting: boolean;
   isStandalone?: boolean;
+  onCountryChange?: (country: string) => void;
 }
 
 interface StepProps {
   selectedReasons: Set<string>;
   onToggle: (reasonId: string) => void;
+  courtDate?: Date | null;
+  onCourtDateChange?: (date: Date | null) => void;
+  otherParentCountry?: string;
+  onOtherParentCountryChange?: (country: string) => void;
 }
 
 type WizardStep = 'legal' | 'income' | 'costs' | 'summary';
@@ -110,7 +118,14 @@ const ProgressIndicator = memo(function ProgressIndicator({
 const LegalStep = memo(function LegalStep({
   selectedReasons,
   onToggle,
+  courtDate,
+  onCourtDateChange,
+  otherParentCountry,
+  onOtherParentCountryChange,
 }: StepProps) {
+  const [countrySearch, setCountrySearch] = useState('');
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+
   const hasCourtDate = useMemo(
     () => Array.from(selectedReasons).some((id) => isCourtDateReason(id)),
     [selectedReasons]
@@ -119,6 +134,10 @@ const LegalStep = memo(function LegalStep({
   const hasInternationalJurisdiction = selectedReasons.has(
     'international_jurisdiction'
   );
+
+  const filteredCountries = useMemo(() => {
+    return searchCountries(countrySearch).slice(0, 10);
+  }, [countrySearch]);
 
   const handleCourtDateToggle = useCallback(() => {
     if (hasCourtDate) {
@@ -174,6 +193,17 @@ const LegalStep = memo(function LegalStep({
             </View>
           </View>
         </Pressable>
+
+        {hasCourtDate && onCourtDateChange && (
+          <View style={styles.datePickerContainer}>
+            <DatePickerField
+              label="When is your court date?"
+              value={courtDate}
+              onChange={onCourtDateChange}
+              minDate={new Date()}
+            />
+          </View>
+        )}
 
         <Pressable
           style={[styles.checkboxRow, isWeb && webClickableStyles]}
@@ -237,6 +267,62 @@ const LegalStep = memo(function LegalStep({
               </View>
             </View>
           </Pressable>
+        )}
+
+        {hasInternationalJurisdiction && onOtherParentCountryChange && (
+          <View style={styles.countryFieldContainer}>
+            <Text style={styles.countryLabel}>
+              Other parent&apos;s country of habitual residence
+            </Text>
+            <TextInput
+              style={styles.countryInput}
+              placeholder="Search for a country..."
+              placeholderTextColor="#94a3b8"
+              value={otherParentCountry || countrySearch}
+              onChangeText={(text) => {
+                setCountrySearch(text);
+                if (otherParentCountry) {
+                  onOtherParentCountryChange('');
+                }
+                setShowCountryDropdown(true);
+              }}
+              onFocus={() => setShowCountryDropdown(true)}
+            />
+
+            {showCountryDropdown &&
+              countrySearch.length > 0 &&
+              !otherParentCountry && (
+                <View style={styles.countryDropdown}>
+                  <ScrollView
+                    style={styles.countryDropdownScroll}
+                    keyboardShouldPersistTaps="handled"
+                    nestedScrollEnabled
+                  >
+                    {filteredCountries.length > 0 ? (
+                      filteredCountries.map((country) => (
+                        <Pressable
+                          key={country}
+                          style={styles.countryOption}
+                          onPress={() => {
+                            onOtherParentCountryChange(country);
+                            setCountrySearch('');
+                            setShowCountryDropdown(false);
+                          }}
+                        >
+                          <Text style={styles.countryOptionText}>
+                            {country}
+                          </Text>
+                        </Pressable>
+                      ))
+                    ) : (
+                      <Text style={styles.noResultsText}>
+                        No countries found
+                      </Text>
+                    )}
+                  </ScrollView>
+                </View>
+              )}
+          </View>
         )}
       </View>
     </View>
@@ -418,11 +504,14 @@ export function SpecialCircumstancesWizard({
   onSubmit,
   isSubmitting,
   isStandalone = false,
+  onCountryChange,
 }: SpecialCircumstancesWizardProps) {
   const [selectedReasons, setSelectedReasons] = useState<Set<string>>(
     () => new Set(initialSelectedReasons)
   );
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [courtDate, setCourtDate] = useState<Date | null>(null);
+  const [otherParentCountry, setOtherParentCountry] = useState<string>('');
 
   useEffect(() => {
     setSelectedReasons(new Set(initialSelectedReasons));
@@ -436,15 +525,63 @@ export function SpecialCircumstancesWizard({
     (reasonId: string) => {
       setSelectedReasons((prev) => {
         const next = new Set(prev);
-        if (next.has(reasonId)) next.delete(reasonId);
-        else next.add(reasonId);
+        if (next.has(reasonId)) {
+          next.delete(reasonId);
+          // If unchecking a court date reason, clear the date
+          if (isCourtDateReason(reasonId)) {
+            setCourtDate(null);
+          }
+        } else {
+          next.add(reasonId);
+        }
 
-        onSpecialCircumstancesChange?.(Array.from(next));
+        // Build reasons array with formatted court date if applicable
+        const hasCourtDateReason = Array.from(next).some(isCourtDateReason);
+        let reasonsArray = Array.from(next).filter(id => !isCourtDateReason(id));
+
+        // Add formatted court date if a court date reason is selected and date is set
+        if (hasCourtDateReason && courtDate) {
+          reasonsArray.push(formatCourtDateForReasons(courtDate));
+        } else if (hasCourtDateReason) {
+          // Keep the generic court_date_pending if no date is set yet
+          reasonsArray.push('court_date_pending');
+        }
+
+        onSpecialCircumstancesChange?.(reasonsArray);
 
         return next;
       });
     },
-    [onSpecialCircumstancesChange]
+    [onSpecialCircumstancesChange, courtDate]
+  );
+
+  const handleCourtDateChange = useCallback(
+    (date: Date | null) => {
+      setCourtDate(date);
+
+      // Update the reasons array with the new date
+      const hasCourtDateReason = Array.from(selectedReasons).some(isCourtDateReason);
+      if (hasCourtDateReason) {
+        let reasonsArray = Array.from(selectedReasons).filter(id => !isCourtDateReason(id));
+
+        if (date) {
+          reasonsArray.push(formatCourtDateForReasons(date));
+        } else {
+          reasonsArray.push('court_date_pending');
+        }
+
+        onSpecialCircumstancesChange?.(reasonsArray);
+      }
+    },
+    [selectedReasons, onSpecialCircumstancesChange]
+  );
+
+  const handleOtherParentCountryChange = useCallback(
+    (country: string) => {
+      setOtherParentCountry(country);
+      onCountryChange?.(country);
+    },
+    [onCountryChange]
   );
 
   const handleNext = useCallback(() => {
@@ -456,7 +593,14 @@ export function SpecialCircumstancesWizard({
   }, [isFirstStep]);
 
   const renderStepContent = () => {
-    const stepProps: StepProps = { selectedReasons, onToggle: handleToggle };
+    const stepProps: StepProps = {
+      selectedReasons,
+      onToggle: handleToggle,
+      courtDate,
+      onCourtDateChange: handleCourtDateChange,
+      otherParentCountry,
+      onOtherParentCountryChange: handleOtherParentCountryChange,
+    };
     switch (currentStep) {
       case 'legal':
         return <LegalStep {...stepProps} />;
@@ -594,6 +738,63 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     flex: 1,
     paddingRight: 4,
+  },
+  datePickerContainer: {
+    marginLeft: 32,
+    marginTop: 12,
+    marginBottom: 12,
+  },
+  countryFieldContainer: {
+    marginLeft: 32,
+    marginTop: 12,
+    marginBottom: 12,
+  },
+  countryLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#475569',
+    marginBottom: 8,
+  },
+  countryInput: {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    padding: 12,
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0',
+    fontSize: 16,
+    color: '#1a202c',
+  },
+  countryDropdown: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 8,
+    marginTop: 4,
+    maxHeight: 200,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  countryDropdownScroll: {
+    maxHeight: 200,
+  },
+  countryOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  countryOptionText: {
+    fontSize: 14,
+    color: '#475569',
+  },
+  noResultsText: {
+    padding: 16,
+    fontSize: 14,
+    color: '#94a3b8',
+    textAlign: 'center',
   },
   summaryList: {
     backgroundColor: '#ffffff',

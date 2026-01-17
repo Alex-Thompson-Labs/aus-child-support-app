@@ -721,7 +721,7 @@ export function useInquiryStyles() {
         backgroundColor: colors.backgroundNeutral,
         ...Platform.select({
           web: {
-            maxWidth: 768,
+            maxWidth: MAX_CALCULATOR_WIDTH,
             width: '100%',
             alignSelf: 'center',
           },

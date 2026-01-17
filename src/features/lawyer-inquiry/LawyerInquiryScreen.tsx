@@ -124,6 +124,8 @@ export default function LawyerInquiryScreen() {
         }
         onLiabilityCalculated={form.setEnrichmentLiability}
         onPayerRoleCalculated={form.setEnrichmentPayerRole}
+        enrichmentCountry={form.enrichmentCountry}
+        onEnrichmentCountryChange={form.setEnrichmentCountry}
         showSuccess={form.showEnrichmentSuccess}
       />
     );

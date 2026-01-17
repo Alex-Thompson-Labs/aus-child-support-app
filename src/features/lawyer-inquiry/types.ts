@@ -191,6 +191,9 @@ export interface EnrichmentViewProps {
   childrenCount: number;
   onLiabilityCalculated: (amount: number) => void;
   onPayerRoleCalculated: (payerRole: 'you' | 'other_parent' | null) => void;
+  // Country for international jurisdiction
+  enrichmentCountry: string;
+  onEnrichmentCountryChange: (country: string) => void;
   // Success state after enrichment submission
   showSuccess: boolean;
 }

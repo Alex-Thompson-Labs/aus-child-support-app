@@ -94,6 +94,7 @@ export function useLeadSubmission(props: UseLeadSubmissionProps) {
   const [enrichmentPayerRole, setEnrichmentPayerRole] = useState<
     'you' | 'other_parent' | null
   >(null);
+  const [enrichmentCountry, setEnrichmentCountry] = useState<string>('');
 
   // Track mount time for time_to_submit calculation
   const mountTimeRef = useRef<number>(Date.now());
@@ -397,7 +398,8 @@ export function useLeadSubmission(props: UseLeadSubmissionProps) {
         currentLeadId,
         selectedEnrichmentFactors,
         enrichmentLiability ?? undefined,
-        enrichmentPayerRole ?? undefined
+        enrichmentPayerRole ?? undefined,
+        enrichmentCountry || undefined
       );
     } catch (error) {
       // Continue even if update fails
@@ -436,10 +438,12 @@ export function useLeadSubmission(props: UseLeadSubmissionProps) {
     isUpdatingEnrichment,
     enrichmentLiability,
     enrichmentPayerRole,
+    enrichmentCountry,
 
     // Setters
     setEnrichmentLiability,
     setEnrichmentPayerRole,
+    setEnrichmentCountry,
 
     // Handlers
     handleSubmit,

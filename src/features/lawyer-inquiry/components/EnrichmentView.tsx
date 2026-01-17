@@ -18,6 +18,7 @@ import {
 } from '@/src/utils/child-support-calculations';
 import { MAR, MAX_PPS, SSA } from '@/src/utils/child-support-constants';
 import { isWeb } from '@/src/utils/responsive';
+import { createShadow } from '@/src/utils/shadow-styles';
 import React, { useState } from 'react';
 import {
     Modal,
@@ -42,6 +43,8 @@ export function EnrichmentView({
   childrenCount,
   onLiabilityCalculated,
   onPayerRoleCalculated,
+  enrichmentCountry,
+  onEnrichmentCountryChange,
   showSuccess,
 }: EnrichmentViewProps) {
   const { containerStyles, enrichmentStyles, buttonStyles, colors, isDark } = useInquiryStyles();
@@ -95,16 +98,16 @@ export function EnrichmentView({
       marginBottom: 12,
     },
     warningBox: {
-      backgroundColor: isDark ? '#422006' : '#fef3c7',
+      backgroundColor: isDark ? '#1e3a5f' : '#eff6ff',
       borderRadius: 8,
       padding: 12,
       marginBottom: 12,
       borderWidth: 1,
-      borderColor: isDark ? '#a16207' : '#fcd34d',
+      borderColor: isDark ? '#3b82f6' : '#bfdbfe',
     },
     warningText: {
       fontSize: 13,
-      color: isDark ? '#fcd34d' : '#92400e',
+      color: isDark ? '#93c5fd' : '#1e40af',
       lineHeight: 18,
     },
     warningBold: {
@@ -135,7 +138,7 @@ export function EnrichmentView({
     modalTitle: {
       fontSize: 20,
       fontWeight: '700',
-      color: colors.textSecondary,
+      color: '#1e3a8a',
       marginBottom: 20,
       textAlign: 'center',
     },
@@ -224,7 +227,7 @@ export function EnrichmentView({
     childLabel: {
       fontSize: 15,
       fontWeight: '600',
-      color: colors.textSecondary,
+      color: '#1e3a8a',
       marginBottom: 8,
     },
     nightsInputRow: {
@@ -263,6 +266,27 @@ export function EnrichmentView({
       fontWeight: '500',
     },
   }), [colors, isDark]);
+
+  // Wizard container styles (matching SpecialCircumstancesPrompt)
+  const wizardContainerStyles = React.useMemo(() => StyleSheet.create({
+    wizardContainer: {
+      backgroundColor: '#eff6ff',
+      borderRadius: 12,
+      borderWidth: 2,
+      borderColor: '#bfdbfe',
+      paddingTop: 16,
+      paddingBottom: 24,
+      paddingHorizontal: 24,
+      marginBottom: 16,
+      ...createShadow({
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.06,
+        shadowRadius: 3,
+        elevation: 2,
+      }),
+    },
+  }), []);
 
   // Calculator state
   const [showCalculator, setShowCalculator] = useState(false);
@@ -533,7 +557,7 @@ export function EnrichmentView({
                 </Text>
                 <View style={estimatorStyles.warningBox}>
                   <Text style={estimatorStyles.warningText}>
-                    <Text style={estimatorStyles.warningBold}>WARNING:</Text> This estimate is a baseline formula. Your lawyer will help you identify legal grounds to adjust this figure based on your specific family circumstances.
+                    <Text style={estimatorStyles.warningBold}>IMPORTANT:</Text> This estimate is a baseline formula. Your lawyer will help you identify legal grounds to adjust this figure based on your specific family circumstances.
                   </Text>
                 </View>
                 <Pressable
@@ -555,15 +579,16 @@ export function EnrichmentView({
         )}
 
         {/* Special Circumstances Wizard */}
-        <View style={{ flex: 1 }}>
+        <View style={wizardContainerStyles.wizardContainer}>
           <SpecialCircumstancesWizard
-            initialSelectedReasons={selectedFactors.map(id => 
+            initialSelectedReasons={selectedFactors.map(id =>
               id.startsWith('enrichment_') ? id.replace('enrichment_', '') : id
             )}
             onSpecialCircumstancesChange={handleSpecialCircumstancesChange}
             onSubmit={handleWizardSubmit}
             isSubmitting={isUpdating}
             isStandalone={false}
+            onCountryChange={onEnrichmentCountryChange}
           />
         </View>
 

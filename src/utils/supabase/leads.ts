@@ -272,7 +272,8 @@ export async function updateLeadEnrichment(
     leadId: string,
     enrichmentFactors: string[],
     annualLiability?: number,
-    payerRole?: 'you' | 'other_parent' | null
+    payerRole?: 'you' | 'other_parent' | null,
+    otherParentCountry?: string
 ): Promise<{ success: boolean; error?: string }> {
     try {
         // Lazy-load Supabase client
@@ -287,6 +288,7 @@ export async function updateLeadEnrichment(
                 new_reasons: enrichmentFactors,
                 annual_liability: annualLiability,
                 payer_role: payerRole,
+                other_parent_country: otherParentCountry || null,
             }
         );
 
