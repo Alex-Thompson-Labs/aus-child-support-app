@@ -297,7 +297,7 @@ export default function FAQPage() {
                     {/* CTA Section */}
                     {hasResults && (
                         <View style={styles.ctaSection}>
-                            <Text style={styles.ctaText}>Still have questions?</Text>
+                            <Text style={styles.ctaText}>Need answers for your specific situation?</Text>
                             <View style={styles.ctaButtons}>
                                 <Pressable
                                     style={[styles.primaryButton, isWeb && webClickableStyles]}

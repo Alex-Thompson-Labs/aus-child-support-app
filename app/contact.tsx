@@ -1,20 +1,20 @@
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { CalculatorHeader } from '@/src/features/calculator';
 import {
-    isWeb,
-    MAX_CALCULATOR_WIDTH,
-    webClickableStyles
+  isWeb,
+  MAX_CALCULATOR_WIDTH,
+  webClickableStyles,
 } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
-    Linking,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  Linking,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -42,10 +42,10 @@ export default function ContactPage() {
 
   const webContainerStyle = isWeb
     ? {
-      maxWidth: MAX_CALCULATOR_WIDTH,
-      width: '100%' as const,
-      alignSelf: 'center' as const,
-    }
+        maxWidth: MAX_CALCULATOR_WIDTH,
+        width: '100%' as const,
+        alignSelf: 'center' as const,
+      }
     : {};
 
   return (
@@ -58,7 +58,11 @@ export default function ContactPage() {
       />
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         {/* Header */}
-        <CalculatorHeader title="Contact" showBackButton={true} maxWidth={MAX_CALCULATOR_WIDTH} />
+        <CalculatorHeader
+          title="Contact"
+          showBackButton={true}
+          maxWidth={MAX_CALCULATOR_WIDTH}
+        />
 
         <ScrollView
           style={styles.scrollView}
@@ -82,7 +86,6 @@ export default function ContactPage() {
 
           {/* Legal Help Card */}
           <View style={styles.contactCard}>
-
             {/* @ts-ignore - Web-only ARIA attributes */}
             <Text
               style={styles.cardTitle}
@@ -107,7 +110,6 @@ export default function ContactPage() {
 
           {/* Blog Card */}
           <View style={styles.contactCard}>
-
             {/* @ts-ignore - Web-only ARIA attributes */}
             <Text
               style={styles.cardTitle}
@@ -123,7 +125,7 @@ export default function ContactPage() {
             <Pressable
               style={[styles.secondaryButton, isWeb && webClickableStyles]}
               onPress={() =>
-                Linking.openURL('https://blog.auschildsupport.com')
+                Linking.openURL('https://blog.auschildsupport.com,au')
               }
               accessibilityRole="button"
               accessibilityLabel="Visit blog"
@@ -134,7 +136,6 @@ export default function ContactPage() {
 
           {/* Calculator Card */}
           <View style={styles.contactCard}>
-
             {/* @ts-ignore - Web-only ARIA attributes */}
             <Text
               style={styles.cardTitle}
@@ -159,7 +160,6 @@ export default function ContactPage() {
 
           {/* General Enquiries Card */}
           <View style={styles.contactCard}>
-
             {/* @ts-ignore - Web-only ARIA attributes */}
             <Text
               style={styles.cardTitle}
@@ -175,7 +175,9 @@ export default function ContactPage() {
             <Pressable
               style={[styles.secondaryButton, isWeb && webClickableStyles]}
               onPress={() => {
-                const subject = encodeURIComponent('General Enquiry - AusChildSupport');
+                const subject = encodeURIComponent(
+                  'General Enquiry - AusChildSupport'
+                );
                 const mailtoUrl = `mailto:contact@auschildsupport.com?subject=${subject}`;
                 Linking.openURL(mailtoUrl);
               }}

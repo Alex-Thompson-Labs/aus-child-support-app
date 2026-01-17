@@ -110,7 +110,7 @@ The project uses a comprehensive `.gitignore` to protect sensitive business data
 - **Full Model Justification:** See `docs/business-docs/BUSINESS_MODEL.md`
 
 This is an **Expo/React Native Web app** that implements an Australian Child Support Calculator with integrated lawyer lead generation.
- 
+
 ### 📱 Platform Support
 
 **Platform:**
@@ -226,7 +226,7 @@ csc/
 
 **⚠️ CRITICAL:** The app receives traffic from multiple external sources beyond the main calculator.
 
-#### 1. Chatbot Widget (blog.auschildsupport.com)
+#### 1. Chatbot Widget (blog.auschildsupport.com.au)
 
 We have a **custom chatbot widget** deployed on our blog that acts as a "pre-calculator" funnel:
 
@@ -323,7 +323,7 @@ Identifies high-value cases that need legal help:
 4. **Payment:** Lawyer responds "YES" → Charged $50
 5. **Access:** Admin generates Secure Magic Link → Lawyer views full PII
 
-**Implementation Status:** 
+**Implementation Status:**
 - ✅ Admin can view PII for vetting
 - ✅ Teaser email template excludes PII
 - ⏳ Secure Magic Link system (route `/admin/view-lead/[token]` exists but needs token generation)

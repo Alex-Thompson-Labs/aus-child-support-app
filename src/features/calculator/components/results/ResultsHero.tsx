@@ -52,8 +52,14 @@ export function ResultsHero({
   let heroLabel = getPayerText(results.payer);
 
   // Calculate NPC liabilities for each parent
-  const npcLiabilityA = results.childResults.reduce((sum, c) => sum + (c.liabilityToNPC_A ?? 0), 0);
-  const npcLiabilityB = results.childResults.reduce((sum, c) => sum + (c.liabilityToNPC_B ?? 0), 0);
+  const npcLiabilityA = results.childResults.reduce(
+    (sum, c) => sum + (c.liabilityToNPC_A ?? 0),
+    0
+  );
+  const npcLiabilityB = results.childResults.reduce(
+    (sum, c) => sum + (c.liabilityToNPC_B ?? 0),
+    0
+  );
 
   // If standard transfer is $0 but there is a Non-Parent Carer payment, show that instead
   if (heroAmount === 0 && (results.paymentToNPC ?? 0) > 0) {
@@ -135,12 +141,21 @@ export function ResultsHero({
           aria-live="polite"
           accessibilityLabel={`${heroLabel}: ${formatCurrency(heroAmount)} per year`}
         >
-          <Text style={[styles.expandedHeroAmount, isStale && styles.staleAmount]}>
+          <Text
+            style={[styles.expandedHeroAmount, isStale && styles.staleAmount]}
+          >
             {formatCurrency(heroAmount)}
           </Text>
           <Text style={styles.expandedHeroLabel}>per year</Text>
           {breakdownText && (
-            <Text style={[styles.expandedSecondaryLabel, { color: '#6b7280', fontSize: 11, marginTop: 2 }]}>{breakdownText}</Text>
+            <Text
+              style={[
+                styles.expandedSecondaryLabel,
+                { color: '#6b7280', fontSize: 11, marginTop: 2 },
+              ]}
+            >
+              {breakdownText}
+            </Text>
           )}
         </View>
       </View>
@@ -157,17 +172,18 @@ export function ResultsHero({
         accessibilityLabel={`${heroLabel}: ${formatCurrency(heroAmount)} per year`}
         style={styles.heroAmountContainer}
       >
-        <Text style={styles.expandedHeroLabel}>
-          {heroLabel}
-        </Text>
-        <Text style={[styles.expandedHeroAmount, isStale && styles.staleAmount]}>
+        <Text style={styles.expandedHeroLabel}>{heroLabel}</Text>
+        <Text
+          style={[styles.expandedHeroAmount, isStale && styles.staleAmount]}
+        >
           {formatCurrency(heroAmount)}
         </Text>
         <Text style={styles.expandedHeroSubtext}>
           per year
           {breakdownText && (
             <Text style={{ fontSize: 13, opacity: 0.9 }}>
-              {'\n'}{breakdownText}
+              {'\n'}
+              {breakdownText}
             </Text>
           )}
         </Text>
@@ -218,12 +234,15 @@ export function ResultsHero({
       {/* SEO-friendly blog link */}
       <View style={styles.blogLinkContainer}>
         <Text style={styles.blogLinkText}>
-          This estimate is based on the 8-step assessment formula used by Services Australia. To understand the rules behind these steps and how they apply to your situation, read our{' '}
+          This estimate is based on the 8-step assessment formula used by
+          Services Australia. To understand the rules behind these steps and how
+          they apply to your situation, read our{' '}
           <Text
             accessibilityRole="link"
             style={styles.blogLink}
             onPress={() => {
-              const url = 'https://blog.auschildsupport.com.au/child-support-formula-australia/';
+              const url =
+                'https://blog.auschildsupport.com.au/child-support-formula-australia/';
               if (Platform.OS === 'web') {
                 window.open(url, '_blank');
               } else {
