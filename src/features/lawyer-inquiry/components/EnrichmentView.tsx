@@ -535,6 +535,7 @@ export function EnrichmentView({
       <View style={enrichmentStyles.enrichmentContainer}>
         {/* Header */}
         <View style={enrichmentStyles.enrichmentHeader}>
+          <Text style={successStyles.successIcon}>✓</Text>
           <Text style={enrichmentStyles.enrichmentTitle}>Enquiry Sent!</Text>
         </View>
 
