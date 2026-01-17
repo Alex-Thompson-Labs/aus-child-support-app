@@ -7,6 +7,7 @@ import { MAX_CALCULATOR_WIDTH, useResponsive } from '@/src/utils/responsive';
 import React, { useEffect } from 'react';
 import {
     Modal,
+    Platform,
     Pressable,
     StyleSheet,
     Text,
@@ -357,7 +358,7 @@ export function CalculatorResults({
           </View>
           {/* Progress Indicator - Step 2: Estimate */}
           <View style={[
-            { backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
+            styles.progressContainer,
             webModalContainerStyle,
           ]}>
             <StepProgressIndicator
@@ -385,9 +386,9 @@ export function CalculatorResults({
 }
 
 const styles = StyleSheet.create({
-  expandedContainer: { 
-    flex: 1, 
-    backgroundColor: '#f8fafc' 
+  expandedContainer: {
+    flex: 1,
+    backgroundColor: '#f8fafc'
   },
   expandedHeader: {
     padding: 4,
@@ -420,18 +421,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  closeIcon: { 
-    fontSize: 22, 
-    color: '#1e3a8a' 
+  closeIcon: {
+    fontSize: 22,
+    color: '#1e3a8a'
   },
-  twoColumnLayout: { 
-    flexDirection: 'row', 
-    gap: 20 
+  progressContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    marginHorizontal: 16,
+    marginBottom: 16,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.08)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 2,
+      },
+    }),
   },
-  leftColumn: { 
-    flex: 1 
+  twoColumnLayout: {
+    flexDirection: 'row',
+    gap: 20
   },
-  rightColumn: { 
-    flex: 1.5 
+  leftColumn: {
+    flex: 1
+  },
+  rightColumn: {
+    flex: 1.5
   },
 });

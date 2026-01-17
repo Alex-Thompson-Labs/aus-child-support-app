@@ -36,8 +36,8 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
         // @ts-ignore - Web-only ARIA role
         <View style={[styles.header, styles.mobileHeaderWrapper]} accessibilityRole="banner">
             <View style={[styles.mobileHeaderRow, maxWidth ? { maxWidth } : undefined]}>
-                {/* Left: Icon/Logo or Back Button */}
-                <View style={styles.leftElement}>
+                {/* Left: Icon/Logo + Title (side by side) or Back Button */}
+                <View style={styles.leftSection}>
                     {showBackButton ? (
                         <Pressable
                             onPress={() => router.replace('/')}
@@ -48,17 +48,17 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
                             <Feather name="arrow-left" size={24} color={BRAND_NAVY} />
                         </Pressable>
                     ) : (
-                        <Image
-                            // Using the requested asset
-                            source={require('@/public/favicon-rounded-white-bg.png')}
-                            style={styles.iconMobile}
-                            resizeMode="contain"
-                        />
+                        <>
+                            <Image
+                                // Using the requested asset
+                                source={require('@/public/favicon-rounded-white-bg.png')}
+                                style={styles.iconMobile}
+                                resizeMode="contain"
+                            />
+                            <Text style={styles.leftTitle}>{title || 'Calculator'}</Text>
+                        </>
                     )}
                 </View>
-
-                {/* Center: Title */}
-                <Text style={styles.centerTitle}>{title || 'Calculator'}</Text>
 
                 {/* Right: Hamburger */}
                 <Pressable
@@ -159,17 +159,16 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     // Mobile Styles
-    leftElement: {
-        width: 40,
-        height: 40,
-        justifyContent: 'center',
+    leftSection: {
+        flexDirection: 'row',
         alignItems: 'center',
+        gap: 8,
     },
     iconMobile: {
         width: 40,
         height: 40,
     },
-    centerTitle: {
+    leftTitle: {
         fontSize: 18,
         fontWeight: 'bold',
         color: BRAND_NAVY,

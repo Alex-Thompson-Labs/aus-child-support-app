@@ -1,6 +1,5 @@
 import type { CalculationResults } from '@/src/utils/calculator';
 import { formatCurrency } from '@/src/utils/formatters';
-import { shadowPresets } from '@/src/utils/shadow-styles';
 import React from 'react';
 import { Linking, Platform, StyleSheet, Text, View } from 'react-native';
 
@@ -258,7 +257,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#3b82f6',
     borderWidth: 1,
     borderColor: '#3b82f6',
-    ...shadowPresets.large,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.08)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 2,
+      },
+    }),
   },
   heroAmountContainer: {
     alignItems: 'center',

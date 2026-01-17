@@ -30,7 +30,7 @@ export function useInquiryStyles() {
       },
       scrollContent: {
         paddingHorizontal: 20,
-        paddingTop: 12,
+        paddingTop: 4,
         paddingBottom: 40,
       },
       progressContainer: {
@@ -42,7 +42,7 @@ export function useInquiryStyles() {
         borderWidth: 1,
         borderColor: '#e2e8f0',
         marginHorizontal: 16,
-        marginBottom: 16,
+        marginBottom: 8,
         ...Platform.select({
           web: {
             boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.08)',
@@ -86,18 +86,14 @@ export function useInquiryStyles() {
         textAlign: 'left',
       },
       headerBarCloseButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 44,
+        height: 44,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: colors.surfaceSubtle,
       },
       headerBarCloseButtonText: {
-        color: colors.primaryDark,
-        fontSize: 20,
-        fontWeight: '400',
-        lineHeight: 24,
+        color: '#1e3a8a',
+        fontSize: 22,
       },
     });
 
@@ -395,7 +391,7 @@ export function useInquiryStyles() {
       financialSectionHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: -8,
+        marginTop: 8,
         marginBottom: 16,
         gap: 8,
         cursor: 'pointer',

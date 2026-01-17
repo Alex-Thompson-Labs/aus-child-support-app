@@ -61,7 +61,12 @@ export function FAQSection() {
                 Frequently Asked Questions
             </Text>
             {LAWYER_INQUIRY_FAQS.map((faq, index) => (
-                <Accordion key={index} title={faq.question}>
+                <Accordion
+                    key={index}
+                    title={faq.question}
+                    titleStyle={{ color: colors.primaryDark }}
+                    iconColor={colors.primaryDark}
+                >
                     <Text style={styles.answerText}>{faq.answer}</Text>
                 </Accordion>
             ))}

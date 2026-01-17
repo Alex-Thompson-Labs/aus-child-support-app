@@ -1,4 +1,5 @@
 // Court Order Scanner using Google Gemini 2.0 Flash (free tier)
+// @ts-ignore
 import { GoogleGenerativeAI } from 'npm:@google/generative-ai@^0.21.0';
 
 declare const Deno: {

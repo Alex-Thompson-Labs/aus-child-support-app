@@ -318,7 +318,7 @@ export const financialStyles = StyleSheet.create({
   financialSectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: -8,
+    marginTop: 24,
     marginBottom: 16,
     gap: 8,
     cursor: 'pointer',

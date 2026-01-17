@@ -6,10 +6,11 @@
  */
 
 import DatePickerField from '@/src/components/ui/DatePickerField';
+import { BrandSwitch } from '@/src/components/ui/BrandSwitch';
 import { FormField } from '@/src/components/ui/FormField';
 import { TrustBadges } from '@/src/components/ui/TrustBadges';
 import { searchCountries } from '@/src/utils/all-countries';
-import { isWeb } from '@/src/utils/responsive';
+import { isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import {
@@ -17,7 +18,7 @@ import {
     Platform,
     Pressable,
     ScrollView,
-    Switch,
+    StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
@@ -93,6 +94,7 @@ export function FinancialSection({
   const [isSummaryOpen, setIsSummaryOpen] = useState(true);
   const [countrySearch, setCountrySearch] = useState('');
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+  const [isPsiLabelHovered, setIsPsiLabelHovered] = useState(false);
 
   // Filter countries based on search
   const filteredCountries = useMemo(() => {
@@ -395,6 +397,7 @@ export function FinancialSection({
           onChange={onCourtDateChange}
           error={touched.courtDate ? errors.courtDate : undefined}
           disabled={isSubmitting}
+          minDate={new Date()}
         />
       )}
 
@@ -412,20 +415,34 @@ export function FinancialSection({
             error={touched.separationDate ? errors.separationDate : undefined}
             disabled={isSubmitting}
             pickMonthYear
+            maxDate={new Date()}
           />
 
-          <View style={financialStyles.switchRow}>
-            <Text style={financialStyles.switchLabel}>
-              Did you live together for at least 6 months before separating?
-            </Text>
-            <Switch
+          <View style={psiToggleStyles.toggleRow}>
+            <BrandSwitch
               value={cohabited6Months}
               onValueChange={onCohabited6MonthsChange}
-              disabled={isSubmitting}
-              trackColor={{ false: '#cbd5e1', true: '#93c5fd' }}
-              thumbColor={cohabited6Months ? '#2563eb' : '#94a3b8'}
               accessibilityLabel="Lived together for 6 months"
+              accessibilityHint="Toggle if you lived together for at least 6 months before separating"
             />
+            <Pressable
+              onPress={() => onCohabited6MonthsChange(!cohabited6Months)}
+              onHoverIn={() => setIsPsiLabelHovered(true)}
+              onHoverOut={() => setIsPsiLabelHovered(false)}
+              style={[psiToggleStyles.labelPressable, webClickableStyles]}
+              accessibilityRole="button"
+              accessibilityLabel="Toggle lived together for 6 months"
+            >
+              <Text
+                style={[
+                  psiToggleStyles.label,
+                  cohabited6Months && psiToggleStyles.labelActive,
+                  isPsiLabelHovered && psiToggleStyles.labelHovered,
+                ]}
+              >
+                Did you live together for at least 6 months before separating?
+              </Text>
+            </Pressable>
           </View>
 
           {/* Blue Info Box for >3 years */}
@@ -547,3 +564,29 @@ export function FinancialSection({
     </>
   );
 }
+
+const psiToggleStyles = StyleSheet.create({
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 12,
+  },
+  labelPressable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flex: 1,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#64748b',
+  },
+  labelActive: {
+    color: '#2563EB',
+  },
+  labelHovered: {
+    ...(isWeb ? ({ textDecorationLine: 'underline' } as never) : {}),
+  },
+});

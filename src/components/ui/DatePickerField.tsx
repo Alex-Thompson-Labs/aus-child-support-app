@@ -24,6 +24,8 @@ interface DatePickerFieldProps {
   error?: string;
   disabled?: boolean;
   pickMonthYear?: boolean;
+  maxDate?: Date;
+  minDate?: Date;
 }
 
 // ============================================================================
@@ -101,6 +103,8 @@ export default function DatePickerField({
   error,
   disabled = false,
   pickMonthYear = false,
+  maxDate,
+  minDate,
 }: DatePickerFieldProps) {
   // Show/hide picker (native or custom)
   const [showPicker, setShowPicker] = useState(false);
@@ -166,58 +170,91 @@ export default function DatePickerField({
   };
 
   // Render the Custom Month/Year Picker Content
-  const renderMonthYearPickerContent = () => (
-    <View style={styles.pickerContent}>
-      {/* Header: Year Selector */}
-      <View style={styles.pickerHeader}>
-        <TouchableOpacity
-          onPress={() => changeYear(-1)}
-          style={styles.pickerArrow}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Ionicons name="chevron-back" size={24} color="#1e293b" />
-        </TouchableOpacity>
-        <Text style={styles.pickerYearText}>{pickerYear}</Text>
-        <TouchableOpacity
-          onPress={() => changeYear(1)}
-          style={styles.pickerArrow}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Ionicons name="chevron-forward" size={24} color="#1e293b" />
-        </TouchableOpacity>
-      </View>
+  const renderMonthYearPickerContent = () => {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
 
-      {/* Grid: Months */}
-      <View style={styles.monthsGrid}>
-        {MONTHS.map((month, index) => {
-          const isSelected =
-            value &&
-            value.getMonth() === index &&
-            value.getFullYear() === pickerYear;
+    const maxYear = maxDate ? maxDate.getFullYear() : 2099;
+    const maxMonth = maxDate ? maxDate.getMonth() : 11;
+    const minYear = minDate ? minDate.getFullYear() : 1900;
+    const minMonth = minDate ? minDate.getMonth() : 0;
 
-          return (
-            <TouchableOpacity
-              key={month}
-              style={[
-                styles.monthButton,
-                isSelected && styles.monthButtonActive,
-              ]}
-              onPress={() => selectMonth(index)}
-            >
-              <Text
+    const canGoForward = pickerYear < maxYear;
+    const canGoBackward = pickerYear > minYear;
+
+    return (
+      <View style={styles.pickerContent}>
+        {/* Header: Year Selector */}
+        <View style={styles.pickerHeader}>
+          <TouchableOpacity
+            onPress={() => changeYear(-1)}
+            style={styles.pickerArrow}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            disabled={!canGoBackward}
+          >
+            <Ionicons
+              name="chevron-back"
+              size={24}
+              color={canGoBackward ? "#1e293b" : "#cbd5e1"}
+            />
+          </TouchableOpacity>
+          <Text style={styles.pickerYearText}>{pickerYear}</Text>
+          <TouchableOpacity
+            onPress={() => changeYear(1)}
+            style={styles.pickerArrow}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            disabled={!canGoForward}
+          >
+            <Ionicons
+              name="chevron-forward"
+              size={24}
+              color={canGoForward ? "#1e293b" : "#cbd5e1"}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Grid: Months */}
+        <View style={styles.monthsGrid}>
+          {MONTHS.map((month, index) => {
+            const isSelected =
+              value &&
+              value.getMonth() === index &&
+              value.getFullYear() === pickerYear;
+
+            // Disable future months (if maxDate is set)
+            const isFutureMonth = pickerYear === maxYear && index > maxMonth;
+            // Disable past months (if minDate is set)
+            const isPastMonth = pickerYear === minYear && index < minMonth;
+            const isDisabled = isFutureMonth || isPastMonth;
+
+            return (
+              <TouchableOpacity
+                key={month}
                 style={[
-                  styles.monthText,
-                  isSelected && styles.monthTextActive,
+                  styles.monthButton,
+                  isSelected && styles.monthButtonActive,
+                  isDisabled && styles.monthButtonDisabled,
                 ]}
+                onPress={() => selectMonth(index)}
+                disabled={isDisabled}
               >
-                {month}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
+                <Text
+                  style={[
+                    styles.monthText,
+                    isSelected && styles.monthTextActive,
+                    isDisabled && styles.monthTextDisabled,
+                  ]}
+                >
+                  {month}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   // ========================================================================
   // Web Rendering
@@ -299,6 +336,8 @@ export default function DatePickerField({
 
     // Standard Date Picker for Web
     const textColor = value ? '#1a202c' : '#9ca3af';
+    const maxDateValue = maxDate ? dateToInputValue(maxDate) : undefined;
+    const minDateValue = minDate ? dateToInputValue(minDate) : undefined;
 
     return (
       <View style={styles.container}>
@@ -309,6 +348,8 @@ export default function DatePickerField({
             value={value ? dateToInputValue(value) : ''}
             onChange={handleWebChange}
             disabled={disabled}
+            max={maxDateValue}
+            min={minDateValue}
             style={{
               position: 'absolute',
               top: 0,
@@ -427,8 +468,8 @@ export default function DatePickerField({
             mode="date"
             display={Platform.OS === 'ios' ? 'spinner' : 'default'}
             onChange={handleNativeChange}
-            maximumDate={new Date(2099, 11, 31)}
-            minimumDate={new Date(1900, 0, 1)}
+            maximumDate={maxDate || new Date(2099, 11, 31)}
+            minimumDate={minDate || new Date(1900, 0, 1)}
           />
         )
       )}
@@ -562,6 +603,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#3b82f6', // blue-500
     borderColor: '#3b82f6',
   },
+  monthButtonDisabled: {
+    backgroundColor: '#f1f5f9',
+    borderColor: '#e2e8f0',
+    opacity: 0.5,
+  },
   monthText: {
     fontSize: 13,
     fontWeight: '500',
@@ -570,5 +616,8 @@ const styles = StyleSheet.create({
   monthTextActive: {
     color: '#ffffff', // White text on active
     fontWeight: '600',
+  },
+  monthTextDisabled: {
+    color: '#cbd5e1',
   },
 });
