@@ -28,6 +28,7 @@ This folder contains all project documentation for the Child Support Calculator 
 - **Who needs it:** Everyone - this is the current source of truth
 
 ### **PRODUCT_ROADMAP.md** 🗺️
+*(Located in `business-docs/slack/`)*
 
 **Strategic product roadmap and growth plan.**
 
@@ -78,17 +79,17 @@ This folder contains all project documentation for the Child Support Calculator 
 
 **If you're NEW to the project:**
 
-1. **BUSINESS_MODEL.md** - Understand what we're building
-2. **PRODUCT_ROADMAP.md** - See where we're going
+1. **business-docs/BUSINESS_MODEL.md** - Understand what we're building
+2. **business-docs/slack/PRODUCT_ROADMAP.md** - See where we're going
 3. **DESIGN_SYSTEM.md** - Learn the UI system
 4. **CLAUDE.md** - Technical reference
 
 **If you're PLANNING strategy or features:**
 
-1. **PRODUCT_ROADMAP.md** - 6-phase growth plan
-2. **BUSINESS_MODEL.md** - Revenue model and projections
-3. **KEY_PERSONAS.md** - User needs and priorities
-4. **proof-before-pitch-v2.md** - Current validation plan
+1. **business-docs/slack/PRODUCT_ROADMAP.md** - 6-phase growth plan
+2. **business-docs/BUSINESS_MODEL.md** - Revenue model and projections
+3. **business-docs/slack/KEY_PERSONAS.md** - User needs and priorities
+4. **business-docs/proof-before-pitch-v2.md** - Current validation plan
 
 **If you're DEPLOYING the web app:**
 
@@ -110,13 +111,13 @@ This folder contains all project documentation for the Child Support Calculator 
 
 ## 📊 QUICK STATS
 
-| Document                     | Purpose                  | Last Updated |
-| :--------------------------- | :----------------------- | :----------- |
-| **CLAUDE.md**                | **Technical guide**      | Jan 1, 2026  |
-| **PRODUCT_ROADMAP.md**       | **Strategic roadmap** ⭐ | Jan 1, 2026  |
-| **DESIGN_SYSTEM.md**         | **Design system**        | Jan 1, 2026  |
-| **BUSINESS_MODEL.md**        | **Business overview** ⭐ | Dec 31, 2025 |
-| **proof-before-pitch-v2.md** | **Validation plan**      | Dec 31, 2025 |
+| Document                     | Location                         | Last Updated |
+| :--------------------------- | :------------------------------- | :----------- |
+| **CLAUDE.md**                | Root (`docs/`)                   | Jan 18, 2026 |
+| **PRODUCT_ROADMAP.md**       | `docs/business-docs/slack/`      | Jan 8, 2026  |
+| **DESIGN_SYSTEM.md**         | Root (`docs/`)                   | Jan 8, 2026  |
+| **BUSINESS_MODEL.md**        | `docs/business-docs/`            | Jan 8, 2026  |
+| **proof-before-pitch-v2.md** | `docs/business-docs/`            | Jan 8, 2026  |
 
 ---
 

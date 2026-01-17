@@ -3,23 +3,11 @@
     "name": "ChildSupportCalculator",
     "slug": "ChildSupportCalculator",
     "version": "1.0.0",
-    "orientation": "portrait",
     "icon": "./public/favicon-rounded-white-bg.png",
     "scheme": "childsupportcalculator",
     "userInterfaceStyle": "light",
     "backgroundColor": "#ffffff",
     "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/source_images/aus-child-support-icon.png"
-      },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
-    },
     "web": {
       "output": "static",
       "bundler": "metro",

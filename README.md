@@ -1,7 +1,7 @@
 # Child Support Calculator - B2B Lead Generation App 🚀
 
 **Australian child support calculator with lawyer lead generation**
-React Native (Expo) • iOS • Android • Web
+React Native (Expo) • Web
 
 **Live Site:** [auschildsupport.com](https://auschildsupport.com)
 
@@ -43,8 +43,6 @@ npm install
 
 ```bash
 npm start          # Start Expo dev server
-npm run ios        # iOS simulator
-npm run android    # Android emulator
 npm run web        # Web browser
 ```
 

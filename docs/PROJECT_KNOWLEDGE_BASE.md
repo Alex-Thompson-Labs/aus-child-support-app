@@ -1,6 +1,6 @@
 # Project Knowledge Base & Context Brief
 
-**Last Updated:** 2025-12-31
+**Last Updated:** 2026-01-18
 
 ---
 
@@ -66,8 +66,14 @@
 │   │   ├── _layout.tsx    # Tab bar hidden on web
 │   │   └── index.tsx      # Home screen (renders CalculatorScreen)
 │   ├── admin/             # Admin-only features
-│   ├── blog/
-│   │   └── [id].js        # Dynamic blog routes
+│   ├── change-of-assessment/
+│   │   └── [reason-slug].tsx # Dynamic landing pages for specific reasons
+│   ├── partner/
+│   │   └── [slug].tsx     # Partnership proposal pages
+│   ├── about.tsx          # About page
+│   ├── contact.tsx        # Contact page
+│   ├── court-order-tool.tsx # AI Court Order Scanner tool
+│   ├── faq.tsx            # FAQ page
 │   ├── lawyer-inquiry.tsx # Lead capture screen
 │   ├── special-circumstances.tsx # Direct entry for complex cases
 │   └── +html.tsx          # HTML wrapper for web
@@ -138,13 +144,17 @@ Detailed calculation breakdowns with comprehensive tooltips:
 - **Purpose**: Allows users from blog links to skip the calculator and select complex factors directly.
 - **Direct Mode**: Navigates to `/lawyer-inquiry` with `mode=direct`, which enables manual income inputs for users who haven't used the calculator.
 
-### **5. Blog System**
+### **5. Court Order Scanner (New)**
 
-- Dynamic routing via `app/blog/[id].js`
-- Accessible navigation from header
-- Blog button uses `#0056b3` for WCAG contrast compliance
+- **CourtOrderToolScreen**: Standalone tool (`app/court-order-tool.tsx`)
+- **Functionality**:
+  - Upload Family Court Order (PDF/Image)
+  - AI-powered analysis to extract care schedules
+  - Generates "Care Calendar" and calculates exact night counts
+  - Detects potential savings opportunities (e.g., travel costs, specific clauses)
+- **Tech**: Uses Supabase Edge Functions (`analyze-order`) for processing.
 
-### **5. Admin Features**
+### **6. Admin Features**
 
 - Located in `app/admin/` directory
 - Heavy libraries (expo-print/sharing) dynamically imported to reduce main bundle size
@@ -375,12 +385,11 @@ This is a **mature, production-ready application** with a strong focus on:
 ### **Navigation Structure**
 
 - Home (`/`) → CalculatorScreen
-- Blog (`/blog/[id]`) → Dynamic blog posts
+- Court Order Tool (`/court-order-tool`) → AI Scanner
 - Inquiry (`/lawyer-inquiry`) → Lead capture form
 - Direct Entry (`/special-circumstances`) → Factors selection for lawyer inquiry
-- Direct Enquiry Links:
-  - `?mode=direct&reason=hidden_income`
-  - `?mode=direct&reason=binding_agreement`
+- Change of Assessment (`/change-of-assessment/[reason]`) → Landing pages
+- Partner (`/partner/[firm]`) → Custom proposals
 - Admin (`/admin/*`) → Admin-only features
 
 ### **Key Metrics to Track**
