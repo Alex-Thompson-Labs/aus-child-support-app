@@ -77,6 +77,8 @@ export async function getSupabaseClient(): Promise<SupabaseClient> {
                     autoRefreshToken: true,
                     persistSession: true,
                     detectSessionInUrl: false,
+                    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+                    storageKey: 'supabase.auth.token',
                 },
             });
 
