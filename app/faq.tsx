@@ -27,7 +27,7 @@ const FAQ_DATA = [
             },
             {
                 question: 'What is the Self-Support Amount (SSA)?',
-                answer: 'The Self-Support Amount is one-third of the Male Total Average Weekly Earnings (MTAWE). This amount is deducted from each parent\'s ATI before calculating child support. In 2026, this is approximately $29,212 per year.',
+                answer: 'The Self-Support Amount is one-third of the Male Total Average Weekly Earnings (MTAWE). This amount is deducted from each parent\'s ATI before calculating child support. In 2026, this is $31,046 per year.',
             },
             {
                 question: 'How does the number of children affect child support?',

@@ -107,18 +107,19 @@ const MenuItem = ({ label, onPress, badge }: { label: string; onPress: () => voi
 
 const styles = StyleSheet.create({
     header: {
-        paddingHorizontal: 16,
         paddingVertical: 12,
         borderBottomWidth: 1,
         borderBottomColor: '#f1f5f9',
         backgroundColor: '#ffffff',
         width: '100%',
         zIndex: 100, // Ensure header sits above content
+        alignItems: 'center', // Center the constrained content
     },
     mobileHeaderWrapper: {
         // Relative positioning for absolute dropdown
         position: 'relative',
         zIndex: 2000,
+        paddingHorizontal: 16, // Add padding here instead
     },
     headerContainer: {
         width: '100%',
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         width: '100%',
-        maxWidth: 1280, // Constrain width on large screens
+        maxWidth: 850, // Match bodyContainer width
         alignSelf: 'center',
     },
     // Desktop Styles

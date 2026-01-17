@@ -36,7 +36,7 @@ import { calculateCareFromTimeline } from '@/src/utils/timeline-aggregator';
 import { CareCalculationResult, TimelineResponse } from '@/src/utils/timeline-types';
 import { validateTimeline, ValidationError } from '@/src/utils/timeline-validator';
 
-type WizardStep = 'upload' | 'state' | 'analyzing' | 'results';
+type WizardStep = 'upload' | 'state' | 'analysing' | 'results';
 type UserRole = 'Father' | 'Mother';
 
 const AUSTRALIAN_STATES: { value: AustralianState; label: string }[] = [
@@ -104,7 +104,7 @@ interface StepStateProps {
   onUserRoleChange: (role: UserRole) => void;
   onContinue: () => void;
   onBack: () => void;
-  isAnalyzing: boolean;
+  isAnalysing: boolean;
 }
 
 function StepState({
@@ -114,7 +114,7 @@ function StepState({
   onUserRoleChange,
   onContinue,
   onBack,
-  isAnalyzing
+  isAnalysing
 }: StepStateProps) {
   return (
     <View style={styles.stepContainer}>
@@ -171,20 +171,20 @@ function StepState({
       </View>
 
       <View style={styles.buttonRow}>
-        <Pressable style={styles.secondaryButton} onPress={onBack} disabled={isAnalyzing}>
+        <Pressable style={styles.secondaryButton} onPress={onBack} disabled={isAnalysing}>
           <Text style={styles.secondaryButtonText}>Back</Text>
         </Pressable>
         <Pressable
-          style={[styles.primaryButton, isAnalyzing && styles.buttonDisabled]}
+          style={[styles.primaryButton, isAnalysing && styles.buttonDisabled]}
           onPress={onContinue}
-          disabled={isAnalyzing}
+          disabled={isAnalysing}
         >
-          {isAnalyzing ? (
+          {isAnalysing ? (
             <ActivityIndicator color="#ffffff" size="small" />
           ) : (
             <>
               <Users size={20} color="#ffffff" />
-              <Text style={styles.primaryButtonText}>Analyze & Calculate</Text>
+              <Text style={styles.primaryButtonText}>Analyse & Calculate</Text>
             </>
           )}
         </Pressable>
@@ -193,7 +193,7 @@ function StepState({
   );
 }
 
-function StepAnalyzing() {
+function StepAnalysing() {
   const [progress, setProgress] = React.useState(0);
   const [stage, setStage] = React.useState('Uploading document...');
 
@@ -203,7 +203,7 @@ function StepAnalyzing() {
       { progress: 5, label: 'Uploading document...', delay: 500 },
       { progress: 15, label: 'Reading court order...', delay: 3000 },
       { progress: 25, label: 'Extracting care schedule...', delay: 8000 },
-      { progress: 40, label: 'Analyzing patterns...', delay: 15000 },
+      { progress: 40, label: 'Analysing patterns...', delay: 15000 },
       { progress: 55, label: 'Calculating nights...', delay: 22000 },
       { progress: 70, label: 'Validating timeline...', delay: 30000 },
       { progress: 85, label: 'Finalizing results...', delay: 38000 },
@@ -225,7 +225,7 @@ function StepAnalyzing() {
       <View style={styles.loaderContainer}>
         <FileText size={48} color="#2563EB" />
       </View>
-      <Text style={styles.stepTitle}>Analyzing Order...</Text>
+      <Text style={styles.stepTitle}>Analysing Order...</Text>
       <Text style={styles.stepDescription}>
         We&apos;re reading your court order and extracting the care schedule to calculate exact night counts.
       </Text>
@@ -340,12 +340,12 @@ function StepResults({
             <Pressable
               style={styles.opportunitiesButton}
               onPress={() => {
-                // Navigate to contact page
+                // Navigate to lawyer inquiry form
                 if (Platform.OS === 'web') {
-                  window.location.href = '/contact';
+                  window.location.href = '/lawyer-inquiry';
                 } else {
                   import('expo-router').then(({ router }) => {
-                    router.push('/contact');
+                    router.push('/lawyer-inquiry');
                   });
                 }
               }}
@@ -478,9 +478,9 @@ export default function CourtOrderToolScreen() {
     }
   }, [showAlert]);
 
-  const analyzeAndCalculate = async () => {
+  const analyseAndCalculate = async () => {
     if (!uploadedFile) return;
-    setStep('analyzing');
+    setStep('analysing');
     setValidationErrors([]);
 
     try {
@@ -631,8 +631,8 @@ export default function CourtOrderToolScreen() {
           <View style={styles.progressIndicatorContainer}>
             {/* Track with circles and connectors */}
             <View style={styles.progressTrack}>
-              {(['Upload', 'Details', 'Analyzing', 'Results'] as const).map((label, index) => {
-                const stepNames: WizardStep[] = ['upload', 'state', 'analyzing', 'results'];
+              {(['Upload', 'Details', 'Analysing', 'Results'] as const).map((label, index) => {
+                const stepNames: WizardStep[] = ['upload', 'state', 'analysing', 'results'];
                 const currentIndex = stepNames.indexOf(step);
                 const isActive = index === currentIndex;
                 const isComplete = index < currentIndex;
@@ -670,8 +670,8 @@ export default function CourtOrderToolScreen() {
             
             {/* Labels - positioned to align with circles */}
             <View style={styles.progressLabelsRow}>
-              {(['Upload', 'Details', 'Analyzing', 'Results'] as const).map((label, index) => {
-                const stepNames: WizardStep[] = ['upload', 'state', 'analyzing', 'results'];
+              {(['Upload', 'Details', 'Analysing', 'Results'] as const).map((label, index) => {
+                const stepNames: WizardStep[] = ['upload', 'state', 'analysing', 'results'];
                 const currentIndex = stepNames.indexOf(step);
                 const isActive = index === currentIndex;
                 const isComplete = index < currentIndex;
@@ -703,12 +703,12 @@ export default function CourtOrderToolScreen() {
                 onStateChange={setSelectedState}
                 userRole={userRole}
                 onUserRoleChange={setUserRole}
-                onContinue={analyzeAndCalculate}
+                onContinue={analyseAndCalculate}
                 onBack={() => setStep('upload')}
-                isAnalyzing={false}
+                isAnalysing={false}
               />
             )}
-            {step === 'analyzing' && <StepAnalyzing />}
+            {step === 'analysing' && <StepAnalysing />}
             {step === 'results' && result && (
               <StepResults
                 result={result}

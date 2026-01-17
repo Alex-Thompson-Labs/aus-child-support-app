@@ -2,7 +2,7 @@
  * Court Order Care Calculator (Refactored)
  * 
  * This module has been refactored from "Rule Extraction" to "Timeline Generation" architecture.
- * The complex simulation logic has been removed in favor of simple timeline aggregation.
+ * The complex simulation logic has been removed in favour of simple timeline aggregation.
  * 
  * The LLM now generates a complete timeline covering the entire year, and the frontend
  * simply aggregates this data to calculate care statistics.

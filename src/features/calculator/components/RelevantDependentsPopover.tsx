@@ -99,7 +99,7 @@ export function RelevantDependentsPopover({
           {!hasValues && <Text style={popoverStyles.plusIcon}>+</Text>}
         </Pressable>
         <HelpTooltip
-          what="Relevant dependent children are those in a parent's care from a different relationship. An allowance is deducted from the parent's Adjusted Taxable Income to recognize the costs of supporting them, effectively reducing their final child support income."
+          what="Relevant dependent children are those in a parent's care from a different relationship. An allowance is deducted from the parent's Adjusted Taxable Income to recognise the costs of supporting them, effectively reducing their final child support income."
           why=""
           hideWhatLabel
           iconColor="#60a5fa" // blue-400

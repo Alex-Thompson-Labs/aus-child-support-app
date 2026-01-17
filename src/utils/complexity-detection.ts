@@ -72,7 +72,7 @@ export interface AlertConfig {
 }
 
 /**
- * Analyzes calculation results and form data to detect complexity indicators
+ * Analyses calculation results and form data to detect complexity indicators
  *
  * Currently implements:
  * - highValue: Detects annual payments exceeding $15,000

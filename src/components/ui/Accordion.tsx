@@ -1,13 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
-    LayoutAnimation,
-    Platform,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    UIManager,
-    View,
+  LayoutAnimation,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  UIManager,
+  View,
 } from 'react-native';
 import { theme } from '../../theme';
 
@@ -30,7 +30,14 @@ export default function Accordion({
   title,
   children,
   defaultOpen = false,
-}: AccordionProps) {
+  headerStyle,
+  titleStyle,
+  iconColor,
+}: AccordionProps & {
+  headerStyle?: any;
+  titleStyle?: any;
+  iconColor?: string;
+}) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   const toggleOpen = () => {
@@ -42,7 +49,7 @@ export default function Accordion({
     <View style={styles.container}>
       <TouchableOpacity
         onPress={toggleOpen}
-        style={styles.header}
+        style={[styles.header, headerStyle]}
         activeOpacity={0.7}
         accessible={true}
         accessibilityRole="button"
@@ -51,11 +58,11 @@ export default function Accordion({
         accessibilityHint={isOpen ? 'Double tap to collapse' : 'Double tap to expand'}
         aria-expanded={isOpen}
       >
-        <Text style={styles.title}>{title}</Text>
+        <Text style={[styles.title, isOpen && styles.titleActive, titleStyle]}>{title}</Text>
         <Ionicons
           name={isOpen ? 'chevron-up' : 'chevron-down'}
           size={20}
-          color={theme.colors.textSecondary}
+          color={iconColor || (isOpen ? theme.colors.primary : theme.colors.textSecondary)}
           accessibilityElementsHidden={true}
           importantForAccessibility="no"
         />
@@ -86,6 +93,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: theme.colors.textPrimary || '#111827',
+  },
+  titleActive: {
+    color: theme.colors.primary || '#2563EB',
   },
   content: {
     padding: 16,

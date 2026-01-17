@@ -97,7 +97,7 @@ export function StepProgressIndicator({
                     ...baseStyle,
                     backgroundColor: colors.primary,
                     borderWidth: 3,
-                    borderColor: colors.primaryDark,
+                    borderColor: '#93c5fd', // Light blue border instead of dark navy
                     // Add subtle glow effect for current step
                     ...Platform.select({
                         web: {

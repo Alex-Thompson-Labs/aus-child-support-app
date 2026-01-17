@@ -65,7 +65,7 @@ export const SPECIAL_CIRCUMSTANCES: readonly SpecialCircumstance[] = [
       'The other parent has income or assets not reflected in their tax return.',
     icon: '💰',
     description:
-      "When someone's tax return doesn't reflect their true financial position—such as hidden income, cash businesses, trust distributions, investment property, or other assets—a lawyer can help investigate and present evidence to the Registrar or the Court. This requires specialized knowledge of income sources, business structures, and non-taxable resources.",
+      "When someone's tax return doesn't reflect their true financial position—such as hidden income, cash businesses, trust distributions, investment property, or other assets—a lawyer can help investigate and present evidence to the Registrar or the Court. This requires specialised knowledge of income sources, business structures, and non-taxable resources.",
     category: 'income',
     priority: 4,
     officialCodes: ['5.2.8'] as const,

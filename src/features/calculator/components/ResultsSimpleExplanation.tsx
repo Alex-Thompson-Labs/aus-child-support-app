@@ -22,7 +22,7 @@ interface ResultsSimpleExplanationProps {
  * reducing the initial bundle size. The breakdown components are only
  * loaded when the user views the results, improving initial page load performance.
  * 
- * Composes 8 calculation steps using specialized sub-components:
+ * Composes 8 calculation steps using specialised sub-components:
  * - IncomeStep (Steps 1-3): Child Support Income, Combined Income, Income Percentage
  * - CareStep (Step 4): Care Percentage per child
  * - CostStep (Steps 5-7): Cost Percentage, Child Support Percentage, Cost of Children

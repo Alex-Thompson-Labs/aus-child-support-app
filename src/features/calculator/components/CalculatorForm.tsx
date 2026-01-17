@@ -1,21 +1,22 @@
 import { useAppTheme } from '@/src/theme';
 import { useAnalytics } from '@/src/utils/analytics';
 import type {
-  ChildInput,
-  FormErrors,
-  MultiCaseInfo,
-  NonParentCarerInfo,
-  OtherCaseChild,
+    ChildInput,
+    FormErrors,
+    MultiCaseInfo,
+    NonParentCarerInfo,
+    OtherCaseChild,
 } from '@/src/utils/calculator';
 import type { AssessmentYear } from '@/src/utils/child-support-constants';
 import {
-  MAX_CONTENT_WIDTH,
-  isWeb,
-  useResponsive,
-  webClickableStyles,
-  webInputStyles,
+    MAX_CONTENT_WIDTH,
+    isWeb,
+    useResponsive,
+    webClickableStyles,
+    webInputStyles,
 } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
+import { ArrowRight } from 'lucide-react-native';
 import React, { useMemo, useRef } from 'react';
 import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
@@ -62,7 +63,6 @@ interface CalculatorFormProps {
   onRelDepAChange: (updates: Partial<{ u13: number; plus13: number }>) => void;
   onRelDepBChange: (updates: Partial<{ u13: number; plus13: number }>) => void;
   onCalculate: () => void;
-  onReset: () => void;
   isDesktopWeb?: boolean;
   // Multi-case support (Formula 3)
   multiCaseA: MultiCaseInfo;
@@ -100,7 +100,6 @@ export function CalculatorForm({
   onRelDepAChange,
   onRelDepBChange,
   onCalculate,
-  onReset,
   isDesktopWeb = false,
   // Multi-case support (Formula 3)
   multiCaseA,
@@ -182,13 +181,6 @@ export function CalculatorForm({
     },
     calculateButtonText: {
       color: colors.buttonPrimaryText,
-    },
-    resetButton: {
-      backgroundColor: colors.buttonSecondary,
-      borderColor: colors.buttonSecondaryBorder,
-    },
-    resetButtonText: {
-      color: colors.buttonSecondaryText,
     },
   }), [colors]);
 
@@ -473,25 +465,16 @@ export function CalculatorForm({
 
       </View>
 
-      {/* Action Buttons */}
-      <View style={styles.actionButtons}>
-        <Pressable
-          onPress={onCalculate}
-          style={[styles.calculateButton, dynamicStyles.calculateButton, isWeb && webClickableStyles]}
-          accessibilityRole="button"
-          accessibilityLabel="Calculate child support"
-        >
-          <Text style={[styles.calculateButtonText, dynamicStyles.calculateButtonText]}>Calculate</Text>
-        </Pressable>
-        <Pressable
-          onPress={onReset}
-          style={[styles.resetButton, dynamicStyles.resetButton, isWeb && webClickableStyles]}
-          accessibilityRole="button"
-          accessibilityLabel="Reset form to default values"
-        >
-          <Text style={[styles.resetButtonText, dynamicStyles.resetButtonText]}>Reset</Text>
-        </Pressable>
-      </View>
+      {/* Action Button */}
+      <Pressable
+        onPress={onCalculate}
+        style={[styles.calculateButton, dynamicStyles.calculateButton, isWeb && webClickableStyles]}
+        accessibilityRole="button"
+        accessibilityLabel="Calculate child support estimate"
+      >
+        <Text style={[styles.calculateButtonText, dynamicStyles.calculateButtonText]}>Calculate Estimate</Text>
+        <ArrowRight size={20} color={colors.buttonPrimaryText} style={styles.buttonIcon} />
+      </Pressable>
     </View>
   );
 }
@@ -702,33 +685,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-  actionButtons: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 8,
-  },
   calculateButton: {
-    flex: 2,
+    width: '100%',
     paddingVertical: 16,
     borderRadius: 12,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 8,
+    marginTop: 8,
   },
   calculateButtonText: {
     fontSize: 18,
     fontWeight: '700',
   },
-  resetButton: {
-    flex: 1,
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1.5,
-  },
-  resetButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
+  buttonIcon: {
+    marginLeft: 4,
   },
   resultsOverlay: {
     position: 'absolute',

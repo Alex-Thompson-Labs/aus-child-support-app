@@ -160,7 +160,7 @@ export function OtherCasesPopover({
           {!hasValues && <Text style={popoverStyles.plusIcon}>+</Text>}
         </Pressable>
         <HelpTooltip
-          what="If you or the other parent have children from other child support cases, an allowance is calculated to recognize those costs. This may reduce the amount payable in this case."
+          what="If you or the other parent have children from other child support cases, an allowance is calculated to recognise those costs. This may reduce the amount payable in this case."
           why=""
           hideWhatLabel
           iconColor="#60a5fa"

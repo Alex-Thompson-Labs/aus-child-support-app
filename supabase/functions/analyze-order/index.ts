@@ -1,4 +1,3 @@
-import Anthropic from 'https://esm.sh/@anthropic-ai/sdk?target=deno';
 
 declare const Deno: {
   env: {
@@ -61,8 +60,13 @@ Deno.serve(async (req) => {
     const termDatesYear1 = TERM_DATES[selectedYear].VIC;
     const termDatesYear2 = TERM_DATES[selectedYear + 1]?.VIC || [];
 
-    const anthropic = new Anthropic({
-      apiKey: Deno.env.get('ANTHROPIC_API_KEY'),
+    const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '');
+    const model = genAI.getGenerativeModel({ 
+      model: 'gemini-2.0-flash-exp',
+      generationConfig: {
+        temperature: 0,
+        responseMimeType: 'application/json',
+      }
     });
 
     // Build school term dates context for the prompt (include both years for 2-year timelines)
@@ -99,7 +103,7 @@ Deno.serve(async (req) => {
     
     const holidayContext = holidayPeriods.join('\n    ');
 
-    const systemPrompt = `You are an expert Australian Family Law Court Order Interpreter.
+    const prompt = `You are an expert Australian Family Law Court Order Interpreter.
 
 GATEKEEPER RULE:
 1. If the document is a Template, Guide, or Brochure -> Return {"error": "INVALID_DOCUMENT_TYPE"}
@@ -231,95 +235,35 @@ VALIDATION CHECK BEFORE OUTPUTTING:
   "year": ${selectedYear},
   "primary_parent": "M"
 }
-`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
-      max_tokens: 8000,
-      temperature: 0,
-      system: systemPrompt,
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: `Here is the court order. Generate a complete care timeline for ${selectedYear}. Output ONLY JSON.`,
-            },
-            mediaType === 'application/pdf'
-              ? {
-                type: 'document',
-                source: {
-                  type: 'base64',
-                  media_type: 'application/pdf',
-                  data: fileBase64,
-                },
-              }
-              : {
-                type: 'image',
-                source: {
-                  type: 'base64',
-                  media_type: mediaType || 'image/jpeg',
-                  data: fileBase64,
-                },
-              },
-          ],
-        },
-      ],
-    });
+Here is the court order. Generate a complete care timeline for ${selectedYear}. Output ONLY JSON.`;
 
-    // Safe extraction of text content
-    const contentBlock = message.content[0];
-    if (contentBlock.type !== 'text') {
-      throw new Error('Unexpected response type from Claude');
-    }
+    // Prepare the file part for Gemini
+    const filePart = {
+      inlineData: {
+        data: fileBase64,
+        mimeType: mediaType,
+      },
+    };
 
-    const result = contentBlock.text;
+    const result = await model.generateContent([prompt, filePart]);
+    const response = result.response;
+    const resultText = response.text();
 
     // Improved extraction to handle any conversational text before/after JSON
-    const jsonMatch = result.match(/\{[\s\S]*\}/);
-    const cleanJson = jsonMatch ? jsonMatch[0] : result;
+    const jsonMatch = resultText.match(/\{[\s\S]*\}/);
+    const cleanJson = jsonMatch ? jsonMatch[0] : resultText;
 
     // Parse the JSON to add opportunity detection
     const parsedResult = JSON.parse(cleanJson);
 
     // Extract raw text from the document for keyword scanning
-    const extractTextMessage = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
-      max_tokens: 4000,
-      temperature: 0,
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: 'Extract all text from this document. Return ONLY the raw text content, no formatting or commentary.',
-            },
-            mediaType === 'application/pdf'
-              ? {
-                type: 'document',
-                source: {
-                  type: 'base64',
-                  media_type: 'application/pdf',
-                  data: fileBase64,
-                },
-              }
-              : {
-                type: 'image',
-                source: {
-                  type: 'base64',
-                  media_type: mediaType || 'image/jpeg',
-                  data: fileBase64,
-                },
-              },
-          ],
-        },
-      ],
-    });
-
-    const textBlock = extractTextMessage.content[0];
-    const documentText = textBlock.type === 'text' ? textBlock.text.toLowerCase() : '';
+    const extractTextResult = await model.generateContent([
+      'Extract all text from this document. Return ONLY the raw text content, no formatting or commentary.',
+      filePart
+    ]);
+    
+    const documentText = extractTextResult.response.text().toLowerCase();
 
     // Keyword detection logic
     const opportunities: {

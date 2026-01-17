@@ -205,7 +205,6 @@ export function CalculatorScreen() {
     onRelDepAChange: handleRelDepAChange,
     onRelDepBChange: handleRelDepBChange,
     onCalculate: handleCalculate,
-    onReset: reset,
     // Multi-case support (Formula 3)
     multiCaseA: formState.multiCaseA,
     multiCaseB: formState.multiCaseB,
@@ -391,14 +390,42 @@ const styles = StyleSheet.create({
     maxWidth: 850,
     alignSelf: 'center',
     backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    marginHorizontal: 16,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.08)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 2,
+      },
+    }),
   },
   progressContainerMobile: {
     width: '100%',
     backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    marginHorizontal: 16,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.08)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 2,
+      },
+    }),
   },
   aiLinkButton: {
     flexDirection: 'row',
