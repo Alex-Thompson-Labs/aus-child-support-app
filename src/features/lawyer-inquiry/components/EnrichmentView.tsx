@@ -6,6 +6,7 @@
  * Uses SpecialCircumstancesWizard for better UX.
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { IncomeSupportModal } from '@/src/features/calculator';
 import { SpecialCircumstancesWizard } from '@/src/features/conversion';
 import {
@@ -519,7 +520,7 @@ export function EnrichmentView({
       <SafeAreaView style={containerStyles.container} edges={['top', 'bottom']}>
         <View style={enrichmentStyles.enrichmentContainer}>
           <View style={enrichmentStyles.enrichmentHeader}>
-            <Text style={successStyles.successIcon}>✓</Text>
+            <Ionicons name="checkmark-circle" size={64} color="#10b981" style={{ marginBottom: 16 }} />
             <Text style={successStyles.successTitle}>Case Updated!</Text>
             <Text style={successStyles.successMessage}>
               Your additional information has been saved and will help the lawyer prepare for your case.
@@ -535,7 +536,7 @@ export function EnrichmentView({
       <View style={enrichmentStyles.enrichmentContainer}>
         {/* Header */}
         <View style={enrichmentStyles.enrichmentHeader}>
-          <Text style={successStyles.successIcon}>✓</Text>
+          <Ionicons name="checkmark-circle" size={64} color="#10b981" style={{ marginBottom: 16 }} />
           <Text style={enrichmentStyles.enrichmentTitle}>Enquiry Sent!</Text>
         </View>
 
