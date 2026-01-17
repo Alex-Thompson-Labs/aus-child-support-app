@@ -9,7 +9,7 @@ export const Env = {
     SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
 
     // Admin
-    // Default to alex@auschildsupport.com for backwards compatibility if env var is missing
+    // Default to alex@auschildsupport.com.au for backwards compatibility if env var is missing
     ADMIN_EMAIL: process.env.EXPO_PUBLIC_ADMIN_EMAIL || 'alex@auschildsupport.com.au',
 
     // Site

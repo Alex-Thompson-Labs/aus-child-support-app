@@ -70,9 +70,16 @@ export default function AdminLoginScreen() {
     }
 
     // Only allow admin email
-    if (email.toLowerCase().trim() !== Env.ADMIN_EMAIL.toLowerCase()) {
+    const enteredEmail = email.toLowerCase().trim();
+    const configuredEmail = Env.ADMIN_EMAIL.toLowerCase();
+    
+    console.log('[AdminLogin] Entered email:', enteredEmail);
+    console.log('[AdminLogin] Configured email:', configuredEmail);
+    console.log('[AdminLogin] Match:', enteredEmail === configuredEmail);
+    
+    if (enteredEmail !== configuredEmail) {
       if (Platform.OS === 'web') {
-        alert('Unauthorized\n\nOnly admin account can access this area.');
+        alert(`Unauthorized\n\nOnly admin account can access this area.\n\nEntered: ${enteredEmail}\nExpected: ${configuredEmail}`);
       } else {
         Alert.alert('Unauthorized', 'Only admin account can access this area.');
       }
