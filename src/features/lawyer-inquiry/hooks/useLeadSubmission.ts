@@ -16,11 +16,11 @@ import { Alert, Platform } from 'react-native';
 import { ENRICHMENT_INQUIRY_TYPES } from '../config';
 import type { CareDataItem } from '../types';
 import {
-    buildComplexityTriggers,
-    formatCourtDateForReasons,
-    sanitizeEmail,
-    sanitizePhone,
-    sanitizeString,
+  buildComplexityTriggers,
+  formatCourtDateForReasons,
+  sanitizeEmail,
+  sanitizePhone,
+  sanitizeString,
 } from '../validators';
 
 export interface UseLeadSubmissionProps {
@@ -259,6 +259,7 @@ export function useLeadSubmission(props: UseLeadSubmissionProps) {
         lead_score: scoreResult.score,
         score_category: scoreResult.category,
         scoring_factors: scoreResult.factors,
+        score_breakdown: scoreResult.breakdown,
 
         // Special circumstances additional data
         special_circumstances_data:

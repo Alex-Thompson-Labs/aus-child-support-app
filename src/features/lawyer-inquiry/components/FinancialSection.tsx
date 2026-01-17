@@ -534,7 +534,7 @@ export function FinancialSection({
           {/* Non-Reciprocating Warning (Amber) */}
           {internationalWarning === 'non_reciprocating' && (
             <View style={financialStyles.warningBox}>
-              <Ionicons name="alert-circle" size={20} color="#d97706" />
+              <Ionicons name="information-circle" size={20} color="#2563eb" />
               <Text style={financialStyles.warningText}>
                 Note: This appears to be a Non-Reciprocating Jurisdiction.
                 Australian child support assessments and court orders are
