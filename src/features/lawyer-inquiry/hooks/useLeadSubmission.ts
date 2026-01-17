@@ -385,7 +385,9 @@ export function useLeadSubmission(props: UseLeadSubmissionProps) {
 
     if (
       selectedEnrichmentFactors.length === 0 &&
-      enrichmentLiability === null
+      enrichmentLiability === null &&
+      enrichmentPayerRole === null &&
+      !enrichmentCountry
     ) {
       props.navigateHome();
       return;
@@ -417,6 +419,7 @@ export function useLeadSubmission(props: UseLeadSubmissionProps) {
     selectedEnrichmentFactors,
     enrichmentLiability,
     enrichmentPayerRole,
+    enrichmentCountry,
     props,
   ]);
 

@@ -120,7 +120,7 @@ export function StepProgressIndicator({
         // Connector connects stepNumber and stepNumber + 1
         const containerStyle = {
             flex: 1,
-            height: compact ? 3 : 4,
+            height: 3,
             backgroundColor: colors.border,
             marginHorizontal: compact ? 4 : 8,
             borderRadius: 2,

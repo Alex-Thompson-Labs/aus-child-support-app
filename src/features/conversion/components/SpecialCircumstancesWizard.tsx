@@ -9,7 +9,7 @@ import {
     type SpecialCircumstance,
 } from '@/src/utils/special-circumstances';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 // Types
 interface SpecialCircumstancesWizardProps {
@@ -40,6 +40,68 @@ const STEP_TITLES: Record<WizardStep, string> = {
   costs: 'Costs & Other Factors',
   summary: 'Review & Submit',
 };
+
+// Animated Conditional Field Component
+interface AnimatedConditionalFieldProps {
+  show: boolean;
+  children: React.ReactNode;
+}
+
+const AnimatedConditionalField = memo(function AnimatedConditionalField({
+  show,
+  children,
+}: AnimatedConditionalFieldProps) {
+  const [opacity] = useState(() => new Animated.Value(show ? 1 : 0));
+  const [shouldRender, setShouldRender] = useState(show);
+
+  useEffect(() => {
+    if (show) {
+      setShouldRender(true);
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => {
+        setShouldRender(false);
+      });
+    }
+  }, [show, opacity]);
+
+  if (!shouldRender) {
+    return null;
+  }
+
+  if (isWeb) {
+    // Use CSS Grid transition on web
+    return (
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateRows: show ? '1fr' : '0fr',
+          transition: 'grid-template-rows 300ms ease, opacity 300ms ease',
+          opacity: show ? 1 : 0,
+        }}
+      >
+        <div style={{ overflow: 'hidden' }}>
+          {children}
+        </div>
+      </div>
+    );
+  }
+
+  // Use Animated.View on mobile
+  return (
+    <Animated.View style={{ opacity }}>
+      {children}
+    </Animated.View>
+  );
+});
 
 // Memoized Checkbox Component
 interface CheckboxItemProps {
@@ -194,16 +256,18 @@ const LegalStep = memo(function LegalStep({
           </View>
         </Pressable>
 
-        {hasCourtDate && onCourtDateChange && (
+        <AnimatedConditionalField show={hasCourtDate && !!onCourtDateChange}>
           <View style={styles.datePickerContainer}>
-            <DatePickerField
-              label="When is your court date?"
-              value={courtDate}
-              onChange={onCourtDateChange}
-              minDate={new Date()}
-            />
+            {onCourtDateChange && (
+              <DatePickerField
+                label="When is your court date?"
+                value={courtDate}
+                onChange={onCourtDateChange}
+                minDate={new Date()}
+              />
+            )}
           </View>
-        )}
+        </AnimatedConditionalField>
 
         <Pressable
           style={[styles.checkboxRow, isWeb && webClickableStyles]}
@@ -269,7 +333,7 @@ const LegalStep = memo(function LegalStep({
           </Pressable>
         )}
 
-        {hasInternationalJurisdiction && onOtherParentCountryChange && (
+        <AnimatedConditionalField show={hasInternationalJurisdiction && !!onOtherParentCountryChange}>
           <View style={styles.countryFieldContainer}>
             <Text style={styles.countryLabel}>
               Other parent&apos;s country of habitual residence
@@ -281,7 +345,7 @@ const LegalStep = memo(function LegalStep({
               value={otherParentCountry || countrySearch}
               onChangeText={(text) => {
                 setCountrySearch(text);
-                if (otherParentCountry) {
+                if (otherParentCountry && onOtherParentCountryChange) {
                   onOtherParentCountryChange('');
                 }
                 setShowCountryDropdown(true);
@@ -304,7 +368,9 @@ const LegalStep = memo(function LegalStep({
                           key={country}
                           style={styles.countryOption}
                           onPress={() => {
-                            onOtherParentCountryChange(country);
+                            if (onOtherParentCountryChange) {
+                              onOtherParentCountryChange(country);
+                            }
                             setCountrySearch('');
                             setShowCountryDropdown(false);
                           }}
@@ -323,7 +389,7 @@ const LegalStep = memo(function LegalStep({
                 </View>
               )}
           </View>
-        )}
+        </AnimatedConditionalField>
       </View>
     </View>
   );

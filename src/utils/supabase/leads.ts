@@ -279,6 +279,15 @@ export async function updateLeadEnrichment(
         // Lazy-load Supabase client
         const supabaseClient = await getSupabaseClient();
 
+        // DEBUG: Log enrichment data being submitted
+        console.log('[updateLeadEnrichment] Submitting enrichment data:', {
+            leadId,
+            enrichmentFactors,
+            annualLiability: annualLiability ?? null,
+            payerRole: payerRole ?? null,
+            otherParentCountry: otherParentCountry || null,
+        });
+
         // Use RPC to append to array AND update fields (avoids needing UPDATE permission)
         // This calls a Postgres function that handles the data update securely
         const { error: updateError } = await supabaseClient.rpc(
@@ -286,8 +295,8 @@ export async function updateLeadEnrichment(
             {
                 lead_id: leadId,
                 new_reasons: enrichmentFactors,
-                annual_liability: annualLiability,
-                payer_role: payerRole,
+                annual_liability: annualLiability ?? null,
+                payer_role: payerRole ?? null,
                 other_parent_country: otherParentCountry || null,
             }
         );
