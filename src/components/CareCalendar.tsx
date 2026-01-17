@@ -79,40 +79,69 @@ function DayCell({ day, careWith, isHoliday, fatherColor, motherColor, isExclude
     );
   }
 
+  // Determine the color for this day
+  const dayColor = careWith === 'Father' ? fatherColor : motherColor;
+  const isUserDay = dayColor === userColor;
+
   if (isHoliday) {
-    // School holiday: light blue filled background (no parent indicator)
+    // School holiday: light blue filled background
+    // If it's the user's day, add a circle around it
+    if (isUserDay) {
+      return (
+        <View style={viewStyles.dayCell}>
+          <View style={[
+            viewStyles.dayCircle, 
+            { 
+              backgroundColor: '#dbeafe', // Light blue background for holidays
+              borderWidth: 2.5,
+              borderColor: userColor
+            }
+          ]}>
+            <Text style={[textStyles.dayText, { color: '#1e293b' }]}>{day}</Text>
+          </View>
+        </View>
+      );
+    } else {
+      // Other parent's holiday - no circle
+      return (
+        <View style={viewStyles.dayCell}>
+          <View style={[
+            viewStyles.dayCircle, 
+            { 
+              backgroundColor: '#dbeafe', // Light blue background for holidays
+            }
+          ]}>
+            <Text style={[textStyles.dayText, { color: '#1e293b' }]}>{day}</Text>
+          </View>
+        </View>
+      );
+    }
+  }
+
+  // Regular day: only show circle for user's days
+  if (isUserDay) {
     return (
       <View style={viewStyles.dayCell}>
         <View style={[
           viewStyles.dayCircle, 
           { 
-            backgroundColor: '#dbeafe', // Light blue background for holidays
+            backgroundColor: 'transparent',
+            borderWidth: 2.5,
+            borderColor: userColor
           }
         ]}>
-          <Text style={[textStyles.dayText, { color: '#1e293b' }]}>{day}</Text>
+          <Text style={[textStyles.dayText, { color: userColor }]}>{day}</Text>
         </View>
       </View>
     );
-  }
-
-  // Regular day: outlined with parent's color (not filled)
-  const borderColor = careWith === 'Father' ? fatherColor : motherColor;
-  // Thicker border for the user's color (blue), thinner for the other parent
-  const borderWidth = borderColor === userColor ? 2.5 : 1.5;
-  return (
-    <View style={viewStyles.dayCell}>
-      <View style={[
-        viewStyles.dayCircle, 
-        { 
-          backgroundColor: 'transparent',
-          borderWidth: borderWidth,
-          borderColor: borderColor
-        }
-      ]}>
-        <Text style={[textStyles.dayText, { color: borderColor }]}>{day}</Text>
+  } else {
+    // Other parent's day - no circle, just plain text
+    return (
+      <View style={viewStyles.dayCell}>
+        <Text style={[textStyles.dayText, { color: '#94a3b8' }]}>{day}</Text>
       </View>
-    </View>
-  );
+    );
+  }
 }
 
 interface MonthGridProps {

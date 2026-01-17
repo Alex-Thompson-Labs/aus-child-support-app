@@ -198,16 +198,17 @@ function StepAnalysing() {
   const [stage, setStage] = React.useState('Uploading document...');
 
   React.useEffect(() => {
-    // Simulate progress stages - spread across ~45 seconds to match actual processing time
+    // Simulate progress stages - spread across ~90 seconds to match actual Gemini processing time
     const stages = [
-      { progress: 5, label: 'Uploading document...', delay: 500 },
-      { progress: 15, label: 'Reading court order...', delay: 3000 },
-      { progress: 25, label: 'Extracting care schedule...', delay: 8000 },
-      { progress: 40, label: 'Analysing patterns...', delay: 15000 },
-      { progress: 55, label: 'Calculating nights...', delay: 22000 },
-      { progress: 70, label: 'Validating timeline...', delay: 30000 },
-      { progress: 85, label: 'Finalizing results...', delay: 38000 },
-      { progress: 95, label: 'Almost done...', delay: 42000 },
+      { progress: 5, label: 'Uploading document...', delay: 1000 },
+      { progress: 12, label: 'Reading court order...', delay: 5000 },
+      { progress: 20, label: 'Extracting care schedule...', delay: 15000 },
+      { progress: 32, label: 'Analysing patterns...', delay: 28000 },
+      { progress: 45, label: 'Calculating nights...', delay: 42000 },
+      { progress: 60, label: 'Validating timeline...', delay: 55000 },
+      { progress: 75, label: 'Detecting opportunities...', delay: 68000 },
+      { progress: 88, label: 'Finalizing results...', delay: 78000 },
+      { progress: 95, label: 'Almost done...', delay: 85000 },
     ];
 
     const timers = stages.map(({ progress: p, label, delay }) =>

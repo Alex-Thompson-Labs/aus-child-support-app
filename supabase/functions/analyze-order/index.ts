@@ -245,7 +245,7 @@ VALIDATION CHECK BEFORE OUTPUTTING:
     const geminiMimeType = mediaType === 'application/pdf' ? 'application/pdf' : (mediaType || 'image/jpeg');
 
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash-exp',
+      model: 'gemini-2.5-flash',
       generationConfig: {
         temperature: 0,
         responseMimeType: 'application/json',
@@ -278,7 +278,7 @@ VALIDATION CHECK BEFORE OUTPUTTING:
     console.log('Extracting text for keyword scanning...');
 
     const textModel = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash-exp',
+      model: 'gemini-2.5-flash',
       generationConfig: {
         temperature: 0,
       },
