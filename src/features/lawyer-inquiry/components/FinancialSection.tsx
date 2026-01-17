@@ -13,16 +13,16 @@ import { isWeb } from '@/src/utils/responsive';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import {
-  LayoutAnimation,
-  Platform,
-  Pressable,
-  ScrollView,
-  Switch,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  UIManager,
-  View,
+    LayoutAnimation,
+    Platform,
+    Pressable,
+    ScrollView,
+    Switch,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    UIManager,
+    View,
 } from 'react-native';
 import { FINANCIAL_TAG_OPTIONS } from '../config';
 import type { FinancialSectionProps } from '../types';
@@ -428,10 +428,10 @@ export function FinancialSection({
             />
           </View>
 
-          {/* Amber Warning for >3 years */}
+          {/* Blue Info Box for >3 years */}
           {showPsiWarning && (
             <View style={financialStyles.warningBox}>
-              <Ionicons name="alert-circle" size={20} color="#d97706" />
+              <Ionicons name="information-circle" size={20} color="#2563eb" />
               <Text style={financialStyles.warningText}>
                 Note: Income exclusion is typically granted for the first 3
                 years after separation. Cases beyond this are harder to prove

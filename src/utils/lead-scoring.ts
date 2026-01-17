@@ -37,6 +37,13 @@ export interface LeadScoreResult {
     score: number;
     category: 'Premium' | 'High-Value' | 'Standard' | 'Low-Value' | 'Unscored';
     factors: string[];
+    breakdown?: ScoreBreakdownItem[]; // Detailed breakdown of each factor's contribution
+}
+
+export interface ScoreBreakdownItem {
+    factor: string;
+    points: number;
+    label: string;
 }
 
 // ============================================================================
@@ -205,51 +212,100 @@ export function calculateLeadScore(
 ): LeadScoreResult {
     let score = 0;
     const factors: string[] = [];
+    const breakdown: ScoreBreakdownItem[] = [];
 
     // Court Date Urgent
     if (isCourtDateUrgent(input.courtDate, config)) {
-        score += config.points.COURT_DATE_URGENT;
+        const points = config.points.COURT_DATE_URGENT;
+        score += points;
         factors.push('court_date_urgent');
+        breakdown.push({
+            factor: 'court_date_urgent',
+            points,
+            label: 'Court Date (Urgent - within 30 days)',
+        });
     } else if (hasCourtDateFuture(input.courtDate, config)) {
         // Court date beyond urgency window still indicates legal proceedings
-        score += config.points.COURT_DATE_FUTURE;
+        const points = config.points.COURT_DATE_FUTURE;
+        score += points;
         factors.push('court_date_future');
+        breakdown.push({
+            factor: 'court_date_future',
+            points,
+            label: 'Court Date (Future)',
+        });
     }
 
     // International Jurisdiction
     if (hasInternationalJurisdiction(input.specialCircumstances)) {
-        score += config.points.INTERNATIONAL_JURISDICTION;
+        const points = config.points.INTERNATIONAL_JURISDICTION;
+        score += points;
         factors.push('international_jurisdiction');
+        breakdown.push({
+            factor: 'international_jurisdiction',
+            points,
+            label: 'International Jurisdiction',
+        });
     }
 
     // Property Settlement
     if (hasPropertySettlement(input.specialCircumstances, config)) {
-        score += config.points.PROPERTY_SETTLEMENT;
+        const points = config.points.PROPERTY_SETTLEMENT;
+        score += points;
         factors.push('property_settlement');
+        breakdown.push({
+            factor: 'property_settlement',
+            points,
+            label: 'Property Settlement Pending',
+        });
     }
 
     // Post-Separation Income
     if (hasPostSeparationIncome(input.specialCircumstances)) {
-        score += config.points.POST_SEPARATION_INCOME;
+        const points = config.points.POST_SEPARATION_INCOME;
+        score += points;
         factors.push('post_separation_income');
+        breakdown.push({
+            factor: 'post_separation_income',
+            points,
+            label: 'Post-Separation Income',
+        });
     }
 
     // Income Issues
     if (hasIncomeIssues(input.financialTags, config)) {
-        score += config.points.INCOME_ISSUES;
+        const points = config.points.INCOME_ISSUES;
+        score += points;
         factors.push('income_issues');
+        breakdown.push({
+            factor: 'income_issues',
+            points,
+            label: 'Income Issues (Hidden Assets/Cash Business)',
+        });
     }
 
     // High-Value Case
     if (isHighValue(input.liability, config)) {
-        score += config.points.HIGH_VALUE_CASE;
+        const points = config.points.HIGH_VALUE_CASE;
+        score += points;
         factors.push('high_value_case');
+        breakdown.push({
+            factor: 'high_value_case',
+            points,
+            label: `High-Value Case (>${config.thresholds.HIGH_VALUE_THRESHOLD.toLocaleString()})`,
+        });
     }
 
     // Multiple Complexity Factors
     if (hasMultipleComplexity(input.specialCircumstances, config)) {
-        score += config.points.MULTIPLE_COMPLEXITY;
+        const points = config.points.MULTIPLE_COMPLEXITY;
+        score += points;
         factors.push('multiple_complexity');
+        breakdown.push({
+            factor: 'multiple_complexity',
+            points,
+            label: `Multiple Complexity Factors (${input.specialCircumstances?.length || 0}+ circumstances)`,
+        });
     }
 
     // Other Special Circumstances (generic +4 points each)
@@ -259,25 +315,44 @@ export function calculateLeadScore(
         config
     );
     if (genericCircumstances > 0) {
-        score += config.points.SPECIAL_CIRCUMSTANCE * genericCircumstances;
+        const points = config.points.SPECIAL_CIRCUMSTANCE * genericCircumstances;
+        score += points;
         factors.push('special_circumstances');
+        breakdown.push({
+            factor: 'special_circumstances',
+            points,
+            label: `Other Special Circumstances (${genericCircumstances} × ${config.points.SPECIAL_CIRCUMSTANCE} pts)`,
+        });
     }
 
     // Shared Care Dispute
     if (hasSharedCareDispute(input.careData, config)) {
-        score += config.points.SHARED_CARE_DISPUTE;
+        const points = config.points.SHARED_CARE_DISPUTE;
+        score += points;
         factors.push('shared_care_dispute');
+        breakdown.push({
+            factor: 'shared_care_dispute',
+            points,
+            label: 'Shared Care Dispute (35-65% range)',
+        });
     }
 
     // Binding Agreement
     if (input.bindingAgreement === true) {
-        score += config.points.BINDING_AGREEMENT;
+        const points = config.points.BINDING_AGREEMENT;
+        score += points;
         factors.push('binding_agreement');
+        breakdown.push({
+            factor: 'binding_agreement',
+            points,
+            label: 'Interested in Binding Agreement',
+        });
     }
 
     return {
         score,
         category: getScoreCategory(score, config),
         factors,
+        breakdown,
     };
 }

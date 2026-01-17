@@ -514,6 +514,12 @@ auschildsupport.com.au`;
               </Text>
             </View>
             <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Payer Role:</Text>
+              <Text style={styles.infoValue}>
+                {lead.payer_role === 'you' ? 'Parent (Payer)' : lead.payer_role === 'other_parent' ? 'Other Parent (Payee)' : 'Not specified'}
+              </Text>
+            </View>
+            <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Parent A Income:</Text>
               <Text style={styles.infoValue}>
                 {formatCurrency(lead.income_parent_a)}
@@ -529,7 +535,126 @@ auschildsupport.com.au`;
               <Text style={styles.infoLabel}>Children:</Text>
               <Text style={styles.infoValue}>{lead.children_count}</Text>
             </View>
+            {lead.time_to_complete && (
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Time to Complete:</Text>
+                <Text style={styles.infoValue}>
+                  {Math.floor(lead.time_to_complete / 60)}m {lead.time_to_complete % 60}s
+                </Text>
+              </View>
+            )}
           </View>
+
+          {/* Children Care Details */}
+          {lead.care_data && lead.care_data.length > 0 && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Children Care Details</Text>
+              {lead.care_data.map((child, index) => (
+                <View key={index} style={styles.careRow}>
+                  <Text style={styles.careLabel}>Child {child.index + 1}:</Text>
+                  <Text style={styles.careValue}>
+                    Parent A: {child.careA.toFixed(0)}% | Parent B: {child.careB.toFixed(0)}%
+                  </Text>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* Lead Scoring */}
+          {(lead.lead_score !== undefined || lead.score_category || lead.scoring_factors) && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Lead Scoring</Text>
+              {lead.lead_score !== undefined && (
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>Lead Score:</Text>
+                  <Text style={[styles.infoValueHighlight, getScoreColor(lead.score_category)]}>
+                    {lead.lead_score} {lead.score_category && `(${lead.score_category})`}
+                  </Text>
+                </View>
+              )}
+              
+              {/* Score Breakdown */}
+              {lead.score_breakdown && lead.score_breakdown.length > 0 && (
+                <View style={{ marginTop: 12 }}>
+                  <Text style={[styles.infoLabel, { marginBottom: 12, fontSize: 13, fontWeight: '600' }]}>
+                    Score Breakdown:
+                  </Text>
+                  {lead.score_breakdown.map((item, index) => (
+                    <View key={index} style={styles.scoreBreakdownRow}>
+                      <View style={styles.scoreBreakdownLeft}>
+                        <Text style={styles.scoreBreakdownLabel}>{item.label}</Text>
+                      </View>
+                      <View style={styles.scoreBreakdownRight}>
+                        <Text style={styles.scoreBreakdownPoints}>+{item.points}</Text>
+                      </View>
+                    </View>
+                  ))}
+                  <View style={styles.scoreBreakdownTotal}>
+                    <Text style={styles.scoreBreakdownTotalLabel}>Total Score</Text>
+                    <Text style={styles.scoreBreakdownTotalPoints}>{lead.lead_score}</Text>
+                  </View>
+                </View>
+              )}
+              
+              {/* Fallback to old format if no breakdown */}
+              {!lead.score_breakdown && lead.scoring_factors && lead.scoring_factors.length > 0 && (
+                <View style={{ marginTop: 8 }}>
+                  <Text style={[styles.infoLabel, { marginBottom: 8 }]}>Scoring Factors:</Text>
+                  {lead.scoring_factors.map((factor, index) => (
+                    <View key={index} style={styles.complexityItem}>
+                      <Text style={styles.complexityBullet}>•</Text>
+                      <Text style={styles.complexityText}>{factor}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </View>
+          )}
+
+          {/* Financial Tags */}
+          {lead.financial_tags && lead.financial_tags.length > 0 && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Financial Tags</Text>
+              <View style={styles.tagsContainer}>
+                {lead.financial_tags.map((tag, index) => (
+                  <View key={index} style={styles.financialTag}>
+                    <Text style={styles.financialTagText}>{tag}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Special Circumstances Data */}
+          {lead.special_circumstances_data && Object.keys(lead.special_circumstances_data).length > 0 && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Special Circumstances Data</Text>
+              {lead.special_circumstances_data.separation_date && (
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>Separation Date:</Text>
+                  <Text style={styles.infoValue}>
+                    {new Date(lead.special_circumstances_data.separation_date).toLocaleDateString('en-AU')}
+                  </Text>
+                </View>
+              )}
+              {lead.special_circumstances_data.cohabited_6_months !== undefined && (
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>Cohabited 6+ Months:</Text>
+                  <Text style={styles.infoValue}>
+                    {lead.special_circumstances_data.cohabited_6_months ? 'Yes' : 'No'}
+                  </Text>
+                </View>
+              )}
+              {lead.special_circumstances_data.other_parent_country && (
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>Other Parent Country:</Text>
+                  <Text style={styles.infoValue}>
+                    {lead.special_circumstances_data.other_parent_country}
+                  </Text>
+                </View>
+              )}
+            </View>
+          )}
 
           {/* Complexity Triggers */}
           {lead.complexity_reasons && lead.complexity_reasons.length > 0 && (
@@ -740,6 +865,19 @@ function getStatusBadgeStyle(status?: string) {
       return { backgroundColor: '#64748b' }; // slate
     default:
       return { backgroundColor: '#3b82f6' }; // blue
+  }
+}
+
+function getScoreColor(category?: string) {
+  switch (category?.toLowerCase()) {
+    case 'high':
+      return { color: '#10b981' }; // green
+    case 'medium':
+      return { color: '#f59e0b' }; // amber
+    case 'low':
+      return { color: '#dc2626' }; // red
+    default:
+      return { color: '#64748b' }; // slate
   }
 }
 
@@ -989,5 +1127,92 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#64748b',
     marginBottom: 4,
+  },
+  careRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#f8fafc',
+    borderRadius: 6,
+  },
+  careLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.light.text,
+  },
+  careValue: {
+    fontSize: 13,
+    color: '#64748b',
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  financialTag: {
+    backgroundColor: '#dbeafe',
+    borderColor: '#93c5fd',
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  financialTagText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#1e40af',
+  },
+  scoreBreakdownRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: '#f8fafc',
+    borderRadius: 6,
+    marginBottom: 6,
+  },
+  scoreBreakdownLeft: {
+    flex: 1,
+    paddingRight: 12,
+  },
+  scoreBreakdownLabel: {
+    fontSize: 13,
+    color: Colors.light.text,
+    lineHeight: 18,
+  },
+  scoreBreakdownRight: {
+    minWidth: 50,
+    alignItems: 'flex-end',
+  },
+  scoreBreakdownPoints: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: PRIMARY_COLOR,
+  },
+  scoreBreakdownTotal: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    backgroundColor: '#e0f2fe',
+    borderRadius: 6,
+    marginTop: 6,
+    borderWidth: 2,
+    borderColor: PRIMARY_COLOR,
+  },
+  scoreBreakdownTotalLabel: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: Colors.light.text,
+  },
+  scoreBreakdownTotalPoints: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: PRIMARY_COLOR,
   },
 });

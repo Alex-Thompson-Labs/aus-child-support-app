@@ -49,6 +49,16 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({ leads }) => {
 
         // Badge logic
         const isAdultChild = item.complexity_reasons?.some(r => r.toLowerCase().includes('adult') || r.includes('18'));
+        
+        // Score badge color
+        const getScoreBadgeColor = (category?: string) => {
+            switch (category?.toLowerCase()) {
+                case 'high': return { backgroundColor: '#dcfce7', color: '#166534' };
+                case 'medium': return { backgroundColor: '#fef3c7', color: '#92400e' };
+                case 'low': return { backgroundColor: '#fee2e2', color: '#991b1b' };
+                default: return { backgroundColor: '#f1f5f9', color: '#64748b' };
+            }
+        };
 
         return (
             <Pressable
@@ -74,6 +84,18 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({ leads }) => {
                     {formatCurrency(item.annual_liability)}
                 </Text>
 
+                <View style={styles.colScore}>
+                    {item.lead_score !== undefined && item.lead_score !== null ? (
+                        <View style={[styles.scoreBadge, { backgroundColor: getScoreBadgeColor(item.score_category).backgroundColor }]}>
+                            <Text style={[styles.scoreText, { color: getScoreBadgeColor(item.score_category).color }]}>
+                                {item.lead_score}
+                            </Text>
+                        </View>
+                    ) : (
+                        <Text style={styles.cell}>-</Text>
+                    )}
+                </View>
+
                 <View style={styles.colStatus}>
                     <View style={[styles.statusBadge, getStatusColor(item.status)]}>
                         <Text style={styles.statusText}>{item.status || 'new'}</Text>
@@ -96,6 +118,7 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({ leads }) => {
             <Text style={[styles.headerCell, styles.colIncome]}>Comb. Income</Text>
             <Text style={[styles.headerCell, styles.colChildren]}>Kids</Text>
             <Text style={[styles.headerCell, styles.colResult]}>Transfer</Text>
+            <Text style={[styles.headerCell, styles.colScore]}>Score</Text>
             <Text style={[styles.headerCell, styles.colStatus]}>Status</Text>
         </View>
     ), []);
@@ -188,6 +211,7 @@ const styles = StyleSheet.create({
     colIncome: { width: 120, textAlign: 'right' },
     colChildren: { width: 60, textAlign: 'center' },
     colResult: { width: 120, textAlign: 'right', fontWeight: 'bold' },
+    colScore: { width: 80, alignItems: 'center', justifyContent: 'center' },
     colStatus: { width: 140, paddingLeft: 16, flexDirection: 'row', alignItems: 'center', gap: 6 },
 
     nameText: {
@@ -224,5 +248,16 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontWeight: '700',
         color: '#be185d',
+    },
+    scoreBadge: {
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 12,
+        minWidth: 40,
+        alignItems: 'center',
+    },
+    scoreText: {
+        fontSize: 12,
+        fontWeight: '700',
     },
 });

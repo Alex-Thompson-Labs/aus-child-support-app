@@ -486,9 +486,9 @@ export function useInquiryStyles() {
         flexDirection: 'row',
         alignItems: 'flex-start',
         gap: 10,
-        backgroundColor: isDark ? '#422006' : '#fffbeb',
+        backgroundColor: isDark ? '#1e3a5f' : '#eff6ff',
         borderWidth: 1,
-        borderColor: isDark ? '#a16207' : '#fcd34d',
+        borderColor: isDark ? '#3b82f6' : '#bfdbfe',
         borderRadius: 8,
         padding: 12,
         marginTop: 12,
@@ -496,7 +496,7 @@ export function useInquiryStyles() {
       warningText: {
         flex: 1,
         fontSize: 13,
-        color: isDark ? '#fcd34d' : '#92400e',
+        color: isDark ? '#93c5fd' : '#1e40af',
         lineHeight: 18,
       },
       errorBox: {
