@@ -5,7 +5,6 @@
  * Matches the visual hierarchy of Calculator and Assessment Breakdown screens.
  */
 
-import { StepProgressIndicator } from '@/src/components/ui/StepProgressIndicator';
 import { isWeb, MAX_CALCULATOR_WIDTH } from '@/src/utils/responsive';
 import { useRouter } from 'expo-router';
 import React, { useCallback } from 'react';
@@ -78,12 +77,7 @@ export function SuccessView({ returnTo, partnerName }: SuccessViewProps) {
         </View>
       </View>
 
-      {/* 2. Progress Indicator - Step 3: Next Steps */}
-      <View style={[styles.progressWrapper, webContainerStyle]}>
-        <StepProgressIndicator currentStep={3} compact />
-      </View>
-
-      {/* 3. Content Card - Inside ScrollView */}
+      {/* 2. Content Card - Inside ScrollView */}
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={[
@@ -196,12 +190,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: BRAND_NAVY,
   },
-  // Progress wrapper - matches structure from CalculatorResults
-  progressWrapper: {
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-  },
+  // Progress wrapper - removed (no longer needed)
   // Scroll container
   scrollContainer: {
     flex: 1,

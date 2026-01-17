@@ -563,9 +563,22 @@ auschildsupport.com.au`;
           </View>
 
           {/* Complexity Triggers */}
-          {lead.complexity_reasons && lead.complexity_reasons.length > 0 && (
+          {lead.complexity_trigger && lead.complexity_trigger.length > 0 && (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Complexity Triggers</Text>
+              {lead.complexity_trigger.map((trigger, index) => (
+                <View key={index} style={styles.complexityItem}>
+                  <Text style={styles.complexityBullet}>•</Text>
+                  <Text style={styles.complexityText}>{trigger}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* Complexity Reasons (Change of Assessment) */}
+          {lead.complexity_reasons && lead.complexity_reasons.length > 0 && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Complexity Reasons</Text>
               {lead.complexity_reasons.map((reason, index) => (
                 <View key={index} style={styles.complexityItem}>
                   <Text style={styles.complexityBullet}>•</Text>

@@ -329,8 +329,12 @@ export function useLeadSubmission(props: UseLeadSubmissionProps) {
       setIsSubmitting(false);
 
       // Check if should show enrichment flow
+      // Show enrichment for:
+      // 1. Direct mode submissions (no calculator data)
+      // 2. Specific inquiry types (hidden_income, binding_agreement)
       const shouldShowEnrichmentFlow =
-        props.reason && ENRICHMENT_INQUIRY_TYPES.includes(props.reason);
+        props.isDirectMode ||
+        (props.reason && ENRICHMENT_INQUIRY_TYPES.includes(props.reason));
 
       if (shouldShowEnrichmentFlow && result.leadId) {
         setCurrentLeadId(result.leadId);
