@@ -6,6 +6,11 @@
 import { NoIndex } from '@/src/components/seo/NoIndex';
 import { LoadingFallback } from '@/src/components/ui/LoadingFallback';
 import { lazy, Suspense } from 'react';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Admin Dashboard',
+};
 
 const LazyAdminDashboard = lazy(() => import('@/src/pages/admin/AdminDashboardScreen'));
 
