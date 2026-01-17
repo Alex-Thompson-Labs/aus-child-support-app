@@ -78,6 +78,7 @@ export default function AdminLayout() {
             const supabase = await getSupabaseClient();
             const { data } = supabase.auth.onAuthStateChange((event, session) => {
                 console.log('[AdminLayout] Auth state change:', event);
+                console.log('[AdminLayout] Session in event:', session ? 'Present' : 'Null');
 
                 if (event === 'SIGNED_IN' && session) {
                     console.log('[AdminLayout] SIGNED_IN - checking credentials');
@@ -96,6 +97,24 @@ export default function AdminLayout() {
                         setAuthState('authenticated');
                     } else {
                         console.log('[AdminLayout] Post-login role check failed');
+                        setAuthState('unauthenticated');
+                    }
+                } else if (event === 'INITIAL_SESSION' && session) {
+                    console.log('[AdminLayout] INITIAL_SESSION - checking credentials');
+                    console.log('[AdminLayout] User email:', session.user.email);
+                    console.log('[AdminLayout] Configured admin email:', Env.ADMIN_EMAIL);
+                    
+                    const hasRole = hasAdminRole(session.user.app_metadata);
+                    const isWhitelisted = session.user.email?.toLowerCase() === Env.ADMIN_EMAIL?.toLowerCase();
+                    
+                    console.log('[AdminLayout] Has admin role:', hasRole);
+                    console.log('[AdminLayout] Is whitelisted:', isWhitelisted);
+                    
+                    if (hasRole || isWhitelisted) {
+                        console.log('[AdminLayout] Setting authenticated state from INITIAL_SESSION');
+                        setAuthState('authenticated');
+                    } else {
+                        console.log('[AdminLayout] INITIAL_SESSION role check failed');
                         setAuthState('unauthenticated');
                     }
                 } else if (event === 'SIGNED_OUT') {

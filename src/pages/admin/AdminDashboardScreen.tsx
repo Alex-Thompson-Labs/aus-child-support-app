@@ -22,7 +22,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/theme.ts';
 import { LeadsTable } from '../../components/admin/LeadsTable.tsx';
 import { SummaryStatCard } from '../../components/admin/SummaryStatCard.tsx';
-import { Env } from '../../config/env.ts';
 import { formatCurrency } from '../../utils/formatters.ts';
 import {
     isWeb,
@@ -120,45 +119,11 @@ export default function AdminDashboardScreen() {
     }
   }, [statusFilter, sortBy]);
 
-  // Check authentication on mount
+  // Load leads on mount (auth is handled by _layout.tsx)
   useEffect(() => {
-    const checkAuth = async () => {
-      // Lazy-load Supabase for auth check
-      const supabase = await getSupabaseClient();
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      console.log('[AdminDashboard] Session check:', session ? 'Found' : 'Not found');
-      console.log('[AdminDashboard] Session user email:', session?.user?.email);
-
-      if (!session) {
-        console.log('[AdminDashboard] No session, redirecting to login');
-        router.replace('/admin/login');
-        return;
-      }
-
-      // Verify it's the admin email (configured via EXPO_PUBLIC_ADMIN_EMAIL)
-      const adminEmail = Env.ADMIN_EMAIL?.toLowerCase();
-      const userEmail = session.user.email?.toLowerCase();
-      
-      console.log('[AdminDashboard] Admin email from config:', adminEmail);
-      console.log('[AdminDashboard] User email from session:', userEmail);
-      console.log('[AdminDashboard] Match:', userEmail === adminEmail);
-
-      if (!adminEmail || userEmail !== adminEmail) {
-        console.log('[AdminDashboard] Email mismatch, signing out');
-        await supabase.auth.signOut();
-        router.replace('/admin/login');
-        return;
-      }
-
-      console.log('[AdminDashboard] Auth check passed, loading leads');
-      loadLeads();
-    };
-
-    checkAuth();
-  }, [router, loadLeads]);
+    console.log('[AdminDashboard] Component mounted, loading leads');
+    loadLeads();
+  }, [loadLeads]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
