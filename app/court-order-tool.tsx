@@ -230,7 +230,7 @@ function StepAnalysing() {
       <Text style={styles.stepDescription}>
         We&apos;re reading your court order and extracting the care schedule to calculate exact night counts.
       </Text>
-      
+
       {/* Progress Bar */}
       <View style={styles.progressContainer}>
         <View style={styles.progressBarBackground}>
@@ -239,7 +239,7 @@ function StepAnalysing() {
         <Text style={styles.progressText}>{stage}</Text>
         <Text style={styles.progressPercentage}>{progress}%</Text>
       </View>
-      
+
       <ActivityIndicator size="large" color="#2563EB" style={{ marginTop: 20 }} />
     </View>
   );
@@ -267,14 +267,14 @@ function StepResults({
   const motherColor = userRole === 'Mother' ? USER_COLOR : OTHER_PARENT_COLOR;
 
   // Detect if this is a 2-year timeline and get the actual start/end dates
-  const is2YearTimeline = timelineResponse && 
-    result.timeline.length > 0 && 
+  const is2YearTimeline = timelineResponse &&
+    result.timeline.length > 0 &&
     result.timeline[result.timeline.length - 1][1].startsWith(`${year + 1}`);
 
   // Extract actual calculation period from timeline
   const startDate = result.timeline[0]?.[0] || `${year}-01-01T00:00`;
   const endDate = result.timeline[result.timeline.length - 1]?.[1] || `${year}-12-31T23:59`;
-  
+
   const calculationStartMonth = parseInt(startDate.split('-')[1]);
   const calculationStartDay = parseInt(startDate.split('-')[2].split('T')[0]);
   const calculationEndYear = parseInt(endDate.split('-')[0]);
@@ -282,7 +282,7 @@ function StepResults({
   const calculationEndDay = parseInt(endDate.split('-')[2].split('T')[0]);
 
   const calculationDuration = is2YearTimeline ? '2-Year' : '1-Year';
-  const periodDescription = is2YearTimeline 
+  const periodDescription = is2YearTimeline
     ? `${format(new Date(startDate), 'MMM d, yyyy')} - ${format(new Date(endDate), 'MMM d, yyyy')}`
     : `${year} Full Year`;
 
@@ -358,7 +358,7 @@ function StepResults({
 
         <View style={styles.calendarSection}>
           <Text style={styles.sectionTitle}>Care Calendar</Text>
-          
+
           <CareCalendar
             year={year}
             timeline={result.timeline}
@@ -366,7 +366,7 @@ function StepResults({
             fatherColor={fatherColor}
             motherColor={motherColor}
           />
-          
+
           <Pressable style={styles.downloadButton} onPress={onDownloadPDF}>
             <Download size={18} color="#ffffff" />
             <Text style={styles.downloadButtonText}>Download Calendar PDF</Text>
@@ -412,7 +412,7 @@ function StepResults({
                 const subject = encodeURIComponent('Beta Feedback: Court Order Scanner');
                 const body = encodeURIComponent('I scanned my court order and noticed an issue with...');
                 const mailtoUrl = `mailto:feedback@auschildsupport.com?subject=${subject}&body=${body}`;
-                
+
                 if (Platform.OS === 'web') {
                   window.open(mailtoUrl, '_blank');
                 } else {
@@ -551,7 +551,7 @@ export default function CourtOrderToolScreen() {
       console.log('Timeline response:', data);
       const timelineData = data as TimelineResponse;
       const validation = validateTimeline(timelineData.timeline, timelineData.year);
-      
+
       if (!validation.valid) {
         console.error('Timeline validation errors:', validation.errors);
         setValidationErrors(validation.errors);
@@ -613,15 +613,15 @@ export default function CourtOrderToolScreen() {
   return (
     <>
       <PageSEO
-        title="Court Order Scanner"
-        description="Extract care schedule."
+        title="Court Order Scanner | Aus Child Support"
+        description="Extract care schedule from court orders."
         canonicalPath="/court-order-tool"
         schema={courtOrderSchema}
       />
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         <CalculatorHeader title="Court Order Scanner (BETA)" showBackButton={true} maxWidth={MAX_CALCULATOR_WIDTH} />
         <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, webContainerStyle]}>
-          
+
           <View style={styles.betaDisclaimer}>
             <Text style={styles.betaDisclaimerText}>
               This tool is currently in Beta. While our system is highly accurate, real-world court orders vary significantly in formatting. Please review all extracted dates and care percentages carefully to ensure they match your documents.
@@ -638,7 +638,7 @@ export default function CourtOrderToolScreen() {
                 const isActive = index === currentIndex;
                 const isComplete = index < currentIndex;
                 const isLast = index === 3;
-                
+
                 return (
                   <React.Fragment key={label}>
                     {/* Step Circle */}
@@ -654,7 +654,7 @@ export default function CourtOrderToolScreen() {
                         {isComplete ? '✓' : index + 1}
                       </Text>
                     </View>
-                    
+
                     {/* Connector Line */}
                     {!isLast && (
                       <View style={styles.progressConnector}>
@@ -668,7 +668,7 @@ export default function CourtOrderToolScreen() {
                 );
               })}
             </View>
-            
+
             {/* Labels - positioned to align with circles */}
             <View style={styles.progressLabelsRow}>
               {(['Upload', 'Details', 'Analysing', 'Results'] as const).map((label, index) => {
@@ -677,7 +677,7 @@ export default function CourtOrderToolScreen() {
                 const isActive = index === currentIndex;
                 const isComplete = index < currentIndex;
                 const isLast = index === 3;
-                
+
                 return (
                   <React.Fragment key={label}>
                     <View style={styles.progressLabelContainer}>

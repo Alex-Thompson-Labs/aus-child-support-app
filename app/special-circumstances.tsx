@@ -149,16 +149,16 @@ export default function SpecialCircumstancesScreen() {
   // Web-specific container styles
   const webContainerStyle = isWeb
     ? {
-        maxWidth: MAX_FORM_WIDTH,
-        width: '100%' as const,
-        alignSelf: 'center' as const,
-      }
+      maxWidth: MAX_FORM_WIDTH,
+      width: '100%' as const,
+      alignSelf: 'center' as const,
+    }
     : {};
 
   return (
     <>
       <PageSEO
-        title="Special Circumstances - Child Support Calculator Australia"
+        title="Special Circumstances | Aus Child Support"
         description="Identify special circumstances that may affect your child support assessment. Select applicable circumstances and connect with a family lawyer for assistance."
         canonicalPath="/special-circumstances"
         schema={faqSchema}

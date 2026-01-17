@@ -53,7 +53,7 @@ export default function LawyerInquiry() {
   return (
     <>
       <PageSEO
-        title="Request Legal Help | Child Support Australia"
+        title="Legal Inquiry | Aus Child Support"
         description="Connect with Australian family law professionals to review your child support situation. Get expert advice on Change of Assessment applications."
         canonicalPath="/lawyer-inquiry"
         schema={faqSchema}

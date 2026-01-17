@@ -519,6 +519,7 @@ export function EnrichmentView({
       <SafeAreaView style={containerStyles.container} edges={['top', 'bottom']}>
         <View style={enrichmentStyles.enrichmentContainer}>
           <View style={enrichmentStyles.enrichmentHeader}>
+            <Text style={enrichmentStyles.enrichmentIcon}>✓</Text>
             <Text style={enrichmentStyles.enrichmentTitle}>Case Updated!</Text>
           </View>
         </View>

@@ -181,16 +181,16 @@ const styles = StyleSheet.create({
     ...shadowPresets.card,
   },
 
-  // Warning Card (Amber/Orange) - Receiver Part A
+  // Warning Card (Blue) - Receiver Part A
   warningCard: {
-    backgroundColor: '#fef3c7', // amber-100
+    backgroundColor: '#eff6ff', // blue-50
     borderWidth: 1,
-    borderColor: '#f59e0b', // amber-500
+    borderColor: '#3b82f6', // blue-500
   },
   warningTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#92400e', // amber-800
+    color: '#1e40af', // blue-800
     marginBottom: 8,
   },
 
@@ -246,11 +246,11 @@ const styles = StyleSheet.create({
   ctaText: {
     fontSize: 13,
     fontStyle: 'italic',
-    color: '#92400e', // amber-800
+    color: '#1e40af', // blue-800
     marginTop: 10,
   },
   ctaButton: {
-    backgroundColor: '#f59e0b', // amber-500
+    backgroundColor: '#3b82f6', // blue-500
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 8,
