@@ -2,7 +2,11 @@ import DatePickerField from '@/src/components/ui/DatePickerField';
 import { HelpTooltip } from '@/src/features/calculator/components/HelpTooltip';
 import { formatCourtDateForReasons } from '@/src/features/lawyer-inquiry/validators';
 import { searchCountries } from '@/src/utils/all-countries';
-import { isWeb, webClickableStyles } from '@/src/utils/responsive';
+import {
+  isWeb,
+  webClickableStyles as webClickableStylesRaw,
+  webOnlyStyles as webOnlyStylesRaw,
+} from '@/src/utils/responsive';
 import {
   SPECIAL_CIRCUMSTANCES,
   isCourtDateReason,
@@ -10,6 +14,9 @@ import {
 } from '@/src/utils/special-circumstances';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+
+const webClickableStyles = webClickableStylesRaw as any;
+const webOnlyStyles = webOnlyStylesRaw as any;
 
 // Types
 interface SpecialCircumstancesWizardProps {
@@ -260,7 +267,7 @@ const LegalStep = memo(function LegalStep({
           <View style={styles.datePickerContainer}>
             {onCourtDateChange && (
               <DatePickerField
-                label="When is your court date?"
+                label="When is your court date? *"
                 value={courtDate}
                 onChange={onCourtDateChange}
                 minDate={new Date()}
@@ -869,19 +876,21 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 20,
     gap: 16,
-    ...(isWeb && {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-      gap: 20,
-    }),
+    ...(isWeb &&
+      ({
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        gap: 20,
+      } as any)),
   },
   summaryItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 12,
-    ...(isWeb && {
-      paddingVertical: 4,
-    }),
+    ...(isWeb &&
+      ({
+        paddingVertical: 4,
+      } as any)),
   },
   summaryCheckmark: {
     width: 20,

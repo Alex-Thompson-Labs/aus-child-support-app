@@ -138,7 +138,7 @@ export function getFontSize(base: number, width: number): number {
 /**
  * Web-specific styles that should only apply on web platform
  */
-export const webOnlyStyles = isWeb
+export const webOnlyStyles: any = isWeb
   ? {
     // Improve text rendering on web
     WebkitFontSmoothing: 'antialiased' as const,
@@ -155,7 +155,7 @@ export const webOnlyStyles = isWeb
 /**
  * Clickable element styles for web (pointer cursor, etc.)
  */
-export const webClickableStyles = isWeb
+export const webClickableStyles: any = isWeb
   ? {
     cursor: 'pointer' as const,
   }
