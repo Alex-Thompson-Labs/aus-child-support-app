@@ -290,7 +290,7 @@ export async function updateLeadEnrichment(
 
         // Use RPC to append to array AND update fields (avoids needing UPDATE permission)
         // This calls a Postgres function that handles the data update securely
-        const { error: updateError } = await supabaseClient.rpc(
+        const { data, error: updateError } = await supabaseClient.rpc(
             'append_complexity_reasons',
             {
                 lead_id: leadId,
@@ -301,7 +301,10 @@ export async function updateLeadEnrichment(
             }
         );
 
+        console.log('[updateLeadEnrichment] RPC response:', { data, error: updateError });
+
         if (updateError) {
+            console.error('[updateLeadEnrichment] RPC error:', updateError);
             // TODO: Replace with proper error reporting service
             return {
                 success: false,
@@ -309,6 +312,7 @@ export async function updateLeadEnrichment(
             };
         }
 
+        console.log('[updateLeadEnrichment] Success!');
         return { success: true };
     } catch (error) {
         // TODO: Replace with proper error reporting service

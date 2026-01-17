@@ -539,6 +539,9 @@ const SummaryStep = memo(function SummaryStep({
       <View style={styles.summaryList}>
         {selectedList.map((reason) => (
           <View key={reason.id} style={styles.summaryItem}>
+            <View style={styles.summaryCheckmark}>
+              <Text style={styles.summaryCheckmarkText}>✓</Text>
+            </View>
             <Text style={styles.summaryText}>{reason.label}</Text>
           </View>
         ))}
@@ -867,10 +870,42 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 16,
     marginBottom: 20,
-    gap: 8,
+    gap: 16,
+    ...(isWeb && {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+      gap: 20,
+    }),
   },
-  summaryItem: { flexDirection: 'row', alignItems: 'flex-start' },
-  summaryText: { fontSize: 14, color: '#334155', flex: 1, lineHeight: 20 },
+  summaryItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    ...(isWeb && {
+      paddingVertical: 4,
+    }),
+  },
+  summaryCheckmark: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#2563EB',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+    marginTop: 2,
+  },
+  summaryCheckmarkText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  summaryText: {
+    fontSize: 14,
+    color: '#334155',
+    flex: 1,
+    lineHeight: 20,
+  },
   emptyState: { alignItems: 'center', paddingVertical: 32 },
   emptyStateText: {
     fontSize: 15,
