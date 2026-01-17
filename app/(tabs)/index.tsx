@@ -60,7 +60,7 @@ export default function HomeScreen() {
   return (
     <>
       <PageSEO
-        title="Child Support Calculator Australia 2026 | Free & Accurate"
+        title="Child Support Calculator | Aus Child Support"
         description="Official 2026 Services Australia formula. Calculate child support payments instantly. Supports 50/50 shared care and split care."
         canonicalPath="/"
         schema={pageSchema}
