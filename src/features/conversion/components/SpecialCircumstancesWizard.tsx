@@ -1,6 +1,5 @@
 import DatePickerField from '@/src/components/ui/DatePickerField';
 import { HelpTooltip } from '@/src/features/calculator/components/HelpTooltip';
-import { formatCourtDateForReasons } from '@/src/features/lawyer-inquiry/validators';
 import { searchCountries } from '@/src/utils/all-countries';
 import {
   isWeb,
@@ -9,6 +8,7 @@ import {
 } from '@/src/utils/responsive';
 import {
   SPECIAL_CIRCUMSTANCES,
+  createCourtDateReasonId,
   isCourtDateReason,
   type SpecialCircumstance,
 } from '@/src/utils/special-circumstances';
@@ -617,7 +617,7 @@ export function SpecialCircumstancesWizard({
 
         // Add formatted court date if a court date reason is selected and date is set
         if (hasCourtDateReason && courtDate) {
-          reasonsArray.push(formatCourtDateForReasons(courtDate));
+          reasonsArray.push(createCourtDateReasonId(courtDate));
         } else if (hasCourtDateReason) {
           // Keep the generic court_date_pending if no date is set yet
           reasonsArray.push('court_date_pending');
@@ -641,7 +641,7 @@ export function SpecialCircumstancesWizard({
         let reasonsArray = Array.from(selectedReasons).filter(id => !isCourtDateReason(id));
 
         if (date) {
-          reasonsArray.push(formatCourtDateForReasons(date));
+          reasonsArray.push(createCourtDateReasonId(date));
         } else {
           reasonsArray.push('court_date_pending');
         }
