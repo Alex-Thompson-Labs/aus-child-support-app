@@ -32,6 +32,11 @@ export default function AdminLayout() {
                 data: { session },
             } = await supabase.auth.getSession();
 
+            console.log('[AdminLayout] Session check:', session ? 'Found' : 'Not found');
+            console.log('[AdminLayout] User email:', session?.user?.email);
+            console.log('[AdminLayout] User app_metadata:', session?.user?.app_metadata);
+            console.log('[AdminLayout] Configured admin email:', Env.ADMIN_EMAIL);
+
             if (!session) {
                 console.log('[AdminLayout] No session found');
                 setAuthState('unauthenticated');
@@ -40,7 +45,13 @@ export default function AdminLayout() {
 
             // Verify admin role from app_metadata OR explicit email whitelist
             // This ensures the admin email always has access even if role is missing
-            if (!hasAdminRole(session.user.app_metadata) && session.user.email !== Env.ADMIN_EMAIL) {
+            const hasRole = hasAdminRole(session.user.app_metadata);
+            const isWhitelisted = session.user.email?.toLowerCase() === Env.ADMIN_EMAIL?.toLowerCase();
+            
+            console.log('[AdminLayout] Has admin role:', hasRole);
+            console.log('[AdminLayout] Is whitelisted email:', isWhitelisted);
+
+            if (!hasRole && !isWhitelisted) {
                 console.log('[AdminLayout] User does not have admin role - signing out');
                 await supabase.auth.signOut();
                 setAuthState('unauthenticated');
@@ -69,14 +80,26 @@ export default function AdminLayout() {
                 console.log('[AdminLayout] Auth state change:', event);
 
                 if (event === 'SIGNED_IN' && session) {
+                    console.log('[AdminLayout] SIGNED_IN - checking credentials');
+                    console.log('[AdminLayout] User email:', session.user.email);
+                    console.log('[AdminLayout] Configured admin email:', Env.ADMIN_EMAIL);
+                    
                     // Fix: Include email whitelist check to match checkAuth logic
-                    if (hasAdminRole(session.user.app_metadata) || session.user.email === Env.ADMIN_EMAIL) {
+                    const hasRole = hasAdminRole(session.user.app_metadata);
+                    const isWhitelisted = session.user.email?.toLowerCase() === Env.ADMIN_EMAIL?.toLowerCase();
+                    
+                    console.log('[AdminLayout] Has admin role:', hasRole);
+                    console.log('[AdminLayout] Is whitelisted:', isWhitelisted);
+                    
+                    if (hasRole || isWhitelisted) {
+                        console.log('[AdminLayout] Setting authenticated state');
                         setAuthState('authenticated');
                     } else {
                         console.log('[AdminLayout] Post-login role check failed');
                         setAuthState('unauthenticated');
                     }
                 } else if (event === 'SIGNED_OUT') {
+                    console.log('[AdminLayout] SIGNED_OUT event');
                     setAuthState('unauthenticated');
                 }
             });
