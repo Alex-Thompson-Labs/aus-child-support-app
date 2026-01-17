@@ -1,6 +1,6 @@
 {
   "imports": {
     "std/": "https://deno.land/std@0.208.0/",
-    "@google/generative-ai": "npm:@google/generative-ai@^0.21.0"
+    "anthropic": "npm:@anthropic-ai/sdk@^0.33.1"
   }
 }
