@@ -5,30 +5,30 @@
  */
 
 import { useRouter } from 'expo-router';
-import process from 'node:process';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  Platform,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    ActivityIndicator,
+    Alert,
+    Platform,
+    Pressable,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/theme.ts';
 import { LeadsTable } from '../../components/admin/LeadsTable.tsx';
 import { SummaryStatCard } from '../../components/admin/SummaryStatCard.tsx';
+import { Env } from '../../config/env.ts';
 import { formatCurrency } from '../../utils/formatters.ts';
 import {
-  isWeb,
-  MAX_CONTENT_WIDTH,
-  webClickableStyles,
-  webInputStyles,
+    isWeb,
+    MAX_CONTENT_WIDTH,
+    webClickableStyles,
+    webInputStyles,
 } from '../../utils/responsive.ts';
 import { getSupabaseClient } from '../../utils/supabase/client.ts';
 import { fetchPaginatedLeads, type LeadSubmission } from '../../utils/supabase/leads.ts';
@@ -129,19 +129,31 @@ export default function AdminDashboardScreen() {
         data: { session },
       } = await supabase.auth.getSession();
 
+      console.log('[AdminDashboard] Session check:', session ? 'Found' : 'Not found');
+      console.log('[AdminDashboard] Session user email:', session?.user?.email);
+
       if (!session) {
+        console.log('[AdminDashboard] No session, redirecting to login');
         router.replace('/admin/login');
         return;
       }
 
       // Verify it's the admin email (configured via EXPO_PUBLIC_ADMIN_EMAIL)
-      const adminEmail = process.env.EXPO_PUBLIC_ADMIN_EMAIL?.toLowerCase();
-      if (!adminEmail || session.user.email?.toLowerCase() !== adminEmail) {
+      const adminEmail = Env.ADMIN_EMAIL?.toLowerCase();
+      const userEmail = session.user.email?.toLowerCase();
+      
+      console.log('[AdminDashboard] Admin email from config:', adminEmail);
+      console.log('[AdminDashboard] User email from session:', userEmail);
+      console.log('[AdminDashboard] Match:', userEmail === adminEmail);
+
+      if (!adminEmail || userEmail !== adminEmail) {
+        console.log('[AdminDashboard] Email mismatch, signing out');
         await supabase.auth.signOut();
         router.replace('/admin/login');
         return;
       }
 
+      console.log('[AdminDashboard] Auth check passed, loading leads');
       loadLeads();
     };
 
