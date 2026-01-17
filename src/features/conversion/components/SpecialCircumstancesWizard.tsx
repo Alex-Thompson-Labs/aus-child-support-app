@@ -1,12 +1,12 @@
-import { HelpTooltip } from '@/src/features/calculator/components/HelpTooltip';
 import DatePickerField from '@/src/components/ui/DatePickerField';
+import { HelpTooltip } from '@/src/features/calculator/components/HelpTooltip';
 import { formatCourtDateForReasons } from '@/src/features/lawyer-inquiry/validators';
 import { searchCountries } from '@/src/utils/all-countries';
 import { isWeb, webClickableStyles } from '@/src/utils/responsive';
 import {
-    SPECIAL_CIRCUMSTANCES,
-    isCourtDateReason,
-    type SpecialCircumstance,
+  SPECIAL_CIRCUMSTANCES,
+  isCourtDateReason,
+  type SpecialCircumstance,
 } from '@/src/utils/special-circumstances';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -73,12 +73,8 @@ const AnimatedConditionalField = memo(function AnimatedConditionalField({
     }
   }, [show, opacity]);
 
-  if (!shouldRender) {
-    return null;
-  }
-
   if (isWeb) {
-    // Use CSS Grid transition on web
+    // Use CSS Grid transition on web - always render to enable smooth transitions
     return (
       <div
         style={{
@@ -95,7 +91,11 @@ const AnimatedConditionalField = memo(function AnimatedConditionalField({
     );
   }
 
-  // Use Animated.View on mobile
+  // Use Animated.View on mobile - only render when needed
+  if (!shouldRender) {
+    return null;
+  }
+
   return (
     <Animated.View style={{ opacity }}>
       {children}
@@ -219,13 +219,13 @@ const LegalStep = memo(function LegalStep({
 
   return (
     <View style={styles.stepContent}>
-      <Text 
+      <Text
         style={styles.stepDescription}
         nativeID="legal-step-heading"
       >
         Do you have any urgent legal matters that require immediate attention?
       </Text>
-      <View 
+      <View
         style={styles.checkboxList}
         role="group"
         aria-labelledby="legal-step-heading"
@@ -411,13 +411,13 @@ const IncomeStep = memo(function IncomeStep({
 
   return (
     <View style={styles.stepContent}>
-      <Text 
+      <Text
         style={styles.stepDescription}
         nativeID="income-step-heading"
       >
         Are there concerns about the other parent&apos;s financial situation?
       </Text>
-      <View 
+      <View
         style={styles.checkboxList}
         role="group"
         aria-labelledby="income-step-heading"
@@ -455,13 +455,13 @@ const CostsStep = memo(function CostsStep({
 
   return (
     <View style={styles.stepContent}>
-      <Text 
+      <Text
         style={styles.stepDescription}
         nativeID="costs-step-heading"
       >
         Are there any special costs or circumstances affecting your situation?
       </Text>
-      <View 
+      <View
         style={styles.checkboxList}
         role="group"
         aria-labelledby="costs-step-heading"
@@ -866,8 +866,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   summaryList: {
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
     padding: 16,
     marginBottom: 20,
     gap: 16,

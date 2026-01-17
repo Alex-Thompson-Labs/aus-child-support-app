@@ -593,8 +593,28 @@ export function EnrichmentView({
           />
         </View>
 
-        {/* Skip Button */}
+        {/* Action Buttons */}
         <View style={enrichmentStyles.enrichmentButtons}>
+          {/* Show Save button if there's enrichment data to save */}
+          {(calculatedLiability !== null || selectedFactors.length > 0 || enrichmentCountry) && (
+            <Pressable
+              style={[
+                buttonStyles.button,
+                isUpdating && buttonStyles.buttonDisabled,
+              ]}
+              onPress={onSubmit}
+              disabled={isUpdating}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Save enrichment data and close"
+            >
+              <Text style={buttonStyles.buttonText}>
+                {isUpdating ? 'Saving...' : 'Save & Close'}
+              </Text>
+            </Pressable>
+          )}
+          
+          {/* Skip button */}
           <Pressable
             style={enrichmentStyles.enrichmentSkipButton}
             onPress={onSkip}
@@ -604,7 +624,7 @@ export function EnrichmentView({
             accessibilityLabel="Skip and Close"
           >
             <Text style={enrichmentStyles.enrichmentSkipButtonText}>
-              Skip & Close
+              {calculatedLiability !== null || selectedFactors.length > 0 || enrichmentCountry ? 'Skip' : 'Skip & Close'}
             </Text>
           </Pressable>
         </View>
