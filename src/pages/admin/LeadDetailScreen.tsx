@@ -10,9 +10,9 @@ import { exportLeadAsPDF } from '@/src/utils/exportLeadPDF';
 import { formatCurrency } from '@/src/utils/formatters';
 import {
   isWeb,
-  MAX_CONTENT_WIDTH,
+  MAX_CALCULATOR_WIDTH,
   webClickableStyles,
-  webInputStyles,
+  webInputStyles
 } from '@/src/utils/responsive';
 import { getSupabaseClient, type LeadSubmission } from '@/src/utils/supabase';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -429,9 +429,9 @@ auschildsupport.com.au`;
     );
   }
 
-  // Web container style for constrained width on desktop
+  // Web container style for constrained width on desktop (matches calculator width)
   const webContainerStyle = isWeb ? {
-    maxWidth: MAX_CONTENT_WIDTH,
+    maxWidth: MAX_CALCULATOR_WIDTH,
     width: '100%' as const,
     alignSelf: 'center' as const,
   } : {};
@@ -535,14 +535,6 @@ auschildsupport.com.au`;
               <Text style={styles.infoLabel}>Children:</Text>
               <Text style={styles.infoValue}>{lead.children_count}</Text>
             </View>
-            {lead.time_to_complete && (
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Time to Complete:</Text>
-                <Text style={styles.infoValue}>
-                  {Math.floor(lead.time_to_complete / 60)}m {lead.time_to_complete % 60}s
-                </Text>
-              </View>
-            )}
 
             {/* Children Care Details - moved inside Case Details */}
             {lead.care_data && lead.care_data.length > 0 && (
@@ -676,6 +668,19 @@ auschildsupport.com.au`;
                   ))}
                 </View>
               )}
+            </View>
+          )}
+
+          {/* Time to Complete */}
+          {lead.time_to_complete && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Time to Complete</Text>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Duration:</Text>
+                <Text style={styles.infoValue}>
+                  {Math.floor(lead.time_to_complete / 60)}m {lead.time_to_complete % 60}s
+                </Text>
+              </View>
             </View>
           )}
 

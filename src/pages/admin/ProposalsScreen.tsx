@@ -6,9 +6,8 @@
 import { Colors } from '@/constants/theme';
 import {
     isWeb,
-    MAX_CONTENT_WIDTH,
     webClickableStyles,
-    webInputStyles,
+    webInputStyles
 } from '@/src/utils/responsive';
 import {
     getSupabaseClient,
@@ -234,9 +233,9 @@ export default function ProposalsScreen() {
     );
   }
 
-  // Web container style for constrained width on desktop
+  // Web container style for constrained width on desktop (wider for proposals table)
   const webContainerStyle = isWeb ? {
-    maxWidth: MAX_CONTENT_WIDTH,
+    maxWidth: 1200, // Wider to accommodate full proposals table without scrolling
     width: '100%' as const,
     alignSelf: 'center' as const,
   } : {};

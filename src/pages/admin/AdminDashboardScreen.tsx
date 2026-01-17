@@ -25,9 +25,8 @@ import { SummaryStatCard } from '../../components/admin/SummaryStatCard.tsx';
 import { formatCurrency } from '../../utils/formatters.ts';
 import {
     isWeb,
-    MAX_CONTENT_WIDTH,
     webClickableStyles,
-    webInputStyles,
+    webInputStyles
 } from '../../utils/responsive.ts';
 import { getSupabaseClient } from '../../utils/supabase/client.ts';
 import { fetchPaginatedLeads, type LeadSubmission } from '../../utils/supabase/leads.ts';
@@ -175,10 +174,10 @@ export default function AdminDashboardScreen() {
     );
   }
 
-  // Web container style for constrained width on desktop
+  // Web container style for constrained width on desktop (wider for table display)
   const webContainerStyle = isWeb
     ? {
-        maxWidth: MAX_CONTENT_WIDTH,
+        maxWidth: 1200, // Wider to accommodate full table without horizontal scroll
         width: '100%' as const,
         alignSelf: 'center' as const,
       }

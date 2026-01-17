@@ -33,31 +33,104 @@ export function useInquiryStyles() {
         paddingTop: 12,
         paddingBottom: 40,
       },
+      progressContainer: {
+        width: '100%',
+        maxWidth: MAX_CALCULATOR_WIDTH,
+        alignSelf: 'center',
+        backgroundColor: '#ffffff',
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+        marginHorizontal: 16,
+        marginBottom: 16,
+        ...Platform.select({
+          web: {
+            boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.08)',
+          },
+          default: {
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 4,
+            elevation: 2,
+          },
+        }),
+      },
     });
 
     // ============================================================================
-    // Header & Trust Badge Styles
+    // Top Header Bar Styles (Title + Close button at very top)
+    // ============================================================================
+    const topHeaderBarStyles = StyleSheet.create({
+      headerBar: {
+        backgroundColor: colors.surface,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
+        width: '100%',
+        zIndex: 100,
+      },
+      headerBarInner: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        maxWidth: MAX_CALCULATOR_WIDTH,
+        alignSelf: 'center',
+      },
+      headerBarTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#1e3a8a',
+        textAlign: 'left',
+      },
+      headerBarCloseButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.surfaceSubtle,
+      },
+      headerBarCloseButtonText: {
+        color: colors.primaryDark,
+        fontSize: 20,
+        fontWeight: '400',
+        lineHeight: 24,
+      },
+    });
+
+    // ============================================================================
+    // Header & Trust Badge Styles (Content card subtitle only)
     // ============================================================================
     const headerStyles = StyleSheet.create({
       headerWrapper: {
         backgroundColor: colors.surface,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.border,
-        alignItems: 'center',
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+        marginHorizontal: 16,
+        marginBottom: 16,
+        ...Platform.select({
+          web: {
+            boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.08)',
+          },
+          default: {
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 4,
+            elevation: 2,
+          },
+        }),
       },
       header: {
         flexDirection: 'column',
         paddingLeft: 20,
         paddingRight: 12,
-        paddingVertical: 8,
+        paddingVertical: 16,
         gap: 0,
-        ...Platform.select({
-          web: {
-            maxWidth: MAX_CALCULATOR_WIDTH,
-            width: '100%',
-          },
-          default: {},
-        }),
       },
       headerTitleRow: {
         flexDirection: 'row',
@@ -564,8 +637,6 @@ export function useInquiryStyles() {
       successContainer: {
         flex: 1,
         backgroundColor: colors.backgroundNeutral,
-        justifyContent: 'center',
-        alignItems: 'center',
       },
       successContent: {
         alignItems: 'center',
@@ -733,6 +804,7 @@ export function useInquiryStyles() {
 
     return {
       containerStyles,
+      topHeaderBarStyles,
       headerStyles,
       formStyles,
       checkboxStyles,

@@ -18,7 +18,7 @@ import { MAX_CALCULATOR_WIDTH, useResponsive } from '../utils/responsive';
 
 // ✅ STANDARD IMPORTS (Reliable)
 import { CalculatorFAQ, CalculatorForm, CalculatorHeader, CalculatorResults, IncomeSupportModal } from '@/src/features/calculator';
-import { PrivacyPolicyLink } from '../components/PrivacyPolicyLink';
+import { Footer } from '../components/ui/Footer';
 import { StepProgressIndicator } from '../components/ui/StepProgressIndicator';
 
 export function CalculatorScreen() {
@@ -288,17 +288,8 @@ export function CalculatorScreen() {
             {/* FAQ Section */}
             <CalculatorFAQ />
 
-            {/* Privacy Footer */}
-            {/* @ts-ignore - Web-only ARIA role */}
-            <View style={styles.privacyFooter} accessibilityRole="footer">
-              <PrivacyPolicyLink
-                linkText="Privacy Policy"
-                textStyle={styles.privacyFooterText}
-              />
-            </View>
-
-            {/* Bottom Padding */}
-            <View style={{ height: 140 }} />
+            {/* Footer */}
+            <Footer />
           </View>
         </ScrollView>
 
@@ -374,16 +365,6 @@ const styles = StyleSheet.create({
   },
   fullWidth: {
     width: '100%',
-  },
-  privacyFooter: {
-    marginTop: 32,
-    marginBottom: 16,
-    alignItems: 'center',
-    paddingVertical: 12,
-  },
-  privacyFooterText: {
-    fontSize: 12,
-    color: '#64748b', // grey-500
   },
   progressContainer: {
     width: '100%',
