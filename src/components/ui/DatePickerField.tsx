@@ -151,7 +151,10 @@ export default function DatePickerField({
   const handleWebChange = (event: any) => {
     const inputValue = event.target.value;
     const date = inputValueToDate(inputValue, pickMonthYear);
-    onChange(date);
+    // Add a small delay to make the picker close feel less abrupt
+    setTimeout(() => {
+      onChange(date);
+    }, 250);
   };
 
   // Calculate position and open picker (Web MonthPicker)
