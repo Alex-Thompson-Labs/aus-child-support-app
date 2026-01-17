@@ -9,25 +9,25 @@ import { Env } from '@/src/config/env';
 import { exportLeadAsPDF } from '@/src/utils/exportLeadPDF';
 import { formatCurrency } from '@/src/utils/formatters';
 import {
-    isWeb,
-    MAX_CONTENT_WIDTH,
-    webClickableStyles,
-    webInputStyles,
+  isWeb,
+  MAX_CONTENT_WIDTH,
+  webClickableStyles,
+  webInputStyles,
 } from '@/src/utils/responsive';
 import { getSupabaseClient, type LeadSubmission } from '@/src/utils/supabase';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Clipboard,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  Alert,
+  Clipboard,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -543,20 +543,88 @@ auschildsupport.com.au`;
                 </Text>
               </View>
             )}
+
+            {/* Children Care Details - moved inside Case Details */}
+            {lead.care_data && lead.care_data.length > 0 && (
+              <View style={{ marginTop: 16, paddingTop: 16, borderTopWidth: 1, borderTopColor: '#e2e8f0' }}>
+                <Text style={[styles.infoLabel, { marginBottom: 12, fontSize: 13, fontWeight: '600' }]}>
+                  Children Care Details:
+                </Text>
+                {lead.care_data.map((child, index) => (
+                  <View key={index} style={styles.careRow}>
+                    <Text style={styles.careLabel}>Child {child.index + 1}:</Text>
+                    <Text style={styles.careValue}>
+                      Parent A: {child.careA.toFixed(0)}% | Parent B: {child.careB.toFixed(0)}%
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {/* Parent's Message - moved inside Case Details */}
+            <View style={{ marginTop: 16, paddingTop: 16, borderTopWidth: 1, borderTopColor: '#e2e8f0' }}>
+              <Text style={[styles.infoLabel, { marginBottom: 8, fontSize: 13, fontWeight: '600' }]}>
+                Parent&apos;s Message:
+              </Text>
+              <Text style={styles.messageText}>{lead.parent_message}</Text>
+            </View>
           </View>
 
-          {/* Children Care Details */}
-          {lead.care_data && lead.care_data.length > 0 && (
+          {/* Complexity Triggers */}
+          {lead.complexity_reasons && lead.complexity_reasons.length > 0 && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Children Care Details</Text>
-              {lead.care_data.map((child, index) => (
-                <View key={index} style={styles.careRow}>
-                  <Text style={styles.careLabel}>Child {child.index + 1}:</Text>
-                  <Text style={styles.careValue}>
-                    Parent A: {child.careA.toFixed(0)}% | Parent B: {child.careB.toFixed(0)}%
-                  </Text>
+              <Text style={styles.sectionTitle}>Complexity Triggers</Text>
+              {lead.complexity_reasons.map((reason, index) => (
+                <View key={index} style={styles.complexityItem}>
+                  <Text style={styles.complexityBullet}>•</Text>
+                  <Text style={styles.complexityText}>{reason}</Text>
                 </View>
               ))}
+            </View>
+          )}
+
+          {/* Financial Tags */}
+          {lead.financial_tags && lead.financial_tags.length > 0 && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Financial Tags</Text>
+              <View style={styles.tagsContainer}>
+                {lead.financial_tags.map((tag, index) => (
+                  <View key={index} style={styles.financialTag}>
+                    <Text style={styles.financialTagText}>{tag}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Special Circumstances Data */}
+          {lead.special_circumstances_data && Object.keys(lead.special_circumstances_data).length > 0 && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Special Circumstances Data</Text>
+              {lead.special_circumstances_data.separation_date && (
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>Separation Date:</Text>
+                  <Text style={styles.infoValue}>
+                    {new Date(lead.special_circumstances_data.separation_date).toLocaleDateString('en-AU')}
+                  </Text>
+                </View>
+              )}
+              {lead.special_circumstances_data.cohabited_6_months !== undefined && (
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>Cohabited 6+ Months:</Text>
+                  <Text style={styles.infoValue}>
+                    {lead.special_circumstances_data.cohabited_6_months ? 'Yes' : 'No'}
+                  </Text>
+                </View>
+              )}
+              {lead.special_circumstances_data.other_parent_country && (
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>Other Parent Country:</Text>
+                  <Text style={styles.infoValue}>
+                    {lead.special_circumstances_data.other_parent_country}
+                  </Text>
+                </View>
+              )}
             </View>
           )}
 
@@ -610,70 +678,6 @@ auschildsupport.com.au`;
               )}
             </View>
           )}
-
-          {/* Financial Tags */}
-          {lead.financial_tags && lead.financial_tags.length > 0 && (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Financial Tags</Text>
-              <View style={styles.tagsContainer}>
-                {lead.financial_tags.map((tag, index) => (
-                  <View key={index} style={styles.financialTag}>
-                    <Text style={styles.financialTagText}>{tag}</Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-
-          {/* Special Circumstances Data */}
-          {lead.special_circumstances_data && Object.keys(lead.special_circumstances_data).length > 0 && (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Special Circumstances Data</Text>
-              {lead.special_circumstances_data.separation_date && (
-                <View style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>Separation Date:</Text>
-                  <Text style={styles.infoValue}>
-                    {new Date(lead.special_circumstances_data.separation_date).toLocaleDateString('en-AU')}
-                  </Text>
-                </View>
-              )}
-              {lead.special_circumstances_data.cohabited_6_months !== undefined && (
-                <View style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>Cohabited 6+ Months:</Text>
-                  <Text style={styles.infoValue}>
-                    {lead.special_circumstances_data.cohabited_6_months ? 'Yes' : 'No'}
-                  </Text>
-                </View>
-              )}
-              {lead.special_circumstances_data.other_parent_country && (
-                <View style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>Other Parent Country:</Text>
-                  <Text style={styles.infoValue}>
-                    {lead.special_circumstances_data.other_parent_country}
-                  </Text>
-                </View>
-              )}
-            </View>
-          )}
-
-          {/* Complexity Triggers */}
-          {lead.complexity_reasons && lead.complexity_reasons.length > 0 && (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Complexity Triggers</Text>
-              {lead.complexity_reasons.map((reason, index) => (
-                <View key={index} style={styles.complexityItem}>
-                  <Text style={styles.complexityBullet}>•</Text>
-                  <Text style={styles.complexityText}>{reason}</Text>
-                </View>
-              ))}
-            </View>
-          )}
-
-          {/* Parent's Message */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Parent&apos;s Message</Text>
-            <Text style={styles.messageText}>{lead.parent_message}</Text>
-          </View>
 
           {/* Notes */}
           <View style={styles.section}>

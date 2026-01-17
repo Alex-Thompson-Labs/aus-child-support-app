@@ -67,8 +67,9 @@ export default function AdminLayout() {
     }, []);
 
     useEffect(() => {
+        // Only check auth on mount, don't re-run
         checkAuth();
-    }, [checkAuth]);
+    }, []);
 
     // Listen for auth state changes (e.g., after login)
     useEffect(() => {
@@ -80,13 +81,12 @@ export default function AdminLayout() {
                 console.log('[AdminLayout] Auth state change:', event);
                 console.log('[AdminLayout] Session in event:', session ? 'Present' : 'Null');
 
-                // Only handle specific events to avoid loops
+                // Handle SIGNED_IN (after login)
                 if (event === 'SIGNED_IN' && session) {
                     console.log('[AdminLayout] SIGNED_IN - checking credentials');
                     console.log('[AdminLayout] User email:', session.user.email);
                     console.log('[AdminLayout] Configured admin email:', Env.ADMIN_EMAIL);
                     
-                    // Fix: Include email whitelist check to match checkAuth logic
                     const hasRole = hasAdminRole(session.user.app_metadata);
                     const isWhitelisted = session.user.email?.toLowerCase() === Env.ADMIN_EMAIL?.toLowerCase();
                     
@@ -100,11 +100,14 @@ export default function AdminLayout() {
                         console.log('[AdminLayout] Post-login role check failed');
                         setAuthState('unauthenticated');
                     }
-                } else if (event === 'SIGNED_OUT') {
+                }
+                // Handle SIGNED_OUT
+                else if (event === 'SIGNED_OUT') {
                     console.log('[AdminLayout] SIGNED_OUT event');
                     setAuthState('unauthenticated');
                 }
-                // Ignore INITIAL_SESSION, TOKEN_REFRESHED, etc. to avoid loops
+                // Ignore INITIAL_SESSION, TOKEN_REFRESHED, USER_UPDATED to avoid loops
+                // The initial checkAuth() handles the session check on mount
             });
 
             subscription = data.subscription;
