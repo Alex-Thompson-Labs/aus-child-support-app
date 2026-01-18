@@ -622,6 +622,12 @@ export default function CourtOrderToolScreen() {
         <CalculatorHeader title="Court Order Scanner (BETA)" showBackButton={true} maxWidth={MAX_CALCULATOR_WIDTH} />
         <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, webContainerStyle]}>
 
+          {/* Page Title */}
+          {/* @ts-ignore - Web-only ARIA attributes */}
+          <Text style={styles.pageTitle} accessibilityRole="header" aria-level="1">
+            Court Order Scanner
+          </Text>
+
           <View style={styles.betaDisclaimer}>
             <Text style={styles.betaDisclaimerText}>
               This tool is currently in Beta. While our system is highly accurate, real-world court orders vary significantly in formatting. Please review all extracted dates and care percentages carefully to ensure they match your documents.
@@ -733,7 +739,7 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1 },
   scrollContent: { padding: 16, paddingBottom: 32 },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
-  pageTitle: { fontSize: 28, fontWeight: '700', color: '#1e293b' },
+  pageTitle: { fontSize: 28, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
   betaBadge: { backgroundColor: '#dbeafe', paddingVertical: 4, paddingHorizontal: 12, borderRadius: 20, borderWidth: 1, borderColor: '#93c5fd' },
   betaBadgeText: { fontSize: 11, fontWeight: '700', color: '#1e40af', letterSpacing: 0.5 },
   introText: { fontSize: 16, color: '#475569', lineHeight: 24, marginBottom: 16 },
@@ -759,7 +765,7 @@ const styles = StyleSheet.create({
   stepContainer: { flex: 1, padding: 20, alignItems: 'center', justifyContent: 'center' },
   iconContainer: { width: 96, height: 96, borderRadius: 48, backgroundColor: '#eff6ff', alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
   loaderContainer: { width: 96, height: 96, borderRadius: 48, backgroundColor: '#eff6ff', alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
-  stepTitle: { fontSize: 22, fontWeight: '700', color: '#1e293b', marginBottom: 12, textAlign: 'center' },
+  stepTitle: { fontSize: 22, fontWeight: '700', color: '#1e3a8a', marginBottom: 12, textAlign: 'center' },
   stepDescription: { fontSize: 15, color: '#475569', textAlign: 'center', lineHeight: 22, marginBottom: 32, maxWidth: 400 },
   sectionContainer: { width: '100%', maxWidth: 500, marginBottom: 32 },
   sectionLabel: { fontSize: 16, fontWeight: '600', color: '#1e293b', marginBottom: 16, textAlign: 'center' },

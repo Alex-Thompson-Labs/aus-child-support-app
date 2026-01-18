@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '600',
-    color: theme.colors.textPrimary || '#111827',
+    color: theme.colors.primaryDark || '#1e3a8a',
   },
   titleActive: {
     color: theme.colors.primary || '#2563EB',

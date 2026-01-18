@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     pageTitle: {
         fontSize: 28,
         fontWeight: '700',
-        color: '#1e293b',
+        color: '#1e3a8a',
         marginBottom: 24,
     },
     section: {
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 20,
         fontWeight: '600',
-        color: '#1e293b',
+        color: '#1e3a8a',
         marginBottom: 12,
     },
     bodyText: {
