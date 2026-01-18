@@ -2,11 +2,22 @@ import { useResponsive } from '@/src/utils/responsive';
 import { shadowPresets } from '@/src/utils/shadow-styles';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import {
+    Animated,
+    Image,
+    Linking,
+    Modal,
+    Pressable,
+    StyleSheet,
+    Text,
+    TouchableWithoutFeedback,
+    View
+} from 'react-native';
 
 // Brand Blue from assessment breakdown
 const BRAND_NAVY = '#1e3a8a';
+const DRAWER_WIDTH = 320;
 
 // Basic back button for sub-pages
 interface CalculatorHeaderProps {
@@ -19,19 +30,37 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
     const { isDesktop } = useResponsive();
     const router = useRouter();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const slideAnim = useRef(new Animated.Value(DRAWER_WIDTH)).current;
 
-    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-
-    const handleNavigation = (route: string) => {
-        setIsMenuOpen(false);
-        if (route.startsWith('http')) {
-            Linking.openURL(route);
-        } else {
-            router.push(route as any);
-        }
+    const openDrawer = () => {
+        setIsMenuOpen(true);
+        Animated.timing(slideAnim, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
     };
 
-    // --- MOBILE VIEW (New Implementation) ---
+    const closeDrawer = () => {
+        Animated.timing(slideAnim, {
+            toValue: DRAWER_WIDTH,
+            duration: 200,
+            useNativeDriver: true,
+        }).start(() => setIsMenuOpen(false));
+    };
+
+    const handleNavigation = (route: string) => {
+        closeDrawer();
+        // Small delay to let animation complete before navigating
+        setTimeout(() => {
+            if (route.startsWith('http')) {
+                Linking.openURL(route);
+            } else {
+                router.push(route as any);
+            }
+        }, 100);
+    };
+
     return (
         // @ts-ignore - Web-only ARIA role
         <View style={[styles.header, styles.mobileHeaderWrapper]} accessibilityRole="banner">
@@ -53,7 +82,6 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
                     ) : (
                         <>
                             <Image
-                                // Using the requested asset
                                 source={require('@/public/favicon-rounded-white-bg.png')}
                                 style={styles.iconMobile}
                                 resizeMode="contain"
@@ -63,49 +91,171 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
                     )}
                 </View>
 
-                {/* Right: Hamburger */}
-                <Pressable
-                    style={styles.rightElement}
-                    onPress={toggleMenu}
-                    accessibilityRole="button"
-                    accessibilityLabel="Menu"
-                >
-                    <Feather name={isMenuOpen ? 'x' : 'menu'} size={28} color={BRAND_NAVY} />
-                </Pressable>
+                {/* Right: Hamburger (hidden on desktop) */}
+                {!isDesktop && (
+                    <Pressable
+                        style={styles.rightElement}
+                        onPress={openDrawer}
+                        accessibilityRole="button"
+                        accessibilityLabel="Open menu"
+                    >
+                        <Feather name="menu" size={28} color={BRAND_NAVY} />
+                    </Pressable>
+                )}
             </View>
 
-            {/* Mobile Dropdown Menu */}
-            {isMenuOpen && (
-                <View style={[styles.dropdownMenu, maxWidth ? { maxWidth } : undefined]}>
-                    <MenuItem label="Calculator" onPress={() => handleNavigation('/')} />
-                    <MenuItem label="Court Order Scanner" onPress={() => handleNavigation('/court-order-tool')} badge="BETA" />
-                    <MenuItem label="About" onPress={() => handleNavigation('/about')} />
-                    <MenuItem label="Blog" onPress={() => handleNavigation('https://blog.auschildsupport.com.au')} />
-                    <MenuItem label="FAQ" onPress={() => handleNavigation('/faq')} />
-                    <MenuItem label="Contact" onPress={() => handleNavigation('/contact')} />
-                </View>
-            )}
+            {/* Slide-out Drawer Modal */}
+            <Modal
+                transparent
+                visible={isMenuOpen}
+                animationType="none"
+                onRequestClose={closeDrawer}
+            >
+                {/* Backdrop */}
+                <TouchableWithoutFeedback onPress={closeDrawer}>
+                    <View style={styles.backdrop} />
+                </TouchableWithoutFeedback>
+
+                {/* Drawer Panel */}
+                <Animated.View
+                    style={[
+                        styles.drawer,
+                        { transform: [{ translateX: slideAnim }] }
+                    ]}
+                >
+                    {/* Decorative Background Shapes */}
+                    <View style={styles.softGlow} />
+                    <View style={styles.techRing} />
+
+                    {/* Header Bar */}
+                    <View style={styles.drawerHeader}>
+                        <Text style={styles.drawerHeaderTitle}>Child Support Calculator</Text>
+                        <Pressable
+                            onPress={closeDrawer}
+                            style={styles.closeButton}
+                            accessibilityRole="button"
+                            accessibilityLabel="Close menu"
+                        >
+                            <Feather name="x" size={28} color="#ffffff" />
+                        </Pressable>
+                    </View>
+
+                    {/* Top Section */}
+                    <View style={styles.topSection}>
+                        {/* Primary Action */}
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.primaryNavButton,
+                                pressed && styles.primaryNavButtonPressed
+                            ]}
+                            onPress={() => handleNavigation('/')}
+                            accessibilityRole="button"
+                        >
+                            <Feather name="plus-circle" size={20} color={BRAND_NAVY} />
+                            <Text style={styles.primaryNavButtonText}>Start New Calculation</Text>
+                        </Pressable>
+
+                        {/* Feature Item - Court Order Scanner */}
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.featureItem,
+                                styles.featureItemSpacing,
+                                pressed && styles.featureItemPressed
+                            ]}
+                            onPress={() => handleNavigation('/court-order-tool')}
+                            accessibilityRole="button"
+                        >
+                            <View style={styles.featureItemContent}>
+                                <Feather name="file-text" size={20} color="#ffffff" />
+                                <Text style={styles.featureItemText}>Court Order Scanner</Text>
+                                <View style={styles.betaBadge}>
+                                    <Text style={styles.betaBadgeText}>BETA</Text>
+                                </View>
+                            </View>
+                            <Feather name="chevron-right" size={18} color="#ffffff" />
+                        </Pressable>
+
+                        {/* Feature Item - Special Circumstances Wizard */}
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.featureItem,
+                                styles.featureItemSpacing,
+                                pressed && styles.featureItemPressed
+                            ]}
+                            onPress={() => handleNavigation('/special-circumstances')}
+                            accessibilityRole="button"
+                        >
+                            <View style={styles.featureItemContent}>
+                                <Feather name="sliders" size={20} color="#ffffff" />
+                                <Text style={styles.featureItemText}>Special Circumstances Wizard</Text>
+                            </View>
+                            <Feather name="chevron-right" size={18} color="#ffffff" />
+                        </Pressable>
+                    </View>
+
+                    {/* Middle Section - Support Links */}
+                    <View style={styles.middleSection}>
+                        <SupportMenuItem
+                            label="About"
+                            icon="info"
+                            onPress={() => handleNavigation('/about')}
+                        />
+                        <SupportMenuItem
+                            label="FAQ"
+                            icon="help-circle"
+                            onPress={() => handleNavigation('/faq')}
+                        />
+                        <SupportMenuItem
+                            label="Contact"
+                            icon="mail"
+                            onPress={() => handleNavigation('/contact')}
+                        />
+                    </View>
+
+                    {/* Bottom Section - Trust Footer */}
+                    <View style={styles.trustFooter}>
+                        <View style={styles.trustTextContainer}>
+                            <Text style={styles.trustStatement}>100% Private & Secure</Text>
+                        </View>
+                        {/* Support person image - add menu-support-person.png to public/images/ */}
+                        <SupportPersonImage />
+                    </View>
+                </Animated.View>
+            </Modal>
         </View>
     );
 }
 
-const MenuItem = ({ label, onPress, badge }: { label: string; onPress: () => void; badge?: string }) => (
+// Support person image component
+const SupportPersonImage = () => {
+    return (
+        <Image
+            source={require('@/public/images/menu-support-person.png')}
+            style={styles.supportPersonImage}
+            resizeMode="contain"
+        />
+    );
+};
+
+// Support menu item with huge white centered text (no icons)
+const SupportMenuItem = ({
+    label,
+    icon,
+    onPress
+}: {
+    label: string;
+    icon: keyof typeof Feather.glyphMap;
+    onPress: () => void;
+}) => (
     <Pressable
         style={({ pressed }) => [
-            styles.menuItem,
-            pressed && styles.menuItemPressed
+            styles.supportMenuItem,
+            pressed && styles.supportMenuItemPressed
         ]}
         onPress={onPress}
+        accessibilityRole="button"
     >
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={styles.menuItemText}>{label}</Text>
-            {badge && (
-                <View style={styles.badgeContainer}>
-                    <Text style={styles.badgeText}>{badge}</Text>
-                </View>
-            )}
-        </View>
-        <Feather name="chevron-right" size={16} color="#94a3b8" />
+        <Text style={styles.supportMenuItemText}>{label}</Text>
     </Pressable>
 );
 
@@ -116,53 +266,22 @@ const styles = StyleSheet.create({
         borderBottomColor: '#f1f5f9',
         backgroundColor: '#ffffff',
         width: '100%',
-        zIndex: 100, // Ensure header sits above content
-        alignItems: 'center', // Center the constrained content
+        zIndex: 100,
+        alignItems: 'center',
     },
     mobileHeaderWrapper: {
-        // Relative positioning for absolute dropdown
         position: 'relative',
         zIndex: 2000,
-        paddingHorizontal: 16, // Add padding here instead
-    },
-    headerContainer: {
-        width: '100%',
-        maxWidth: 850,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        alignSelf: 'center',
-        gap: 16,
+        paddingHorizontal: 16,
     },
     mobileHeaderRow: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         width: '100%',
-        maxWidth: 850, // Match bodyContainer width
+        maxWidth: 850,
         alignSelf: 'center',
     },
-    // Desktop Styles
-    logoDesktop: {
-        height: 52,
-        width: 286,
-        marginLeft: -35,
-        marginTop: -2,
-    },
-    blogButton: {
-        backgroundColor: '#0056b3',
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 20,
-        flexShrink: 0,
-        ...shadowPresets.small,
-    },
-    blogButtonText: {
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 14,
-    },
-    // Mobile Styles
     leftSection: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -183,47 +302,198 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'flex-end',
     },
-    // Dropdown
-    dropdownMenu: {
+
+    // Backdrop - hidden since menu is full screen
+    backdrop: {
         position: 'absolute',
-        top: '100%',
-        width: '100%',
-        alignSelf: 'center',
-        backgroundColor: '#ffffff',
-        ...shadowPresets.card,
-        borderBottomLeftRadius: 16,
-        borderBottomRightRadius: 16,
-        paddingVertical: 8,
-        marginTop: 1, // Slight offset
-        zIndex: 2000,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'transparent',
     },
-    menuItem: {
+
+    // Drawer - Full dark mode with unified navy background
+    drawer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: BRAND_NAVY,
+        justifyContent: 'space-between',
+        overflow: 'hidden',
+        // NO shadow, NO borderRadius, NO margin - pure full screen
+    },
+
+    // Decorative Background Shapes - Subtle white watermarks
+    softGlow: {
+        position: 'absolute',
+        top: -50,
+        right: -50,
+        width: 300,
+        height: 300,
+        borderRadius: 150,
+        backgroundColor: 'rgba(255, 255, 255, 0.03)',
+        zIndex: 0,
+    },
+    techRing: {
+        position: 'absolute',
+        top: 200,
+        right: -160,
+        width: 400,
+        height: 400,
+        borderRadius: 200,
+        borderWidth: 30,
+        borderColor: 'rgba(255, 255, 255, 0.03)',
+        backgroundColor: 'transparent',
+        zIndex: 0,
+    },
+
+    // Drawer Header Bar - Title and Close Button
+    drawerHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingTop: 50,
+        paddingHorizontal: 20,
+        paddingBottom: 20,
+        zIndex: 10,
+    },
+    drawerHeaderTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#ffffff',
+    },
+    closeButton: {
+        width: 44,
+        height: 44,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    // Top Section - Primary actions (layered above decorations)
+    topSection: {
+        paddingTop: 20,
+        zIndex: 1,
+    },
+
+    // Primary Action Button - Inverted white on dark
+    primaryNavButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#ffffff',
+        marginHorizontal: 20,
+        marginBottom: 20,
+        paddingVertical: 16,
+        borderRadius: 12,
+        gap: 10,
+        ...shadowPresets.medium,
+    },
+    primaryNavButtonPressed: {
+        backgroundColor: '#f1f5f9',
+    },
+    primaryNavButtonText: {
+        color: BRAND_NAVY,
+        fontSize: 17,
+        fontWeight: '600',
+    },
+
+    // Feature Item - Transparent white on dark background
+    featureItem: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: '#f8fafc',
+        marginHorizontal: 20,
+        paddingVertical: 14,
+        paddingHorizontal: 16,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#ffffff',
     },
-    menuItemPressed: {
-        backgroundColor: '#f1f5f9',
+    featureItemSpacing: {
+        marginTop: 16,
     },
-    menuItemText: {
+    featureItemPressed: {
+        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    },
+    featureItemContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+    },
+    featureItemText: {
         fontSize: 16,
-        color: '#334155',
         fontWeight: '500',
+        color: '#ffffff',
     },
-    badgeContainer: {
-        backgroundColor: '#dbeafe', // light blue
-        paddingHorizontal: 6,
-        paddingVertical: 2,
-        borderRadius: 4,
-        marginLeft: 8,
+    betaBadge: {
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        paddingHorizontal: 8,
+        paddingVertical: 3,
+        borderRadius: 6,
     },
-    badgeText: {
-        color: '#1e3a8a', // BRAND_NAVY (dark blue)
+    betaBadgeText: {
+        color: '#ffffff',
         fontSize: 10,
         fontWeight: 'bold',
+        letterSpacing: 0.5,
+    },
+
+    // Middle Section - Heavy left-aligned editorial typography (layered above decorations)
+    middleSection: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        paddingLeft: 24,
+        zIndex: 1,
+    },
+    supportMenuItem: {
+        alignItems: 'flex-start',
+        paddingVertical: 8,
+        marginVertical: 20,
+    },
+    supportMenuItemPressed: {
+        opacity: 0.7,
+    },
+    supportMenuItemText: {
+        fontSize: 36,
+        color: '#ffffff',
+        fontWeight: '800',
+        letterSpacing: -0.5,
+    },
+
+    // Trust Footer - seamless dark navy (layered above decorations)
+    trustFooter: {
+        position: 'relative',
+        backgroundColor: BRAND_NAVY,
+        height: 280,
+        overflow: 'visible',
+        zIndex: 1,
+    },
+    trustTextContainer: {
+        position: 'absolute',
+        left: 24,
+        bottom: 40,
+        maxWidth: '60%',
+        zIndex: 10,
+    },
+    trustStatement: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#ffffff',
+        opacity: 0.8,
+    },
+    // Giant support person image - 320x380, anchored to bottom edge
+    supportPersonImage: {
+        position: 'absolute',
+        bottom: -60,
+        right: -30,
+        width: 320,
+        height: 380,
     },
 });
