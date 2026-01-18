@@ -6,6 +6,8 @@ import {
   webClickableStyles,
 } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
+import { sendContactEmail } from '@/src/utils/emailjs';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -20,7 +22,6 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 
 // Topic options for the contact form
 const TOPIC_OPTIONS = [
@@ -77,7 +78,12 @@ export default function ContactPage() {
 
   const handleSubmitContact = async () => {
     // Validate form
-    if (!formData.name || !formData.email || !formData.topic || !formData.message) {
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.topic ||
+      !formData.message
+    ) {
       setSubmitError('Please fill in all fields');
       return;
     }
@@ -93,15 +99,19 @@ export default function ContactPage() {
     setSubmitError('');
 
     try {
-      // For now, construct a mailto link as fallback
-      // In production, you'd send this to a backend API
-      const subject = encodeURIComponent(`${formData.topic} - ${formData.name}`);
-      const body = encodeURIComponent(
-        `Name: ${formData.name}\nEmail: ${formData.email}\nTopic: ${formData.topic}\n\nMessage:\n${formData.message}`
-      );
-      const mailtoUrl = `mailto:contact@auschildsupport.com?subject=${subject}&body=${body}`;
+      // Send via EmailJS
+      const result = await sendContactEmail({
+        name: formData.name,
+        email: formData.email,
+        topic: formData.topic,
+        message: formData.message,
+      });
 
-      await Linking.openURL(mailtoUrl);
+      if (!result.success) {
+        setSubmitError(result.error || 'Unable to send message. Please try again.');
+        setIsSubmitting(false);
+        return;
+      }
 
       setSubmitSuccess(true);
       setTimeout(() => {
@@ -193,7 +203,7 @@ export default function ContactPage() {
             <Pressable
               style={[styles.secondaryButton, isWeb && webClickableStyles]}
               onPress={() =>
-                Linking.openURL('https://blog.auschildsupport.com,au')
+                Linking.openURL('https://blog.auschildsupport.com.au')
               }
               accessibilityRole="button"
               accessibilityLabel="Visit blog"
@@ -264,7 +274,9 @@ export default function ContactPage() {
               accessibilityRole="button"
               accessibilityLabel="View frequently asked questions"
             >
-              <Text style={styles.faqLinkText}>Frequently Asked Questions →</Text>
+              <Text style={styles.faqLinkText}>
+                Frequently Asked Questions →
+              </Text>
             </Pressable>
           </View>
 
@@ -305,10 +317,17 @@ export default function ContactPage() {
                     {submitSuccess ? (
                       // Success Message
                       <View style={modalStyles.successContainer}>
-                        <Ionicons name="checkmark-circle" size={64} color="#10b981" />
-                        <Text style={modalStyles.successTitle}>Message Sent!</Text>
+                        <Ionicons
+                          name="checkmark-circle"
+                          size={64}
+                          color="#10b981"
+                        />
+                        <Text style={modalStyles.successTitle}>
+                          Message Sent!
+                        </Text>
                         <Text style={modalStyles.successText}>
-                          Thank you for contacting us. We'll get back to you soon.
+                          Thank you for contacting us. We&apos;ll get back to
+                          you soon.
                         </Text>
                       </View>
                     ) : (
@@ -348,19 +367,26 @@ export default function ContactPage() {
                           <Text style={modalStyles.label}>Topic *</Text>
                           <Pressable
                             style={modalStyles.dropdownButton}
-                            onPress={() => setShowTopicDropdown(!showTopicDropdown)}
+                            onPress={() =>
+                              setShowTopicDropdown(!showTopicDropdown)
+                            }
                             disabled={isSubmitting}
                           >
                             <Text
                               style={[
                                 modalStyles.dropdownButtonText,
-                                !formData.topic && modalStyles.dropdownPlaceholder,
+                                !formData.topic &&
+                                  modalStyles.dropdownPlaceholder,
                               ]}
                             >
                               {formData.topic || 'Select a topic'}
                             </Text>
                             <Ionicons
-                              name={showTopicDropdown ? 'chevron-up' : 'chevron-down'}
+                              name={
+                                showTopicDropdown
+                                  ? 'chevron-up'
+                                  : 'chevron-down'
+                              }
                               size={20}
                               color="#64748b"
                             />
@@ -406,16 +432,22 @@ export default function ContactPage() {
                         {/* Error Message */}
                         {submitError && (
                           <View style={modalStyles.errorContainer}>
-                            <Ionicons name="warning" size={20} color="#dc2626" />
-                            <Text style={modalStyles.errorText}>{submitError}</Text>
+                            <Ionicons
+                              name="warning"
+                              size={20}
+                              color="#dc2626"
+                            />
+                            <Text style={modalStyles.errorText}>
+                              {submitError}
+                            </Text>
                           </View>
                         )}
 
                         {/* Disclaimer */}
                         <View style={modalStyles.disclaimerBox}>
                           <Text style={modalStyles.disclaimerBoxText}>
-                            We aim to respond within 48 hours. Please note we cannot
-                            provide legal advice via email.
+                            We aim to respond within 48 hours. Please note we
+                            cannot provide legal advice via email.
                           </Text>
                         </View>
 
@@ -480,7 +512,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1e293b',
+    color: '#1e3a8a',
     marginBottom: 12,
   },
   introText: {
@@ -508,7 +540,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1e293b',
+    color: '#1e3a8a',
     marginBottom: 8,
   },
   cardDescription: {

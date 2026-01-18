@@ -2,6 +2,7 @@ import { SemanticColors } from '@/constants/theme';
 import { LoadingFallback } from '@/src/components/ui/LoadingFallback';
 import { ABTestingProvider } from '@/src/contexts/ABTestingContext';
 import { useClientOnly } from '@/src/hooks/useClientOnly';
+import { initEmailJS } from '@/src/utils/emailjs';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, usePathname } from 'expo-router';
 import Head from 'expo-router/head';
@@ -35,6 +36,10 @@ export default function RootLayout() {
   useEffect(() => {
     async function prepare() {
       try {
+        // Initialize EmailJS for web
+        if (Platform.OS === 'web') {
+          initEmailJS();
+        }
         // Add any async resource loading here if needed (e.g., fonts)
         // For now, we just mark as ready since fonts are loaded via expo config
       } catch (e) {

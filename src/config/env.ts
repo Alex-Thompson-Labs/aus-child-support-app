@@ -14,4 +14,9 @@ export const Env = {
 
     // Site
     SITE_URL: process.env.EXPO_PUBLIC_SITE_URL || 'https://auschildsupport.com.au',
+
+    // EmailJS
+    EMAILJS_SERVICE_ID: process.env.EXPO_PUBLIC_EMAILJS_SERVICE_ID,
+    EMAILJS_TEMPLATE_ID: process.env.EXPO_PUBLIC_EMAILJS_TEMPLATE_ID,
+    EMAILJS_PUBLIC_KEY: process.env.EXPO_PUBLIC_EMAILJS_PUBLIC_KEY,
 };

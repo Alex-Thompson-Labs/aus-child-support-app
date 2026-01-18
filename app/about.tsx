@@ -110,11 +110,11 @@ export default function AboutPage() {
                         </Text>
                     </View>
 
-                    {/* Contact Section */}
+                    {/* Next Steps Section */}
                     <View style={styles.section}>
                         {/* @ts-ignore - Web-only ARIA attributes */}
                         <Text style={styles.sectionTitle} accessibilityRole="header" aria-level="2">
-                            Contact
+                            Next Steps
                         </Text>
                         <Text style={styles.bodyText}>
                             For questions or feedback about the calculator, visit our blog or use the
@@ -123,19 +123,19 @@ export default function AboutPage() {
                         <View style={styles.buttonRow}>
                             <Pressable
                                 style={[styles.primaryButton, isWeb && webClickableStyles]}
-                                onPress={() => Linking.openURL('https://blog.auschildsupport.com.au')}
-                                accessibilityRole="button"
-                                accessibilityLabel="Visit our blog"
-                            >
-                                <Text style={styles.primaryButtonText}>Visit Blog</Text>
-                            </Pressable>
-                            <Pressable
-                                style={[styles.secondaryButton, isWeb && webClickableStyles]}
                                 onPress={() => router.push('/')}
                                 accessibilityRole="button"
                                 accessibilityLabel="Return to calculator"
                             >
-                                <Text style={styles.secondaryButtonText}>Calculator</Text>
+                                <Text style={styles.primaryButtonText}>Calculator</Text>
+                            </Pressable>
+                            <Pressable
+                                style={[styles.secondaryButton, isWeb && webClickableStyles]}
+                                onPress={() => Linking.openURL('https://blog.auschildsupport.com.au')}
+                                accessibilityRole="button"
+                                accessibilityLabel="Visit our blog"
+                            >
+                                <Text style={styles.secondaryButtonText}>Visit Blog</Text>
                             </Pressable>
                         </View>
                     </View>
