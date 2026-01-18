@@ -74,11 +74,12 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
             {/* Mobile Dropdown Menu */}
             {isMenuOpen && (
                 <View style={[styles.dropdownMenu, maxWidth ? { maxWidth } : undefined]}>
-                    <MenuItem label="Blog" onPress={() => handleNavigation('https://blog.auschildsupport.com.au')} />
+                    <MenuItem label="Calculator" onPress={() => handleNavigation('/')} />
                     <MenuItem label="Court Order Scanner" onPress={() => handleNavigation('/court-order-tool')} badge="BETA" />
                     <MenuItem label="About" onPress={() => handleNavigation('/about')} />
-                    <MenuItem label="Contact" onPress={() => handleNavigation('/contact')} />
+                    <MenuItem label="Blog" onPress={() => handleNavigation('https://blog.auschildsupport.com.au')} />
                     <MenuItem label="FAQ" onPress={() => handleNavigation('/faq')} />
+                    <MenuItem label="Contact" onPress={() => handleNavigation('/contact')} />
                 </View>
             )}
         </View>
