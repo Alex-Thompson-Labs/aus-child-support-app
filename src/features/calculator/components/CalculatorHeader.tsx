@@ -1,6 +1,7 @@
 import { useResponsive } from '@/src/utils/responsive';
 import { shadowPresets } from '@/src/utils/shadow-styles';
 import { Feather } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
@@ -129,7 +130,11 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
 
                     {/* Header Bar */}
                     <View style={styles.drawerHeader}>
-                        <Text style={styles.drawerHeaderTitle}>Child Support Calculator</Text>
+                        <Image
+                            source={require('@/assets/source_images/australian-child-support-assessment-calculator-logo.png')}
+                            style={styles.drawerLogo}
+                            resizeMode="contain"
+                        />
                         <Pressable
                             onPress={closeDrawer}
                             style={styles.closeButton}
@@ -151,7 +156,7 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
                             onPress={() => handleNavigation('/')}
                             accessibilityRole="button"
                         >
-                            <Feather name="plus-circle" size={20} color={BRAND_NAVY} />
+                            <Feather name="plus-circle" size={26} color={BRAND_NAVY} />
                             <Text style={styles.primaryNavButtonText}>Start New Calculation</Text>
                         </Pressable>
 
@@ -166,7 +171,7 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
                             accessibilityRole="button"
                         >
                             <View style={styles.featureItemContent}>
-                                <Feather name="file-text" size={20} color="#ffffff" />
+                                <Feather name="file-text" size={26} color="#ffffff" />
                                 <Text style={styles.featureItemText}>Court Order Scanner</Text>
                                 <View style={styles.betaBadge}>
                                     <Text style={styles.betaBadgeText}>BETA</Text>
@@ -186,7 +191,7 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
                             accessibilityRole="button"
                         >
                             <View style={styles.featureItemContent}>
-                                <Feather name="sliders" size={20} color="#ffffff" />
+                                <Feather name="sliders" size={26} color="#ffffff" />
                                 <Text style={styles.featureItemText}>Special Circumstances Wizard</Text>
                             </View>
                             <Feather name="chevron-right" size={18} color="#ffffff" />
@@ -226,14 +231,21 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
     );
 }
 
-// Support person image component
+// Support person image component with gradient mask
 const SupportPersonImage = () => {
     return (
-        <Image
-            source={require('@/public/images/menu-support-person.png')}
-            style={styles.supportPersonImage}
-            resizeMode="contain"
-        />
+        <View style={styles.supportPersonImageContainer}>
+            <Image
+                source={require('@/public/images/menu-support-person.png')}
+                style={styles.supportPersonImage}
+                resizeMode="contain"
+            />
+            <LinearGradient
+                colors={[BRAND_NAVY, 'transparent']}
+                style={styles.gradientMask}
+                pointerEvents="none"
+            />
+        </View>
     );
 };
 
@@ -357,10 +369,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingTop: 50,
+        paddingTop: 40,
         paddingHorizontal: 20,
         paddingBottom: 20,
+        gap: 10,
         zIndex: 10,
+    },
+    drawerLogo: {
+        height: 42,
+        width: 280,
+        tintColor: '#ffffff',
     },
     drawerHeaderTitle: {
         fontSize: 20,
@@ -377,6 +395,7 @@ const styles = StyleSheet.create({
     // Top Section - Primary actions (layered above decorations)
     topSection: {
         paddingTop: 20,
+        gap: 16,
         zIndex: 1,
     },
 
@@ -398,8 +417,8 @@ const styles = StyleSheet.create({
     },
     primaryNavButtonText: {
         color: BRAND_NAVY,
-        fontSize: 17,
-        fontWeight: '600',
+        fontSize: 21,
+        fontWeight: '800',
     },
 
     // Feature Item - Transparent white on dark background
@@ -408,7 +427,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         marginHorizontal: 20,
-        paddingVertical: 14,
+        paddingVertical: 16,
         paddingHorizontal: 16,
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
         borderRadius: 12,
@@ -416,7 +435,7 @@ const styles = StyleSheet.create({
         borderColor: '#ffffff',
     },
     featureItemSpacing: {
-        marginTop: 16,
+        marginTop: 0,
     },
     featureItemPressed: {
         backgroundColor: 'rgba(255, 255, 255, 0.15)',
@@ -427,8 +446,8 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     featureItemText: {
-        fontSize: 16,
-        fontWeight: '500',
+        fontSize: 21,
+        fontWeight: '800',
         color: '#ffffff',
     },
     betaBadge: {
@@ -450,18 +469,18 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'flex-start',
         paddingLeft: 24,
+        gap: 32,
         zIndex: 1,
     },
     supportMenuItem: {
         alignItems: 'flex-start',
-        paddingVertical: 8,
-        marginVertical: 20,
+        paddingVertical: 0,
     },
     supportMenuItemPressed: {
         opacity: 0.7,
     },
     supportMenuItemText: {
-        fontSize: 36,
+        fontSize: 24,
         color: '#ffffff',
         fontWeight: '800',
         letterSpacing: -0.5,
@@ -489,11 +508,23 @@ const styles = StyleSheet.create({
         opacity: 0.8,
     },
     // Giant support person image - 320x380, anchored to bottom edge
-    supportPersonImage: {
+    supportPersonImageContainer: {
         position: 'absolute',
         bottom: -60,
         right: -30,
         width: 320,
         height: 380,
+    },
+    supportPersonImage: {
+        width: 320,
+        height: 380,
+    },
+    gradientMask: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 60,
+        zIndex: 1,
     },
 });
