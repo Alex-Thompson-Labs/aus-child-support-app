@@ -2,16 +2,17 @@ import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCalculator } from '../hooks/useCalculator';
+import { isComplexityTrap } from '../utils/calculator';
 import { convertCareToPercentage } from '../utils/care-utils';
 import { getYearConstants } from '../utils/child-support-constants';
 import { MAX_CALCULATOR_WIDTH, useResponsive } from '../utils/responsive';
@@ -184,6 +185,9 @@ export function CalculatorScreen() {
     runCalculation(false, false);
   };
 
+  // For form props, only show income percentages for standard calculation results
+  const standardResults = results && !isComplexityTrap(results) ? results : null;
+
   const formProps = {
     incomeA: formState.incomeA,
     incomeB: formState.incomeB,
@@ -191,10 +195,10 @@ export function CalculatorScreen() {
     relDepA: formState.relDepA,
     relDepB: formState.relDepB,
     errors: errors,
-    incomePercA: results?.incomePercA,
-    incomePercB: results?.incomePercB,
-    csiA: results?.CSI_A,
-    csiB: results?.CSI_B,
+    incomePercA: standardResults?.incomePercA,
+    incomePercB: standardResults?.incomePercB,
+    csiA: standardResults?.CSI_A,
+    csiB: standardResults?.CSI_B,
     selectedYear: selectedYear,
     onYearChange: handleYearChange,
     onIncomeAChange: handleIncomeAChange,

@@ -39,7 +39,7 @@ export function deriveAgeRangeMemoized(age: number): AgeRange {
   if (cached !== undefined) {
     return cached;
   }
-  
+
   // Calculate and cache
   const result = deriveAgeRange(age);
   ageRangeCache.set(age, result);
@@ -177,6 +177,33 @@ export interface CalculationResults {
   paymentToNPC?: number;
 }
 
+/**
+ * Result returned when calculation is bypassed due to complexity trap.
+ * Used for lead generation instead of showing inaccurate estimates.
+ */
+export interface ComplexityTrapCalculationResult {
+  /** Discriminator for type checking */
+  resultType: 'COMPLEXITY_TRAP';
+  /** Specific trap reason */
+  trapReason: ComplexityTrapReason;
+  /** Human-readable reason for UI display */
+  displayReason: string;
+}
+
+/**
+ * Union type for all possible calculation results
+ */
+export type CalculationResultUnion = CalculationResults | ComplexityTrapCalculationResult;
+
+/**
+ * Type guard to check if result is a complexity trap
+ */
+export function isComplexityTrap(
+  result: CalculationResultUnion | null
+): result is ComplexityTrapCalculationResult {
+  return result !== null && 'resultType' in result && result.resultType === 'COMPLEXITY_TRAP';
+}
+
 export interface FormErrors {
   incomeA?: string;
   incomeB?: string;
@@ -207,12 +234,24 @@ export interface MultiCaseInfo {
 }
 
 /**
- * Non-parent carer information (Formula 4).
+ * Reasons for complexity trap - bypasses calculation for lead generation.
+ */
+export type ComplexityTrapReason =
+  | 'FORMULA_4_NPC_MULTI_CASE' // NPC + either parent has other children
+  | 'FORMULA_5_OVERSEAS' // NPC + parent living overseas
+  | 'FORMULA_6_DECEASED'; // NPC + parent deceased
+
+/**
+ * Non-parent carer information (Formula 2/4).
  * A non-parent carer (e.g., grandparent) must have at least 35% care.
  * Eligibility is derived from per-child care amounts in ChildInput.careAmountNPC.
  */
 export interface NonParentCarerInfo {
   enabled: boolean;
+  /** Is either parent deceased? Triggers Formula 6 trap. */
+  hasDeceasedParent?: boolean;
+  /** Is either parent living overseas? Triggers Formula 5 trap. */
+  hasOverseasParent?: boolean;
 }
 
 /**

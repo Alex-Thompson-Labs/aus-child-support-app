@@ -36,17 +36,20 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
         // @ts-ignore - Web-only ARIA role
         <View style={[styles.header, styles.mobileHeaderWrapper]} accessibilityRole="banner">
             <View style={[styles.mobileHeaderRow, maxWidth ? { maxWidth } : undefined]}>
-                {/* Left: Icon/Logo + Title (side by side) or Back Button */}
+                {/* Left: Icon/Logo + Title (side by side) or Back Button + Title */}
                 <View style={styles.leftSection}>
                     {showBackButton ? (
-                        <Pressable
-                            onPress={() => router.replace('/')}
-                            accessibilityRole="button"
-                            accessibilityLabel="Go back to calculator"
-                            hitSlop={12}
-                        >
-                            <Feather name="arrow-left" size={24} color={BRAND_NAVY} />
-                        </Pressable>
+                        <>
+                            <Pressable
+                                onPress={() => router.replace('/')}
+                                accessibilityRole="button"
+                                accessibilityLabel="Go back to calculator"
+                                hitSlop={12}
+                            >
+                                <Feather name="arrow-left" size={24} color={BRAND_NAVY} />
+                            </Pressable>
+                            <Text style={styles.leftTitle}>{title || 'Calculator'}</Text>
+                        </>
                     ) : (
                         <>
                             <Image

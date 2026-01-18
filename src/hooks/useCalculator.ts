@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import type {
-  CalculationResults,
+  CalculationResultUnion,
   CalculatorInputs,
 } from '../utils/calculator';
 import { deriveAgeRange } from '../utils/calculator';
@@ -33,7 +33,7 @@ export function useCalculator() {
     resetState
   } = useCalculatorState();
 
-  const [results, setResults] = useState<CalculationResults | null>(null);
+  const [results, setResults] = useState<CalculationResultUnion | null>(null);
 
   const validateForm = useCallback((): boolean => {
     const newErrors = validateCalculatorForm(formState);

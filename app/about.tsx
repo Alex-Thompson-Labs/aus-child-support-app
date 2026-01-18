@@ -53,12 +53,6 @@ export default function AboutPage() {
                     style={styles.scrollView}
                     contentContainerStyle={[styles.scrollContent, webContainerStyle]}
                 >
-                    {/* Page Title */}
-                    {/* @ts-ignore - Web-only ARIA attributes */}
-                    <Text style={styles.pageTitle} accessibilityRole="header" aria-level="1">
-                        About AusChildSupport
-                    </Text>
-
                     {/* Mission Section */}
                     <View style={styles.section}>
                         {/* @ts-ignore - Web-only ARIA attributes */}
@@ -66,9 +60,10 @@ export default function AboutPage() {
                             Our Mission
                         </Text>
                         <Text style={styles.bodyText}>
-                            We provide the only free Australian child support calculator that handles all six
-                            official formulas used by Services Australia. Our goal is to help separated parents
-                            understand their estimated child support obligations before contacting Services Australia.
+                            We provide the most comprehensive Australian child support tool available. We help
+                            separated parents estimate standard assessments (Formulas 1-3) and identify complex
+                            legal scenarios (Formulas 4-6). Our goal is to provide initial clarity while connecting
+                            all parents with specialist family law advice when they need it.
                         </Text>
                     </View>
 
@@ -79,21 +74,19 @@ export default function AboutPage() {
                             How Our Calculator Works
                         </Text>
                         <Text style={styles.bodyText}>
-                            Unlike basic calculators that only handle the standard formula, our calculator
-                            implements all six child support formulas used by Services Australia:
+                            We use the official 2026 Services Australia basic formula for standard assessments,
+                            while flagging complex cases for review:
                         </Text>
                         <View style={styles.bulletList}>
-                            <Text style={styles.bulletItem}>• Formula 1: Basic formula (standard cases)</Text>
-                            <Text style={styles.bulletItem}>• Formula 2: Parent on minimum rate</Text>
-                            <Text style={styles.bulletItem}>• Formula 3: Both parents below self-support</Text>
-                            <Text style={styles.bulletItem}>• Formula 4: One parent below self-support</Text>
-                            <Text style={styles.bulletItem}>• Formula 5: Fixed annual rate</Text>
-                            <Text style={styles.bulletItem}>• Formula 6: Both parents on minimum/fixed rate</Text>
+                            <Text style={styles.bulletItem}>• Formula 1: Standard separation (Single case)</Text>
+                            <Text style={styles.bulletItem}>• Formula 2: Care provided by a Non-Parent Carer (e.g., Grandparent)</Text>
+                            <Text style={styles.bulletItem}>• Formula 3: Parents with children from other relationships (Multi-case)</Text>
+                            <Text style={styles.bulletItem}>• Formulas 4-6: Complex cases involving non-parent carers with multi-case, overseas, or estate considerations (Referral service)</Text>
                         </View>
                         <Text style={[styles.bodyText, { marginTop: 12 }]}>
-                            This comprehensive approach ensures accurate estimates regardless of your income
-                            situation, including the 2026 cost of children tables, care percentage adjustments,
-                            and relevant dependent considerations.
+                            For standard cases, our calculator provides accurate estimates using the 2026 cost
+                            of children tables, care percentage adjustments, and relevant dependent considerations.
+                            For complex scenarios, we help you identify when specialist legal advice is needed.
                         </Text>
                     </View>
 
@@ -128,6 +121,14 @@ export default function AboutPage() {
                                 accessibilityLabel="Return to calculator"
                             >
                                 <Text style={styles.primaryButtonText}>Calculator</Text>
+                            </Pressable>
+                            <Pressable
+                                style={[styles.secondaryButton, isWeb && webClickableStyles]}
+                                onPress={() => router.push('/lawyer-inquiry')}
+                                accessibilityRole="button"
+                                accessibilityLabel="Contact a lawyer"
+                            >
+                                <Text style={styles.secondaryButtonText}>Talk to a Lawyer</Text>
                             </Pressable>
                             <Pressable
                                 style={[styles.secondaryButton, isWeb && webClickableStyles]}

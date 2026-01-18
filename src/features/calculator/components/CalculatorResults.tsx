@@ -1,19 +1,21 @@
 import { StepProgressIndicator } from '@/src/components/ui/StepProgressIndicator';
-import type { CalculationResults } from '@/src/utils/calculator';
+import type { CalculationResults, CalculationResultUnion } from '@/src/utils/calculator';
+import { isComplexityTrap } from '@/src/utils/calculator';
 import {
-    ComplexityFormData,
+  ComplexityFormData,
 } from '@/src/utils/complexity-detection';
 import { MAX_CALCULATOR_WIDTH, useResponsive } from '@/src/utils/responsive';
 import React, { useEffect } from 'react';
 import {
-    Modal,
-    Platform,
-    Pressable,
-    StyleSheet,
-    Text,
-    View
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ComplexityTrapAlert } from './ComplexityTrapAlert';
 import { ResultsHero } from './results/ResultsHero';
 import { ResultsInlineSummary } from './results/ResultsInlineSummary';
 import { ResultsModalContent } from './results/ResultsModalContent';
@@ -141,7 +143,7 @@ export { OPEN_BREAKDOWN_EVENT, triggerOpenBreakdown } from '@/src/utils/event-bu
  */
 
 interface CalculatorResultsProps {
-  results: CalculationResults;
+  results: CalculationResultUnion;
   formData?: ComplexityFormData;
   displayMode?: 'modal' | 'inline';
   isStale?: boolean;
@@ -162,6 +164,19 @@ export function CalculatorResults({
   const insets = useSafeAreaInsets();
   const { isWeb, isDesktop } = useResponsive();
 
+  // Handle complexity trap results - show CTA instead of calculation
+  if (isComplexityTrap(results)) {
+    return (
+      <ComplexityTrapAlert
+        trapReason={results.trapReason}
+        displayReason={results.displayReason}
+      />
+    );
+  }
+
+  // Cast to CalculationResults after trap check
+  const calculationResults = results as CalculationResults;
+
   // Use custom hook for state and navigation logic
   const {
     isExpanded,
@@ -174,7 +189,7 @@ export function CalculatorResults({
     triggerButtonRef,
     closeButtonRef,
   } = useResultsNavigation({
-    results,
+    results: calculationResults,
     formData,
     resetTimestamp,
   });
@@ -271,7 +286,7 @@ export function CalculatorResults({
       <View style={styles.twoColumnLayout}>
         <View style={styles.leftColumn}>
           <ResultsHero
-            results={results}
+            results={calculationResults}
             isStale={isStale}
             variant="inline"
             supportA={formData?.supportA ?? false}
@@ -280,7 +295,7 @@ export function CalculatorResults({
         </View>
         <View style={styles.rightColumn}>
           <ResultsModalContent
-            results={results}
+            results={calculationResults}
             formData={formData}
             localFormData={localFormData}
             currentResultsKey={currentResultsKey}
@@ -306,7 +321,7 @@ export function CalculatorResults({
     <>
       {!isExpanded && (
         <ResultsInlineSummary
-          results={results}
+          results={calculationResults}
           supportA={formData?.supportA}
           supportB={formData?.supportB}
           isStale={isStale}
@@ -368,7 +383,7 @@ export function CalculatorResults({
             />
           </View>
           <ResultsModalContent
-            results={results}
+            results={calculationResults}
             formData={formData}
             localFormData={localFormData}
             currentResultsKey={currentResultsKey}

@@ -9,9 +9,10 @@ import {
   View,
 } from 'react-native';
 import { HelpTooltip } from './HelpTooltip';
+
 // ============================================================================
-// NonParentCarerSection - Toggle for Formula 4 (NPC eligibility derived from
-// per-child care amounts in ChildRow)
+// NonParentCarerSection - Toggle for Formula 2/4 (NPC eligibility derived from
+// per-child care amounts in ChildRow) + status flags for Lead Trap detection
 // ============================================================================
 
 export interface NonParentCarerSectionProps {
@@ -24,9 +25,30 @@ export function NonParentCarerSection({
   onNonParentCarerChange,
 }: NonParentCarerSectionProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleToggle = (enabled: boolean) => {
-    onNonParentCarerChange({ enabled });
+    onNonParentCarerChange({
+      ...nonParentCarer,
+      enabled,
+      // Reset flags when disabling NPC
+      hasDeceasedParent: enabled ? (nonParentCarer.hasDeceasedParent ?? false) : undefined,
+      hasOverseasParent: enabled ? (nonParentCarer.hasOverseasParent ?? false) : undefined,
+    });
+  };
+
+  const handleDeceasedChange = (value: boolean) => {
+    onNonParentCarerChange({
+      ...nonParentCarer,
+      hasDeceasedParent: value,
+    });
+  };
+
+  const handleOverseasChange = (value: boolean) => {
+    onNonParentCarerChange({
+      ...nonParentCarer,
+      hasOverseasParent: value,
+    });
   };
 
   return (
@@ -67,6 +89,54 @@ export function NonParentCarerSection({
           />
         </View>
       </View>
+
+      {/* Parent Status Section - only visible when NPC is enabled */}
+      {nonParentCarer.enabled && (
+        <View style={styles.statusSection}>
+          <Pressable
+            onPress={() => setIsExpanded(!isExpanded)}
+            style={[styles.expandButton, webClickableStyles]}
+            accessibilityRole="button"
+            accessibilityLabel={isExpanded ? "Collapse parent status options" : "Expand parent status options"}
+          >
+            <Text style={styles.expandButtonText}>
+              Parent Status {isExpanded ? '▼' : '▶'}
+            </Text>
+            <HelpTooltip
+              what="If either parent is living overseas or deceased, special assessment rules apply that require manual review."
+              why=""
+              hideWhatLabel
+              iconColor="#60a5fa"
+              iconBorderColor="#bfdbfe"
+              iconBackgroundColor="#eff6ff"
+            />
+          </Pressable>
+
+          {isExpanded && (
+            <View style={styles.statusList}>
+              {/* Deceased Toggle */}
+              <View style={styles.statusRow}>
+                <BrandSwitch
+                  value={nonParentCarer.hasDeceasedParent ?? false}
+                  onValueChange={handleDeceasedChange}
+                  accessibilityLabel="Either parent is deceased"
+                />
+                <Text style={styles.statusLabel}>Is either parent deceased?</Text>
+              </View>
+
+              {/* Overseas Toggle */}
+              <View style={styles.statusRow}>
+                <BrandSwitch
+                  value={nonParentCarer.hasOverseasParent ?? false}
+                  onValueChange={handleOverseasChange}
+                  accessibilityLabel="Either parent is living overseas"
+                />
+                <Text style={styles.statusLabel}>Is either parent living overseas?</Text>
+              </View>
+            </View>
+          )}
+        </View>
+      )}
     </View>
   );
 }
@@ -101,5 +171,33 @@ const styles = StyleSheet.create({
   labelHovered: {
     ...(isWeb ? ({ textDecorationLine: 'underline' } as never) : {}),
   },
-
+  // Parent Status Section styles
+  statusSection: {
+    marginTop: 12,
+    paddingLeft: 48, // Align with toggle content
+  },
+  expandButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 4,
+  },
+  expandButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#64748b',
+  },
+  statusList: {
+    gap: 12,
+    marginTop: 12,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  statusLabel: {
+    fontSize: 14,
+    color: '#475569',
+  },
 });

@@ -622,12 +622,6 @@ export default function CourtOrderToolScreen() {
         <CalculatorHeader title="Court Order Scanner (BETA)" showBackButton={true} maxWidth={MAX_CALCULATOR_WIDTH} />
         <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, webContainerStyle]}>
 
-          {/* Page Title */}
-          {/* @ts-ignore - Web-only ARIA attributes */}
-          <Text style={styles.pageTitle} accessibilityRole="header" aria-level="1">
-            Court Order Scanner
-          </Text>
-
           <View style={styles.betaDisclaimer}>
             <Text style={styles.betaDisclaimerText}>
               This tool is currently in Beta. While our system is highly accurate, real-world court orders vary significantly in formatting. Please review all extracted dates and care percentages carefully to ensure they match your documents.

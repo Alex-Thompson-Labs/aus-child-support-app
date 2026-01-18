@@ -235,12 +235,6 @@ export default function FAQPage() {
                     style={styles.scrollView}
                     contentContainerStyle={[styles.scrollContent, webContainerStyle]}
                 >
-                    {/* Page Title */}
-                    {/* @ts-ignore - Web-only ARIA attributes */}
-                    <Text style={styles.pageTitle} accessibilityRole="header" aria-level="1">
-                        Frequently Asked Questions
-                    </Text>
-
                     <Text style={styles.introText}>
                         Find answers to common questions about child support in Australia.
                     </Text>

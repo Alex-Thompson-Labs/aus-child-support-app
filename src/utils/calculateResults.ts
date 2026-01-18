@@ -1,17 +1,19 @@
 import {
-    CalculationResults,
-    CalculatorFormState,
-    deriveAgeRangeMemoized,
+  CalculationResultUnion,
+  CalculatorFormState,
+  ComplexityTrapCalculationResult,
+  deriveAgeRangeMemoized
 } from './calculator';
 import { convertCareToPercentage } from './care-utils';
 import { getChildCost } from './child-support-calculations';
 import { AssessmentYear, getYearConstants } from './child-support-constants';
+import { detectComplexityTrap } from './complexity-detection';
 
 // Import from extracted modules
 import {
-    applyMARFARCaps,
-    applyMultiCaseCaps,
-    applyRatesToChildren,
+  applyMARFARCaps,
+  applyMultiCaseCaps,
+  applyRatesToChildren,
 } from './engine';
 import { validateCalculatorForm } from './form-validator';
 import { calculateIncomes } from './income-calculator';
@@ -22,39 +24,57 @@ import { resolvePayment } from './payment-resolver';
 export * from './engine';
 export { validateCalculatorForm } from './form-validator';
 export {
-    calculateCSI,
-    calculateIncomePercentages,
-    calculateIncomes,
-    createVirtualDependentChildren
+  calculateCSI,
+  calculateIncomePercentages,
+  calculateIncomes,
+  createVirtualDependentChildren
 } from './income-calculator';
 export type {
-    IncomeCalculationInput,
-    IncomeCalculationResult
+  IncomeCalculationInput,
+  IncomeCalculationResult
 } from './income-calculator';
 export {
-    calculateChildLiability,
-    calculateChildSupportPercentage,
-    shouldPayLiability
+  calculateChildLiability,
+  calculateChildSupportPercentage,
+  shouldPayLiability
 } from './liability-calculator';
 export type { LiabilityInput, LiabilityResult } from './liability-calculator';
 export {
-    calculateNPCPayment,
-    determinePayerRole,
-    resolvePayment
+  calculateNPCPayment,
+  determinePayerRole,
+  resolvePayment
 } from './payment-resolver';
 export type {
-    PaymentResolutionInput,
-    PaymentResolutionResult
+  PaymentResolutionInput,
+  PaymentResolutionResult
 } from './payment-resolver';
 
 export const calculateChildSupport = (
   formState: CalculatorFormState,
   selectedYear: AssessmentYear,
   overrides?: { supportA?: boolean; supportB?: boolean }
-): CalculationResults | null => {
+): CalculationResultUnion | null => {
   const errors = validateCalculatorForm(formState);
   if (Object.keys(errors).length > 0) {
     return null;
+  }
+
+  // =========================================================================
+  // Lead Trap Check - bypass calculation for complex NPC scenarios
+  // =========================================================================
+  const trapResult = detectComplexityTrap(
+    formState.nonParentCarer,
+    formState.multiCaseA.otherChildren.length > 0,
+    formState.multiCaseB.otherChildren.length > 0
+  );
+
+  if (trapResult.isTrapped) {
+    // Return trap result instead of attempting calculation
+    return {
+      resultType: 'COMPLEXITY_TRAP',
+      trapReason: trapResult.reason!,
+      displayReason: trapResult.displayReason!,
+    } as ComplexityTrapCalculationResult;
   }
 
   // Get year-specific constants
@@ -341,7 +361,7 @@ export const calculateChildSupport = (
           child.liabilityToNPC_B = child.finalLiabilityB;
           child.finalLiabilityB = 0;
         }
-        
+
         // Accumulate final liabilities in same pass
         finalLiabilityA += child.finalLiabilityA;
         finalLiabilityB += child.finalLiabilityB;

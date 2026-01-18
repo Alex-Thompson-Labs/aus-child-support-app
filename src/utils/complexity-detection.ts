@@ -1,11 +1,11 @@
-import type { CalculationResults, ChildInput } from '../utils/calculator';
+import type { CalculationResults, ChildInput, ComplexityTrapReason, NonParentCarerInfo } from './calculator';
 import { convertCareToPercentage } from './care-utils';
 import { formatCurrency } from './formatters';
 import {
-    getHighestPriorityReason,
-    getSpecialCircumstanceById,
-    isCourtDateReason,
-    parseCourtDateFromReasonId,
+  getHighestPriorityReason,
+  getSpecialCircumstanceById,
+  isCourtDateReason,
+  parseCourtDateFromReasonId,
 } from './special-circumstances';
 
 /**
@@ -343,4 +343,84 @@ export function getAlertConfig(
   }
 
   return null; // No alert needed
+}
+
+// ============================================================================
+// Complexity Trap Detection (Lead Generation for Formulas 4, 5, 6)
+// ============================================================================
+
+/**
+ * Result of complexity trap detection.
+ * When trapped, the calculation should be bypassed and a lead CTA shown instead.
+ */
+export interface ComplexityTrapResult {
+  /** Whether this scenario requires a trap (bypass calculation) */
+  isTrapped: boolean;
+  /** The specific reason for the trap */
+  reason?: ComplexityTrapReason;
+  /** Human-readable description for UI display */
+  displayReason?: string;
+}
+
+/**
+ * Display reasons for each trap type
+ */
+const TRAP_DISPLAY_REASONS: Record<ComplexityTrapReason, string> = {
+  FORMULA_4_NPC_MULTI_CASE: 'multi-case considerations',
+  FORMULA_5_OVERSEAS: 'overseas parent considerations',
+  FORMULA_6_DECEASED: 'estate considerations',
+};
+
+/**
+ * Detects if a scenario requires "Lead Trap" instead of calculation.
+ * 
+ * Trap conditions (all require NPC to be enabled):
+ * - Formula 4 Trap: NPC + either parent has children in other cases
+ * - Formula 5 Trap: NPC + a parent is marked as "Living Overseas"
+ * - Formula 6 Trap: NPC + a parent is marked as "Deceased"
+ * 
+ * @param nonParentCarer - Non-parent carer info from form state
+ * @param hasOtherChildrenA - Whether Parent A has other children (multi-case)
+ * @param hasOtherChildrenB - Whether Parent B has other children (multi-case)
+ * @returns ComplexityTrapResult indicating if trap applies and why
+ */
+export function detectComplexityTrap(
+  nonParentCarer: NonParentCarerInfo,
+  hasOtherChildrenA: boolean,
+  hasOtherChildrenB: boolean
+): ComplexityTrapResult {
+  // No trap if NPC is not enabled - standard Formula 1 or 3
+  if (!nonParentCarer.enabled) {
+    return { isTrapped: false };
+  }
+
+  // Check for Formula 6: Deceased parent (highest priority)
+  if (nonParentCarer.hasDeceasedParent) {
+    return {
+      isTrapped: true,
+      reason: 'FORMULA_6_DECEASED',
+      displayReason: TRAP_DISPLAY_REASONS.FORMULA_6_DECEASED,
+    };
+  }
+
+  // Check for Formula 5: Overseas parent
+  if (nonParentCarer.hasOverseasParent) {
+    return {
+      isTrapped: true,
+      reason: 'FORMULA_5_OVERSEAS',
+      displayReason: TRAP_DISPLAY_REASONS.FORMULA_5_OVERSEAS,
+    };
+  }
+
+  // Check for Formula 4: NPC + Multi-case
+  if (hasOtherChildrenA || hasOtherChildrenB) {
+    return {
+      isTrapped: true,
+      reason: 'FORMULA_4_NPC_MULTI_CASE',
+      displayReason: TRAP_DISPLAY_REASONS.FORMULA_4_NPC_MULTI_CASE,
+    };
+  }
+
+  // No trap - this is Formula 2 (standard NPC scenario)
+  return { isTrapped: false };
 }
