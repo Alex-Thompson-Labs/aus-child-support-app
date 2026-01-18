@@ -28,6 +28,7 @@ const TOPIC_OPTIONS = [
   'Website Bug or Issue',
   'Feature Request',
   'Calculator Question',
+  'Legal Referral Inquiry',
   'Partnership Opportunity',
   'General Feedback',
   'Other',
@@ -320,7 +321,7 @@ export default function ContactPage() {
                         <Ionicons
                           name="checkmark-circle"
                           size={64}
-                          color="#10b981"
+                          color="#2563EB"
                         />
                         <Text style={modalStyles.successTitle}>
                           Message Sent!
@@ -427,6 +428,18 @@ export default function ContactPage() {
                             textAlignVertical="top"
                             editable={!isSubmitting}
                           />
+                        </View>
+
+                        {/* Privacy Footer Note */}
+                        <View style={modalStyles.privacyFooter}>
+                          <Text style={modalStyles.privacyFooterText}>
+                            For questions about a specific estimate, please use
+                            the secure calculator. This general form is not
+                            intended for sensitive personal or financial details.
+                            For official assessments, contact Services Australia.
+                            For legal advice, we recommend consulting an Australian
+                            family lawyer.
+                          </Text>
                         </View>
 
                         {/* Error Message */}
@@ -650,7 +663,7 @@ const modalStyles = StyleSheet.create({
   modalTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1e293b',
+    color: '#1e3a8a',
   },
   closeButton: {
     padding: 4,
@@ -747,6 +760,16 @@ const modalStyles = StyleSheet.create({
     lineHeight: 19,
     textAlign: 'center',
   },
+  privacyFooter: {
+    marginTop: 16,
+    marginBottom: 16,
+  },
+  privacyFooterText: {
+    fontSize: 12,
+    color: '#64748b',
+    lineHeight: 18,
+    textAlign: 'left',
+  },
   submitButton: {
     backgroundColor: '#2563EB',
     borderRadius: 8,
@@ -776,7 +799,7 @@ const modalStyles = StyleSheet.create({
   successTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#10b981',
+    color: '#2563EB',
     marginTop: 16,
     marginBottom: 8,
   },
