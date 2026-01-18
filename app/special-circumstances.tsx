@@ -218,13 +218,15 @@ export default function SpecialCircumstancesScreen() {
           </View>
 
           {/* Wizard Component */}
-          <SpecialCircumstancesWizard
-            initialSelectedReasons={selectedReasons}
-            onSpecialCircumstancesChange={handleSpecialCircumstancesChange}
-            onSubmit={handleSubmit}
-            isSubmitting={isNavigating}
-            isStandalone={true}
-          />
+          <View style={styles.wizardWrapper}>
+            <SpecialCircumstancesWizard
+              initialSelectedReasons={selectedReasons}
+              onSpecialCircumstancesChange={handleSpecialCircumstancesChange}
+              onSubmit={handleSubmit}
+              isSubmitting={isNavigating}
+              isStandalone={true}
+            />
+          </View>
 
           {/* FAQ Section */}
           <View style={styles.faqSection}>
@@ -313,7 +315,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#bfdbfe',
     padding: 20,
-    marginBottom: 24,
+    marginBottom: 32,
     ...createShadow({
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 1 },
@@ -321,6 +323,11 @@ const styles = StyleSheet.create({
       shadowRadius: 3,
       elevation: 2,
     }),
+  },
+  wizardWrapper: {
+    minHeight: 700,
+    marginBottom: 64,
+    ...(isWeb && { minHeight: '80vh' as any }),
   },
   introTitle: {
     fontSize: 20,
@@ -336,7 +343,7 @@ const styles = StyleSheet.create({
 
   // FAQ Section
   faqSection: {
-    marginTop: 32,
+    marginTop: 80,
     marginBottom: 24,
   },
   faqSectionTitle: {

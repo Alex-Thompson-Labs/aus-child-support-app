@@ -161,9 +161,8 @@ export function SpecialCircumstancesPrompt({
         onPress={() => setIsExpanded((p) => !p)}
         accessible
         accessibilityRole="button"
-        accessibilityLabel={`Do special circumstances exist? ${
-          isExpanded ? 'Collapse' : 'Expand'
-        }`}
+        accessibilityLabel={`Do special circumstances exist? ${isExpanded ? 'Collapse' : 'Expand'
+          }`}
       >
         <View style={styles.headerContent}>
           <View style={styles.titleRow}>
@@ -249,5 +248,5 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   selectionBadgeText: { fontSize: 12, color: '#1e40af', fontWeight: '600' },
-  wizardWrapper: { marginTop: 20 },
+  wizardWrapper: { marginTop: 32, paddingBottom: 16 },
 });

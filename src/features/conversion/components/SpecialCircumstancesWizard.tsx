@@ -268,7 +268,7 @@ const LegalStep = memo(function LegalStep({
             {onCourtDateChange && (
               <DatePickerField
                 label="When is your court date? *"
-                value={courtDate}
+                value={courtDate ?? null}
                 onChange={onCourtDateChange}
                 minDate={new Date()}
               />
@@ -704,40 +704,42 @@ export function SpecialCircumstancesWizard({
         totalSteps={STEPS.length}
         stepTitle={STEP_TITLES[currentStep]}
       />
-      {renderStepContent()}
-      <View style={styles.navigationButtons}>
-        <Pressable
-          style={[
-            styles.navButton,
-            styles.backButton,
-            isFirstStep && styles.navButtonHidden,
-            isWeb && !isFirstStep && webClickableStyles,
-          ]}
-          onPress={handleBack}
-          disabled={isFirstStep}
-          accessible
-          accessibilityRole="button"
-          accessibilityLabel="Go to previous step"
-        >
-          <Text style={styles.backButtonText}>Back</Text>
-        </Pressable>
-        {!isLastStep ? (
+      <View style={styles.contentWrapper}>
+        {renderStepContent()}
+        <View style={styles.navigationButtons}>
           <Pressable
             style={[
               styles.navButton,
-              styles.nextButton,
-              isWeb && webClickableStyles,
+              styles.backButton,
+              isFirstStep && styles.navButtonHidden,
+              isWeb && !isFirstStep && webClickableStyles,
             ]}
-            onPress={handleNext}
+            onPress={handleBack}
+            disabled={isFirstStep}
             accessible
             accessibilityRole="button"
-            accessibilityLabel="Go to next step"
+            accessibilityLabel="Go to previous step"
           >
-            <Text style={styles.nextButtonText}>Next</Text>
+            <Text style={styles.backButtonText}>Back</Text>
           </Pressable>
-        ) : (
-          <View style={styles.navButtonSpacer} />
-        )}
+          {!isLastStep ? (
+            <Pressable
+              style={[
+                styles.navButton,
+                styles.nextButton,
+                isWeb && webClickableStyles,
+              ]}
+              onPress={handleNext}
+              accessible
+              accessibilityRole="button"
+              accessibilityLabel="Go to next step"
+            >
+              <Text style={styles.nextButtonText}>Next</Text>
+            </Pressable>
+          ) : (
+            <View style={styles.navButtonSpacer} />
+          )}
+        </View>
       </View>
     </View>
   );
@@ -745,25 +747,33 @@ export function SpecialCircumstancesWizard({
 
 // Styles
 const styles = StyleSheet.create({
-  wizardContainer: { marginTop: 0 },
+  wizardContainer: {
+    marginTop: 0,
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  contentWrapper: {
+    flexDirection: 'column',
+    alignItems: 'stretch',
+  },
   progressContainer: {
     alignItems: 'center',
-    marginBottom: 20,
-    paddingBottom: 16,
+    marginBottom: 28,
+    paddingBottom: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#e2e8f0',
   },
   progressText: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#64748b',
     fontWeight: '500',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   stepTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
     color: '#1e3a8a',
-    marginBottom: 12,
+    marginBottom: 14,
   },
   progressBar: { flexDirection: 'row', gap: 8 },
   progressDot: {
@@ -774,29 +784,32 @@ const styles = StyleSheet.create({
   },
   progressDotActive: { backgroundColor: '#93c5fd' },
   progressDotCurrent: { backgroundColor: '#2563eb', width: 24 },
-  stepContent: { minHeight: 200 },
-  stepDescription: {
-    fontSize: 14,
-    color: '#475569',
-    lineHeight: 21,
-    marginBottom: 16,
+  stepContent: {
+    minHeight: 200,
+    paddingVertical: 24,
   },
-  checkboxList: { gap: 12 },
+  stepDescription: {
+    fontSize: 16,
+    color: '#475569',
+    lineHeight: 24,
+    marginBottom: 24,
+  },
+  checkboxList: { gap: 16 },
   checkboxRow: { flexDirection: 'row', alignItems: 'flex-start' },
   checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
+    width: 24,
+    height: 24,
+    borderRadius: 6,
     borderWidth: 2,
     borderColor: '#d1d5db',
     backgroundColor: '#ffffff',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
-    marginTop: 4,
+    marginRight: 14,
+    marginTop: 2,
   },
   checkboxChecked: { backgroundColor: '#2563EB', borderColor: '#2563EB' },
-  checkboxCheck: { color: '#ffffff', fontSize: 14, fontWeight: '700' },
+  checkboxCheck: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
   checkboxContent: {
     flex: 1,
     flexDirection: 'row',
@@ -809,9 +822,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   checkboxLabel: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#475569',
-    lineHeight: 20,
+    lineHeight: 22,
     flex: 1,
     paddingRight: 4,
   },
@@ -924,13 +937,13 @@ const styles = StyleSheet.create({
   navigationButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 24,
+    marginTop: 16,
     gap: 12,
   },
   navButton: {
     flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
     borderRadius: 8,
     alignItems: 'center',
   },
