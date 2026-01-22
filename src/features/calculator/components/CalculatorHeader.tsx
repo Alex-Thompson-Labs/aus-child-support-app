@@ -92,17 +92,15 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
                     )}
                 </View>
 
-                {/* Right: Hamburger (hidden on desktop) */}
-                {!isDesktop && (
-                    <Pressable
-                        style={styles.rightElement}
-                        onPress={openDrawer}
-                        accessibilityRole="button"
-                        accessibilityLabel="Open menu"
-                    >
-                        <Feather name="menu" size={28} color={BRAND_NAVY} />
-                    </Pressable>
-                )}
+                {/* Right: Hamburger */}
+                <Pressable
+                    style={styles.rightElement}
+                    onPress={openDrawer}
+                    accessibilityRole="button"
+                    accessibilityLabel="Open menu"
+                >
+                    <Feather name="menu" size={28} color={BRAND_NAVY} />
+                </Pressable>
             </View>
 
             {/* Slide-out Drawer Modal */}
