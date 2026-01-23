@@ -1,13 +1,13 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import {
-  Linking,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Linking,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PageSEO } from '../src/components/seo/PageSEO';
@@ -15,8 +15,8 @@ import Accordion from '../src/components/ui/Accordion';
 import { SpecialCircumstancesWizard } from '../src/features/conversion';
 import { useAnalytics } from '../src/utils/analytics';
 import {
-  MAX_FORM_WIDTH,
-  isWeb
+    MAX_FORM_WIDTH,
+    isWeb
 } from '../src/utils/responsive';
 import { createShadow } from '../src/utils/shadow-styles';
 import { getHighestPriorityReason } from '../src/utils/special-circumstances';
@@ -162,6 +162,10 @@ export default function SpecialCircumstancesScreen() {
         description="Identify special circumstances that may affect your child support assessment. Select applicable circumstances and connect with a family lawyer for assistance."
         canonicalPath="/special-circumstances"
         schema={faqSchema}
+        breadcrumbs={[
+          { label: 'Home', path: '/' },
+          { label: 'Special Circumstances' },
+        ]}
       />
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         {/* Header */}

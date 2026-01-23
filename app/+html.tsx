@@ -40,6 +40,14 @@ export default function Root({ children }: PropsWithChildren) {
         {/* GLOBAL SOCIAL (STATIC) */}
         <meta property="og:site_name" content="AusChildSupport" />
 
+        {/* Resource Hints - Preconnect to external domains for faster loading */}
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://swcbcudasyiqhtkymcpy.supabase.co" />
+        <link rel="dns-prefetch" href="https://swcbcudasyiqhtkymcpy.supabase.co" />
+
         {/* Favicon */}
         <link
           rel="icon"

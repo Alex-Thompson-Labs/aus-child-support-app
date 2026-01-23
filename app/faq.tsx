@@ -226,6 +226,10 @@ export default function FAQPage() {
                 description="Frequently asked questions about Australian child support calculations, Change of Assessment applications, care arrangements, and connecting with family law professionals."
                 canonicalPath="/faq"
                 schema={faqSchema}
+                breadcrumbs={[
+                    { label: 'Home', path: '/' },
+                    { label: 'FAQ' },
+                ]}
             />
             <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
                 {/* Header */}

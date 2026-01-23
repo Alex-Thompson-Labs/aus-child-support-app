@@ -2,11 +2,17 @@ import Head from 'expo-router/head';
 import React from 'react';
 import { Platform } from 'react-native';
 
+interface BreadcrumbItem {
+  label: string;
+  path?: string;
+}
+
 interface PageSEOProps {
   title: string;
   description: string;
   canonicalPath: string;
   schema?: Record<string, any>;
+  breadcrumbs?: BreadcrumbItem[];
 }
 
 export const PageSEO: React.FC<PageSEOProps> = ({
@@ -14,6 +20,7 @@ export const PageSEO: React.FC<PageSEOProps> = ({
   description,
   canonicalPath,
   schema,
+  breadcrumbs,
 }) => {
   const BASE_URL = 'https://auschildsupport.com.au';
   const fullUrl = `${BASE_URL}${canonicalPath}`;
@@ -32,7 +39,45 @@ export const PageSEO: React.FC<PageSEOProps> = ({
     },
   };
 
-  const finalSchema = schema ? { ...defaultSchema, ...schema } : defaultSchema;
+  // Build breadcrumb schema if provided
+  const breadcrumbSchema = breadcrumbs ? {
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbs.map((crumb, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: crumb.label,
+      ...(crumb.path && { item: `${BASE_URL}${crumb.path}` }),
+    })),
+  } : null;
+
+  // Combine schemas into @graph structure
+  const finalSchema = (() => {
+    const schemas = [];
+    
+    // Add breadcrumb schema first if present
+    if (breadcrumbSchema) {
+      schemas.push(breadcrumbSchema);
+    }
+    
+    // Add custom schema
+    if (schema) {
+      if (schema['@graph']) {
+        // Schema already has @graph, merge it
+        schemas.push(...schema['@graph']);
+      } else {
+        // Single schema object
+        schemas.push(schema);
+      }
+    } else {
+      // Use default schema
+      schemas.push(defaultSchema);
+    }
+    
+    return {
+      '@context': 'https://schema.org',
+      '@graph': schemas,
+    };
+  })();
 
   if (Platform.OS !== 'web') return null;
 

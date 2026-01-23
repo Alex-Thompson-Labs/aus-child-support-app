@@ -11,9 +11,6 @@
 const fs = require('fs');
 const path = require('path');
 
-// Get directory name for CommonJS
-const __dirname = path.dirname(require.main.filename);
-
 // Configuration
 const SITE_URL = 'https://auschildsupport.com.au';
 const OUTPUT_PATH = path.join(__dirname, '../public/sitemap.xml');
@@ -32,8 +29,8 @@ const EXCLUDED_ROUTES = [
 
 // Priority configuration
 const PRIORITY_CONFIG = {
-  '/': { priority: '1.0', changefreq: 'daily' },
-  '/lawyer-inquiry': { priority: '0.9', changefreq: 'weekly' },
+  '/': { priority: '0.8', changefreq: 'daily' },
+  '/lawyer-inquiry': { priority: '0.7', changefreq: 'weekly' },
   '/special-circumstances': { priority: '0.7', changefreq: 'monthly' },
   '/about': { priority: '0.6', changefreq: 'monthly' },
   '/contact': { priority: '0.6', changefreq: 'monthly' },
@@ -116,14 +113,42 @@ function scanRoutes(dir, basePath = '') {
 }
 
 /**
+ * Get the last modification date for a route
+ * Uses file modification time if available, otherwise returns current date
+ */
+function getFileModDate(routePath) {
+  // Map route to file path
+  let filePath;
+  
+  if (routePath === '/') {
+    filePath = path.join(APP_DIR, '(tabs)/index.tsx');
+  } else if (routePath.startsWith('/change-of-assessment/')) {
+    // CoA pages are generated from data, use the data file's mod time
+    filePath = path.join(__dirname, '../src/data/coa/reasons.ts');
+  } else {
+    // Try to find the file
+    const cleanPath = routePath.replace(/^\//, '');
+    filePath = path.join(APP_DIR, `${cleanPath}.tsx`);
+  }
+  
+  try {
+    const stats = fs.statSync(filePath);
+    return stats.mtime.toISOString().split('T')[0];
+  } catch {
+    // Fallback to current date if file not found
+    return new Date().toISOString().split('T')[0];
+  }
+}
+
+/**
  * Generates XML for a single URL entry
  */
 function generateUrlEntry(
   path,
-  lastmod,
   changefreq = 'weekly',
   priority = '0.5'
 ) {
+  const lastmod = getFileModDate(path);
   const config = PRIORITY_CONFIG[path] || { priority, changefreq };
 
   return `  <url>
@@ -138,8 +163,6 @@ function generateUrlEntry(
  * Main function to generate sitemap
  */
 function generateSitemap() {
-  const today = new Date().toISOString().split('T')[0];
-
   // Scan routes from app directory
   const routes = scanRoutes(APP_DIR);
 
@@ -150,12 +173,12 @@ function generateSitemap() {
 
   // Generate URL entries for static routes
   const staticEntries = uniqueRoutes.map((route) =>
-    generateUrlEntry(route, today)
+    generateUrlEntry(route)
   );
 
   // Generate URL entries for Change of Assessment pages
   const coaEntries = COA_SLUGS.map((slug) =>
-    generateUrlEntry(`/change-of-assessment/${slug}`, today, 'monthly', '0.7')
+    generateUrlEntry(`/change-of-assessment/${slug}`, 'monthly', '0.7')
   );
 
   // Build complete sitemap

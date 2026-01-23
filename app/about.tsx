@@ -44,6 +44,10 @@ export default function AboutPage() {
                 description="Learn about the free Australian Child Support Calculator. We use the official 2026 Services Australia formula to help parents estimate child support payments."
                 canonicalPath="/about"
                 schema={aboutSchema}
+                breadcrumbs={[
+                    { label: 'Home', path: '/' },
+                    { label: 'About' },
+                ]}
             />
             <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
                 {/* Header */}
