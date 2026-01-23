@@ -1,10 +1,15 @@
 # CLAUDE.md
 
-**Last Updated:** 2026-01-01
+**Last Updated:** 2026-01-18
 **Project Phase:** Phase 3A - Validation
 **Status:** Production Ready / Validation Mode
 
 This file provides guidance to Claude Code (claude.ai/code) and Desktop Commander when working with code in this repository.
+
+> **🚨 CRITICAL: Documentation Maintenance Required**  
+> **When you make ANY code changes, you MUST update relevant documentation.**  
+> See `/docs/AI_DOCUMENTATION_GUIDE.md` for complete instructions.  
+> Common docs to update: `BUSINESS_MODEL.md`, `PROJECT_KNOWLEDGE_BASE.md`, `DESIGN_SYSTEM.md`
 
 ---
 
@@ -17,6 +22,7 @@ This file provides guidance to Claude Code (claude.ai/code) and Desktop Commande
 - [Project Structure](#-project-structure)
 - [Current Project Phase](#-current-project-phase)
 - [Documentation Structure](#-documentation-structure)
+- [AI Documentation Maintenance](#-ai-documentation-maintenance) ⚠️ **READ THIS**
 - [Key Technical Patterns](#-key-technical-patterns)
 - [AI Assistant Guidance](#-ai-assistant-guidance)
 - [Production Code Standards](#-production-code-standards)
@@ -220,7 +226,45 @@ csc/
 
 ---
 
-## 🔧 Key Technical Patterns
+## � AI Documentation Maintenance
+
+**⚠️ CRITICAL REQUIREMENT FOR ALL AI ASSISTANTS**
+
+When you make ANY code changes to this project, you **MUST** update relevant documentation files.
+
+### Quick Checklist
+
+After making code changes, ask yourself:
+
+- [ ] Did I implement a new feature? → Update `BUSINESS_MODEL.md` (change 📋 to ✅)
+- [ ] Did I modify UI components? → Update `DESIGN_SYSTEM.md`
+- [ ] Did I add new routes? → Update `USER_FLOW.md`
+- [ ] Did I change database schema? → Update this file (`CLAUDE.md`)
+- [ ] Did I fix a bug? → Update `PROJECT_KNOWLEDGE_BASE.md`
+
+### Complete Guide
+
+**See `/docs/AI_DOCUMENTATION_GUIDE.md` for:**
+- Detailed checklist for each type of code change
+- Which documentation files to update
+- Common mistakes to avoid
+- Examples of proper documentation updates
+- Verification procedures
+
+### Most Common Updates
+
+| Code Change | Update These Docs |
+|-------------|-------------------|
+| New feature completed | `BUSINESS_MODEL.md`, `PROJECT_KNOWLEDGE_BASE.md` |
+| UI component added | `DESIGN_SYSTEM.md` |
+| New route/screen | `USER_FLOW.md`, `PROJECT_KNOWLEDGE_BASE.md` |
+| Database change | `CLAUDE.md`, `PROJECT_KNOWLEDGE_BASE.md` |
+
+**Remember:** Documentation is as important as code. Keep them synchronized!
+
+---
+
+## �🔧 Key Technical Patterns
 
 ### External Lead Generation Channels
 

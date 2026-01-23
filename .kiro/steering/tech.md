@@ -2,6 +2,23 @@
 inclusion: always
 ---
 
+> ## 🚨 CRITICAL: Documentation Maintenance Required
+> 
+> **BEFORE making ANY code changes, you MUST update relevant documentation.**
+> 
+> **Read this first:** `/docs/AI_DOCUMENTATION_GUIDE.md`
+> 
+> **Quick checklist after making code changes:**
+> - New feature implemented? → Update `/docs/business-docs/BUSINESS_MODEL.md` (change 📋 to ✅)
+> - UI component added/modified? → Update `/docs/DESIGN_SYSTEM.md`
+> - New route/screen created? → Update `/docs/business-docs/USER_FLOW.md`
+> - Database schema changed? → Update `/docs/CLAUDE.md`
+> - Bug fixed? → Update `/docs/PROJECT_KNOWLEDGE_BASE.md`
+> 
+> **See `/docs/CLAUDE.md` for complete checklist and examples.**
+> 
+> **This is mandatory, not optional.** Documentation accuracy is critical to this project.
+
 # Tech Stack & Build System
 
 ## Framework
@@ -89,3 +106,46 @@ Required in `.env` (never commit):
 - **Web**: Vercel (static export)
 - **Build**: `expo export --platform web`
 - **Analytics**: Google Analytics + Vercel Analytics & Speed Insights
+
+## 🚨 External Lead Generation Channels
+
+**CRITICAL:** The app receives traffic from external sources beyond the main calculator.
+
+### Chatbot Widget (blog.auschildsupport.com.au)
+- Custom chatbot on blog guides readers directly to inquiry form
+- Uses Direct Inquiry URL patterns (bypasses calculator)
+- **Key traffic source** - be aware when modifying inquiry form URLs
+
+### Direct Routing URLs
+These URLs are embedded in **chatbot widget AND blog posts**:
+
+```
+https://auschildsupport.com.au/lawyer-inquiry?mode=direct
+https://auschildsupport.com.au/lawyer-inquiry?mode=direct&reason=binding_agreement
+https://auschildsupport.com.au/special-circumstances
+```
+
+**⚠️ Breaking Changes:** If you modify these URL patterns or parameters:
+1. Update chatbot widget configuration
+2. Search/replace URLs in all blog posts
+3. Notify team before deploying
+
+### Direct Enquiry Flow
+- **Entry Point 1**: `/special-circumstances` - Factor selection first
+- **Entry Point 2**: `/lawyer-inquiry?mode=direct&reason=[slug]` - Direct form entry
+- **Mechanism**: `mode=direct` param triggers manual income/children inputs
+- **Slugs**: `hidden_income`, `binding_agreement` (defined in `src/features/lawyer-inquiry/config.ts`)
+
+## Production Code Standards
+
+**⚠️ Apply to EVERY code generation task:**
+
+Before implementing, check:
+- [ ] Proper TypeScript types (no `any`)
+- [ ] Error handling for all failure cases
+- [ ] Loading states where needed
+- [ ] Input validation and sanitization
+- [ ] Edge case handling (empty strings, null, undefined, extreme values)
+- [ ] Accessibility labels where appropriate
+
+**Think:** What could go wrong? What am I forgetting? Is this production-ready?

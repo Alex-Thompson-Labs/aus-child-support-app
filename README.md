@@ -7,6 +7,23 @@ React Native (Expo) • Web
 
 ---
 
+> ## 🚨 **ATTENTION: AI ASSISTANTS (Kiro, Claude, etc.)**
+> 
+> **BEFORE making ANY code changes, read this:**
+> 
+> 1. **You MUST update documentation when you change code**
+> 2. **Read:** `/docs/AI_DOCUMENTATION_GUIDE.md` for complete instructions
+> 3. **Quick reference:** `/docs/CLAUDE.md` has a checklist
+> 
+> **Common updates needed:**
+> - New feature? → Update `docs/business-docs/BUSINESS_MODEL.md`
+> - UI change? → Update `docs/DESIGN_SYSTEM.md`
+> - New route? → Update `docs/business-docs/USER_FLOW.md`
+> 
+> **This is not optional.** Documentation accuracy is critical to this project.
+
+---
+
 ## 🎯 What This Is
 
 A **free calculator** that helps Australian parents calculate child support payments, with built-in **complexity detection** that connects high-value cases to family law firms.
@@ -60,6 +77,7 @@ npm run web        # Web browser
 
 - [docs/CLAUDE.md](docs/CLAUDE.md) - **Architecture & AI Coding Standards** (includes deployment instructions)
 - [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) - UI patterns & Calculation formulas
+- [docs/AI_DOCUMENTATION_GUIDE.md](docs/AI_DOCUMENTATION_GUIDE.md) - **⚠️ AI Assistants: Documentation maintenance requirements**
 
 ---
 

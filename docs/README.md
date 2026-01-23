@@ -145,3 +145,25 @@ This folder contains all project documentation for the Child Support Calculator 
 ---
 
 **Questions?** Check BUSINESS_MODEL.md for current strategy and proof-before-pitch-v2.md for specific next steps.
+
+---
+
+## 📝 Additional Documentation Notes
+
+### SAGE Partnership Materials
+
+The `/docs/business-docs/SAGE/` directory contains partnership materials created as a **template for future exclusive partner proposals**. These materials include:
+
+- Exclusive Partner Program documentation
+- Pitch deck (PDF and HTML versions)
+- Implementation plan
+- Email templates
+
+**Status:** Template/Reference - Not an active partnership
+
+### Blog Content Status
+
+- **Platform:** WordPress blog at `blog.auschildsupport.com.au`
+- **Status:** ✅ All 9 blog posts deployed
+- **Content Location:** `/docs/business-docs/blog-posts/` (markdown source files)
+- **Features:** Chatbot widget integrated, direct inquiry links embedded
