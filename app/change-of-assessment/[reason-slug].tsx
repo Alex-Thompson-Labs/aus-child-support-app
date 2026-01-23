@@ -334,11 +334,11 @@ function buildSchema(reason: CoAReasonPage) {
     '@type': 'WebPage',
     name: reason.title,
     description: reason.metaDescription,
-    url: `https://auschildsupport.com${reason.canonicalPath}`,
+    url: `https://auschildsupport.com.au${reason.canonicalPath}`,
     isPartOf: {
       '@type': 'WebSite',
       name: 'AusChildSupport',
-      url: 'https://auschildsupport.com',
+      url: 'https://auschildsupport.com.au',
     },
     breadcrumb: {
       '@type': 'BreadcrumbList',
@@ -347,7 +347,7 @@ function buildSchema(reason: CoAReasonPage) {
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://auschildsupport.com',
+          item: 'https://auschildsupport.com.au',
         },
         {
           '@type': 'ListItem',

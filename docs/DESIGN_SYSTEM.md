@@ -6,7 +6,7 @@ Child Support Calculator - React Native/Expo app following Australian Government
 
 **Business Model:** B2B lead generation platform connecting parents with family law practitioners. Parents use free calculator, complexity triggers identify high-value cases, and lawyers pay **$50 per qualified lead**.
 
-**Platform Support:** Native iOS/Android via Expo, plus web version deployed at auschildsupport.com.
+**Platform Support:** Native iOS/Android via Expo, plus web version deployed at auschildsupport.com.au.
 
 ## Color Palette
 

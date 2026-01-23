@@ -5,7 +5,7 @@ This folder contains all project documentation for the Child Support Calculator 
 ## 🎯 CURRENT PROJECT STATUS (January 2026)
 
 **Phase 3A: VALIDATION (Proof Before Pitch)** 🔄
-**Live at:** auschildsupport.com
+**Live at:** auschildsupport.com.au
 **Strategy:** Dual Launch (Organic Traffic + Exclusive Partner Retainer)
 
 ---

@@ -115,7 +115,7 @@ This is an **Expo/React Native Web app** that implements an Australian Child Sup
 
 **Platform:**
 
-- ✅ **Web** - Static site export for `auschildsupport.com`
+- ✅ **Web** - Static site export for `auschildsupport.com.au`
 
 **Platform-specific considerations:**
 
@@ -243,14 +243,14 @@ These URLs are embedded in **BOTH** the Chatbot Widget and throughout Blog Posts
 
 **Standard URLs:**
 ```
-https://auschildsupport.com/lawyer-inquiry?mode=direct
-https://auschildsupport.com/special-circumstances
+https://auschildsupport.com.au/lawyer-inquiry?mode=direct
+https://auschildsupport.com.au/special-circumstances
 ```
 
 **Inquiry Type-Specific URLs:**
 ```
-https://auschildsupport.com/lawyer-inquiry?mode=direct&reason=binding_agreement
-https://auschildsupport.com/lawyer-inquiry?mode=direct&reason=hidden_income
+https://auschildsupport.com.au/lawyer-inquiry?mode=direct&reason=binding_agreement
+https://auschildsupport.com.au/lawyer-inquiry?mode=direct&reason=hidden_income
 ```
 
 **URL Parameters:**
@@ -542,7 +542,7 @@ npx expo start --clear
 
 **After deployment:**
 
-- Test live web app at `auschildsupport.com`
+- Test live web app at `auschildsupport.com.au`
 - Verify privacy policy link works
 - Test form submission end-to-end
 - Check admin panel on production database
@@ -564,7 +564,7 @@ npx expo export --platform web
 
 1. Build: `npx expo export --platform web`
 2. Use Vercel CLI: `vercel --prod` or connect repository to Vercel dashboard
-3. Point `auschildsupport.com` to Vercel (update DNS records at registrar)
+3. Point `auschildsupport.com.au` to Vercel (update DNS records at registrar)
 
 **Deployment details:** See deployment section above
 
@@ -572,7 +572,7 @@ npx expo export --platform web
 
 ## 🔐 Admin Access
 
-**Admin Panel:** `auschildsupport.com/admin/login`
+**Admin Panel:** `auschildsupport.com.au/admin/login`
 
 **Login credentials:** Stored in `.env`
 
@@ -635,7 +635,7 @@ npx expo export --platform web
 
 ### Phase 3A Goals (Current)
 
-- ✅ Web app deployed to `auschildsupport.com`
+- ✅ Web app deployed to `auschildsupport.com.au`
 - ✅ **Analytics** active (Google Analytics + Vercel Analytics)
 - 🎯 **Secure Magic Link** system operational
 - 🎯 1 Exclusive Partner signed (**$500 Retainer**)

@@ -15,14 +15,14 @@ import * as Sharing from 'expo-sharing';
 import { Download, FileText, Lock as LockIcon, Upload, User, Users } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View
+    ActivityIndicator,
+    Alert,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -411,7 +411,7 @@ function StepResults({
               onPress={() => {
                 const subject = encodeURIComponent('Beta Feedback: Court Order Scanner');
                 const body = encodeURIComponent('I scanned my court order and noticed an issue with...');
-                const mailtoUrl = `mailto:feedback@auschildsupport.com?subject=${subject}&body=${body}`;
+                const mailtoUrl = `mailto:feedback@auschildsupport.com.au?subject=${subject}&body=${body}`;
 
                 if (Platform.OS === 'web') {
                   window.open(mailtoUrl, '_blank');

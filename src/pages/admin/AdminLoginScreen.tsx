@@ -1,32 +1,32 @@
 /**
  * Admin Login Screen
- * Simple email/password authentication for alex@auschildsupport.com
+ * Simple email/password authentication for alex@auschildsupport.com.au
  * Uses Supabase Auth with RLS policies
  */
 
 import { Colors } from '@/constants/theme';
 import { Env } from '@/src/config/env';
 import {
-  MAX_FORM_WIDTH,
-  isWeb,
-  useResponsive,
-  webClickableStyles,
-  webInputStyles,
+    MAX_FORM_WIDTH,
+    isWeb,
+    useResponsive,
+    webClickableStyles,
+    webInputStyles,
 } from '@/src/utils/responsive';
 import { getSupabaseClient } from '@/src/utils/supabase';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 

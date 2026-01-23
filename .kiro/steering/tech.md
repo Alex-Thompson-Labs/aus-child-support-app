@@ -1,3 +1,7 @@
+---
+inclusion: always
+---
+
 # Tech Stack & Build System
 
 ## Framework
@@ -17,11 +21,34 @@
 - **@vercel/analytics** + **@vercel/speed-insights** - Web performance
 - **lucide-react-native** - Icons
 - **expo-print** / **expo-sharing** - PDF export (lazy loaded)
+- **@react-pdf/renderer** - PDF generation
 
 ## Styling
 - **React Native StyleSheet** - No Tailwind CSS
-- Slate/blue color theme (see DESIGN_SYSTEM.md)
+- Slate/blue color theme (see docs/DESIGN_SYSTEM.md)
 - Platform-specific code via `Platform.OS` checks
+
+## Project Structure
+```
+/
+├── app/                    # Expo Router (file-based routing)
+│   ├── (tabs)/             # Tab navigation (calculator home)
+│   ├── admin/              # Admin dashboard & lead management
+│   ├── lawyer-inquiry.tsx  # Lead capture form
+│   ├── special-circumstances.tsx  # Direct entry from blog
+│   └── partner/[slug].tsx  # Partner landing pages
+├── src/
+│   ├── components/         # UI components
+│   ├── features/           # Feature modules (calculator, conversion, lawyer-inquiry)
+│   ├── hooks/              # useCalculator, useCalculatorState
+│   ├── utils/              # Business logic (formulas, complexity detection)
+│   └── config/             # Configuration (partners, scoring)
+├── docs/                   # Documentation
+│   ├── CLAUDE.md           # Architecture & coding standards
+│   ├── DESIGN_SYSTEM.md    # UI patterns & formulas
+│   └── business-docs/      # Strategy & roadmap
+└── supabase/               # Database functions & migrations
+```
 
 ## Common Commands
 
@@ -30,8 +57,6 @@
 npm start              # Start Expo dev server (all platforms)
 npm run dev            # Start with cache cleared
 npm run web            # Web browser only
-npm run ios            # iOS simulator
-npm run android        # Android emulator
 
 # Quality
 npm run lint           # ESLint
@@ -41,24 +66,26 @@ npm run type-check     # TypeScript validation
 npm run build:web      # Build for Vercel (generates sitemap + exports)
 npm run build:analyze  # Bundle size analysis
 
-# Performance
-npm run lighthouse     # Full Lighthouse audit (builds, serves, runs)
-npm run serve:dist     # Serve production build locally
+# Testing
+npm run test           # Run Jest tests
+npm run test:coverage  # Coverage report
 ```
 
 ## Environment Variables
 Required in `.env` (never commit):
 - `EXPO_PUBLIC_SUPABASE_URL`
 - `EXPO_PUBLIC_SUPABASE_ANON_KEY`
-- `EXPO_PUBLIC_ADMIN_EMAIL` / `EXPO_PUBLIC_ADMIN_PASSWORD`
+- `EXPO_PUBLIC_ADMIN_EMAIL`
+- `EXPO_PUBLIC_ADMIN_PASSWORD`
 - `EXPO_PUBLIC_GA_MEASUREMENT_ID`
 
-## TypeScript Config
-- Strict mode enabled
-- Path alias: `@/*` maps to project root
-- Types include Jest for testing
+## Database
+- **Platform**: Supabase (PostgreSQL, Sydney region)
+- **Tables**: leads, proposals (with RLS policies)
+- **Security**: Row Level Security, encrypted storage
+- **Compliance**: Privacy Act 1988 compliant (consent tracking, audit trails)
 
 ## Deployment
-- **Web**: Vercel (static export via `expo export --platform web`)
-- **Domain**: auschildsupport.com
-- **Database**: Supabase with Row Level Security
+- **Web**: Vercel (static export)
+- **Build**: `expo export --platform web`
+- **Analytics**: Google Analytics + Vercel Analytics & Speed Insights

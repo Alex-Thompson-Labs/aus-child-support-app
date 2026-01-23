@@ -76,7 +76,7 @@ export default function RootLayout() {
 
   // SEO: Generate Canonical URL (Strip query params and trailing slashes)
   const siteUrl =
-    process.env.EXPO_PUBLIC_SITE_URL || 'https://auschildsupport.com';
+    process.env.EXPO_PUBLIC_SITE_URL || 'https://auschildsupport.com.au';
   // Handle root path and normalize trailing slashes (vercel.json has trailingSlash: false)
   const normalizedPath = pathname === '/' ? '' : pathname.replace(/\/$/, '');
   const canonicalUrl = `${siteUrl}${normalizedPath}`;

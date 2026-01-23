@@ -51,7 +51,7 @@
   - Blog routes (`app/blog/*`) utilize `+html.tsx` for proper meta tag injection and static rendering.
   - Goal: Ensure indexability of content to drive organic traffic for Phase 3A validation.
 - **Privacy & Compliance**:
-  - Privacy policy published at auschildsupport.com/privacy
+  - Privacy policy published at auschildsupport.com.au/privacy
   - Mandatory consent checkbox on inquiry form
   - Data rights supported (access, correction, deletion)
   - All lead access and status changes logged for audit trail

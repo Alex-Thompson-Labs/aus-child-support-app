@@ -1,25 +1,25 @@
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { CalculatorHeader } from '@/src/features/calculator';
+import { sendContactEmail } from '@/src/utils/emailjs';
 import {
-  isWeb,
-  MAX_CALCULATOR_WIDTH,
-  webClickableStyles,
+    isWeb,
+    MAX_CALCULATOR_WIDTH,
+    webClickableStyles,
 } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
-import { sendContactEmail } from '@/src/utils/emailjs';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Linking,
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableWithoutFeedback,
-  View,
+    Linking,
+    Modal,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableWithoutFeedback,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -44,7 +44,7 @@ const contactSchema = {
   mainEntity: {
     '@type': 'Organization',
     name: 'AusChildSupport',
-    url: 'https://auschildsupport.com',
+    url: 'https://auschildsupport.com.au',
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer support',

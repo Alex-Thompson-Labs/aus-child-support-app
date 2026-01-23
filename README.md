@@ -3,7 +3,7 @@
 **Australian child support calculator with lawyer lead generation**
 React Native (Expo) • Web
 
-**Live Site:** [auschildsupport.com](https://auschildsupport.com)
+**Live Site:** [auschildsupport.com.au](https://auschildsupport.com.au)
 
 ---
 
@@ -72,7 +72,7 @@ csc/
 │   ├── admin/            # Admin dashboard & Secure View
 │   ├── lawyer-inquiry.tsx # Lead capture form (main + direct mode)
 │   ├── special-circumstances.tsx # Direct entry from blog links
-│   └── blog/             # Blog routes (external: blog.auschildsupport.com)
+│   └── blog/             # Blog routes (external: blog.auschildsupport.com.au)
 ├── src/
 │   ├── components/       # UI Components
 │   ├── hooks/            # Logic (useCalculator)
