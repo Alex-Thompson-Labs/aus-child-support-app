@@ -24,7 +24,6 @@ const EXCLUDED_ROUTES = [
   '_sitemap',
   'modal',
   'admin',
-  'blog', // noindexed - main blog at subdomain
   'court-order-tool', // Hidden from navigation, not for public indexing
 ];
 
@@ -50,6 +49,25 @@ const COA_SLUGS = [
   'earning-capacity',
   'duty-to-maintain-another',
   'resident-child-responsibility',
+];
+
+// Blog post slugs (add new posts here)
+const BLOG_SLUGS = [
+  'court-order-child-support-calculator',
+  'accurate-child-support-calculator',
+  'when-to-hire-family-lawyer',
+  'child-support-self-employed',
+  'how-to-calculate-child-support',
+  'child-support-formula-australia',
+  'complicated-child-support-situations',
+  'child-support-care-percentage-table',
+  'object-to-child-support-assessment',
+  'international-child-support-australia',
+  'adult-disabled-child-maintenance',
+  'overseas-parent-child-support-enforcement',
+  'private-school-fees-child-support',
+  'parental-leave-child-support',
+  'estimate-vs-actual-income-child-support',
 ];
 
 /**
@@ -182,6 +200,11 @@ function generateSitemap() {
     generateUrlEntry(`/change-of-assessment/${slug}`, 'monthly', '0.7')
   );
 
+  // Generate URL entries for Blog posts
+  const blogEntries = BLOG_SLUGS.map((slug) =>
+    generateUrlEntry(`/blog/${slug}`, 'monthly', '0.6')
+  );
+
   // Build complete sitemap
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -190,13 +213,16 @@ ${staticEntries.join('\n')}
 
   <!-- Change of Assessment Reason Pages -->
 ${coaEntries.join('\n')}
+
+  <!-- Blog Posts -->
+${blogEntries.join('\n')}
 </urlset>
 `;
 
   // Write to file
   fs.writeFileSync(OUTPUT_PATH, sitemap, 'utf-8');
   console.log(`✅ Sitemap generated: ${OUTPUT_PATH}`);
-  console.log(`   Total URLs: ${uniqueRoutes.length + COA_SLUGS.length}`);
+  console.log(`   Total URLs: ${uniqueRoutes.length + COA_SLUGS.length + BLOG_SLUGS.length}`);
 }
 
 // Run

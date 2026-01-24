@@ -1,0 +1,463 @@
+import { PageSEO } from '@/src/components/seo/PageSEO';
+import { CalculatorHeader } from '@/src/features/calculator';
+import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+        {
+            '@type': 'Question',
+            name: 'Does my new partner\'s income affect child support in Australia?',
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'No. Your new partner\'s income is NOT included in the standard child support formula. Only your income and the other parent\'s income matter. However, if your new partner supports you financially, Services Australia may investigate whether you\'re deliberately reducing income to avoid child support.',
+            },
+        },
+        {
+            '@type': 'Question',
+            name: 'Can my ex apply for a Change of Assessment based on my new partner\'s income?',
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Yes. Under Reason 8, your ex can argue that your new partner\'s income gives you access to financial resources that reduce your child support costs. This is complex and requires evidence. Most applications fail unless there\'s clear financial benefit.',
+            },
+        },
+        {
+            '@type': 'Question',
+            name: 'What if my new partner pays all the bills?',
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'If your new partner covers most living expenses, your ex can apply for a Change of Assessment arguing you have more disposable income for child support. Services Australia will assess whether this arrangement is genuine or designed to avoid child support.',
+            },
+        },
+    ],
+};
+
+const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: 'New Partner Income & Child Support: Does It Affect Your Assessment?',
+    description: 'Remarried or living with a new partner? Learn how their income affects child support, when Change of Assessment applies, and how to protect your assessment.',
+    datePublished: '2026-01-24',
+    author: { '@type': 'Organization', name: 'AusChildSupport' },
+};
+
+export default function NewPartnerIncomeChildSupportBlogPost() {
+    const router = useRouter();
+    const webContainerStyle = isWeb ? { maxWidth: MAX_CALCULATOR_WIDTH, width: '100%' as const, alignSelf: 'center' as const } : {};
+
+    return (
+        <>
+            <PageSEO
+                title="New Partner Income & Child Support: Does It Affect Your Assessment?"
+                description="Remarried or living with a new partner? Learn how their income affects child support, when Change of Assessment applies, and how to protect your assessment."
+                canonicalPath="/blog/new-partner-income-child-support"
+                schema={[articleSchema, faqSchema]}
+                breadcrumbs={[
+                    { label: 'Home', path: '/' },
+                    { label: 'Blog', path: '/blog' },
+                    { label: 'New Partner Income' },
+                ]}
+            />
+            <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+                <CalculatorHeader title="Blog" showBackButton={true} maxWidth={MAX_CALCULATOR_WIDTH} />
+                <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, webContainerStyle]}>
+                    <View style={styles.articleHeader}>
+                        <Text style={styles.category}>New Relationships</Text>
+                        <Text style={styles.h1} accessibilityRole="header">
+                            New Partner Income & Child Support: Does It Affect Your Assessment?
+                        </Text>
+                        <Text style={styles.publishDate}>Published January 24, 2026</Text>
+                    </View>
+
+                    <Text style={styles.intro}>
+                        Remarried or living with a new partner? You're probably wondering: does their income affect 
+                        your child support? The short answer: not directly. But there are exceptions. Here's exactly 
+                        how new partner income works in Australian child support law, when it matters, and how to 
+                        protect yourself.
+                    </Text>
+
+                    <View style={styles.keyRuleBox}>
+                        <Text style={styles.keyRuleTitle}>🔑 Key Rule:</Text>
+                        <Text style={styles.keyRuleText}>
+                            Your new partner's income is NOT included in the child support formula. Only YOUR income 
+                            and the other parent's income count. However, your ex can apply for a Change of Assessment 
+                            if your new partner's income gives you financial advantages.
+                        </Text>
+                    </View>
+
+                    <Text style={styles.h2} accessibilityRole="header">The Standard Rule: New Partner Income Doesn't Count</Text>
+                    <Text style={styles.paragraph}>
+                        The Australian child support formula uses only two incomes:
+                    </Text>
+
+                    <View style={styles.formulaCard}>
+                        <Text style={styles.formulaTitle}>Standard Formula Inputs:</Text>
+                        <Text style={styles.bulletItem}>• Your taxable income (paying parent)</Text>
+                        <Text style={styles.bulletItem}>• Other parent's taxable income (receiving parent)</Text>
+                        <Text style={styles.bulletItem}>• Number of children</Text>
+                        <Text style={styles.bulletItem}>• Care percentage</Text>
+                    </View>
+
+                    <Text style={styles.paragraph}>
+                        Your new partner's income is excluded. This applies whether you're married, de facto, or just 
+                        living together. The formula doesn't care how much your new partner earns.
+                    </Text>
+
+                    <View style={styles.exampleCard}>
+                        <Text style={styles.exampleTitle}>Example:</Text>
+                        <Text style={styles.exampleText}>Your income: $80,000</Text>
+                        <Text style={styles.exampleText}>Ex-partner's income: $60,000</Text>
+                        <Text style={styles.exampleText}>New partner's income: $150,000</Text>
+                        <Text style={styles.exampleResult}>Child support calculated using: $80,000 + $60,000 = $140,000 combined</Text>
+                        <Text style={styles.exampleNote}>New partner's $150,000 is ignored</Text>
+                    </View>
+
+                    <Text style={styles.h2} accessibilityRole="header">When New Partner Income DOES Matter</Text>
+                    <Text style={styles.paragraph}>
+                        While new partner income isn't in the formula, it can affect child support through Change of 
+                        Assessment applications. Your ex can argue that your new partner's income gives you financial 
+                        advantages that should increase your child support.
+                    </Text>
+
+                    <View style={styles.reasonCard}>
+                        <Text style={styles.reasonTitle}>Change of Assessment Reason 8:</Text>
+                        <Text style={styles.reasonSubtitle}>"Income, Property, Financial Resources"</Text>
+                        <Text style={styles.reasonText}>
+                            Your ex can apply if they believe you have access to income, property, or financial 
+                            resources (including from your new partner) that aren't captured in the formula but give 
+                            you capacity to pay more child support.
+                        </Text>
+                    </View>
+
+                    <Text style={styles.h3} accessibilityRole="header">Scenarios Where It Applies:</Text>
+
+                    <View style={styles.scenarioCard}>
+                        <Text style={styles.scenarioTitle}>1. New Partner Pays All Living Expenses</Text>
+                        <Text style={styles.scenarioText}>
+                            If your new partner covers rent, utilities, groceries, and other costs, your ex can argue 
+                            you have more disposable income for child support.
+                        </Text>
+                        <Text style={styles.scenarioExample}>
+                            Example: You earn $60,000 but your partner pays $30,000/year in household expenses. Your 
+                            ex argues you effectively have $90,000 in resources.
+                        </Text>
+                    </View>
+
+                    <View style={styles.scenarioCard}>
+                        <Text style={styles.scenarioTitle}>2. Living Rent-Free in Partner's Property</Text>
+                        <Text style={styles.scenarioText}>
+                            If you live in your new partner's home without paying rent or mortgage, your ex can argue 
+                            this reduces your living costs and increases capacity to pay child support.
+                        </Text>
+                        <Text style={styles.scenarioExample}>
+                            Example: Market rent would be $2,000/month ($24,000/year). Your ex argues this is a 
+                            financial benefit that should increase child support.
+                        </Text>
+                    </View>
+
+                    <View style={styles.scenarioCard}>
+                        <Text style={styles.scenarioTitle}>3. New Partner Funds Your Lifestyle</Text>
+                        <Text style={styles.scenarioText}>
+                            If your new partner pays for holidays, cars, private school fees for your children with 
+                            them, or other significant expenses, your ex can argue you have access to financial resources.
+                        </Text>
+                        <Text style={styles.scenarioExample}>
+                            Example: Your partner pays $15,000/year for private school for their child. Your ex argues 
+                            this frees up your income for child support.
+                        </Text>
+                    </View>
+
+                    <View style={styles.scenarioCard}>
+                        <Text style={styles.scenarioTitle}>4. Deliberately Reducing Income</Text>
+                        <Text style={styles.scenarioText}>
+                            If you quit your job or reduce hours because your new partner supports you financially, 
+                            Services Australia may investigate whether you're avoiding child support obligations.
+                        </Text>
+                        <Text style={styles.scenarioExample}>
+                            Example: You earned $100,000, then quit to work part-time ($40,000) after moving in with 
+                            high-earning partner. Your ex argues this is deliberate income reduction.
+                        </Text>
+                    </View>
+
+                    <View style={styles.warningBox}>
+                        <Text style={styles.warningTitle}>⚠️ Important:</Text>
+                        <Text style={styles.warningText}>
+                            Most Change of Assessment applications based on new partner income fail. Services Australia 
+                            requires strong evidence that you're receiving direct financial benefit. Simply living with 
+                            a high earner isn't enough.
+                        </Text>
+                    </View>
+
+                    <Text style={styles.h2} accessibilityRole="header">How Services Australia Assesses New Partner Income</Text>
+                    <Text style={styles.paragraph}>
+                        If your ex applies for a Change of Assessment, Services Australia will investigate:
+                    </Text>
+
+                    <View style={styles.assessmentCard}>
+                        <Text style={styles.assessmentTitle}>Evidence They Consider:</Text>
+                        <Text style={styles.bulletItem}>• Bank statements showing who pays household bills</Text>
+                        <Text style={styles.bulletItem}>• Rental agreements or property ownership documents</Text>
+                        <Text style={styles.bulletItem}>• Joint account transactions</Text>
+                        <Text style={styles.bulletItem}>• Lifestyle changes (new car, holidays, private school)</Text>
+                        <Text style={styles.bulletItem}>• Your income history (did it drop after new relationship?)</Text>
+                        <Text style={styles.bulletItem}>• Your new partner's financial contributions</Text>
+                    </View>
+
+                    <Text style={styles.paragraph}>
+                        Services Australia will determine whether your new partner's income gives you a "financial 
+                        advantage" that justifies increasing child support. This is subjective and case-by-case.
+                    </Text>
+
+                    <Pressable
+                        style={[styles.ctaButton, isWeb && webClickableStyles]}
+                        onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=income_property_resources')}
+                        accessibilityRole="button"
+                    >
+                        <Text style={styles.ctaButtonText}>Get Legal Advice on Change of Assessment →</Text>
+                    </Pressable>
+
+                    <Text style={styles.h2} accessibilityRole="header">How to Protect Your Assessment</Text>
+
+                    <View style={styles.protectionCard}>
+                        <Text style={styles.protectionNumber}>1</Text>
+                        <View style={styles.protectionContent}>
+                            <Text style={styles.protectionTitle}>Keep Finances Separate</Text>
+                            <Text style={styles.protectionText}>
+                                Maintain separate bank accounts. Pay your share of household expenses from your account. 
+                                Avoid joint accounts or having your partner pay all bills.
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.protectionCard}>
+                        <Text style={styles.protectionNumber}>2</Text>
+                        <View style={styles.protectionContent}>
+                            <Text style={styles.protectionTitle}>Document Your Contributions</Text>
+                            <Text style={styles.protectionText}>
+                                Keep records showing you pay rent, utilities, groceries, and other expenses. If your 
+                                ex claims your partner supports you, you'll have evidence to refute it.
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.protectionCard}>
+                        <Text style={styles.protectionNumber}>3</Text>
+                        <View style={styles.protectionContent}>
+                            <Text style={styles.protectionTitle}>Don't Reduce Income Without Reason</Text>
+                            <Text style={styles.protectionText}>
+                                If you quit your job or reduce hours after moving in with a new partner, Services 
+                                Australia may assume you're avoiding child support. Only reduce income for legitimate 
+                                reasons (health, education, childcare).
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.protectionCard}>
+                        <Text style={styles.protectionNumber}>4</Text>
+                        <View style={styles.protectionContent}>
+                            <Text style={styles.protectionTitle}>Be Transparent</Text>
+                            <Text style={styles.protectionText}>
+                                If Services Australia asks about your living arrangements, answer honestly. Lying or 
+                                hiding information makes you look like you're avoiding obligations.
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.protectionCard}>
+                        <Text style={styles.protectionNumber}>5</Text>
+                        <View style={styles.protectionContent}>
+                            <Text style={styles.protectionTitle}>Get Legal Advice Early</Text>
+                            <Text style={styles.protectionText}>
+                                If your ex threatens a Change of Assessment based on your new partner's income, get 
+                                legal advice immediately. A lawyer can help you respond and protect your assessment.
+                            </Text>
+                        </View>
+                    </View>
+
+                    <Text style={styles.h2} accessibilityRole="header">What If You're the Receiving Parent?</Text>
+                    <Text style={styles.paragraph}>
+                        If your ex has a new high-earning partner and you believe they're benefiting financially, you 
+                        can apply for a Change of Assessment. Here's how:
+                    </Text>
+
+                    <View style={styles.receivingCard}>
+                        <Text style={styles.receivingTitle}>Steps to Apply:</Text>
+                        <Text style={styles.bulletItem}>
+                            <Text style={styles.bold}>1. Gather evidence:</Text> Bank statements, social media posts 
+                            showing lifestyle, property records, income history
+                        </Text>
+                        <Text style={styles.bulletItem}>
+                            <Text style={styles.bold}>2. Complete application:</Text> Use Reason 8 (Income, Property, 
+                            Financial Resources)
+                        </Text>
+                        <Text style={styles.bulletItem}>
+                            <Text style={styles.bold}>3. Explain financial advantage:</Text> Show how new partner's 
+                            income reduces your ex's living costs or increases disposable income
+                        </Text>
+                        <Text style={styles.bulletItem}>
+                            <Text style={styles.bold}>4. Be specific:</Text> Vague claims fail. Provide dollar amounts, 
+                            dates, and concrete examples
+                        </Text>
+                    </View>
+
+                    <View style={styles.dangerBox}>
+                        <Text style={styles.dangerTitle}>🚨 Reality Check:</Text>
+                        <Text style={styles.dangerText}>
+                            Most applications fail. Services Australia sets a high bar. Simply living with a high 
+                            earner isn't enough—you must prove direct financial benefit. Get legal advice before applying.
+                        </Text>
+                    </View>
+
+                    <Text style={styles.h2} accessibilityRole="header">Frequently Asked Questions</Text>
+
+                    <FAQItem
+                        question="Does my new partner's income affect child support in Australia?"
+                        answer="No. Your new partner's income is NOT included in the standard child support formula. Only your income and the other parent's income matter. However, if your new partner supports you financially, Services Australia may investigate whether you're deliberately reducing income to avoid child support."
+                    />
+
+                    <FAQItem
+                        question="Can my ex apply for a Change of Assessment based on my new partner's income?"
+                        answer="Yes. Under Reason 8, your ex can argue that your new partner's income gives you access to financial resources that reduce your child support costs. This is complex and requires evidence. Most applications fail unless there's clear financial benefit."
+                    />
+
+                    <FAQItem
+                        question="What if my new partner pays all the bills?"
+                        answer="If your new partner covers most living expenses, your ex can apply for a Change of Assessment arguing you have more disposable income for child support. Services Australia will assess whether this arrangement is genuine or designed to avoid child support."
+                    />
+
+                    <FAQItem
+                        question="Can I reduce my income if my new partner supports me?"
+                        answer="Technically yes, but Services Australia may investigate. If you quit your job or reduce hours after moving in with a high-earning partner, your ex can argue you're deliberately avoiding child support. This can trigger earning capacity assessments."
+                    />
+
+                    <FAQItem
+                        question="What if my ex's new partner is wealthy?"
+                        answer="You can apply for a Change of Assessment if you believe your ex is receiving financial benefits from their new partner. However, you need strong evidence—bank statements, property records, lifestyle changes. Most applications fail without concrete proof."
+                    />
+
+                    <View style={styles.calculatorSection}>
+                        <Text style={styles.calculatorTitle}>Calculate Your Child Support</Text>
+                        <Text style={styles.calculatorText}>
+                            Use our free calculator to see your current assessment based on YOUR income only. New 
+                            partner income is not included in the standard formula.
+                        </Text>
+                        <Pressable
+                            style={[styles.calculatorButton, isWeb && webClickableStyles]}
+                            onPress={() => router.push('/')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.calculatorButtonText}>Calculate Now</Text>
+                        </Pressable>
+                    </View>
+
+                    <View style={styles.finalCtaSection}>
+                        <Text style={styles.finalCtaTitle}>Facing a Change of Assessment?</Text>
+                        <Text style={styles.finalCtaText}>
+                            Connect with experienced family lawyers who can help you respond to Change of Assessment 
+                            applications or apply for one yourself.
+                        </Text>
+                        <Pressable
+                            style={[styles.primaryButton, isWeb && webClickableStyles]}
+                            onPress={() => router.push('/lawyer-inquiry?mode=direct')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.primaryButtonText}>Get Legal Help</Text>
+                        </Pressable>
+                    </View>
+                </ScrollView>
+            </SafeAreaView>
+        </>
+    );
+}
+
+function FAQItem({ question, answer }: { question: string; answer: string }) {
+    return (
+        <View style={styles.faqItem}>
+            <Text style={styles.faqQuestion}>{question}</Text>
+            <Text style={styles.faqAnswer}>{answer}</Text>
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: '#f8f9fa' },
+    scrollView: { flex: 1 },
+    scrollContent: { padding: 16, paddingBottom: 32 },
+    articleHeader: { marginBottom: 24 },
+    category: { fontSize: 14, fontWeight: '600', color: '#2563EB', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 },
+    h1: { fontSize: 32, fontWeight: '700', color: '#1e3a8a', marginBottom: 12, ...(Platform.OS === 'web' ? { lineHeight: 40 } : {}) },
+    publishDate: { fontSize: 14, color: '#64748b' },
+    intro: { fontSize: 18, lineHeight: 28, color: '#334155', marginBottom: 16, fontWeight: '500' },
+    h2: { fontSize: 24, fontWeight: '700', color: '#1e3a8a', marginTop: 32, marginBottom: 16, ...(Platform.OS === 'web' ? { lineHeight: 32 } : {}) },
+    h3: { fontSize: 20, fontWeight: '600', color: '#1e3a8a', marginTop: 24, marginBottom: 12, ...(Platform.OS === 'web' ? { lineHeight: 28 } : {}) },
+    paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
+    bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
+    bold: { fontWeight: '600', color: '#1e3a8a' },
+    
+    keyRuleBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 2, borderColor: '#3b82f6', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#3b82f6', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 }) },
+    keyRuleTitle: { fontSize: 18, fontWeight: '700', color: '#1e40af', marginBottom: 8 },
+    keyRuleText: { fontSize: 15, lineHeight: 24, color: '#1e40af' },
+    
+    formulaCard: { backgroundColor: '#f0f9ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bae6fd' },
+    formulaTitle: { fontSize: 16, fontWeight: '700', color: '#0c4a6e', marginBottom: 12 },
+    
+    exampleCard: { backgroundColor: '#fefce8', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#fde047', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 }) },
+    exampleTitle: { fontSize: 16, fontWeight: '700', color: '#713f12', marginBottom: 8 },
+    exampleText: { fontSize: 15, lineHeight: 24, color: '#854d0e', marginBottom: 4 },
+    exampleResult: { fontSize: 15, lineHeight: 24, color: '#713f12', fontWeight: '600', marginTop: 8 },
+    exampleNote: { fontSize: 14, lineHeight: 22, color: '#92400e', fontStyle: 'italic', marginTop: 4 },
+    
+    reasonCard: { backgroundColor: '#f5f3ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#c4b5fd' },
+    reasonTitle: { fontSize: 16, fontWeight: '700', color: '#5b21b6', marginBottom: 4 },
+    reasonSubtitle: { fontSize: 14, color: '#6b21a8', fontStyle: 'italic', marginBottom: 8 },
+    reasonText: { fontSize: 15, lineHeight: 24, color: '#6b21a8' },
+    
+    scenarioCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 }) },
+    scenarioTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
+    scenarioText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8 },
+    scenarioExample: { fontSize: 14, lineHeight: 22, color: '#64748b', fontStyle: 'italic', paddingLeft: 12, borderLeftWidth: 3, borderLeftColor: '#3b82f6' },
+    
+    warningBox: { backgroundColor: '#fef3c7', borderRadius: 12, borderWidth: 1, borderColor: '#fbbf24', padding: 16, marginBottom: 16 },
+    warningTitle: { fontSize: 16, fontWeight: '700', color: '#92400e', marginBottom: 8 },
+    warningText: { fontSize: 15, lineHeight: 24, color: '#92400e' },
+    
+    assessmentCard: { backgroundColor: '#ecfdf5', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#a7f3d0' },
+    assessmentTitle: { fontSize: 16, fontWeight: '700', color: '#065f46', marginBottom: 12 },
+    
+    protectionCard: { flexDirection: 'row', backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 }) },
+    protectionNumber: { fontSize: 24, fontWeight: '700', color: '#2563EB', marginRight: 16, width: 32 },
+    protectionContent: { flex: 1 },
+    protectionTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
+    protectionText: { fontSize: 15, lineHeight: 24, color: '#475569' },
+    
+    receivingCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
+    receivingTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 12 },
+    
+    dangerBox: { backgroundColor: '#fef2f2', borderRadius: 12, borderWidth: 2, borderColor: '#dc2626', padding: 16, marginBottom: 16, ...createShadow({ shadowColor: '#dc2626', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    dangerTitle: { fontSize: 16, fontWeight: '700', color: '#991b1b', marginBottom: 8 },
+    dangerText: { fontSize: 15, lineHeight: 24, color: '#991b1b' },
+    
+    ctaButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 24, marginVertical: 16, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
+    ctaButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
+    
+    faqItem: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 }) },
+    faqQuestion: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
+    faqAnswer: { fontSize: 15, lineHeight: 24, color: '#475569' },
+    
+    calculatorSection: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 24, marginTop: 32, marginBottom: 16, alignItems: 'center' },
+    calculatorTitle: { fontSize: 20, fontWeight: '700', color: '#1e3a8a', marginBottom: 8, textAlign: 'center' },
+    calculatorText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 20, textAlign: 'center' },
+    calculatorButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24, ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
+    calculatorButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
+    
+    finalCtaSection: { backgroundColor: '#1e3a8a', borderRadius: 12, padding: 24, marginTop: 16, alignItems: 'center' },
+    finalCtaTitle: { fontSize: 20, fontWeight: '700', color: '#ffffff', marginBottom: 8, textAlign: 'center' },
+    finalCtaText: { fontSize: 15, lineHeight: 24, color: '#e0e7ff', marginBottom: 20, textAlign: 'center' },
+    primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 }) },
+    primaryButtonText: { color: '#1e3a8a', fontSize: 16, fontWeight: '600' },
+});

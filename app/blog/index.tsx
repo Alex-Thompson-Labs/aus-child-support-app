@@ -1,0 +1,381 @@
+import { PageSEO } from '@/src/components/seo/PageSEO';
+import { CalculatorHeader } from '@/src/features/calculator';
+import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
+import { createShadow } from '@/src/utils/shadow-styles';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+// Blog post data - add new posts here
+const BLOG_POSTS = [
+    {
+        slug: 'court-order-child-support-calculator',
+        title: 'Court Order Child Support Calculator: How to Read Your Court Order (Free Tool)',
+        excerpt: 'Have a court order for child support? Learn how to read it, when it expires, and how to use a calculator to understand what happens next. Free tool included.',
+        category: 'Court Orders',
+        date: '2026-01-24',
+        readTime: '12 min read',
+    },
+    {
+        slug: 'accurate-child-support-calculator',
+        title: 'Accurate Child Support Calculator Australia: Estimate Your Payments (2026)',
+        excerpt: 'Free calculator using the official 2026 formula. Get instant, accurate estimates in under 5 minutes. Learn what makes calculators accurate and when to get legal advice.',
+        category: 'Calculator Guide',
+        date: '2026-01-24',
+        readTime: '11 min read',
+    },
+    {
+        slug: 'when-to-hire-family-lawyer',
+        title: 'When to Hire a Family Lawyer for Child Support: 3 Key Signs',
+        excerpt: 'Learn the 3 critical signs you need a family lawyer for child support. Understand when DIY is risky, what lawyers cost, and how to find the right representation.',
+        category: 'Legal Advice',
+        date: '2026-01-24',
+        readTime: '13 min read',
+    },
+    {
+        slug: 'child-support-self-employed',
+        title: 'Child Support for Self-Employed Parents: How Business Income is Assessed',
+        excerpt: 'Self-employed? Learn how Services Australia assesses business income, what expenses get added back, and when you need legal advice to protect your interests.',
+        category: 'Self-Employment',
+        date: '2026-01-24',
+        readTime: '14 min read',
+    },
+    {
+        slug: 'how-to-calculate-child-support',
+        title: 'How to Calculate Child Support in Australia: The 2026 Guide',
+        excerpt: 'Step-by-step guide to calculating child support in Australia. Learn what information you need, how the formula works, and use our free calculator for instant results.',
+        category: 'Calculator Guide',
+        date: '2026-01-24',
+        readTime: '12 min read',
+    },
+    {
+        slug: 'child-support-formula-australia',
+        title: 'Child Support Formula Australia: How Income & Care Work',
+        excerpt: 'Complete guide to the Australian child support formula. Learn the 8-step calculation, how income and care percentages affect payments, with real examples.',
+        category: 'Child Support',
+        date: '2026-01-24',
+        readTime: '10 min read',
+    },
+    {
+        slug: 'complicated-child-support-situations',
+        title: 'Complicated Child Support in Australia: 8 Situations That Need Legal Advice',
+        excerpt: 'Self-employed? Trusts? Overseas income? Learn when child support gets too complicated for DIY and why legal advice protects your financial interests.',
+        category: 'Legal Advice',
+        date: '2026-01-24',
+        readTime: '15 min read',
+    },
+    {
+        slug: 'child-support-care-percentage-table',
+        title: 'Official Child Support Care Percentage Table (2026)',
+        excerpt: 'Complete care percentage table showing how nights per year convert to child support percentages. Includes thresholds, examples, and how care affects payments.',
+        category: 'Child Support',
+        date: '2026-01-24',
+        readTime: '12 min read',
+    },
+    {
+        slug: 'object-to-child-support-assessment',
+        title: 'How to Object to a Child Support Assessment in Australia',
+        excerpt: 'Received an unfair child support assessment? Learn how to object within 28 days, what evidence you need, and when to appeal to SSAT.',
+        category: 'Child Support',
+        date: '2026-01-24',
+        readTime: '10 min read',
+    },
+    {
+        slug: 'international-child-support-australia',
+        title: 'International Child Support Australia: When Your Ex Lives Overseas',
+        excerpt: 'Ex lives overseas? Australian child support still applies. Learn about reciprocating jurisdictions, enforcement options, and what to do next.',
+        category: 'Child Support',
+        date: '2026-01-24',
+        readTime: '8 min read',
+    },
+    {
+        slug: 'adult-disabled-child-maintenance',
+        title: 'Adult Disabled Child Maintenance: Complete Guide to Child Support Beyond 18',
+        excerpt: 'Child support can continue indefinitely for adult children with disabilities. Learn eligibility criteria, application process, and how assessments work.',
+        category: 'Child Support',
+        date: '2026-01-24',
+        readTime: '8 min read',
+    },
+    {
+        slug: 'overseas-parent-child-support-enforcement',
+        title: 'Overseas Parent Child Support Enforcement: Complete Guide for Australia',
+        excerpt: 'Enforcing child support when a parent lives overseas. Learn about reciprocating jurisdictions, international treaties, and enforcement mechanisms.',
+        category: 'Child Support',
+        date: '2026-01-24',
+        readTime: '9 min read',
+    },
+    {
+        slug: 'private-school-fees-child-support',
+        title: 'Private School Fees and Child Support: Complete Guide for Australia',
+        excerpt: 'Private school fees aren\'t automatically included in child support. Learn about Change of Assessment, Binding Agreements, and how to split education costs.',
+        category: 'Child Support',
+        date: '2026-01-24',
+        readTime: '8 min read',
+    },
+    {
+        slug: 'parental-leave-child-support',
+        title: 'Parental Leave and Child Support: Complete Guide for Australia',
+        excerpt: 'How parental leave affects child support. Learn about temporary assessment changes, Parental Leave Pay, returning to work, and planning ahead.',
+        category: 'Child Support',
+        date: '2026-01-24',
+        readTime: '8 min read',
+    },
+    {
+        slug: 'estimate-vs-actual-income-child-support',
+        title: 'Estimate vs Actual Income for Child Support: Complete Guide Australia',
+        excerpt: 'Understand the difference between estimated and actual income. Learn about reconciliation, overpayments, underpayments, and how to update your estimate.',
+        category: 'Child Support',
+        date: '2026-01-24',
+        readTime: '9 min read',
+    },
+];
+
+export default function BlogIndexPage() {
+    const router = useRouter();
+
+    const webContainerStyle = isWeb
+        ? {
+            maxWidth: MAX_CALCULATOR_WIDTH,
+            width: '100%' as const,
+            alignSelf: 'center' as const,
+        }
+        : {};
+
+    return (
+        <>
+            <PageSEO
+                title="Blog | AusChildSupport"
+                description="Expert guides on Australian child support, international enforcement, Change of Assessment applications, and family law advice."
+                canonicalPath="/blog"
+                breadcrumbs={[
+                    { label: 'Home', path: '/' },
+                    { label: 'Blog' },
+                ]}
+            />
+            <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+                <CalculatorHeader 
+                    title="Blog" 
+                    showBackButton={true} 
+                    maxWidth={MAX_CALCULATOR_WIDTH} 
+                />
+
+                <ScrollView
+                    style={styles.scrollView}
+                    contentContainerStyle={[styles.scrollContent, webContainerStyle]}
+                >
+                    <Text 
+                        style={styles.pageTitle}
+                        accessibilityRole="header"
+                        // @ts-ignore
+                        aria-level="1"
+                    >
+                        Child Support Guides & Resources
+                    </Text>
+
+                    <Text style={styles.introText}>
+                        Expert advice on Australian child support calculations, international enforcement, 
+                        and when to seek legal help.
+                    </Text>
+
+                    {/* Blog Posts Grid */}
+                    <View style={styles.postsGrid}>
+                        {BLOG_POSTS.map((post) => (
+                            <Pressable
+                                key={post.slug}
+                                style={[styles.postCard, isWeb && webClickableStyles]}
+                                onPress={() => router.push(`/blog/${post.slug}` as any)}
+                                accessibilityRole="button"
+                                accessibilityLabel={`Read article: ${post.title}`}
+                            >
+                                <View style={styles.postHeader}>
+                                    <Text style={styles.postCategory}>{post.category}</Text>
+                                    <Text style={styles.postDate}>{post.date}</Text>
+                                </View>
+                                <Text style={styles.postTitle}>{post.title}</Text>
+                                <Text style={styles.postExcerpt}>{post.excerpt}</Text>
+                                <View style={styles.postFooter}>
+                                    <Text style={styles.readTime}>{post.readTime}</Text>
+                                    <Text style={styles.readMore}>Read more →</Text>
+                                </View>
+                            </Pressable>
+                        ))}
+                    </View>
+
+                    {/* CTA Section */}
+                    <View style={styles.ctaSection}>
+                        <Text style={styles.ctaTitle}>Need Help With Your Child Support?</Text>
+                        <Text style={styles.ctaText}>
+                            Use our free calculator or connect with experienced family lawyers.
+                        </Text>
+                        <View style={styles.ctaButtons}>
+                            <Pressable
+                                style={[styles.primaryButton, isWeb && webClickableStyles]}
+                                onPress={() => router.push('/')}
+                                accessibilityRole="button"
+                            >
+                                <Text style={styles.primaryButtonText}>Try Calculator</Text>
+                            </Pressable>
+                            <Pressable
+                                style={[styles.secondaryButton, isWeb && webClickableStyles]}
+                                onPress={() => router.push('/lawyer-inquiry')}
+                                accessibilityRole="button"
+                            >
+                                <Text style={styles.secondaryButtonText}>Get Legal Help</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </ScrollView>
+            </SafeAreaView>
+        </>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#f8f9fa',
+    },
+    scrollView: {
+        flex: 1,
+    },
+    scrollContent: {
+        padding: 16,
+        paddingBottom: 32,
+    },
+    pageTitle: {
+        fontSize: 32,
+        fontWeight: '700',
+        color: '#1e3a8a',
+        marginBottom: 12,
+        ...(Platform.OS === 'web' ? { lineHeight: 40 } : {}),
+    },
+    introText: {
+        fontSize: 16,
+        lineHeight: 24,
+        color: '#475569',
+        marginBottom: 24,
+    },
+    postsGrid: {
+        gap: 16,
+    },
+    postCard: {
+        backgroundColor: '#ffffff',
+        borderRadius: 12,
+        padding: 20,
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+        ...createShadow({
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.06,
+            shadowRadius: 8,
+            elevation: 3,
+        }),
+    },
+    postHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    postCategory: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#2563EB',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    postDate: {
+        fontSize: 12,
+        color: '#64748b',
+    },
+    postTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#1e3a8a',
+        marginBottom: 8,
+        lineHeight: 28,
+    },
+    postExcerpt: {
+        fontSize: 15,
+        lineHeight: 22,
+        color: '#475569',
+        marginBottom: 16,
+    },
+    postFooter: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingTop: 12,
+        borderTopWidth: 1,
+        borderTopColor: '#e2e8f0',
+    },
+    readTime: {
+        fontSize: 13,
+        color: '#64748b',
+    },
+    readMore: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#2563EB',
+    },
+    ctaSection: {
+        backgroundColor: '#eff6ff',
+        borderRadius: 12,
+        padding: 24,
+        marginTop: 32,
+        alignItems: 'center',
+    },
+    ctaTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#1e3a8a',
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    ctaText: {
+        fontSize: 15,
+        lineHeight: 24,
+        color: '#475569',
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    ctaButtons: {
+        flexDirection: 'row',
+        gap: 12,
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+    },
+    primaryButton: {
+        backgroundColor: '#2563EB',
+        borderRadius: 8,
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        ...createShadow({
+            shadowColor: '#2563EB',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 4,
+            elevation: 3,
+        }),
+    },
+    primaryButtonText: {
+        color: '#ffffff',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    secondaryButton: {
+        backgroundColor: '#ffffff',
+        borderRadius: 8,
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderWidth: 1,
+        borderColor: '#2563EB',
+    },
+    secondaryButtonText: {
+        color: '#2563EB',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+});
