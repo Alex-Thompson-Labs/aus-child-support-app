@@ -77,7 +77,7 @@ export default function AdultDisabledChildMaintenanceScreen() {
         title="Adult Disabled Child Maintenance: Child Support Beyond 18 | Australia"
         description="Complete guide to child support for adult children with disabilities. Learn eligibility criteria, application process, assessment calculations, and how support continues indefinitely in Australia."
         canonicalPath="/blog/adult-disabled-child-maintenance"
-        schemas={[faqSchema, articleSchema]}
+        schema={[faqSchema, articleSchema]}
       />
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.container}>
@@ -807,7 +807,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginVertical: 24,
-    ...createShadow(2),
+    ...createShadow({ elevation: 2 }),
     ...(isWeb && { cursor: 'pointer' }),
   },
   ctaButtonPressed: {
@@ -843,7 +843,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginTop: 40,
     alignItems: 'center',
-    ...createShadow(3),
+    ...createShadow({ elevation: 3 }),
   },
   finalCTATitle: {
     fontSize: 24,

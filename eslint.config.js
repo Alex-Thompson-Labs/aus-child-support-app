@@ -7,4 +7,10 @@ module.exports = defineConfig([
   {
     ignores: ['dist/*'],
   },
+  {
+    files: ['app/blog/**/*.tsx'],
+    rules: {
+      'react/no-unescaped-entities': 'off', // Allow apostrophes and quotes in blog content
+    },
+  },
 ]);
