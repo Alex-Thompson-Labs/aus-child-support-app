@@ -8,86 +8,194 @@ export const CalculatorFAQ = () => {
 
   return (
     <View style={styles.container}>
-      {/* Section 1: The Formula */}
+      <Text style={styles.sectionTitle}>Common Questions About Child Support</Text>
+
+      {/* Question 1: How much will I pay */}
       <Accordion
-        title="How is this calculated?"
+        title="How much child support will I pay in Australia?"
         titleStyle={{ color: colors.primaryDark }}
         iconColor={colors.primaryDark}
       >
         <Text style={styles.text}>
-          Australian Child Support is based on the Income Shares Model. Our
-          calculator replicates the official Services Australia 8-step formula.
-          Key factors include Combined Income (Adjusted Taxable Income minus the
-          Self-Support Amount), Cost of Children (determined by government
-          tables), and Care Percentage (comparing your share of the income
-          against your share of the care).
+          Child support payments depend on both parents' incomes, the number of children, 
+          and how much time each parent cares for the children. For example:
+        </Text>
+        <View style={styles.list}>
+          <Text style={styles.listItem}>• Parent 1 earns $80,000, Parent 2 earns $50,000</Text>
+          <Text style={styles.listItem}>• 2 children under 13</Text>
+          <Text style={styles.listItem}>• Parent 1 has children 30% of nights (4 nights per fortnight)</Text>
+        </View>
+        <Text style={[styles.text, styles.marginTop]}>
+          In this scenario, Parent 1 would typically pay around <Text style={styles.bold}>$450-500 per month</Text> to 
+          Parent 2. The exact amount depends on other factors like relevant dependents and whether 
+          either parent supports children from other relationships.
+        </Text>
+        <Text style={[styles.text, styles.marginTop]}>
+          Use the calculator above to get your specific estimate.
         </Text>
       </Accordion>
 
-      {/* Section 2: The 50/50 Myth */}
+      {/* Question 2: Minimum payment */}
       <Accordion
-        title="Does 50/50 care mean $0?"
+        title="What is the minimum child support payment in Australia?"
         titleStyle={{ color: colors.primaryDark }}
         iconColor={colors.primaryDark}
       >
         <Text style={styles.text}>
-          Not necessarily. In Australia, Shared Care (such as 50/50) does not
-          automatically result in $0. The formula balances your income share
-          against your care share. If you earn significantly more than the other
-          parent, you are likely liable for payments to bridge the financial
-          gap.
+          If your adjusted taxable income is below the self-support amount ($29,619 for 2025-26), 
+          you may pay a <Text style={styles.bold}>minimum annual rate</Text> rather than a percentage of income. 
+          This is currently <Text style={styles.bold}>$1,815 per year ($151.25 per month)</Text> for one child, 
+          regardless of care arrangements.
         </Text>
+        <Text style={[styles.text, styles.marginTop]}>
+          Parents receiving income support payments may have this amount collected directly from their payments.
+        </Text>
+      </Accordion>
+
+      {/* Question 3: Income changes */}
+      <Accordion
+        title="How is child support calculated when income changes?"
+        titleStyle={{ color: colors.primaryDark }}
+        iconColor={colors.primaryDark}
+      >
+        <Text style={styles.text}>
+          Services Australia reassesses your child support when your income changes by <Text style={styles.bold}>15% or more</Text> from 
+          your last tax return. You can request a reassessment by providing:
+        </Text>
+        <View style={styles.list}>
+          <Text style={styles.listItem}>• Recent payslips (for wage earners)</Text>
+          <Text style={styles.listItem}>• Profit and loss statements (for self-employed)</Text>
+          <Text style={styles.listItem}>• Evidence of job loss or reduced hours</Text>
+        </View>
         <View style={styles.highlightBox}>
           <Text style={styles.highlightText}>
-            Higher Earner + 50/50 Care = You likely pay.
+            The new assessment applies from the date you notify Services Australia, not retrospectively. 
+            This is why it's important to report income changes quickly – you could be overpaying or 
+            underpaying for months.
           </Text>
         </View>
       </Accordion>
 
-      {/* Section 3: Complex Income */}
+      {/* Question 4: 50/50 custody */}
       <Accordion
-        title="What income sources are included?"
+        title="Does child support change with 50/50 custody?"
         titleStyle={{ color: colors.primaryDark }}
         iconColor={colors.primaryDark}
       >
         <Text style={styles.text}>
-          The formula relies on Adjusted Taxable Income (ATI), not just gross
-          salary. ATI includes taxable income, reportable fringe benefits,
-          target foreign income, total net investment losses, and reportable
-          superannuation contributions. Complex assets (like hidden cash or
-          business structures) generally require a specialised &apos;Change of
-          Assessment&apos; application.
+          Yes, significantly. When care is exactly 50/50 (182-183 nights each per year), the parent 
+          with the higher income typically pays child support to the other parent, but the amount is{' '}
+          <Text style={styles.bold}>much lower</Text> than in sole-care arrangements.
+        </Text>
+        <Text style={[styles.text, styles.marginTop]}>
+          For example:
+        </Text>
+        <View style={styles.list}>
+          <Text style={styles.listItem}>• Sole care (0% to parent 1): Parent 1 pays $800/month</Text>
+          <Text style={styles.listItem}>• Shared care (50/50): Parent 1 pays $200/month</Text>
+        </View>
+        <Text style={[styles.text, styles.marginTop]}>
+          The formula recognises that both parents are directly covering costs when children are in their care.
         </Text>
       </Accordion>
 
-      {/* Section 4: Self-Support Amount */}
+      {/* Question 5: Multiple children from different relationships */}
       <Accordion
-        title="What is the Self-Support Amount?"
+        title="How does child support work with multiple children from different relationships?"
         titleStyle={{ color: colors.primaryDark }}
         iconColor={colors.primaryDark}
       >
         <Text style={styles.text}>
-          The Self-Support Amount is a protected portion of your income reserved
-          for your own basic living expenses. Child support is only calculated
-          on income above this threshold. This amount is indexed annually by
-          Services Australia ($31,046 in 2026).
+          This is called a <Text style={styles.bold}>multi-case situation</Text>, and it significantly affects calculations. 
+          Services Australia applies a Multi-Case Allowance that reduces your child support income to 
+          recognise you're supporting children in multiple cases.
+        </Text>
+        <Text style={[styles.text, styles.marginTop]}>
+          For example, if you have:
+        </Text>
+        <View style={styles.list}>
+          <Text style={styles.listItem}>• 2 children with Partner A</Text>
+          <Text style={styles.listItem}>• 1 child with Partner B</Text>
+        </View>
+        <Text style={[styles.text, styles.marginTop]}>
+          Your income is reduced by a percentage before calculating what you owe to each case. 
+          This prevents you from being assessed as if you had full income available for each case separately.
+        </Text>
+        <View style={styles.highlightBox}>
+          <Text style={styles.highlightText}>
+            Most basic calculators get this wrong. Our calculator applies the correct multi-case formula.
+          </Text>
+        </View>
+      </Accordion>
+
+      {/* Question 6: Court orders */}
+      <Accordion
+        title="Can I use a child support calculator for court orders?"
+        titleStyle={{ color: colors.primaryDark }}
+        iconColor={colors.primaryDark}
+      >
+        <Text style={styles.text}>
+          If you have a <Text style={styles.bold}>court order</Text> or <Text style={styles.bold}>binding child support agreement</Text> that 
+          sets a specific amount, that overrides the Services Australia formula. However, you can still 
+          use this calculator to:
+        </Text>
+        <View style={styles.list}>
+          <Text style={styles.listItem}>• Compare what you're paying vs. the formula amount</Text>
+          <Text style={styles.listItem}>• Understand if the agreement is still fair as circumstances change</Text>
+          <Text style={styles.listItem}>• Prepare for renegotiating the agreement</Text>
+        </View>
+        <Text style={[styles.text, styles.marginTop]}>
+          Court orders and agreements can be changed if both parents agree, or through court application 
+          if circumstances have significantly changed.
         </Text>
       </Accordion>
 
-      {/* Section 5: Private School Fees */}
+      {/* Question 7: School fees */}
       <Accordion
-        title="Does this include private school fees?"
+        title="Does child support cover school fees and medical costs?"
         titleStyle={{ color: colors.primaryDark }}
         iconColor={colors.primaryDark}
       >
         <Text style={styles.text}>
-          No. The standard formula covers day-to-day costs like food and
-          housing. Significant extra costs—such as private school fees,
-          orthodontics, or high-level extracurriculars—are often classified as
-          &apos;Non-Agency Payments&apos; or specific &apos;Prescribed
-          Expenses&apos;. These usually require a separate binding child support
-          agreement or court order.
+          <Text style={styles.bold}>No.</Text> The child support formula is designed to cover basic living costs only. 
+          It does not include:
         </Text>
+        <View style={styles.list}>
+          <Text style={styles.listItem}>• Private school fees</Text>
+          <Text style={styles.listItem}>• Extracurricular activities (sports, music lessons)</Text>
+          <Text style={styles.listItem}>• Medical costs not covered by Medicare</Text>
+          <Text style={styles.listItem}>• Childcare fees</Text>
+        </View>
+        <Text style={[styles.text, styles.marginTop]}>
+          Parents can agree to share these costs separately, or include them in a binding child support agreement. 
+          If you can't agree, you may need to apply to court for orders about additional expenses.
+        </Text>
+      </Accordion>
+
+      {/* Question 8: Accuracy */}
+      <Accordion
+        title="How accurate is this calculator?"
+        titleStyle={{ color: colors.primaryDark }}
+        iconColor={colors.primaryDark}
+      >
+        <Text style={styles.text}>
+          This calculator uses the official Services Australia 8-step formula and is accurate for the 
+          scenarios it covers. However, it provides <Text style={styles.bold}>estimates only</Text>, not formal assessments.
+        </Text>
+        <Text style={[styles.text, styles.marginTop]}>
+          Accuracy depends on:
+        </Text>
+        <View style={styles.list}>
+          <Text style={styles.listItem}>• How accurately you enter your income and care details</Text>
+          <Text style={styles.listItem}>• Whether your situation involves factors we can't calculate (e.g., Change of Assessment decisions)</Text>
+          <Text style={styles.listItem}>• Timing – rates and thresholds change each financial year</Text>
+        </View>
+        <View style={styles.highlightBox}>
+          <Text style={styles.highlightText}>
+            For a formal assessment, you must apply through Services Australia. They will verify your 
+            income with the ATO and issue an official decision you can rely on.
+          </Text>
+        </View>
       </Accordion>
     </View>
   );
@@ -100,6 +208,13 @@ const styles = StyleSheet.create({
     width: '100%',
     // maxWidth: 600, // Optional: restricts width on huge screens
     alignSelf: 'center',
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: theme.colors.primaryDark,
+    marginBottom: 16,
+    textAlign: 'center',
   },
   text: {
     fontSize: 14,

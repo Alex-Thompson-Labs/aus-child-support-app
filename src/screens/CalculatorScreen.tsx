@@ -2,13 +2,13 @@ import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCalculator } from '../hooks/useCalculator';
@@ -20,6 +20,8 @@ import { MAX_CALCULATOR_WIDTH, useResponsive } from '../utils/responsive';
 // ✅ STANDARD IMPORTS (Reliable)
 import { CalculatorFAQ, CalculatorForm, CalculatorHeader, CalculatorResults, IncomeSupportModal } from '@/src/features/calculator';
 import { Footer } from '../components/ui/Footer';
+import { SEOContentSection } from '../components/ui/SEOContentSection';
+import { SEOHeroSection } from '../components/ui/SEOHeroSection';
 import { StepProgressIndicator } from '../components/ui/StepProgressIndicator';
 
 export function CalculatorScreen() {
@@ -188,6 +190,16 @@ export function CalculatorScreen() {
   // For form props, only show income percentages for standard calculation results
   const standardResults = results && !isComplexityTrap(results) ? results : null;
 
+  // Ref for scrolling to calculator form
+  const calculatorFormRef = React.useRef<View>(null);
+
+  const handleScrollToCalculator = () => {
+    if (Platform.OS === 'web' && calculatorFormRef.current) {
+      // @ts-ignore - Web-only scrollIntoView
+      calculatorFormRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   const formProps = {
     incomeA: formState.incomeA,
     incomeB: formState.incomeB,
@@ -286,8 +298,16 @@ export function CalculatorScreen() {
           accessibilityRole={'main' as any}
         >
           <View style={isDesktop ? styles.bodyContainer : styles.fullWidth}>
+            {/* SEO Hero Section - Above the fold */}
+            <SEOHeroSection onCalculatePress={handleScrollToCalculator} />
+
             {/* ✅ FORM RESTORED (No Suspense) */}
-            <CalculatorForm {...formProps} isDesktopWeb={isDesktop} />
+            <View ref={calculatorFormRef}>
+              <CalculatorForm {...formProps} isDesktopWeb={isDesktop} />
+            </View>
+
+            {/* SEO Content Section - Educational content */}
+            <SEOContentSection />
 
             {/* FAQ Section */}
             <CalculatorFAQ />
