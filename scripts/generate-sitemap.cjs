@@ -25,6 +25,7 @@ const EXCLUDED_ROUTES = [
   'modal',
   'admin',
   'blog', // noindexed - main blog at subdomain
+  'court-order-tool', // Hidden from navigation, not for public indexing
 ];
 
 // Priority configuration

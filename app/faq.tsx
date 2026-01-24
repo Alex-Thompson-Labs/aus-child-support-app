@@ -4,7 +4,7 @@ import { CalculatorHeader } from '@/src/features/calculator';
 import { isWeb, MAX_CALCULATOR_WIDTH, webClickableStyles } from '@/src/utils/responsive';
 import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Comprehensive FAQ data aggregated from all pages
@@ -222,7 +222,7 @@ export default function FAQPage() {
     return (
         <>
             <PageSEO
-                title="FAQ | Child Support Calculator Australia"
+                title="FAQ | AusChildSupport"
                 description="Frequently asked questions about Australian child support calculations, Change of Assessment applications, care arrangements, and connecting with family law professionals."
                 canonicalPath="/faq"
                 schema={faqSchema}
@@ -239,6 +239,16 @@ export default function FAQPage() {
                     style={styles.scrollView}
                     contentContainerStyle={[styles.scrollContent, webContainerStyle]}
                 >
+                    {/* Page Title - H1 for SEO */}
+                    <Text 
+                        style={styles.pageTitle} 
+                        accessibilityRole="header"
+                        // @ts-ignore - Web-only ARIA attributes
+                        aria-level="1"
+                    >
+                        Frequently Asked Questions
+                    </Text>
+
                     <Text style={styles.introText}>
                         Find answers to common questions about child support in Australia.
                     </Text>
@@ -352,10 +362,11 @@ const styles = StyleSheet.create({
         paddingBottom: 32,
     },
     pageTitle: {
-        fontSize: 28,
+        fontSize: 32,
         fontWeight: '700',
         color: '#1e3a8a',
-        marginBottom: 8,
+        marginBottom: 12,
+        ...(Platform.OS === 'web' ? { lineHeight: 40 } : {}),
     },
     introText: {
         fontSize: 16,

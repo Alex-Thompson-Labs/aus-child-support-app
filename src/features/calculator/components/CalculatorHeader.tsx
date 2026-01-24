@@ -115,115 +115,120 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
                     <View style={styles.backdrop} />
                 </TouchableWithoutFeedback>
 
-                {/* Drawer Panel */}
-                <Animated.View
-                    style={[
-                        styles.drawer,
-                        { transform: [{ translateX: slideAnim }] }
-                    ]}
-                >
-                    {/* Decorative Background Shapes */}
-                    <View style={styles.softGlow} />
-                    <View style={styles.techRing} />
+                {/* Drawer Panel - Centered container */}
+                <View style={styles.drawerContainer}>
+                    <Animated.View
+                        style={[
+                            styles.drawer,
+                            { transform: [{ translateX: slideAnim }] }
+                        ]}
+                    >
+                        {/* Decorative Background Shapes */}
+                        <View style={styles.softGlow} />
+                        <View style={styles.techRing} />
 
-                    {/* Header Bar */}
-                    <View style={styles.drawerHeader}>
-                        <Image
-                            source={require('@/assets/source_images/australian-child-support-assessment-calculator-logo.png')}
-                            style={styles.drawerLogo}
-                            resizeMode="contain"
-                        />
-                        <Pressable
-                            onPress={closeDrawer}
-                            style={styles.closeButton}
-                            accessibilityRole="button"
-                            accessibilityLabel="Close menu"
-                        >
-                            <Feather name="x" size={28} color="#ffffff" />
-                        </Pressable>
-                    </View>
-
-                    {/* Top Section */}
-                    <View style={styles.topSection}>
-                        {/* Primary Action */}
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.primaryNavButton,
-                                pressed && styles.primaryNavButtonPressed
-                            ]}
-                            onPress={() => handleNavigation('/')}
-                            accessibilityRole="button"
-                        >
-                            <Feather name="plus-circle" size={26} color={BRAND_NAVY} />
-                            <Text style={styles.primaryNavButtonText}>Start New Calculation</Text>
-                        </Pressable>
-
-                        {/* Feature Item - Court Order Scanner */}
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.featureItem,
-                                styles.featureItemSpacing,
-                                pressed && styles.featureItemPressed
-                            ]}
-                            onPress={() => handleNavigation('/court-order-tool')}
-                            accessibilityRole="button"
-                        >
-                            <View style={styles.featureItemContent}>
-                                <Feather name="file-text" size={26} color="#ffffff" />
-                                <Text style={styles.featureItemText}>Court Order Scanner</Text>
-                                <View style={styles.betaBadge}>
-                                    <Text style={styles.betaBadgeText}>BETA</Text>
-                                </View>
-                            </View>
-                            <Feather name="chevron-right" size={18} color="#ffffff" />
-                        </Pressable>
-
-                        {/* Feature Item - Special Circumstances Wizard */}
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.featureItem,
-                                styles.featureItemSpacing,
-                                pressed && styles.featureItemPressed
-                            ]}
-                            onPress={() => handleNavigation('/special-circumstances')}
-                            accessibilityRole="button"
-                        >
-                            <View style={styles.featureItemContent}>
-                                <Feather name="sliders" size={26} color="#ffffff" />
-                                <Text style={styles.featureItemText}>Special Circumstances Wizard</Text>
-                            </View>
-                            <Feather name="chevron-right" size={18} color="#ffffff" />
-                        </Pressable>
-                    </View>
-
-                    {/* Middle Section - Support Links */}
-                    <View style={styles.middleSection}>
-                        <SupportMenuItem
-                            label="About"
-                            icon="info"
-                            onPress={() => handleNavigation('/about')}
-                        />
-                        <SupportMenuItem
-                            label="FAQ"
-                            icon="help-circle"
-                            onPress={() => handleNavigation('/faq')}
-                        />
-                        <SupportMenuItem
-                            label="Contact"
-                            icon="mail"
-                            onPress={() => handleNavigation('/contact')}
-                        />
-                    </View>
-
-                    {/* Bottom Section - Trust Footer */}
-                    <View style={styles.trustFooter}>
-                        <View style={styles.trustTextContainer}>
-                            <Text style={styles.trustStatement}>100% Private & Secure</Text>
+                    {/* Content wrapper with width constraint */}
+                    <View style={styles.drawerContent}>
+                        {/* Header Bar */}
+                        <View style={styles.drawerHeader}>
+                            <Image
+                                source={require('@/assets/source_images/australian-child-support-assessment-calculator-logo.png')}
+                                style={styles.drawerLogo}
+                                resizeMode="contain"
+                            />
+                            <Pressable
+                                onPress={closeDrawer}
+                                style={styles.closeButton}
+                                accessibilityRole="button"
+                                accessibilityLabel="Close menu"
+                            >
+                                <Feather name="x" size={28} color="#ffffff" />
+                            </Pressable>
                         </View>
-                        {/* Support person image - add menu-support-person.png to public/images/ */}
-                        <SupportPersonImage />
+
+                        {/* Top Section */}
+                        <View style={styles.topSection}>
+                            {/* Primary Action */}
+                            <Pressable
+                                style={({ pressed }) => [
+                                    styles.primaryNavButton,
+                                    pressed && styles.primaryNavButtonPressed
+                                ]}
+                                onPress={() => handleNavigation('/')}
+                                accessibilityRole="button"
+                            >
+                                <Feather name="plus-circle" size={26} color={BRAND_NAVY} />
+                                <Text style={styles.primaryNavButtonText}>Start New Calculation</Text>
+                            </Pressable>
+
+                            {/* Feature Item - Court Order Scanner */}
+                            <Pressable
+                                style={({ pressed }) => [
+                                    styles.featureItem,
+                                    styles.featureItemSpacing,
+                                    pressed && styles.featureItemPressed
+                                ]}
+                                onPress={() => handleNavigation('/court-order-tool')}
+                                accessibilityRole="button"
+                            >
+                                <View style={styles.featureItemContent}>
+                                    <Feather name="file-text" size={26} color="#ffffff" />
+                                    <Text style={styles.featureItemText}>Court Order Scanner</Text>
+                                    <View style={styles.betaBadge}>
+                                        <Text style={styles.betaBadgeText}>BETA</Text>
+                                    </View>
+                                </View>
+                                <Feather name="chevron-right" size={18} color="#ffffff" />
+                            </Pressable>
+
+                            {/* Feature Item - Special Circumstances Wizard */}
+                            <Pressable
+                                style={({ pressed }) => [
+                                    styles.featureItem,
+                                    styles.featureItemSpacing,
+                                    pressed && styles.featureItemPressed
+                                ]}
+                                onPress={() => handleNavigation('/special-circumstances')}
+                                accessibilityRole="button"
+                            >
+                                <View style={styles.featureItemContent}>
+                                    <Feather name="sliders" size={26} color="#ffffff" />
+                                    <Text style={styles.featureItemText}>Special Circumstances Wizard</Text>
+                                </View>
+                                <Feather name="chevron-right" size={18} color="#ffffff" />
+                            </Pressable>
+                        </View>
+
+                        {/* Middle Section - Support Links */}
+                        <View style={styles.middleSection}>
+                            <SupportMenuItem
+                                label="About"
+                                icon="info"
+                                onPress={() => handleNavigation('/about')}
+                            />
+                            <SupportMenuItem
+                                label="FAQ"
+                                icon="help-circle"
+                                onPress={() => handleNavigation('/faq')}
+                            />
+                            <SupportMenuItem
+                                label="Contact"
+                                icon="mail"
+                                onPress={() => handleNavigation('/contact')}
+                            />
+                        </View>
+
+                        {/* Bottom Section - Trust Footer */}
+                        <View style={styles.trustFooter}>
+                            <View style={styles.trustTextContainer}>
+                                <Text style={styles.trustStatement}>100% Private & Secure</Text>
+                            </View>
+                            {/* Support person image - add menu-support-person.png to public/images/ */}
+                            <SupportPersonImage />
+                        </View>
                     </View>
-                </Animated.View>
+                    </Animated.View>
+                </View>
             </Modal>
         </View>
     );
@@ -313,29 +318,42 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
     },
 
-    // Backdrop - hidden since menu is full screen
+    // Backdrop - matches main page background
     backdrop: {
         position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'transparent',
+        backgroundColor: '#f8fafc',
     },
 
-    // Drawer - Full dark mode with unified navy background
-    drawer: {
+    // Drawer container - centers the drawer with max width
+    drawerContainer: {
         position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    // Drawer - Constrained navy background
+    drawer: {
         width: '100%',
+        maxWidth: 850,
         height: '100%',
         backgroundColor: BRAND_NAVY,
         justifyContent: 'space-between',
         overflow: 'hidden',
-        // NO shadow, NO borderRadius, NO margin - pure full screen
+    },
+    
+    // Drawer content wrapper - full width within constrained drawer
+    drawerContent: {
+        width: '100%',
+        height: '100%',
+        justifyContent: 'space-between',
     },
 
     // Decorative Background Shapes - Subtle white watermarks

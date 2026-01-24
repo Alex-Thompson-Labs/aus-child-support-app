@@ -15,7 +15,6 @@ import Accordion from '../src/components/ui/Accordion';
 import { SpecialCircumstancesWizard } from '../src/features/conversion';
 import { useAnalytics } from '../src/utils/analytics';
 import {
-    MAX_FORM_WIDTH,
     isWeb
 } from '../src/utils/responsive';
 import { createShadow } from '../src/utils/shadow-styles';
@@ -149,7 +148,7 @@ export default function SpecialCircumstancesScreen() {
   // Web-specific container styles
   const webContainerStyle = isWeb
     ? {
-      maxWidth: MAX_FORM_WIDTH,
+      maxWidth: 850, // Match MAX_CALCULATOR_WIDTH
       width: '100%' as const,
       alignSelf: 'center' as const,
     }
@@ -169,39 +168,41 @@ export default function SpecialCircumstancesScreen() {
       />
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Special Circumstances</Text>
-          <Pressable
-            style={styles.closeButton}
-            onPress={() => {
-              if (returnTo) {
-                if (returnTo.startsWith('http')) {
-                  if (Platform.OS === 'web') {
-                    (
-                      globalThis as unknown as { location: { href: string } }
-                    ).location.href = returnTo;
+        <View style={styles.headerWrapper}>
+          <View style={[styles.header, webContainerStyle]}>
+            <Text style={styles.headerTitle}>Special Circumstances</Text>
+            <Pressable
+              style={styles.closeButton}
+              onPress={() => {
+                if (returnTo) {
+                  if (returnTo.startsWith('http')) {
+                    if (Platform.OS === 'web') {
+                      (
+                        globalThis as unknown as { location: { href: string } }
+                      ).location.href = returnTo;
+                    } else {
+                      Linking.openURL(returnTo);
+                    }
                   } else {
-                    Linking.openURL(returnTo);
+                    // @ts-ignore: returnTo is string but router.push expects pathname
+                    router.push(returnTo);
                   }
-                } else {
-                  // @ts-ignore: returnTo is string but router.push expects pathname
-                  router.push(returnTo);
+                  return;
                 }
-                return;
-              }
 
-              if (router.canGoBack()) {
-                router.back();
-              } else {
-                router.replace('/');
-              }
-            }}
-            accessible
-            accessibilityRole="button"
-            accessibilityLabel="Close"
-          >
-            <Text style={styles.closeButtonText}>✕</Text>
-          </Pressable>
+                if (router.canGoBack()) {
+                  router.back();
+                } else {
+                  router.replace('/');
+                }
+              }}
+              accessible
+              accessibilityRole="button"
+              accessibilityLabel="Close"
+            >
+              <Text style={styles.closeButtonText}>✕</Text>
+            </Pressable>
+          </View>
         </View>
 
         <ScrollView
@@ -279,30 +280,38 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8f9fa',
   },
+  headerWrapper: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
+    backgroundColor: '#ffffff',
+    alignItems: 'center',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-    backgroundColor: '#ffffff',
+    paddingVertical: 16,
+    width: '100%',
   },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1e293b',
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1e3a8a',
   },
   closeButton: {
-    padding: 8,
-    borderRadius: 20,
-    backgroundColor: '#f1f5f9',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   closeButtonText: {
-    fontSize: 16,
-    color: '#64748b',
-    fontWeight: '500',
+    fontSize: 24,
+    color: '#1e3a8a',
+    fontWeight: '400',
+    lineHeight: 24,
   },
   scrollView: {
     flex: 1,

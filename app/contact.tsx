@@ -13,6 +13,7 @@ import React, { useState } from 'react';
 import {
     Linking,
     Modal,
+    Platform,
     Pressable,
     ScrollView,
     StyleSheet,
@@ -130,10 +131,14 @@ export default function ContactPage() {
   return (
     <>
       <PageSEO
-        title="Contact | Child Support Calculator Australia"
+        title="Contact | AusChildSupport"
         description="Get in touch with AusChildSupport. Connect with family law professionals or visit our blog for child support guidance in Australia."
         canonicalPath="/contact"
         schema={contactSchema}
+        breadcrumbs={[
+          { label: 'Home', path: '/' },
+          { label: 'Contact' },
+        ]}
       />
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         {/* Header */}
@@ -147,6 +152,16 @@ export default function ContactPage() {
           style={styles.scrollView}
           contentContainerStyle={[styles.scrollContent, webContainerStyle]}
         >
+          {/* Page Title - H1 for SEO */}
+          <Text 
+            style={styles.pageTitle} 
+            accessibilityRole="header"
+            // @ts-ignore - Web-only ARIA attributes
+            aria-level="1"
+          >
+            Contact Us
+          </Text>
+
           {/* Intro */}
           <Text style={styles.introText}>
             Have questions about child support calculations or need professional
@@ -513,10 +528,11 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   pageTitle: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '700',
     color: '#1e3a8a',
     marginBottom: 12,
+    ...(Platform.OS === 'web' ? { lineHeight: 40 } : {}),
   },
   introText: {
     fontSize: 16,

@@ -5,9 +5,8 @@ Allow: /
 # Disallow admin pages
 Disallow: /admin/
 
-# Disallow non-indexable routes
-Disallow: /modal
-Disallow: /_sitemap
+# Disallow partner proposal pages (noindexed)
+Disallow: /partner/
 
 # Sitemap
 Sitemap: https://auschildsupport.com.au/sitemap.xml

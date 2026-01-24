@@ -1,29 +1,17 @@
 import { ScrollViewStyleReset } from 'expo-router/html';
 import { type PropsWithChildren } from 'react';
 
-// GLOBAL SCHEMA: Organization
+// GLOBAL SCHEMA: Organization (only - pages control their own schemas)
 const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'AusChildSupport',
   url: 'https://auschildsupport.com.au',
   logo: 'https://auschildsupport.com.au/favicon-rounded-white-bg.png',
-};
-
-// GLOBAL SCHEMA: SoftwareApplication
-const softwareApplicationSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'SoftwareApplication',
-  name: 'Child Support Calculator Australia',
-  applicationCategory: 'FinanceApplication',
-  operatingSystem: 'Web',
-  offers: {
-    '@type': 'Offer',
-    price: '0',
-    priceCurrency: 'AUD',
+  areaServed: {
+    '@type': 'Country',
+    name: 'Australia',
   },
-  // Note: aggregateRating removed - Google requires real, verified ratings
-  // Add back only when you have actual user reviews to reference
 };
 
 export default function Root({ children }: PropsWithChildren) {
@@ -47,6 +35,16 @@ export default function Root({ children }: PropsWithChildren) {
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://swcbcudasyiqhtkymcpy.supabase.co" />
         <link rel="dns-prefetch" href="https://swcbcudasyiqhtkymcpy.supabase.co" />
+
+        {/* Preload critical assets for LCP optimization */}
+        <link 
+          rel="preload" 
+          as="image" 
+          href="/main-page-logo.png" 
+          type="image/png"
+          // @ts-ignore - Web-only fetchpriority attribute
+          fetchpriority="high"
+        />
 
         {/* Favicon */}
         <link
@@ -176,12 +174,9 @@ export default function Root({ children }: PropsWithChildren) {
           }}
         />
 
-        {/* GLOBAL SCHEMA INJECTION */}
+        {/* GLOBAL SCHEMA INJECTION - Organization only, pages control their own schemas */}
         <script type="application/ld+json">
           {JSON.stringify(organizationSchema)}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify(softwareApplicationSchema)}
         </script>
 
         <ScrollViewStyleReset />

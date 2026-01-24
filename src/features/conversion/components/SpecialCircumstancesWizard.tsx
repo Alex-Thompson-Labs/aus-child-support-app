@@ -2,18 +2,18 @@ import DatePickerField from '@/src/components/ui/DatePickerField';
 import { HelpTooltip } from '@/src/features/calculator/components/HelpTooltip';
 import { searchCountries } from '@/src/utils/all-countries';
 import {
-  isWeb,
-  webClickableStyles as webClickableStylesRaw,
-  webOnlyStyles as webOnlyStylesRaw,
+    isWeb,
+    webClickableStyles as webClickableStylesRaw,
+    webOnlyStyles as webOnlyStylesRaw,
 } from '@/src/utils/responsive';
 import {
-  SPECIAL_CIRCUMSTANCES,
-  createCourtDateReasonId,
-  isCourtDateReason,
-  type SpecialCircumstance,
+    SPECIAL_CIRCUMSTANCES,
+    createCourtDateReasonId,
+    isCourtDateReason,
+    type SpecialCircumstance,
 } from '@/src/utils/special-circumstances';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Animated, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 const webClickableStyles = webClickableStylesRaw as any;
 const webOnlyStyles = webOnlyStylesRaw as any;
@@ -699,46 +699,48 @@ export function SpecialCircumstancesWizard({
 
   return (
     <View style={styles.wizardContainer}>
-      <ProgressIndicator
-        currentStep={currentStepIndex + 1}
-        totalSteps={STEPS.length}
-        stepTitle={STEP_TITLES[currentStep]}
-      />
-      <View style={styles.contentWrapper}>
-        {renderStepContent()}
-        <View style={styles.navigationButtons}>
-          <Pressable
-            style={[
-              styles.navButton,
-              styles.backButton,
-              isFirstStep && styles.navButtonHidden,
-              isWeb && !isFirstStep && webClickableStyles,
-            ]}
-            onPress={handleBack}
-            disabled={isFirstStep}
-            accessible
-            accessibilityRole="button"
-            accessibilityLabel="Go to previous step"
-          >
-            <Text style={styles.backButtonText}>Back</Text>
-          </Pressable>
-          {!isLastStep ? (
+      <View style={styles.card}>
+        <ProgressIndicator
+          currentStep={currentStepIndex + 1}
+          totalSteps={STEPS.length}
+          stepTitle={STEP_TITLES[currentStep]}
+        />
+        <View style={styles.contentWrapper}>
+          {renderStepContent()}
+          <View style={styles.navigationButtons}>
             <Pressable
               style={[
                 styles.navButton,
-                styles.nextButton,
-                isWeb && webClickableStyles,
+                styles.backButton,
+                isFirstStep && styles.navButtonHidden,
+                isWeb && !isFirstStep && webClickableStyles,
               ]}
-              onPress={handleNext}
+              onPress={handleBack}
+              disabled={isFirstStep}
               accessible
               accessibilityRole="button"
-              accessibilityLabel="Go to next step"
+              accessibilityLabel="Go to previous step"
             >
-              <Text style={styles.nextButtonText}>Next</Text>
+              <Text style={styles.backButtonText}>Back</Text>
             </Pressable>
-          ) : (
-            <View style={styles.navButtonSpacer} />
-          )}
+            {!isLastStep ? (
+              <Pressable
+                style={[
+                  styles.navButton,
+                  styles.nextButton,
+                  isWeb && webClickableStyles,
+                ]}
+                onPress={handleNext}
+                accessible
+                accessibilityRole="button"
+                accessibilityLabel="Go to next step"
+              >
+                <Text style={styles.nextButtonText}>Next</Text>
+              </Pressable>
+            ) : (
+              <View style={styles.navButtonSpacer} />
+            )}
+          </View>
         </View>
       </View>
     </View>
@@ -751,6 +753,25 @@ const styles = StyleSheet.create({
     marginTop: 0,
     display: 'flex',
     flexDirection: 'column',
+  },
+  card: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    padding: 20,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.08)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 2,
+      },
+    }),
   },
   contentWrapper: {
     flexDirection: 'column',

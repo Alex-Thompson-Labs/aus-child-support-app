@@ -4,7 +4,7 @@ import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/res
 import { createShadow } from '@/src/utils/shadow-styles';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Schema.org structured data for About page
@@ -40,7 +40,7 @@ export default function AboutPage() {
     return (
         <>
             <PageSEO
-                title="About | Child Support Calculator Australia"
+                title="About | AusChildSupport"
                 description="Learn about the free Australian Child Support Calculator. We use the official 2026 Services Australia formula to help parents estimate child support payments."
                 canonicalPath="/about"
                 schema={aboutSchema}
@@ -57,6 +57,16 @@ export default function AboutPage() {
                     style={styles.scrollView}
                     contentContainerStyle={[styles.scrollContent, webContainerStyle]}
                 >
+                    {/* Page Title - H1 for SEO */}
+                    <Text 
+                        style={styles.pageTitle} 
+                        accessibilityRole="header"
+                        // @ts-ignore - Web-only ARIA attributes
+                        aria-level="1"
+                    >
+                        About AusChildSupport
+                    </Text>
+
                     {/* Mission Section */}
                     <View style={styles.section}>
                         {/* @ts-ignore - Web-only ARIA attributes */}
@@ -182,10 +192,11 @@ const styles = StyleSheet.create({
         paddingBottom: 32,
     },
     pageTitle: {
-        fontSize: 28,
+        fontSize: 32,
         fontWeight: '700',
         color: '#1e3a8a',
         marginBottom: 24,
+        ...(Platform.OS === 'web' ? { lineHeight: 40 } : {}),
     },
     section: {
         marginBottom: 24,
