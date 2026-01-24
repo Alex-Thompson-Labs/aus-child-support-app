@@ -25,6 +25,7 @@ const EXCLUDED_ROUTES = [
   'modal',
   'admin',
   'court-order-tool', // Hidden from navigation, not for public indexing
+  'blog', // Blog posts are manually added below to avoid duplicates
 ];
 
 // Priority configuration
