@@ -69,6 +69,16 @@ const BLOG_SLUGS = [
   'private-school-fees-child-support',
   'parental-leave-child-support',
   'estimate-vs-actual-income-child-support',
+  'child-support-after-18',
+  'new-partner-income-child-support',
+  'binding-child-support-agreement',
+  'lump-sum-child-support-payment',
+  'backdating-child-support-australia',
+  'child-support-overpayment-refund',
+  'child-support-arrears-australia',
+  'shared-care-5050-child-support',
+  'child-support-reduction-strategies',
+  'child-support-centrelink-income-support',
 ];
 
 /**
