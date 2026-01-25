@@ -298,6 +298,32 @@ This app implements the official Services Australia formula:
 
 8. **Calculate Final Payment**
    - Child Support % × Cost of Children = Annual liability
+
+### Special Formulas
+
+**Formula 5: Non-Parent Carer with Overseas Parent (✅ IMPLEMENTED)**
+
+When a non-parent carer (e.g., grandparent) applies and one parent lives in a non-reciprocating jurisdiction:
+
+- **Income Doubling**: Available parent's CSI × 2 (recognizes child has two parents)
+- **Cost Calculation**: Uses doubled income to calculate costs
+- **Rate Halving**: Final rate × 0.5 (compensates for doubling)
+- **Result**: Fair assessment using only one parent's income
+
+**Implementation Status:**
+- ✅ Core calculation engine (`src/utils/formula-5-calculator.ts`)
+- ✅ Jurisdiction checker (`src/utils/jurisdiction-checker.ts`)
+- ✅ Country selector UI component
+- ✅ Complexity detection (flags for lead generation)
+- ✅ 21 passing unit tests
+- ⏳ Results breakdown display (in progress)
+
+**Formula 6: Non-Parent Carer with Deceased Parent (📋 PLANNED)**
+
+When a non-parent carer applies and one parent is deceased:
+- Uses only surviving parent's income (no doubling)
+- No halving of final rate
+- See `/docs/business-docs/formulas/FORMULA_6_SPECIFICATION.md`
    - Apply minimum rates if applicable:
      - **FAR (Fixed Annual Rate)**: Low income, not on support
      - **MAR (Minimum Annual Rate)**: Very low income, on Centrelink support

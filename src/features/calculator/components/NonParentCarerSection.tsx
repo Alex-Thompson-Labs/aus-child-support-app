@@ -1,5 +1,7 @@
 import { BrandSwitch } from '@/src/components/ui/BrandSwitch';
+import { CountrySelector } from '@/src/components/ui/CountrySelector';
 import type { NonParentCarerInfo } from '@/src/utils/calculator';
+import type { JurisdictionStatus } from '@/src/utils/jurisdiction-checker';
 import { isWeb, webClickableStyles } from '@/src/utils/responsive';
 import React, { useState } from 'react';
 import {
@@ -48,6 +50,17 @@ export function NonParentCarerSection({
     onNonParentCarerChange({
       ...nonParentCarer,
       hasOverseasParent: value,
+      // Reset country and jurisdiction status when toggling off
+      overseasParentCountry: value ? nonParentCarer.overseasParentCountry : undefined,
+      isNonReciprocating: value ? nonParentCarer.isNonReciprocating : undefined,
+    });
+  };
+
+  const handleCountrySelect = (country: string, status: JurisdictionStatus) => {
+    onNonParentCarerChange({
+      ...nonParentCarer,
+      overseasParentCountry: country,
+      isNonReciprocating: status === 'non-reciprocating',
     });
   };
 
@@ -163,6 +176,18 @@ export function NonParentCarerSection({
                 />
                 <Text style={styles.statusLabel}>Is either parent living overseas?</Text>
               </View>
+
+              {/* Country Selector - shown when overseas parent is selected */}
+              {nonParentCarer.hasOverseasParent && (
+                <View style={styles.countrySection}>
+                  <Text style={styles.countrySectionLabel}>Which country?</Text>
+                  <CountrySelector
+                    value={nonParentCarer.overseasParentCountry}
+                    onSelect={handleCountrySelect}
+                    placeholder="Select country"
+                  />
+                </View>
+              )}
             </View>
           )}
         </View>
@@ -234,5 +259,14 @@ const styles = StyleSheet.create({
   statusLabel: {
     fontSize: 14,
     color: '#475569',
+  },
+  countrySection: {
+    marginTop: 8,
+    gap: 8,
+  },
+  countrySectionLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#64748b',
   },
 });

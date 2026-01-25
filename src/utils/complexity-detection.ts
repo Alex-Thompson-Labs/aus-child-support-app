@@ -176,6 +176,19 @@ export function detectComplexity(
   // Check for special circumstances via selected CoA reasons
   const hasSpecialCircumstances = selectedReasons.length > 0;
 
+  // NEW: Check for Formula 5 cases (always flag as complex - international jurisdiction)
+  const isFormula5 = (results as any).formulaUsed === 5;
+  if (isFormula5) {
+    // Formula 5 cases are inherently complex (international, NPC)
+    // Always flag for lead generation
+    return {
+      highValue: isHighValue,
+      specialCircumstances: true, // Always true for Formula 5
+      sharedCareDispute: hasSharedCareDispute,
+      bindingAgreement: formData.wantsBindingAgreement ?? false,
+    };
+  }
+
   if (__DEV__) {
   }
 
@@ -205,6 +218,19 @@ export function getAlertConfig(
   results: CalculationResults,
   formData?: ComplexityFormData
 ): AlertConfig | null {
+  // Priority 0: Formula 5 cases (international jurisdiction)
+  const isFormula5 = (results as any).formulaUsed === 5;
+  if (isFormula5) {
+    const country = (results as any).overseasParentCountry || 'a non-reciprocating country';
+    return {
+      title: '🌏 International Case: Verification Recommended',
+      message: `This assessment uses Formula 5 because one parent lives in ${country}. International child support cases have unique enforcement challenges. A family lawyer can help you understand your options and ensure the assessment is accurate.`,
+      urgency: 'high',
+      buttonText: 'Get Legal Advice',
+      tip: 'Formula 5 assessments use only the Australian parent\'s income. Enforcement across borders can be complex and may require additional legal steps.',
+    };
+  }
+
   // Priority 1: Court date selected
   const courtDateReasonId = formData?.selectedCircumstances?.find((id) =>
     isCourtDateReason(id)

@@ -62,7 +62,51 @@ export const calculateChildSupport = (
   }
 
   // =========================================================================
-  // Lead Trap Check - bypass calculation for complex NPC scenarios
+  // Formula 5 Check - Non-parent carer with overseas parent in non-reciprocating jurisdiction
+  // =========================================================================
+  if (
+    formState.nonParentCarer.enabled &&
+    formState.nonParentCarer.hasOverseasParent &&
+    formState.nonParentCarer.overseasParentCountry
+  ) {
+    const jurisdictionStatus = checkJurisdictionStatus(
+      formState.nonParentCarer.overseasParentCountry
+    );
+    
+    if (shouldUseFormula5(jurisdictionStatus)) {
+      // Formula 5 applies - use simplified calculation with one parent's income
+      // Determine which parent is available (the one NOT overseas)
+      // For now, assume Parent A is the Australian resident parent
+      // TODO: Add UI to specify which parent is overseas
+      
+      const formula5Input: Formula5Input = {
+        availableParentATI: formState.incomeA,
+        availableParentCarePercentage: 0, // NPC has care, parent typically has 0%
+        children: formState.children.map(c => ({ age: c.age })),
+        hasMultipleCases: formState.multiCaseA.otherChildren.length > 0,
+        otherCaseChildren: formState.multiCaseA.otherChildren,
+        numberOfNonParentCarers: formState.nonParentCarer.hasSecondNPC ? 2 : 1,
+        carer1CarePercentage: formState.nonParentCarer.hasSecondNPC ? 60 : 100, // TODO: Get from form
+        carer2CarePercentage: formState.nonParentCarer.hasSecondNPC ? 40 : undefined, // TODO: Get from form
+        reason: 'non-reciprocating',
+        overseasParentCountry: formState.nonParentCarer.overseasParentCountry,
+        selectedYear,
+      };
+      
+      try {
+        const formula5Result = calculateFormula5(formula5Input);
+        // Convert Formula5Result to CalculationResults format for compatibility
+        // This is a simplified conversion - full integration would require updating CalculationResults type
+        return formula5Result as any; // TODO: Proper type integration
+      } catch (error) {
+        console.error('Formula 5 calculation error:', error);
+        return null;
+      }
+    }
+  }
+
+  // =========================================================================
+  // Lead Trap Check - bypass calculation for complex NPC scenarios (Formula 6)
   // =========================================================================
   const trapResult = detectComplexityTrap(
     formState.nonParentCarer,

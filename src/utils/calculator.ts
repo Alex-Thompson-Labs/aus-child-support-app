@@ -247,7 +247,7 @@ export type ComplexityTrapReason =
   | 'FORMULA_6_DECEASED'; // NPC + parent deceased
 
 /**
- * Non-parent carer information (Formula 2/4).
+ * Non-parent carer information (Formula 2/4/5).
  * A non-parent carer (e.g., grandparent) must have at least 35% care.
  * Eligibility is derived from per-child care amounts in ChildInput.careAmountNPC.
  */
@@ -255,8 +255,12 @@ export interface NonParentCarerInfo {
   enabled: boolean;
   /** Is either parent deceased? Triggers Formula 6 trap. */
   hasDeceasedParent?: boolean;
-  /** Is either parent living overseas? Triggers Formula 5 trap. */
+  /** Is either parent living overseas? May trigger Formula 5. */
   hasOverseasParent?: boolean;
+  /** Country where overseas parent resides (for Formula 5 jurisdiction check) */
+  overseasParentCountry?: string;
+  /** Is the overseas parent in a non-reciprocating jurisdiction? (Formula 5) */
+  isNonReciprocating?: boolean;
   /** Is there a second non-parent carer? (Formula 2/4 two NPC split) */
   hasSecondNPC?: boolean;
 }
