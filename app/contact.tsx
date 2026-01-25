@@ -1,4 +1,5 @@
 import { PageSEO } from '@/src/components/seo/PageSEO';
+import { Breadcrumb } from '@/src/components/ui/Breadcrumb';
 import { CalculatorHeader } from '@/src/features/calculator';
 import { sendContactEmail } from '@/src/utils/emailjs';
 import {
@@ -152,6 +153,12 @@ export default function ContactPage() {
           style={styles.scrollView}
           contentContainerStyle={[styles.scrollContent, webContainerStyle]}
         >
+          {/* Breadcrumb Navigation */}
+          <Breadcrumb items={[
+            { label: 'Home', path: '/' },
+            { label: 'Contact' },
+          ]} />
+
           {/* Page Title - H1 for SEO */}
           <Text 
             style={styles.pageTitle} 

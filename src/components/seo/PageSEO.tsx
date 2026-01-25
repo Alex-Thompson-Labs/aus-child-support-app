@@ -22,7 +22,7 @@ export const PageSEO: React.FC<PageSEOProps> = ({
   schema,
   breadcrumbs,
 }) => {
-  const BASE_URL = 'https://auschildsupport.com.au';
+  const BASE_URL = 'https://www.auschildsupport.com.au';
   const fullUrl = `${BASE_URL}${canonicalPath}`;
 
   const defaultSchema = {

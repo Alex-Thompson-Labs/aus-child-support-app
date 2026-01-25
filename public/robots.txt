@@ -9,4 +9,4 @@ Disallow: /admin/
 Disallow: /partner/
 
 # Sitemap
-Sitemap: https://auschildsupport.com.au/sitemap.xml
+Sitemap: https://www.auschildsupport.com.au/sitemap.xml

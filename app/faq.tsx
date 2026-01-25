@@ -239,6 +239,12 @@ export default function FAQPage() {
                     style={styles.scrollView}
                     contentContainerStyle={[styles.scrollContent, webContainerStyle]}
                 >
+                    {/* Breadcrumb Navigation */}
+                    <Breadcrumb items={[
+                        { label: 'Home', path: '/' },
+                        { label: 'FAQ' },
+                    ]} />
+
                     {/* Page Title - H1 for SEO */}
                     <Text 
                         style={styles.pageTitle} 

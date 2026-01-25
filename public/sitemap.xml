@@ -2,37 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Static Pages -->
   <url>
-    <loc>https://auschildsupport.com.au/</loc>
+    <loc>https://www.auschildsupport.com.au/</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/about</loc>
+    <loc>https://www.auschildsupport.com.au/about</loc>
+    <lastmod>2026-01-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.auschildsupport.com.au/contact</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/contact</loc>
-    <lastmod>2026-01-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://auschildsupport.com.au/faq</loc>
+    <loc>https://www.auschildsupport.com.au/faq</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/lawyer-inquiry</loc>
+    <loc>https://www.auschildsupport.com.au/lawyer-inquiry</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/special-circumstances</loc>
+    <loc>https://www.auschildsupport.com.au/special-circumstances</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -40,67 +40,67 @@
 
   <!-- Change of Assessment Reason Pages -->
   <url>
-    <loc>https://auschildsupport.com.au/change-of-assessment/high-costs-of-contact</loc>
+    <loc>https://www.auschildsupport.com.au/change-of-assessment/high-costs-of-contact</loc>
     <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/change-of-assessment/special-needs-care-costs</loc>
+    <loc>https://www.auschildsupport.com.au/change-of-assessment/special-needs-care-costs</loc>
     <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/change-of-assessment/high-costs-caring-educating-child</loc>
+    <loc>https://www.auschildsupport.com.au/change-of-assessment/high-costs-caring-educating-child</loc>
     <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/change-of-assessment/childs-income-resources</loc>
+    <loc>https://www.auschildsupport.com.au/change-of-assessment/childs-income-resources</loc>
     <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/change-of-assessment/transferred-benefits</loc>
+    <loc>https://www.auschildsupport.com.au/change-of-assessment/transferred-benefits</loc>
     <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/change-of-assessment/high-childcare-costs</loc>
+    <loc>https://www.auschildsupport.com.au/change-of-assessment/high-childcare-costs</loc>
     <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/change-of-assessment/reduced-capacity-commitments</loc>
+    <loc>https://www.auschildsupport.com.au/change-of-assessment/reduced-capacity-commitments</loc>
     <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/change-of-assessment/income-property-resources</loc>
+    <loc>https://www.auschildsupport.com.au/change-of-assessment/income-property-resources</loc>
     <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/change-of-assessment/earning-capacity</loc>
+    <loc>https://www.auschildsupport.com.au/change-of-assessment/earning-capacity</loc>
     <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/change-of-assessment/duty-to-maintain-another</loc>
+    <loc>https://www.auschildsupport.com.au/change-of-assessment/duty-to-maintain-another</loc>
     <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/change-of-assessment/resident-child-responsibility</loc>
+    <loc>https://www.auschildsupport.com.au/change-of-assessment/resident-child-responsibility</loc>
     <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -108,151 +108,151 @@
 
   <!-- Blog Posts -->
   <url>
-    <loc>https://auschildsupport.com.au/blog/court-order-child-support-calculator</loc>
+    <loc>https://www.auschildsupport.com.au/blog/court-order-child-support-calculator</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/accurate-child-support-calculator</loc>
+    <loc>https://www.auschildsupport.com.au/blog/accurate-child-support-calculator</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/when-to-hire-family-lawyer</loc>
+    <loc>https://www.auschildsupport.com.au/blog/when-to-hire-family-lawyer</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/child-support-self-employed</loc>
+    <loc>https://www.auschildsupport.com.au/blog/child-support-self-employed</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/how-to-calculate-child-support</loc>
+    <loc>https://www.auschildsupport.com.au/blog/how-to-calculate-child-support</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/child-support-formula-australia</loc>
+    <loc>https://www.auschildsupport.com.au/blog/child-support-formula-australia</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/complicated-child-support-situations</loc>
+    <loc>https://www.auschildsupport.com.au/blog/complicated-child-support-situations</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/child-support-care-percentage-table</loc>
+    <loc>https://www.auschildsupport.com.au/blog/child-support-care-percentage-table</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/object-to-child-support-assessment</loc>
+    <loc>https://www.auschildsupport.com.au/blog/object-to-child-support-assessment</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/international-child-support-australia</loc>
+    <loc>https://www.auschildsupport.com.au/blog/international-child-support-australia</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/adult-disabled-child-maintenance</loc>
+    <loc>https://www.auschildsupport.com.au/blog/adult-disabled-child-maintenance</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/overseas-parent-child-support-enforcement</loc>
+    <loc>https://www.auschildsupport.com.au/blog/overseas-parent-child-support-enforcement</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/private-school-fees-child-support</loc>
+    <loc>https://www.auschildsupport.com.au/blog/private-school-fees-child-support</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/parental-leave-child-support</loc>
+    <loc>https://www.auschildsupport.com.au/blog/parental-leave-child-support</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/estimate-vs-actual-income-child-support</loc>
+    <loc>https://www.auschildsupport.com.au/blog/estimate-vs-actual-income-child-support</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/child-support-after-18</loc>
+    <loc>https://www.auschildsupport.com.au/blog/child-support-after-18</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/new-partner-income-child-support</loc>
+    <loc>https://www.auschildsupport.com.au/blog/new-partner-income-child-support</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/binding-child-support-agreement</loc>
+    <loc>https://www.auschildsupport.com.au/blog/binding-child-support-agreement</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/lump-sum-child-support-payment</loc>
+    <loc>https://www.auschildsupport.com.au/blog/lump-sum-child-support-payment</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/backdating-child-support-australia</loc>
+    <loc>https://www.auschildsupport.com.au/blog/backdating-child-support-australia</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/child-support-overpayment-refund</loc>
+    <loc>https://www.auschildsupport.com.au/blog/child-support-overpayment-refund</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/child-support-arrears-australia</loc>
+    <loc>https://www.auschildsupport.com.au/blog/child-support-arrears-australia</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/shared-care-5050-child-support</loc>
+    <loc>https://www.auschildsupport.com.au/blog/shared-care-5050-child-support</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/child-support-reduction-strategies</loc>
+    <loc>https://www.auschildsupport.com.au/blog/child-support-reduction-strategies</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://auschildsupport.com.au/blog/child-support-centrelink-income-support</loc>
+    <loc>https://www.auschildsupport.com.au/blog/child-support-centrelink-income-support</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

@@ -72,6 +72,13 @@ export default function HowToCalculateChildSupportBlogPost() {
             />
             <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
                 <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, webContainerStyle]}>
+                    {/* Breadcrumb Navigation */}
+                    <Breadcrumb items={[
+                        { label: 'Home', path: '/' },
+                        { label: 'Blog', path: '/blog' },
+                        { label: 'How to Calculate' },
+                    ]} />
+
                     <View style={styles.articleHeader}>
                         <Text style={styles.category}>Calculator Guide</Text>
                         <Text style={styles.h1} accessibilityRole="header">

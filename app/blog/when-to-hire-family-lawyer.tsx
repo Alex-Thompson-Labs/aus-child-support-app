@@ -287,7 +287,7 @@ export default function WhenToHireFamilyLawyerBlogPost() {
                         <Text style={styles.warningTitle}>⚠️ Don't Wait:</Text>
                         <Text style={styles.warningText}>
                             High-conflict situations escalate quickly. What starts as a child support dispute can 
-                            become a full custody battle. Early legal intervention prevents costly mistakes and 
+                            become a full parenting dispute. Early legal intervention prevents costly mistakes and 
                             protects your relationship with your children.
                         </Text>
                     </View>

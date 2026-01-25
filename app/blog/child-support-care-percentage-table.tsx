@@ -13,10 +13,10 @@ const faqSchema = {
     mainEntity: [
         {
             '@type': 'Question',
-            name: 'How many nights is 50/50 custody in Australia?',
+            name: 'How many nights is 50/50 care in Australia?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: '50/50 custody (equal shared care) is 182.5 nights per year for each parent. In practice, this is usually 182 or 183 nights. This equals exactly 50% care for child support purposes.',
+                text: '50/50 care (equal shared care) is 182.5 nights per year for each parent. In practice, this is usually 182 or 183 nights. This equals exactly 50% care for child support purposes.',
             },
         },
         {
@@ -105,7 +105,7 @@ export default function CarePercentageTableBlogPost() {
 
                     {/* Introduction */}
                     <Text style={styles.intro}>
-                        How many nights per year equals 50/50 custody? What about every second weekend? 
+                        How many nights per year equals 50/50 care? What about every second weekend? 
                         Care percentage determines who pays child support and how much.
                     </Text>
 
@@ -555,8 +555,8 @@ export default function CarePercentageTableBlogPost() {
                     </Text>
 
                     <FAQItem
-                        question="How many nights is 50/50 custody in Australia?"
-                        answer="50/50 custody (equal shared care) is 182.5 nights per year for each parent. In practice, this is usually 182 or 183 nights. This equals exactly 50% care for child support purposes."
+                        question="How many nights is 50/50 care in Australia?"
+                        answer="50/50 care (equal shared care) is 182.5 nights per year for each parent. In practice, this is usually 182 or 183 nights. This equals exactly 50% care for child support purposes."
                     />
 
                     <FAQItem

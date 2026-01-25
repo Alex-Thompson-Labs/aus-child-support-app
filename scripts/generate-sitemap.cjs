@@ -12,7 +12,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
-const SITE_URL = 'https://auschildsupport.com.au';
+const SITE_URL = 'https://www.auschildsupport.com.au';
 const OUTPUT_PATH = path.join(__dirname, '../public/sitemap.xml');
 const APP_DIR = path.join(__dirname, '../app');
 

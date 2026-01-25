@@ -76,9 +76,9 @@ export const CalculatorFAQ = () => {
         </View>
       </Accordion>
 
-      {/* Question 4: 50/50 custody */}
+      {/* Question 4: 50/50 care */}
       <Accordion
-        title="Does child support change with 50/50 custody?"
+        title="Does child support change with 50/50 care?"
         titleStyle={{ color: colors.primaryDark }}
         iconColor={colors.primaryDark}
       >

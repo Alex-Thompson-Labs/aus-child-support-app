@@ -57,6 +57,12 @@ export default function AboutPage() {
                     style={styles.scrollView}
                     contentContainerStyle={[styles.scrollContent, webContainerStyle]}
                 >
+                    {/* Breadcrumb Navigation */}
+                    <Breadcrumb items={[
+                        { label: 'Home', path: '/' },
+                        { label: 'About' },
+                    ]} />
+
                     {/* Page Title - H1 for SEO */}
                     <Text 
                         style={styles.pageTitle} 

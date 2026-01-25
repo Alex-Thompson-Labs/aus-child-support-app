@@ -63,7 +63,7 @@ export default function HomeScreen() {
           },
           {
             '@type': 'Question',
-            name: 'Does child support change with 50/50 custody?',
+            name: 'Does child support change with 50/50 care?',
             acceptedAnswer: {
               '@type': 'Answer',
               text: 'Yes. When care is exactly 50/50, the parent with higher income typically pays child support to the other parent, but the amount is much lower than in sole-care arrangements. The formula recognises both parents are directly covering costs when children are in their care.',
@@ -94,7 +94,7 @@ export default function HomeScreen() {
     <>
       <PageSEO
         title="Australian Child Support Calculator | Free, Accurate Estimate 2026"
-        description="Calculate your child support payments in minutes. Free Australian calculator covering complex scenarios, income changes, and care arrangements. More detailed than Services Australia's tool."
+        description="Calculate your 2026 child support payments in minutes. Free Australian calculator covering complex scenarios, income changes, and care arrangements. More detailed than Services Australia's tool."
         canonicalPath="/"
         schema={pageSchema}
       />

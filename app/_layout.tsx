@@ -4,6 +4,8 @@ import { ABTestingProvider } from '@/src/contexts/ABTestingContext';
 import { useClientOnly } from '@/src/hooks/useClientOnly';
 import { initEmailJS } from '@/src/utils/emailjs';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Stack, usePathname } from 'expo-router';
 import Head from 'expo-router/head';
 import * as SplashScreen from 'expo-splash-screen';
@@ -39,6 +41,13 @@ export default function RootLayout() {
         // Initialize EmailJS for web
         if (Platform.OS === 'web') {
           initEmailJS();
+          
+          // Initialize Google Analytics 4
+          if (Env.GA_MEASUREMENT_ID) {
+            AnalyticsUtil.initialize(Env.GA_MEASUREMENT_ID);
+          } else {
+            console.warn('GA_MEASUREMENT_ID not configured - analytics disabled');
+          }
         }
         // Add any async resource loading here if needed (e.g., fonts)
         // For now, we just mark as ready since fonts are loaded via expo config
@@ -76,7 +85,7 @@ export default function RootLayout() {
 
   // SEO: Generate Canonical URL (Strip query params and trailing slashes)
   const siteUrl =
-    process.env.EXPO_PUBLIC_SITE_URL || 'https://auschildsupport.com.au';
+    process.env.EXPO_PUBLIC_SITE_URL || 'https://www.auschildsupport.com.au';
   // Handle root path and normalize trailing slashes (vercel.json has trailingSlash: false)
   const normalizedPath = pathname === '/' ? '' : pathname.replace(/\/$/, '');
   const canonicalUrl = `${siteUrl}${normalizedPath}`;
@@ -153,8 +162,8 @@ export default function RootLayout() {
             />
           </Stack>
           <StatusBar style="dark" />
-          {/* {Platform.OS === 'web' && <Analytics />} */}
-          {/* {Platform.OS === 'web' && <SpeedInsights />} */}
+          {Platform.OS === 'web' && <Analytics />}
+          {Platform.OS === 'web' && <SpeedInsights />}
           </ThemeProvider>
         </ABTestingProvider>
       </Suspense>

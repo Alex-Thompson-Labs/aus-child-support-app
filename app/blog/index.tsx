@@ -68,7 +68,7 @@ const BLOG_POSTS = [
     {
         slug: 'shared-care-5050-child-support',
         title: 'Shared Care 50/50 Child Support: Do You Still Pay?',
-        excerpt: 'Have 50/50 custody but still paying child support? Learn how shared care affects payments, when you pay $0, and how income differences matter.',
+        excerpt: 'Have 50/50 care but still paying child support? Learn how shared care affects payments, when you pay $0, and how income differences matter.',
         category: 'Shared Care',
         date: '2026-01-24',
         readTime: '12 min read',

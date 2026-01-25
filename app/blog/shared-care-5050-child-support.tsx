@@ -12,7 +12,7 @@ const faqSchema = {
     mainEntity: [
         {
             '@type': 'Question',
-            name: 'Do I still pay child support with 50/50 custody in Australia?',
+            name: 'Do I still pay child support with 50/50 care in Australia?',
             acceptedAnswer: {
                 '@type': 'Answer',
                 text: 'Yes, usually. Even with equal care (50/50), the higher-income parent typically pays child support to the lower-income parent. The amount depends on the income difference. Only if both parents earn exactly the same would child support be zero.',
@@ -40,8 +40,8 @@ const faqSchema = {
 const articleSchema = {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: 'Shared Care 50/50 Child Support: How Equal Custody Affects Payments',
-    description: 'Have 50/50 custody? Learn how shared care affects child support in Australia. Understand the formula, see real examples, and calculate your payments.',
+    headline: 'Shared Care 50/50 Child Support: How Equal Care Affects Payments',
+    description: 'Have 50/50 care? Learn how shared care affects child support in Australia. Understand the formula, see real examples, and calculate your payments.',
     datePublished: '2026-01-24',
     author: { '@type': 'Organization', name: 'AusChildSupport' },
 };
@@ -54,8 +54,8 @@ export default function SharedCare5050ChildSupportBlogPost() {
     return (
         <>
             <PageSEO
-                title="Shared Care 50/50 Child Support: How Equal Custody Affects Payments"
-                description="Have 50/50 custody? Learn how shared care affects child support in Australia. Understand the formula, see real examples, and calculate your payments."
+                title="Shared Care 50/50 Child Support: How Equal Care Affects Payments"
+                description="Have 50/50 care? Learn how shared care affects child support in Australia. Understand the formula, see real examples, and calculate your payments."
                 canonicalPath="/blog/shared-care-5050-child-support"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -69,13 +69,13 @@ export default function SharedCare5050ChildSupportBlogPost() {
                     <View style={styles.articleHeader}>
                         <Text style={styles.category}>Shared Care</Text>
                         <Text style={styles.h1} accessibilityRole="header">
-                            Shared Care 50/50 Child Support: How Equal Custody Affects Payments
+                            Shared Care 50/50 Child Support: How Equal Care Affects Payments
                         </Text>
                         <Text style={styles.publishDate}>Published January 24, 2026</Text>
                     </View>
 
                     <Text style={styles.intro}>
-                        Have 50/50 custody and wondering about child support? Many parents assume equal care means 
+                        Have 50/50 care and wondering about child support? Many parents assume equal care means 
                         no child support. That's rarely true. Even with shared care, the higher-income parent usually 
                         pays. Here's how the formula works, real examples, and what to do if you disagree about care 
                         percentages.
@@ -84,7 +84,7 @@ export default function SharedCare5050ChildSupportBlogPost() {
                     <View style={styles.mythBox}>
                         <Text style={styles.mythTitle}>❌ Common Myth</Text>
                         <Text style={styles.mythText}>
-                            "50/50 custody means no child support." FALSE. Child support equalizes the financial 
+                            "50/50 care means no child support." FALSE. Child support equalizes the financial 
                             burden between parents. Unless both parents earn exactly the same income, the higher 
                             earner pays child support even with equal care.
                         </Text>
@@ -240,7 +240,7 @@ export default function SharedCare5050ChildSupportBlogPost() {
                     <Text style={styles.h2} accessibilityRole="header">Frequently Asked Questions</Text>
 
                     <FAQItem
-                        question="Do I still pay child support with 50/50 custody in Australia?"
+                        question="Do I still pay child support with 50/50 care in Australia?"
                         answer="Yes, usually. Even with equal care (50/50), the higher-income parent typically pays child support to the lower-income parent. The amount depends on the income difference. Only if both parents earn exactly the same would child support be zero."
                     />
 
@@ -255,7 +255,7 @@ export default function SharedCare5050ChildSupportBlogPost() {
                     />
 
                     <FAQItem
-                        question="Can we agree to no child support with 50/50 custody?"
+                        question="Can we agree to no child support with 50/50 care?"
                         answer="Yes, but it must be formalized as a Binding Child Support Agreement. Verbal agreements aren't legally binding. Either parent can apply for Services Australia assessment at any time, which will override informal arrangements. Get legal advice to create a proper agreement."
                     />
 
