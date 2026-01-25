@@ -198,7 +198,9 @@ export interface ComplexityTrapCalculationResult {
 /**
  * Union type for all possible calculation results
  */
-export type CalculationResultUnion = CalculationResults | ComplexityTrapCalculationResult;
+export type CalculationResultUnion = 
+  | CalculationResults 
+  | ComplexityTrapCalculationResult;
 
 /**
  * Type guard to check if result is a complexity trap
@@ -240,11 +242,12 @@ export interface MultiCaseInfo {
 
 /**
  * Reasons for complexity trap - bypasses calculation for lead generation.
+ * 
+ * NOTE: As of January 2026, all formulas now calculate (no traps).
+ * This type is kept for backward compatibility.
  */
 export type ComplexityTrapReason =
-  | 'FORMULA_4_NPC_MULTI_CASE' // NPC + either parent has other children
-  | 'FORMULA_5_OVERSEAS' // NPC + parent living overseas
-  | 'FORMULA_6_DECEASED'; // NPC + parent deceased
+  | 'FORMULA_4_NPC_MULTI_CASE'; // DEPRECATED - now calculates normally
 
 /**
  * Non-parent carer information (Formula 2/4/5).

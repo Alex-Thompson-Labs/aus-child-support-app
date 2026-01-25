@@ -249,6 +249,7 @@ const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 16,
         paddingVertical: 12,
+        width: '100%',
     },
     containerCompact: {
         paddingHorizontal: 12,
@@ -257,7 +258,7 @@ const styles = StyleSheet.create({
     trackContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
+        width: '100%',
     },
     stepCircle: {
         // Base styles are applied dynamically via getStepCircleStyle

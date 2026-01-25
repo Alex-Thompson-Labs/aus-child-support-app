@@ -146,7 +146,7 @@ export function NonParentCarerSection({
               Parent Status {isExpanded ? '▼' : '▶'}
             </Text>
             <HelpTooltip
-              what="If either parent is living overseas or deceased, special assessment rules apply that require manual review."
+              what="If either parent is living overseas or deceased, the calculator will use special assessment rules (Formula 5 or Formula 6) to calculate support based on the available parent's income."
               why=""
               hideWhatLabel
               iconColor="#60a5fa"

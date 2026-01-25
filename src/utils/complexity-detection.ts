@@ -189,6 +189,19 @@ export function detectComplexity(
     };
   }
 
+  // NEW: Check for Formula 6 cases (always flag as complex - deceased parent, NPC)
+  const isFormula6 = (results as any).formulaUsed === 6;
+  if (isFormula6) {
+    // Formula 6 cases are inherently complex (deceased parent, NPC, estate considerations)
+    // Always flag for lead generation
+    return {
+      highValue: isHighValue,
+      specialCircumstances: true, // Always true for Formula 6
+      sharedCareDispute: hasSharedCareDispute,
+      bindingAgreement: formData.wantsBindingAgreement ?? false,
+    };
+  }
+
   if (__DEV__) {
   }
 
@@ -218,7 +231,19 @@ export function getAlertConfig(
   results: CalculationResults,
   formData?: ComplexityFormData
 ): AlertConfig | null {
-  // Priority 0: Formula 5 cases (international jurisdiction)
+  // Priority 0: Formula 6 cases (deceased parent)
+  const isFormula6 = (results as any).formulaUsed === 6;
+  if (isFormula6) {
+    return {
+      title: 'Bereavement Assessment: Legal Guidance Available',
+      message: 'This assessment recognizes that one parent has passed away. A family lawyer can help ensure the assessment is accurate and guide you through the application process with Services Australia.',
+      urgency: 'high',
+      buttonText: 'Get Legal Guidance',
+      tip: 'Formula 6 assessments focus on the surviving parent\'s financial capacity. Legal advice can help navigate estate considerations and ensure proper documentation.',
+    };
+  }
+
+  // Priority 1: Formula 5 cases (international jurisdiction)
   const isFormula5 = (results as any).formulaUsed === 5;
   if (isFormula5) {
     const country = (results as any).overseasParentCountry || 'a non-reciprocating country';
@@ -231,7 +256,7 @@ export function getAlertConfig(
     };
   }
 
-  // Priority 1: Court date selected
+  // Priority 2: Court date selected
   const courtDateReasonId = formData?.selectedCircumstances?.find((id) =>
     isCourtDateReason(id)
   );
@@ -256,7 +281,7 @@ export function getAlertConfig(
     };
   }
 
-  // Priority 2: Complexity triggers (special circumstances)
+  // Priority 3: Complexity triggers (special circumstances)
   if (flags.specialCircumstances) {
     // Safely get selected reasons, handle undefined/null
     const selectedIds = formData?.selectedCircumstances ?? [];
@@ -347,7 +372,7 @@ export function getAlertConfig(
     }
   }
 
-  // Priority 3: Shared care dispute
+  // Priority 4: Shared care dispute
   if (flags.sharedCareDispute) {
     return {
       title: 'Care Arrangement in Dispute Zone',
@@ -358,7 +383,7 @@ export function getAlertConfig(
     };
   }
 
-  // Priority 4: High value cases
+  // Priority 5: High value cases
   if (flags.highValue) {
     return {
       title: '💰 High-Value Case',
@@ -393,18 +418,18 @@ export interface ComplexityTrapResult {
  */
 const TRAP_DISPLAY_REASONS: Record<ComplexityTrapReason, string> = {
   FORMULA_4_NPC_MULTI_CASE: 'multi-case considerations',
-  FORMULA_5_OVERSEAS: 'overseas parent considerations',
-  FORMULA_6_DECEASED: 'estate considerations',
 };
 
 /**
  * Detects if a scenario requires "Lead Trap" instead of calculation.
  * 
- * Trap conditions (all require NPC to be enabled):
- * - Formula 5 Trap: NPC + a parent is marked as "Living Overseas"
- * - Formula 6 Trap: NPC + a parent is marked as "Deceased"
+ * As of January 2026, ALL formulas now calculate:
+ * - Formula 4 (NPC + multi-case): Calculates normally
+ * - Formula 5 (NPC + overseas parent): Calculates using single-parent income
+ * - Formula 6 (NPC + deceased parent): Calculates using single-parent income
  * 
- * Formula 4 (NPC + multi-case) is NO LONGER trapped - it calculates normally.
+ * This function is kept for backward compatibility but currently returns no traps.
+ * Complexity detection for lead scoring is handled separately in detectComplexity().
  * 
  * @param nonParentCarer - Non-parent carer info from form state
  * @param hasOtherChildrenA - Whether Parent A has other children (multi-case)
@@ -416,32 +441,7 @@ export function detectComplexityTrap(
   hasOtherChildrenA: boolean,
   hasOtherChildrenB: boolean
 ): ComplexityTrapResult {
-  // No trap if NPC is not enabled - standard Formula 1 or 3
-  if (!nonParentCarer.enabled) {
-    return { isTrapped: false };
-  }
-
-  // Check for Formula 6: Deceased parent (highest priority)
-  if (nonParentCarer.hasDeceasedParent) {
-    return {
-      isTrapped: true,
-      reason: 'FORMULA_6_DECEASED',
-      displayReason: TRAP_DISPLAY_REASONS.FORMULA_6_DECEASED,
-    };
-  }
-
-  // Check for Formula 5: Overseas parent
-  if (nonParentCarer.hasOverseasParent) {
-    return {
-      isTrapped: true,
-      reason: 'FORMULA_5_OVERSEAS',
-      displayReason: TRAP_DISPLAY_REASONS.FORMULA_5_OVERSEAS,
-    };
-  }
-
-  // Formula 4 (NPC + Multi-case) is NO LONGER trapped
-  // It will calculate normally using Formula 4 logic
-  
-  // No trap - this is Formula 2 or Formula 4 (both calculate normally)
+  // All formulas now calculate - no traps
+  // Complexity detection for lead scoring happens in detectComplexity()
   return { isTrapped: false };
 }

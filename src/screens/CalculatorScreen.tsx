@@ -413,7 +413,6 @@ const styles = StyleSheet.create({
     }),
   },
   progressContainerMobile: {
-    width: '100%',
     backgroundColor: '#ffffff',
     borderRadius: 12,
     borderWidth: 1,

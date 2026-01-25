@@ -8,6 +8,9 @@ import { convertCareToPercentage } from './care-utils';
 import { getChildCost } from './child-support-calculations';
 import { AssessmentYear, getYearConstants } from './child-support-constants';
 import { detectComplexityTrap } from './complexity-detection';
+import { calculateFormula5, type Formula5Input } from './formula-5-calculator';
+import { calculateFormula6, type Formula6Input } from './formula-6-calculator';
+import { checkJurisdictionStatus } from './jurisdiction-checker';
 
 // Import from extracted modules
 import { mapCareToCostPercent, roundCarePercentage } from './care-utils';
@@ -51,6 +54,22 @@ export type {
     PaymentResolutionResult
 } from './payment-resolver';
 
+// ============================================================================
+// Helper Functions
+// ============================================================================
+
+/**
+ * Determines if Formula 5 should be used based on jurisdiction status.
+ * Formula 5 applies when parent is in non-reciprocating jurisdiction.
+ */
+function shouldUseFormula5(status: JurisdictionStatus): boolean {
+  return status === 'non-reciprocating';
+}
+
+// ============================================================================
+// Main Calculation Function
+// ============================================================================
+
 export const calculateChildSupport = (
   formState: CalculatorFormState,
   selectedYear: AssessmentYear,
@@ -59,6 +78,38 @@ export const calculateChildSupport = (
   const errors = validateCalculatorForm(formState);
   if (Object.keys(errors).length > 0) {
     return null;
+  }
+
+  // =========================================================================
+  // Formula 6 Check - Non-parent carer with deceased parent
+  // =========================================================================
+  if (
+    formState.nonParentCarer.enabled &&
+    formState.nonParentCarer.hasDeceasedParent
+  ) {
+    // Formula 6 applies - use single parent income (deceased parent has no capacity)
+    // Assume Parent A is the surviving parent (doesn't matter which for calculation)
+    
+    const formula6Input: Formula6Input = {
+      survivingParentATI: formState.incomeA,
+      survivingParentCarePercentage: 0, // NPC has care, parent typically has 0%
+      children: formState.children.map(c => ({ age: c.age })),
+      hasMultipleCases: formState.multiCaseA.otherChildren.length > 0,
+      otherCaseChildren: formState.multiCaseA.otherChildren,
+      numberOfNonParentCarers: formState.nonParentCarer.hasSecondNPC ? 2 : 1,
+      carer1CarePercentage: formState.nonParentCarer.hasSecondNPC ? 60 : 100, // TODO: Get from form
+      carer2CarePercentage: formState.nonParentCarer.hasSecondNPC ? 40 : undefined, // TODO: Get from form
+      selectedYear,
+    };
+    
+    try {
+      const formula6Result = calculateFormula6(formula6Input);
+      // Return Formula 6 result directly
+      return formula6Result as any; // TODO: Proper type integration
+    } catch (error) {
+      console.error('Formula 6 calculation error:', error);
+      return null;
+    }
   }
 
   // =========================================================================
@@ -106,7 +157,7 @@ export const calculateChildSupport = (
   }
 
   // =========================================================================
-  // Lead Trap Check - bypass calculation for complex NPC scenarios (Formula 6)
+  // Lead Trap Check - bypass calculation for complex NPC scenarios (DEPRECATED)
   // =========================================================================
   const trapResult = detectComplexityTrap(
     formState.nonParentCarer,
