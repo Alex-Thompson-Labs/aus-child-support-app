@@ -124,6 +124,46 @@ export function calculateNPCPayment(childResults: ChildResult[]): number {
 }
 
 /**
+ * Calculates payment split between two non-parent carers (Formula 2/4).
+ * 
+ * When two NPCs both have ≥35% care, payment is split proportionally
+ * based on their cost percentages.
+ * 
+ * Formula: paymentToNPC1 = totalPayment × (costPercNPC1 / totalNPCCostPerc)
+ * 
+ * @param totalPaymentToNPCs - Total payment from both parents to all NPCs
+ * @param costPercNPC1 - First NPC's cost percentage
+ * @param costPercNPC2 - Second NPC's cost percentage
+ * @returns Object with payment amounts for each NPC
+ */
+export function calculateTwoNPCPaymentSplit(
+  totalPaymentToNPCs: number,
+  costPercNPC1: number,
+  costPercNPC2: number
+): { paymentToNPC1: number; paymentToNPC2: number } {
+  // Handle edge case: no payment to split
+  if (totalPaymentToNPCs <= 0) {
+    return { paymentToNPC1: 0, paymentToNPC2: 0 };
+  }
+
+  // Handle edge case: no cost percentages (shouldn't happen with validation)
+  const totalNPCCostPerc = costPercNPC1 + costPercNPC2;
+  if (totalNPCCostPerc <= 0) {
+    return { paymentToNPC1: 0, paymentToNPC2: 0 };
+  }
+
+  // Split proportionally based on cost percentages
+  const paymentToNPC1 = Math.round(
+    totalPaymentToNPCs * (costPercNPC1 / totalNPCCostPerc)
+  );
+  const paymentToNPC2 = Math.round(
+    totalPaymentToNPCs * (costPercNPC2 / totalNPCCostPerc)
+  );
+
+  return { paymentToNPC1, paymentToNPC2 };
+}
+
+/**
  * Determines the payer role for multi-case scenarios.
  *
  * Requirement 6.6: Determine payer role based on NPC payments and final payment

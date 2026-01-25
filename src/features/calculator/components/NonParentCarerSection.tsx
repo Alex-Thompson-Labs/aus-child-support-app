@@ -3,10 +3,10 @@ import type { NonParentCarerInfo } from '@/src/utils/calculator';
 import { isWeb, webClickableStyles } from '@/src/utils/responsive';
 import React, { useState } from 'react';
 import {
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
+    Pressable,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 import { HelpTooltip } from './HelpTooltip';
 
@@ -51,6 +51,13 @@ export function NonParentCarerSection({
     });
   };
 
+  const handleSecondNPCChange = (value: boolean) => {
+    onNonParentCarerChange({
+      ...nonParentCarer,
+      hasSecondNPC: value,
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
@@ -89,6 +96,29 @@ export function NonParentCarerSection({
           />
         </View>
       </View>
+
+      {/* Second NPC Toggle - only visible when first NPC is enabled */}
+      {nonParentCarer.enabled && (
+        <View style={styles.secondNPCSection}>
+          <View style={styles.statusRow}>
+            <BrandSwitch
+              value={nonParentCarer.hasSecondNPC ?? false}
+              onValueChange={handleSecondNPCChange}
+              accessibilityLabel="Enable second non-parent carer"
+              accessibilityHint="Toggle if there are two non-parent carers (e.g., both grandparents)"
+            />
+            <Text style={styles.statusLabel}>Second non-parent carer</Text>
+            <HelpTooltip
+              what="If two non-parent carers (e.g., maternal and paternal grandparents) both have at least 35% care, payments are split proportionally between them."
+              why=""
+              hideWhatLabel
+              iconColor="#60a5fa"
+              iconBorderColor="#bfdbfe"
+              iconBackgroundColor="#eff6ff"
+            />
+          </View>
+        </View>
+      )}
 
       {/* Parent Status Section - only visible when NPC is enabled */}
       {nonParentCarer.enabled && (
@@ -170,6 +200,11 @@ const styles = StyleSheet.create({
   },
   labelHovered: {
     ...(isWeb ? ({ textDecorationLine: 'underline' } as never) : {}),
+  },
+  // Second NPC Section styles
+  secondNPCSection: {
+    marginTop: 12,
+    paddingLeft: 48, // Align with toggle content
   },
   // Parent Status Section styles
   statusSection: {

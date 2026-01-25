@@ -43,6 +43,10 @@ export const validateCalculatorForm = (formState: CalculatorFormState): FormErro
 
         // Validate NPC care
         const careNPC = formState.nonParentCarer.enabled ? (child.careAmountNPC ?? 0) : 0;
+        const careNPC2 = (formState.nonParentCarer.enabled && formState.nonParentCarer.hasSecondNPC) 
+            ? (child.careAmountNPC2 ?? 0) 
+            : 0;
+        
         if (formState.nonParentCarer.enabled) {
             if (careNPC < 0) {
                 newErrors[child.id] = `NPC ${unitLabel} must be 0 or more.`;
@@ -50,16 +54,26 @@ export const validateCalculatorForm = (formState: CalculatorFormState): FormErro
                 newErrors[child.id] =
                     `NPC ${unitLabel} cannot exceed ${maxValue}${unitSymbol} for ${child.carePeriod}.`;
             }
+            
+            // Validate second NPC if enabled
+            if (formState.nonParentCarer.hasSecondNPC) {
+                if (careNPC2 < 0) {
+                    newErrors[child.id] = `NPC 2 ${unitLabel} must be 0 or more.`;
+                } else if (careNPC2 > maxValue) {
+                    newErrors[child.id] =
+                        `NPC 2 ${unitLabel} cannot exceed ${maxValue}${unitSymbol} for ${child.carePeriod}.`;
+                }
+            }
         }
 
 
-        // Validate sum
-        const total = child.careAmountA + child.careAmountB + careNPC;
+        // Validate sum (including both NPCs if enabled)
+        const total = child.careAmountA + child.careAmountB + careNPC + careNPC2;
 
         if (total > maxValue) {
             newErrors[child.id] =
                 `Total ${unitLabel} cannot exceed ${maxValue}${unitSymbol} per ${child.carePeriod}. Currently: ${total}${unitSymbol}`;
-        } else if (!validateTotalCare(child.careAmountA, child.careAmountB + careNPC, child.carePeriod)) {
+        } else if (!validateTotalCare(child.careAmountA, child.careAmountB + careNPC + careNPC2, child.carePeriod)) {
             newErrors[child.id] =
                 `Total care must equal ${maxValue}${unitSymbol} per ${child.carePeriod} (365 days annually). Currently: ${total}${unitSymbol}`;
         }

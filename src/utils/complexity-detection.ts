@@ -2,10 +2,10 @@ import type { CalculationResults, ChildInput, ComplexityTrapReason, NonParentCar
 import { convertCareToPercentage } from './care-utils';
 import { formatCurrency } from './formatters';
 import {
-  getHighestPriorityReason,
-  getSpecialCircumstanceById,
-  isCourtDateReason,
-  parseCourtDateFromReasonId,
+    getHighestPriorityReason,
+    getSpecialCircumstanceById,
+    isCourtDateReason,
+    parseCourtDateFromReasonId,
 } from './special-circumstances';
 
 /**
@@ -375,9 +375,10 @@ const TRAP_DISPLAY_REASONS: Record<ComplexityTrapReason, string> = {
  * Detects if a scenario requires "Lead Trap" instead of calculation.
  * 
  * Trap conditions (all require NPC to be enabled):
- * - Formula 4 Trap: NPC + either parent has children in other cases
  * - Formula 5 Trap: NPC + a parent is marked as "Living Overseas"
  * - Formula 6 Trap: NPC + a parent is marked as "Deceased"
+ * 
+ * Formula 4 (NPC + multi-case) is NO LONGER trapped - it calculates normally.
  * 
  * @param nonParentCarer - Non-parent carer info from form state
  * @param hasOtherChildrenA - Whether Parent A has other children (multi-case)
@@ -412,15 +413,9 @@ export function detectComplexityTrap(
     };
   }
 
-  // Check for Formula 4: NPC + Multi-case
-  if (hasOtherChildrenA || hasOtherChildrenB) {
-    return {
-      isTrapped: true,
-      reason: 'FORMULA_4_NPC_MULTI_CASE',
-      displayReason: TRAP_DISPLAY_REASONS.FORMULA_4_NPC_MULTI_CASE,
-    };
-  }
-
-  // No trap - this is Formula 2 (standard NPC scenario)
+  // Formula 4 (NPC + Multi-case) is NO LONGER trapped
+  // It will calculate normally using Formula 4 logic
+  
+  // No trap - this is Formula 2 or Formula 4 (both calculate normally)
   return { isTrapped: false };
 }

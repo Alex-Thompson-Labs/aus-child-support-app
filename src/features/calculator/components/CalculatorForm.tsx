@@ -444,6 +444,7 @@ export function CalculatorForm({
               onUpdate={(updates) => onUpdateChild(child.id, updates)}
               onRemove={() => onRemoveChild(child.id)}
               showNPCInput={nonParentCarer.enabled}
+              showNPC2Input={nonParentCarer.enabled && (nonParentCarer.hasSecondNPC ?? false)}
               error={errors[child.id]}
             />
           ))}

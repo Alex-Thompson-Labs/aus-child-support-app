@@ -8,8 +8,10 @@ export interface ChildInput {
   careAmountA: number;
   careAmountB: number;
   carePeriod: 'week' | 'fortnight' | 'year' | 'percent';
-  /** Care amount for non-parent carer (Formula 4). Optional. */
+  /** Care amount for non-parent carer (Formula 2/4). Optional. */
   careAmountNPC?: number;
+  /** Care amount for second non-parent carer (Formula 2/4 two NPC split). Optional. */
+  careAmountNPC2?: number;
 }
 
 /**
@@ -172,9 +174,12 @@ export interface CalculationResults {
   marCapExplanationB?: string;
   farCapExplanationA?: string;
   farCapExplanationB?: string;
-  // Non-parent carer fields (Formula 4)
+  // Non-parent carer fields (Formula 2/4)
   payerRole: PayerRole;
   paymentToNPC?: number;
+  // Two NPC payment split (Formula 2/4)
+  paymentToNPC1?: number;
+  paymentToNPC2?: number;
 }
 
 /**
@@ -252,6 +257,8 @@ export interface NonParentCarerInfo {
   hasDeceasedParent?: boolean;
   /** Is either parent living overseas? Triggers Formula 5 trap. */
   hasOverseasParent?: boolean;
+  /** Is there a second non-parent carer? (Formula 2/4 two NPC split) */
+  hasSecondNPC?: boolean;
 }
 
 /**

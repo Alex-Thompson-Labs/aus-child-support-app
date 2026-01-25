@@ -4,10 +4,10 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { CARE_PERIOD_DAYS } from '@/src/utils/child-support-constants';
 import {
-  isWeb,
-  useResponsive,
-  webClickableStyles,
-  webInputStyles,
+    isWeb,
+    useResponsive,
+    webClickableStyles,
+    webInputStyles,
 } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import { PeriodPicker } from './PeriodPicker';
@@ -21,6 +21,8 @@ interface ChildRowProps {
   totalChildren?: number;
   /** Show NPC (non-parent carer) care input when enabled */
   showNPCInput?: boolean;
+  /** Show second NPC care input when enabled */
+  showNPC2Input?: boolean;
   /** Validation error message for this child */
   error?: string;
 }
@@ -32,13 +34,14 @@ export function ChildRow({
   childIndex,
   totalChildren,
   showNPCInput = false,
+  showNPC2Input = false,
   error,
 }: ChildRowProps) {
   const { isMobile } = useResponsive();
 
   // Local state for input values while editing
   const [editingField, setEditingField] = useState<
-    'A' | 'B' | 'NPC' | 'Age' | null
+    'A' | 'B' | 'NPC' | 'NPC2' | 'Age' | null
   >(null);
   const [localValue, setLocalValue] = useState('');
 
@@ -55,7 +58,8 @@ export function ChildRow({
 
   // Calculate if total exceeds maximum (including NPC if enabled)
   const npcAmount = showNPCInput ? child.careAmountNPC ?? 0 : 0;
-  const totalCare = child.careAmountA + child.careAmountB + npcAmount;
+  const npc2Amount = showNPC2Input ? child.careAmountNPC2 ?? 0 : 0;
+  const totalCare = child.careAmountA + child.careAmountB + npcAmount + npc2Amount;
   const isOverLimit = totalCare > maxValue;
   const periodLabel = child.carePeriod === 'percent' ? '%' : ' nights';
 
@@ -148,6 +152,26 @@ export function ChildRow({
     setLocalValue('');
   };
 
+  // NPC2 (Second Non-Parent Carer) handlers
+  const handleFocusNPC2 = () => {
+    setEditingField('NPC2');
+    setLocalValue('');
+  };
+
+  const handleChangeNPC2 = (text: string) => {
+    const cleanedText = text.replace(/[^0-9.]/g, '');
+    setLocalValue(cleanedText);
+    const newAmountNPC2 = parseFloat(cleanedText) || 0;
+    onUpdate({ careAmountNPC2: newAmountNPC2 });
+  };
+
+  const handleBlurNPC2 = () => {
+    const newAmountNPC2 = parseFloat(localValue) || 0;
+    onUpdate({ careAmountNPC2: newAmountNPC2 });
+    setEditingField(null);
+    setLocalValue('');
+  };
+
   // Get display value for inputs
   const getDisplayValueA = () => {
     if (editingField === 'A') return localValue;
@@ -162,6 +186,12 @@ export function ChildRow({
   const getDisplayValueNPC = () => {
     if (editingField === 'NPC') return localValue;
     const amount = child.careAmountNPC ?? 0;
+    return amount === 0 ? '' : amount.toString();
+  };
+
+  const getDisplayValueNPC2 = () => {
+    if (editingField === 'NPC2') return localValue;
+    const amount = child.careAmountNPC2 ?? 0;
     return amount === 0 ? '' : amount.toString();
   };
 
@@ -288,7 +318,7 @@ export function ChildRow({
             />
           </View>
 
-          {/* Non-Parent Carer (Formula 4) */}
+          {/* Non-Parent Carer (Formula 2/4) */}
           {showNPCInput && (
             <View
               style={[styles.itemWrapper, isMobile && styles.parentItemMobile]}
@@ -310,6 +340,33 @@ export function ChildRow({
                 placeholderTextColor="#64748b"
                 accessibilityLabel="Non-parent carer's nights of care"
                 accessibilityHint="Enter number of nights child stays with non-parent carer"
+                {...(isWeb && { inputMode: 'numeric' as never })}
+              />
+            </View>
+          )}
+
+          {/* Second Non-Parent Carer (Formula 2/4 two NPC split) */}
+          {showNPC2Input && (
+            <View
+              style={[styles.itemWrapper, isMobile && styles.parentItemMobile]}
+            >
+              <Text style={styles.headerLabelNPC2}>NPC 2</Text>
+              <TextInput
+                style={[
+                  styles.careInput,
+                  styles.compactInput,
+                  isWeb && webInputStyles,
+                ]}
+                value={getDisplayValueNPC2()}
+                onChangeText={handleChangeNPC2}
+                onFocus={handleFocusNPC2}
+                onBlur={handleBlurNPC2}
+                placeholder="0"
+                keyboardType="number-pad"
+                maxLength={5}
+                placeholderTextColor="#64748b"
+                accessibilityLabel="Second non-parent carer's nights of care"
+                accessibilityHint="Enter number of nights child stays with second non-parent carer"
                 {...(isWeb && { inputMode: 'numeric' as never })}
               />
             </View>
@@ -498,6 +555,13 @@ const styles = StyleSheet.create({
     fontSize: 12, // Same size as other header labels
     fontWeight: '600',
     color: '#1e3a8a', // blue-900 (Dark Brand Blue) - matches "CARE" header
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  headerLabelNPC2: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#7c3aed', // violet-600 - distinct from NPC1 but still professional
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },

@@ -1,8 +1,8 @@
 import {
-  CalculationResultUnion,
-  CalculatorFormState,
-  ComplexityTrapCalculationResult,
-  deriveAgeRangeMemoized
+    CalculationResultUnion,
+    CalculatorFormState,
+    ComplexityTrapCalculationResult,
+    deriveAgeRangeMemoized
 } from './calculator';
 import { convertCareToPercentage } from './care-utils';
 import { getChildCost } from './child-support-calculations';
@@ -10,10 +10,11 @@ import { AssessmentYear, getYearConstants } from './child-support-constants';
 import { detectComplexityTrap } from './complexity-detection';
 
 // Import from extracted modules
+import { mapCareToCostPercent, roundCarePercentage } from './care-utils';
 import {
-  applyMARFARCaps,
-  applyMultiCaseCaps,
-  applyRatesToChildren,
+    applyMARFARCaps,
+    applyMultiCaseCaps,
+    applyRatesToChildren,
 } from './engine';
 import { validateCalculatorForm } from './form-validator';
 import { calculateIncomes } from './income-calculator';
@@ -24,29 +25,30 @@ import { resolvePayment } from './payment-resolver';
 export * from './engine';
 export { validateCalculatorForm } from './form-validator';
 export {
-  calculateCSI,
-  calculateIncomePercentages,
-  calculateIncomes,
-  createVirtualDependentChildren
+    calculateCSI,
+    calculateIncomePercentages,
+    calculateIncomes,
+    createVirtualDependentChildren
 } from './income-calculator';
 export type {
-  IncomeCalculationInput,
-  IncomeCalculationResult
+    IncomeCalculationInput,
+    IncomeCalculationResult
 } from './income-calculator';
 export {
-  calculateChildLiability,
-  calculateChildSupportPercentage,
-  shouldPayLiability
+    calculateChildLiability,
+    calculateChildSupportPercentage,
+    shouldPayLiability
 } from './liability-calculator';
 export type { LiabilityInput, LiabilityResult } from './liability-calculator';
 export {
-  calculateNPCPayment,
-  determinePayerRole,
-  resolvePayment
+    calculateNPCPayment,
+    calculateTwoNPCPaymentSplit,
+    determinePayerRole,
+    resolvePayment
 } from './payment-resolver';
 export type {
-  PaymentResolutionInput,
-  PaymentResolutionResult
+    PaymentResolutionInput,
+    PaymentResolutionResult
 } from './payment-resolver';
 
 export const calculateChildSupport = (
@@ -388,6 +390,36 @@ export const calculateChildSupport = (
   const { payer, receiver, finalPaymentAmount, payerRole, paymentToNPC } =
     paymentResult;
 
+  // Formula 2/4: Handle Two NPCs (payment split)
+  let paymentToNPC1: number | undefined;
+  let paymentToNPC2: number | undefined;
+
+  if (hasNPC && formState.nonParentCarer.hasSecondNPC && paymentToNPC && paymentToNPC > 0) {
+    // Calculate cost percentages for both NPCs from first child
+    // (All children should have same NPC care percentages in current implementation)
+    const firstChild = childResults[0];
+    if (firstChild && firstChild.costPercNPC !== undefined) {
+      // Get second NPC care from first child
+      const childInput = formState.children[0];
+      const rawCareNPC2 = childInput?.careAmountNPC2
+        ? convertCareToPercentage(childInput.careAmountNPC2, childInput.carePeriod)
+        : 0;
+      
+      const roundedCareNPC2 = roundCarePercentage(rawCareNPC2);
+      const costPercNPC2 = mapCareToCostPercent(roundedCareNPC2);
+
+      // Use the two NPC split function
+      const npcSplit = calculateTwoNPCPaymentSplit(
+        paymentToNPC,
+        firstChild.costPercNPC,
+        costPercNPC2
+      );
+
+      paymentToNPC1 = npcSplit.paymentToNPC1;
+      paymentToNPC2 = npcSplit.paymentToNPC2;
+    }
+  }
+
   // Update rateApplied based on payment resolution
   let finalRateApplied = rateApplied;
   if (rateApplied.startsWith('FAR') && FAR_A > 0 && FAR_B > 0) {
@@ -435,8 +467,11 @@ export const calculateChildSupport = (
     marCapExplanationB,
     farCapExplanationA,
     farCapExplanationB,
-    // NPC fields (Formula 4)
+    // NPC fields (Formula 2/4)
     payerRole,
     paymentToNPC,
+    // Two NPC payment split (Formula 2/4)
+    paymentToNPC1,
+    paymentToNPC2,
   };
 };
