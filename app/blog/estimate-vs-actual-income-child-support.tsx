@@ -1,5 +1,4 @@
 import { PageSEO } from '@/src/components/seo/PageSEO';
-import { CalculatorHeader } from '@/src/features/calculator';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import { useRouter } from 'expo-router';
@@ -80,8 +79,6 @@ export default function EstimateVsActualIncomeScreen() {
       />
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.container}>
-          <CalculatorHeader />
-
           <View style={styles.breadcrumb}>
             <Pressable onPress={() => router.push('/')} {...webClickableStyles}>
               <Text style={styles.breadcrumbLink}>Home</Text>

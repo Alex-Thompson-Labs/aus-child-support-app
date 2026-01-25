@@ -163,7 +163,12 @@ The `/docs/business-docs/SAGE/` directory contains partnership materials created
 
 ### Blog Content Status
 
-- **Platform:** WordPress blog at `blog.auschildsupport.com.au`
-- **Status:** ✅ All 9 blog posts deployed
-- **Content Location:** `/docs/business-docs/blog-posts/` (markdown source files)
-- **Features:** Chatbot widget integrated, direct inquiry links embedded
+- **Platform:** Integrated blog at `auschildsupport.com.au/blog` (Expo Router)
+- **Status:** ✅ 25 blog posts deployed (10 original + 15 new)
+- **Content Location:** `/app/blog/` (React Native components)
+- **Features:** 
+  - SEO-optimized with FAQ and Article schemas
+  - Direct CTAs to calculator and inquiry form
+  - Mobile-responsive React Native design
+  - Auto-deploys with main app to Vercel
+- **Guide:** See `/docs/BLOG_SYSTEM_GUIDE.md` for details

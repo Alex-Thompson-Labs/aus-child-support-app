@@ -216,6 +216,11 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
                                 icon="mail"
                                 onPress={() => handleNavigation('/contact')}
                             />
+                            <SupportMenuItem
+                                label="Blog"
+                                icon="book-open"
+                                onPress={() => handleNavigation('/blog')}
+                            />
                         </View>
 
                         {/* Bottom Section - Trust Footer */}

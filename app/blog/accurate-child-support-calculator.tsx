@@ -1,5 +1,4 @@
 import { PageSEO } from '@/src/components/seo/PageSEO';
-import { CalculatorHeader } from '@/src/features/calculator';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import { useRouter } from 'expo-router';
@@ -66,7 +65,6 @@ export default function AccurateChildSupportCalculatorBlogPost() {
                 ]}
             />
             <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-                <CalculatorHeader title="Blog" showBackButton={true} maxWidth={MAX_CALCULATOR_WIDTH} />
                 <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, webContainerStyle]}>
                     <View style={styles.articleHeader}>
                         <Text style={styles.category}>Calculator Guide</Text>

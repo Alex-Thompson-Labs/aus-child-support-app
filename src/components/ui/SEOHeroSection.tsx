@@ -26,7 +26,7 @@ export function SEOHeroSection({ onCalculatePress }: SEOHeroSectionProps) {
 
       {/* Value proposition */}
       <Text style={styles.subtitle}>
-        Get an accurate estimate of your child support payments in under 5 minutes. 
+        Get an accurate estimate of your child support payments in under 60 seconds. 
         Our free calculator uses the official Services Australia 8-step formula and 
         handles complex scenarios most calculators miss.
       </Text>
