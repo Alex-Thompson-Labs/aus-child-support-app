@@ -74,10 +74,11 @@ export default function AboutPage() {
                             Our Mission
                         </Text>
                         <Text style={styles.bodyText}>
-                            We provide the most comprehensive Australian child support tool available. We help
-                            separated parents estimate standard assessments (Formulas 1-3) and identify complex
-                            legal scenarios (Formulas 4-6). Our goal is to provide initial clarity while connecting
-                            all parents with specialist family law advice when they need it.
+                            We provide the most comprehensive Australian child support tool available. We're the
+                            only calculator that handles all 6 Services Australia formulas - from standard
+                            separations to complex scenarios involving non-parent carers, overseas parents, and
+                            deceased parents. Our goal is to provide accurate estimates while connecting parents
+                            with specialist family law advice when complex situations arise.
                         </Text>
                     </View>
 
@@ -88,19 +89,22 @@ export default function AboutPage() {
                             How Our Calculator Works
                         </Text>
                         <Text style={styles.bodyText}>
-                            We use the official 2026 Services Australia basic formula for standard assessments,
-                            while flagging complex cases for review:
+                            We use the official 2026 Services Australia formulas to calculate child support
+                            assessments for all scenarios:
                         </Text>
                         <View style={styles.bulletList}>
                             <Text style={styles.bulletItem}>• Formula 1: Standard separation (Single case)</Text>
                             <Text style={styles.bulletItem}>• Formula 2: Care provided by a Non-Parent Carer (e.g., Grandparent)</Text>
                             <Text style={styles.bulletItem}>• Formula 3: Parents with children from other relationships (Multi-case)</Text>
-                            <Text style={styles.bulletItem}>• Formulas 4-6: Complex cases involving non-parent carers with multi-case, overseas, or estate considerations (Referral service)</Text>
+                            <Text style={styles.bulletItem}>• Formula 4: Non-parent carer with multi-case scenarios</Text>
+                            <Text style={styles.bulletItem}>• Formula 5: Overseas parent in reciprocating jurisdiction</Text>
+                            <Text style={styles.bulletItem}>• Formula 6: Deceased parent with non-parent carer</Text>
                         </View>
                         <Text style={[styles.bodyText, { marginTop: 12 }]}>
-                            For standard cases, our calculator provides accurate estimates using the 2026 cost
-                            of children tables, care percentage adjustments, and relevant dependent considerations.
-                            For complex scenarios, we help you identify when specialist legal advice is needed.
+                            Our calculator provides accurate estimates using the 2026 cost of children tables,
+                            care percentage adjustments, and relevant dependent considerations. We also identify
+                            complex situations (income variations, court orders, Change of Assessment factors)
+                            where specialist legal advice may be beneficial.
                         </Text>
                     </View>
 

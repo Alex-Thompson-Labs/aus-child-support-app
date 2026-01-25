@@ -98,6 +98,16 @@ export function SEOContentSection() {
       <View style={styles.section}>
         <Text style={styles.h2}>Why This Calculator Is Different</Text>
         
+        <Text style={styles.h3}>Complete Formula Coverage</Text>
+        <Text style={styles.paragraph}>
+          The only calculator that handles all 6 Services Australia formulas:
+        </Text>
+        
+        <BulletPoint text="Formula 1 & 2: Standard two-parent and non-parent carer scenarios" />
+        <BulletPoint text="Formula 3 & 4: Multi-case situations (parents with children in other relationships)" />
+        <BulletPoint text="Formula 5: Overseas parent in non-reciprocating jurisdiction" />
+        <BulletPoint text="Formula 6: Deceased parent with non-parent carer" />
+        
         <Text style={styles.h3}>Transparency You Can Trust</Text>
         <Text style={styles.paragraph}>
           Unlike basic calculators that show a single figure, we explain:
