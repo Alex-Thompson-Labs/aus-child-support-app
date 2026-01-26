@@ -9,6 +9,7 @@ import {
     Image,
     Linking,
     Modal,
+    Platform,
     Pressable,
     StyleSheet,
     Text,

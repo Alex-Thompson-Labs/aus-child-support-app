@@ -6,6 +6,7 @@
  * Decision Tree Logic - No open-ended text input to prevent
  * accidental legal advice.
  */
+/* global gtag */
 (function () {
   'use strict';
 
@@ -35,7 +36,13 @@
     borderColor: '#bfdbfe',
     textDark: '#1e293b',
     textMuted: '#64748b',
-    white: '#ffffff'
+    white: '#ffffff',
+
+    // Analytics
+    analytics: {
+      enabled: true,
+      gaEnabled: typeof gtag !== 'undefined',
+    }
   };
 
   // ============================================
@@ -45,7 +52,11 @@
     isOpen: false,
     isLoaded: false,
     currentPath: 'main',
-    qualifyingAnswers: {}
+    qualifyingAnswers: {},
+    context: {
+      source: 'unknown',
+      blogTopic: null
+    }
   };
 
   // ============================================
@@ -53,79 +64,156 @@
   // ============================================
   const DECISION_TREE = {
     main: {
-      message: "Hi there! 👋 I'm here to help you navigate Australian Child Support. What would you like to do today?",
+      get message() {
+        if (state.context?.source === 'blog') {
+          return "Hi! 👋 I noticed you're reading about child support. I can help you take the next step – whether that's calculating your payments or connecting with a lawyer.";
+        }
+        if (state.context?.source === 'calculator') {
+          return "Hi there! 👋 I see you've been using our calculator. Need help understanding your results or want to speak with a specialist?";
+        }
+        return "Hi there! 👋 Dealing with child support can be overwhelming. I'm here to help you understand your options and connect you with the right support.";
+      },
       options: [
-        { id: 'estimate', label: '💰 Estimate My Payments', action: 'external', url: CONFIG.calculatorUrl },
-        { id: 'lawyer', label: '⚖️ Find a Lawyer', action: 'navigate', target: 'lawyer_q1' },
-        { id: 'info', label: '📚 General Information', action: 'navigate', target: 'info_menu' },
-        { id: 'already_have', label: '🔄 I Have An Assessment', action: 'navigate', target: 'existing_menu' }
+        { id: 'estimate', label: '💰 Calculate My Payments', action: 'external', url: CONFIG.calculatorUrl },
+        { id: 'urgent', label: '🚨 I Need Urgent Legal Help', action: 'navigate', target: 'urgency_check' },
+        { id: 'lawyer', label: '⚖️ Explore Legal Options', action: 'navigate', target: 'value_prop' },
+        { id: 'info', label: '📚 Learn About Child Support', action: 'navigate', target: 'info_menu' }
       ]
     },
 
-    // LAWYER QUALIFICATION PATH
-    lawyer_q1: {
-      message: "Great, I can help connect you with a family lawyer. First, a quick question:",
-      question: "Do you currently have a parenting plan or court order in place?",
+    // VALUE PROPOSITION (before qualification)
+    value_prop: {
+      message: "Great choice. Our partner lawyers specialize in complex child support cases – hidden income, international situations, and unfair assessments. Most consultations are free or low-cost.",
+      question: "What's your biggest concern right now?",
       options: [
-        { id: 'yes', label: 'Yes, I have one', action: 'navigate', target: 'lawyer_q2', answer: true },
-        { id: 'no', label: 'No, not yet', action: 'navigate', target: 'lawyer_q2', answer: false },
-        { id: 'unsure', label: "I'm not sure", action: 'navigate', target: 'lawyer_q2', answer: 'unsure' },
+        { id: 'hiding', label: '🔍 Ex is hiding income', action: 'navigate', target: 'qualified_income', answer: 'hidden_income' },
+        { id: 'unfair', label: '😤 Assessment feels unfair', action: 'navigate', target: 'qualified_special', answer: 'special' },
+        { id: 'agreement', label: '📝 Need a formal agreement', action: 'navigate', target: 'qualified_agreement', answer: 'agreement' },
+        { id: 'confused', label: '🤔 Not sure where to start', action: 'navigate', target: 'help_decide', answer: 'unsure' },
         { id: 'back', label: '← Back', action: 'navigate', target: 'main' }
       ],
-      qualifier: 'hasParentingPlan'
+      qualifier: 'primaryConcern'
     },
 
-    // TRIAGE STEP: Routing to specific forms
-    lawyer_q2: {
-      message: "Thanks. One more question to help us match you with the right specialist:",
-      question: "What is your main goal right now?",
+    // HELP DECIDE (escape hatch for confused users)
+    help_decide: {
+      message: "No problem! Here are the most common situations we help with. Pick the one that sounds closest to yours:",
       options: [
-        { id: 'income', label: '🔍 Ex hiding income / Unfair assessment', action: 'navigate', target: 'qualified_income', answer: 'income' },
-        { id: 'agree', label: '📝 Make or change an agreement', action: 'navigate', target: 'qualified_agreement', answer: 'agreement' },
-        { id: 'special', label: '⚠️ Special Circumstances / Appeal', action: 'navigate', target: 'qualified_special', answer: 'special' },
-        { id: 'other', label: '⚖️ General Legal Advice', action: 'navigate', target: 'qualified_standard', answer: 'general' },
-        { id: 'back', label: '← Back', action: 'navigate', target: 'lawyer_q1' }
+        { id: 'hiding', label: '🔍 I think they\'re hiding income', action: 'navigate', target: 'qualified_income' },
+        { id: 'unfair', label: '😤 My assessment seems too high/low', action: 'navigate', target: 'qualified_special' },
+        { id: 'private', label: '📝 We want a private arrangement', action: 'navigate', target: 'qualified_agreement' },
+        { id: 'general', label: '⚖️ I just need general advice', action: 'navigate', target: 'qualified_standard' },
+        { id: 'back', label: '← Back', action: 'navigate', target: 'value_prop' }
+      ]
+    },
+
+    // URGENCY TRIAGE
+    urgency_check: {
+      message: "I understand this is urgent. Let me connect you with someone who can help immediately.",
+      question: "Do you have a court date or deadline coming up?",
+      options: [
+        { id: 'yes_court', label: '⚖️ Yes, I have a court date', action: 'navigate', target: 'urgent_court', answer: 'court_date' },
+        { id: 'yes_deadline', label: '⏰ Yes, other deadline', action: 'navigate', target: 'urgent_general', answer: 'deadline' },
+        { id: 'no_urgent', label: '🚨 No, but I need help ASAP', action: 'navigate', target: 'urgent_general', answer: 'urgent_no_deadline' },
+        { id: 'back', label: '← Back', action: 'navigate', target: 'main' }
       ],
-      qualifier: 'assessmentType'
+      qualifier: 'urgencyType'
+    },
+
+    // URGENT COURT DATE PATH
+    urgent_court: {
+      message: "Court dates require immediate preparation. Our lawyers can often provide same-day or next-day consultations for urgent matters.",
+      summary: true,
+      trustSignals: true,
+      options: [
+        { id: 'contact', label: '📞 Get Urgent Help Now', action: 'external', url: CONFIG.forms.standard + '&urgency=court_date', primary: true },
+        { id: 'back', label: '← Back', action: 'navigate', target: 'urgency_check' }
+      ]
+    },
+
+    // GENERAL URGENT PATH
+    urgent_general: {
+      message: "We understand time is critical. Most of our partner lawyers respond within 24 hours for urgent inquiries.",
+      summary: true,
+      trustSignals: true,
+      options: [
+        { id: 'contact', label: '📞 Request Priority Contact', action: 'external', url: CONFIG.forms.standard + '&urgency=high', primary: true },
+        { id: 'back', label: '← Back', action: 'navigate', target: 'urgency_check' }
+      ]
+    },
+
+    // COMPLEXITY DETECTION (Progressive Profiling)
+    lawyer_q1_complexity: {
+      message: "To match you with the right specialist, I need to understand your situation better.",
+      question: "Does your situation involve any of these factors?",
+      options: [
+        { id: 'international', label: '🌏 International/Overseas parent', action: 'navigate', target: 'lawyer_q2_timeline', answer: 'international' },
+        { id: 'self_employed', label: '💼 Self-employed/business owner', action: 'navigate', target: 'lawyer_q2_timeline', answer: 'self_employed' },
+        { id: 'court', label: '⚖️ Court proceedings', action: 'navigate', target: 'lawyer_q2_timeline', answer: 'court' },
+        { id: 'none', label: '❌ None of these', action: 'navigate', target: 'lawyer_q2_timeline', answer: 'standard' },
+        { id: 'back', label: '← Back', action: 'navigate', target: 'value_prop' }
+      ],
+      qualifier: 'complexityFactor'
+    },
+
+    // TIMELINE/URGENCY
+    lawyer_q2_timeline: {
+      message: "Almost done! One last question:",
+      question: "How soon do you need help?",
+      options: [
+        { id: 'urgent', label: '🚨 Urgent (within 1 week)', action: 'navigate', target: 'route_to_qualified', answer: 'urgent' },
+        { id: 'soon', label: '⏰ Soon (within 1 month)', action: 'navigate', target: 'route_to_qualified', answer: 'soon' },
+        { id: 'exploring', label: '🤔 Just exploring options', action: 'navigate', target: 'route_to_qualified', answer: 'exploring' },
+        { id: 'back', label: '← Back', action: 'navigate', target: 'lawyer_q1_complexity' }
+      ],
+      qualifier: 'timeline'
     },
 
     // --- SUCCESS SCREEN 1: HIDDEN INCOME ---
     qualified_income: {
-      message: "We have specialists who are experts in forensic accounting and uncovering hidden income.",
+      message: "Hidden income cases require forensic accounting expertise. Our specialists have recovered millions in undisclosed income for parents like you.",
       summary: true,
+      trustSignals: true,
       options: [
-        { id: 'contact', label: '🕵️ Talk to an Income Specialist', action: 'external', url: CONFIG.forms.hiddenIncome, primary: true },
-        { id: 'back', label: '← Back', action: 'navigate', target: 'lawyer_q2' }
+        { id: 'contact', label: '🕵️ Uncover Hidden Income – Free Consultation', action: 'external', url: CONFIG.forms.hiddenIncome, primary: true },
+        { id: 'learn', label: '📚 Learn About Hidden Income Cases', action: 'external', url: 'https://auschildsupport.com/blog/child-support-self-employed' },
+        { id: 'back', label: '← Back', action: 'navigate', target: 'value_prop' }
       ]
     },
 
     // --- SUCCESS SCREEN 2: AGREEMENTS ---
     qualified_agreement: {
-      message: "Binding Child Support Agreements require specific legal wording to be valid. We can help draft this correctly.",
+      message: "Binding Child Support Agreements must meet strict legal requirements. Get it wrong and it won't be enforceable. Our lawyers draft these daily.",
       summary: true,
+      trustSignals: true,
       options: [
-        { id: 'contact', label: '📝 Start Agreement Process', action: 'external', url: CONFIG.forms.agreements, primary: true },
-        { id: 'back', label: '← Back', action: 'navigate', target: 'lawyer_q2' }
+        { id: 'contact', label: '📝 Get Your Agreement Drafted – Fixed Fee Quote', action: 'external', url: CONFIG.forms.agreements, primary: true },
+        { id: 'learn', label: '📚 Learn About Binding Agreements', action: 'external', url: 'https://auschildsupport.com/blog/binding-child-support-agreement' },
+        { id: 'back', label: '← Back', action: 'navigate', target: 'value_prop' }
       ]
     },
 
     // --- SUCCESS SCREEN 3: SPECIAL CIRCUMSTANCES ---
     qualified_special: {
-      message: "Special Circumstances applications are complex. We can connect you with a lawyer who handles these appeals.",
+      message: "Special Circumstances applications have a 60%+ success rate when properly prepared. Don't leave money on the table.",
       summary: true,
+      trustSignals: true,
       options: [
-        { id: 'contact', label: '⚠️ Review Special Circumstances', action: 'external', url: CONFIG.forms.special, primary: true },
-        { id: 'back', label: '← Back', action: 'navigate', target: 'lawyer_q2' }
+        { id: 'contact', label: '⚠️ Challenge Your Assessment – Free Case Review', action: 'external', url: CONFIG.forms.special, primary: true },
+        { id: 'learn', label: '� Learn About Special Circumstances', action: 'external', url: 'https://auschildsupport.com/blog/object-to-child-support-assessment' },
+        { id: 'back', label: '← Back', action: 'navigate', target: 'value_prop' }
       ]
     },
 
     // --- SUCCESS SCREEN 4: STANDARD ---
     qualified_standard: {
-      message: "Perfect! Based on your answers, we can connect you with a family lawyer who specializes in child support matters.",
+      message: "Every child support case is unique. Our partner lawyers offer free initial consultations to assess your situation and explain your options.",
       summary: true,
+      trustSignals: true,
       options: [
-        { id: 'contact', label: '📞 Contact Us Now', action: 'external', url: CONFIG.forms.standard, primary: true },
-        { id: 'back', label: '← Back', action: 'navigate', target: 'lawyer_q2' }
+        { id: 'contact', label: '📞 Speak to a Specialist – No Obligation', action: 'external', url: CONFIG.forms.standard, primary: true },
+        { id: 'calculator', label: '🧮 Calculate My Payments First', action: 'external', url: CONFIG.calculatorUrl },
+        { id: 'back', label: '← Back', action: 'navigate', target: 'value_prop' }
       ]
     },
 
@@ -140,15 +228,9 @@
       ]
     },
 
-    // EXISTING ASSESSMENT PATH
-    existing_menu: {
-      message: "If you already have a child support assessment, here's how I can help:",
-      options: [
-        { id: 'check', label: '✅ Check My Estimate', action: 'external', url: CONFIG.calculatorUrl },
-        { id: 'change', label: '📝 Change of Assessment', action: 'navigate', target: 'lawyer_q1' },
-        { id: 'review', label: '🔍 Review Options', action: 'external', url: CONFIG.generalInfoUrl },
-        { id: 'back', label: '← Back to Menu', action: 'navigate', target: 'main' }
-      ]
+    // ROUTER NODE (logic only - routes based on primaryConcern)
+    route_to_qualified: {
+      // This is handled in renderNode - no message/options needed
     }
   };
 
@@ -355,6 +437,32 @@
   margin-bottom: 2px;
 }
 
+.auscsc-trust-signals {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 12px 0;
+}
+
+.auscsc-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 13px;
+  color: ${CONFIG.textDark};
+}
+
+.auscsc-trust-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.auscsc-trust-text {
+  line-height: 1.4;
+}
+
 @keyframes auscsc-fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -381,6 +489,27 @@
   // ============================================
   // HELPER FUNCTIONS
   // ============================================
+
+  /**
+   * Track chatbot events to Google Analytics
+   */
+  function trackChatbotEvent(eventName, eventParams = {}) {
+    if (!CONFIG.analytics.enabled) return;
+
+    // Google Analytics 4
+    if (CONFIG.analytics.gaEnabled && typeof gtag !== 'undefined') {
+      gtag('event', eventName, {
+        event_category: 'chatbot',
+        ...eventParams
+      });
+    }
+
+    // Console log for debugging (remove in production if needed)
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      console.log('[Chatbot Analytics]', eventName, eventParams);
+    }
+  }
+
   function injectStyles() {
     if (document.getElementById('auscsc-widget-styles')) return;
     const styleEl = document.createElement('style');
@@ -437,14 +566,32 @@
     const node = DECISION_TREE[nodeKey];
     if (!node) return;
 
+    // Handle routing logic node
+    if (nodeKey === 'route_to_qualified') {
+      const primaryConcern = state.qualifyingAnswers.primaryConcern;
+      const targetNode = primaryConcern === 'hidden_income' ? 'qualified_income' :
+                         primaryConcern === 'agreement' ? 'qualified_agreement' :
+                         primaryConcern === 'special' ? 'qualified_special' :
+                         primaryConcern === 'unsure' ? 'qualified_standard' :
+                         'qualified_standard';
+      renderNode(targetNode);
+      return;
+    }
+
     state.currentPath = nodeKey;
     const body = document.getElementById('auscsc-chat-body');
     body.innerHTML = '';
 
-    // Message
+    // Track node view
+    trackChatbotEvent('chatbot_node_view', {
+      node_key: nodeKey,
+      answers_collected: Object.keys(state.qualifyingAnswers).length
+    });
+
+    // Message (handle dynamic messages via getter)
     const msgEl = document.createElement('div');
     msgEl.className = 'auscsc-message';
-    msgEl.textContent = node.message;
+    msgEl.textContent = typeof node.message === 'function' ? node.message() : node.message;
     body.appendChild(msgEl);
 
     // Question (if exists)
@@ -455,14 +602,37 @@
       body.appendChild(qEl);
     }
 
+    // Trust signals (for success screens)
+    if (node.trustSignals) {
+      const trustEl = document.createElement('div');
+      trustEl.className = 'auscsc-trust-signals';
+      trustEl.innerHTML = `
+        <div class="auscsc-trust-item">
+          <span class="auscsc-trust-icon">⚡</span>
+          <span class="auscsc-trust-text">Most lawyers respond within 24 hours</span>
+        </div>
+        <div class="auscsc-trust-item">
+          <span class="auscsc-trust-icon">🔒</span>
+          <span class="auscsc-trust-text">Your information is confidential</span>
+        </div>
+        <div class="auscsc-trust-item">
+          <span class="auscsc-trust-icon">✓</span>
+          <span class="auscsc-trust-text">No obligation – free initial consultation</span>
+        </div>
+      `;
+      body.appendChild(trustEl);
+    }
+
     // Summary (for qualified leads)
     if (node.summary && Object.keys(state.qualifyingAnswers).length > 0) {
       const summaryEl = document.createElement('div');
       summaryEl.className = 'auscsc-summary';
       
       const items = [
-        { label: 'Parenting Plan', value: formatAnswer(state.qualifyingAnswers.hasParentingPlan) },
-        { label: 'Assessment Type', value: formatAnswer(state.qualifyingAnswers.assessmentType) }
+        { label: 'Primary Concern', value: formatAnswer(state.qualifyingAnswers.primaryConcern) },
+        { label: 'Complexity', value: formatAnswer(state.qualifyingAnswers.complexityFactor) },
+        { label: 'Timeline', value: formatAnswer(state.qualifyingAnswers.timeline) },
+        { label: 'Urgency', value: formatAnswer(state.qualifyingAnswers.urgencyType) }
       ];
 
       items.forEach(item => {
@@ -496,14 +666,33 @@
     if (answer === true) return 'Yes';
     if (answer === false) return 'No';
     if (answer === 'unsure') return 'Not sure';
-    if (answer === 'income') return 'Hidden Income';
+    if (answer === 'hidden_income') return 'Hidden Income';
     if (answer === 'agreement') return 'Agreement';
-    if (answer === 'special') return 'Special/Appeal';
+    if (answer === 'special') return 'Special Circumstances';
     if (answer === 'general') return 'General Advice';
+    if (answer === 'international') return 'International';
+    if (answer === 'self_employed') return 'Self-Employed';
+    if (answer === 'court') return 'Court Proceedings';
+    if (answer === 'standard') return 'Standard';
+    if (answer === 'urgent') return 'Urgent (1 week)';
+    if (answer === 'soon') return 'Soon (1 month)';
+    if (answer === 'exploring') return 'Exploring';
+    if (answer === 'court_date') return 'Court Date';
+    if (answer === 'deadline') return 'Deadline';
+    if (answer === 'urgent_no_deadline') return 'Urgent';
     return answer || null;
   }
 
   function handleOptionClick(option, currentNode) {
+    // Track button click
+    trackChatbotEvent('chatbot_button_click', {
+      button_id: option.id,
+      button_label: option.label,
+      current_node: state.currentPath,
+      target_node: option.target || 'external',
+      action_type: option.action
+    });
+
     // 1. Save the answer for the current step
     if (currentNode.qualifier && option.answer !== undefined) {
       state.qualifyingAnswers[currentNode.qualifier] = option.answer;
@@ -511,6 +700,10 @@
 
     switch (option.action) {
       case 'navigate':
+        trackChatbotEvent('chatbot_navigation', {
+          from_node: state.currentPath,
+          to_node: option.target
+        });
         renderNode(option.target);
         break;
 
@@ -522,6 +715,16 @@
         );
 
         if (isForm) {
+          // Track form handoff
+          trackChatbotEvent('chatbot_form_handoff', {
+            form_type: option.url.includes('hidden_income') ? 'hidden_income' :
+                       option.url.includes('binding_agreement') ? 'binding_agreement' :
+                       option.url.includes('special-circumstances') ? 'special_circumstances' :
+                       'standard',
+            qualifying_answers: JSON.stringify(state.qualifyingAnswers),
+            conversation_path: state.currentPath
+          });
+
           // --- STEP A: Get Base URL ---
           let finalUrl = option.url;
           const separator = finalUrl.includes('?') ? '&' : '?';
@@ -544,6 +747,10 @@
           window.location.href = finalUrl;
         } else {
           // External links (Calculator, etc.)
+          trackChatbotEvent('chatbot_external_link', {
+            url: option.url,
+            link_type: option.url.includes('calculator') ? 'calculator' : 'blog'
+          });
           window.open(option.url, '_blank', 'noopener,noreferrer');
         }
         break;
@@ -556,6 +763,11 @@
     const chatWindow = document.getElementById('auscsc-chat-window');
 
     if (state.isOpen) {
+      trackChatbotEvent('chatbot_opened', {
+        page_url: window.location.href,
+        page_title: document.title
+      });
+
       trigger.classList.add('open');
       trigger.setAttribute('aria-label', 'Close chat assistant');
 
@@ -573,6 +785,11 @@
         chatWindow.classList.add('open');
       }
     } else {
+      trackChatbotEvent('chatbot_closed', {
+        current_node: state.currentPath,
+        answers_collected: Object.keys(state.qualifyingAnswers).length
+      });
+
       trigger.classList.remove('open');
       trigger.setAttribute('aria-label', 'Open chat assistant');
       chatWindow.classList.remove('open');
@@ -585,6 +802,18 @@
   function init() {
     // Prevent double-loading
     if (document.querySelector('.auscsc-widget-trigger')) return;
+
+    // Detect referrer context for dynamic messaging
+    const referrer = document.referrer;
+    const currentUrl = window.location.href;
+    
+    state.context = {
+      source: referrer.includes('auschildsupport.com/blog') ? 'blog' :
+              currentUrl.includes('auschildsupport.com') && !referrer ? 'direct' :
+              referrer.includes('auschildsupport.com') ? 'calculator' :
+              'external',
+      blogTopic: referrer.includes('/blog/') ? referrer.split('/blog/')[1]?.split('?')[0] : null
+    };
 
     // Only inject styles when trigger is created (minimal initial load)
     injectStyles();

@@ -1,6 +1,6 @@
 # Project Knowledge Base & Context Brief
 
-**Last Updated:** 2026-01-18
+**Last Updated:** 2026-01-26
 
 ---
 
@@ -154,7 +154,45 @@ Detailed calculation breakdowns with comprehensive tooltips:
   - Detects potential savings opportunities (e.g., travel costs, specific clauses)
 - **Tech**: Uses Supabase Edge Functions (`analyze-order`) for processing.
 
-### **6. Admin Features**
+### **6. Blog Chatbot Widget (Conversion Optimization)**
+
+**Location**: `public/chatbot-widget.js` (vanilla JavaScript, deployed to blog subdomain)
+
+**Purpose**: Guides blog readers from educational content to lawyer inquiry form with intelligent qualification.
+
+**Recent Improvements (2026-01-26)**:
+- ✅ **Value-First Messaging**: Restructured conversation flow to lead with benefits before asking qualification questions
+- ✅ **Urgency Triage**: New fast-track path for users with court dates or urgent deadlines
+- ✅ **Trust Signals**: Added credibility markers (24hr response time, confidentiality, no obligation) on success screens
+- ✅ **Benefit-Driven CTAs**: Replaced generic button copy with outcome-focused language (e.g., "Uncover Hidden Income – Free Consultation")
+- ✅ **Analytics Tracking**: Comprehensive Google Analytics 4 event tracking for all interactions:
+  - `chatbot_opened` / `chatbot_closed`
+  - `chatbot_button_click` (with button_id, label, node context)
+  - `chatbot_navigation` (node-to-node transitions)
+  - `chatbot_form_handoff` (tracks qualifying answers and conversation path)
+  - `chatbot_external_link` (calculator/blog link clicks)
+- ✅ **Context-Aware Messaging**: Dynamic opening message based on referrer (blog vs calculator vs direct)
+- ✅ **Escape Hatches**: "Help me decide" option for confused users to reduce decision paralysis
+- ✅ **Progressive Profiling**: Captures complexity signals (international, self-employed, court proceedings) and timeline urgency
+
+**Conversation Flow**:
+```
+main → value_prop (concern selection) → qualified_[type] (with trust signals) → form handoff
+     → urgency_check → urgent_[type] → form handoff
+     → help_decide → qualified_[type] → form handoff
+```
+
+**Data Captured**:
+- `primaryConcern`: hidden_income | agreement | special | unsure
+- `urgencyType`: court_date | deadline | urgent_no_deadline
+- `complexityFactor`: international | self_employed | court | standard
+- `timeline`: urgent | soon | exploring
+
+**Integration**: Passes all qualifying answers as URL parameters to `/lawyer-inquiry` form for pre-population and lead enrichment.
+
+**Analytics Dashboard**: All events visible in Google Analytics 4 under "chatbot" event category for funnel analysis and optimization.
+
+### **7. Admin Features**
 
 - Located in `app/admin/` directory
 - Heavy libraries (expo-print/sharing) dynamically imported to reduce main bundle size
@@ -208,6 +246,7 @@ Lighthouse Performance score improvements:
 6. ✅ **Blog Button Contrast**: Improved to `#0056b3` for WCAG compliance
 7. ✅ **Navigation Issue**: LawyerInquiryScreen routing fixed
 8. ✅ **Form Spacing**: SpecialCircumstancesForm spacing tightened
+9. ✅ **Platform Import Missing** (2026-01-26): Added missing `Platform` import to `CalculatorHeader.tsx` - was causing "Can't find variable: Platform" runtime error
 
 ### **Performance Improvements**
 
