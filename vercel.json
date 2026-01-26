@@ -18,6 +18,14 @@
   ],
   "rewrites": [
     {
+      "source": "/robots.txt",
+      "destination": "/robots.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/sitemap.xml"
+    },
+    {
       "source": "/admin/lead/:id",
       "destination": "/admin/lead/[id].html"
     },
