@@ -4,10 +4,10 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { CARE_PERIOD_DAYS } from '@/src/utils/child-support-constants';
 import {
-    isWeb,
-    useResponsive,
-    webClickableStyles,
-    webInputStyles,
+  isWeb,
+  useResponsive,
+  webClickableStyles,
+  webInputStyles,
 } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import { PeriodPicker } from './PeriodPicker';
@@ -297,7 +297,7 @@ export function ChildRow({
           <View
             style={[styles.itemWrapper, isMobile && styles.parentItemMobile]}
           >
-            <Text style={styles.headerLabelB}>OTHER PARENT</Text>
+            <Text style={styles.headerLabelB}>OTHER</Text>
             <TextInput
               style={[
                 styles.careInput,
