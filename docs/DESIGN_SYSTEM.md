@@ -108,6 +108,132 @@ Full-screen inquiry form (mobile and web):
 - **Large**: 20px - Card padding
 - **XL**: 24px - Section separation
 
+## Blog Post Styling (January 2026 Optimization)
+
+### Typography & Readability
+
+**Body Text:**
+- Font size: 16px
+- Line height: 1.6 (25.6px) - optimized for legal content readability
+- Color: `#475569` (slate-600)
+- Paragraph spacing: 18px bottom margin
+
+**Headers:**
+- H1: 32px, weight 700, color `#1e3a8a` (blue-900)
+- H2: 24px, weight 700, color `#1e293b` (slate-900), 48px top margin, 16px bottom
+- H3: 20px, weight 600, color `#475569` (slate-600), 32px top margin, 12px bottom
+
+**Bullet Points:**
+- Font size: 15px
+- Line height: 24px
+- Spacing: 12px between items (increased from 8px for better scannability)
+
+### Callout Boxes
+
+All callout boxes follow consistent padding and spacing for mobile readability:
+
+**Base Styles:**
+- Padding: 20px (all sides)
+- Border radius: 12px
+- Margin bottom: 24px
+- Margin top: 16px (after body paragraphs)
+
+**Info Boxes (Blue):**
+- Background: `#eff6ff` (blue-50)
+- Border: 1px solid `#bfdbfe` (blue-200)
+- Header: 17px, weight 700, color `#1e40af` (blue-800)
+- Use for: General information, DIY-friendly situations, tips
+
+**Real Example Boxes (Gray with Blue Accent):**
+- Background: `#f1f5f9` (slate-100) - visually distinct from info boxes
+- Left border: 4px solid `#2563eb` (blue-600)
+- Header: 17px, weight 700, color `#1e40af`
+- Calculation text: 16px, weight 500 (no monospace font)
+- Dollar amounts: Emphasized with larger size or bold weight
+- Use for: Case studies, concrete scenarios with financial outcomes
+
+**Urgent Boxes (Red):**
+- Background: `#fee2e2` (red-50)
+- Border: 3px solid `#dc2626` (red-600) - thicker for emphasis
+- Header: 18px, weight 700, color `#991b1b` (red-800)
+- Use for: Time-sensitive legal deadlines, court dates, critical actions
+
+**Warning Boxes (Yellow/Amber):**
+- Background: `#fef3c7` (amber-50)
+- Border: 3px solid `#f59e0b` (amber-500)
+- Header: 17px, weight 700, color `#92400e` (amber-900)
+- Text: color `#78350f` (amber-900)
+- Use for: Important cautions, potential consequences, cost warnings
+
+**Cost Reality Check Boxes (Amber with Left Border):**
+- Background: `#fef3c7` (amber-50)
+- Left border: 4px solid `#f59e0b` (amber-500)
+- Border: 1px solid `#fde68a` (amber-200)
+- Header: 17px, weight 700, color `#92400e`
+- Dollar amounts: 16px for emphasis
+- Use for: Financial stakes, cost comparisons
+
+### CTA Buttons
+
+**Primary CTA Buttons:**
+- Background: `#2563eb` (blue-600) - darker than callout boxes for visual prominence
+- Text: white, 17px, weight 600
+- Padding: 14px vertical, 20px horizontal
+- Border radius: 8px
+- Shadow: `shadowColor: '#2563eb', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4`
+- Minimum height: 48px (thumb-friendly on mobile)
+
+**Visual Hierarchy:**
+- Callout box background: `#dbeafe` (light blue)
+- CTA button: `#2563eb` (vibrant blue) - creates clear distinction
+- Hover/press: Darken by 10%
+
+### Header Hierarchy Inside Callouts
+
+To improve scannability, callout box headers and internal labels use different weights and colors:
+
+**Callout Box Header:**
+- Font size: 17px
+- Font weight: 700 (bold)
+- Color: `#1e40af` (darker blue)
+
+**List Item Labels (e.g., "Self-employed:", "Company director:"):**
+- Font size: 16px
+- Font weight: 600 (semi-bold, not full bold)
+- Color: `#3b82f6` (medium blue, lighter than header)
+
+This creates clear visual hierarchy: Header → Labels → Description
+
+### Spacing Between Elements
+
+- Between callout boxes: 24px
+- Between body paragraph and callout: 16px top margin on callout
+- Between list items inside callouts: 12px
+- Between H2 sections: 48px top margin
+- Between H3 subsections: 32px top margin
+
+### Mobile Optimization
+
+- All padding values optimized for mobile (20px provides breathing room without wasting space)
+- Touch targets: Minimum 48px height for all buttons
+- Line height: 1.6 for comfortable reading on small screens
+- No horizontal scrolling required
+- Full-width buttons on mobile for easy tapping
+
+### Accessibility
+
+- Color contrast ratios meet WCAG 2.1 AA standards
+- Semantic HTML structure (H1 → H2 → H3, no skipped levels)
+- Clear visual hierarchy for screen readers
+- Touch-friendly button sizes (48px minimum)
+
+### Implementation Location
+
+Blog post styling is implemented in individual blog post files:
+- Example: `app/blog/when-to-hire-family-lawyer.tsx`
+- Styles defined in StyleSheet.create() at bottom of file
+- Consistent patterns across all blog posts
+
 ## Border Radius
 
 - **Small**: 4px - Buttons, inputs
