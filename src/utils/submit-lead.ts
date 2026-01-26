@@ -13,7 +13,6 @@
 
 import type { PartnerKey } from '@/src/config/partners';
 import type { LeadSubmission } from './supabase';
-import { getSupabaseClient } from './supabase/client';
 
 export interface SubmitLeadPayload extends LeadSubmission {
   partner_id?: PartnerKey | null;
@@ -58,7 +57,8 @@ export async function submitLeadWithPartner(
       };
     }
 
-    // Get Supabase client (lazy-loaded)
+    // Lazy load Supabase client only when needed
+    const { getSupabaseClient } = await import('./supabase/client');
     const supabase = await getSupabaseClient();
 
     // Use direct database insertion (bypassing edge function for now)

@@ -1,0 +1,12 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Disallow admin pages
+Disallow: /admin/
+
+# Disallow partner proposal pages (noindexed)
+Disallow: /partner/
+
+# Sitemap
+Sitemap: https://www.auschildsupport.com.au/sitemap.xml

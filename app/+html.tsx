@@ -7,7 +7,7 @@ const organizationSchema = {
   '@type': 'Organization',
   name: 'AusChildSupport',
   url: 'https://auschildsupport.com.au',
-  logo: 'https://auschildsupport.com.au/favicon-rounded-white-bg.png',
+  logo: 'https://auschildsupport.com.au/favicon-rounded-white-bg.webp',
   areaServed: {
     '@type': 'Country',
     name: 'Australia',
@@ -40,8 +40,8 @@ export default function Root({ children }: PropsWithChildren) {
         <link 
           rel="preload" 
           as="image" 
-          href="/main-page-logo.png" 
-          type="image/png"
+          href="/main-page-logo.webp" 
+          type="image/webp"
           // @ts-ignore - Web-only fetchpriority attribute
           fetchpriority="high"
         />
@@ -49,19 +49,19 @@ export default function Root({ children }: PropsWithChildren) {
         {/* Favicon */}
         <link
           rel="icon"
-          type="image/png"
-          href="/favicon-rounded-white-bg.png?v=4"
+          type="image/webp"
+          href="/favicon-rounded-white-bg.webp?v=5"
         />
 
         {/* Apple Touch Icon (iOS home screen) */}
-        <link rel="apple-touch-icon" href="/favicon-rounded-white-bg.png?v=4" />
+        <link rel="apple-touch-icon" href="/favicon-rounded-white-bg.webp?v=5" />
 
         {/* Android home screen icon */}
         <link
           rel="icon"
-          type="image/png"
+          type="image/webp"
           sizes="192x192"
-          href="/favicon-rounded-white-bg.png?v=4"
+          href="/favicon-rounded-white-bg.webp?v=5"
         />
 
         {/* CRITICAL CSS: Inline styles for above-the-fold content */}
@@ -83,6 +83,22 @@ export default function Root({ children }: PropsWithChildren) {
               /* Font display optimization */
               @font-face {
                 font-family: system-ui;
+                font-display: swap;
+              }
+              
+              /* Icon fonts from @expo/vector-icons - apply font-display: swap */
+              @font-face {
+                font-family: 'Feather';
+                font-display: swap;
+              }
+              
+              @font-face {
+                font-family: 'Ionicons';
+                font-display: swap;
+              }
+              
+              @font-face {
+                font-family: 'MaterialIcons';
                 font-display: swap;
               }
               

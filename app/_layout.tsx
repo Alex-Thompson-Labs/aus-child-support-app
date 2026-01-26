@@ -1,7 +1,9 @@
 import { SemanticColors } from '@/constants/theme';
+import { AnalyticsErrorBoundary } from '@/src/components/ui/AnalyticsErrorBoundary';
 import { LoadingFallback } from '@/src/components/ui/LoadingFallback';
 import { ABTestingProvider } from '@/src/contexts/ABTestingContext';
 import { useClientOnly } from '@/src/hooks/useClientOnly';
+import { Analytics as AnalyticsUtil } from '@/src/utils/analytics';
 import { initEmailJS } from '@/src/utils/emailjs';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Analytics } from '@vercel/analytics/react';
@@ -41,10 +43,12 @@ export default function RootLayout() {
         // Initialize EmailJS for web
         if (Platform.OS === 'web') {
           initEmailJS();
-          
-          // Initialize Google Analytics 4
-          if (Env.GA_MEASUREMENT_ID) {
-            AnalyticsUtil.initialize(Env.GA_MEASUREMENT_ID);
+
+          // Initialize Google Analytics 4 (deferred via requestIdleCallback)
+          // The Analytics.initialize() method will defer loading until after initial render
+          const gaMeasurementId = process.env.EXPO_PUBLIC_GA_MEASUREMENT_ID;
+          if (gaMeasurementId) {
+            AnalyticsUtil.initialize(gaMeasurementId);
           } else {
             console.warn('GA_MEASUREMENT_ID not configured - analytics disabled');
           }
@@ -85,7 +89,7 @@ export default function RootLayout() {
 
   // SEO: Generate Canonical URL (Strip query params and trailing slashes)
   const siteUrl =
-    process.env.EXPO_PUBLIC_SITE_URL || 'https://www.auschildsupport.com.au';
+    process.env.EXPO_PUBLIC_SITE_URL || 'https://auschildsupport.com.au';
   // Handle root path and normalize trailing slashes (vercel.json has trailingSlash: false)
   const normalizedPath = pathname === '/' ? '' : pathname.replace(/\/$/, '');
   const canonicalUrl = `${siteUrl}${normalizedPath}`;
@@ -114,56 +118,93 @@ export default function RootLayout() {
         {/* SEO: Dynamic Canonical Tag via Expo Head */}
         <Head>
           <link rel="canonical" href={canonicalUrl} />
+          
+          {/* Font optimization: Add font-display: swap to prevent render blocking */}
+          {Platform.OS === 'web' && (
+            <style>{`
+              /* System font stack with font-display: swap for optimal loading */
+              body {
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+              }
+              
+              /* Ensure all font faces use font-display: swap to prevent FOIT (Flash of Invisible Text) */
+              @font-face {
+                font-family: system-ui;
+                font-display: swap;
+              }
+              
+              /* Icon fonts from @expo/vector-icons - apply font-display: swap */
+              @font-face {
+                font-family: 'Feather';
+                font-display: swap;
+              }
+              
+              @font-face {
+                font-family: 'Ionicons';
+                font-display: swap;
+              }
+              
+              @font-face {
+                font-family: 'MaterialIcons';
+                font-display: swap;
+              }
+            `}</style>
+          )}
         </Head>
 
         <ABTestingProvider>
           <ThemeProvider value={DefaultTheme}>
-          <Stack
-            screenOptions={{
-              title: 'Child Support Calculator',
-            }}
-          >
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="special-circumstances"
-              options={{
-                headerShown: false,
+            <Stack
+              screenOptions={{
+                title: 'Child Support Calculator',
               }}
-            />
-            <Stack.Screen name="about" options={{ headerShown: false }} />
-            <Stack.Screen name="contact" options={{ headerShown: false }} />
-            <Stack.Screen name="faq" options={{ headerShown: false }} />
-            <Stack.Screen name="court-order-tool" options={{ headerShown: false, drawerItemStyle: { display: 'none' } } as any} />
-            <Stack.Screen
-              name="lawyer-inquiry"
-              options={{
-                presentation: 'modal',
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="admin"
-              options={{
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="change-of-assessment/[reason-slug]"
-              options={{
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="partner/[slug]"
-              options={{
-                headerShown: false,
-                title: 'Partnership Proposal',
-              }}
-            />
-          </Stack>
-          <StatusBar style="dark" />
-          {Platform.OS === 'web' && <Analytics />}
-          {Platform.OS === 'web' && <SpeedInsights />}
+            >
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="special-circumstances"
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen name="about" options={{ headerShown: false }} />
+              <Stack.Screen name="contact" options={{ headerShown: false }} />
+              <Stack.Screen name="faq" options={{ headerShown: false }} />
+              <Stack.Screen name="court-order-tool" options={{ headerShown: false, drawerItemStyle: { display: 'none' } } as any} />
+              <Stack.Screen
+                name="lawyer-inquiry"
+                options={{
+                  presentation: 'modal',
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="admin"
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="change-of-assessment/[reason-slug]"
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="partner/[slug]"
+                options={{
+                  headerShown: false,
+                  title: 'Partnership Proposal',
+                }}
+              />
+            </Stack>
+            <StatusBar style="dark" />
+            {/* Lazy load analytics components after app is ready */}
+            {Platform.OS === 'web' && appIsReady && (
+              <AnalyticsErrorBoundary>
+                <Analytics />
+                <SpeedInsights />
+              </AnalyticsErrorBoundary>
+            )}
           </ThemeProvider>
         </ABTestingProvider>
       </Suspense>

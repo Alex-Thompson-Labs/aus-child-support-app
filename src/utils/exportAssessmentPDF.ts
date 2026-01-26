@@ -2,11 +2,10 @@
  * Assessment PDF Export Utility
  *
  * Generates professional PDF documents for calculator assessment results.
- * Uses expo-print to generate PDF from HTML content.
+ * Uses expo-print to generate PDF from HTML content (lazy loaded).
  * Compatible with both Web (Browser Print) and Mobile (Native Print).
  */
 
-import * as Print from 'expo-print';
 import type { CalculationResults } from './calculator';
 import { generateAssessmentHTML } from './generateAssessmentHTML';
 
@@ -20,10 +19,26 @@ export interface ExportAssessmentPDFProps {
 }
 
 /**
+ * Lazy load expo-print to avoid including it in the initial bundle
+ * This saves ~50-80 KB from the initial bundle size
+ */
+async function loadExpoPrint() {
+  try {
+    const Print = await import('expo-print');
+    return Print;
+  } catch (error) {
+    console.error('Failed to load expo-print:', error);
+    throw new Error('PDF export feature is temporarily unavailable. Please try again later.');
+  }
+}
+
+/**
  * Generate and download/print assessment PDF
  *
  * Web: Opens browser print dialog (user selects "Save as PDF")
  * Mobile: Opens native print preview (user shares/saves PDF)
+ * 
+ * Note: This function lazy loads expo-print on first use to reduce initial bundle size
  */
 export async function exportAssessmentPDF({
   results,
@@ -49,6 +64,8 @@ export async function exportAssessmentPDF({
     }
     
     // Fallback to print dialog if window.open fails
+    // Lazy load expo-print only when needed
+    const Print = await loadExpoPrint();
     await Print.printAsync({
       html,
       ...(process.env.EXPO_OS === 'ios' && {
@@ -58,14 +75,18 @@ export async function exportAssessmentPDF({
       }),
     });
   } catch (error) {
-    // TODO: Replace with proper error reporting service
+    // Re-throw with user-friendly message if it's our custom error
+    if (error instanceof Error && error.message.includes('temporarily unavailable')) {
+      throw error;
+    }
+    // Otherwise, throw generic error
     throw new Error('Failed to generate PDF. Please try again.');
   }
 }
 
 /**
  * Check if PDF export is available on current platform
- * Now available on all platforms via expo-print
+ * Now available on all platforms via expo-print (lazy loaded)
  */
 export function isPDFExportAvailable(): boolean {
   return true;

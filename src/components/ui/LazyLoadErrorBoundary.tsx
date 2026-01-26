@@ -1,109 +1,100 @@
 import React, { Component, ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-interface LazyLoadErrorBoundaryProps {
+interface Props {
   children: ReactNode;
-  /** Custom render function for error state. Receives error and retry callback. */
-  fallback?: (error: Error, retry: () => void) => ReactNode;
+  fallback?: ReactNode;
+  onRetry?: () => void;
 }
 
-interface LazyLoadErrorBoundaryState {
+interface State {
   hasError: boolean;
   error: Error | null;
 }
 
-export class LazyLoadErrorBoundary extends Component<
-  LazyLoadErrorBoundaryProps,
-  LazyLoadErrorBoundaryState
-> {
-  constructor(props: LazyLoadErrorBoundaryProps) {
+/**
+ * Error boundary for lazy-loaded components
+ * Catches errors during dynamic imports and provides retry functionality
+ */
+export class LazyLoadErrorBoundary extends Component<Props, State> {
+  constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = {
+      hasError: false,
+      error: null,
+    };
   }
 
-  static getDerivedStateFromError(error: Error): LazyLoadErrorBoundaryState {
-    return { hasError: true, error };
+  static getDerivedStateFromError(error: Error): State {
+    return {
+      hasError: true,
+      error,
+    };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    // TODO: Replace with proper error reporting service
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('LazyLoad Error:', error, errorInfo);
   }
 
-  handleRetry = (): void => {
+  handleRetry = () => {
     this.setState({ hasError: false, error: null });
+    if (this.props.onRetry) {
+      this.props.onRetry();
+    }
   };
 
-  render(): ReactNode {
-    const { hasError, error } = this.state;
-    const { children, fallback } = this.props;
-
-    if (hasError && error) {
-      if (fallback) {
-        return fallback(error, this.handleRetry);
+  render() {
+    if (this.state.hasError) {
+      if (this.props.fallback) {
+        return <>{this.props.fallback}</>;
       }
-      return <DefaultErrorFallback onRetry={this.handleRetry} />;
+
+      return (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTitle}>Failed to Load Component</Text>
+          <Text style={styles.errorMessage}>
+            {this.state.error?.message || 'An unexpected error occurred'}
+          </Text>
+          <TouchableOpacity style={styles.retryButton} onPress={this.handleRetry}>
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      );
     }
 
-    return children;
+    return this.props.children;
   }
-}
-
-interface DefaultErrorFallbackProps {
-  onRetry: () => void;
-}
-
-function DefaultErrorFallback({ onRetry }: DefaultErrorFallbackProps) {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.errorTitle}>Failed to load</Text>
-      <Text style={styles.errorMessage}>
-        Something went wrong loading this content.
-      </Text>
-      <Pressable
-        onPress={onRetry}
-        style={({ pressed }) => [
-          styles.retryButton,
-          pressed && styles.retryButtonPressed,
-        ]}
-        accessibilityRole="button"
-        accessibilityLabel="Retry loading content"
-      >
-        <Text style={styles.retryButtonText}>Try Again</Text>
-      </Pressable>
-    </View>
-  );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    alignItems: 'center',
+  errorContainer: {
+    flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#ffffff',
   },
   errorTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
-    color: '#0f172a',
+    color: '#DC2626',
     marginBottom: 8,
   },
   errorMessage: {
     fontSize: 14,
-    color: '#64748b',
+    color: '#6B7280',
     textAlign: 'center',
     marginBottom: 16,
   },
   retryButton: {
-    backgroundColor: '#3b82f6',
-    borderRadius: 8,
-    paddingVertical: 12,
+    backgroundColor: '#2563EB',
     paddingHorizontal: 24,
-  },
-  retryButtonPressed: {
-    opacity: 0.8,
+    paddingVertical: 12,
+    borderRadius: 8,
   },
   retryButtonText: {
+    color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
   },
 });

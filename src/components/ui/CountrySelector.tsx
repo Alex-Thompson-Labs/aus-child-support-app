@@ -5,6 +5,7 @@
  * Shows jurisdiction status badge after selection.
  */
 
+import { AlertCircle, CheckCircle, Info } from '@/src/components/icons';
 import { useAppTheme } from '@/src/theme';
 import { ALL_COUNTRIES } from '@/src/utils/all-countries';
 import {
@@ -13,7 +14,6 @@ import {
   type JurisdictionStatus
 } from '@/src/utils/jurisdiction-checker';
 import { isWeb, webInputStyles } from '@/src/utils/responsive';
-import { AlertCircle, CheckCircle, Info } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import {
   Modal,

@@ -2,18 +2,21 @@
  * PDFExportButton Component
  *
  * Button to export calculator results as a professional PDF document.
- * Web-only feature using @react-pdf/renderer.
+ * Web-only feature using expo-print (lazy loaded for performance).
+ * 
+ * Performance: expo-print is lazy loaded on first use to reduce initial bundle size.
  */
 
+import { Download } from '@/src/components/icons';
 import type { CalculationResults } from '@/src/utils/calculator';
 import {
     exportAssessmentPDF,
     isPDFExportAvailable,
 } from '@/src/utils/exportAssessmentPDF';
-import { Download } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
     ActivityIndicator,
+    Alert,
     Pressable,
     StyleSheet,
     Text,
@@ -46,13 +49,29 @@ export function PDFExportButton({
     setError(null);
 
     try {
+      // This will lazy load expo-print on first use
       await exportAssessmentPDF({
         results,
         supportA,
         supportB,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Export failed');
+      const errorMessage = err instanceof Error ? err.message : 'Export failed';
+      setError(errorMessage);
+      
+      // Show alert for better user feedback
+      Alert.alert(
+        'PDF Export Failed',
+        errorMessage,
+        [
+          { text: 'OK', style: 'default' },
+          { 
+            text: 'Try Again', 
+            style: 'default',
+            onPress: handleExport 
+          },
+        ]
+      );
     } finally {
       setIsLoading(false);
     }

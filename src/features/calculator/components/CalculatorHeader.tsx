@@ -83,9 +83,18 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
                     ) : (
                         <>
                             <Image
-                                source={require('@/public/favicon-rounded-white-bg.png')}
+                                source={
+                                    Platform.OS === 'web'
+                                        ? { uri: '/favicon-rounded-white-bg.webp' }
+                                        : require('@/public/favicon-rounded-white-bg.png')
+                                }
                                 style={styles.iconMobile}
                                 resizeMode="contain"
+                                // @ts-ignore - Web-only loading attribute
+                                loading="eager"
+                                // @ts-ignore - Web-only dimensions for CLS prevention
+                                width={40}
+                                height={40}
                             />
                             <Text style={styles.leftTitle}>{title || 'Calculator'}</Text>
                         </>
@@ -132,9 +141,18 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
                         {/* Header Bar */}
                         <View style={styles.drawerHeader}>
                             <Image
-                                source={require('@/assets/source_images/australian-child-support-assessment-calculator-logo.png')}
+                                source={
+                                    Platform.OS === 'web'
+                                        ? { uri: '/main-page-logo.webp' }
+                                        : require('@/assets/source_images/australian-child-support-assessment-calculator-logo.png')
+                                }
                                 style={styles.drawerLogo}
                                 resizeMode="contain"
+                                // @ts-ignore - Web-only loading attribute
+                                loading="eager"
+                                // @ts-ignore - Web-only dimensions for CLS prevention
+                                width={280}
+                                height={42}
                             />
                             <Pressable
                                 onPress={closeDrawer}
@@ -244,9 +262,18 @@ const SupportPersonImage = () => {
     return (
         <View style={styles.supportPersonImageContainer}>
             <Image
-                source={require('@/public/images/menu-support-person.png')}
+                source={
+                    Platform.OS === 'web'
+                        ? { uri: '/images/menu-support-person.webp' }
+                        : require('@/public/images/menu-support-person.png')
+                }
                 style={styles.supportPersonImage}
                 resizeMode="contain"
+                // @ts-ignore - Web-only loading attribute (below-the-fold, lazy load)
+                loading="lazy"
+                // @ts-ignore - Web-only dimensions for CLS prevention
+                width={320}
+                height={380}
             />
             <LinearGradient
                 colors={[BRAND_NAVY, 'transparent']}

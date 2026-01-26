@@ -1,12 +1,11 @@
+import { ArrowRight } from '@/src/components/icons';
 import type { CalculationResults } from '@/src/utils/calculator';
 import type { ComplexityFormData } from '@/src/utils/complexity-detection';
 import { useResponsive } from '@/src/utils/responsive';
 import { shadowPresets } from '@/src/utils/shadow-styles';
 import { detectLowAssessmentTrigger } from '@/src/utils/zero-payment-detection';
 import { useRouter } from 'expo-router';
-import { ArrowRight } from 'lucide-react-native';
 import React, { useMemo } from 'react';
-import ReactGA from 'react-ga4';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 /**
@@ -201,19 +200,25 @@ export function SmartConversionFooter({
       onCtaPress(logicConfig.complexityTrigger);
     }
 
-    if (isWeb) {
-      // Track inquiry_opened for funnel analytics
-      ReactGA.event('inquiry_opened', {
-        source: 'smart_footer',
-        card_variant: cardVariant,
-        complexity_trigger: logicConfig.complexityTrigger,
-        total_liability: results.finalPaymentAmount,
-      });
-      // Legacy event for backwards compatibility
-      ReactGA.event({
-        category: 'Conversion',
-        action: 'Smart_Footer_Click',
-        label: `${cardVariant}_${logicConfig.complexityTrigger}`,
+    // Track analytics on web only
+    if (Platform.OS === 'web') {
+      // Lazy load react-ga4 for analytics tracking
+      import('react-ga4').then((ReactGA) => {
+        // Track inquiry_opened for funnel analytics
+        ReactGA.default.event('inquiry_opened', {
+          source: 'smart_footer',
+          card_variant: cardVariant,
+          complexity_trigger: logicConfig.complexityTrigger,
+          total_liability: results.finalPaymentAmount,
+        });
+        // Legacy event for backwards compatibility
+        ReactGA.default.event({
+          category: 'Conversion',
+          action: 'Smart_Footer_Click',
+          label: `${cardVariant}_${logicConfig.complexityTrigger}`,
+        });
+      }).catch(() => {
+        // Analytics failed to load - fail silently
       });
     }
 

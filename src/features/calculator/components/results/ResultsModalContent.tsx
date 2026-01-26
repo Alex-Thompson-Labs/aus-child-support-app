@@ -4,10 +4,13 @@
  * Displays the full breakdown content including:
  * - ResultsHero (payment amount and details)
  * - SpecialCircumstancesPrompt (complexity detection)
- * - ResultsSimpleExplanation (calculation breakdown)
+ * - ResultsSimpleExplanation (calculation breakdown - lazy loaded)
  * - SmartConversionFooter (CTA for lawyer inquiry)
- * - PDFExportButton (download assessment)
+ * - PDFExportButton (download assessment - lazy loaded)
  * - FtbImpactCard (family tax benefit implications)
+ * 
+ * Performance: PDFExportButton is lazy loaded to defer loading of
+ * @react-pdf/renderer, expo-print, and expo-sharing until needed.
  */
 
 import { LazyLoadErrorBoundary } from '@/src/components/ui/LazyLoadErrorBoundary';
@@ -27,13 +30,20 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FtbImpactCard } from '../FtbImpactCard';
-import { PDFExportButton } from './PDFExportButton';
 import { ResultsHero } from './ResultsHero';
 
 // Lazy load the breakdown explanation component
 const ResultsSimpleExplanation = lazy(() =>
   import('../ResultsSimpleExplanation').then((module) => ({
     default: module.ResultsSimpleExplanation,
+  }))
+);
+
+// Lazy load PDF export button to reduce initial bundle size
+// This defers loading of @react-pdf/renderer, expo-print, and expo-sharing
+const PDFExportButton = lazy(() =>
+  import('./PDFExportButton').then((module) => ({
+    default: module.PDFExportButton,
   }))
 );
 
@@ -134,12 +144,28 @@ export function ResultsModalContent({
       {/* PDF Export Button - Below conversion footer */}
       {Platform.OS === 'web' && (
         <View style={styles.pdfButtonContainer}>
-          <PDFExportButton
-            results={results}
-            supportA={formData?.supportA ?? false}
-            supportB={formData?.supportB ?? false}
-            variant="secondary"
-          />
+          <LazyLoadErrorBoundary
+            fallback={
+              <Text style={styles.errorText}>
+                PDF export temporarily unavailable
+              </Text>
+            }
+          >
+            <Suspense
+              fallback={
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="small" color="#2563eb" />
+                </View>
+              }
+            >
+              <PDFExportButton
+                results={results}
+                supportA={formData?.supportA ?? false}
+                supportB={formData?.supportB ?? false}
+                variant="secondary"
+              />
+            </Suspense>
+          </LazyLoadErrorBoundary>
         </View>
       )}
 
@@ -173,5 +199,11 @@ const styles = StyleSheet.create({
   pdfButtonContainer: {
     alignItems: 'center',
     paddingVertical: 8,
+  },
+  errorText: {
+    color: '#dc2626',
+    fontSize: 14,
+    textAlign: 'center',
+    padding: 12,
   },
 });

@@ -1,3 +1,4 @@
+import { ArrowRight } from '@/src/components/icons';
 import { useAppTheme } from '@/src/theme';
 import { useAnalytics } from '@/src/utils/analytics';
 import type {
@@ -16,7 +17,6 @@ import {
     webInputStyles,
 } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
-import { ArrowRight } from 'lucide-react-native';
 import React, { useMemo, useRef } from 'react';
 import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 

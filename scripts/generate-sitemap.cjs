@@ -12,7 +12,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
-const SITE_URL = 'https://www.auschildsupport.com.au';
+const SITE_URL = 'https://auschildsupport.com.au';
 const OUTPUT_PATH = path.join(__dirname, '../public/sitemap.xml');
 const APP_DIR = path.join(__dirname, '../app');
 
@@ -149,7 +149,7 @@ function scanRoutes(dir, basePath = '') {
 function getFileModDate(routePath) {
   // Map route to file path
   let filePath;
-  
+
   if (routePath === '/') {
     filePath = path.join(APP_DIR, '(tabs)/index.tsx');
   } else if (routePath.startsWith('/change-of-assessment/')) {
@@ -160,7 +160,7 @@ function getFileModDate(routePath) {
     const cleanPath = routePath.replace(/^\//, '');
     filePath = path.join(APP_DIR, `${cleanPath}.tsx`);
   }
-  
+
   try {
     const stats = fs.statSync(filePath);
     return stats.mtime.toISOString().split('T')[0];

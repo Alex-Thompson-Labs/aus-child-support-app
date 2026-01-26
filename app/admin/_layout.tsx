@@ -7,7 +7,6 @@
 
 import { LoadingFallback } from '@/src/components/ui/LoadingFallback';
 import { Env } from '@/src/config/env';
-import { getSupabaseClient } from '@/src/utils/supabase';
 import { Redirect, Slot, usePathname } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -27,7 +26,10 @@ export default function AdminLayout() {
 
     const checkAuth = useCallback(async () => {
         try {
+            // Lazy load Supabase client only when needed
+            const { getSupabaseClient } = await import('@/src/utils/supabase/client');
             const supabase = await getSupabaseClient();
+            
             const {
                 data: { session },
             } = await supabase.auth.getSession();
@@ -76,7 +78,10 @@ export default function AdminLayout() {
         let subscription: { unsubscribe: () => void } | null = null;
 
         const setupAuthListener = async () => {
+            // Lazy load Supabase client only when needed
+            const { getSupabaseClient } = await import('@/src/utils/supabase/client');
             const supabase = await getSupabaseClient();
+            
             const { data } = supabase.auth.onAuthStateChange((event, session) => {
                 console.log('[AdminLayout] Auth state change:', event);
                 console.log('[AdminLayout] Session in event:', session ? 'Present' : 'Null');

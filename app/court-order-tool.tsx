@@ -5,14 +5,13 @@
  * parses it into structured data, and calculates care percentages.
  */
 
-import { getSupabaseClient } from '@/src/utils/supabase/client';
+import { Download, FileText, Lock as LockIcon, Upload, User, Users } from '@/src/components/icons';
 import { format } from 'date-fns';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import { Download, FileText, Lock as LockIcon, Upload, User, Users } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import {
     ActivityIndicator,
@@ -522,7 +521,11 @@ export default function CourtOrderToolScreen() {
 
       // 4. Call Supabase with JSON (Reliable) - pass year parameter
       console.log('Calling Supabase function with Base64...', { year: selectedYear });
+      
+      // Lazy load Supabase client only when needed
+      const { getSupabaseClient } = await import('@/src/utils/supabase/client');
       const supabase = await getSupabaseClient();
+      
       const { data, error } = await supabase.functions.invoke('analyze-order', {
         body: {
           fileBase64: base64,

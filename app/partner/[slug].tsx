@@ -11,11 +11,7 @@
 
 import { NoIndex } from '@/src/components/seo/NoIndex';
 import { LoadingFallback } from '@/src/components/ui/LoadingFallback';
-import {
-  getDeviceInfo,
-  getSupabaseClient,
-  type PartnershipProposal,
-} from '@/src/utils/supabase';
+import type { PartnershipProposal } from '@/src/utils/supabase';
 import { Link, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -48,6 +44,8 @@ export default function PartnerProposalPage() {
     if (!viewIdRef.current) return;
 
     try {
+      // Lazy load Supabase client only when needed
+      const { getSupabaseClient } = await import('@/src/utils/supabase/client');
       const supabase = await getSupabaseClient();
 
       const { error: updateError } = await supabase
@@ -101,6 +99,8 @@ export default function PartnerProposalPage() {
   const recordView = useCallback(
     async (proposalId: string) => {
       try {
+        // Lazy load Supabase client and utilities only when needed
+        const { getSupabaseClient, getDeviceInfo } = await import('@/src/utils/supabase');
         const supabase = await getSupabaseClient();
 
         const deviceInfo = getDeviceInfo();
@@ -147,6 +147,8 @@ export default function PartnerProposalPage() {
       }
 
       try {
+        // Lazy load Supabase client only when needed
+        const { getSupabaseClient } = await import('@/src/utils/supabase/client');
         const supabase = await getSupabaseClient();
 
         // Fetch proposal by slug (RLS ensures only active proposals are returned for anon)
