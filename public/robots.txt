@@ -8,5 +8,5 @@ Disallow: /admin/
 # Disallow partner proposal pages (noindexed)
 Disallow: /partner/
 
-# Sitemap
+# Sitemap (non-www canonical)
 Sitemap: https://auschildsupport.com.au/sitemap.xml
