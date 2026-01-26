@@ -54,8 +54,8 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
     return (
         <>
             <PageSEO
-                title="Backdating Child Support Australia: How Far Back Can You Claim?"
-                description="Can child support be backdated? Learn the 18-month rule, how to apply, what evidence you need, and how backdated payments are collected."
+                title="Backdating Child Support Australia 2026: How Far Back Can You Claim?"
+                description="Can child support be backdated in Australia? Learn the 18-month rule, application process, evidence requirements, and payment collection. Updated 2026."
                 canonicalPath="/blog/backdating-child-support-australia"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -80,6 +80,14 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                         in Australia, the 18-month rule, and how to maximize your claim.
                     </Text>
 
+                    <Pressable
+                        style={[styles.ctaButton, isWeb && webClickableStyles]}
+                        onPress={() => router.push('/')}
+                        accessibilityRole="button"
+                    >
+                        <Text style={styles.ctaButtonText}>Calculate Your Child Support Now →</Text>
+                    </Pressable>
+
                     <View style={styles.keyRuleBox}>
                         <Text style={styles.keyRuleTitle}>🔑 Key Rule:</Text>
                         <Text style={styles.keyRuleText}>
@@ -88,7 +96,12 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                         </Text>
                     </View>
 
-                    <Text style={styles.h2} accessibilityRole="header">The 18-Month Backdating Rule</Text>
+                    <Text style={styles.h2} accessibilityRole="header">How far back can child support be backdated in Australia?</Text>
+                    <Text style={styles.paragraph}>
+                        Child support in Australia can be backdated up to 18 months before your application date. This is a hard limit set by Services Australia. If you apply on January 1, 2026, the earliest backdating date is July 1, 2024. You cannot claim child support for any period before this 18-month window, regardless of how long you waited to apply.
+                    </Text>
+
+                    <Text style={styles.h2} accessibilityRole="header">The 18-Month Backdating Rule Explained</Text>
                     <Text style={styles.paragraph}>
                         When you apply for child support, Services Australia can backdate the assessment to a maximum
                         of 18 months before your application date. This is a hard limit—you cannot claim further back.

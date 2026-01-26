@@ -54,8 +54,8 @@ export default function BindingChildSupportAgreementBlogPost() {
     return (
         <>
             <PageSEO
-                title="Binding Child Support Agreement Australia: Complete Guide (2026)"
-                description="Considering a Binding Child Support Agreement? Learn how they work, legal requirements, risks, and when to use them instead of the standard formula."
+                title="Binding Child Support Agreement Australia 2026: Legal Guide"
+                description="Set child support outside the formula. Learn legal requirements, costs ($2,500-6,500), risks, and when binding agreements make sense."
                 canonicalPath="/blog/binding-child-support-agreement"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[

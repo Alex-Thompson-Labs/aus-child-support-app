@@ -55,8 +55,8 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
     return (
         <>
             <PageSEO
-                title="Child Support Arrears Australia: What Happens If You Don't Pay"
-                description="Behind on child support? Learn what enforcement actions Services Australia can take, how arrears accumulate, and your options to resolve debt before serious consequences."
+                title="Child Support Arrears Australia 2026: Enforcement & Solutions"
+                description="Behind on child support? Learn enforcement actions (wage garnishment, passport suspension), 10% interest, and payment plan options."
                 canonicalPath="/blog/child-support-arrears-australia"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[

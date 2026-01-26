@@ -17,7 +17,7 @@ const faqSchema = {
             name: 'How much does a child support lawyer cost in Brisbane?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Family lawyers in Brisbane typically charge between $300 and $500 per hour, which is slightly lower than Sydney or Melbourne rates. Initial consultations usually range from $220 to $440. Fixed fee arrangements are becoming common for specific tasks like binding child support agreements.',
+                text: 'Brisbane family lawyers charge $300-$500/hour. Initial consultations range from $220-$440. Fixed-fee binding agreements start at $2,200. Court representation costs $3,300+ per day. Many firms offer payment plans.',
             },
         },
         {
@@ -30,11 +30,30 @@ const faqSchema = {
         },
         {
             '@type': 'Question',
-            name: 'Do I need a lawyer for child support in Queensland?',
+            name: 'Do I need a lawyer for FIFO child support in Queensland?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'For routine assessments managed by Services Australia, legal representation isn\'t required. However, considering Queensland\'s high rate of self-employment and small business ownership, lawyers are essential for complex income assessments, business valuations, and binding agreements.',
+                text: 'FIFO workers should consult a lawyer if income varies significantly year-to-year, if you receive non-cash benefits (accommodation, flights), or if the other parent disputes your reported income. Standard FIFO wages are straightforward, but complex packages require legal review.',
             },
+        },
+    ],
+};
+
+const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+        {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: 'https://auschildsupport.com.au/',
+        },
+        {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Brisbane Child Support Lawyers',
+            item: 'https://auschildsupport.com.au/child-support-lawyer-brisbane',
         },
     ],
 };
@@ -64,10 +83,10 @@ export default function BrisbaneLawyerPage() {
     return (
         <>
             <PageSEO
-                title="Child Support Lawyers Brisbane: Free Calculator & Legal Referrals"
-                description="Expert child support lawyers in Brisbane. Get matched with top Queensland family lawyers for complex assessments and court matters. Free initial consultation referrals."
+                title="Child Support Lawyers Brisbane 2026: Free Calculator & Referrals"
+                description="Find child support lawyers in Brisbane. Free calculator + QLD family law referrals. FIFO/mining income specialists. Rates from $300-$500/hr."
                 canonicalPath="/child-support-lawyer-brisbane"
-                schema={[localBusinessSchema, faqSchema]}
+                schema={[localBusinessSchema, faqSchema, breadcrumbSchema]}
                 breadcrumbs={[
                     { label: 'Home', path: '/' },
                     { label: 'Brisbane Child Support Lawyers' },
@@ -117,7 +136,16 @@ export default function BrisbaneLawyerPage() {
                     </Text>
 
                     <View style={styles.listContainer}>
-                        <Text style={styles.bulletItem}>• Income determination for self-employed parents</Text>
+                        <Text style={styles.bulletItem}>
+                            •{' '}
+                            <Text
+                                style={styles.inlineLink}
+                                onPress={() => router.push('/blog/child-support-self-employed')}
+                            >
+                                Income determination for self-employed parents
+                            </Text>{' '}
+                            (business valuations, trust structures)
+                        </Text>
                         <Text style={styles.bulletItem}>• Departure orders due to high costs of access (travel for visitation)</Text>
                         <Text style={styles.bulletItem}>• Recovery of unpaid child support arrears</Text>
                         <Text style={styles.bulletItem}>• Binding Child Support Agreements</Text>
@@ -160,12 +188,29 @@ export default function BrisbaneLawyerPage() {
                     <View style={styles.tipBox}>
                         <Text style={styles.tipTitle}>💡 Cost Strategy:</Text>
                         <Text style={styles.tipText}>
-                            For non-urgent matters, seek a "Binding Child Support Agreement" rather than court orders.
-                            This is often faster and cheaper ($2,000-$4,000) than litigation ($10,000+).
+                            For non-urgent matters, seek a{' '}
+                            <Text
+                                style={styles.inlineLink}
+                                onPress={() => router.push('/blog/binding-child-support-agreement')}
+                            >
+                                Binding Child Support Agreement
+                            </Text>{' '}
+                            rather than court orders. This is often faster and cheaper ($2,000-$4,000) than litigation ($10,000+).
                         </Text>
                     </View>
 
                     <Text style={styles.h2} accessibilityRole="header">When to Hire a Lawyer</Text>
+
+                    <Text style={styles.paragraph}>
+                        Need help deciding? Read our guide on{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/when-to-hire-family-lawyer')}
+                        >
+                            when to hire a family lawyer
+                        </Text>{' '}
+                        for Queensland-specific considerations.
+                    </Text>
 
                     <View style={styles.comparisonTable}>
                         <View style={styles.tableRowHeader}>
@@ -201,11 +246,15 @@ export default function BrisbaneLawyerPage() {
                     <View style={styles.faqContainer}>
                         <FAQItem
                             question="How much does a child support lawyer cost in Brisbane?"
-                            answer="Family lawyers in Brisbane typically charge between $300 and $500 per hour, which is slightly lower than Sydney or Melbourne rates. Initial consultations usually range from $220 to $440. Fixed fee arrangements are becoming common for specific tasks like binding child support agreements."
+                            answer="Brisbane family lawyers charge $300-$500/hour. Initial consultations range from $220-$440. Fixed-fee binding agreements start at $2,200. Court representation costs $3,300+ per day."
                         />
                         <FAQItem
                             question="Where is the Family Court in Brisbane?"
                             answer="The Federal Circuit and Family Court registry in Brisbane is located at the Harry Gibbs Commonwealth Law Courts Building, 119 North Quay, Brisbane City QLD 4000. This is where most child support disputes and family law matters are heard."
+                        />
+                        <FAQItem
+                            question="Do I need a lawyer for FIFO child support in Queensland?"
+                            answer="FIFO workers should consult a lawyer if income varies significantly year-to-year, if you receive non-cash benefits (accommodation, flights), or if the other parent disputes your reported income. Standard FIFO wages are straightforward, but complex packages require legal review."
                         />
                     </View>
 
@@ -289,4 +338,10 @@ const styles = StyleSheet.create({
     finalCtaTitle: { fontSize: 24, fontWeight: '700', color: '#ffffff', marginBottom: 12, textAlign: 'center' },
     finalCtaText: { fontSize: 16, color: '#bfdbfe', textAlign: 'center', marginBottom: 24, lineHeight: 24 },
     finalButton: { backgroundColor: '#ffffff', width: '100%', maxWidth: 300, alignItems: 'center' },
+
+    inlineLink: {
+        color: '#2563EB',
+        textDecorationLine: 'underline',
+        fontWeight: '600',
+    },
 });

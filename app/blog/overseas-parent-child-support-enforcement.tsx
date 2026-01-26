@@ -74,8 +74,8 @@ export default function OverseasParentEnforcementScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <PageSEO
-        title="Overseas Parent Child Support Enforcement | International Recovery Australia"
-        description="Complete guide to enforcing child support when a parent lives overseas. Learn about reciprocating jurisdictions, international treaties, enforcement mechanisms, and legal options."
+        title="Overseas Parent Child Support Enforcement Australia 2026: International Recovery"
+        description="Enforce child support when a parent lives overseas. Learn about reciprocating jurisdictions, Hague Convention, enforcement mechanisms. Updated 2026."
         canonicalPath="/blog/overseas-parent-child-support-enforcement"
         schema={[faqSchema, articleSchema]}
       />
@@ -115,6 +115,12 @@ export default function OverseasParentEnforcementScreen() {
             >
               <Text style={styles.ctaButtonText}>Calculate Your Child Support</Text>
             </Pressable>
+
+            <Text style={styles.heading2}>Can I enforce child support if the other parent lives overseas?</Text>
+
+            <Text style={styles.paragraph}>
+              Yes, you can enforce child support if the other parent lives in a reciprocating jurisdiction (country with a child support agreement with Australia). Services Australia can work with overseas authorities to establish and enforce child support in over 80 countries including the UK, US, Canada, NZ, and all EU countries. If the country is not a reciprocating jurisdiction, enforcement is much more difficult and may require international legal action, but the debt still exists and can be pursued if your ex returns to Australia.
+            </Text>
 
             <Text style={styles.heading2}>Understanding International Child Support</Text>
 

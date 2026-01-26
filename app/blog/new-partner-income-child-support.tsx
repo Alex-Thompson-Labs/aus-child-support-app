@@ -40,10 +40,19 @@ const faqSchema = {
 const articleSchema = {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: 'New Partner Income & Child Support: Does It Affect Your Assessment?',
-    description: 'Remarried or living with a new partner? Learn how their income affects child support, when Change of Assessment applies, and how to protect your assessment.',
+    headline: 'New Partner Income & Child Support Australia 2026 | Does It Affect You?',
+    description: 'Remarried or living with a new partner? Learn how their income affects child support in Australia, when Change of Assessment applies, and how to protect your assessment.',
     datePublished: '2026-01-24',
+    dateModified: '2026-01-27',
     author: { '@type': 'Organization', name: 'AusChildSupport' },
+    publisher: {
+        '@type': 'Organization',
+        name: 'Australian Child Support Calculator',
+        logo: {
+            '@type': 'ImageObject',
+            url: 'https://auschildsupport.com.au/main-page-logo.png',
+        },
+    },
 };
 
 export default function NewPartnerIncomeChildSupportBlogPost() {
@@ -53,8 +62,8 @@ export default function NewPartnerIncomeChildSupportBlogPost() {
     return (
         <>
             <PageSEO
-                title="New Partner Income & Child Support: Does It Affect Your Assessment?"
-                description="Remarried or living with a new partner? Learn how their income affects child support, when Change of Assessment applies, and how to protect your assessment."
+                title="New Partner Income & Child Support Australia 2026 | Does It Affect You?"
+                description="Remarried or living with a new partner? Learn how their income affects child support in Australia, when Change of Assessment applies, and how to protect your assessment."
                 canonicalPath="/blog/new-partner-income-child-support"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -68,9 +77,9 @@ export default function NewPartnerIncomeChildSupportBlogPost() {
                     <View style={styles.articleHeader}>
                         <Text style={styles.category}>New Relationships</Text>
                         <Text style={styles.h1} accessibilityRole="header">
-                            New Partner Income & Child Support: Does It Affect Your Assessment?
+                            New Partner Income & Child Support Australia 2026 | Does It Affect You?
                         </Text>
-                        <Text style={styles.publishDate}>Published January 24, 2026</Text>
+                        <Text style={styles.publishDate}>Published January 24, 2026 • Updated January 27, 2026</Text>
                     </View>
 
                     <Text style={styles.intro}>
@@ -89,7 +98,11 @@ export default function NewPartnerIncomeChildSupportBlogPost() {
                         </Text>
                     </View>
 
-                    <Text style={styles.h2} accessibilityRole="header">The Standard Rule: New Partner Income Doesn't Count</Text>
+                    <Text style={styles.h2} accessibilityRole="header">Does my new partner's income affect child support in Australia?</Text>
+                    <Text style={styles.paragraph}>
+                        No. Your new partner's income is NOT included in the standard child support formula. Only YOUR income and the other parent's income count. However, there are important exceptions you need to know about.
+                    </Text>
+
                     <Text style={styles.paragraph}>
                         The Australian child support formula uses only two incomes:
                     </Text>
@@ -227,6 +240,26 @@ export default function NewPartnerIncomeChildSupportBlogPost() {
                     >
                         <Text style={styles.ctaButtonText}>Get Legal Advice on Change of Assessment →</Text>
                     </Pressable>
+
+                    <View style={styles.internalLinkBox}>
+                        <Text style={styles.internalLinkTitle}>📖 Related Reading:</Text>
+                        <Text style={styles.internalLinkText}>
+                            Learn more about{' '}
+                            <Text
+                                style={styles.inlineLink}
+                                onPress={() => router.push('/blog/object-to-child-support-assessment')}
+                            >
+                                how to object to child support assessments
+                            </Text>
+                            {' '}if you disagree with a Change of Assessment decision. For complex situations, see our guide on{' '}
+                            <Text
+                                style={styles.inlineLink}
+                                onPress={() => router.push('/blog/complicated-child-support-situations')}
+                            >
+                                complicated child support situations
+                            </Text>.
+                        </Text>
+                    </View>
 
                     <Text style={styles.h2} accessibilityRole="header">How to Protect Your Assessment</Text>
 
@@ -469,4 +502,7 @@ const styles = StyleSheet.create({
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 16, fontWeight: '600' },
     inlineLink: { color: '#2563EB', fontWeight: '600', textDecorationLine: 'underline' },
+    internalLinkBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
+    internalLinkTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
+    internalLinkText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 16 },
 });

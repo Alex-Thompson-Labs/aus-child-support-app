@@ -73,8 +73,8 @@ export default function PrivateSchoolFeesScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <PageSEO
-        title="Private School Fees and Child Support: Complete Guide | Australia"
-        description="Comprehensive guide to how private school fees affect child support. Learn about Change of Assessment, Binding Agreements, court orders, and splitting education costs in Australia."
+        title="Private School Fees and Child Support Australia 2026: Complete Guide"
+        description="Are private school fees included in child support? Learn about Change of Assessment, Binding Agreements, court orders, splitting education costs. Updated 2026."
         canonicalPath="/blog/private-school-fees-child-support"
         schema={[faqSchema, articleSchema]}
       />
@@ -114,6 +114,12 @@ export default function PrivateSchoolFeesScreen() {
             >
               <Text style={styles.ctaButtonText}>Calculate Your Child Support</Text>
             </Pressable>
+
+            <Text style={styles.heading2}>Are private school fees included in child support calculations?</Text>
+
+            <Text style={styles.paragraph}>
+              No, private school fees are not automatically included in the standard child support formula in Australia. The formula covers basic educational expenses like public school fees, textbooks, and standard supplies, but private school tuition is considered an additional expense beyond the formula. Parents can seek to include these costs through a Change of Assessment application citing special circumstances, a Binding Child Support Agreement, or a court order.
+            </Text>
 
             <Text style={styles.heading2}>Are Private School Fees Included in Child Support?</Text>
 

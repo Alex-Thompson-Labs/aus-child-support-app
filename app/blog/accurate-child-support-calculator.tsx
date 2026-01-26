@@ -55,8 +55,8 @@ export default function AccurateChildSupportCalculatorBlogPost() {
     return (
         <>
             <PageSEO
-                title="Accurate Child Support Calculator Australia: Estimate Your Payments (2026)"
-                description="Free child support calculator using the official 2026 Services Australia formula. Get instant, accurate estimates in under 5 minutes. Understand what makes calculators accurate and when to get legal advice."
+                title="Accurate Child Support Calculator Australia 2026 | Free Estimate"
+                description="Free accurate child support calculator using official 2026 formula. Instant results in 5 minutes. Learn what makes calculators accurate and when you need legal advice."
                 canonicalPath="/blog/accurate-child-support-calculator"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -99,7 +99,7 @@ export default function AccurateChildSupportCalculatorBlogPost() {
                     {/* Featured Snippet Opportunity */}
                     <Text style={styles.h2} accessibilityRole="header">How Much Child Support Will I Pay in Australia?</Text>
                     <Text style={styles.paragraph}>
-                        Child support in Australia typically ranges from the minimum rate ($1,815 per year) up to over $30,000 per year for high-income earners. The exact amount depends on the difference between your income and the other parent's income, combined with your care percentage. Use the calculator above to get an exact figure based on the 2026 formula.
+                        Child support in Australia ranges from $1,815/year (minimum rate) to $30,000+/year for high earners. The exact amount depends on: your income vs the other parent's income, number and ages of children, and care percentage (nights per year). For example, if you earn $80,000, the other parent earns $50,000, you have 2 children and 0% care, you'll pay approximately $13,800/year ($1,150/month). Use our free calculator for your exact estimate.
                     </Text>
 
                     {/* What Makes a Calculator Accurate */}
@@ -192,13 +192,27 @@ export default function AccurateChildSupportCalculatorBlogPost() {
                         <Text style={styles.bulletItem}>• Week on/week off: 183 nights/year (50% care)</Text>
                     </View>
 
-                    <Pressable
-                        style={[styles.linkButton, isWeb && webClickableStyles]}
-                        onPress={() => router.push('/blog/child-support-care-percentage-table')}
-                        accessibilityRole="button"
-                    >
-                        <Text style={styles.linkButtonText}>See Full Care Percentage Table →</Text>
-                    </Pressable>
+                    <View style={styles.internalLinkBox}>
+                        <Text style={styles.internalLinkTitle}>📚 Related Resources:</Text>
+                        <Pressable
+                            style={[styles.internalLink, isWeb && webClickableStyles]}
+                            onPress={() => router.push('/blog/child-support-care-percentage-table')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.internalLinkText}>
+                                Full Care Percentage Table →
+                            </Text>
+                        </Pressable>
+                        <Pressable
+                            style={[styles.internalLink, isWeb && webClickableStyles]}
+                            onPress={() => router.push('/blog/how-to-calculate-child-support')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.internalLinkText}>
+                                Step-by-Step Calculation Guide →
+                            </Text>
+                        </Pressable>
+                    </View>
 
                     <Text style={styles.h3} accessibilityRole="header">Step 4: Add Other Factors (If Applicable)</Text>
                     <View style={styles.stepCard}>

@@ -53,8 +53,8 @@ export default function LumpSumChildSupportPaymentBlogPost() {
     return (
         <>
             <PageSEO
-                title="Lump Sum Child Support Payment Australia: How It Works (2026)"
-                description="Considering a lump sum child support payment? Learn how to calculate it, legal requirements, tax implications, and risks before making this permanent decision."
+                title="Lump Sum Child Support Payment Australia 2026: Complete Guide"
+                description="Pay all child support at once? Learn calculation methods, legal requirements, tax implications, and permanent risks. Get legal advice first."
                 canonicalPath="/blog/lump-sum-child-support-payment"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[

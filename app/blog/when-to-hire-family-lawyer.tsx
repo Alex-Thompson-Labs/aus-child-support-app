@@ -55,8 +55,8 @@ export default function WhenToHireFamilyLawyerBlogPost() {
     return (
         <>
             <PageSEO
-                title="When to Hire a Family Lawyer for Child Support: 3 Key Signs"
-                description="Learn the 3 critical signs you need a family lawyer for child support in Australia. Understand when DIY is risky, what lawyers cost, and how to find the right representation."
+                title="When to Hire a Family Lawyer for Child Support Australia 2026"
+                description="3 critical signs you need a family lawyer for child support: complex income, legal documents, or high conflict. Free consultations available."
                 canonicalPath="/blog/when-to-hire-family-lawyer"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[

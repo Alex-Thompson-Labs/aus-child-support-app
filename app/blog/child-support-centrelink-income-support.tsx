@@ -45,8 +45,8 @@ export default function ChildSupportCentrelinkBlogPost() {
     return (
         <>
             <PageSEO
-                title="Child Support and Centrelink: How Income Support Affects Payments"
-                description="On JobSeeker, DSP, or Parenting Payment? Learn how Centrelink income support affects child support. Understand Formula 2, payment amounts, and your obligations."
+                title="Child Support and Centrelink Australia 2026: Income Support Payments"
+                description="On JobSeeker, DSP, or Parenting Payment? Learn how Centrelink income support affects child support. Formula 2 explained. Updated 2026."
                 canonicalPath="/blog/child-support-centrelink-income-support"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -70,6 +70,10 @@ export default function ChildSupportCentrelinkBlogPost() {
                         minimal. Services Australia uses a special formula (Formula 2) for parents on income support.
                         Here's how it works, what you'll pay, and your obligations.
                     </Text>
+
+                    <Pressable style={[styles.calculatorButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                        <Text style={styles.calculatorButtonText}>Calculate Your Child Support →</Text>
+                    </Pressable>
 
                     <View style={styles.keyFactBox}>
                         <Text style={styles.keyFactTitle}>💡 Key Fact:</Text>
@@ -201,6 +205,28 @@ export default function ChildSupportCentrelinkBlogPost() {
                         answer="On JobSeeker (2026 rate: ~$750/fortnight), you typically pay $5-10/week per child depending on care arrangement. This is calculated using Formula 2. If you have 0% care, expect $10/week per child. With some care (14%+), payments reduce further."
                     />
 
+                    <View style={styles.internalLinkBox}>
+                        <Text style={styles.internalLinkTitle}>📚 Related Reading:</Text>
+                        <Pressable
+                            style={[styles.internalLink, isWeb && webClickableStyles]}
+                            onPress={() => router.push('/blog/child-support-arrears-australia')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.internalLinkText}>
+                                Child Support Arrears: Collection & Enforcement →
+                            </Text>
+                        </Pressable>
+                        <Pressable
+                            style={[styles.internalLink, isWeb && webClickableStyles]}
+                            onPress={() => router.push('/blog/object-to-child-support-assessment')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.internalLinkText}>
+                                How to Object to an Assessment →
+                            </Text>
+                        </Pressable>
+                    </View>
+
                     <Pressable style={[styles.calculatorButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
                         <Text style={styles.calculatorButtonText}>Calculate Your Child Support</Text>
                     </Pressable>
@@ -212,6 +238,11 @@ export default function ChildSupportCentrelinkBlogPost() {
                             support and child support interactions. Most offer free initial consultations with no
                             obligation to proceed.
                         </Text>
+                        <View style={styles.trustSignalsBox}>
+                            <Text style={styles.trustSignalItem}>✓ Specialists in income support cases</Text>
+                            <Text style={styles.trustSignalItem}>✓ Free initial consultations available</Text>
+                            <Text style={styles.trustSignalItem}>✓ Help with Formula 2 assessments</Text>
+                        </View>
                         <Pressable style={[styles.primaryButton, isWeb && webClickableStyles]} onPress={() => router.push('/lawyer-inquiry?mode=direct')} accessibilityRole="button">
                             <Text style={styles.primaryButtonText}>Get Legal Help</Text>
                         </Pressable>
@@ -287,4 +318,12 @@ const styles = StyleSheet.create({
     finalCtaText: { fontSize: 16, lineHeight: 26, color: '#bfdbfe', marginBottom: 24, textAlign: 'center' },
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 16, paddingHorizontal: 32, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 18, fontWeight: '700' },
+
+    internalLinkBox: { backgroundColor: '#f8fafc', borderRadius: 12, padding: 16, marginVertical: 16, borderWidth: 1, borderColor: '#e2e8f0' },
+    internalLinkTitle: { fontSize: 15, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
+    internalLink: { paddingVertical: 8 },
+    internalLinkText: { fontSize: 15, color: '#2563EB', fontWeight: '500' },
+
+    trustSignalsBox: { marginBottom: 24, alignItems: 'flex-start', width: '100%', maxWidth: 400 },
+    trustSignalItem: { fontSize: 14, color: '#e0e7ff', marginBottom: 8, lineHeight: 20 },
 });

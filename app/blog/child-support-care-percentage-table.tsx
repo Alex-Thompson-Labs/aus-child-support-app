@@ -75,8 +75,8 @@ export default function CarePercentageTableBlogPost() {
     return (
         <>
             <PageSEO
-                title="Official Child Support Care Percentage Table (2026)"
-                description="Complete care percentage table showing how nights per year convert to child support percentages. Includes thresholds, examples, and how care affects payments."
+                title="Child Support Care Percentage Table Australia 2026 | Nights to %"
+                description="Official care percentage table: 52 nights = 14%, 183 nights = 50%. Convert nights to care percentages. Understand thresholds, calculate payments. Free calculator."
                 canonicalPath="/blog/child-support-care-percentage-table"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -144,6 +144,13 @@ export default function CarePercentageTableBlogPost() {
                             onPress={() => router.push('/blog/how-to-calculate-child-support')}
                         >
                             calculating your child support accurately
+                        </Text>
+                        . Learn more about the{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/child-support-formula-australia')}
+                        >
+                            complete child support formula
                         </Text>.
                     </Text>
 
@@ -200,7 +207,14 @@ export default function CarePercentageTableBlogPost() {
                         >
                             50/50 shared care arrangements
                         </Text>
-                        {' '}and how they affect payments.
+                        {' '}and use our{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/')}
+                        >
+                            free calculator
+                        </Text>
+                        {' '}to see how care affects your payments.
                     </Text>
 
                     <View style={styles.thresholdCard}>

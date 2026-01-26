@@ -41,10 +41,19 @@ const faqSchema = {
 const articleSchema = {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: 'Court Order Child Support Calculator: How to Read Your Court Order (Free Tool)',
-    description: 'Have a court order for child support? Learn how to read it, when it expires, and how to use a calculator to understand what happens next. Free tool included.',
+    headline: 'Court Order Child Support Calculator Australia 2026 | Free Tool',
+    description: 'Have a court order for child support? Scan it with our AI tool to extract care schedules and calculate percentages. Learn how to read orders, when they expire, and plan ahead.',
     datePublished: '2026-01-24',
+    dateModified: '2026-01-27',
     author: { '@type': 'Organization', name: 'AusChildSupport' },
+    publisher: {
+        '@type': 'Organization',
+        name: 'Australian Child Support Calculator',
+        logo: {
+            '@type': 'ImageObject',
+            url: 'https://auschildsupport.com.au/main-page-logo.png',
+        },
+    },
 };
 
 export default function CourtOrderChildSupportCalculatorBlogPost() {
@@ -55,8 +64,8 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
     return (
         <>
             <PageSEO
-                title="Court Order Child Support Calculator: How to Read Your Court Order (Free Tool)"
-                description="Have a court order for child support? Learn how to read it, when it expires, and how to use a calculator to understand what happens next. Free tool included."
+                title="Court Order Child Support Calculator Australia 2026 | Free Tool"
+                description="Have a court order for child support? Scan it with our AI tool to extract care schedules and calculate percentages. Learn how to read orders, when they expire, and plan ahead."
                 canonicalPath="/blog/court-order-child-support-calculator"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -70,17 +79,38 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                     <View style={styles.articleHeader}>
                         <Text style={styles.category}>Court Orders</Text>
                         <Text style={styles.h1} accessibilityRole="header">
-                            Court Order Child Support Calculator: How to Read Your Court Order (Free Tool)
+                            Court Order Child Support Calculator Australia 2026 | Free Tool
                         </Text>
-                        <Text style={styles.publishDate}>Published January 24, 2026</Text>
+                        <Text style={styles.publishDate}>Published January 24, 2026 • Updated January 27, 2026</Text>
                     </View>
 
                     <Text style={styles.intro}>
                         Have a court order for child support? You're not alone. Thousands of Australian parents have
                         court-ordered child support instead of Services Australia assessments. But court orders can be
-                        confusing. Here's how to read yours, when it expires, and how a calculator can help you plan
-                        for what happens next.
+                        confusing. Here's how to read yours, when it expires, and how our tools can help you understand
+                        what happens next.
                     </Text>
+
+                    <View style={styles.toolPromoCard}>
+                        <Text style={styles.toolPromoTitle}>🎯 New: Court Order Scanner Tool</Text>
+                        <Text style={styles.toolPromoText}>
+                            Upload your court order PDF and our AI-powered scanner will automatically extract the care
+                            schedule, calculate exact night counts, and convert it to care percentages for child support.
+                        </Text>
+                        <View style={styles.toolPromoFeatures}>
+                            <Text style={styles.toolPromoFeature}>✓ Instant care percentage calculation</Text>
+                            <Text style={styles.toolPromoFeature}>✓ Visual calendar showing your schedule</Text>
+                            <Text style={styles.toolPromoFeature}>✓ Detects potential savings opportunities</Text>
+                            <Text style={styles.toolPromoFeature}>✓ 100% private - data never stored</Text>
+                        </View>
+                        <Pressable
+                            style={[styles.toolPromoButton, isWeb && webClickableStyles]}
+                            onPress={() => router.push('/court-order-tool')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.toolPromoButtonText}>Try Court Order Scanner →</Text>
+                        </Pressable>
+                    </View>
 
                     <View style={styles.alertBox}>
                         <Text style={styles.alertTitle}>⚖️ Court Order = Legally Binding</Text>
@@ -170,9 +200,9 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                     </View>
 
                     {/* When to Use Calculator */}
-                    <Text style={styles.h2} accessibilityRole="header">When to Use a Calculator If You Have a Court Order</Text>
+                    <Text style={styles.h2} accessibilityRole="header">Can I use a calculator if I have a court order for child support?</Text>
                     <Text style={styles.paragraph}>
-                        Even with a court order, a calculator is useful for:
+                        Yes. Even with a court order, a calculator is useful for planning and comparison. The court order takes precedence, but a calculator helps you:
                     </Text>
 
                     <View style={styles.useCaseCard}>
@@ -221,24 +251,42 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
 
                     <Pressable
                         style={[styles.calculatorButton, isWeb && webClickableStyles]}
+                        onPress={() => router.push('/court-order-tool')}
+                        accessibilityRole="button"
+                    >
+                        <Text style={styles.calculatorButtonText}>Scan Your Court Order Now →</Text>
+                    </Pressable>
+
+                    <Text style={styles.paragraph}>
+                        Or use our standard calculator to estimate what Services Australia would assess:
+                    </Text>
+
+                    <Pressable
+                        style={[styles.secondaryCtaButton, isWeb && webClickableStyles]}
                         onPress={() => router.push('/')}
                         accessibilityRole="button"
                     >
-                        <Text style={styles.calculatorButtonText}>Try Free Calculator →</Text>
+                        <Text style={styles.secondaryCtaButtonText}>Calculate Child Support →</Text>
                     </Pressable>
 
                     <View style={styles.internalLinkBox}>
                         <Text style={styles.internalLinkTitle}>📖 Related Reading:</Text>
                         <Text style={styles.internalLinkText}>
-                            If you're considering replacing your court order with a binding agreement:
+                            If you're considering replacing your court order with a binding agreement, learn about{' '}
+                            <Text
+                                style={styles.inlineLink}
+                                onPress={() => router.push('/blog/binding-child-support-agreement')}
+                            >
+                                binding child support agreements
+                            </Text>
+                            {' '}and how they work. For complex situations, see our guide on{' '}
+                            <Text
+                                style={styles.inlineLink}
+                                onPress={() => router.push('/blog/complicated-child-support-situations')}
+                            >
+                                complicated child support situations
+                            </Text>.
                         </Text>
-                        <Pressable
-                            style={[styles.internalLinkButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/blog/binding-child-support-agreement')}
-                            accessibilityRole="button"
-                        >
-                            <Text style={styles.internalLinkButtonText}>Binding Child Support Agreements Guide →</Text>
-                        </Pressable>
                     </View>
 
                     {/* When Court Orders Expire */}
@@ -482,22 +530,30 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
 
                     {/* Use Calculator */}
                     <View style={styles.calculatorSection}>
-                        <Text style={styles.calculatorTitle}>Calculate What Happens After Your Order Expires</Text>
+                        <Text style={styles.calculatorTitle}>Scan Your Court Order in 2 Minutes</Text>
                         <Text style={styles.calculatorText}>
-                            Use our free calculator to estimate what Services Australia would assess when your court
-                            order expires. Takes 3-5 minutes. No registration required.
+                            Upload your court order PDF and our AI scanner will automatically extract the care schedule,
+                            calculate exact night counts, and show you a visual calendar. Perfect for understanding your
+                            current arrangement or planning for when the order expires.
                         </Text>
                         <Pressable
                             style={[styles.calculatorButton, isWeb && webClickableStyles]}
+                            onPress={() => router.push('/court-order-tool')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.calculatorButtonText}>Try Court Order Scanner</Text>
+                        </Pressable>
+                        <Text style={styles.calculatorDisclaimer}>
+                            Or use our standard calculator to estimate what Services Australia would assess when your
+                            order expires.
+                        </Text>
+                        <Pressable
+                            style={[styles.secondaryCtaButton, isWeb && webClickableStyles]}
                             onPress={() => router.push('/')}
                             accessibilityRole="button"
                         >
-                            <Text style={styles.calculatorButtonText}>Try Free Calculator</Text>
+                            <Text style={styles.secondaryCtaButtonText}>Calculate Child Support</Text>
                         </Pressable>
-                        <Text style={styles.calculatorDisclaimer}>
-                            Calculator provides estimates only. For legal advice about varying or setting aside a
-                            court order, consult a family lawyer.
-                        </Text>
                     </View>
 
                     {/* Final CTA */}
@@ -567,6 +623,16 @@ const styles = StyleSheet.create({
 
     calculatorButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 24, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     calculatorButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
+    secondaryCtaButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 20, marginBottom: 16, alignItems: 'center', borderWidth: 2, borderColor: '#2563EB' },
+    secondaryCtaButtonText: { color: '#2563EB', fontSize: 15, fontWeight: '600' },
+
+    toolPromoCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 24, marginBottom: 24, borderWidth: 2, borderColor: '#3b82f6', ...createShadow({ shadowColor: '#3b82f6', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 }) },
+    toolPromoTitle: { fontSize: 20, fontWeight: '700', color: '#1e3a8a', marginBottom: 12 },
+    toolPromoText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 16 },
+    toolPromoFeatures: { marginBottom: 20 },
+    toolPromoFeature: { fontSize: 14, lineHeight: 22, color: '#1e40af', marginBottom: 6 },
+    toolPromoButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 4, elevation: 3 }) },
+    toolPromoButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
 
     expiryCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     expiryTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 12 },
@@ -623,4 +689,5 @@ const styles = StyleSheet.create({
     internalLinkText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 16 },
     internalLinkButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 20, alignSelf: 'flex-start', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     internalLinkButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
+    inlineLink: { color: '#2563EB', fontWeight: '600', textDecorationLine: isWeb ? 'underline' : 'none' },
 });

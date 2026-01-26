@@ -74,8 +74,8 @@ export default function AdultDisabledChildMaintenanceScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <PageSEO
-        title="Adult Disabled Child Maintenance: Child Support Beyond 18 | Australia"
-        description="Complete guide to child support for adult children with disabilities. Learn eligibility criteria, application process, assessment calculations, and how support continues indefinitely in Australia."
+        title="Adult Disabled Child Maintenance Australia 2026: Child Support Beyond 18"
+        description="Child support for adult children with disabilities in Australia. Learn eligibility, application process, assessment calculations, NDIS interaction. Updated 2026."
         canonicalPath="/blog/adult-disabled-child-maintenance"
         schema={[faqSchema, articleSchema]}
       />
@@ -115,6 +115,12 @@ export default function AdultDisabledChildMaintenanceScreen() {
             >
               <Text style={styles.ctaButtonText}>Calculate Your Child Support</Text>
             </Pressable>
+
+            <Text style={styles.heading2}>Can child support continue after a child turns 18 if they have a disability?</Text>
+
+            <Text style={styles.paragraph}>
+              Yes, child support can continue indefinitely after a child turns 18 if they have a mental or physical disability that prevents them from supporting themselves. The child must be unable to work or earn a living due to their disability, verified through medical evidence. Services Australia assesses each case individually based on the child's capacity for self-support, and support can continue for the lifetime of the adult child if the disability persists.
+            </Text>
 
             <Text style={styles.heading2}>What Is Adult Disabled Child Maintenance?</Text>
 

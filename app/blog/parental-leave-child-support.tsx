@@ -40,8 +40,8 @@ const faqSchema = {
 const articleSchema = {
   '@context': 'https://schema.org',
   '@type': 'Article',
-  headline: 'Parental Leave and Child Support: Complete Guide for Australia',
-  description: 'How parental leave affects child support in Australia. Learn about temporary assessment changes, Parental Leave Pay, returning to work, and planning ahead.',
+  headline: 'Parental Leave and Child Support Australia 2026 | Complete Guide',
+  description: 'How parental leave affects child support in Australia. Learn about temporary assessment changes, Parental Leave Pay, returning to work, and planning ahead for 2026.',
   author: {
     '@type': 'Organization',
     name: 'Australian Child Support Calculator',
@@ -55,7 +55,7 @@ const articleSchema = {
     },
   },
   datePublished: '2026-01-24',
-  dateModified: '2026-01-24',
+  dateModified: '2026-01-27',
 };
 
 export default function ParentalLeaveChildSupportScreen() {
@@ -72,8 +72,8 @@ export default function ParentalLeaveChildSupportScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <PageSEO
-        title="Parental Leave and Child Support: Complete Guide | Australia"
-        description="How parental leave affects child support in Australia. Learn about temporary assessment changes, Parental Leave Pay, returning to work, and planning ahead."
+        title="Parental Leave and Child Support Australia 2026 | Complete Guide"
+        description="How parental leave affects child support in Australia. Learn about temporary assessment changes, Parental Leave Pay, returning to work, and planning ahead for 2026."
         canonicalPath="/blog/parental-leave-child-support"
         schema={[faqSchema, articleSchema]}
       />
@@ -93,10 +93,10 @@ export default function ParentalLeaveChildSupportScreen() {
 
           <View style={styles.content}>
             <Text style={styles.title}>
-              Parental Leave and Child Support: Complete Guide for Australia
+              Parental Leave and Child Support Australia 2026 | Complete Guide
             </Text>
 
-            <Text style={styles.meta}>Last updated: January 24, 2026 • 8 min read</Text>
+            <Text style={styles.meta}>Last updated: January 27, 2026 • 8 min read</Text>
 
             <Text style={styles.paragraph}>
               Taking parental leave is a significant life event that affects your income and, consequently, your child support obligations. Whether you're the paying or receiving parent, understanding how parental leave impacts child support assessments is crucial for financial planning.
@@ -111,8 +111,14 @@ export default function ParentalLeaveChildSupportScreen() {
               onPress={handleCalculatorPress}
               {...webClickableStyles}
             >
-              <Text style={styles.ctaButtonText}>Calculate Your Child Support</Text>
+              <Text style={styles.ctaButtonText}>Calculate Your Child Support →</Text>
             </Pressable>
+
+            <Text style={styles.heading2}>Does parental leave affect child support payments in Australia?</Text>
+
+            <Text style={styles.paragraph}>
+              Yes. Parental leave typically reduces your income, which can lower your child support assessment. You can apply for a temporary assessment change based on your reduced income during parental leave. When you return to work, your assessment will be recalculated.
+            </Text>
 
             <Text style={styles.heading2}>How Parental Leave Affects Your Income</Text>
 
@@ -270,6 +276,26 @@ export default function ParentalLeaveChildSupportScreen() {
               </Text>
               .
             </Text>
+
+            <View style={styles.internalLinkBox}>
+              <Text style={styles.internalLinkTitle}>📖 Related Reading:</Text>
+              <Text style={styles.internalLinkText}>
+                Learn about{' '}
+                <Text
+                  style={styles.inlineLink}
+                  onPress={() => router.push('/blog/estimate-vs-actual-income-child-support')}
+                >
+                  estimate vs actual income
+                </Text>
+                {' '}and how income changes affect child support. For complex situations, see our guide on{' '}
+                <Text
+                  style={styles.inlineLink}
+                  onPress={() => router.push('/blog/child-support-centrelink-income-support')}
+                >
+                  Centrelink income support
+                </Text>.
+              </Text>
+            </View>
 
             <View style={styles.unpaidCard}>
               <Text style={styles.unpaidTitle}>Unpaid Leave Scenarios</Text>
@@ -1031,4 +1057,7 @@ const styles = StyleSheet.create({
     color: '#e0e7ff',
     marginBottom: 4,
   },
+  internalLinkBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
+  internalLinkTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
+  internalLinkText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 16 },
 });

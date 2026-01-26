@@ -74,8 +74,8 @@ export default function ChildSupportFormulaBlogPost() {
     return (
         <>
             <PageSEO
-                title="Child Support Formula Australia: How Income & Care Work"
-                description="Complete guide to the Australian child support formula. Learn the 8-step calculation, how income and care percentages affect payments, with real examples."
+                title="Child Support Formula Australia 2026 | 8-Step Calculation Explained"
+                description="Master the Australian child support formula. Learn how income and care percentages determine payments. Real examples, official 2026 rates. Free calculator included."
                 canonicalPath="/blog/child-support-formula-australia"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -134,7 +134,7 @@ export default function ChildSupportFormulaBlogPost() {
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        The Australian child support formula (Formula 1) calculates payments by comparing each parent's share of combined income against their share of care. Specifically, it involves 8 steps: determining child support income, combined income, income percentage, cost of children, care percentage, cost percentage, and finally applying the formula (Income % - Cost %) × Total Costs.
+                        The Australian child support formula (Formula 1) calculates payments by comparing each parent's income share against their care share. It involves 8 steps: calculate child support income (taxable income minus $31,046), determine combined income, calculate income percentages, look up costs from official tables, convert care to cost percentages, then apply: (Income % - Cost %) × Total Costs. This ensures fair payments based on capacity to pay and direct care contribution.
                     </Text>
 
                     <Text style={styles.paragraph}>
@@ -282,7 +282,13 @@ export default function ChildSupportFormulaBlogPost() {
                         >
                             self-employed
                         </Text>
-                        , income calculation can be more complex.
+                        , income calculation can be more complex. Learn more about{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/how-to-calculate-child-support')}
+                        >
+                            calculating child support step-by-step
+                        </Text>.
                     </Text>
 
                     <View style={styles.exampleCard}>
@@ -387,15 +393,24 @@ export default function ChildSupportFormulaBlogPost() {
                     <View style={styles.finalCtaSection}>
                         <Text style={styles.ctaTitle}>Calculate Your Child Support</Text>
                         <Text style={styles.ctaText}>
-                            Get an instant estimate using the official 2026 formula. Takes 5 minutes.
+                            Get an instant estimate using the official 2026 formula. Takes 5 minutes. Free, no registration required.
                         </Text>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
                             onPress={() => router.push('/')}
                             accessibilityRole="button"
                         >
-                            <Text style={styles.primaryButtonText}>Use Calculator</Text>
+                            <Text style={styles.primaryButtonText}>Use Free Calculator</Text>
                         </Pressable>
+                        <Text style={styles.ctaText} style={{ marginTop: 16, fontSize: 14 }}>
+                            Need legal advice?{' '}
+                            <Text
+                                style={[styles.inlineLink, { color: '#bfdbfe' }]}
+                                onPress={() => router.push('/lawyer-inquiry?mode=direct')}
+                            >
+                                Connect with family lawyers
+                            </Text>
+                        </Text>
                     </View>
                 </ScrollView>
             </SafeAreaView>

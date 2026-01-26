@@ -17,7 +17,7 @@ const faqSchema = {
             name: 'How much does a child support lawyer cost in Sydney?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Family lawyers in Sydney typically charge between $350 and $600 per hour. An initial consultation usually costs between $300 and $500. For a straightforward Change of Assessment application, total costs might range from $3,000 to $6,000. Complex court proceedings can cost significantly more.',
+                text: 'Sydney family lawyers charge $350-$600/hour. Initial consultations cost $300-$500. A Change of Assessment application typically costs $3,000-$6,000 total. Complex court proceedings cost significantly more. Many firms offer fixed-fee packages.',
             },
         },
         {
@@ -33,8 +33,27 @@ const faqSchema = {
             name: 'Do I need a lawyer for child support in NSW?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'You don\'t need a lawyer for standard assessments handled by Services Australia. However, you should hire a lawyer if you are applying for a Change of Assessment, disputing paternity, have complex income structures (trusts/companies), or if the other parent has legal representation.',
+                text: 'You don&apos;t need a lawyer for standard assessments handled by Services Australia. However, you should hire a lawyer if you are applying for a Change of Assessment, disputing paternity, have complex income structures (trusts/companies), or if the other parent has legal representation.',
             },
+        },
+    ],
+};
+
+const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+        {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: 'https://auschildsupport.com.au/',
+        },
+        {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Sydney Child Support Lawyers',
+            item: 'https://auschildsupport.com.au/child-support-lawyer-sydney',
         },
     ],
 };
@@ -54,7 +73,7 @@ const localBusinessSchema = {
         addressRegion: 'NSW',
         addressCountry: 'AU',
     },
-    priceRange: '$$$',
+    priceRange: '$$',
 };
 
 export default function SydneyLawyerPage() {
@@ -64,10 +83,10 @@ export default function SydneyLawyerPage() {
     return (
         <>
             <PageSEO
-                title="Child Support Lawyers Sydney: Free Calculator & Legal Referrals"
-                description="Looking for a child support lawyer in Sydney? Get matched with experienced family lawyers in NSW. Free calculator and initial consultation referrals available."
+                title="Child Support Lawyers Sydney 2026: Free Calculator & Referrals"
+                description="Find child support lawyers in Sydney. Free calculator + no-cost referrals to NSW family law experts. Compare rates ($350-$600/hr) and court locations."
                 canonicalPath="/child-support-lawyer-sydney"
-                schema={[localBusinessSchema, faqSchema]}
+                schema={[localBusinessSchema, faqSchema, breadcrumbSchema]}
                 breadcrumbs={[
                     { label: 'Home', path: '/' },
                     { label: 'Sydney Child Support Lawyers' },
@@ -96,7 +115,7 @@ export default function SydneyLawyerPage() {
                         <Text style={styles.cardTitle}>Before You Hire a Lawyer...</Text>
                         <Text style={styles.cardText}>
                             Check your accurate child support assessment using the 2026 Services Australia formula.
-                            Many parents find they don't need a lawyer once they understand the calculation.
+                            Many parents find they don&apos;t need a lawyer once they understand the calculation.
                         </Text>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
@@ -113,8 +132,13 @@ export default function SydneyLawyerPage() {
                         but disputes are often heard in local registries of the Federal Circuit and Family Court of Australia.
                     </Text>
                     <Text style={styles.paragraph}>
-                        Sydney parents often face unique challenges including high costs of living, private school fee
-                        disputes, and complex income structures. While Services Australia handles standard assessments,
+                        Sydney parents often face unique challenges including high costs of living,{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/private-school-fees-child-support')}
+                        >
+                            private school fee disputes
+                        </Text>, and complex income structures. While Services Australia handles standard assessments,
                         NSW courts deal with:
                     </Text>
 
@@ -122,7 +146,16 @@ export default function SydneyLawyerPage() {
                         <Text style={styles.bulletItem}>• Departure orders (appealing assessment decisions)</Text>
                         <Text style={styles.bulletItem}>• Paternity disputes</Text>
                         <Text style={styles.bulletItem}>• Adult child maintenance (for children over 18)</Text>
-                        <Text style={styles.bulletItem}>• Binding Child Support Agreements</Text>
+                        <Text style={styles.bulletItem}>
+                            •{' '}
+                            <Text
+                                style={styles.inlineLink}
+                                onPress={() => router.push('/blog/binding-child-support-agreement')}
+                            >
+                                Binding Child Support Agreements
+                            </Text>{' '}
+                            (private arrangements outside Services Australia)
+                        </Text>
                     </View>
 
                     <View style={styles.locationBox}>
@@ -163,12 +196,23 @@ export default function SydneyLawyerPage() {
                     <View style={styles.tipBox}>
                         <Text style={styles.tipTitle}>💡 Cost Saving Tip:</Text>
                         <Text style={styles.tipText}>
-                            Many Sydney firms offer a "fixed fee" initial consultation. Use this to get strategic advice
+                            Many Sydney firms offer a &quot;fixed fee&quot; initial consultation. Use this to get strategic advice
                             on your specific situation before committing to ongoing representation.
                         </Text>
                     </View>
 
                     <Text style={styles.h2} accessibilityRole="header">When to Hire a Lawyer vs Use Calculator</Text>
+
+                    <Text style={styles.paragraph}>
+                        Still unsure? Our detailed guide explains{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/when-to-hire-family-lawyer')}
+                        >
+                            when to hire a family lawyer
+                        </Text>{' '}
+                        versus handling child support yourself.
+                    </Text>
 
                     <View style={styles.comparisonTable}>
                         <View style={styles.tableRowHeader}>
@@ -208,7 +252,7 @@ export default function SydneyLawyerPage() {
                     <View style={styles.faqContainer}>
                         <FAQItem
                             question="How much does a child support lawyer cost in Sydney?"
-                            answer="Family lawyers in Sydney typically charge between $350 and $600 per hour. An initial consultation usually costs between $300 and $500. For a straightforward Change of Assessment application, total costs might range from $3,000 to $6,000. Complex court proceedings can cost significantly more."
+                            answer="Sydney family lawyers charge $350-$600/hour. Initial consultations cost $300-$500. A Change of Assessment application typically costs $3,000-$6,000 total. Complex court proceedings cost significantly more."
                         />
                         <FAQItem
                             question="Where is the Family Court in Sydney?"
@@ -216,7 +260,7 @@ export default function SydneyLawyerPage() {
                         />
                         <FAQItem
                             question="Do I need a lawyer for child support in NSW?"
-                            answer="You don't need a lawyer for standard assessments handled by Services Australia. However, you should hire a lawyer if you are applying for a Change of Assessment, disputing paternity, have complex income structures (trusts/companies), or if the other parent has legal representation."
+                            answer="You don&apos;t need a lawyer for standard assessments handled by Services Australia. However, you should hire a lawyer if you are applying for a Change of Assessment, disputing paternity, have complex income structures (trusts/companies), or if the other parent has legal representation."
                         />
                     </View>
 
@@ -300,4 +344,10 @@ const styles = StyleSheet.create({
     finalCtaTitle: { fontSize: 24, fontWeight: '700', color: '#ffffff', marginBottom: 12, textAlign: 'center' },
     finalCtaText: { fontSize: 16, color: '#bfdbfe', textAlign: 'center', marginBottom: 24, lineHeight: 24 },
     finalButton: { backgroundColor: '#ffffff', width: '100%', maxWidth: 300, alignItems: 'center' },
+
+    inlineLink: {
+        color: '#2563EB',
+        textDecorationLine: 'underline',
+        fontWeight: '600',
+    },
 });

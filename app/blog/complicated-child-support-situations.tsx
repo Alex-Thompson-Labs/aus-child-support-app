@@ -67,8 +67,8 @@ export default function ComplicatedChildSupportBlogPost() {
     return (
         <>
             <PageSEO
-                title="Complicated Child Support in Australia: 8 Situations That Need Legal Advice"
-                description="Self-employed? Trusts? Overseas income? Learn when child support gets too complicated for DIY and why legal advice protects your financial interests."
+                title="Complicated Child Support Situations Australia 2026: Get Legal Help"
+                description="Self-employed, trusts, or overseas income? 8 situations requiring legal advice. Free consultations with child support specialists."
                 canonicalPath="/blog/complicated-child-support-situations"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[

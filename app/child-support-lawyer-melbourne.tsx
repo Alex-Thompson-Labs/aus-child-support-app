@@ -17,7 +17,7 @@ const faqSchema = {
             name: 'How much does a child support lawyer cost in Melbourne?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Family lawyers in Melbourne generally charge between $300 and $550 per hour. Initial consultations often cost $250-$450. Fixed-fee packages for consent orders or binding financial agreements start from around $2,500.',
+                text: 'Family lawyers in Melbourne charge: Hourly rates $300-$550, Initial consultations $250-$450, Fixed-fee consent orders from $2,500, Court representation $3,500+ per day. Many firms offer payment plans or fixed-fee packages for specific services.',
             },
         },
         {
@@ -39,6 +39,25 @@ const faqSchema = {
     ],
 };
 
+const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+        {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: 'https://auschildsupport.com.au/',
+        },
+        {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Melbourne Child Support Lawyers',
+            item: 'https://auschildsupport.com.au/child-support-lawyer-melbourne',
+        },
+    ],
+};
+
 const localBusinessSchema = {
     '@context': 'https://schema.org',
     '@type': 'LegalService',
@@ -54,7 +73,7 @@ const localBusinessSchema = {
         addressRegion: 'VIC',
         addressCountry: 'AU',
     },
-    priceRange: '$$$',
+    priceRange: '$$',
 };
 
 export default function MelbourneLawyerPage() {
@@ -64,10 +83,10 @@ export default function MelbourneLawyerPage() {
     return (
         <>
             <PageSEO
-                title="Child Support Lawyers Melbourne: Free Calculator & Legal Referrals"
-                description="Expert child support lawyers in Melbourne. Get matched with top Victorian family lawyers for complex assessments and court matters. Free initial consultation referrals."
+                title="Child Support Lawyers Melbourne 2026: Free Calculator & Referrals"
+                description="Find child support lawyers in Melbourne. Free calculator + no-cost referrals to Victorian family law specialists. Compare rates ($300-$550/hr) before you hire."
                 canonicalPath="/child-support-lawyer-melbourne"
-                schema={[localBusinessSchema, faqSchema]}
+                schema={[localBusinessSchema, faqSchema, breadcrumbSchema]}
                 breadcrumbs={[
                     { label: 'Home', path: '/' },
                     { label: 'Melbourne Child Support Lawyers' },
@@ -113,7 +132,14 @@ export default function MelbourneLawyerPage() {
                         often trigger Change of Assessment applications (Reason 8: High costs of access).
                     </Text>
                     <Text style={styles.paragraph}>
-                        Melbourne family courts handle thousands of child support matters annually, particularly:
+                        Melbourne family courts handle thousands of child support matters annually, particularly{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/special-circumstances')}
+                        >
+                            Change of Assessment applications
+                        </Text>{' '}
+                        (when the formula produces an unfair result):
                     </Text>
 
                     <View style={styles.listContainer}>
@@ -165,7 +191,29 @@ export default function MelbourneLawyerPage() {
                         </Text>
                     </View>
 
+                    <Text style={styles.paragraph}>
+                        Before paying legal fees, explore{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/child-support-reduction-strategies')}
+                        >
+                            strategies to reduce your child support
+                        </Text>{' '}
+                        that you can implement yourself.
+                    </Text>
+
                     <Text style={styles.h2} accessibilityRole="header">When to Hire a Lawyer</Text>
+
+                    <Text style={styles.paragraph}>
+                        Not sure if your situation requires legal help? Read our guide on{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/when-to-hire-family-lawyer')}
+                        >
+                            when you need a lawyer vs DIY calculator
+                        </Text>{' '}
+                        to make an informed decision.
+                    </Text>
 
                     <View style={styles.comparisonTable}>
                         <View style={styles.tableRowHeader}>
@@ -201,7 +249,7 @@ export default function MelbourneLawyerPage() {
                     <View style={styles.faqContainer}>
                         <FAQItem
                             question="How much does a child support lawyer cost in Melbourne?"
-                            answer="Family lawyers in Melbourne generally charge between $300 and $550 per hour. Initial consultations often cost $250-$450. Fixed-fee packages for consent orders or binding financial agreements start from around $2,500."
+                            answer="Family lawyers in Melbourne charge: Hourly rates $300-$550, Initial consultations $250-$450, Fixed-fee consent orders from $2,500, Court representation $3,500+ per day. Many firms offer payment plans or fixed-fee packages."
                         />
                         <FAQItem
                             question="Where is the Family Court in Melbourne?"
@@ -289,4 +337,10 @@ const styles = StyleSheet.create({
     finalCtaTitle: { fontSize: 24, fontWeight: '700', color: '#ffffff', marginBottom: 12, textAlign: 'center' },
     finalCtaText: { fontSize: 16, color: '#bfdbfe', textAlign: 'center', marginBottom: 24, lineHeight: 24 },
     finalButton: { backgroundColor: '#ffffff', width: '100%', maxWidth: 300, alignItems: 'center' },
+
+    inlineLink: {
+        color: '#2563EB',
+        textDecorationLine: 'underline',
+        fontWeight: '600',
+    },
 });

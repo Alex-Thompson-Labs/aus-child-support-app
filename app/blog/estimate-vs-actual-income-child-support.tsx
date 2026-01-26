@@ -40,8 +40,8 @@ const faqSchema = {
 const articleSchema = {
   '@context': 'https://schema.org',
   '@type': 'Article',
-  headline: 'Estimate vs Actual Income for Child Support: Complete Guide Australia',
-  description: 'Understand the difference between estimated and actual income for child support. Learn about reconciliation, overpayments, underpayments, and how to update your income estimate.',
+  headline: 'Estimate vs Actual Income Child Support Australia 2026 | Complete Guide',
+  description: 'Understand estimated vs actual income for child support in Australia. Learn about reconciliation, overpayments, underpayments, and how to update your income estimate to avoid surprises.',
   author: {
     '@type': 'Organization',
     name: 'Australian Child Support Calculator',
@@ -55,7 +55,7 @@ const articleSchema = {
     },
   },
   datePublished: '2026-01-24',
-  dateModified: '2026-01-24',
+  dateModified: '2026-01-27',
 };
 
 export default function EstimateVsActualIncomeScreen() {
@@ -72,8 +72,8 @@ export default function EstimateVsActualIncomeScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <PageSEO
-        title="Estimate vs Actual Income for Child Support: Complete Guide | Australia"
-        description="Understand the difference between estimated and actual income for child support. Learn about reconciliation, overpayments, underpayments, and how to update your income estimate."
+        title="Estimate vs Actual Income Child Support Australia 2026 | Complete Guide"
+        description="Understand estimated vs actual income for child support in Australia. Learn about reconciliation, overpayments, underpayments, and how to update your income estimate to avoid surprises."
         canonicalPath="/blog/estimate-vs-actual-income-child-support"
         schema={[faqSchema, articleSchema]}
       />
@@ -93,10 +93,10 @@ export default function EstimateVsActualIncomeScreen() {
 
           <View style={styles.content}>
             <Text style={styles.title}>
-              Estimate vs Actual Income for Child Support: Complete Guide Australia
+              Estimate vs Actual Income Child Support Australia 2026 | Complete Guide
             </Text>
 
-            <Text style={styles.meta}>Last updated: January 24, 2026 • 9 min read</Text>
+            <Text style={styles.meta}>Last updated: January 27, 2026 • 9 min read</Text>
 
             <Text style={styles.paragraph}>
               Child support assessments in Australia are based on income, but there's often a gap between what Services Australia estimates you'll earn and what you actually earn. This difference can lead to significant adjustments, overpayments, or underpayments when your tax return is processed.
@@ -111,10 +111,14 @@ export default function EstimateVsActualIncomeScreen() {
               onPress={handleCalculatorPress}
               {...webClickableStyles}
             >
-              <Text style={styles.ctaButtonText}>Calculate Your Child Support</Text>
+              <Text style={styles.ctaButtonText}>Calculate Your Child Support →</Text>
             </Pressable>
 
-            <Text style={styles.heading2}>Estimated Income vs Actual Income: What's the Difference?</Text>
+            <Text style={styles.heading2}>What is the difference between estimated and actual income for child support?</Text>
+
+            <Text style={styles.paragraph}>
+              Estimated income is what Services Australia predicts you'll earn this year, while actual income is what you really earned (confirmed by your tax return). Understanding this difference is crucial for avoiding financial surprises.
+            </Text>
 
             <View style={styles.comparisonCard}>
               <Text style={styles.comparisonTitle}>Estimated Income</Text>
@@ -438,15 +442,21 @@ export default function EstimateVsActualIncomeScreen() {
             <View style={styles.internalLinkBox}>
               <Text style={styles.internalLinkTitle}>📖 Related Reading:</Text>
               <Text style={styles.internalLinkText}>
-                If you're self-employed and your income varies significantly year-to-year:
+                If you're self-employed and your income varies significantly year-to-year, learn about{' '}
+                <Text
+                  style={styles.inlineLink}
+                  onPress={() => router.push('/blog/child-support-self-employed')}
+                >
+                  child support for self-employed parents
+                </Text>
+                . For complex income situations, see our guide on{' '}
+                <Text
+                  style={styles.inlineLink}
+                  onPress={() => router.push('/blog/complicated-child-support-situations')}
+                >
+                  complicated child support situations
+                </Text>.
               </Text>
-              <Pressable
-                style={({ pressed }) => [styles.internalLinkButton, pressed && styles.internalLinkButtonPressed]}
-                onPress={() => router.push('/blog/child-support-self-employed')}
-                {...webClickableStyles}
-              >
-                <Text style={styles.internalLinkButtonText}>Child Support for Self-Employed Parents →</Text>
-              </Pressable>
             </View>
 
             <Text style={styles.heading2}>Tips to Avoid Reconciliation Surprises</Text>
@@ -1023,4 +1033,5 @@ const styles = StyleSheet.create({
   internalLinkButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 20, alignSelf: 'flex-start', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
   internalLinkButtonPressed: { opacity: 0.8 },
   internalLinkButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
+  inlineLink: { color: '#2563EB', fontWeight: '600', textDecorationLine: isWeb ? 'underline' : 'none' },
 });

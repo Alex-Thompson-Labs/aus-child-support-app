@@ -55,8 +55,8 @@ export default function ChildSupportSelfEmployedBlogPost() {
     return (
         <>
             <PageSEO
-                title="Child Support for Self-Employed Parents: How Business Income is Assessed"
-                description="Complete guide to child support for self-employed parents in Australia. Learn how business income is assessed, what expenses are added back, and when you need legal advice."
+                title="Child Support for Self-Employed Parents Australia 2026"
+                description="How business income is assessed for child support. Learn what expenses get added back, trust scrutiny, and when you need legal advice."
                 canonicalPath="/blog/child-support-self-employed"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[

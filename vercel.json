@@ -1,6 +1,7 @@
 {
-  "buildCommand": "npx expo export --platform web --source-maps",
+  "buildCommand": "npm run type-check && npm run lint && npm run test && npx expo export --platform web --source-maps",
   "outputDirectory": "dist",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./",
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [

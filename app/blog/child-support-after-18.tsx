@@ -40,10 +40,19 @@ const faqSchema = {
 const articleSchema = {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: 'Child Support After 18 in Australia: When Does It Stop?',
-    description: 'Child turning 18? Learn when child support ends, what happens if they\'re still in school, university exceptions, and how to handle the transition.',
+    headline: 'Child Support After 18 Australia 2026 | When Does It Stop?',
+    description: 'Child turning 18? Learn when child support ends in Australia, what happens if they\'re still in school, university exceptions, and how to handle the transition smoothly.',
     datePublished: '2026-01-24',
+    dateModified: '2026-01-27',
     author: { '@type': 'Organization', name: 'AusChildSupport' },
+    publisher: {
+        '@type': 'Organization',
+        name: 'Australian Child Support Calculator',
+        logo: {
+            '@type': 'ImageObject',
+            url: 'https://auschildsupport.com.au/main-page-logo.png',
+        },
+    },
 };
 
 export default function ChildSupportAfter18BlogPost() {
@@ -53,8 +62,8 @@ export default function ChildSupportAfter18BlogPost() {
     return (
         <>
             <PageSEO
-                title="Child Support After 18 in Australia: When Does It Stop?"
-                description="Child turning 18? Learn when child support ends, what happens if they're still in school, university exceptions, and how to handle the transition."
+                title="Child Support After 18 Australia 2026 | When Does It Stop?"
+                description="Child turning 18? Learn when child support ends in Australia, what happens if they're still in school, university exceptions, and how to handle the transition smoothly."
                 canonicalPath="/blog/child-support-after-18"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -68,9 +77,9 @@ export default function ChildSupportAfter18BlogPost() {
                     <View style={styles.articleHeader}>
                         <Text style={styles.category}>Age Transitions</Text>
                         <Text style={styles.h1} accessibilityRole="header">
-                            Child Support After 18 in Australia: When Does It Stop?
+                            Child Support After 18 Australia 2026 | When Does It Stop?
                         </Text>
-                        <Text style={styles.publishDate}>Published January 24, 2026</Text>
+                        <Text style={styles.publishDate}>Published January 24, 2026 • Updated January 27, 2026</Text>
                     </View>
 
                     <Text style={styles.intro}>
@@ -86,6 +95,11 @@ export default function ChildSupportAfter18BlogPost() {
                             Still in school at 18? Payments continue until they finish or turn 19.
                         </Text>
                     </View>
+
+                    <Text style={styles.h2} accessibilityRole="header">Does child support automatically stop at 18 in Australia?</Text>
+                    <Text style={styles.paragraph}>
+                        No. Child support continues until your child turns 18 AND finishes Year 12, whichever is later. If your child is still in school at 18, payments continue until they complete school or turn 19.
+                    </Text>
 
                     <Text style={styles.h2} accessibilityRole="header">When Does Child Support End?</Text>
                     <Text style={styles.paragraph}>
@@ -140,6 +154,26 @@ export default function ChildSupportAfter18BlogPost() {
                             binding child support agreement
                         </Text>.
                     </Text>
+
+                    <View style={styles.internalLinkBox}>
+                        <Text style={styles.internalLinkTitle}>📖 Related Reading:</Text>
+                        <Text style={styles.internalLinkText}>
+                            Learn more about{' '}
+                            <Text
+                                style={styles.inlineLink}
+                                onPress={() => router.push('/blog/binding-child-support-agreement')}
+                            >
+                                binding child support agreements
+                            </Text>
+                            {' '}for university costs. If your child has a disability, see our guide on{' '}
+                            <Text
+                                style={styles.inlineLink}
+                                onPress={() => router.push('/blog/adult-disabled-child-maintenance')}
+                            >
+                                adult disabled child maintenance
+                            </Text>.
+                        </Text>
+                    </View>
 
                     <View style={styles.infoCard}>
                         <Text style={styles.infoTitle}>Why University Isn't Covered:</Text>
@@ -464,4 +498,7 @@ const styles = StyleSheet.create({
     finalCtaText: { fontSize: 15, lineHeight: 24, color: '#e0e7ff', marginBottom: 20, textAlign: 'center' },
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 16, fontWeight: '600' },
+    internalLinkBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
+    internalLinkTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
+    internalLinkText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 16 },
 });

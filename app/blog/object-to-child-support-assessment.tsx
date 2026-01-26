@@ -75,8 +75,8 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
     return (
         <>
             <PageSEO
-                title="How to Challenge an Unfair Child Support Assessment in Australia"
-                description="Received an unfair child support assessment? Learn how to object within 28 days, what evidence you need, and when to appeal to SSAT."
+                title="How to Object to Child Support Assessment Australia 2026"
+                description="Object to unfair child support in 28 days. Learn valid grounds, required evidence, and SSAT appeal process. Free legal consultations available."
                 canonicalPath="/blog/object-to-child-support-assessment"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[

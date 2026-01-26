@@ -46,8 +46,8 @@ export default function ChildSupportReductionStrategiesBlogPost() {
     return (
         <>
             <PageSEO
-                title="Child Support Reduction: 7 Legal Ways to Lower Your Payments"
-                description="7 legal strategies to reduce child support in Australia. Learn valid grounds, application process, and what doesn't work. Includes real examples and success rates."
+                title="How to Reduce Child Support Payments Australia 2026: 7 Legal Ways"
+                description="7 legal strategies to reduce child support: Change of Assessment, increase care, challenge income. Success rates 40-80%. Free legal consultations."
                 canonicalPath="/blog/child-support-reduction-strategies"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[

@@ -54,8 +54,8 @@ export default function SharedCare5050ChildSupportBlogPost() {
     return (
         <>
             <PageSEO
-                title="Shared Care 50/50 Child Support: How Equal Care Affects Payments"
-                description="Have 50/50 care? Learn how shared care affects child support in Australia. Understand the formula, see real examples, and calculate your payments."
+                title="50/50 Shared Care Child Support Australia 2026 | Do You Still Pay?"
+                description="Yes, you still pay with 50/50 care if you earn more. Learn how equal care affects child support in Australia. Real examples, calculator, and dispute resolution."
                 canonicalPath="/blog/shared-care-5050-child-support"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -91,9 +91,9 @@ export default function SharedCare5050ChildSupportBlogPost() {
                     </View>
 
                     {/* Featured Snippet Opportunity */}
-                    <Text style={styles.h2} accessibilityRole="header">Does Child Support Change With 50/50 Care?</Text>
+                    <Text style={styles.h2} accessibilityRole="header">Do You Still Pay Child Support With 50/50 Care in Australia?</Text>
                     <Text style={styles.paragraph}>
-                        Yes, child support changes with 50/50 care, but it rarely drops to zero. In Australia, payments are based on the income difference between parents. Even with equal care (183 nights each), the higher-income parent typically pays the lower-income parent to equalize the detailed costs of raising children.
+                        Yes, you still pay child support with 50/50 care if you earn more than the other parent. In Australia, equal care (183 nights each) means both parents have 50% care and 50% cost percentages. However, the higher-income parent pays based on the income difference. Only if both parents earn exactly the same would child support be zero. Typical payments range from $100-$600/month depending on income gap and number of children.
                     </Text>
 
                     <Text style={styles.paragraph}>
@@ -185,7 +185,13 @@ export default function SharedCare5050ChildSupportBlogPost() {
                         >
                             care percentage calculations
                         </Text>
-                        .
+                        {' '}and how to{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/how-to-calculate-child-support')}
+                        >
+                            calculate child support accurately
+                        </Text>.
                     </Text>
 
                     <View style={styles.impactCard}>
@@ -246,20 +252,19 @@ export default function SharedCare5050ChildSupportBlogPost() {
                         </Text>
                     </View>
 
-                    <Pressable
-                        style={[styles.ctaButton, isWeb && webClickableStyles]}
-                        onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                        accessibilityRole="button"
-                    >
-                        <Text style={styles.ctaButtonText}>Get Legal Advice on Binding Agreements →</Text>
-                    </Pressable>
-
                     <View style={styles.trustBox}>
                         <Text style={styles.trustBoxTitle}>💡 What to Expect:</Text>
                         <Text style={styles.trustBoxItem}>• Most lawyers respond within 24 hours</Text>
                         <Text style={styles.trustBoxItem}>• Initial consultations often free or low-cost</Text>
                         <Text style={styles.trustBoxItem}>• No obligation to proceed after consultation</Text>
                         <Text style={styles.trustBoxItem}>• Your information remains confidential</Text>
+                        <Pressable
+                            style={[styles.ctaButton, isWeb && webClickableStyles, { marginTop: 12 }]}
+                            onPress={() => router.push('/lawyer-inquiry?mode=direct')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.ctaButtonText}>Get Legal Advice on Binding Agreements →</Text>
+                        </Pressable>
                     </View>
 
                     {/* FAQ */}

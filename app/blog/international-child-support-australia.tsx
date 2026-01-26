@@ -67,8 +67,8 @@ export default function InternationalChildSupportBlogPost() {
     return (
         <>
             <PageSEO
-                title="International Child Support Australia: When Your Ex Lives Overseas"
-                description="Ex lives overseas? Australian child support still applies. Learn about reciprocating jurisdictions, enforcement options, and what to do next."
+                title="International Child Support Australia 2026: When Your Ex Lives Overseas"
+                description="Ex lives overseas? Australian child support still applies. Learn about reciprocating jurisdictions, Hague Convention, enforcement options. Updated 2026."
                 canonicalPath="/blog/international-child-support-australia"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -85,7 +85,7 @@ export default function InternationalChildSupportBlogPost() {
                     {/* Article Header */}
                     <View style={styles.articleHeader}>
                         <Text style={styles.category}>Child Support</Text>
-                        <Text 
+                        <Text
                             style={styles.h1}
                             accessibilityRole="header"
                             // @ts-ignore - Web-only ARIA
@@ -98,23 +98,45 @@ export default function InternationalChildSupportBlogPost() {
 
                     {/* Introduction */}
                     <Text style={styles.intro}>
-                        Your ex-partner has moved to another country. You're still raising your children in Australia. 
+                        Your ex-partner has moved to another country. You're still raising your children in Australia.
                         And you're wondering: <Text style={styles.emphasis}>Can I still get child support?</Text>
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        The short answer is yes—Australian child support laws still apply even when one parent lives overseas. 
-                        But enforcement depends entirely on which country your ex has moved to. Some countries cooperate with 
+                        The short answer is yes—Australian child support laws still apply even when one parent lives overseas.
+                        But enforcement depends entirely on which country your ex has moved to. Some countries cooperate with
                         Australia to collect payments. Others don't.
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        This guide explains how international child support works in Australia, which countries enforce 
+                        This guide explains how international child support works in Australia, which countries enforce
                         Australian child support orders, and what steps you should take if your ex is living abroad.
                     </Text>
 
+                    <Pressable
+                        style={[styles.primaryButton, isWeb && webClickableStyles]}
+                        onPress={() => router.push('/')}
+                        accessibilityRole="button"
+                        accessibilityLabel="Calculate child support"
+                    >
+                        <Text style={styles.primaryButtonText}>Calculate Your Child Support →</Text>
+                    </Pressable>
+
                     {/* Section 1 */}
-                    <Text 
+                    <Text
+                        style={styles.h2}
+                        accessibilityRole="header"
+                        // @ts-ignore
+                        aria-level="2"
+                    >
+                        Can Services Australia collect child support from overseas?
+                    </Text>
+
+                    <Text style={styles.paragraph}>
+                        Yes, Services Australia can collect child support from overseas if your ex lives in a reciprocating jurisdiction. Australia has child support agreements with over 80 countries including the UK, US, Canada, NZ, and all EU countries. Services Australia registers the debt with the overseas country's enforcement agency, which collects payment using their local laws. If your ex lives in a non-reciprocating jurisdiction, Services Australia cannot enforce payment overseas.
+                    </Text>
+
+                    <Text
                         style={styles.h2}
                         accessibilityRole="header"
                         // @ts-ignore
@@ -124,13 +146,13 @@ export default function InternationalChildSupportBlogPost() {
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        Yes. If you and your children live in Australia, the Australian child support formula applies 
+                        Yes. If you and your children live in Australia, the Australian child support formula applies
                         regardless of where your ex-partner lives.
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        Services Australia (the government agency that administers child support) can assess child support 
-                        even when the paying parent is overseas. The assessment uses the same 8-step formula that applies 
+                        Services Australia (the government agency that administers child support) can assess child support
+                        even when the paying parent is overseas. The assessment uses the same 8-step formula that applies
                         to all Australian child support cases.
                     </Text>
 
@@ -195,8 +217,8 @@ export default function InternationalChildSupportBlogPost() {
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        A reciprocating jurisdiction is a country that has signed an agreement with Australia to enforce 
-                        child support orders. These agreements work both ways—Australia enforces their orders, and they 
+                        A reciprocating jurisdiction is a country that has signed an agreement with Australia to enforce
+                        child support orders. These agreements work both ways—Australia enforces their orders, and they
                         enforce ours.
                     </Text>
 
@@ -218,20 +240,20 @@ export default function InternationalChildSupportBlogPost() {
                     <Text style={styles.h3} accessibilityRole="header">The Hague Convention on Child Support</Text>
 
                     <Text style={styles.paragraph}>
-                        Many reciprocating jurisdictions operate under the Hague Convention on the International Recovery 
+                        Many reciprocating jurisdictions operate under the Hague Convention on the International Recovery
                         of Child Support and Other Forms of Family Maintenance (2007).
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        Australia ratified the Hague Convention in 2014, significantly expanding enforcement options for 
+                        Australia ratified the Hague Convention in 2014, significantly expanding enforcement options for
                         parents whose ex-partners live overseas.
                     </Text>
 
                     <View style={styles.warningBox}>
                         <Text style={styles.warningTitle}>Important limitation:</Text>
                         <Text style={styles.warningText}>
-                            Even in reciprocating jurisdictions, enforcement depends on the overseas country's ability to 
-                            locate your ex and collect payment. If your ex is working cash jobs or hiding assets, enforcement 
+                            Even in reciprocating jurisdictions, enforcement depends on the overseas country's ability to
+                            locate your ex and collect payment. If your ex is working cash jobs or hiding assets, enforcement
                             becomes difficult regardless of the agreement.
                         </Text>
                     </View>
@@ -242,7 +264,7 @@ export default function InternationalChildSupportBlogPost() {
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        Six countries are classified as excluded jurisdictions. For these countries, you cannot use a 
+                        Six countries are classified as excluded jurisdictions. For these countries, you cannot use a
                         Services Australia child support assessment. Instead, you must obtain a court order.
                     </Text>
 
@@ -257,12 +279,12 @@ export default function InternationalChildSupportBlogPost() {
                     </View>
 
                     <Text style={styles.paragraph}>
-                        These countries signed reciprocating agreements with Australia before the Hague Convention came 
+                        These countries signed reciprocating agreements with Australia before the Hague Convention came
                         into effect. Their agreements require court orders rather than administrative assessments.
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        This process is more expensive and time-consuming than a standard Services Australia assessment. 
+                        This process is more expensive and time-consuming than a standard Services Australia assessment.
                         Budget for legal fees and court costs.
                     </Text>
 
@@ -272,7 +294,7 @@ export default function InternationalChildSupportBlogPost() {
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        If your ex lives in a country that is neither a reciprocating jurisdiction nor an excluded 
+                        If your ex lives in a country that is neither a reciprocating jurisdiction nor an excluded
                         jurisdiction, you're in the most difficult situation.
                     </Text>
 
@@ -285,7 +307,7 @@ export default function InternationalChildSupportBlogPost() {
                     </View>
 
                     <Text style={styles.paragraph}>
-                        If your ex lives in a non-reciprocating jurisdiction and refuses to pay, your practical options 
+                        If your ex lives in a non-reciprocating jurisdiction and refuses to pay, your practical options
                         are limited. Many parents in this situation receive no child support. Learn more about{' '}
                         <Text
                             style={styles.inlineLink}
@@ -308,7 +330,7 @@ export default function InternationalChildSupportBlogPost() {
                         <Text style={styles.stepNumber}>Step 1</Text>
                         <Text style={styles.stepTitle}>Identify Which Type of Country Your Ex Lives In</Text>
                         <Text style={styles.stepDesc}>
-                            Check whether your ex's country is a reciprocating jurisdiction, excluded jurisdiction, or 
+                            Check whether your ex's country is a reciprocating jurisdiction, excluded jurisdiction, or
                             non-reciprocating jurisdiction. Services Australia maintains an up-to-date list on their website.
                         </Text>
                     </View>
@@ -317,7 +339,7 @@ export default function InternationalChildSupportBlogPost() {
                         <Text style={styles.stepNumber}>Step 2</Text>
                         <Text style={styles.stepTitle}>Apply for Child Support Assessment</Text>
                         <Text style={styles.stepDesc}>
-                            Even if enforcement is uncertain, apply for a child support assessment through Services Australia. 
+                            Even if enforcement is uncertain, apply for a child support assessment through Services Australia.
                             This establishes the official amount your ex owes and creates a legal record of the debt.
                         </Text>
                     </View>
@@ -326,7 +348,7 @@ export default function InternationalChildSupportBlogPost() {
                         <Text style={styles.stepNumber}>Step 3</Text>
                         <Text style={styles.stepTitle}>Calculate What You're Owed</Text>
                         <Text style={styles.stepDesc}>
-                            Use our free calculator to estimate your child support amount. The Australian child support 
+                            Use our free calculator to estimate your child support amount. The Australian child support
                             formula applies regardless of where your ex lives.
                         </Text>
                     </View>
@@ -335,7 +357,7 @@ export default function InternationalChildSupportBlogPost() {
                         <Text style={styles.stepNumber}>Step 4</Text>
                         <Text style={styles.stepTitle}>Get Legal Advice for Complex Cases</Text>
                         <Text style={styles.stepDesc}>
-                            Consult a family lawyer if your ex lives in an excluded jurisdiction, has significant assets 
+                            Consult a family lawyer if your ex lives in an excluded jurisdiction, has significant assets
                             overseas, or is deliberately avoiding payment.
                         </Text>
                     </View>
@@ -376,8 +398,8 @@ export default function InternationalChildSupportBlogPost() {
                     <View style={styles.ctaSection}>
                         <Text style={styles.ctaTitle}>Need Help With International Child Support?</Text>
                         <Text style={styles.ctaText}>
-                            International cases require specialized knowledge of reciprocating jurisdictions and 
-                            enforcement mechanisms. Most family lawyers offer free initial consultations with no 
+                            International cases require specialized knowledge of reciprocating jurisdictions and
+                            enforcement mechanisms. Most family lawyers offer free initial consultations with no
                             obligation to proceed.
                         </Text>
                         <View style={styles.ctaButtons}>

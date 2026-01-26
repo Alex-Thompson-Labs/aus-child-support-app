@@ -1,0 +1,35 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Running pre-commit checks..."
+
+# Run type check
+echo "📝 Type checking..."
+npm run type-check || {
+  echo "❌ Type check failed. Fix errors before committing."
+  exit 1
+}
+
+# Run linter
+echo "🧹 Linting..."
+npm run lint || {
+  echo "❌ Lint check failed. Fix errors before committing."
+  exit 1
+}
+
+# Run tests with coverage
+echo "🧪 Running tests with coverage..."
+npm run test:coverage || {
+  echo "❌ Tests failed. Fix failing tests before committing."
+  exit 1
+}
+
+# Run security audit (non-blocking for low/moderate issues)
+echo "🔒 Running security audit..."
+npm audit --audit-level=high || {
+  echo "⚠️  High/critical security vulnerabilities found!"
+  echo "Run 'npm audit' to see details and 'npm audit fix' to attempt fixes."
+  exit 1
+}
+
+echo "✅ All pre-commit checks passed!"

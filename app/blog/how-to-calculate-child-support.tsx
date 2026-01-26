@@ -60,8 +60,8 @@ export default function HowToCalculateChildSupportBlogPost() {
     return (
         <>
             <PageSEO
-                title="How to Calculate Child Support in Australia: The 2026 Guide"
-                description="Step-by-step guide to calculating child support in Australia. Learn what information you need, how the formula works, and use our free calculator for instant results."
+                title="How to Calculate Child Support Australia 2026 | Free Calculator"
+                description="Calculate child support in 5 minutes using the official 2026 formula. Step-by-step guide with examples. Free calculator, no registration. Get accurate estimates now."
                 canonicalPath="/blog/how-to-calculate-child-support"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -104,7 +104,7 @@ export default function HowToCalculateChildSupportBlogPost() {
                     {/* Featured Snippet Opportunity */}
                     <Text style={styles.h2} accessibilityRole="header">How Is Child Support Calculated in Australia?</Text>
                     <Text style={styles.paragraph}>
-                        Child support in Australia is calculated using an 8-step formula that considers both parents' adjusted taxable incomes and the care arrangements for the children. The basic formula is: (Your Income Percentage - Your Cost Percentage) × Total Costs of the Children. This ensures payments reflect each parent's capacity to pay and their direct contribution through care.
+                        Child support in Australia is calculated using an 8-step formula that considers both parents' adjusted taxable incomes and care arrangements. The formula is: (Your Income % - Your Cost %) × Total Costs of Children. Services Australia applies this to determine who pays, how much, and when. Most parents pay between $1,815 (minimum) and $30,000+ annually depending on income and care.
                     </Text>
 
                     {/* Step 1 */}
@@ -209,12 +209,15 @@ export default function HowToCalculateChildSupportBlogPost() {
                     </View>
 
                     <View style={styles.internalLinkBox}>
-                        <Text style={styles.internalLinkTitle}>📖 Need Help Understanding Your Calculation?</Text>
+                        <Text style={styles.internalLinkTitle}>📖 Related Guides</Text>
                         <Text style={styles.internalLinkText}>
-                            If your situation involves court orders, learn how they interact with Services Australia assessments:
+                            Understanding the formula is just the start. Explore these related topics:
                         </Text>
-                        <Pressable style={[styles.internalLinkButton, isWeb && webClickableStyles]} onPress={() => router.push('/blog/court-order-child-support-calculator')} accessibilityRole="button">
-                            <Text style={styles.internalLinkButtonText}>Court Order Calculator Guide →</Text>
+                        <Pressable style={[styles.internalLinkButton, isWeb && webClickableStyles]} onPress={() => router.push('/blog/child-support-formula-australia')} accessibilityRole="button">
+                            <Text style={styles.internalLinkButtonText}>Complete Formula Breakdown →</Text>
+                        </Pressable>
+                        <Pressable style={[styles.internalLinkButton, isWeb && webClickableStyles, { marginTop: 8 }]} onPress={() => router.push('/blog/accurate-child-support-calculator')} accessibilityRole="button">
+                            <Text style={styles.internalLinkButtonText}>Why Use a Calculator? →</Text>
                         </Pressable>
                     </View>
 
@@ -286,6 +289,9 @@ export default function HowToCalculateChildSupportBlogPost() {
                         <Text style={styles.trustSignalItem}>• Get expert help if your calculation involves self-employment, trusts, or overseas income</Text>
                         <Text style={styles.trustSignalItem}>• No obligation to proceed after consultation</Text>
                         <Text style={styles.trustSignalItem}>• Understand whether your situation needs professional advice</Text>
+                        <Pressable style={[styles.infoButton, isWeb && webClickableStyles, { marginTop: 12 }]} onPress={() => router.push('/lawyer-inquiry?mode=direct')} accessibilityRole="button">
+                            <Text style={styles.infoButtonText}>Connect with a Specialist →</Text>
+                        </Pressable>
                     </View>
 
                     {/* Final CTA */}
