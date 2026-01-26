@@ -91,9 +91,9 @@ export default function SharedCare5050ChildSupportBlogPost() {
                     </View>
 
                     {/* Featured Snippet Opportunity */}
-                    <Text style={styles.h2} accessibilityRole="header">Does Child Support Change With 50/50 Custody?</Text>
+                    <Text style={styles.h2} accessibilityRole="header">Does Child Support Change With 50/50 Care?</Text>
                     <Text style={styles.paragraph}>
-                        Yes, child support changes with 50/50 custody, but it rarely drops to zero. In Australia, payments are based on the income difference between parents. Even with equal care (183 nights each), the higher-income parent typically pays the lower-income parent to equalize the detailed costs of raising children.
+                        Yes, child support changes with 50/50 care, but it rarely drops to zero. In Australia, payments are based on the income difference between parents. Even with equal care (183 nights each), the higher-income parent typically pays the lower-income parent to equalize the detailed costs of raising children.
                     </Text>
 
                     <Text style={styles.paragraph}>

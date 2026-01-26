@@ -44,8 +44,11 @@ export function ConsentSection({
         </View>
         <View style={checkboxStyles.checkboxTextContainer}>
           <Text style={checkboxStyles.checkboxLabel}>
-            I consent to my information being shared with legal practitioners
-            for the purpose of consultation. *
+            I consent to Australian Child Support Calculator sharing my contact 
+            details and case information with Australian family law firms for the 
+            purpose of arranging a legal consultation. I understand that lawyers 
+            pay to receive my information and that I may be contacted directly by 
+            lawyers who are interested in my case. *
           </Text>
         </View>
       </Pressable>
