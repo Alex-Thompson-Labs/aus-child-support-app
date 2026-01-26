@@ -1,0 +1,151 @@
+name: Manual Quality Checks
+
+on:
+  workflow_dispatch:
+    inputs:
+      check_type:
+        description: 'Type of check to run'
+        required: true
+        type: choice
+        options:
+          - all
+          - coverage
+          - security
+          - build
+          - lighthouse
+      coverage_threshold:
+        description: 'Minimum coverage percentage (default: 70)'
+        required: false
+        default: '70'
+
+jobs:
+  manual-coverage:
+    name: Coverage Check
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.check_type == 'coverage' || github.event.inputs.check_type == 'all' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Check coverage threshold
+        run: |
+          THRESHOLD=${{ github.event.inputs.coverage_threshold }}
+          echo "Checking if coverage meets ${THRESHOLD}% threshold..."
+          
+          # Parse coverage from Jest output
+          # Add custom logic here based on your coverage requirements
+
+      - name: Generate coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7
+
+  manual-security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.check_type == 'security' || github.event.inputs.check_type == 'all' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Full security audit
+        run: |
+          echo "Running comprehensive security audit..."
+          npm audit --audit-level=low
+          npm audit --json > security-audit.json
+
+      - name: Upload security report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-audit
+          path: security-audit.json
+          retention-days: 30
+
+  manual-build:
+    name: Build Verification
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.check_type == 'build' || github.event.inputs.check_type == 'all' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build web
+        run: npm run build:web
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: dist/
+          retention-days: 7
+
+  manual-lighthouse:
+    name: Lighthouse Performance
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.check_type == 'lighthouse' || github.event.inputs.check_type == 'all' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and run Lighthouse
+        run: npm run lighthouse
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+
+      - name: Upload Lighthouse report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: lighthouse-report.html
+          retention-days: 7
