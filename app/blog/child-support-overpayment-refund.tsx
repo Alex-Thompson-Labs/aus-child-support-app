@@ -1,3 +1,4 @@
+import { ContextualWizard } from '@/src/components/blog/ContextualWizard';
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
@@ -90,7 +91,15 @@ export default function ChildSupportOverpaymentRefundBlogPost() {
 
                     <Text style={styles.h2} accessibilityRole="header">What Causes Child Support Overpayments?</Text>
                     <Text style={styles.paragraph}>
-                        Overpayments occur when you pay more child support than your assessment requires:
+                        Overpayments occur when you pay more child support than your assessment requires. This is 
+                        different from{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/child-support-arrears-australia')}
+                        >
+                            child support arrears
+                        </Text>
+                        , where you've underpaid.
                     </Text>
 
                     <View style={styles.causeCard}>
@@ -339,6 +348,18 @@ export default function ChildSupportOverpaymentRefundBlogPost() {
                         </View>
                     </View>
 
+                    {/* Contextual Wizard */}
+                    <ContextualWizard
+                        preselectedFactors={['overpayment_issue']}
+                        highlightedFactors={['income_resources_not_reflected']}
+                        blogTopic="overpayment"
+                        ctaText="Resolve Overpayment Issues"
+                        analyticsSource="blog_child_support_overpayment_refund"
+                        formReason="special_circumstances"
+                        title="Dealing With an Overpayment?"
+                        description="Professional advice can help you recover overpayments or challenge incorrect assessments. Select any factors that apply."
+                    />
+
                     <Text style={styles.h2} accessibilityRole="header">Frequently Asked Questions</Text>
 
                     <FAQItem
@@ -385,7 +406,8 @@ export default function ChildSupportOverpaymentRefundBlogPost() {
                         <Text style={styles.finalCtaTitle}>Need Help Recovering Overpayments?</Text>
                         <Text style={styles.finalCtaText}>
                             Connect with experienced family lawyers who can help you claim overpayments, challenge 
-                            Services Australia decisions, or negotiate with the other parent.
+                            Services Australia decisions, or negotiate with the other parent. Most offer free initial 
+                            consultations with no obligation to proceed.
                         </Text>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
@@ -481,4 +503,5 @@ const styles = StyleSheet.create({
     finalCtaText: { fontSize: 15, lineHeight: 24, color: '#e0e7ff', marginBottom: 20, textAlign: 'center' },
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 16, fontWeight: '600' },
+    inlineLink: { color: '#2563EB', fontWeight: '600', textDecorationLine: 'underline' },
 });

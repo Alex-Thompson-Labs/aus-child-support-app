@@ -1,3 +1,4 @@
+import { ContextualWizard } from '@/src/components/blog/ContextualWizard';
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
@@ -75,17 +76,17 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                     </View>
 
                     <Text style={styles.intro}>
-                        Have a court order for child support? You're not alone. Thousands of Australian parents have 
-                        court-ordered child support instead of Services Australia assessments. But court orders can be 
-                        confusing. Here's how to read yours, when it expires, and how a calculator can help you plan 
+                        Have a court order for child support? You're not alone. Thousands of Australian parents have
+                        court-ordered child support instead of Services Australia assessments. But court orders can be
+                        confusing. Here's how to read yours, when it expires, and how a calculator can help you plan
                         for what happens next.
                     </Text>
 
                     <View style={styles.alertBox}>
                         <Text style={styles.alertTitle}>⚖️ Court Order = Legally Binding</Text>
                         <Text style={styles.alertText}>
-                            A court order overrides the standard child support formula. You must follow the court order 
-                            until it expires, is varied, or is set aside. Using a calculator doesn't change your legal 
+                            A court order overrides the standard child support formula. You must follow the court order
+                            until it expires, is varied, or is set aside. Using a calculator doesn't change your legal
                             obligations under the order.
                         </Text>
                     </View>
@@ -117,8 +118,8 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                     <View style={styles.keyPointBox}>
                         <Text style={styles.keyPointTitle}>🔑 Key Point:</Text>
                         <Text style={styles.keyPointText}>
-                            You cannot have both a court order and a Services Australia assessment active at the same 
-                            time. If you have a court order, Services Australia will not assess child support until 
+                            You cannot have both a court order and a Services Australia assessment active at the same
+                            time. If you have a court order, Services Australia will not assess child support until
                             the order expires or is set aside.
                         </Text>
                     </View>
@@ -132,7 +133,7 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                     <Text style={styles.h3} accessibilityRole="header">1. The Amount</Text>
                     <View style={styles.sectionCard}>
                         <Text style={styles.sectionText}>
-                            Look for phrases like "The respondent shall pay" or "Child support is ordered at". 
+                            Look for phrases like "The respondent shall pay" or "Child support is ordered at".
                             The amount may be:
                         </Text>
                         <Text style={styles.bulletItem}>• Fixed dollar amount per week/month/year</Text>
@@ -179,7 +180,7 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                         <View style={styles.useCaseContent}>
                             <Text style={styles.useCaseTitle}>Planning for Order Expiry</Text>
                             <Text style={styles.useCaseText}>
-                                If your order expires when your youngest child turns 18, use the calculator now to 
+                                If your order expires when your youngest child turns 18, use the calculator now to
                                 estimate what Services Australia would assess. This helps you budget for the transition.
                             </Text>
                         </View>
@@ -190,7 +191,7 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                         <View style={styles.useCaseContent}>
                             <Text style={styles.useCaseTitle}>Comparing Order to Formula</Text>
                             <Text style={styles.useCaseText}>
-                                Calculate what the standard formula would be. If your court order is significantly 
+                                Calculate what the standard formula would be. If your court order is significantly
                                 different, you may have grounds to apply for variation (if circumstances have changed).
                             </Text>
                         </View>
@@ -201,7 +202,7 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                         <View style={styles.useCaseContent}>
                             <Text style={styles.useCaseTitle}>Preparing Variation Application</Text>
                             <Text style={styles.useCaseText}>
-                                If your income or care arrangement has changed significantly, use the calculator to 
+                                If your income or care arrangement has changed significantly, use the calculator to
                                 show what the new assessment would be. This is evidence for your variation application.
                             </Text>
                         </View>
@@ -212,7 +213,7 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                         <View style={styles.useCaseContent}>
                             <Text style={styles.useCaseTitle}>Negotiating New Agreement</Text>
                             <Text style={styles.useCaseText}>
-                                If you're negotiating to replace the court order with a consent order or binding 
+                                If you're negotiating to replace the court order with a consent order or binding
                                 agreement, the calculator shows what the baseline formula would be.
                             </Text>
                         </View>
@@ -226,6 +227,20 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                         <Text style={styles.calculatorButtonText}>Try Free Calculator →</Text>
                     </Pressable>
 
+                    <View style={styles.internalLinkBox}>
+                        <Text style={styles.internalLinkTitle}>📖 Related Reading:</Text>
+                        <Text style={styles.internalLinkText}>
+                            If you're considering replacing your court order with a binding agreement:
+                        </Text>
+                        <Pressable
+                            style={[styles.internalLinkButton, isWeb && webClickableStyles]}
+                            onPress={() => router.push('/blog/binding-child-support-agreement')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.internalLinkButtonText}>Binding Child Support Agreements Guide →</Text>
+                        </Pressable>
+                    </View>
+
                     {/* When Court Orders Expire */}
                     <Text style={styles.h2} accessibilityRole="header">When Do Court Orders Expire?</Text>
                     <Text style={styles.paragraph}>
@@ -235,15 +250,15 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                     <View style={styles.expiryCard}>
                         <Text style={styles.expiryTitle}>🗓️ Automatic Expiry:</Text>
                         <Text style={styles.bulletItem}>
-                            <Text style={styles.bold}>Child turns 18:</Text> Most orders expire when the youngest 
+                            <Text style={styles.bold}>Child turns 18:</Text> Most orders expire when the youngest
                             child reaches 18 (or finishes Year 12 if still in school)
                         </Text>
                         <Text style={styles.bulletItem}>
-                            <Text style={styles.bold}>Specified date:</Text> Order states "until [date]" or "for 
+                            <Text style={styles.bold}>Specified date:</Text> Order states "until [date]" or "for
                             [X] years"
                         </Text>
                         <Text style={styles.bulletItem}>
-                            <Text style={styles.bold}>Event occurs:</Text> Order expires on remarriage, cohabitation, 
+                            <Text style={styles.bold}>Event occurs:</Text> Order expires on remarriage, cohabitation,
                             or other specified event
                         </Text>
                     </View>
@@ -251,15 +266,15 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                     <View style={styles.expiryCard}>
                         <Text style={styles.expiryTitle}>⚖️ Variation or Setting Aside:</Text>
                         <Text style={styles.bulletItem}>
-                            <Text style={styles.bold}>Material change:</Text> Significant change in income, care, or 
+                            <Text style={styles.bold}>Material change:</Text> Significant change in income, care, or
                             circumstances
                         </Text>
                         <Text style={styles.bulletItem}>
-                            <Text style={styles.bold}>Mutual agreement:</Text> Both parties agree to replace order 
+                            <Text style={styles.bold}>Mutual agreement:</Text> Both parties agree to replace order
                             with new arrangement
                         </Text>
                         <Text style={styles.bulletItem}>
-                            <Text style={styles.bold}>Court application:</Text> One party applies to court to vary 
+                            <Text style={styles.bold}>Court application:</Text> One party applies to court to vary
                             or set aside the order
                         </Text>
                     </View>
@@ -267,8 +282,8 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                     <View style={styles.warningBox}>
                         <Text style={styles.warningTitle}>⚠️ Don't Assume Expiry:</Text>
                         <Text style={styles.warningText}>
-                            Even if you think your order has expired, continue payments until you have written 
-                            confirmation from Services Australia or a new court order. Stopping payments without 
+                            Even if you think your order has expired, continue payments until you have written
+                            confirmation from Services Australia or a new court order. Stopping payments without
                             confirmation can result in arrears and penalties.
                         </Text>
                     </View>
@@ -283,7 +298,7 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                         <Text style={styles.stepNumber}>Step 1</Text>
                         <Text style={styles.stepTitle}>Order Expires</Text>
                         <Text style={styles.stepText}>
-                            The court order is no longer enforceable. You're not legally required to continue payments 
+                            The court order is no longer enforceable. You're not legally required to continue payments
                             at the ordered amount.
                         </Text>
                     </View>
@@ -292,7 +307,7 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                         <Text style={styles.stepNumber}>Step 2</Text>
                         <Text style={styles.stepTitle}>Apply for Services Australia Assessment</Text>
                         <Text style={styles.stepText}>
-                            Either parent can apply for a Services Australia assessment. This uses the standard formula 
+                            Either parent can apply for a Services Australia assessment. This uses the standard formula
                             based on current income and care.
                         </Text>
                     </View>
@@ -301,7 +316,7 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                         <Text style={styles.stepNumber}>Step 3</Text>
                         <Text style={styles.stepTitle}>Assessment Issued</Text>
                         <Text style={styles.stepText}>
-                            Services Australia calculates child support using the formula. This becomes the new legally 
+                            Services Australia calculates child support using the formula. This becomes the new legally
                             binding amount (unless you return to court or make a binding agreement).
                         </Text>
                     </View>
@@ -310,7 +325,7 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                         <Text style={styles.stepNumber}>Step 4</Text>
                         <Text style={styles.stepTitle}>Payments Adjust</Text>
                         <Text style={styles.stepText}>
-                            The new assessment amount may be higher or lower than the court order. Payments adjust to 
+                            The new assessment amount may be higher or lower than the court order. Payments adjust to
                             the new amount from the assessment date.
                         </Text>
                     </View>
@@ -318,7 +333,7 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                     <View style={styles.tipBox}>
                         <Text style={styles.tipTitle}>💡 Pro Tip:</Text>
                         <Text style={styles.tipText}>
-                            Apply for a Services Australia assessment 2-3 months before your court order expires. 
+                            Apply for a Services Australia assessment 2-3 months before your court order expires.
                             This ensures a smooth transition and avoids gaps in child support.
                         </Text>
                     </View>
@@ -352,10 +367,19 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                     <View style={styles.costCard}>
                         <Text style={styles.costTitle}>💰 Cost Reality:</Text>
                         <Text style={styles.costText}>
-                            Court applications cost $365 filing fee plus legal fees ($3,000-10,000+). Only pursue 
-                            variation if the financial difference justifies the cost. For small changes, wait until 
+                            Court applications cost $365 filing fee plus legal fees ($3,000-10,000+). Only pursue
+                            variation if the financial difference justifies the cost. For small changes, wait until
                             the order expires and apply for Services Australia assessment.
                         </Text>
+                    </View>
+
+                    <View style={styles.trustSignalBox}>
+                        <Text style={styles.trustSignalTitle}>💼 What to Expect from a Lawyer:</Text>
+                        <Text style={styles.trustSignalItem}>• Free initial consultation to assess your case (15-30 minutes)</Text>
+                        <Text style={styles.trustSignalItem}>• Clear explanation of whether variation is worth pursuing</Text>
+                        <Text style={styles.trustSignalItem}>• Upfront cost estimate for your specific situation</Text>
+                        <Text style={styles.trustSignalItem}>• No obligation to proceed after consultation</Text>
+                        <Text style={styles.trustSignalItem}>• Confidential discussion of your options</Text>
                     </View>
 
                     {/* Common Court Order Scenarios */}
@@ -364,14 +388,14 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                     <View style={styles.scenarioCard}>
                         <Text style={styles.scenarioTitle}>Scenario 1: Order is Higher Than Formula</Text>
                         <Text style={styles.scenarioText}>
-                            Your court order requires $1,500/month, but the calculator shows the formula would be 
+                            Your court order requires $1,500/month, but the calculator shows the formula would be
                             $900/month.
                         </Text>
                         <Text style={styles.scenarioAction}>What to do:</Text>
                         <Text style={styles.scenarioText}>
-                            You must continue paying $1,500/month until the order expires or is varied. If your 
-                            circumstances have changed significantly since the order was made, you may have grounds 
-                            to apply for variation. Otherwise, wait for expiry and apply for Services Australia 
+                            You must continue paying $1,500/month until the order expires or is varied. If your
+                            circumstances have changed significantly since the order was made, you may have grounds
+                            to apply for variation. Otherwise, wait for expiry and apply for Services Australia
                             assessment.
                         </Text>
                     </View>
@@ -379,13 +403,13 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                     <View style={styles.scenarioCard}>
                         <Text style={styles.scenarioTitle}>Scenario 2: Order is Lower Than Formula</Text>
                         <Text style={styles.scenarioText}>
-                            Your court order requires $600/month, but the calculator shows the formula would be 
+                            Your court order requires $600/month, but the calculator shows the formula would be
                             $1,200/month.
                         </Text>
                         <Text style={styles.scenarioAction}>What to do:</Text>
                         <Text style={styles.scenarioText}>
-                            The receiving parent can apply to vary the order if circumstances have changed (e.g., 
-                            paying parent's income has increased significantly). If the order was based on accurate 
+                            The receiving parent can apply to vary the order if circumstances have changed (e.g.,
+                            paying parent's income has increased significantly). If the order was based on accurate
                             information at the time, they may need to wait for expiry.
                         </Text>
                     </View>
@@ -397,8 +421,8 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                         </Text>
                         <Text style={styles.scenarioAction}>What to do:</Text>
                         <Text style={styles.scenarioText}>
-                            Apply for Services Australia assessment now. Use the calculator to estimate the new amount 
-                            so you can budget. If the child is still in secondary school, child support continues 
+                            Apply for Services Australia assessment now. Use the calculator to estimate the new amount
+                            so you can budget. If the child is still in secondary school, child support continues
                             until they finish Year 12 (or turn 18, whichever is later).
                         </Text>
                     </View>
@@ -410,11 +434,23 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                         </Text>
                         <Text style={styles.scenarioAction}>What to do:</Text>
                         <Text style={styles.scenarioText}>
-                            This is grounds for urgent variation. Use the calculator to show what the new assessment 
-                            would be. Apply to court for variation immediately—don't wait. Continue paying the ordered 
+                            This is grounds for urgent variation. Use the calculator to show what the new assessment
+                            would be. Apply to court for variation immediately—don't wait. Continue paying the ordered
                             amount until the court varies it (stopping payments can result in arrears).
                         </Text>
                     </View>
+
+                    {/* Contextual Wizard */}
+                    <ContextualWizard
+                        preselectedFactors={['court_order_existing']}
+                        highlightedFactors={['property_settlement', 'change_circumstances']}
+                        blogTopic="court_order"
+                        ctaText="Review Your Court Order"
+                        analyticsSource="blog_court_order_child_support_calculator"
+                        formReason="special_circumstances"
+                        title="Need Help With a Court Order?"
+                        description="Court orders can be complex and may need review if circumstances change. Select any factors that apply."
+                    />
 
                     {/* FAQ */}
                     <Text style={styles.h2} accessibilityRole="header">Frequently Asked Questions</Text>
@@ -448,7 +484,7 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                     <View style={styles.calculatorSection}>
                         <Text style={styles.calculatorTitle}>Calculate What Happens After Your Order Expires</Text>
                         <Text style={styles.calculatorText}>
-                            Use our free calculator to estimate what Services Australia would assess when your court 
+                            Use our free calculator to estimate what Services Australia would assess when your court
                             order expires. Takes 3-5 minutes. No registration required.
                         </Text>
                         <Pressable
@@ -459,7 +495,7 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                             <Text style={styles.calculatorButtonText}>Try Free Calculator</Text>
                         </Pressable>
                         <Text style={styles.calculatorDisclaimer}>
-                            Calculator provides estimates only. For legal advice about varying or setting aside a 
+                            Calculator provides estimates only. For legal advice about varying or setting aside a
                             court order, consult a family lawyer.
                         </Text>
                     </View>
@@ -468,7 +504,7 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                     <View style={styles.finalCtaSection}>
                         <Text style={styles.finalCtaTitle}>Need Help With a Court Order?</Text>
                         <Text style={styles.finalCtaText}>
-                            Court orders are complex legal documents. If you need to vary an order, understand your 
+                            Court orders are complex legal documents. If you need to vary an order, understand your
                             rights, or prepare for order expiry, connect with experienced family lawyers.
                         </Text>
                         <Pressable
@@ -508,73 +544,83 @@ const styles = StyleSheet.create({
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
     bold: { fontWeight: '600', color: '#1e3a8a' },
-    
+
     alertBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 2, borderColor: '#2563EB', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     alertTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
     alertText: { fontSize: 15, lineHeight: 24, color: '#1e3a8a' },
-    
+
     comparisonCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     comparisonTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
-    
+
     keyPointBox: { backgroundColor: '#fef3c7', borderRadius: 12, borderWidth: 1, borderColor: '#fbbf24', padding: 16, marginBottom: 16 },
     keyPointTitle: { fontSize: 15, fontWeight: '600', color: '#78350f', marginBottom: 8 },
     keyPointText: { fontSize: 15, lineHeight: 24, color: '#78350f' },
-    
+
     sectionCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0' },
     sectionText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8 },
-    
+
     useCaseCard: { flexDirection: 'row', backgroundColor: '#f0fdf4', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#86efac' },
     useCaseNumber: { fontSize: 24, fontWeight: '700', color: '#22c55e', marginRight: 12, width: 32 },
     useCaseContent: { flex: 1 },
     useCaseTitle: { fontSize: 16, fontWeight: '600', color: '#14532d', marginBottom: 4 },
     useCaseText: { fontSize: 14, lineHeight: 22, color: '#14532d' },
-    
+
     calculatorButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 24, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     calculatorButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
-    
+
     expiryCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     expiryTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 12 },
-    
+
     warningBox: { backgroundColor: '#fef3c7', borderRadius: 12, borderWidth: 1, borderColor: '#fbbf24', padding: 16, marginBottom: 16 },
     warningTitle: { fontSize: 15, fontWeight: '600', color: '#78350f', marginBottom: 8 },
     warningText: { fontSize: 15, lineHeight: 24, color: '#78350f' },
-    
+
     stepCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#bfdbfe' },
     stepNumber: { fontSize: 14, fontWeight: '700', color: '#2563EB', marginBottom: 4 },
     stepTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 6 },
     stepText: { fontSize: 14, lineHeight: 22, color: '#475569' },
-    
+
     tipBox: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#86efac' },
     tipTitle: { fontSize: 15, fontWeight: '600', color: '#14532d', marginBottom: 8 },
     tipText: { fontSize: 15, lineHeight: 24, color: '#14532d' },
-    
+
     groundsCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0' },
     groundsTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
-    
+
     processCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
     processTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
-    
+
     costCard: { backgroundColor: '#fef2f2', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#fecaca' },
     costTitle: { fontSize: 16, fontWeight: '600', color: '#991b1b', marginBottom: 8 },
     costText: { fontSize: 15, lineHeight: 24, color: '#991b1b' },
-    
+
     scenarioCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     scenarioTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
     scenarioText: { fontSize: 14, lineHeight: 22, color: '#475569', marginBottom: 8 },
     scenarioAction: { fontSize: 14, fontWeight: '600', color: '#2563EB', marginTop: 8, marginBottom: 4 },
-    
+
     faqItem: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0' },
     faqQuestion: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
     faqAnswer: { fontSize: 15, lineHeight: 24, color: '#475569' },
-    
+
     calculatorSection: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 24, marginTop: 32, marginBottom: 16, alignItems: 'center', borderWidth: 1, borderColor: '#bfdbfe' },
     calculatorTitle: { fontSize: 22, fontWeight: '700', color: '#1e3a8a', marginBottom: 12, textAlign: 'center' },
     calculatorText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 20, textAlign: 'center' },
     calculatorDisclaimer: { fontSize: 13, color: '#64748b', textAlign: 'center', fontStyle: 'italic' },
-    
+
     finalCtaSection: { backgroundColor: '#1e3a8a', borderRadius: 12, padding: 28, marginTop: 32, alignItems: 'center', ...createShadow({ shadowColor: '#1e3a8a', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     finalCtaTitle: { fontSize: 24, fontWeight: '700', color: '#ffffff', marginBottom: 12, textAlign: 'center' },
     finalCtaText: { fontSize: 16, lineHeight: 26, color: '#bfdbfe', marginBottom: 24, textAlign: 'center' },
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 16, paddingHorizontal: 32, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 18, fontWeight: '700' },
+
+    trustSignalBox: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#86efac' },
+    trustSignalTitle: { fontSize: 16, fontWeight: '700', color: '#14532d', marginBottom: 12 },
+    trustSignalItem: { fontSize: 15, lineHeight: 24, color: '#14532d', marginBottom: 6 },
+
+    internalLinkBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
+    internalLinkTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
+    internalLinkText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 16 },
+    internalLinkButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 20, alignSelf: 'flex-start', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
+    internalLinkButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
 });

@@ -3,7 +3,7 @@ import { CalculatorHeader } from '@/src/features/calculator';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -211,8 +211,29 @@ const BLOG_POSTS = [
     },
 ];
 
+// Featured posts for complex situations
+const FEATURED_SLUGS = [
+    'complicated-child-support-situations',
+    'when-to-hire-family-lawyer',
+    'child-support-self-employed',
+];
+
+// All unique categories
+const CATEGORIES = [
+    'All Posts',
+    'Legal Advice',
+    'Calculator Guide',
+    'Self-Employment',
+    'Agreements',
+    'Court Orders',
+    'Income Assessment',
+    'Arrears & Debt',
+    'Shared Care',
+];
+
 export default function BlogIndexPage() {
     const router = useRouter();
+    const [selectedCategory, setSelectedCategory] = useState('All Posts');
 
     const webContainerStyle = isWeb
         ? {
@@ -221,6 +242,19 @@ export default function BlogIndexPage() {
             alignSelf: 'center' as const,
         }
         : {};
+
+    // Filter posts by category
+    const filteredPosts = useMemo(() => {
+        if (selectedCategory === 'All Posts') {
+            return BLOG_POSTS;
+        }
+        return BLOG_POSTS.filter(post => post.category === selectedCategory);
+    }, [selectedCategory]);
+
+    // Get featured posts
+    const featuredPosts = useMemo(() => {
+        return BLOG_POSTS.filter(post => FEATURED_SLUGS.includes(post.slug));
+    }, []);
 
     return (
         <>
@@ -234,17 +268,17 @@ export default function BlogIndexPage() {
                 ]}
             />
             <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-                <CalculatorHeader 
-                    title="Blog" 
-                    showBackButton={true} 
-                    maxWidth={MAX_CALCULATOR_WIDTH} 
+                <CalculatorHeader
+                    title="Blog"
+                    showBackButton={true}
+                    maxWidth={MAX_CALCULATOR_WIDTH}
                 />
 
                 <ScrollView
                     style={styles.scrollView}
                     contentContainerStyle={[styles.scrollContent, webContainerStyle]}
                 >
-                    <Text 
+                    <Text
                         style={styles.pageTitle}
                         accessibilityRole="header"
                         // @ts-ignore
@@ -254,13 +288,72 @@ export default function BlogIndexPage() {
                     </Text>
 
                     <Text style={styles.introText}>
-                        Expert advice on Australian child support calculations, international enforcement, 
+                        Expert advice on Australian child support calculations, international enforcement,
                         and when to seek legal help.
+                    </Text>
+
+                    {/* Featured Posts Section */}
+                    <View style={styles.featuredSection}>
+                        <Text style={styles.featuredTitle}>🎯 Complex Situation? Start Here:</Text>
+                        <Text style={styles.featuredSubtitle}>
+                            These guides help you understand when you need legal advice and what to expect.
+                        </Text>
+                        <View style={styles.featuredGrid}>
+                            {featuredPosts.map((post) => (
+                                <Pressable
+                                    key={post.slug}
+                                    style={[styles.featuredCard, isWeb && webClickableStyles]}
+                                    onPress={() => router.push(`/blog/${post.slug}` as any)}
+                                    accessibilityRole="button"
+                                >
+                                    <Text style={styles.featuredCategory}>{post.category}</Text>
+                                    <Text style={styles.featuredCardTitle}>{post.title}</Text>
+                                    <Text style={styles.featuredExcerpt} numberOfLines={2}>{post.excerpt}</Text>
+                                    <Text style={styles.featuredReadMore}>Read guide →</Text>
+                                </Pressable>
+                            ))}
+                        </View>
+                    </View>
+
+                    {/* Category Filter */}
+                    <View style={styles.filterSection}>
+                        <Text style={styles.filterTitle}>Filter by Category:</Text>
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={styles.filterScrollContent}
+                        >
+                            {CATEGORIES.map((category) => (
+                                <Pressable
+                                    key={category}
+                                    style={[
+                                        styles.filterButton,
+                                        selectedCategory === category && styles.filterButtonActive,
+                                        isWeb && webClickableStyles,
+                                    ]}
+                                    onPress={() => setSelectedCategory(category)}
+                                    accessibilityRole="button"
+                                >
+                                    <Text style={[
+                                        styles.filterButtonText,
+                                        selectedCategory === category && styles.filterButtonTextActive,
+                                    ]}>
+                                        {category}
+                                    </Text>
+                                </Pressable>
+                            ))}
+                        </ScrollView>
+                    </View>
+
+                    {/* Results Count */}
+                    <Text style={styles.resultsCount}>
+                        {filteredPosts.length} {filteredPosts.length === 1 ? 'post' : 'posts'}
+                        {selectedCategory !== 'All Posts' && ` in ${selectedCategory}`}
                     </Text>
 
                     {/* Blog Posts Grid */}
                     <View style={styles.postsGrid}>
-                        {BLOG_POSTS.map((post) => (
+                        {filteredPosts.map((post) => (
                             <Pressable
                                 key={post.slug}
                                 style={[styles.postCard, isWeb && webClickableStyles]}
@@ -280,6 +373,20 @@ export default function BlogIndexPage() {
                                 </View>
                             </Pressable>
                         ))}
+                    </View>
+
+                    {/* Trust Signal Box */}
+                    <View style={styles.trustSignalBox}>
+                        <Text style={styles.trustSignalTitle}>💼 Free Legal Consultation Available</Text>
+                        <Text style={styles.trustSignalText}>
+                            Most family lawyers offer free initial consultations (15-30 minutes). Get expert advice
+                            on complex child support situations with no obligation to proceed.
+                        </Text>
+                        <View style={styles.trustSignalFeatures}>
+                            <Text style={styles.trustSignalFeature}>✓ Confidential discussion</Text>
+                            <Text style={styles.trustSignalFeature}>✓ Clear fee structure explained</Text>
+                            <Text style={styles.trustSignalFeature}>✓ Specialist family law advice</Text>
+                        </View>
                     </View>
 
                     {/* CTA Section */}
@@ -457,5 +564,142 @@ const styles = StyleSheet.create({
         color: '#2563EB',
         fontSize: 16,
         fontWeight: '600',
+    },
+
+    // Featured Section
+    featuredSection: {
+        backgroundColor: '#fef3c7',
+        borderRadius: 12,
+        padding: 20,
+        marginBottom: 32,
+        borderWidth: 2,
+        borderColor: '#fbbf24',
+    },
+    featuredTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#78350f',
+        marginBottom: 6,
+    },
+    featuredSubtitle: {
+        fontSize: 14,
+        color: '#92400e',
+        marginBottom: 16,
+        lineHeight: 20,
+    },
+    featuredGrid: {
+        gap: 12,
+    },
+    featuredCard: {
+        backgroundColor: '#ffffff',
+        borderRadius: 8,
+        padding: 16,
+        borderWidth: 1,
+        borderColor: '#fbbf24',
+        ...createShadow({
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.06,
+            shadowRadius: 4,
+            elevation: 2,
+        }),
+    },
+    featuredCategory: {
+        fontSize: 11,
+        fontWeight: '600',
+        color: '#2563EB',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+        marginBottom: 6,
+    },
+    featuredCardTitle: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#1e3a8a',
+        marginBottom: 6,
+        lineHeight: 22,
+    },
+    featuredExcerpt: {
+        fontSize: 13,
+        lineHeight: 18,
+        color: '#64748b',
+        marginBottom: 8,
+    },
+    featuredReadMore: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#2563EB',
+    },
+
+    // Filter Section
+    filterSection: {
+        marginBottom: 20,
+    },
+    filterTitle: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#1e3a8a',
+        marginBottom: 12,
+    },
+    filterScrollContent: {
+        gap: 8,
+        paddingRight: 16,
+    },
+    filterButton: {
+        backgroundColor: '#ffffff',
+        borderRadius: 20,
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+    },
+    filterButtonActive: {
+        backgroundColor: '#2563EB',
+        borderColor: '#2563EB',
+    },
+    filterButtonText: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#64748b',
+    },
+    filterButtonTextActive: {
+        color: '#ffffff',
+        fontWeight: '600',
+    },
+    resultsCount: {
+        fontSize: 13,
+        color: '#64748b',
+        marginBottom: 16,
+    },
+
+    // Trust Signal Box
+    trustSignalBox: {
+        backgroundColor: '#f0fdf4',
+        borderRadius: 12,
+        padding: 20,
+        marginTop: 32,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: '#86efac',
+    },
+    trustSignalTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#14532d',
+        marginBottom: 8,
+    },
+    trustSignalText: {
+        fontSize: 15,
+        lineHeight: 22,
+        color: '#14532d',
+        marginBottom: 12,
+    },
+    trustSignalFeatures: {
+        gap: 6,
+    },
+    trustSignalFeature: {
+        fontSize: 14,
+        color: '#14532d',
+        lineHeight: 20,
     },
 });

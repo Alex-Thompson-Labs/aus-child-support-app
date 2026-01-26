@@ -248,6 +248,14 @@ export default function EstimateVsActualIncomeScreen() {
               <Text style={styles.ctaButtonText}>Get Legal Help With Income Disputes →</Text>
             </Pressable>
 
+            <View style={styles.trustSignalBox}>
+              <Text style={styles.trustSignalTitle}>💼 Free Consultation Available:</Text>
+              <Text style={styles.trustSignalItem}>• Most lawyers offer free initial consultations (15-30 minutes)</Text>
+              <Text style={styles.trustSignalItem}>• No obligation to proceed after consultation</Text>
+              <Text style={styles.trustSignalItem}>• Get expert advice on challenging incorrect assessments</Text>
+              <Text style={styles.trustSignalItem}>• Understand your options for payment plans or disputes</Text>
+            </View>
+
             <Text style={styles.heading2}>Overpayments: When You Earned Less Than Estimated</Text>
 
             <Text style={styles.paragraph}>
@@ -426,6 +434,20 @@ export default function EstimateVsActualIncomeScreen() {
             >
               <Text style={styles.ctaButtonText}>Calculate Your Child Support Now</Text>
             </Pressable>
+
+            <View style={styles.internalLinkBox}>
+              <Text style={styles.internalLinkTitle}>📖 Related Reading:</Text>
+              <Text style={styles.internalLinkText}>
+                If you're self-employed and your income varies significantly year-to-year:
+              </Text>
+              <Pressable
+                style={({ pressed }) => [styles.internalLinkButton, pressed && styles.internalLinkButtonPressed]}
+                onPress={() => router.push('/blog/child-support-self-employed')}
+                {...webClickableStyles}
+              >
+                <Text style={styles.internalLinkButtonText}>Child Support for Self-Employed Parents →</Text>
+              </Pressable>
+            </View>
 
             <Text style={styles.heading2}>Tips to Avoid Reconciliation Surprises</Text>
 
@@ -990,4 +1012,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+
+  trustSignalBox: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#86efac' },
+  trustSignalTitle: { fontSize: 16, fontWeight: '700', color: '#14532d', marginBottom: 12 },
+  trustSignalItem: { fontSize: 15, lineHeight: 24, color: '#14532d', marginBottom: 6 },
+
+  internalLinkBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
+  internalLinkTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
+  internalLinkText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 16 },
+  internalLinkButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 20, alignSelf: 'flex-start', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
+  internalLinkButtonPressed: { opacity: 0.8 },
+  internalLinkButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
 });

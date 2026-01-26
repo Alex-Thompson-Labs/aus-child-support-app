@@ -1,3 +1,4 @@
+import { ContextualWizard } from '@/src/components/blog/ContextualWizard';
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
@@ -136,7 +137,14 @@ export default function CarePercentageTableBlogPost() {
 
                     <Text style={styles.paragraph}>
                         Services Australia uses this table to convert the number of nights each parent has the children 
-                        into a care percentage. This percentage then determines how child support is calculated.
+                        into a care percentage. This percentage then determines how child support is calculated. 
+                        Understanding this is crucial for{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/how-to-calculate-child-support')}
+                        >
+                            calculating your child support accurately
+                        </Text>.
                     </Text>
 
                     <View style={styles.tableContainer}>
@@ -184,7 +192,15 @@ export default function CarePercentageTableBlogPost() {
 
                     <Text style={styles.paragraph}>
                         Care percentage isn't just a number—specific thresholds dramatically change how child support 
-                        is calculated. Understanding these thresholds is crucial for planning care arrangements.
+                        is calculated. Understanding these thresholds is crucial for planning care arrangements. Learn 
+                        more about{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/shared-care-5050-child-support')}
+                        >
+                            50/50 shared care arrangements
+                        </Text>
+                        {' '}and how they affect payments.
                     </Text>
 
                     <View style={styles.thresholdCard}>
@@ -248,6 +264,22 @@ export default function CarePercentageTableBlogPost() {
                             A difference of just a few nights per year can push you across a threshold and 
                             significantly change your child support. This is why accurate care records are critical.
                         </Text>
+                    </View>
+
+                    <View style={styles.trustCard}>
+                        <Text style={styles.trustTitle}>💡 Optimizing Your Care Arrangement?</Text>
+                        <Text style={styles.trustText}>
+                            If you're negotiating care arrangements or disputing care percentages, professional advice 
+                            can save thousands. Most family lawyers offer free initial consultations to review your 
+                            situation.
+                        </Text>
+                        <Pressable
+                            style={[styles.ctaButton, isWeb && webClickableStyles]}
+                            onPress={() => router.push('/lawyer-inquiry?mode=direct')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.ctaButtonText}>Get Expert Advice on Care Arrangements →</Text>
+                        </Pressable>
                     </View>
 
                     {/* Section 3: How to Count Nights */}
@@ -538,16 +570,29 @@ export default function CarePercentageTableBlogPost() {
                     <View style={styles.ctaSection}>
                         <Text style={styles.ctaTitle}>Need Help With a Care Dispute?</Text>
                         <Text style={styles.ctaText}>
-                            Connect with family lawyers who specialize in child support care arrangement disputes.
+                            Connect with family lawyers who specialize in child support care arrangement disputes. 
+                            Most offer free initial consultations with no obligation to proceed.
                         </Text>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=care_dispute')}
+                            onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                             accessibilityRole="button"
                         >
                             <Text style={styles.primaryButtonText}>Get Legal Help</Text>
                         </Pressable>
                     </View>
+
+                    {/* Contextual Wizard */}
+                    <ContextualWizard
+                        preselectedFactors={['care_arrangement_change']}
+                        highlightedFactors={['high_contact_costs']}
+                        blogTopic="care_percentage"
+                        ctaText="Optimize Your Care Arrangement"
+                        analyticsSource="blog_child_support_care_percentage_table"
+                        formReason="special_circumstances"
+                        title="Changing Care Arrangements?"
+                        description="Care percentage changes can significantly impact child support. Professional advice ensures you maximize your position. Select any factors that apply."
+                    />
 
                     {/* FAQ Section */}
                     <Text style={styles.h2} accessibilityRole="header">
@@ -798,6 +843,57 @@ const styles = StyleSheet.create({
         fontSize: 15,
         lineHeight: 24,
         color: '#78350f',
+    },
+    trustCard: {
+        backgroundColor: '#eff6ff',
+        borderRadius: 12,
+        padding: 20,
+        marginVertical: 16,
+        borderWidth: 1,
+        borderColor: '#bfdbfe',
+        ...createShadow({
+            shadowColor: '#2563EB',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+            elevation: 2,
+        }),
+    },
+    trustTitle: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#1e3a8a',
+        marginBottom: 12,
+    },
+    trustText: {
+        fontSize: 15,
+        lineHeight: 24,
+        color: '#475569',
+        marginBottom: 16,
+    },
+    ctaButton: {
+        backgroundColor: '#2563EB',
+        borderRadius: 8,
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        alignItems: 'center',
+        ...createShadow({
+            shadowColor: '#2563EB',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 4,
+            elevation: 3,
+        }),
+    },
+    ctaButtonText: {
+        color: '#ffffff',
+        fontSize: 15,
+        fontWeight: '600',
+    },
+    inlineLink: {
+        color: '#2563EB',
+        fontWeight: '600',
+        textDecorationLine: 'underline',
     },
     tableContainer: {
         backgroundColor: '#ffffff',

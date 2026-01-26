@@ -1,3 +1,4 @@
+import { ContextualWizard } from '@/src/components/blog/ContextualWizard';
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
@@ -84,7 +85,7 @@ export default function ComplicatedChildSupportBlogPost() {
                     {/* Article Header */}
                     <View style={styles.articleHeader}>
                         <Text style={styles.category}>Legal Advice</Text>
-                        <Text 
+                        <Text
                             style={styles.h1}
                             accessibilityRole="header"
                             // @ts-ignore
@@ -97,32 +98,40 @@ export default function ComplicatedChildSupportBlogPost() {
 
                     {/* Introduction */}
                     <Text style={styles.intro}>
-                        Most child support cases are straightforward. Two parents, regular wages, clear care arrangement. 
+                        Most child support cases are straightforward. Two parents, regular wages, clear care arrangement.
                         The formula works. The calculator gives you an accurate estimate.
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        But some situations are complicated. Self-employment income. Family trusts. Overseas assets. 
-                        Multiple relationships. Court orders. In these cases, the standard formula doesn't capture 
+                        But some situations are complicated. Self-employment income. Family trusts. Overseas assets.
+                        Multiple relationships. Court orders. In these cases, the standard formula doesn't capture
                         the full picture—and mistakes can cost you thousands of dollars per year.
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        This guide explains eight situations where child support becomes too complicated for DIY, 
-                        why legal advice protects your financial interests, and how to find the right lawyer for 
+                        This guide explains eight situations where child support becomes too complicated for DIY,
+                        why legal advice protects your financial interests, and how to find the right lawyer for
                         your case.
                     </Text>
 
                     <View style={styles.warningBox}>
                         <Text style={styles.warningTitle}>⚠️ High Stakes:</Text>
                         <Text style={styles.warningText}>
-                            Complex child support cases often involve $5,000-$20,000+ per year in payments. A lawyer's 
+                            Complex child support cases often involve $5,000-$20,000+ per year in payments. A lawyer's
                             fee of $2,000-$5,000 can save you tens of thousands over the life of the assessment.
                         </Text>
                     </View>
 
+                    <View style={styles.trustSignalBox}>
+                        <Text style={styles.trustSignalTitle}>💡 Free Consultation Available:</Text>
+                        <Text style={styles.trustSignalItem}>• Most family lawyers offer free initial consultations (15-30 minutes)</Text>
+                        <Text style={styles.trustSignalItem}>• No obligation to proceed after consultation</Text>
+                        <Text style={styles.trustSignalItem}>• Confidential assessment of your situation</Text>
+                        <Text style={styles.trustSignalItem}>• Clear explanation of costs and options</Text>
+                    </View>
+
                     {/* Situation 1 */}
-                    <Text 
+                    <Text
                         style={styles.h2}
                         accessibilityRole="header"
                         // @ts-ignore
@@ -136,8 +145,8 @@ export default function ComplicatedChildSupportBlogPost() {
                         <View style={styles.situationContent}>
                             <Text style={styles.situationTitle}>Why It's Complicated</Text>
                             <Text style={styles.situationDesc}>
-                                Self-employed parents can manipulate their taxable income through business expenses, 
-                                depreciation, retained earnings, and income splitting. Services Australia may not 
+                                Self-employed parents can manipulate their taxable income through business expenses,
+                                depreciation, retained earnings, and income splitting. Services Australia may not
                                 accept your tax return at face value.
                             </Text>
                         </View>
@@ -162,15 +171,15 @@ export default function ComplicatedChildSupportBlogPost() {
                     <View style={styles.exampleBox}>
                         <Text style={styles.exampleTitle}>Real Example:</Text>
                         <Text style={styles.exampleText}>
-                            Parent A declares $45,000 taxable income from their business. But their business turns 
-                            over $300,000 and they drive a $80,000 car "for work." A lawyer can argue their true 
+                            Parent A declares $45,000 taxable income from their business. But their business turns
+                            over $300,000 and they drive a $80,000 car "for work." A lawyer can argue their true
                             earning capacity is $100,000+, tripling the child support owed.
                         </Text>
                     </View>
 
                     <View style={styles.ctaBox}>
                         <Text style={styles.ctaText}>
-                            Self-employed or dealing with a self-employed ex? Get legal advice before accepting 
+                            Self-employed or dealing with a self-employed ex? Get legal advice before accepting
                             their declared income.
                         </Text>
                         <Pressable
@@ -179,6 +188,20 @@ export default function ComplicatedChildSupportBlogPost() {
                             accessibilityRole="button"
                         >
                             <Text style={styles.ctaButtonText}>Get Legal Help →</Text>
+                        </Pressable>
+                    </View>
+
+                    <View style={styles.internalLinkBox}>
+                        <Text style={styles.internalLinkTitle}>📖 Related Guide:</Text>
+                        <Text style={styles.internalLinkText}>
+                            Learn more about how business income is assessed and what expenses get added back:
+                        </Text>
+                        <Pressable
+                            style={[styles.internalLinkButton, isWeb && webClickableStyles]}
+                            onPress={() => router.push('/blog/child-support-self-employed')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.internalLinkButtonText}>Child Support for Self-Employed Parents →</Text>
                         </Pressable>
                     </View>
 
@@ -192,8 +215,8 @@ export default function ComplicatedChildSupportBlogPost() {
                         <View style={styles.situationContent}>
                             <Text style={styles.situationTitle}>Why It's Complicated</Text>
                             <Text style={styles.situationDesc}>
-                                Family trusts and companies can hide income, distribute it to other family members, 
-                                or retain it indefinitely. The person controlling the trust may have access to 
+                                Family trusts and companies can hide income, distribute it to other family members,
+                                or retain it indefinitely. The person controlling the trust may have access to
                                 significant wealth while declaring minimal personal income.
                             </Text>
                         </View>
@@ -218,7 +241,7 @@ export default function ComplicatedChildSupportBlogPost() {
                     <View style={styles.highlightBox}>
                         <Text style={styles.highlightTitle}>Legal Expertise Required:</Text>
                         <Text style={styles.highlightText}>
-                            Trust law is complex. Services Australia staff aren't equipped to analyze trust structures. 
+                            Trust law is complex. Services Australia staff aren't equipped to analyze trust structures.
                             You need a lawyer who understands both family law and tax law to navigate these cases.
                         </Text>
                     </View>
@@ -246,8 +269,8 @@ export default function ComplicatedChildSupportBlogPost() {
                         <View style={styles.situationContent}>
                             <Text style={styles.situationTitle}>Why It's Complicated</Text>
                             <Text style={styles.situationDesc}>
-                                Income earned overseas, foreign investments, offshore accounts, and international 
-                                property complicate child support assessments. Currency conversion, tax treaties, 
+                                Income earned overseas, foreign investments, offshore accounts, and international
+                                property complicate child support assessments. Currency conversion, tax treaties,
                                 and verification challenges make these cases difficult.
                             </Text>
                         </View>
@@ -272,7 +295,7 @@ export default function ComplicatedChildSupportBlogPost() {
                     <View style={styles.infoBox}>
                         <Text style={styles.infoTitle}>💡 Related:</Text>
                         <Text style={styles.infoText}>
-                            If your ex lives overseas, enforcement depends on which country. Read our guide on 
+                            If your ex lives overseas, enforcement depends on which country. Read our guide on
                             international child support for reciprocating jurisdictions.
                         </Text>
                         <Pressable
@@ -307,8 +330,8 @@ export default function ComplicatedChildSupportBlogPost() {
                         <View style={styles.situationContent}>
                             <Text style={styles.situationTitle}>Why It's Complicated</Text>
                             <Text style={styles.situationDesc}>
-                                When you have children from multiple relationships, the multi-case formula applies. 
-                                This formula is complex, involves cost splitting between cases, and can produce 
+                                When you have children from multiple relationships, the multi-case formula applies.
+                                This formula is complex, involves cost splitting between cases, and can produce
                                 counterintuitive results.
                             </Text>
                         </View>
@@ -333,8 +356,8 @@ export default function ComplicatedChildSupportBlogPost() {
                     <View style={styles.exampleBox}>
                         <Text style={styles.exampleTitle}>Why This Matters:</Text>
                         <Text style={styles.exampleText}>
-                            In multi-case situations, increasing care in one case can actually increase your payments 
-                            in another case due to how costs are split. A lawyer can model these scenarios before 
+                            In multi-case situations, increasing care in one case can actually increase your payments
+                            in another case due to how costs are split. A lawyer can model these scenarios before
                             you make care arrangement decisions.
                         </Text>
                     </View>
@@ -362,8 +385,8 @@ export default function ComplicatedChildSupportBlogPost() {
                         <View style={styles.situationContent}>
                             <Text style={styles.situationTitle}>Why It's Complicated</Text>
                             <Text style={styles.situationDesc}>
-                                Existing court orders, consent orders, or binding child support agreements can 
-                                override the standard formula. Understanding how these interact with Services 
+                                Existing court orders, consent orders, or binding child support agreements can
+                                override the standard formula. Understanding how these interact with Services
                                 Australia assessments requires legal expertise.
                             </Text>
                         </View>
@@ -388,7 +411,7 @@ export default function ComplicatedChildSupportBlogPost() {
                     <View style={styles.warningBox}>
                         <Text style={styles.warningTitle}>⚠️ Don't Assume Orders Are Final:</Text>
                         <Text style={styles.warningText}>
-                            Court orders and agreements can be varied if circumstances have significantly changed. 
+                            Court orders and agreements can be varied if circumstances have significantly changed.
                             A lawyer can assess whether you have grounds to apply for a variation.
                         </Text>
                     </View>
@@ -416,8 +439,8 @@ export default function ComplicatedChildSupportBlogPost() {
                         <View style={styles.situationContent}>
                             <Text style={styles.situationTitle}>Why It's Complicated</Text>
                             <Text style={styles.situationDesc}>
-                                Your ex declares low income but lives a high lifestyle. New car, expensive holidays, 
-                                designer clothes. They're hiding income somewhere—but proving it requires legal 
+                                Your ex declares low income but lives a high lifestyle. New car, expensive holidays,
+                                designer clothes. They're hiding income somewhere—but proving it requires legal
                                 investigation and evidence gathering.
                             </Text>
                         </View>
@@ -442,8 +465,8 @@ export default function ComplicatedChildSupportBlogPost() {
                     <View style={styles.highlightBox}>
                         <Text style={styles.highlightTitle}>Success Rate:</Text>
                         <Text style={styles.highlightText}>
-                            Change of Assessment applications based on hidden income (Reason 8A) have a moderate 
-                            success rate when supported by strong evidence. A lawyer knows what evidence Services 
+                            Change of Assessment applications based on hidden income (Reason 8A) have a moderate
+                            success rate when supported by strong evidence. A lawyer knows what evidence Services
                             Australia and SSAT will accept.
                         </Text>
                     </View>
@@ -471,8 +494,8 @@ export default function ComplicatedChildSupportBlogPost() {
                         <View style={styles.situationContent}>
                             <Text style={styles.situationTitle}>Why It's Complicated</Text>
                             <Text style={styles.situationDesc}>
-                                When combined income exceeds $200,000+, or when the other parent has hired a lawyer, 
-                                or when there's a history of litigation, you need legal representation to protect 
+                                When combined income exceeds $200,000+, or when the other parent has hired a lawyer,
+                                or when there's a history of litigation, you need legal representation to protect
                                 your interests.
                             </Text>
                         </View>
@@ -497,8 +520,8 @@ export default function ComplicatedChildSupportBlogPost() {
                     <View style={styles.exampleBox}>
                         <Text style={styles.exampleTitle}>Cost-Benefit Analysis:</Text>
                         <Text style={styles.exampleText}>
-                            If child support is $30,000/year and a lawyer can reduce it by 20%, that's $6,000/year 
-                            saved. Over 10 years, that's $60,000. A lawyer's fee of $5,000 pays for itself many 
+                            If child support is $30,000/year and a lawyer can reduce it by 20%, that's $6,000/year
+                            saved. Over 10 years, that's $60,000. A lawyer's fee of $5,000 pays for itself many
                             times over.
                         </Text>
                     </View>
@@ -526,8 +549,8 @@ export default function ComplicatedChildSupportBlogPost() {
                         <View style={styles.situationContent}>
                             <Text style={styles.situationTitle}>Why It's Complicated</Text>
                             <Text style={styles.situationDesc}>
-                                Change of Assessment applications involve 10 specific reasons, strict evidence 
-                                requirements, and a review process that can take months. The success rate is 
+                                Change of Assessment applications involve 10 specific reasons, strict evidence
+                                requirements, and a review process that can take months. The success rate is
                                 significantly higher with legal representation.
                             </Text>
                         </View>
@@ -558,8 +581,8 @@ export default function ComplicatedChildSupportBlogPost() {
                     <View style={styles.highlightBox}>
                         <Text style={styles.highlightTitle}>Success Rates:</Text>
                         <Text style={styles.highlightText}>
-                            Professionally prepared Change of Assessment applications have significantly higher 
-                            success rates than self-represented applications. Lawyers know what evidence Services 
+                            Professionally prepared Change of Assessment applications have significantly higher
+                            success rates than self-represented applications. Lawyers know what evidence Services
                             Australia requires and how to present it effectively.
                         </Text>
                     </View>
@@ -591,8 +614,8 @@ export default function ComplicatedChildSupportBlogPost() {
                         <View style={styles.reasonContent}>
                             <Text style={styles.reasonTitle}>High Financial Stakes</Text>
                             <Text style={styles.reasonDesc}>
-                                Complex cases often involve $10,000-$30,000+ per year in child support. Over 10-15 
-                                years, that's $100,000-$450,000. A lawyer's fee of $2,000-$10,000 is a small 
+                                Complex cases often involve $10,000-$30,000+ per year in child support. Over 10-15
+                                years, that's $100,000-$450,000. A lawyer's fee of $2,000-$10,000 is a small
                                 investment to protect six-figure interests.
                             </Text>
                         </View>
@@ -603,8 +626,8 @@ export default function ComplicatedChildSupportBlogPost() {
                         <View style={styles.reasonContent}>
                             <Text style={styles.reasonTitle}>Legal Risk</Text>
                             <Text style={styles.reasonDesc}>
-                                Mistakes in complex cases can be costly and difficult to fix. Incorrect assessments, 
-                                missed deadlines, inadequate evidence, or poor strategy can lock you into unfavorable 
+                                Mistakes in complex cases can be costly and difficult to fix. Incorrect assessments,
+                                missed deadlines, inadequate evidence, or poor strategy can lock you into unfavorable
                                 outcomes for years.
                             </Text>
                         </View>
@@ -615,8 +638,8 @@ export default function ComplicatedChildSupportBlogPost() {
                         <View style={styles.reasonContent}>
                             <Text style={styles.reasonTitle}>Specialized Knowledge Required</Text>
                             <Text style={styles.reasonDesc}>
-                                Complex cases require expertise in family law, tax law, trust law, and Services 
-                                Australia procedures. This isn't knowledge you can gain from Google searches—it 
+                                Complex cases require expertise in family law, tax law, trust law, and Services
+                                Australia procedures. This isn't knowledge you can gain from Google searches—it
                                 requires years of professional experience.
                             </Text>
                         </View>
@@ -628,14 +651,14 @@ export default function ComplicatedChildSupportBlogPost() {
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        Family lawyers who specialize in child support provide services that go far beyond what 
+                        Family lawyers who specialize in child support provide services that go far beyond what
                         you can do yourself:
                     </Text>
 
                     <View style={styles.serviceCard}>
                         <Text style={styles.serviceTitle}>📊 Financial Analysis</Text>
                         <Text style={styles.serviceDesc}>
-                            Analyze complex income structures, business financials, trust distributions, and asset 
+                            Analyze complex income structures, business financials, trust distributions, and asset
                             holdings to determine true earning capacity and financial resources.
                         </Text>
                     </View>
@@ -643,7 +666,7 @@ export default function ComplicatedChildSupportBlogPost() {
                     <View style={styles.serviceCard}>
                         <Text style={styles.serviceTitle}>🔍 Evidence Gathering</Text>
                         <Text style={styles.serviceDesc}>
-                            Obtain financial records through discovery, subpoena documents, hire forensic accountants, 
+                            Obtain financial records through discovery, subpoena documents, hire forensic accountants,
                             and compile evidence that meets legal standards.
                         </Text>
                     </View>
@@ -651,7 +674,7 @@ export default function ComplicatedChildSupportBlogPost() {
                     <View style={styles.serviceCard}>
                         <Text style={styles.serviceTitle}>📝 Application Preparation</Text>
                         <Text style={styles.serviceDesc}>
-                            Draft comprehensive Change of Assessment applications, objections, and appeals with 
+                            Draft comprehensive Change of Assessment applications, objections, and appeals with
                             proper legal language and supporting documentation.
                         </Text>
                     </View>
@@ -659,7 +682,7 @@ export default function ComplicatedChildSupportBlogPost() {
                     <View style={styles.serviceCard}>
                         <Text style={styles.serviceTitle}>🤝 Negotiation</Text>
                         <Text style={styles.serviceDesc}>
-                            Negotiate with the other parent's lawyer to reach fair settlements without lengthy 
+                            Negotiate with the other parent's lawyer to reach fair settlements without lengthy
                             court proceedings.
                         </Text>
                     </View>
@@ -667,7 +690,7 @@ export default function ComplicatedChildSupportBlogPost() {
                     <View style={styles.serviceCard}>
                         <Text style={styles.serviceTitle}>⚖️ Representation</Text>
                         <Text style={styles.serviceDesc}>
-                            Represent you at Services Australia conferences, SSAT hearings, and Family Court 
+                            Represent you at Services Australia conferences, SSAT hearings, and Family Court
                             proceedings if necessary.
                         </Text>
                     </View>
@@ -675,7 +698,7 @@ export default function ComplicatedChildSupportBlogPost() {
                     <View style={styles.serviceCard}>
                         <Text style={styles.serviceTitle}>🎯 Strategic Advice</Text>
                         <Text style={styles.serviceDesc}>
-                            Advise on optimal timing, which legal avenues to pursue, cost-benefit analysis, and 
+                            Advise on optimal timing, which legal avenues to pursue, cost-benefit analysis, and
                             long-term strategy across multiple issues.
                         </Text>
                     </View>
@@ -686,7 +709,7 @@ export default function ComplicatedChildSupportBlogPost() {
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        Many parents hesitate to hire a lawyer because of the cost. But in complex cases, the 
+                        Many parents hesitate to hire a lawyer because of the cost. But in complex cases, the
                         cost of NOT having a lawyer is usually much higher.
                     </Text>
 
@@ -711,10 +734,36 @@ export default function ComplicatedChildSupportBlogPost() {
                     <View style={styles.highlightBox}>
                         <Text style={styles.highlightTitle}>The Math Is Simple:</Text>
                         <Text style={styles.highlightText}>
-                            If a lawyer's fee is $5,000 and they save or gain you $10,000+ per year in child support, 
+                            If a lawyer's fee is $5,000 and they save or gain you $10,000+ per year in child support,
                             the investment pays for itself in 6 months. Over 10 years, you're ahead by $95,000.
                         </Text>
                     </View>
+
+                    <View style={styles.internalLinkBox}>
+                        <Text style={styles.internalLinkTitle}>📖 Not Sure If You Need a Lawyer?</Text>
+                        <Text style={styles.internalLinkText}>
+                            Read our detailed guide on when to hire a family lawyer for child support matters:
+                        </Text>
+                        <Pressable
+                            style={[styles.internalLinkButton, isWeb && webClickableStyles]}
+                            onPress={() => router.push('/blog/when-to-hire-family-lawyer')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.internalLinkButtonText}>When to Hire a Family Lawyer →</Text>
+                        </Pressable>
+                    </View>
+
+                    {/* Contextual Wizard */}
+                    <ContextualWizard
+                        preselectedFactors={[]}
+                        highlightedFactors={['income_resources_not_reflected', 'property_settlement', 'high_costs']}
+                        blogTopic="complicated"
+                        ctaText="Get Expert Help"
+                        analyticsSource="blog_complicated_child_support_situations"
+                        formReason="special_circumstances"
+                        title="Is Your Situation Complex?"
+                        description="Complicated cases benefit from professional guidance. Select any factors that apply to your situation."
+                    />
 
                     {/* FAQ Section */}
                     <Text style={styles.h2} accessibilityRole="header">
@@ -752,8 +801,8 @@ export default function ComplicatedChildSupportBlogPost() {
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        Child support is straightforward for most families. But if your situation involves any of 
-                        the eight complications we've discussed, you're in territory where mistakes are costly and 
+                        Child support is straightforward for most families. But if your situation involves any of
+                        the eight complications we've discussed, you're in territory where mistakes are costly and
                         legal expertise is essential.
                     </Text>
 
@@ -767,8 +816,8 @@ export default function ComplicatedChildSupportBlogPost() {
                     </View>
 
                     <Text style={styles.paragraph}>
-                        Start by using our calculator to understand the standard formula. If your situation is 
-                        complex, the calculator will flag it. Then connect with experienced family lawyers who 
+                        Start by using our calculator to understand the standard formula. If your situation is
+                        complex, the calculator will flag it. Then connect with experienced family lawyers who
                         can protect your interests.
                     </Text>
 
@@ -776,7 +825,7 @@ export default function ComplicatedChildSupportBlogPost() {
                     <View style={styles.finalCtaSection}>
                         <Text style={styles.finalCtaTitle}>Is Your Child Support Situation Complex?</Text>
                         <Text style={styles.finalCtaText}>
-                            Get a free initial consultation with family lawyers who specialize in complex child 
+                            Get a free initial consultation with family lawyers who specialize in complex child
                             support cases.
                         </Text>
                         <View style={styles.ctaButtons}>
@@ -1198,4 +1247,14 @@ const styles = StyleSheet.create({
         fontSize: 17,
         fontWeight: '600',
     },
+
+    trustSignalBox: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#86efac' },
+    trustSignalTitle: { fontSize: 16, fontWeight: '700', color: '#14532d', marginBottom: 12 },
+    trustSignalItem: { fontSize: 15, lineHeight: 24, color: '#14532d', marginBottom: 6 },
+
+    internalLinkBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
+    internalLinkTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
+    internalLinkText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 16 },
+    internalLinkButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 20, alignSelf: 'flex-start', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
+    internalLinkButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
 });

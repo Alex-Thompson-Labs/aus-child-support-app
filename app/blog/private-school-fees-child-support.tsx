@@ -118,7 +118,14 @@ export default function PrivateSchoolFeesScreen() {
             <Text style={styles.heading2}>Are Private School Fees Included in Child Support?</Text>
 
             <Text style={styles.paragraph}>
-              The standard child support formula includes a component for education costs, but this covers basic educational expenses like public school fees, textbooks, and standard supplies. Private school tuition is considered an additional expense beyond the formula.
+              The standard child support formula includes a component for education costs, but this covers basic educational expenses like public school fees, textbooks, and standard supplies. Private school tuition is considered an additional expense beyond the formula. For more information on how the formula works, see our guide on{' '}
+              <Text
+                style={styles.inlineLink}
+                onPress={() => router.push('/blog/child-support-formula-australia')}
+              >
+                the child support formula
+              </Text>
+              .
             </Text>
 
             <View style={styles.infoBox}>
@@ -183,7 +190,14 @@ export default function PrivateSchoolFeesScreen() {
             <Text style={styles.heading2}>Factors Services Australia Considers</Text>
 
             <Text style={styles.paragraph}>
-              When deciding whether to include private school fees in a Change of Assessment, Services Australia considers:
+              When deciding whether to include private school fees in a Change of Assessment, Services Australia considers multiple factors. Learn more about{' '}
+              <Text
+                style={styles.inlineLink}
+                onPress={() => router.push('/special-circumstances')}
+              >
+                Change of Assessment applications
+              </Text>
+              {' '}and special circumstances.
             </Text>
 
             <View style={styles.factorCard}>
@@ -228,6 +242,14 @@ export default function PrivateSchoolFeesScreen() {
             >
               <Text style={styles.ctaButtonText}>Get Legal Help With School Fees →</Text>
             </Pressable>
+
+            <View style={styles.trustBox}>
+              <Text style={styles.trustBoxTitle}>💡 What to Expect:</Text>
+              <Text style={styles.trustBoxItem}>• Most lawyers respond within 24 hours</Text>
+              <Text style={styles.trustBoxItem}>• Initial consultations often free or low-cost</Text>
+              <Text style={styles.trustBoxItem}>• No obligation to proceed after consultation</Text>
+              <Text style={styles.trustBoxItem}>• Your information remains confidential</Text>
+            </View>
 
             <Text style={styles.heading2}>How to Split Private School Costs</Text>
 
@@ -430,6 +452,11 @@ export default function PrivateSchoolFeesScreen() {
               <Text style={styles.finalCtaText}>
                 Private school fee disputes can be complex and emotional. Connect with experienced family lawyers who can help you negotiate agreements, apply for Change of Assessment, or represent you in court.
               </Text>
+              <View style={styles.trustSignals}>
+                <Text style={styles.trustSignalItem}>✓ Free initial consultation</Text>
+                <Text style={styles.trustSignalItem}>✓ Specialists in education cost disputes</Text>
+                <Text style={styles.trustSignalItem}>✓ Confidential case review</Text>
+              </View>
               <Pressable
                 style={({ pressed }) => [styles.finalCtaButton, pressed && styles.finalCtaButtonPressed]}
                 onPress={handleInquiryPress}
@@ -874,5 +901,38 @@ const styles = StyleSheet.create({
     color: '#1e3a8a',
     fontSize: 16,
     fontWeight: '600',
+  },
+  inlineLink: {
+    color: '#2563EB',
+    textDecorationLine: isWeb ? 'underline' : 'none',
+    fontWeight: '600',
+  },
+  trustBox: {
+    backgroundColor: '#eff6ff',
+    borderRadius: 12,
+    padding: 16,
+    marginVertical: 16,
+    borderWidth: 1,
+    borderColor: '#bfdbfe',
+  },
+  trustBoxTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1e40af',
+    marginBottom: 12,
+  },
+  trustBoxItem: {
+    fontSize: 14,
+    color: '#1e40af',
+    marginBottom: 6,
+  },
+  trustSignals: {
+    marginBottom: 16,
+    alignItems: 'center',
+  },
+  trustSignalItem: {
+    fontSize: 14,
+    color: '#e0e7ff',
+    marginBottom: 4,
   },
 });

@@ -119,7 +119,13 @@ export default function LumpSumChildSupportPaymentBlogPost() {
 
                     <Text style={styles.paragraph}>
                         Without a Binding Agreement, the lump sum is just a gift—it doesn't discharge your child 
-                        support obligations.
+                        support obligations. Learn more about{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/binding-child-support-agreement')}
+                        >
+                            binding child support agreements
+                        </Text>.
                     </Text>
 
                     <Text style={styles.h2} accessibilityRole="header">How to Calculate a Lump Sum Payment</Text>
@@ -400,7 +406,8 @@ export default function LumpSumChildSupportPaymentBlogPost() {
                         <Text style={styles.finalCtaTitle}>Need Legal Advice on Lump Sum Payments?</Text>
                         <Text style={styles.finalCtaText}>
                             Connect with experienced family lawyers who can draft Binding Agreements, calculate fair 
-                            lump sums, and protect your interests.
+                            lump sums, and protect your interests. Most offer free initial consultations with no 
+                            obligation to proceed.
                         </Text>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
@@ -501,4 +508,5 @@ const styles = StyleSheet.create({
     finalCtaText: { fontSize: 15, lineHeight: 24, color: '#e0e7ff', marginBottom: 20, textAlign: 'center' },
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 16, fontWeight: '600' },
+    inlineLink: { color: '#2563EB', fontWeight: '600', textDecorationLine: 'underline' },
 });

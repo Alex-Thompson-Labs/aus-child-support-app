@@ -1,3 +1,4 @@
+import { ContextualWizard } from '@/src/components/blog/ContextualWizard';
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
@@ -66,16 +67,16 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                     </View>
 
                     <Text style={styles.intro}>
-                        Paying too much child support? There are legal ways to reduce payments—but also many illegal 
-                        methods that backfire. Here are 7 legitimate strategies, what works, what doesn't, and how 
+                        Paying too much child support? There are legal ways to reduce payments—but also many illegal
+                        methods that backfire. Here are 7 legitimate strategies, what works, what doesn't, and how
                         to apply without triggering penalties.
                     </Text>
 
                     <View style={styles.warningBox}>
                         <Text style={styles.warningTitle}>⚠️ Legal vs Illegal:</Text>
                         <Text style={styles.warningText}>
-                            This guide covers LEGAL reduction strategies. Hiding income, quitting your job, or 
-                            deliberately reducing earnings to avoid child support is illegal and results in penalties, 
+                            This guide covers LEGAL reduction strategies. Hiding income, quitting your job, or
+                            deliberately reducing earnings to avoid child support is illegal and results in penalties,
                             arrears, and potential criminal charges.
                         </Text>
                     </View>
@@ -88,8 +89,8 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                         <View style={styles.strategyContent}>
                             <Text style={styles.strategyTitle}>Apply for Change of Assessment</Text>
                             <Text style={styles.strategyText}>
-                                If your circumstances changed significantly since the last assessment, apply for 
-                                Change of Assessment. Valid grounds include income reduction, new dependents, high 
+                                If your circumstances changed significantly since the last assessment, apply for
+                                Change of Assessment. Valid grounds include income reduction, new dependents, high
                                 contact costs, or special needs care.
                             </Text>
                             <Text style={styles.strategySuccess}>Success rate: 40-60% (with evidence)</Text>
@@ -97,13 +98,24 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                         </View>
                     </View>
 
+                    <ContextualWizard
+                        preselectedFactors={['income_resources_not_reflected']}
+                        highlightedFactors={['change_circumstances', 'high_costs', 'care_arrangement_change']}
+                        blogTopic="reduction"
+                        ctaText="Challenge Your Assessment"
+                        analyticsSource="blog_reduction_strategies"
+                        formReason="special_circumstances"
+                        title="Want to Reduce Your Child Support?"
+                        description="Select factors that apply. Our partner lawyers specialize in Change of Assessment applications."
+                    />
+
                     <View style={styles.strategyCard}>
                         <Text style={styles.strategyNumber}>2</Text>
                         <View style={styles.strategyContent}>
                             <Text style={styles.strategyTitle}>Increase Your Care Percentage</Text>
                             <Text style={styles.strategyText}>
-                                More nights with children = lower child support. Increasing from 14% to 35% care 
-                                (52 to 128 nights/year) can reduce payments by 30-50%. Must be genuine care increase, 
+                                More nights with children = lower child support. Increasing from 14% to 35% care
+                                (52 to 128 nights/year) can reduce payments by 30-50%. Must be genuine care increase,
                                 not manipulation.
                             </Text>
                             <Text style={styles.strategySuccess}>Success rate: High (if documented)</Text>
@@ -116,8 +128,8 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                         <View style={styles.strategyContent}>
                             <Text style={styles.strategyTitle}>Challenge Incorrect Income Assessment</Text>
                             <Text style={styles.strategyText}>
-                                If Services Australia used wrong income (old tax return, incorrect fringe benefits), 
-                                provide updated evidence. Common errors: using gross instead of taxable income, 
+                                If Services Australia used wrong income (old tax return, incorrect fringe benefits),
+                                provide updated evidence. Common errors: using gross instead of taxable income,
                                 including one-time bonuses as ongoing income.
                             </Text>
                             <Text style={styles.strategySuccess}>Success rate: 70-80% (if error exists)</Text>
@@ -130,8 +142,8 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                         <View style={styles.strategyContent}>
                             <Text style={styles.strategyTitle}>Apply for Departure from Assessment</Text>
                             <Text style={styles.strategyText}>
-                                If income dropped significantly (job loss, illness, business failure), apply for 
-                                departure. Must show income reduction is genuine and not deliberate to avoid child 
+                                If income dropped significantly (job loss, illness, business failure), apply for
+                                departure. Must show income reduction is genuine and not deliberate to avoid child
                                 support.
                             </Text>
                             <Text style={styles.strategySuccess}>Success rate: 50-70% (genuine hardship)</Text>
@@ -144,8 +156,8 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                         <View style={styles.strategyContent}>
                             <Text style={styles.strategyTitle}>Claim Relevant Dependents</Text>
                             <Text style={styles.strategyText}>
-                                If you have other children (new relationship, stepchildren you support), claim them 
-                                as relevant dependents. This reduces your child support income by $1,786 per dependent 
+                                If you have other children (new relationship, stepchildren you support), claim them
+                                as relevant dependents. This reduces your child support income by $1,786 per dependent
                                 (2026 rate).
                             </Text>
                             <Text style={styles.strategySuccess}>Success rate: 90%+ (if eligible)</Text>
@@ -158,7 +170,7 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                         <View style={styles.strategyContent}>
                             <Text style={styles.strategyTitle}>Negotiate Binding Agreement</Text>
                             <Text style={styles.strategyText}>
-                                If other parent agrees, negotiate lower amount via Binding Child Support Agreement. 
+                                If other parent agrees, negotiate lower amount via Binding Child Support Agreement.
                                 Must meet minimum payment thresholds and both parties need independent legal advice.
                             </Text>
                             <Text style={styles.strategySuccess}>Success rate: Depends on negotiation</Text>
@@ -166,19 +178,42 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                         </View>
                     </View>
 
+                    <Text style={styles.paragraph}>
+                        Binding Agreements are complex legal documents. Learn more about{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/binding-child-support-agreement')}
+                        >
+                            how Binding Child Support Agreements work
+                        </Text>
+                        {', including requirements, costs, and risks before pursuing this option.'}
+                    </Text>
+
                     <View style={styles.strategyCard}>
                         <Text style={styles.strategyNumber}>7</Text>
                         <View style={styles.strategyContent}>
                             <Text style={styles.strategyTitle}>Salary Sacrifice to Super</Text>
                             <Text style={styles.strategyText}>
-                                Salary sacrificing to superannuation reduces taxable income (up to concessional cap). 
-                                However, reportable super contributions are added back to child support income. Limited 
+                                Salary sacrificing to superannuation reduces taxable income (up to concessional cap).
+                                However, reportable super contributions are added back to child support income. Limited
                                 benefit but can reduce tax burden.
                             </Text>
                             <Text style={styles.strategySuccess}>Success rate: Minimal impact</Text>
                             <Text style={styles.strategyTime}>Timeline: Next tax year</Text>
                         </View>
                     </View>
+
+                    <Text style={styles.paragraph}>
+                        Complex reduction applications often require legal representation. If you're unsure which strategy
+                        is right for you, consider{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/when-to-hire-family-lawyer')}
+                        >
+                            when to hire a family lawyer
+                        </Text>
+                        {' '}to maximize your chances of success.
+                    </Text>
 
                     <Pressable style={[styles.ctaButton, isWeb && webClickableStyles]} onPress={() => router.push('/lawyer-inquiry?mode=direct')} accessibilityRole="button">
                         <Text style={styles.ctaButtonText}>Get Legal Advice on Reduction Strategies →</Text>
@@ -206,6 +241,27 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                         <Text style={styles.bulletItem}>• Enforcement actions (wage garnishment, passport suspension)</Text>
                     </View>
 
+                    <View style={styles.trustBox}>
+                        <Text style={styles.trustTitle}>⚠️ Already Tried Illegal Methods? Get Help Now</Text>
+                        <Text style={styles.trustText}>
+                            If you've already attempted illegal reduction methods, you may be facing penalties or arrears.
+                            Our partner lawyers can help you:
+                        </Text>
+                        <Text style={styles.bulletItem}>• Negotiate payment plans for arrears</Text>
+                        <Text style={styles.bulletItem}>• Apply for legitimate reductions going forward</Text>
+                        <Text style={styles.bulletItem}>• Respond to Services Australia investigations</Text>
+                        <Text style={[styles.trustText, { marginTop: 12 }]}>
+                            Early legal intervention can minimize penalties and protect your rights.
+                        </Text>
+                        <Pressable
+                            style={[styles.trustButton, isWeb && webClickableStyles]}
+                            onPress={() => router.push('/lawyer-inquiry?mode=direct')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.trustButtonText}>Get Confidential Legal Help →</Text>
+                        </Pressable>
+                    </View>
+
                     {/* FAQ */}
                     <Text style={styles.h2} accessibilityRole="header">Frequently Asked Questions</Text>
 
@@ -223,9 +279,15 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                     <View style={styles.finalCtaSection}>
                         <Text style={styles.finalCtaTitle}>Need Help Reducing Child Support?</Text>
                         <Text style={styles.finalCtaText}>
-                            Reduction applications require evidence and legal arguments. Connect with family lawyers 
-                            who can assess your case and maximize your chances of success.
+                            Reduction applications require evidence and legal arguments. Our partner lawyers specialize in
+                            Change of Assessment applications, income challenges, and binding agreements.
                         </Text>
+                        <View style={styles.finalCtaTrustSignals}>
+                            <Text style={styles.finalCtaTrustItem}>✓ Free initial consultations available</Text>
+                            <Text style={styles.finalCtaTrustItem}>✓ Experience with Services Australia processes</Text>
+                            <Text style={styles.finalCtaTrustItem}>✓ No obligation to proceed</Text>
+                            <Text style={styles.finalCtaTrustItem}>✓ Confidential case assessment</Text>
+                        </View>
                         <Pressable style={[styles.primaryButton, isWeb && webClickableStyles]} onPress={() => router.push('/lawyer-inquiry?mode=direct')} accessibilityRole="button">
                             <Text style={styles.primaryButtonText}>Get Legal Help</Text>
                         </Pressable>
@@ -257,35 +319,56 @@ const styles = StyleSheet.create({
     h2: { fontSize: 24, fontWeight: '700', color: '#1e3a8a', marginTop: 32, marginBottom: 16, ...(Platform.OS === 'web' ? { lineHeight: 32 } : {}) },
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
-    
-    warningBox: { backgroundColor: '#fef3c7', borderRadius: 12, borderWidth: 1, borderColor: '#fbbf24', padding: 16, marginBottom: 16 },
-    warningTitle: { fontSize: 15, fontWeight: '600', color: '#78350f', marginBottom: 8 },
-    warningText: { fontSize: 15, lineHeight: 24, color: '#78350f' },
-    
-    strategyCard: { flexDirection: 'row', backgroundColor: '#f0fdf4', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#86efac' },
-    strategyNumber: { fontSize: 24, fontWeight: '700', color: '#22c55e', marginRight: 12, width: 32 },
+
+    warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 1, borderColor: '#bfdbfe', padding: 16, marginBottom: 16 },
+    warningTitle: { fontSize: 15, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
+    warningText: { fontSize: 15, lineHeight: 24, color: '#1e3a8a' },
+
+    strategyCard: { flexDirection: 'row', backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#bfdbfe' },
+    strategyNumber: { fontSize: 24, fontWeight: '700', color: '#2563EB', marginRight: 12, width: 32 },
     strategyContent: { flex: 1 },
-    strategyTitle: { fontSize: 16, fontWeight: '600', color: '#14532d', marginBottom: 4 },
-    strategyText: { fontSize: 14, lineHeight: 22, color: '#14532d', marginBottom: 8 },
-    strategySuccess: { fontSize: 13, color: '#22c55e', fontWeight: '600', marginBottom: 2 },
+    strategyTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 4 },
+    strategyText: { fontSize: 14, lineHeight: 22, color: '#475569', marginBottom: 8 },
+    strategySuccess: { fontSize: 13, color: '#2563EB', fontWeight: '600', marginBottom: 2 },
     strategyTime: { fontSize: 13, color: '#64748b', fontStyle: 'italic' },
-    
+
     ctaButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 24, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     ctaButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
-    
-    dangerCard: { backgroundColor: '#fef2f2', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#fecaca' },
-    dangerTitle: { fontSize: 16, fontWeight: '600', color: '#991b1b', marginBottom: 12 },
-    
-    consequenceBox: { backgroundColor: '#fef2f2', borderRadius: 12, borderWidth: 2, borderColor: '#dc2626', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#dc2626', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
-    consequenceTitle: { fontSize: 16, fontWeight: '700', color: '#991b1b', marginBottom: 12 },
-    
+
+    dangerCard: { backgroundColor: '#f1f5f9', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#cbd5e1' },
+    dangerTitle: { fontSize: 16, fontWeight: '600', color: '#475569', marginBottom: 12 },
+
+    consequenceBox: { backgroundColor: '#dbeafe', borderRadius: 12, borderWidth: 2, borderColor: '#3b82f6', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
+    consequenceTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 12 },
+
     faqItem: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0' },
     faqQuestion: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
     faqAnswer: { fontSize: 15, lineHeight: 24, color: '#475569' },
-    
+
     finalCtaSection: { backgroundColor: '#1e3a8a', borderRadius: 12, padding: 28, marginTop: 32, alignItems: 'center', ...createShadow({ shadowColor: '#1e3a8a', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     finalCtaTitle: { fontSize: 24, fontWeight: '700', color: '#ffffff', marginBottom: 12, textAlign: 'center' },
     finalCtaText: { fontSize: 16, lineHeight: 26, color: '#bfdbfe', marginBottom: 24, textAlign: 'center' },
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 16, paddingHorizontal: 32, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 18, fontWeight: '700' },
+
+    // Info box styles (for Change of Assessment CTA)
+    infoBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginTop: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
+    infoTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
+    infoText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 16 },
+    infoButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 20, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
+    infoButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
+
+    // Trust box styles (for illegal methods CTA)
+    trustBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginTop: 16, marginBottom: 16, borderWidth: 2, borderColor: '#bfdbfe', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
+    trustTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
+    trustText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8 },
+    trustButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 20, marginTop: 16, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
+    trustButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
+
+    // Inline link style (for internal links)
+    inlineLink: { color: '#2563EB', fontWeight: '600', textDecorationLine: 'underline' },
+
+    // Final CTA trust signals
+    finalCtaTrustSignals: { marginBottom: 20, alignSelf: 'stretch' },
+    finalCtaTrustItem: { fontSize: 14, lineHeight: 22, color: '#bfdbfe', marginBottom: 6, textAlign: 'center' },
 });

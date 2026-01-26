@@ -72,13 +72,7 @@ export default function HowToCalculateChildSupportBlogPost() {
             />
             <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
                 <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, webContainerStyle]}>
-                    {/* Breadcrumb Navigation */}
-                    <Breadcrumb items={[
-                        { label: 'Home', path: '/' },
-                        { label: 'Blog', path: '/blog' },
-                        { label: 'How to Calculate' },
-                    ]} />
-
+                    {/* Article Header */}
                     <View style={styles.articleHeader}>
                         <Text style={styles.category}>Calculator Guide</Text>
                         <Text style={styles.h1} accessibilityRole="header">
@@ -88,14 +82,14 @@ export default function HowToCalculateChildSupportBlogPost() {
                     </View>
 
                     <Text style={styles.intro}>
-                        Need to calculate child support? You're in the right place. This guide shows you exactly 
+                        Need to calculate child support? You're in the right place. This guide shows you exactly
                         what information you need, how the calculation works, and the fastest way to get an accurate estimate.
                     </Text>
 
                     <View style={styles.quickAnswerBox}>
                         <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
                         <Text style={styles.quickAnswerText}>
-                            Use our free calculator below. It uses the official 2026 Services Australia formula and 
+                            Use our free calculator below. It uses the official 2026 Services Australia formula and
                             gives you an instant, accurate estimate in under 5 minutes.
                         </Text>
                         <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
@@ -141,7 +135,7 @@ export default function HowToCalculateChildSupportBlogPost() {
                     {/* Step 2 */}
                     <Text style={styles.h2} accessibilityRole="header">Step 2: Calculate Child Support Income</Text>
                     <Text style={styles.paragraph}>
-                        Child support income is your taxable income minus the Self-Support Amount (SSA). The SSA is 
+                        Child support income is your taxable income minus the Self-Support Amount (SSA). The SSA is
                         $31,046 in 2026—the minimum income you need to support yourself.
                     </Text>
 
@@ -179,14 +173,14 @@ export default function HowToCalculateChildSupportBlogPost() {
                     {/* Step 4 */}
                     <Text style={styles.h2} accessibilityRole="header">Step 4: Look Up the Costs of Children</Text>
                     <Text style={styles.paragraph}>
-                        Use the official Costs of Children table based on combined income, number of children, and their ages. 
+                        Use the official Costs of Children table based on combined income, number of children, and their ages.
                         This table is updated annually and varies significantly by income level.
                     </Text>
 
                     <View style={styles.warningBox}>
                         <Text style={styles.warningTitle}>⚠️ Complex Table:</Text>
                         <Text style={styles.warningText}>
-                            The Costs of Children table has hundreds of entries. Manual lookup is error-prone. 
+                            The Costs of Children table has hundreds of entries. Manual lookup is error-prone.
                             Our calculator does this automatically.
                         </Text>
                     </View>
@@ -194,7 +188,7 @@ export default function HowToCalculateChildSupportBlogPost() {
                     {/* Step 5 */}
                     <Text style={styles.h2} accessibilityRole="header">Step 5: Calculate Care and Cost Percentages</Text>
                     <Text style={styles.paragraph}>
-                        Convert nights per year into care percentage, then use the formula to calculate cost percentage. 
+                        Convert nights per year into care percentage, then use the formula to calculate cost percentage.
                         This determines how much of the costs you cover through direct care.
                     </Text>
 
@@ -208,10 +202,20 @@ export default function HowToCalculateChildSupportBlogPost() {
                         </Pressable>
                     </View>
 
+                    <View style={styles.internalLinkBox}>
+                        <Text style={styles.internalLinkTitle}>📖 Need Help Understanding Your Calculation?</Text>
+                        <Text style={styles.internalLinkText}>
+                            If your situation involves court orders, learn how they interact with Services Australia assessments:
+                        </Text>
+                        <Pressable style={[styles.internalLinkButton, isWeb && webClickableStyles]} onPress={() => router.push('/blog/court-order-child-support-calculator')} accessibilityRole="button">
+                            <Text style={styles.internalLinkButtonText}>Court Order Calculator Guide →</Text>
+                        </Pressable>
+                    </View>
+
                     {/* Step 6 */}
                     <Text style={styles.h2} accessibilityRole="header">Step 6: Apply the Formula</Text>
                     <Text style={styles.paragraph}>
-                        Subtract your cost percentage from your income percentage. Multiply by the total costs of children. 
+                        Subtract your cost percentage from your income percentage. Multiply by the total costs of children.
                         This is your annual child support amount.
                     </Text>
 
@@ -269,6 +273,14 @@ export default function HowToCalculateChildSupportBlogPost() {
                         question="Is there a free child support calculator for Australia?"
                         answer="Yes. Our free calculator uses the official 2026 Services Australia formula. Enter your income, care arrangement, and children's details to get an instant estimate. It handles standard cases (Formulas 1-3) and flags complex situations that need legal advice."
                     />
+
+                    <View style={styles.trustSignalBox}>
+                        <Text style={styles.trustSignalTitle}>💼 Complex Situation?</Text>
+                        <Text style={styles.trustSignalItem}>• Free initial consultations available with family lawyers (15-30 minutes)</Text>
+                        <Text style={styles.trustSignalItem}>• Get expert help if your calculation involves self-employment, trusts, or overseas income</Text>
+                        <Text style={styles.trustSignalItem}>• No obligation to proceed after consultation</Text>
+                        <Text style={styles.trustSignalItem}>• Understand whether your situation needs professional advice</Text>
+                    </View>
 
                     {/* Final CTA */}
                     <View style={styles.finalCtaSection}>
@@ -343,4 +355,14 @@ const styles = StyleSheet.create({
     finalCtaText: { fontSize: 16, lineHeight: 26, color: '#bfdbfe', marginBottom: 24, textAlign: 'center' },
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 16, paddingHorizontal: 32, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 18, fontWeight: '700' },
+
+    trustSignalBox: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#86efac' },
+    trustSignalTitle: { fontSize: 16, fontWeight: '700', color: '#14532d', marginBottom: 12 },
+    trustSignalItem: { fontSize: 15, lineHeight: 24, color: '#14532d', marginBottom: 6 },
+
+    internalLinkBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
+    internalLinkTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
+    internalLinkText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 16 },
+    internalLinkButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 20, alignSelf: 'flex-start', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
+    internalLinkButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
 });

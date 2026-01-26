@@ -11,6 +11,29 @@ config.transformer = {
     compress: {
       // Drop console.log in production builds
       drop_console: process.env.NODE_ENV === 'production',
+      // Additional optimizations for smaller bundles
+      dead_code: true,
+      drop_debugger: true,
+      conditionals: true,
+      evaluate: true,
+      booleans: true,
+      loops: true,
+      unused: true,
+      hoist_funs: true,
+      keep_fargs: false,
+      hoist_vars: false,
+      if_return: true,
+      join_vars: true,
+      side_effects: true,
+    },
+    mangle: {
+      // Mangle variable names for smaller bundle size
+      toplevel: true,
+    },
+    output: {
+      // Remove comments and beautify for smaller size
+      comments: false,
+      beautify: false,
     },
   },
 };

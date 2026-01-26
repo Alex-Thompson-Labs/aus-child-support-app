@@ -35,6 +35,14 @@ export default function Root({ children }: PropsWithChildren) {
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://swcbcudasyiqhtkymcpy.supabase.co" />
         <link rel="dns-prefetch" href="https://swcbcudasyiqhtkymcpy.supabase.co" />
+        
+        {/* Preload critical JavaScript bundles */}
+        <link 
+          rel="modulepreload" 
+          href="/_expo/static/js/web/__common-*.js"
+          // @ts-ignore - Web-only fetchpriority attribute
+          fetchpriority="high"
+        />
 
         {/* Preload critical assets for LCP optimization */}
         <link 

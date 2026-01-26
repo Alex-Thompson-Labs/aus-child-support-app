@@ -131,7 +131,14 @@ export default function ChildSupportAfter18BlogPost() {
                     <Text style={styles.h2} accessibilityRole="header">What About University or TAFE?</Text>
                     <Text style={styles.paragraph}>
                         Standard child support does NOT cover tertiary education. Once your child finishes Year 12 
-                        (or turns 18 if they've already finished), child support ends—even if they're starting university.
+                        (or turns 18 if they've already finished), child support ends—even if they're starting university. 
+                        If you want to continue support, you'll need a{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/binding-child-support-agreement')}
+                        >
+                            binding child support agreement
+                        </Text>.
                     </Text>
 
                     <View style={styles.infoCard}>
@@ -172,7 +179,14 @@ export default function ChildSupportAfter18BlogPost() {
                     <Text style={styles.h2} accessibilityRole="header">Adult Child Maintenance (Disability Exception)</Text>
                     <Text style={styles.paragraph}>
                         If your child has a disability that prevents them from being self-supporting, child support 
-                        can continue indefinitely as "adult child maintenance."
+                        can continue indefinitely as "adult child maintenance." Learn more about{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/adult-disabled-child-maintenance')}
+                        >
+                            adult disabled child maintenance
+                        </Text>
+                        {' '}and how it's calculated.
                     </Text>
 
                     <View style={styles.disabilityCard}>
@@ -188,13 +202,20 @@ export default function ChildSupportAfter18BlogPost() {
                         child's care needs, disability support payments, and both parents' capacity to contribute.
                     </Text>
 
-                    <Pressable
-                        style={[styles.ctaButton, isWeb && webClickableStyles]}
-                        onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                        accessibilityRole="button"
-                    >
-                        <Text style={styles.ctaButtonText}>Get Legal Advice on Adult Child Maintenance →</Text>
-                    </Pressable>
+                    <View style={styles.trustCard}>
+                        <Text style={styles.trustTitle}>💡 Need Help With Adult Child Maintenance?</Text>
+                        <Text style={styles.trustText}>
+                            Most family lawyers offer free initial consultations to assess disability cases. Applications 
+                            must be lodged before the child turns 18 (or within 12 months).
+                        </Text>
+                        <Pressable
+                            style={[styles.ctaButton, isWeb && webClickableStyles]}
+                            onPress={() => router.push('/lawyer-inquiry?mode=direct')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.ctaButtonText}>Get Legal Advice on Adult Child Maintenance →</Text>
+                        </Pressable>
+                    </View>
 
                     <Text style={styles.h2} accessibilityRole="header">How to Prepare for Child Support Ending</Text>
 
@@ -345,7 +366,8 @@ export default function ChildSupportAfter18BlogPost() {
                         <Text style={styles.finalCtaTitle}>Need Legal Advice on Child Support Transitions?</Text>
                         <Text style={styles.finalCtaText}>
                             Connect with experienced family lawyers who can help with university agreements, adult 
-                            child maintenance applications, or arrears resolution.
+                            child maintenance applications, or arrears resolution. Most offer free initial consultations 
+                            with no obligation to proceed.
                         </Text>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
@@ -431,6 +453,11 @@ const styles = StyleSheet.create({
     calculatorText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 20, textAlign: 'center' },
     calculatorButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24, ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     calculatorButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
+    
+    trustCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginVertical: 16, borderWidth: 1, borderColor: '#bfdbfe', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }) },
+    trustTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
+    trustText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 16 },
+    inlineLink: { color: '#2563EB', fontWeight: '600', textDecorationLine: 'underline' },
     
     finalCtaSection: { backgroundColor: '#1e3a8a', borderRadius: 12, padding: 24, marginTop: 16, alignItems: 'center' },
     finalCtaTitle: { fontSize: 20, fontWeight: '700', color: '#ffffff', marginBottom: 8, textAlign: 'center' },

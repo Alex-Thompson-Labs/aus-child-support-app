@@ -194,7 +194,15 @@ export default function NewPartnerIncomeChildSupportBlogPost() {
 
                     <Text style={styles.h2} accessibilityRole="header">How Services Australia Assesses New Partner Income</Text>
                     <Text style={styles.paragraph}>
-                        If your ex applies for a Change of Assessment, Services Australia will investigate:
+                        If your ex applies for a Change of Assessment, Services Australia will investigate. Learn more 
+                        about{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/object-to-child-support-assessment')}
+                        >
+                            how to object to assessments
+                        </Text>
+                        {' '}if you disagree with the outcome.
                     </Text>
 
                     <View style={styles.assessmentCard}>
@@ -358,7 +366,8 @@ export default function NewPartnerIncomeChildSupportBlogPost() {
                         <Text style={styles.finalCtaTitle}>Facing a Change of Assessment?</Text>
                         <Text style={styles.finalCtaText}>
                             Connect with experienced family lawyers who can help you respond to Change of Assessment 
-                            applications or apply for one yourself.
+                            applications or apply for one yourself. Most offer free initial consultations with no 
+                            obligation to proceed.
                         </Text>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
@@ -459,4 +468,5 @@ const styles = StyleSheet.create({
     finalCtaText: { fontSize: 15, lineHeight: 24, color: '#e0e7ff', marginBottom: 20, textAlign: 'center' },
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 16, fontWeight: '600' },
+    inlineLink: { color: '#2563EB', fontWeight: '600', textDecorationLine: 'underline' },
 });

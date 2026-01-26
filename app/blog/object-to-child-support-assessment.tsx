@@ -1,3 +1,4 @@
+import { ContextualWizard } from '@/src/components/blog/ContextualWizard';
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
@@ -220,8 +221,21 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
 
                     <Text style={styles.paragraph}>
                         If your situation involves special circumstances not captured by the formula (like hidden income, 
-                        high contact costs, or special needs), you need to apply for a Change of Assessment instead of 
-                        lodging an objection.
+                        high contact costs, or special needs), you need to apply for a{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/special-circumstances')}
+                        >
+                            Change of Assessment
+                        </Text>
+                        {' '}instead of lodging an objection. Learn more about{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/child-support-reduction-strategies')}
+                        >
+                            reduction strategies
+                        </Text>
+                        {' '}if you're seeking to lower your assessment.
                     </Text>
 
                     {/* Section 2: The 28-Day Deadline */}
@@ -448,6 +462,21 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                         is strongly recommended.
                     </Text>
 
+                    <View style={styles.infoBox}>
+                        <Text style={styles.infoTitle}>💡 When Legal Help Makes the Difference</Text>
+                        <Text style={styles.infoText}>
+                            SSAT and AAT appeals have significantly higher success rates with legal representation. 
+                            Lawyers know how to present evidence effectively, cross-examine witnesses, and argue legal points.
+                        </Text>
+                        <Pressable
+                            style={[styles.infoButton, isWeb && webClickableStyles]}
+                            onPress={() => router.push('/blog/when-to-hire-family-lawyer')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.infoButtonText}>When to Hire a Lawyer →</Text>
+                        </Pressable>
+                    </View>
+
                     {/* Section 6: When to Get Legal Help */}
                     <Text style={styles.h2} accessibilityRole="header">
                         When to Get Legal Help
@@ -480,8 +509,14 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.ctaSection}>
                         <Text style={styles.ctaTitle}>Need Help With Your Objection?</Text>
                         <Text style={styles.ctaText}>
-                            Connect with experienced family lawyers who specialize in child support objections and appeals.
+                            Connect with experienced family lawyers who specialize in child support objections and appeals. 
+                            Most offer free initial consultations to assess your case.
                         </Text>
+                        <View style={styles.trustSignals}>
+                            <Text style={styles.trustItem}>✓ Free initial consultation</Text>
+                            <Text style={styles.trustItem}>✓ No obligation to proceed</Text>
+                            <Text style={styles.trustItem}>✓ Confidential case review</Text>
+                        </View>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
                             onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=assessment_objection')}
@@ -536,6 +571,18 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                             Services Australia only cares about whether the calculation is correct.
                         </Text>
                     </View>
+
+                    {/* Contextual Wizard */}
+                    <ContextualWizard
+                        preselectedFactors={['change_circumstances']}
+                        highlightedFactors={['income_resources_not_reflected', 'high_costs']}
+                        blogTopic="object_assessment"
+                        ctaText="Request a Change of Assessment"
+                        analyticsSource="blog_object_to_child_support_assessment"
+                        formReason="special_circumstances"
+                        title="Ready to Challenge Your Assessment?"
+                        description="Change of Assessment applications have strong success rates when properly prepared. Select any factors that apply to your situation."
+                    />
 
                     {/* FAQ Section */}
                     <Text style={styles.h2} accessibilityRole="header">
@@ -1020,5 +1067,19 @@ const styles = StyleSheet.create({
         color: '#ffffff',
         fontSize: 16,
         fontWeight: '600',
+    },
+    inlineLink: {
+        color: '#2563EB',
+        textDecorationLine: isWeb ? 'underline' : 'none',
+        fontWeight: '600',
+    },
+    trustSignals: {
+        marginBottom: 16,
+        alignItems: 'center',
+    },
+    trustItem: {
+        fontSize: 14,
+        color: '#bfdbfe',
+        marginBottom: 4,
     },
 });

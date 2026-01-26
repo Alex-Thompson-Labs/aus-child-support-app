@@ -271,7 +271,14 @@ export default function ChildSupportFormulaBlogPost() {
 
                     <Text style={styles.paragraph}>
                         Your income determines two things: your income percentage (share of costs) and the total 
-                        costs of children (higher combined income = higher costs from the table).
+                        costs of children (higher combined income = higher costs from the table). If you're{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/child-support-self-employed')}
+                        >
+                            self-employed
+                        </Text>
+                        , income calculation can be more complex.
                     </Text>
 
                     <View style={styles.exampleCard}>
@@ -290,7 +297,14 @@ export default function ChildSupportFormulaBlogPost() {
 
                     <Text style={styles.paragraph}>
                         Care percentage converts to cost percentage using a formula. More care = higher cost percentage 
-                        = lower child support payments.
+                        = lower child support payments. See the complete{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/child-support-care-percentage-table')}
+                        >
+                            care percentage table
+                        </Text>
+                        {' '}for all thresholds.
                     </Text>
 
                     <View style={styles.tableContainer}>
@@ -409,6 +423,7 @@ const styles = StyleSheet.create({
     highlightBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 1, borderColor: '#bfdbfe', padding: 16, marginBottom: 16, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     highlightTitle: { fontSize: 15, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
     highlightText: { fontSize: 15, lineHeight: 24, color: '#1e40af' },
+    inlineLink: { color: '#2563EB', fontWeight: '600', textDecorationLine: 'underline' },
     stepCard: { flexDirection: 'row', backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderLeftWidth: 4, borderLeftColor: '#2563EB', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     stepNumber: { fontSize: 24, fontWeight: '700', color: '#2563EB', marginRight: 12, minWidth: 50 },
     stepContent: { flex: 1 },

@@ -174,7 +174,14 @@ export default function SharedCare5050ChildSupportBlogPost() {
 
                     <Text style={styles.h3} accessibilityRole="header">1. Disagreement About Actual Care</Text>
                     <Text style={styles.paragraph}>
-                        One parent claims 50/50, the other says it's 60/40. This matters because:
+                        One parent claims 50/50, the other says it's 60/40. This matters because care percentage directly affects child support. Learn more about{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/child-support-care-percentage-table')}
+                        >
+                            care percentage calculations
+                        </Text>
+                        .
                     </Text>
 
                     <View style={styles.impactCard}>
@@ -208,7 +215,14 @@ export default function SharedCare5050ChildSupportBlogPost() {
 
                     <Text style={styles.h3} accessibilityRole="header">3. "We Agreed No Child Support"</Text>
                     <Text style={styles.paragraph}>
-                        Many 50/50 parents verbally agree "no child support." This isn't legally binding unless:
+                        Many 50/50 parents verbally agree "no child support." This isn't legally binding unless formalized. Learn more about{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/binding-child-support-agreement')}
+                        >
+                            binding child support agreements
+                        </Text>
+                        {' '}and how to protect yourself.
                     </Text>
 
                     <View style={styles.requirementCard}>
@@ -235,6 +249,14 @@ export default function SharedCare5050ChildSupportBlogPost() {
                     >
                         <Text style={styles.ctaButtonText}>Get Legal Advice on Binding Agreements →</Text>
                     </Pressable>
+
+                    <View style={styles.trustBox}>
+                        <Text style={styles.trustBoxTitle}>💡 What to Expect:</Text>
+                        <Text style={styles.trustBoxItem}>• Most lawyers respond within 24 hours</Text>
+                        <Text style={styles.trustBoxItem}>• Initial consultations often free or low-cost</Text>
+                        <Text style={styles.trustBoxItem}>• No obligation to proceed after consultation</Text>
+                        <Text style={styles.trustBoxItem}>• Your information remains confidential</Text>
+                    </View>
 
                     {/* FAQ */}
                     <Text style={styles.h2} accessibilityRole="header">Frequently Asked Questions</Text>
@@ -271,6 +293,11 @@ export default function SharedCare5050ChildSupportBlogPost() {
                             Care percentage disputes can cost thousands per year. Connect with family lawyers who 
                             specialize in shared care arrangements and can protect your rights.
                         </Text>
+                        <View style={styles.trustSignals}>
+                            <Text style={styles.trustSignalItem}>✓ Free initial consultation</Text>
+                            <Text style={styles.trustSignalItem}>✓ Specialists in shared care disputes</Text>
+                            <Text style={styles.trustSignalItem}>✓ Confidential case review</Text>
+                        </View>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
                             onPress={() => router.push('/lawyer-inquiry?mode=direct')}
@@ -364,4 +391,37 @@ const styles = StyleSheet.create({
     finalCtaText: { fontSize: 16, lineHeight: 26, color: '#bfdbfe', marginBottom: 24, textAlign: 'center' },
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 16, paddingHorizontal: 32, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 18, fontWeight: '700' },
+    inlineLink: {
+        color: '#2563EB',
+        textDecorationLine: isWeb ? 'underline' : 'none',
+        fontWeight: '600',
+    },
+    trustBox: {
+        backgroundColor: '#eff6ff',
+        borderRadius: 12,
+        padding: 16,
+        marginVertical: 16,
+        borderWidth: 1,
+        borderColor: '#bfdbfe',
+    },
+    trustBoxTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#1e40af',
+        marginBottom: 12,
+    },
+    trustBoxItem: {
+        fontSize: 14,
+        color: '#1e40af',
+        marginBottom: 6,
+    },
+    trustSignals: {
+        marginBottom: 16,
+        alignItems: 'center',
+    },
+    trustSignalItem: {
+        fontSize: 14,
+        color: '#bfdbfe',
+        marginBottom: 4,
+    },
 });

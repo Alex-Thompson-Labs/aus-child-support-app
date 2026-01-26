@@ -1,3 +1,4 @@
+import { ContextualWizard } from '@/src/components/blog/ContextualWizard';
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
@@ -289,6 +290,28 @@ export default function AdultDisabledChildMaintenanceScreen() {
               <Text style={styles.ctaButtonText}>Get Legal Help With Your Application</Text>
             </Pressable>
 
+            <View style={styles.internalLinkBox}>
+              <Text style={styles.internalLinkTitle}>📚 Related Reading:</Text>
+              <Pressable
+                style={[styles.internalLink, isWeb && webClickableStyles]}
+                onPress={() => router.push('/blog/child-support-after-18')}
+                accessibilityRole="button"
+              >
+                <Text style={styles.internalLinkText}>
+                  Child Support After 18: When Does It End? →
+                </Text>
+              </Pressable>
+              <Pressable
+                style={[styles.internalLink, isWeb && webClickableStyles]}
+                onPress={() => router.push('/blog/object-to-child-support-assessment')}
+                accessibilityRole="button"
+              >
+                <Text style={styles.internalLinkText}>
+                  How to Object to a Child Support Assessment →
+                </Text>
+              </Pressable>
+            </View>
+
             <Text style={styles.heading2}>How Is the Amount Calculated?</Text>
 
             <Text style={styles.paragraph}>
@@ -493,6 +516,18 @@ export default function AdultDisabledChildMaintenanceScreen() {
               <Text style={styles.ctaButtonText}>Get Legal Advice on Your Case</Text>
             </Pressable>
 
+            {/* Contextual Wizard */}
+            <ContextualWizard
+              preselectedFactors={[]}
+              highlightedFactors={['change_circumstances', 'high_costs', 'care_arrangement_change']}
+              blogTopic="adult_disabled_child"
+              ctaText="Get Help With Adult Disabled Child Support"
+              analyticsSource="blog_adult_disabled_child_maintenance"
+              formReason="special_circumstances"
+              title="Need Help With Your Adult Disabled Child Case?"
+              description="Adult disabled child maintenance cases often involve Change of Assessment applications for additional disability costs. Select any factors that apply."
+            />
+
             <Text style={styles.heading2}>Common Scenarios</Text>
 
             <Text style={styles.heading3}>Scenario 1: Intellectual Disability</Text>
@@ -639,6 +674,11 @@ export default function AdultDisabledChildMaintenanceScreen() {
               <Text style={styles.finalCTAText}>
                 Our calculator helps you understand your child support obligations, but adult disabled child maintenance cases often require professional legal advice.
               </Text>
+              <View style={styles.trustSignalsBox}>
+                <Text style={styles.trustSignalItem}>✓ Specialists in disability-related child support</Text>
+                <Text style={styles.trustSignalItem}>✓ Free initial consultations available</Text>
+                <Text style={styles.trustSignalItem}>✓ Help with medical evidence and applications</Text>
+              </View>
               <Pressable
                 style={({ pressed }) => [
                   styles.finalCTAButton,
@@ -647,7 +687,7 @@ export default function AdultDisabledChildMaintenanceScreen() {
                 onPress={handleInquiryPress}
                 {...webClickableStyles}
               >
-                <Text style={styles.finalCTAButtonText}>Get Legal Advice</Text>
+                <Text style={styles.finalCTAButtonText}>Speak to a Specialist</Text>
               </Pressable>
             </View>
           </View>
@@ -779,9 +819,9 @@ const styles = StyleSheet.create({
     color: '#1e40af',
   },
   warningBox: {
-    backgroundColor: '#fef3c7',
+    backgroundColor: '#eff6ff',
     borderLeftWidth: 4,
-    borderLeftColor: '#f59e0b',
+    borderLeftColor: '#2563EB',
     padding: 16,
     marginVertical: 20,
     borderRadius: 8,
@@ -789,13 +829,13 @@ const styles = StyleSheet.create({
   warningBoxTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#92400e',
+    color: '#1e3a8a',
     marginBottom: 8,
   },
   warningBoxText: {
     fontSize: 15,
     lineHeight: 24,
-    color: '#92400e',
+    color: '#1e3a8a',
   },
   ctaButton: {
     backgroundColor: '#2563EB',
@@ -856,6 +896,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
+  trustSignalsBox: {
+    marginBottom: 24,
+    alignItems: 'flex-start',
+    width: '100%',
+    maxWidth: 400,
+  },
+  trustSignalItem: {
+    fontSize: 14,
+    color: '#e0e7ff',
+    marginBottom: 8,
+    lineHeight: 20,
+  },
   finalCTAButton: {
     backgroundColor: '#ffffff',
     paddingVertical: 14,
@@ -871,5 +923,27 @@ const styles = StyleSheet.create({
     color: '#1e3a8a',
     fontSize: 16,
     fontWeight: '600',
+  },
+  internalLinkBox: {
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    padding: 16,
+    marginVertical: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  internalLinkTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#1e3a8a',
+    marginBottom: 12,
+  },
+  internalLink: {
+    paddingVertical: 8,
+  },
+  internalLinkText: {
+    fontSize: 15,
+    color: '#2563EB',
+    fontWeight: '500',
   },
 });

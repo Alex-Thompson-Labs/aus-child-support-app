@@ -1,3 +1,4 @@
+import { ContextualWizard } from '@/src/components/blog/ContextualWizard';
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
@@ -285,8 +286,13 @@ export default function InternationalChildSupportBlogPost() {
 
                     <Text style={styles.paragraph}>
                         If your ex lives in a non-reciprocating jurisdiction and refuses to pay, your practical options 
-                        are limited. Many parents in this situation receive no child support. This is one of the most 
-                        frustrating gaps in the international child support system.
+                        are limited. Many parents in this situation receive no child support. Learn more about{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/overseas-parent-child-support-enforcement')}
+                        >
+                            overseas parent enforcement strategies
+                        </Text>.
                     </Text>
 
                     {/* What to Do Section */}
@@ -334,6 +340,18 @@ export default function InternationalChildSupportBlogPost() {
                         </Text>
                     </View>
 
+                    {/* Contextual Wizard */}
+                    <ContextualWizard
+                        preselectedFactors={['international_jurisdiction']}
+                        highlightedFactors={['income_resources_not_reflected']}
+                        blogTopic="international"
+                        ctaText="Get Help With International Cases"
+                        analyticsSource="blog_international_child_support_australia"
+                        formReason="special_circumstances"
+                        title="Dealing With an Overseas Parent?"
+                        description="International cases require specialized knowledge of reciprocating jurisdictions and enforcement mechanisms. Select any factors that apply."
+                    />
+
                     {/* FAQ Section */}
                     <Text style={styles.h2} accessibilityRole="header">
                         Frequently Asked Questions
@@ -356,10 +374,11 @@ export default function InternationalChildSupportBlogPost() {
 
                     {/* CTA Section */}
                     <View style={styles.ctaSection}>
-                        <Text style={styles.ctaTitle}>Need to Calculate Your Child Support?</Text>
+                        <Text style={styles.ctaTitle}>Need Help With International Child Support?</Text>
                         <Text style={styles.ctaText}>
-                            Use our free calculator to estimate what you're owed. Takes 5 minutes and uses the official 
-                            Services Australia formula.
+                            International cases require specialized knowledge of reciprocating jurisdictions and 
+                            enforcement mechanisms. Most family lawyers offer free initial consultations with no 
+                            obligation to proceed.
                         </Text>
                         <View style={styles.ctaButtons}>
                             <Pressable
@@ -372,7 +391,7 @@ export default function InternationalChildSupportBlogPost() {
                             </Pressable>
                             <Pressable
                                 style={[styles.secondaryButton, isWeb && webClickableStyles]}
-                                onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=international')}
+                                onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                                 accessibilityRole="button"
                                 accessibilityLabel="Get legal help"
                             >
@@ -461,6 +480,10 @@ const styles = StyleSheet.create({
         lineHeight: 26,
         color: '#475569',
         marginBottom: 16,
+    },
+    inlineLink: {
+        color: '#2563EB',
+        textDecorationLine: 'underline',
     },
     bulletItem: {
         fontSize: 15,

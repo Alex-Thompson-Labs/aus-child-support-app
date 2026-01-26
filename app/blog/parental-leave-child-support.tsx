@@ -151,7 +151,14 @@ export default function ParentalLeaveChildSupportScreen() {
             <Text style={styles.heading2}>Temporary Assessment Changes for Parental Leave</Text>
 
             <Text style={styles.paragraph}>
-              When you go on parental leave, you can apply for a temporary assessment change. Here's how it works:
+              When you go on parental leave, you can apply for a temporary assessment change. Here's how it works. For more information on how income changes affect child support, see our guide on{' '}
+              <Text
+                style={styles.inlineLink}
+                onPress={() => router.push('/blog/estimate-vs-actual-income-child-support')}
+              >
+                estimate vs actual income
+              </Text>
+              .
             </Text>
 
             <View style={styles.stepCard}>
@@ -209,6 +216,14 @@ export default function ParentalLeaveChildSupportScreen() {
               <Text style={styles.ctaButtonText}>Get Legal Help With Assessment Changes →</Text>
             </Pressable>
 
+            <View style={styles.trustBox}>
+              <Text style={styles.trustBoxTitle}>💡 What to Expect:</Text>
+              <Text style={styles.trustBoxItem}>• Most lawyers respond within 24 hours</Text>
+              <Text style={styles.trustBoxItem}>• Initial consultations often free or low-cost</Text>
+              <Text style={styles.trustBoxItem}>• No obligation to proceed after consultation</Text>
+              <Text style={styles.trustBoxItem}>• Your information remains confidential</Text>
+            </View>
+
             <Text style={styles.heading2}>Parental Leave Pay and Child Support</Text>
 
             <Text style={styles.paragraph}>
@@ -246,7 +261,14 @@ export default function ParentalLeaveChildSupportScreen() {
             <Text style={styles.heading2}>Unpaid Parental Leave</Text>
 
             <Text style={styles.paragraph}>
-              If you take unpaid parental leave (no income at all), your child support assessment can be reduced to the minimum:
+              If you take unpaid parental leave (no income at all), your child support assessment can be reduced to the minimum. Learn more about{' '}
+              <Text
+                style={styles.inlineLink}
+                onPress={() => router.push('/blog/child-support-centrelink-income-support')}
+              >
+                how Centrelink income support affects child support
+              </Text>
+              .
             </Text>
 
             <View style={styles.unpaidCard}>
@@ -433,6 +455,11 @@ export default function ParentalLeaveChildSupportScreen() {
               <Text style={styles.finalCtaText}>
                 Navigating child support during parental leave can be complex. Connect with experienced family lawyers who can help you apply for assessment changes, handle disputes, and ensure you're paying the correct amount.
               </Text>
+              <View style={styles.trustSignals}>
+                <Text style={styles.trustSignalItem}>✓ Free initial consultation</Text>
+                <Text style={styles.trustSignalItem}>✓ Specialists in assessment changes</Text>
+                <Text style={styles.trustSignalItem}>✓ Confidential case review</Text>
+              </View>
               <Pressable
                 style={({ pressed }) => [styles.finalCtaButton, pressed && styles.finalCtaButtonPressed]}
                 onPress={handleInquiryPress}
@@ -970,5 +997,38 @@ const styles = StyleSheet.create({
     color: '#1e3a8a',
     fontSize: 16,
     fontWeight: '600',
+  },
+  inlineLink: {
+    color: '#2563EB',
+    textDecorationLine: isWeb ? 'underline' : 'none',
+    fontWeight: '600',
+  },
+  trustBox: {
+    backgroundColor: '#eff6ff',
+    borderRadius: 12,
+    padding: 16,
+    marginVertical: 16,
+    borderWidth: 1,
+    borderColor: '#bfdbfe',
+  },
+  trustBoxTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1e40af',
+    marginBottom: 12,
+  },
+  trustBoxItem: {
+    fontSize: 14,
+    color: '#1e40af',
+    marginBottom: 6,
+  },
+  trustSignals: {
+    marginBottom: 16,
+    alignItems: 'center',
+  },
+  trustSignalItem: {
+    fontSize: 14,
+    color: '#e0e7ff',
+    marginBottom: 4,
   },
 });

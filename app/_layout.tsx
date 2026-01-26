@@ -4,16 +4,17 @@ import { LoadingFallback } from '@/src/components/ui/LoadingFallback';
 import { ABTestingProvider } from '@/src/contexts/ABTestingContext';
 import { useClientOnly } from '@/src/hooks/useClientOnly';
 import { Analytics as AnalyticsUtil } from '@/src/utils/analytics';
-import { initEmailJS } from '@/src/utils/emailjs';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Stack, usePathname } from 'expo-router';
 import Head from 'expo-router/head';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import { Platform, View } from 'react-native';
+
+// Lazy load analytics components (non-critical)
+const Analytics = lazy(() => import('@vercel/analytics/react').then(m => ({ default: m.Analytics })));
+const SpeedInsights = lazy(() => import('@vercel/speed-insights/react').then(m => ({ default: m.SpeedInsights })));
 
 // Keep the splash screen visible while we fetch resources
 // Wrap in try-catch to prevent crashes on web static export
@@ -40,32 +41,40 @@ export default function RootLayout() {
   useEffect(() => {
     async function prepare() {
       try {
-        // Initialize EmailJS for web
+        // Defer non-critical initialization to after first paint
+        setAppIsReady(true);
+        
+        // Initialize analytics and EmailJS after app is ready (non-blocking)
         if (Platform.OS === 'web') {
-          initEmailJS();
+          // Use requestIdleCallback to defer until browser is idle
+          // Delay by 3 seconds to ensure critical rendering is complete
+          const idleCallback = (window as any).requestIdleCallback || setTimeout;
+          
+          idleCallback(() => {
+            setTimeout(() => {
+              // Lazy load EmailJS
+              import('@/src/utils/emailjs').then(({ initEmailJS }) => {
+                initEmailJS();
+              }).catch(() => {
+                // Fail silently - EmailJS is non-critical
+              });
 
-          // Initialize Google Analytics 4 (deferred via requestIdleCallback)
-          // The Analytics.initialize() method will defer loading until after initial render
-          const gaMeasurementId = process.env.EXPO_PUBLIC_GA_MEASUREMENT_ID;
-          if (gaMeasurementId) {
-            AnalyticsUtil.initialize(gaMeasurementId);
-          } else {
-            console.warn('GA_MEASUREMENT_ID not configured - analytics disabled');
-          }
+              // Initialize Google Analytics 4 (deferred)
+              const gaMeasurementId = process.env.EXPO_PUBLIC_GA_MEASUREMENT_ID;
+              if (gaMeasurementId) {
+                AnalyticsUtil.initialize(gaMeasurementId);
+              }
+            }, 3000); // 3 second delay for analytics
+          });
         }
-        // Add any async resource loading here if needed (e.g., fonts)
-        // For now, we just mark as ready since fonts are loaded via expo config
       } catch (e) {
         console.warn('Error preparing app:', e);
-      } finally {
-        setAppIsReady(true);
       }
     }
 
     prepare();
 
     // Safety fallback: Ensure splash screen hides after 5 seconds
-    // to prevent it from blocking user interactions if something hangs.
     const timeout = setTimeout(() => {
       SplashScreen.hideAsync().catch(() => {
         // Ignore errors if already hidden
@@ -201,8 +210,10 @@ export default function RootLayout() {
             {/* Lazy load analytics components after app is ready */}
             {Platform.OS === 'web' && appIsReady && (
               <AnalyticsErrorBoundary>
-                <Analytics />
-                <SpeedInsights />
+                <Suspense fallback={null}>
+                  <Analytics />
+                  <SpeedInsights />
+                </Suspense>
               </AnalyticsErrorBoundary>
             )}
           </ThemeProvider>

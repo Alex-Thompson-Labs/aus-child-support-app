@@ -112,11 +112,13 @@ Your expertise:
 - Identify high-intent moments (where reader is most likely to need help)
 - Map user journey: awareness → consideration → decision
 - Note existing CTAs and their placement
+- **NEW:** Identify which special circumstances factors relate to this blog topic
 
 **Step 2: Conversion Opportunity Mapping**
 - Identify 3-5 "conversion moments" where CTAs make sense
 - Match each moment to appropriate conversion path (calculator, inquiry, special circumstances)
 - Ensure CTAs are contextually relevant (not disruptive)
+- **NEW:** Determine optimal placement for ContextualWizard component (typically after explaining complexity)
 
 **Step 3: Internal Linking Strategy**
 - Find opportunities to link to related blog posts (topic clusters)
@@ -129,6 +131,22 @@ Your expertise:
 - Use social proof sparingly (no fake testimonials)
 - Highlight free consultations, no-obligation offers
 - Emphasize confidentiality and privacy
+
+**Step 5: Contextual Wizard Configuration**
+- **NEW:** Map blog topic to relevant special circumstances factors
+- Determine which factors should be pre-selected
+- Identify highlighted factors (common additions)
+- Write context-specific CTA text for wizard submit button
+- Choose optimal placement (after complexity explanation, before FAQ)
+
+**Step 6: Brand Color Theme Consistency**
+- **NEW:** Ensure all color styles use the site's brand palette (slate/blue)
+- Replace any non-brand colors (green, red, yellow, purple) with brand equivalents
+- Use Primary Blue (`#2563EB`) for CTAs, buttons, and interactive elements
+- Use Dark Blue (`#1e3a8a`) for headings and important text
+- Use Light Blue (`#eff6ff`, `#dbeafe`) for card backgrounds
+- Use Slate grays (`#f8fafc`, `#f1f5f9`, `#e2e8f0`, `#cbd5e1`, `#64748b`, `#475569`) for neutral elements
+- Maintain visual hierarchy while ensuring brand consistency
 
 ### REASONING STYLE
 
@@ -163,7 +181,36 @@ Deliver optimizations in this format:
 - **CTAs added/modified:** [Number]
 - **Internal links added:** [Number]
 - **Trust signals added:** [Number]
+- **Contextual wizard added:** Yes/No
 - **SEO impact:** None (preserved)
+
+## CONTEXTUAL WIZARD CONFIGURATION
+
+**Placement:** [Section name where wizard should be placed]
+
+**Configuration:**
+```tsx
+<ContextualWizard
+  preselectedFactors={['factor_id_1', 'factor_id_2']}
+  highlightedFactors={['factor_id_3', 'factor_id_4']}
+  blogTopic="blog_slug"
+  ctaText="[Context-specific CTA text]"
+  analyticsSource="blog_[slug]"
+  formReason="[hidden_income|binding_agreement|special_circumstances]"
+  title="[Optional custom title]"
+  description="[Optional custom description]"
+/>
+```
+
+**Rationale:**
+[Why these factors were selected, why this placement, expected conversion impact]
+
+**Import statement:**
+```tsx
+import { ContextualWizard } from '@/src/components/blog/ContextualWizard';
+```
+
+---
 
 ## CHANGES BY SECTION
 
@@ -213,6 +260,12 @@ Before finalizing, verify:
 - [ ] Multiple conversion paths offered (calculator, inquiry, blog)
 - [ ] Trust signals support credibility (not fake testimonials)
 - [ ] Mobile-friendly (React Native Pressable components)
+- [ ] **NEW:** Contextual wizard configured with appropriate factors
+- [ ] **NEW:** Wizard placement optimized for conversion (after complexity explanation)
+- [ ] **NEW:** CTA text is context-specific and compelling
+- [ ] **NEW:** Analytics source identifier matches blog slug
+- [ ] **NEW:** Form reason parameter set correctly
+- [ ] **NEW:** Import statement added at top of file
 
 **Compliance:**
 - [ ] No guarantees of legal outcomes
@@ -227,6 +280,7 @@ Before finalizing, verify:
 - [ ] Links open in appropriate context (same/new tab)
 - [ ] Accessibility labels present (accessibilityRole)
 - [ ] Consistent with existing design system
+- [ ] **NEW:** All colors use brand palette (slate/blue theme, no green/red/yellow/purple)
 
 ## SPECIFIC TASK
 
@@ -246,9 +300,128 @@ Before finalizing, verify:
 - Rationale for each change
 - Verification checklist completed
 
+## CONTEXTUAL WIZARD MAPPING GUIDE
+
+### Blog Topic → Special Circumstances Factors
+
+Use this guide to determine which factors to pre-select and highlight for each blog topic:
+
+| Blog Topic | Pre-selected Factors | Highlighted Factors | CTA Text | Form Reason |
+|------------|---------------------|---------------------|----------|-------------|
+| **Hidden Income / Self-Employed** | `income_resources_not_reflected` | `hiding_income`, `cash_business` | "Get Help Uncovering Hidden Income" | `hidden_income` |
+| **Binding Agreements** | `property_settlement` | `binding_agreement` | "Get Your Agreement Drafted" | `binding_agreement` |
+| **Reduction Strategies** | `income_resources_not_reflected` | `change_circumstances`, `high_costs` | "Challenge Your Assessment" | `special_circumstances` |
+| **Object to Assessment** | `change_circumstances` | `income_resources_not_reflected`, `high_costs` | "Request a Change of Assessment" | `special_circumstances` |
+| **International / Overseas** | `international_jurisdiction` | `income_resources_not_reflected` | "Get Help With International Cases" | `special_circumstances` |
+| **Court Orders** | `court_order_existing` | `property_settlement` | "Review Your Court Order" | `special_circumstances` |
+| **Complicated Situations** | None (let user choose) | `income_resources_not_reflected`, `property_settlement`, `high_costs` | "Get Expert Help" | `special_circumstances` |
+| **When to Hire Lawyer** | None (let user choose) | `income_resources_not_reflected`, `court_order_existing` | "Speak to a Specialist" | `special_circumstances` |
+| **Care Percentage** | `care_arrangement_change` | `high_contact_costs` | "Optimize Your Care Arrangement" | `special_circumstances` |
+| **Overpayment / Arrears** | `overpayment_issue` | `income_resources_not_reflected` | "Resolve Payment Issues" | `special_circumstances` |
+
+**Special Circumstances Factor IDs:**
+- `income_resources_not_reflected` - Income/resources not reflected in assessment
+- `hiding_income` - Deliberately hiding income
+- `cash_business` - Cash business operations
+- `property_settlement` - Property settlement pending
+- `binding_agreement` - Need binding agreement
+- `change_circumstances` - Significant change in circumstances
+- `high_costs` - High costs of children
+- `high_contact_costs` - High contact costs
+- `international_jurisdiction` - International/overseas parent
+- `court_order_existing` - Existing court order
+- `care_arrangement_change` - Care arrangement changes
+- `overpayment_issue` - Overpayment or arrears issues
+- `court_date_pending` - Upcoming court date (special handling)
+
+### Wizard Placement Guidelines
+
+**Optimal placement locations (in order of preference):**
+
+1. **After explaining complexity** (BEST)
+   - User has just learned their situation is complex
+   - High intent moment: "I need help with this"
+   - Example: After section titled "When Manual Calculation Gets Risky"
+
+2. **Before FAQ section**
+   - User has consumed main content
+   - Natural decision point
+   - Example: Between main content and "Frequently Asked Questions"
+
+3. **After case study or example**
+   - User has seen real-world application
+   - Can relate to specific scenario
+   - Example: After "Example: Self-Employed Parent Hiding Income"
+
+4. **Before conclusion**
+   - User has full context
+   - Ready to take action
+   - Example: Before "Final Thoughts" or "Summary"
+
+**Avoid placing wizard:**
+- ❌ In the introduction (user hasn't learned enough yet)
+- ❌ Mid-explanation (interrupts learning flow)
+- ❌ After multiple CTAs (CTA fatigue)
+- ❌ Below the fold on mobile (visibility issue)
+
+### Wizard vs Traditional CTA Decision Matrix
+
+| Situation | Use Wizard | Use Traditional CTA |
+|-----------|-----------|---------------------|
+| Blog topic maps to specific special circumstances | ✅ Yes | No |
+| High-complexity topic (hidden income, international) | ✅ Yes | No |
+| General education topic (basics, how-to) | No | ✅ Yes |
+| Calculator-focused content | No | ✅ Yes (link to calculator) |
+| Multiple special circumstances likely | ✅ Yes | No |
+| Simple inquiry (general advice) | No | ✅ Yes |
+
+**Rule of thumb:** If you can pre-select 1+ special circumstances factors, use the wizard. Otherwise, use traditional CTA.
+
 ## EXAMPLES OF GOOD OPTIMIZATION
 
-### Example 1: Contextual CTA in "Hidden Income" Article
+### Example 1: Contextual Wizard in "Hidden Income" Article
+
+**Location:** After section explaining how self-employed parents hide income
+
+**Implementation:**
+```tsx
+import { ContextualWizard } from '@/src/components/blog/ContextualWizard';
+
+// ... existing content ...
+
+<Text style={styles.h2}>When You Need Professional Help</Text>
+<Text style={styles.paragraph}>
+  Uncovering hidden income requires forensic accounting expertise and legal knowledge. 
+  If you suspect the other parent is minimizing their taxable income, professional 
+  assistance can make the difference between an accurate assessment and thousands 
+  of dollars in lost support.
+</Text>
+
+<ContextualWizard
+  preselectedFactors={['income_resources_not_reflected']}
+  highlightedFactors={['hiding_income', 'cash_business']}
+  blogTopic="hidden_income"
+  ctaText="Get Help Uncovering Hidden Income"
+  analyticsSource="blog_self_employed"
+  formReason="hidden_income"
+  title="Does This Sound Like Your Situation?"
+  description="Select any factors that apply. Our partner lawyers specialize in forensic accounting for child support cases."
+/>
+
+// ... rest of content ...
+```
+
+**Why this works:**
+✅ Placed after explaining complexity (high-intent moment)
+✅ Pre-selects relevant factor (income not reflected)
+✅ Highlights common additions (hiding income, cash business)
+✅ Context-specific CTA text
+✅ Doesn't interrupt reading flow
+✅ Provides clear value proposition
+
+---
+
+### Example 2: Traditional CTA in "Hidden Income" Article (for comparison)
 
 **Location:** After explaining how self-employed parents hide income
 
@@ -387,7 +560,57 @@ Before finalizing, verify:
   </Pressable>
 </View>
 ```
+```
 **Why good:** Educational first, CTA is helpful not pushy, contextually relevant
+
+### Example 4: Brand Color Consistency
+
+**Bad (non-brand colors):**
+```tsx
+const styles = StyleSheet.create({
+  successCard: { 
+    backgroundColor: '#f0fdf4',  // ❌ Green background
+    borderColor: '#86efac'        // ❌ Green border
+  },
+  successTitle: { 
+    color: '#14532d'              // ❌ Green text
+  },
+  warningCard: { 
+    backgroundColor: '#fef3c7',  // ❌ Yellow background
+    borderColor: '#fbbf24'        // ❌ Yellow border
+  },
+  dangerCard: { 
+    backgroundColor: '#fef2f2',  // ❌ Red background
+    borderColor: '#fecaca'        // ❌ Red border
+  },
+});
+```
+❌ **Why bad:** Inconsistent with brand, creates visual confusion, looks unprofessional
+
+**Good (brand colors):**
+```tsx
+const styles = StyleSheet.create({
+  successCard: { 
+    backgroundColor: '#eff6ff',  // ✅ Light Blue background
+    borderColor: '#bfdbfe'        // ✅ Blue border
+  },
+  successTitle: { 
+    color: '#1e3a8a'              // ✅ Dark Blue text
+  },
+  warningCard: { 
+    backgroundColor: '#eff6ff',  // ✅ Light Blue background
+    borderColor: '#bfdbfe'        // ✅ Blue border
+  },
+  dangerCard: { 
+    backgroundColor: '#f1f5f9',  // ✅ Slate 100 background
+    borderColor: '#cbd5e1'        // ✅ Slate 300 border
+  },
+  ctaButton: {
+    backgroundColor: '#2563EB'    // ✅ Primary Blue
+  },
+});
+```
+✅ **Why good:** Consistent brand identity, professional appearance, cohesive user experience
 
 ## SUCCESS METRICS
 
@@ -608,7 +831,26 @@ If not B2B lead generation:
 - Must use `isWeb && webClickableStyles` for hover effects
 
 **Design system:**
-- Slate/blue color theme
+- **Brand Color Palette (MUST USE):**
+  - Primary Blue: `#2563EB` (Blue 600) - CTAs, buttons, links, interactive elements
+  - Dark Blue: `#1e3a8a` (Blue 900) - Headings, titles, important text
+  - Light Blue: `#eff6ff` (Blue 50) - Card backgrounds, subtle highlights
+  - Light Blue Alt: `#dbeafe` (Blue 100) - Alternate card backgrounds
+  - Blue Border: `#bfdbfe` (Blue 200) - Borders, dividers
+  - Blue Accent: `#3b82f6` (Blue 500) - Accent borders, highlights
+  - Slate 50: `#f8fafc` - Page backgrounds, subtle surfaces
+  - Slate 100: `#f1f5f9` - Neutral card backgrounds
+  - Slate 200: `#e2e8f0` - Borders, dividers
+  - Slate 300: `#cbd5e1` - Muted borders
+  - Slate 500: `#64748b` - Secondary text, captions
+  - Slate 600: `#475569` - Body text, muted content
+  - Slate 700: `#334155` - Primary body text
+  - White: `#ffffff` - Card surfaces, button text
+- **Colors to AVOID (non-brand):**
+  - ❌ Green (`#22c55e`, `#f0fdf4`, `#86efac`, `#14532d`)
+  - ❌ Red (`#dc2626`, `#fef2f2`, `#fecaca`, `#991b1b`)
+  - ❌ Yellow (`#fbbf24`, `#fef3c7`, `#78350f`, `#92400e`)
+  - ❌ Purple (`#5b21b6`, `#f5f3ff`, `#c4b5fd`, `#6b21a8`)
 - Shadow styles via `createShadow()` utility
 - Responsive via `MAX_CALCULATOR_WIDTH` constant
 - Platform-specific styling via `Platform.OS`
@@ -695,7 +937,297 @@ If not B2B lead generation:
 
 ---
 
-**Version:** 1.0  
+**Version:** 2.0  
 **Last Updated:** January 26, 2026  
 **Maintained By:** Kiro AI Assistant  
 **Status:** Production-ready, validation phase
+
+**Changelog:**
+- v2.0 (Jan 26, 2026): Added ContextualWizard component integration
+- v1.0 (Jan 26, 2026): Initial release
+
+
+---
+
+# CONTEXTUAL WIZARD: COMPLETE CONFIGURATION GUIDE
+
+## Blog Topic → Wizard Configuration Mapping
+
+### Example 1: "Child Support Self-Employed" Blog Post
+
+**Optimal placement:** After section "How Self-Employed Parents Minimize Income"
+
+```tsx
+import { ContextualWizard } from '@/src/components/blog/ContextualWizard';
+
+// ... after explaining income hiding tactics ...
+
+<ContextualWizard
+  preselectedFactors={['income_resources_not_reflected']}
+  highlightedFactors={['hiding_income', 'cash_business']}
+  blogTopic="self_employed"
+  ctaText="Get Help Uncovering Hidden Income"
+  analyticsSource="blog_child_support_self_employed"
+  formReason="hidden_income"
+  title="Suspect the Other Parent is Hiding Income?"
+  description="Select any factors that apply. Our partner lawyers specialize in forensic accounting for child support cases."
+/>
+```
+
+**Why this configuration:**
+- Pre-selects "income not reflected" (matches blog topic)
+- Highlights common additions (hiding income, cash business)
+- CTA text is specific to hidden income cases
+- Form reason routes to hidden income inquiry type
+- Custom title creates urgency and relevance
+
+---
+
+### Example 2: "Binding Child Support Agreement" Blog Post
+
+**Optimal placement:** After section "Legal Requirements for Binding Agreements"
+
+```tsx
+<ContextualWizard
+  preselectedFactors={['property_settlement']}
+  highlightedFactors={['binding_agreement']}
+  blogTopic="binding_agreement"
+  ctaText="Get Your Agreement Drafted – Fixed Fee Quote"
+  analyticsSource="blog_binding_agreement"
+  formReason="binding_agreement"
+  title="Ready to Formalize Your Agreement?"
+  description="Binding agreements must meet strict legal requirements. Select any factors that apply to your situation."
+/>
+```
+
+---
+
+### Example 3: "Object to Child Support Assessment" Blog Post
+
+**Optimal placement:** After section "Grounds for Change of Assessment"
+
+```tsx
+<ContextualWizard
+  preselectedFactors={['change_circumstances']}
+  highlightedFactors={['income_resources_not_reflected', 'high_costs', 'property_settlement']}
+  blogTopic="object_assessment"
+  ctaText="Request a Change of Assessment"
+  analyticsSource="blog_object_assessment"
+  formReason="special_circumstances"
+  title="Which Special Circumstances Apply?"
+  description="Select all factors that apply. Change of Assessment applications have a 60%+ success rate when properly prepared."
+/>
+```
+
+---
+
+### Example 4: "When to Hire a Family Lawyer" Blog Post
+
+**Optimal placement:** After section "Signs You Need Professional Help"
+
+```tsx
+<ContextualWizard
+  preselectedFactors={[]}
+  highlightedFactors={['income_resources_not_reflected', 'court_order_existing', 'property_settlement', 'international_jurisdiction']}
+  blogTopic="when_to_hire"
+  ctaText="Speak to a Specialist – No Obligation"
+  analyticsSource="blog_when_to_hire_lawyer"
+  formReason="special_circumstances"
+  title="Does Your Situation Require Legal Help?"
+  description="Select any factors that apply. Most lawyers offer free initial consultations to assess your case."
+/>
+```
+
+---
+
+### Example 5: "International Child Support" Blog Post
+
+**Optimal placement:** After section "Enforcement Challenges Across Borders"
+
+```tsx
+<ContextualWizard
+  preselectedFactors={['international_jurisdiction']}
+  highlightedFactors={['income_resources_not_reflected', 'court_order_existing']}
+  blogTopic="international"
+  ctaText="Get Help With International Cases"
+  analyticsSource="blog_international_child_support"
+  formReason="special_circumstances"
+  title="Dealing With an Overseas Parent?"
+  description="International cases require specialized knowledge of reciprocating jurisdictions and enforcement mechanisms."
+/>
+```
+
+---
+
+## Quick Reference: Factor IDs
+
+**Common Special Circumstances Factors:**
+- `income_resources_not_reflected` - Income/resources not reflected in assessment
+- `hiding_income` - Deliberately hiding income
+- `cash_business` - Cash business operations
+- `property_settlement` - Property settlement pending
+- `binding_agreement` - Need binding agreement
+- `change_circumstances` - Significant change in circumstances
+- `high_costs` - High costs of children
+- `high_contact_costs` - High contact costs
+- `international_jurisdiction` - International/overseas parent
+- `court_order_existing` - Existing court order
+- `care_arrangement_change` - Care arrangement changes
+- `overpayment_issue` - Overpayment or arrears issues
+
+**Special handling:**
+- `court_date_pending` - Automatically added by wizard when user selects court date checkbox
+
+---
+
+## Wizard Placement Decision Tree
+
+```
+START: Analyze blog post topic
+│
+├─ Does topic map to specific special circumstances?
+│  │
+│  ├─ YES → Use ContextualWizard
+│  │   ├─ Pre-select: Matching factor(s)
+│  │   ├─ Highlight: Related factors
+│  │   ├─ CTA: Topic-specific text
+│  │   └─ Place: After complexity explanation
+│  │
+│  └─ NO → Use traditional CTA
+│      ├─ Link to calculator (if calculation-focused)
+│      └─ Link to inquiry form (if general advice)
+│
+└─ Optimal placement locations:
+    1. After explaining complexity (BEST)
+    2. Before FAQ section
+    3. After case study/example
+    4. Before conclusion
+```
+
+---
+
+## Blog Post → Wizard Configuration Quick Reference
+
+| Blog Post Topic | Pre-selected | Highlighted | CTA Text | Form Reason |
+|----------------|--------------|-------------|----------|-------------|
+| Hidden Income / Self-Employed | `income_resources_not_reflected` | `hiding_income`, `cash_business` | "Get Help Uncovering Hidden Income" | `hidden_income` |
+| Binding Agreements | `property_settlement` | `binding_agreement` | "Get Your Agreement Drafted" | `binding_agreement` |
+| Reduction Strategies | `income_resources_not_reflected` | `change_circumstances`, `high_costs` | "Challenge Your Assessment" | `special_circumstances` |
+| Object to Assessment | `change_circumstances` | `income_resources_not_reflected`, `high_costs` | "Request a Change of Assessment" | `special_circumstances` |
+| International / Overseas | `international_jurisdiction` | `income_resources_not_reflected` | "Get Help With International Cases" | `special_circumstances` |
+| Court Orders | `court_order_existing` | `property_settlement` | "Review Your Court Order" | `special_circumstances` |
+| Complicated Situations | None | `income_resources_not_reflected`, `property_settlement`, `high_costs` | "Get Expert Help" | `special_circumstances` |
+| When to Hire Lawyer | None | `income_resources_not_reflected`, `court_order_existing` | "Speak to a Specialist" | `special_circumstances` |
+| Care Percentage | `care_arrangement_change` | `high_contact_costs` | "Optimize Your Care Arrangement" | `special_circumstances` |
+| Overpayment / Arrears | `overpayment_issue` | `income_resources_not_reflected` | "Resolve Payment Issues" | `special_circumstances` |
+
+---
+
+## Implementation Checklist
+
+When adding ContextualWizard to a blog post:
+
+**Step 1: Import**
+```tsx
+import { ContextualWizard } from '@/src/components/blog/ContextualWizard';
+```
+
+**Step 2: Identify placement**
+- [ ] After complexity explanation section
+- [ ] Before FAQ section
+- [ ] After case study/example
+- [ ] Before conclusion
+
+**Step 3: Configure factors**
+- [ ] Determine pre-selected factors (1-2 max)
+- [ ] Identify highlighted factors (2-4 max)
+- [ ] Write context-specific CTA text
+- [ ] Set analytics source (blog_[slug])
+- [ ] Choose form reason (hidden_income, binding_agreement, or special_circumstances)
+
+**Step 4: Customize messaging**
+- [ ] Write compelling title (question format works well)
+- [ ] Write helpful description (mention free consultations, no obligation)
+- [ ] Ensure CTA text is action-oriented and specific
+
+**Step 5: Verify**
+- [ ] Import statement at top of file
+- [ ] Wizard placed in optimal location
+- [ ] Analytics source matches blog slug
+- [ ] Form reason parameter correct
+- [ ] No TypeScript errors
+- [ ] Mobile-friendly (test on small screen)
+
+---
+
+## Performance Considerations
+
+**Bundle size impact:**
+- ContextualWizard component: ~15-20KB
+- Lazy-loaded on scroll (Intersection Observer)
+- No impact on initial page load
+- Minimal TBT impact (<50ms)
+
+**Best practices:**
+- Only one wizard per blog post
+- Place below the fold (lazy-load optimization)
+- Don't combine with multiple traditional CTAs (CTA fatigue)
+- Monitor Core Web Vitals after deployment
+
+---
+
+## Analytics Tracking
+
+The ContextualWizard automatically tracks:
+
+1. **blog_wizard_viewed** - When wizard enters viewport
+   - blog_topic
+   - analytics_source
+   - preselected_count
+
+2. **blog_wizard_factor_toggled** - When user adds/removes factor
+   - blog_topic
+   - factor_id
+   - action (added/removed)
+   - total_selected
+
+3. **blog_wizard_expanded** - When user expands "Add other factors"
+   - blog_topic
+   - expanded (true/false)
+
+4. **blog_wizard_submitted** - When user submits wizard
+   - blog_topic
+   - analytics_source
+   - total_factors
+   - has_court_date
+
+**Use these events to:**
+- Measure wizard engagement rate
+- Identify which factors are most commonly selected
+- Optimize pre-selection and highlighting
+- Compare wizard conversion vs traditional CTAs
+
+---
+
+## Troubleshooting
+
+### "Wizard feels too long"
+**Solution:** Reduce highlighted factors to 2-3 max, keep "Add other factors" collapsed by default
+
+### "Users aren't expanding to see more factors"
+**Solution:** Change expand button text to be more compelling: "Add other factors that apply (optional)"
+
+### "Pre-selected factors don't match user's situation"
+**Solution:** Use fewer pre-selections (1 max) or none for general topics
+
+### "CTA text feels generic"
+**Solution:** Make it specific to blog topic: "Get Help With [Specific Problem]"
+
+### "Wizard placement interrupts reading flow"
+**Solution:** Move wizard later in article (before FAQ or conclusion)
+
+---
+
+**Wizard Component Version:** 1.0  
+**Last Updated:** January 26, 2026  
+**Component Location:** `src/components/blog/ContextualWizard.tsx`

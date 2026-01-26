@@ -1,3 +1,4 @@
+import { ContextualWizard } from '@/src/components/blog/ContextualWizard';
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
@@ -75,16 +76,16 @@ export default function ChildSupportSelfEmployedBlogPost() {
                     </View>
 
                     <Text style={styles.intro}>
-                        Self-employed? Your child support assessment is more complex than wage earners. Services Australia 
-                        scrutinizes business income differently, adds back certain expenses, and has legal authority to 
+                        Self-employed? Your child support assessment is more complex than wage earners. Services Australia
+                        scrutinizes business income differently, adds back certain expenses, and has legal authority to
                         access your financial records. Here's what you need to know.
                     </Text>
 
                     <View style={styles.alertBox}>
                         <Text style={styles.alertTitle}>⚠️ High-Risk Assessment Area</Text>
                         <Text style={styles.alertText}>
-                            Self-employment is one of the most disputed areas in child support. Mistakes in reporting 
-                            business income can result in underpayment penalties, Change of Assessment applications, 
+                            Self-employment is one of the most disputed areas in child support. Mistakes in reporting
+                            business income can result in underpayment penalties, Change of Assessment applications,
                             or legal action. This guide covers the basics—complex cases need professional advice.
                         </Text>
                     </View>
@@ -92,7 +93,7 @@ export default function ChildSupportSelfEmployedBlogPost() {
                     {/* How Business Income is Assessed */}
                     <Text style={styles.h2} accessibilityRole="header">How Business Income is Assessed</Text>
                     <Text style={styles.paragraph}>
-                        Services Australia doesn't use your gross business revenue. They use your Adjusted Taxable Income 
+                        Services Australia doesn't use your gross business revenue. They use your Adjusted Taxable Income
                         (ATI) from your tax return, which includes:
                     </Text>
 
@@ -107,25 +108,33 @@ export default function ChildSupportSelfEmployedBlogPost() {
                     </View>
 
                     <Text style={styles.paragraph}>
-                        But here's where it gets complicated: Services Australia can add back certain business expenses 
-                        they consider personal benefits rather than legitimate business costs.
+                        But here's where it gets complicated: Services Australia can add back certain business expenses
+                        they consider personal benefits rather than legitimate business costs. Understanding these
+                        adjustments is critical—learn more about{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/child-support-reduction-strategies')}
+                        >
+                            strategies to reduce child support assessments
+                        </Text>
+                        {' '}if you're facing inflated income calculations.
                     </Text>
 
                     {/* Expenses That Get Added Back */}
                     <Text style={styles.h2} accessibilityRole="header">Business Expenses That Get Added Back</Text>
                     <Text style={styles.paragraph}>
-                        Even if the ATO allows these deductions, Services Australia may add them back to your income 
+                        Even if the ATO allows these deductions, Services Australia may add them back to your income
                         for child support purposes:
                     </Text>
 
                     <View style={styles.warningCard}>
                         <Text style={styles.warningCardTitle}>🔍 Commonly Scrutinized Expenses:</Text>
                         <Text style={styles.bulletItem}>
-                            <Text style={styles.bold}>Depreciation:</Text> Non-cash expense that reduces taxable income 
+                            <Text style={styles.bold}>Depreciation:</Text> Non-cash expense that reduces taxable income
                             but doesn't affect cash flow
                         </Text>
                         <Text style={styles.bulletItem}>
-                            <Text style={styles.bold}>Home office costs:</Text> Portion deemed personal use (electricity, 
+                            <Text style={styles.bold}>Home office costs:</Text> Portion deemed personal use (electricity,
                             internet, mortgage interest)
                         </Text>
                         <Text style={styles.bulletItem}>
@@ -176,9 +185,9 @@ export default function ChildSupportSelfEmployedBlogPost() {
                     <View style={styles.dangerBox}>
                         <Text style={styles.dangerTitle}>⚠️ Critical Warning:</Text>
                         <Text style={styles.dangerText}>
-                            Services Australia can request information directly from the ATO without your permission. 
-                            They can also issue formal notices requiring you to provide records within 28 days. 
-                            Refusing or providing false information can result in penalties or default assessments 
+                            Services Australia can request information directly from the ATO without your permission.
+                            They can also issue formal notices requiring you to provide records within 28 days.
+                            Refusing or providing false information can result in penalties or default assessments
                             based on industry averages (often higher than actual income).
                         </Text>
                     </View>
@@ -191,13 +200,13 @@ export default function ChildSupportSelfEmployedBlogPost() {
 
                     <Text style={styles.h3} accessibilityRole="header">Annual Reassessment</Text>
                     <Text style={styles.paragraph}>
-                        Child support is automatically reassessed each year when you lodge your tax return. If your 
+                        Child support is automatically reassessed each year when you lodge your tax return. If your
                         income drops, your payments adjust accordingly. If it increases, you'll pay more.
                     </Text>
 
                     <Text style={styles.h3} accessibilityRole="header">Interim Assessments (Income Drops)</Text>
                     <Text style={styles.paragraph}>
-                        If your income drops significantly mid-year (business downturn, loss of major client), you can 
+                        If your income drops significantly mid-year (business downturn, loss of major client), you can
                         request an interim assessment. You'll need to provide:
                     </Text>
 
@@ -209,7 +218,7 @@ export default function ChildSupportSelfEmployedBlogPost() {
 
                     <Text style={styles.h3} accessibilityRole="header">Change of Assessment (Income Increases or Hidden)</Text>
                     <Text style={styles.paragraph}>
-                        If the other parent believes you're underreporting income or your earning capacity is higher 
+                        If the other parent believes you're underreporting income or your earning capacity is higher
                         than reported, they can apply for a Change of Assessment. Common grounds:
                     </Text>
 
@@ -223,15 +232,22 @@ export default function ChildSupportSelfEmployedBlogPost() {
                         <Text style={styles.bulletItem}>• Significant assets but low reported income</Text>
                     </View>
 
-                    <Pressable
-                        style={[styles.ctaButton, isWeb && webClickableStyles]}
-                        onPress={() => router.push('/blog/complicated-child-support-situations')}
-                        accessibilityRole="button"
-                    >
-                        <Text style={styles.ctaButtonText}>
-                            Read: 8 Complicated Situations That Need Legal Advice →
+                    <View style={styles.internalLinkBox}>
+                        <Text style={styles.internalLinkTitle}>📖 Related Reading:</Text>
+                        <Text style={styles.internalLinkText}>
+                            Self-employment is one of the most complex child support scenarios. Learn about other
+                            situations that require professional help:
                         </Text>
-                    </Pressable>
+                        <Pressable
+                            style={[styles.internalLinkButton, isWeb && webClickableStyles]}
+                            onPress={() => router.push('/blog/complicated-child-support-situations')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.internalLinkButtonText}>
+                                8 Complicated Situations That Need Legal Advice →
+                            </Text>
+                        </Pressable>
+                    </View>
 
                     {/* Trusts and Company Structures */}
                     <Text style={styles.h2} accessibilityRole="header">Business Structures: Sole Trader vs Company vs Trust</Text>
@@ -258,7 +274,7 @@ export default function ChildSupportSelfEmployedBlogPost() {
                             <Text style={styles.bold}>Risk:</Text> Retained profits in company may be deemed available income
                         </Text>
                         <Text style={styles.structureText}>
-                            <Text style={styles.bold}>Scrutiny:</Text> High—Services Australia may argue you're minimizing 
+                            <Text style={styles.bold}>Scrutiny:</Text> High—Services Australia may argue you're minimizing
                             personal income by retaining profits
                         </Text>
                     </View>
@@ -269,11 +285,11 @@ export default function ChildSupportSelfEmployedBlogPost() {
                             <Text style={styles.bold}>Assessment:</Text> Trust distributions to you
                         </Text>
                         <Text style={styles.structureText}>
-                            <Text style={styles.bold}>Risk:</Text> Extremely high scrutiny—trusts are often used to minimize 
+                            <Text style={styles.bold}>Risk:</Text> Extremely high scrutiny—trusts are often used to minimize
                             child support
                         </Text>
                         <Text style={styles.structureText}>
-                            <Text style={styles.bold}>Scrutiny:</Text> Services Australia may argue you control distributions 
+                            <Text style={styles.bold}>Scrutiny:</Text> Services Australia may argue you control distributions
                             and should be assessed on full trust income
                         </Text>
                     </View>
@@ -281,9 +297,9 @@ export default function ChildSupportSelfEmployedBlogPost() {
                     <View style={styles.dangerBox}>
                         <Text style={styles.dangerTitle}>🚨 Trust Warning:</Text>
                         <Text style={styles.dangerText}>
-                            If you control a trust and distribute income to family members (spouse, adult children) 
-                            to reduce your personal income, Services Australia can apply for a court order to assess 
-                            you on the full trust income. This is a complex legal area—get advice before making 
+                            If you control a trust and distribute income to family members (spouse, adult children)
+                            to reduce your personal income, Services Australia can apply for a court order to assess
+                            you on the full trust income. This is a complex legal area—get advice before making
                             distribution decisions.
                         </Text>
                     </View>
@@ -296,7 +312,7 @@ export default function ChildSupportSelfEmployedBlogPost() {
                         <View style={styles.mistakeContent}>
                             <Text style={styles.mistakeTitle}>Assuming ATO Deductions = Child Support Deductions</Text>
                             <Text style={styles.mistakeText}>
-                                Just because the ATO allows a deduction doesn't mean Services Australia will. 
+                                Just because the ATO allows a deduction doesn't mean Services Australia will.
                                 Depreciation, home office, and vehicle expenses are commonly added back.
                             </Text>
                         </View>
@@ -307,7 +323,7 @@ export default function ChildSupportSelfEmployedBlogPost() {
                         <View style={styles.mistakeContent}>
                             <Text style={styles.mistakeTitle}>Not Keeping Detailed Records</Text>
                             <Text style={styles.mistakeText}>
-                                If you can't prove business expenses are legitimate, Services Australia will disallow 
+                                If you can't prove business expenses are legitimate, Services Australia will disallow
                                 them. Keep receipts, invoices, and documentation for everything.
                             </Text>
                         </View>
@@ -318,7 +334,7 @@ export default function ChildSupportSelfEmployedBlogPost() {
                         <View style={styles.mistakeContent}>
                             <Text style={styles.mistakeTitle}>Suddenly Reducing Income After Separation</Text>
                             <Text style={styles.mistakeText}>
-                                If your income drops significantly right after separation, expect scrutiny. The other 
+                                If your income drops significantly right after separation, expect scrutiny. The other
                                 parent can apply for Change of Assessment claiming you're deliberately reducing income.
                             </Text>
                         </View>
@@ -329,7 +345,7 @@ export default function ChildSupportSelfEmployedBlogPost() {
                         <View style={styles.mistakeContent}>
                             <Text style={styles.mistakeTitle}>Using Business Funds for Personal Expenses</Text>
                             <Text style={styles.mistakeText}>
-                                Paying personal expenses through the business (school fees, groceries, holidays) can 
+                                Paying personal expenses through the business (school fees, groceries, holidays) can
                                 be deemed personal income and added to your assessment.
                             </Text>
                         </View>
@@ -340,8 +356,8 @@ export default function ChildSupportSelfEmployedBlogPost() {
                         <View style={styles.mistakeContent}>
                             <Text style={styles.mistakeTitle}>Not Getting Legal Advice on Trust Distributions</Text>
                             <Text style={styles.mistakeText}>
-                                Trust distributions are heavily scrutinized. Making distribution decisions without 
-                                understanding child support implications can result in assessments on income you 
+                                Trust distributions are heavily scrutinized. Making distribution decisions without
+                                understanding child support implications can result in assessments on income you
                                 didn't personally receive.
                             </Text>
                         </View>
@@ -368,19 +384,31 @@ export default function ChildSupportSelfEmployedBlogPost() {
                     <View style={styles.costBenefitCard}>
                         <Text style={styles.costBenefitTitle}>💰 Cost vs Benefit:</Text>
                         <Text style={styles.costBenefitText}>
-                            Legal advice costs $300-500/hour. A mistake in self-employed income assessment can cost 
-                            $5,000-20,000/year in overpaid child support or penalties. For complex business structures, 
+                            Legal advice costs $300-500/hour. A mistake in self-employed income assessment can cost
+                            $5,000-20,000/year in overpaid child support or penalties. For complex business structures,
                             legal advice pays for itself within months.
                         </Text>
                     </View>
 
-                    <Pressable
-                        style={[styles.primaryButton, isWeb && webClickableStyles]}
-                        onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=hidden_income')}
-                        accessibilityRole="button"
-                    >
-                        <Text style={styles.primaryButtonText}>Connect With Family Lawyers</Text>
-                    </Pressable>
+                    <View style={styles.trustSignalBox}>
+                        <Text style={styles.trustSignalTitle}>💼 What to Expect:</Text>
+                        <Text style={styles.trustSignalItem}>• Most lawyers offer free initial consultations (15-30 minutes)</Text>
+                        <Text style={styles.trustSignalItem}>• No obligation to proceed after consultation</Text>
+                        <Text style={styles.trustSignalItem}>• Confidential discussion of your specific situation</Text>
+                        <Text style={styles.trustSignalItem}>• Clear fee structure explained upfront</Text>
+                        <Text style={styles.trustSignalItem}>• Many offer fixed-fee packages for specific services</Text>
+                    </View>
+
+                    <ContextualWizard
+                        preselectedFactors={['income_resources_not_reflected']}
+                        highlightedFactors={['hiding_income', 'cash_business']}
+                        blogTopic="self_employed_income"
+                        ctaText="Get Help With Self-Employment Income Assessment"
+                        analyticsSource="blog_self_employed"
+                        formReason="hidden_income"
+                        title="Does This Sound Like Your Situation?"
+                        description="Self-employment income is one of the most disputed areas in child support. Our partner lawyers specialize in business income assessments and forensic accounting."
+                    />
 
                     {/* FAQ */}
                     <Text style={styles.h2} accessibilityRole="header">Frequently Asked Questions</Text>
@@ -414,7 +442,7 @@ export default function ChildSupportSelfEmployedBlogPost() {
                     <View style={styles.calculatorSection}>
                         <Text style={styles.calculatorTitle}>Estimate Your Child Support</Text>
                         <Text style={styles.calculatorText}>
-                            Use our free calculator to estimate child support based on your business income. 
+                            Use our free calculator to estimate child support based on your business income.
                             Enter your taxable income (after deductions) to get an instant estimate.
                         </Text>
                         <Pressable
@@ -425,7 +453,7 @@ export default function ChildSupportSelfEmployedBlogPost() {
                             <Text style={styles.calculatorButtonText}>Try Free Calculator</Text>
                         </Pressable>
                         <Text style={styles.calculatorDisclaimer}>
-                            Note: The calculator uses standard income. If Services Australia adds back business 
+                            Note: The calculator uses standard income. If Services Australia adds back business
                             expenses, your actual assessment will be higher.
                         </Text>
                     </View>
@@ -434,7 +462,7 @@ export default function ChildSupportSelfEmployedBlogPost() {
                     <View style={styles.finalCtaSection}>
                         <Text style={styles.finalCtaTitle}>Self-Employed? Get Expert Advice</Text>
                         <Text style={styles.finalCtaText}>
-                            Business income assessments are complex and high-risk. Connect with experienced family 
+                            Business income assessments are complex and high-risk. Connect with experienced family
                             lawyers who understand self-employment and child support.
                         </Text>
                         <Pressable
@@ -474,65 +502,77 @@ const styles = StyleSheet.create({
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
     bold: { fontWeight: '600', color: '#1e3a8a' },
-    
+
     alertBox: { backgroundColor: '#fef3c7', borderRadius: 12, borderWidth: 2, borderColor: '#fbbf24', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#fbbf24', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     alertTitle: { fontSize: 16, fontWeight: '700', color: '#78350f', marginBottom: 8 },
     alertText: { fontSize: 15, lineHeight: 24, color: '#78350f' },
-    
+
     listCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0' },
     listTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
-    
+
     warningCard: { backgroundColor: '#fef2f2', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#fecaca' },
     warningCardTitle: { fontSize: 16, fontWeight: '600', color: '#991b1b', marginBottom: 12 },
-    
+
     exampleCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }) },
     exampleTitle: { fontSize: 15, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
     exampleText: { fontSize: 14, color: '#475569', marginBottom: 4 },
     exampleCalc: { fontSize: 13, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', color: '#64748b', marginBottom: 4, paddingLeft: 8 },
     exampleResult: { fontSize: 16, fontWeight: '700', color: '#dc2626', marginTop: 8, marginBottom: 4 },
     exampleImpact: { fontSize: 14, color: '#475569', fontStyle: 'italic', marginTop: 8 },
-    
+
     accessCard: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#86efac' },
     accessTitle: { fontSize: 16, fontWeight: '600', color: '#14532d', marginBottom: 12 },
-    
+
     dangerBox: { backgroundColor: '#fef2f2', borderRadius: 12, borderWidth: 2, borderColor: '#dc2626', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#dc2626', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     dangerTitle: { fontSize: 16, fontWeight: '700', color: '#991b1b', marginBottom: 8 },
     dangerText: { fontSize: 15, lineHeight: 24, color: '#991b1b' },
-    
+
     structureCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     structureTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
     structureText: { fontSize: 14, lineHeight: 22, color: '#475569', marginBottom: 6 },
-    
+
     mistakeCard: { flexDirection: 'row', backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0' },
     mistakeNumber: { fontSize: 24, fontWeight: '700', color: '#dc2626', marginRight: 12, width: 32 },
     mistakeContent: { flex: 1 },
     mistakeTitle: { fontSize: 15, fontWeight: '600', color: '#1e3a8a', marginBottom: 4 },
     mistakeText: { fontSize: 14, lineHeight: 22, color: '#475569' },
-    
+
     legalAdviceCard: { backgroundColor: '#fef2f2', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#fecaca' },
     legalAdviceTitle: { fontSize: 16, fontWeight: '600', color: '#991b1b', marginBottom: 12 },
-    
+
     costBenefitCard: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 16, marginBottom: 20, borderWidth: 1, borderColor: '#86efac' },
     costBenefitTitle: { fontSize: 16, fontWeight: '600', color: '#14532d', marginBottom: 8 },
     costBenefitText: { fontSize: 15, lineHeight: 24, color: '#14532d' },
-    
+
     ctaButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 20, marginBottom: 16, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     ctaButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
-    
+
     faqItem: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0' },
     faqQuestion: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
     faqAnswer: { fontSize: 15, lineHeight: 24, color: '#475569' },
-    
+
     calculatorSection: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 24, marginTop: 32, marginBottom: 16, alignItems: 'center', borderWidth: 1, borderColor: '#bfdbfe' },
     calculatorTitle: { fontSize: 22, fontWeight: '700', color: '#1e3a8a', marginBottom: 12, textAlign: 'center' },
     calculatorText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 20, textAlign: 'center' },
     calculatorButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 28, marginBottom: 12, ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     calculatorButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
     calculatorDisclaimer: { fontSize: 13, color: '#64748b', textAlign: 'center', fontStyle: 'italic' },
-    
+
     finalCtaSection: { backgroundColor: '#1e3a8a', borderRadius: 12, padding: 28, marginTop: 32, alignItems: 'center', ...createShadow({ shadowColor: '#1e3a8a', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     finalCtaTitle: { fontSize: 24, fontWeight: '700', color: '#ffffff', marginBottom: 12, textAlign: 'center' },
     finalCtaText: { fontSize: 16, lineHeight: 26, color: '#bfdbfe', marginBottom: 24, textAlign: 'center' },
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 16, paddingHorizontal: 32, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 18, fontWeight: '700' },
+
+    inlineLink: { color: '#2563EB', textDecorationLine: 'underline', fontWeight: '600' },
+
+    internalLinkBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
+    internalLinkTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
+    internalLinkText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 16 },
+    internalLinkButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 20, alignSelf: 'flex-start', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
+    internalLinkButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
+
+    trustSignalBox: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#86efac' },
+    trustSignalTitle: { fontSize: 16, fontWeight: '700', color: '#14532d', marginBottom: 12 },
+    trustSignalItem: { fontSize: 15, lineHeight: 24, color: '#14532d', marginBottom: 6 },
 });

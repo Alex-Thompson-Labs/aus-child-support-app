@@ -131,7 +131,15 @@ export default function ChildSupportCentrelinkBlogPost() {
 
                     <Text style={styles.h2} accessibilityRole="header">What Happens When You Return to Work</Text>
                     <Text style={styles.paragraph}>
-                        When you stop receiving income support and return to work, your child support assessment changes:
+                        When you stop receiving income support and return to work, your child support assessment changes. 
+                        Understanding{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/child-support-formula-australia')}
+                        >
+                            how the child support formula works
+                        </Text>
+                        {' '}helps you prepare for the transition.
                     </Text>
 
                     <View style={styles.transitionCard}>
@@ -195,7 +203,8 @@ export default function ChildSupportCentrelinkBlogPost() {
                         <Text style={styles.finalCtaTitle}>Questions About Income Support & Child Support?</Text>
                         <Text style={styles.finalCtaText}>
                             Formula 2 calculations can be confusing. Connect with family lawyers who understand income 
-                            support and child support interactions.
+                            support and child support interactions. Most offer free initial consultations with no 
+                            obligation to proceed.
                         </Text>
                         <Pressable style={[styles.primaryButton, isWeb && webClickableStyles]} onPress={() => router.push('/lawyer-inquiry?mode=direct')} accessibilityRole="button">
                             <Text style={styles.primaryButtonText}>Get Legal Help</Text>
@@ -264,6 +273,8 @@ const styles = StyleSheet.create({
     
     calculatorButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 24, marginTop: 24, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     calculatorButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
+    
+    inlineLink: { color: '#2563EB', fontWeight: '600', textDecorationLine: 'underline' },
     
     finalCtaSection: { backgroundColor: '#1e3a8a', borderRadius: 12, padding: 28, marginTop: 32, alignItems: 'center', ...createShadow({ shadowColor: '#1e3a8a', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     finalCtaTitle: { fontSize: 24, fontWeight: '700', color: '#ffffff', marginBottom: 12, textAlign: 'center' },

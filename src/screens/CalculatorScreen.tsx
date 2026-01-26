@@ -53,6 +53,18 @@ export function CalculatorScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
 
+  // Preload PDF dependencies when component mounts (non-blocking)
+  React.useEffect(() => {
+    if (Platform.OS === 'web') {
+      // Lazy load preload utility and execute
+      import('../utils/preload').then(({ preloadPDFDependencies }) => {
+        preloadPDFDependencies();
+      }).catch(() => {
+        // Fail silently - preloading is non-critical
+      });
+    }
+  }, []);
+
   // Reset calculator when navigating back with reset=true
   React.useEffect(() => {
     if (params.reset === 'true') {

@@ -1,3 +1,4 @@
+import { ContextualWizard } from '@/src/components/blog/ContextualWizard';
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
@@ -93,8 +94,28 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                     {/* What Are Arrears */}
                     <Text style={styles.h2} accessibilityRole="header">What Are Child Support Arrears?</Text>
                     <Text style={styles.paragraph}>
-                        Arrears are unpaid child support that has accumulated over time. They occur when:
+                        Arrears are unpaid child support that has accumulated over time. They occur when you miss 
+                        payments, pay less than required, or your assessment increases retroactively. Learn more about{' '}
+                        <Text
+                            style={styles.inlineLink}
+                            onPress={() => router.push('/blog/child-support-overpayment-refund')}
+                        >
+                            overpayments and refunds
+                        </Text>
+                        {' '}if you've paid too much.
                     </Text>
+
+                    <Text style={styles.paragraph}>
+                        Common causes of arrears:
+                    </Text>
+
+                    <View style={styles.listCard}>
+                        <Text style={styles.bulletItem}>• You miss scheduled payments</Text>
+                        <Text style={styles.bulletItem}>• Payments are less than the assessed amount</Text>
+                        <Text style={styles.bulletItem}>• Your assessment increases retroactively (backdating)</Text>
+                        <Text style={styles.bulletItem}>• You stop paying without formal variation</Text>
+                        <Text style={styles.bulletItem}>• Employer deductions fail or are insufficient</Text>
+                    </View>
 
                     <View style={styles.listCard}>
                         <Text style={styles.bulletItem}>• You miss scheduled payments</Text>
@@ -298,6 +319,15 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                         </View>
                     </View>
 
+                    <View style={styles.trustCard}>
+                        <Text style={styles.trustTitle}>💡 What to Expect From Legal Help:</Text>
+                        <Text style={styles.bulletItem}>• Most lawyers respond within 24 hours</Text>
+                        <Text style={styles.bulletItem}>• Initial consultations often free or low-cost ($200-400)</Text>
+                        <Text style={styles.bulletItem}>• No obligation to proceed after consultation</Text>
+                        <Text style={styles.bulletItem}>• Your information remains confidential</Text>
+                        <Text style={styles.bulletItem}>• Payment plans available for legal fees</Text>
+                    </View>
+
                     <Pressable
                         style={[styles.ctaButton, isWeb && webClickableStyles]}
                         onPress={() => router.push('/lawyer-inquiry?mode=direct')}
@@ -364,6 +394,18 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                         </View>
                     </View>
 
+                    {/* Contextual Wizard */}
+                    <ContextualWizard
+                        preselectedFactors={['overpayment_issue']}
+                        highlightedFactors={['income_resources_not_reflected']}
+                        blogTopic="arrears"
+                        ctaText="Resolve Payment Issues"
+                        analyticsSource="blog_child_support_arrears_australia"
+                        formReason="special_circumstances"
+                        title="Struggling With Arrears?"
+                        description="Professional advice can help you negotiate payment plans or challenge incorrect assessments. Select any factors that apply."
+                    />
+
                     {/* FAQ */}
                     <Text style={styles.h2} accessibilityRole="header">Frequently Asked Questions</Text>
 
@@ -418,7 +460,7 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                         <Text style={styles.finalCtaText}>
                             Don't wait for enforcement to start. Connect with experienced family lawyers who can 
                             negotiate with Services Australia, challenge incorrect assessments, and protect your 
-                            rights.
+                            rights. Most offer free initial consultations with no obligation to proceed.
                         </Text>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
@@ -494,6 +536,10 @@ const styles = StyleSheet.create({
     optionText: { fontSize: 14, lineHeight: 22, color: '#14532d', marginBottom: 8 },
     optionPros: { fontSize: 13, color: '#14532d', marginBottom: 2 },
     optionCons: { fontSize: 13, color: '#78350f', marginBottom: 2 },
+    
+    trustCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginVertical: 16, borderWidth: 1, borderColor: '#bfdbfe', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }) },
+    trustTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 12 },
+    inlineLink: { color: '#2563EB', fontWeight: '600', textDecorationLine: 'underline' },
     
     ctaButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 24, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     ctaButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },

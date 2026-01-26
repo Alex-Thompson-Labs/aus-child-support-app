@@ -1,3 +1,4 @@
+import { ContextualWizard } from '@/src/components/blog/ContextualWizard';
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
@@ -76,7 +77,7 @@ export default function OverseasParentEnforcementScreen() {
         title="Overseas Parent Child Support Enforcement | International Recovery Australia"
         description="Complete guide to enforcing child support when a parent lives overseas. Learn about reciprocating jurisdictions, international treaties, enforcement mechanisms, and legal options."
         canonicalPath="/blog/overseas-parent-child-support-enforcement"
-        schemas={[faqSchema, articleSchema]}
+        schema={[faqSchema, articleSchema]}
       />
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.container}>
@@ -118,7 +119,14 @@ export default function OverseasParentEnforcementScreen() {
             <Text style={styles.heading2}>Understanding International Child Support</Text>
 
             <Text style={styles.paragraph}>
-              International child support enforcement relies on agreements between countries to recognize and enforce each other's child support orders. Without these agreements, enforcing child support across borders is extremely difficult.
+              International child support enforcement relies on agreements between countries to recognize and enforce each other's child support orders. Without these agreements, enforcing child support across borders is extremely difficult. If you're dealing with a parent who has moved overseas, understanding{' '}
+              <Text
+                style={styles.inlineLink}
+                onPress={() => router.push('/blog/international-child-support-australia')}
+              >
+                international child support arrangements
+              </Text>
+              {' '}is crucial.
             </Text>
 
             <View style={styles.infoBox}>
@@ -271,6 +279,14 @@ export default function OverseasParentEnforcementScreen() {
             >
               <Text style={styles.ctaButtonText}>Get Legal Help With International Enforcement</Text>
             </Pressable>
+
+            <View style={styles.trustBox}>
+              <Text style={styles.trustBoxTitle}>What to Expect:</Text>
+              <Text style={styles.trustBoxItem}>• Most lawyers respond within 24 hours</Text>
+              <Text style={styles.trustBoxItem}>• Initial consultations often free or low-cost</Text>
+              <Text style={styles.trustBoxItem}>• No obligation to proceed after consultation</Text>
+              <Text style={styles.trustBoxItem}>• Your information remains confidential</Text>
+            </View>
 
             <Text style={styles.heading2}>Enforcement Mechanisms</Text>
 
@@ -516,7 +532,14 @@ export default function OverseasParentEnforcementScreen() {
             <Text style={styles.heading3}>Departure Prohibition Orders</Text>
 
             <Text style={styles.paragraph}>
-              Services Australia can apply for a Departure Prohibition Order (DPO) to prevent the paying parent from leaving Australia if they have significant child support debt. Requirements include:
+              Services Australia can apply for a Departure Prohibition Order (DPO) to prevent the paying parent from leaving Australia if they have significant child support debt. Learn more about{' '}
+              <Text
+                style={styles.inlineLink}
+                onPress={() => router.push('/blog/child-support-arrears-australia')}
+              >
+                child support arrears and enforcement
+              </Text>
+              . Requirements include:
             </Text>
 
             <View style={styles.bulletList}>
@@ -610,6 +633,18 @@ export default function OverseasParentEnforcementScreen() {
               </Text>
             </View>
 
+            {/* Contextual Wizard */}
+            <ContextualWizard
+              preselectedFactors={['international_jurisdiction']}
+              highlightedFactors={['income_resources_not_reflected']}
+              blogTopic="overseas_parent"
+              ctaText="Get Help With International Enforcement"
+              analyticsSource="blog_overseas_parent_child_support_enforcement"
+              formReason="special_circumstances"
+              title="Dealing With an Overseas Parent?"
+              description="International enforcement requires specialized knowledge of reciprocating jurisdictions and cross-border legal mechanisms. Select any factors that apply."
+            />
+
             <Text style={styles.heading2}>Frequently Asked Questions</Text>
 
             <FAQItem
@@ -667,6 +702,11 @@ export default function OverseasParentEnforcementScreen() {
               <Text style={styles.finalCTAText}>
                 International child support enforcement is complex and often requires professional legal guidance. Get expert advice on your specific situation.
               </Text>
+              <View style={styles.trustSignals}>
+                <Text style={styles.trustSignalItem}>✓ Specialists in international cases</Text>
+                <Text style={styles.trustSignalItem}>✓ Experience with reciprocating jurisdictions</Text>
+                <Text style={styles.trustSignalItem}>✓ Free case assessment available</Text>
+              </View>
               <Pressable
                 style={({ pressed }) => [
                   styles.finalCTAButton,
@@ -832,7 +872,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginVertical: 24,
-    ...createShadow(2),
+    ...createShadow({
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    }),
     ...(isWeb && { cursor: 'pointer' }),
   },
   ctaButtonPressed: {
@@ -868,7 +914,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginTop: 40,
     alignItems: 'center',
-    ...createShadow(3),
+    ...createShadow({
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.15,
+      shadowRadius: 6,
+      elevation: 4,
+    }),
   },
   finalCTATitle: {
     fontSize: 24,
@@ -899,5 +951,38 @@ const styles = StyleSheet.create({
     color: '#1e3a8a',
     fontSize: 16,
     fontWeight: '600',
+  },
+  inlineLink: {
+    color: '#2563EB',
+    textDecorationLine: isWeb ? 'underline' : 'none',
+    fontWeight: '600',
+  },
+  trustBox: {
+    backgroundColor: '#eff6ff',
+    borderRadius: 12,
+    padding: 16,
+    marginVertical: 16,
+    borderWidth: 1,
+    borderColor: '#bfdbfe',
+  },
+  trustBoxTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1e40af',
+    marginBottom: 12,
+  },
+  trustBoxItem: {
+    fontSize: 14,
+    color: '#1e40af',
+    marginBottom: 6,
+  },
+  trustSignals: {
+    marginBottom: 16,
+    alignItems: 'center',
+  },
+  trustSignalItem: {
+    fontSize: 14,
+    color: '#e0e7ff',
+    marginBottom: 4,
   },
 });
