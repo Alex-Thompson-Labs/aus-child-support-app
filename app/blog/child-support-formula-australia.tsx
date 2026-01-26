@@ -92,7 +92,7 @@ export default function ChildSupportFormulaBlogPost() {
                     {/* Article Header */}
                     <View style={styles.articleHeader}>
                         <Text style={styles.category}>Child Support</Text>
-                        <Text 
+                        <Text
                             style={styles.h1}
                             accessibilityRole="header"
                             // @ts-ignore
@@ -105,14 +105,14 @@ export default function ChildSupportFormulaBlogPost() {
 
                     {/* Introduction */}
                     <Text style={styles.intro}>
-                        How does Services Australia calculate child support? Why does your payment change when income 
-                        or care arrangements change? The answer lies in the 8-step formula that determines every 
+                        How does Services Australia calculate child support? Why does your payment change when income
+                        or care arrangements change? The answer lies in the 8-step formula that determines every
                         Australian child support assessment.
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        This guide explains the Australian child support formula in plain English. You'll learn how 
-                        income and care percentages affect payments, what the Self-Support Amount means, and see 
+                        This guide explains the Australian child support formula in plain English. You'll learn how
+                        income and care percentages affect payments, what the Self-Support Amount means, and see
                         real examples showing exactly how the calculation works.
                     </Text>
 
@@ -123,18 +123,22 @@ export default function ChildSupportFormulaBlogPost() {
                         </Text>
                     </View>
 
-                    {/* The 8 Steps */}
-                    <Text 
+                    {/* Featured Snippet Opportunity */}
+                    <Text
                         style={styles.h2}
                         accessibilityRole="header"
                         // @ts-ignore
                         aria-level="2"
                     >
-                        The 8-Step Child Support Formula
+                        What Is the Child Support Formula?
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        Services Australia uses an 8-step formula to calculate child support. Each step builds on 
+                        The Australian child support formula (Formula 1) calculates payments by comparing each parent's share of combined income against their share of care. Specifically, it involves 8 steps: determining child support income, combined income, income percentage, cost of children, care percentage, cost percentage, and finally applying the formula (Income % - Cost %) × Total Costs.
+                    </Text>
+
+                    <Text style={styles.paragraph}>
+                        Services Australia uses this 8-step formula to calculate child support. Each step builds on
                         the previous one to determine the final payment amount.
                     </Text>
 
@@ -143,7 +147,7 @@ export default function ChildSupportFormulaBlogPost() {
                         <View style={styles.stepContent}>
                             <Text style={styles.stepTitle}>Calculate Each Parent's Child Support Income</Text>
                             <Text style={styles.stepDesc}>
-                                Start with your Adjusted Taxable Income (ATI). Subtract the Self-Support Amount 
+                                Start with your Adjusted Taxable Income (ATI). Subtract the Self-Support Amount
                                 ($31,046 in 2026). The result is your child support income.
                             </Text>
                             <Text style={styles.stepFormula}>
@@ -157,7 +161,7 @@ export default function ChildSupportFormulaBlogPost() {
                         <View style={styles.stepContent}>
                             <Text style={styles.stepTitle}>Calculate Combined Child Support Income</Text>
                             <Text style={styles.stepDesc}>
-                                Add both parents' child support incomes together. This is the total income available 
+                                Add both parents' child support incomes together. This is the total income available
                                 for child support.
                             </Text>
                             <Text style={styles.stepFormula}>
@@ -185,7 +189,7 @@ export default function ChildSupportFormulaBlogPost() {
                         <View style={styles.stepContent}>
                             <Text style={styles.stepTitle}>Calculate the Costs of the Children</Text>
                             <Text style={styles.stepDesc}>
-                                Use the official Costs of Children table based on combined income, number of children, 
+                                Use the official Costs of Children table based on combined income, number of children,
                                 and their ages. This determines the total annual cost of raising the children.
                             </Text>
                             <Text style={styles.stepFormula}>
@@ -199,7 +203,7 @@ export default function ChildSupportFormulaBlogPost() {
                         <View style={styles.stepContent}>
                             <Text style={styles.stepTitle}>Calculate Each Parent's Cost Percentage</Text>
                             <Text style={styles.stepDesc}>
-                                Your cost percentage is based on your care percentage. More care = higher cost percentage. 
+                                Your cost percentage is based on your care percentage. More care = higher cost percentage.
                                 This represents how much of the costs you cover through direct care.
                             </Text>
                             <Text style={styles.stepFormula}>
@@ -213,7 +217,7 @@ export default function ChildSupportFormulaBlogPost() {
                         <View style={styles.stepContent}>
                             <Text style={styles.stepTitle}>Calculate Each Parent's Child Support Percentage</Text>
                             <Text style={styles.stepDesc}>
-                                Subtract your cost percentage from your income percentage. If positive, you pay. 
+                                Subtract your cost percentage from your income percentage. If positive, you pay.
                                 If negative, you receive.
                             </Text>
                             <Text style={styles.stepFormula}>
@@ -227,7 +231,7 @@ export default function ChildSupportFormulaBlogPost() {
                         <View style={styles.stepContent}>
                             <Text style={styles.stepTitle}>Calculate the Annual Child Support Amount</Text>
                             <Text style={styles.stepDesc}>
-                                Multiply your child support percentage by the total costs of children. This is your 
+                                Multiply your child support percentage by the total costs of children. This is your
                                 annual child support liability.
                             </Text>
                             <Text style={styles.stepFormula}>
@@ -241,7 +245,7 @@ export default function ChildSupportFormulaBlogPost() {
                         <View style={styles.stepContent}>
                             <Text style={styles.stepTitle}>Apply Multi-Case Adjustments (If Applicable)</Text>
                             <Text style={styles.stepDesc}>
-                                If you have children from multiple relationships, the multi-case formula adjusts 
+                                If you have children from multiple relationships, the multi-case formula adjusts
                                 your payments across all cases. This is complex and requires special calculation.
                             </Text>
                             <Text style={styles.stepFormula}>
@@ -270,7 +274,7 @@ export default function ChildSupportFormulaBlogPost() {
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        Your income determines two things: your income percentage (share of costs) and the total 
+                        Your income determines two things: your income percentage (share of costs) and the total
                         costs of children (higher combined income = higher costs from the table). If you're{' '}
                         <Text
                             style={styles.inlineLink}
@@ -296,7 +300,7 @@ export default function ChildSupportFormulaBlogPost() {
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        Care percentage converts to cost percentage using a formula. More care = higher cost percentage 
+                        Care percentage converts to cost percentage using a formula. More care = higher cost percentage
                         = lower child support payments. See the complete{' '}
                         <Text
                             style={styles.inlineLink}
@@ -375,7 +379,7 @@ export default function ChildSupportFormulaBlogPost() {
                     </View>
 
                     <Text style={styles.paragraph}>
-                        The formula is complex, but our calculator handles all the math for you. Enter your details 
+                        The formula is complex, but our calculator handles all the math for you. Enter your details
                         and get an instant, accurate estimate.
                     </Text>
 

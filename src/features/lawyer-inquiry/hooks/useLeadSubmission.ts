@@ -16,11 +16,11 @@ import { Alert, Platform } from 'react-native';
 import { ENRICHMENT_INQUIRY_TYPES } from '../config';
 import type { CareDataItem } from '../types';
 import {
-  buildComplexityTriggers,
-  formatCourtDateForReasons,
-  sanitizeEmail,
-  sanitizePhone,
-  sanitizeString,
+    buildComplexityTriggers,
+    formatCourtDateForReasons,
+    sanitizeEmail,
+    sanitizePhone,
+    sanitizeString,
 } from '../validators';
 
 export interface UseLeadSubmissionProps {
@@ -186,6 +186,17 @@ export function useLeadSubmission(props: UseLeadSubmissionProps) {
         bindingAgreement: false,
       });
 
+      // Capture consent metadata (timestamp and IP address)
+      const consentTimestamp = new Date().toISOString();
+      let consentIpAddress = 'unknown';
+      
+      try {
+        consentIpAddress = await getClientIP();
+      } catch (error) {
+        // Don't fail submission if IP capture fails
+        console.error('Failed to capture IP address:', error);
+      }
+
       // Create lead submission
       const leadSubmission: LeadSubmission = {
         // Parent contact
@@ -247,6 +258,8 @@ export function useLeadSubmission(props: UseLeadSubmissionProps) {
 
         // Privacy compliance
         consent_given: props.consent,
+        consent_timestamp: consentTimestamp,
+        consent_ip_address: consentIpAddress,
 
         // Initial status
         status: 'new',

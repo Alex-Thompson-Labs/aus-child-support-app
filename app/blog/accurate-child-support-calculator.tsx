@@ -96,6 +96,12 @@ export default function AccurateChildSupportCalculatorBlogPost() {
                         </Pressable>
                     </View>
 
+                    {/* Featured Snippet Opportunity */}
+                    <Text style={styles.h2} accessibilityRole="header">How Much Child Support Will I Pay in Australia?</Text>
+                    <Text style={styles.paragraph}>
+                        Child support in Australia typically ranges from the minimum rate ($1,815 per year) up to over $30,000 per year for high-income earners. The exact amount depends on the difference between your income and the other parent's income, combined with your care percentage. Use the calculator above to get an exact figure based on the 2026 formula.
+                    </Text>
+
                     {/* What Makes a Calculator Accurate */}
                     <Text style={styles.h2} accessibilityRole="header">What Makes a Child Support Calculator Accurate?</Text>
                     <Text style={styles.paragraph}>

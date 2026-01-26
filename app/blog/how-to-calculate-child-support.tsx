@@ -101,6 +101,12 @@ export default function HowToCalculateChildSupportBlogPost() {
                         Want to understand how it works first? Keep reading for the step-by-step process.
                     </Text>
 
+                    {/* Featured Snippet Opportunity */}
+                    <Text style={styles.h2} accessibilityRole="header">How Is Child Support Calculated in Australia?</Text>
+                    <Text style={styles.paragraph}>
+                        Child support in Australia is calculated using an 8-step formula that considers both parents' adjusted taxable incomes and the care arrangements for the children. The basic formula is: (Your Income Percentage - Your Cost Percentage) × Total Costs of the Children. This ensures payments reflect each parent's capacity to pay and their direct contribution through care.
+                    </Text>
+
                     {/* Step 1 */}
                     <Text style={styles.h2} accessibilityRole="header">Step 1: Gather the Information You Need</Text>
                     <Text style={styles.paragraph}>Before you can calculate child support, collect these details:</Text>

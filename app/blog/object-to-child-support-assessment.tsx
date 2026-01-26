@@ -75,14 +75,14 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
     return (
         <>
             <PageSEO
-                title="How to Object to a Child Support Assessment in Australia"
+                title="How to Challenge an Unfair Child Support Assessment in Australia"
                 description="Received an unfair child support assessment? Learn how to object within 28 days, what evidence you need, and when to appeal to SSAT."
                 canonicalPath="/blog/object-to-child-support-assessment"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
                     { label: 'Home', path: '/' },
                     { label: 'Blog', path: '/blog' },
-                    { label: 'Object to Assessment' },
+                    { label: 'Challenge Assessment' },
                 ]}
             />
             <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -93,44 +93,44 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     {/* Article Header */}
                     <View style={styles.articleHeader}>
                         <Text style={styles.category}>Child Support</Text>
-                        <Text 
+                        <Text
                             style={styles.h1}
                             accessibilityRole="header"
                             // @ts-ignore
                             aria-level="1"
                         >
-                            How to Object to a Child Support Assessment in Australia
+                            How to Challenge an Unfair Child Support Assessment in Australia
                         </Text>
                         <Text style={styles.publishDate}>Published January 24, 2026</Text>
                     </View>
 
                     {/* Introduction */}
                     <Text style={styles.intro}>
-                        You've received your child support assessment from Services Australia. The amount looks wrong. 
-                        Maybe they've used incorrect income figures, miscalculated your care percentage, or made an 
+                        You've received your child support assessment from Services Australia. The amount looks wrong.
+                        Maybe they've used incorrect income figures, miscalculated your care percentage, or made an
                         administrative error.
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        You have the right to object to a child support assessment in Australia. But you need to act 
+                        You have the right to object to a child support assessment in Australia. But you need to act
                         fast—you only have 28 days from the date you receive the notice.
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        This guide explains how to object to a child support assessment, what grounds are valid, what 
+                        This guide explains how to object to a child support assessment, what grounds are valid, what
                         evidence you need, and what happens if your objection is rejected.
                     </Text>
 
                     <View style={styles.warningBox}>
                         <Text style={styles.warningTitle}>⏰ Critical Deadline:</Text>
                         <Text style={styles.warningText}>
-                            You have 28 days from receiving your assessment notice to lodge an objection. This deadline 
+                            You have 28 days from receiving your assessment notice to lodge an objection. This deadline
                             is strict. Mark it on your calendar immediately.
                         </Text>
                     </View>
 
                     {/* Section 1: When Can You Object */}
-                    <Text 
+                    <Text
                         style={styles.h2}
                         accessibilityRole="header"
                         // @ts-ignore
@@ -140,7 +140,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        You can object to a child support assessment if you believe Services Australia made an error 
+                        You can object to a child support assessment if you believe Services Australia made an error
                         in calculating the amount. But you can't object simply because you think the amount is too high.
                     </Text>
 
@@ -149,7 +149,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.groundCard}>
                         <Text style={styles.groundTitle}>1. Incorrect Income Information</Text>
                         <Text style={styles.groundDesc}>
-                            Services Australia used the wrong taxable income, didn't account for income changes, or 
+                            Services Australia used the wrong taxable income, didn't account for income changes, or
                             included income that shouldn't be counted.
                         </Text>
                     </View>
@@ -157,7 +157,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.groundCard}>
                         <Text style={styles.groundTitle}>2. Wrong Care Percentage</Text>
                         <Text style={styles.groundDesc}>
-                            The assessment doesn't reflect the actual number of nights each parent has the children, 
+                            The assessment doesn't reflect the actual number of nights each parent has the children,
                             or doesn't account for a recent care arrangement change.
                         </Text>
                     </View>
@@ -172,7 +172,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.groundCard}>
                         <Text style={styles.groundTitle}>4. Incorrect Relevant Dependent Allowances</Text>
                         <Text style={styles.groundDesc}>
-                            Services Australia didn't account for other children you support, or calculated the 
+                            Services Australia didn't account for other children you support, or calculated the
                             allowance incorrectly.
                         </Text>
                     </View>
@@ -180,7 +180,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.groundCard}>
                         <Text style={styles.groundTitle}>5. Multi-Case Calculation Errors</Text>
                         <Text style={styles.groundDesc}>
-                            If you have children from multiple relationships, the multi-case formula may have been 
+                            If you have children from multiple relationships, the multi-case formula may have been
                             applied incorrectly.
                         </Text>
                     </View>
@@ -195,7 +195,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.infoBox}>
                         <Text style={styles.infoTitle}>💡 Not Sure If Your Assessment Is Correct?</Text>
                         <Text style={styles.infoText}>
-                            Use our free calculator to check if the amount matches what the formula should produce. 
+                            Use our free calculator to check if the amount matches what the formula should produce.
                             If there's a significant difference, you may have grounds for an objection.
                         </Text>
                         <Pressable
@@ -220,7 +220,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <Text style={styles.bulletItem}>• You want a Change of Assessment (that's a different process)</Text>
 
                     <Text style={styles.paragraph}>
-                        If your situation involves special circumstances not captured by the formula (like hidden income, 
+                        If your situation involves special circumstances not captured by the formula (like hidden income,
                         high contact costs, or special needs), you need to apply for a{' '}
                         <Text
                             style={styles.inlineLink}
@@ -244,15 +244,15 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        When Services Australia issues a child support assessment, you have 28 days from the date you 
+                        When Services Australia issues a child support assessment, you have 28 days from the date you
                         receive the notice to lodge an objection. This deadline is strict and non-negotiable in most cases.
                     </Text>
 
                     <View style={styles.warningBox}>
                         <Text style={styles.warningTitle}>⚠️ The Clock Starts When You Receive the Notice</Text>
                         <Text style={styles.warningText}>
-                            Services Australia considers you to have received the notice 7 days after they send it 
-                            (for mail) or immediately (for electronic notices). Don't assume you have 28 days from 
+                            Services Australia considers you to have received the notice 7 days after they send it
+                            (for mail) or immediately (for electronic notices). Don't assume you have 28 days from
                             when you actually read it.
                         </Text>
                     </View>
@@ -267,8 +267,8 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                         <Text style={styles.stepNumber}>Option 1</Text>
                         <Text style={styles.stepTitle}>Apply for an Extension</Text>
                         <Text style={styles.stepDesc}>
-                            You can ask Services Australia for an extension if you have a valid reason for missing the 
-                            deadline (e.g., serious illness, family emergency, didn't receive the notice). Extensions 
+                            You can ask Services Australia for an extension if you have a valid reason for missing the
+                            deadline (e.g., serious illness, family emergency, didn't receive the notice). Extensions
                             are granted at their discretion.
                         </Text>
                     </View>
@@ -277,8 +277,8 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                         <Text style={styles.stepNumber}>Option 2</Text>
                         <Text style={styles.stepTitle}>Appeal Directly to SSAT</Text>
                         <Text style={styles.stepDesc}>
-                            You can skip the objection process and appeal directly to the Social Security Appeals 
-                            Tribunal (SSAT) within 13 weeks of the assessment. The SSAT has more flexibility to 
+                            You can skip the objection process and appeal directly to the Social Security Appeals
+                            Tribunal (SSAT) within 13 weeks of the assessment. The SSAT has more flexibility to
                             consider late applications.
                         </Text>
                     </View>
@@ -319,9 +319,9 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.highlightBox}>
                         <Text style={styles.highlightTitle}>Example Objection Statement:</Text>
                         <Text style={styles.highlightText}>
-                            "I object to the child support assessment dated [date] (reference: [number]). The assessment 
-                            uses my 2024 taxable income of $85,000, but my actual income for 2025 is $65,000 due to 
-                            reduced work hours. I have attached my recent payslips and a letter from my employer 
+                            "I object to the child support assessment dated [date] (reference: [number]). The assessment
+                            uses my 2024 taxable income of $85,000, but my actual income for 2025 is $65,000 due to
+                            reduced work hours. I have attached my recent payslips and a letter from my employer
                             confirming the change. I request the assessment be recalculated using my current income."
                         </Text>
                     </View>
@@ -335,7 +335,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.methodCard}>
                         <Text style={styles.methodTitle}>📱 Online (Fastest)</Text>
                         <Text style={styles.methodDesc}>
-                            Log in to your myGov account linked to Services Australia. Go to Child Support → 
+                            Log in to your myGov account linked to Services Australia. Go to Child Support →
                             Correspondence → Lodge an objection. Upload your evidence as attachments.
                         </Text>
                     </View>
@@ -343,7 +343,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.methodCard}>
                         <Text style={styles.methodTitle}>📞 Phone</Text>
                         <Text style={styles.methodDesc}>
-                            Call Services Australia on 131 272. Tell them you want to lodge an objection. They'll 
+                            Call Services Australia on 131 272. Tell them you want to lodge an objection. They'll
                             record your objection and tell you how to submit evidence.
                         </Text>
                     </View>
@@ -351,7 +351,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.methodCard}>
                         <Text style={styles.methodTitle}>✉️ Mail</Text>
                         <Text style={styles.methodDesc}>
-                            Write your objection and mail it with copies of your evidence to: Child Support, 
+                            Write your objection and mail it with copies of your evidence to: Child Support,
                             PO Box 7800, Canberra BC ACT 2610. Send via registered post to prove you met the deadline.
                         </Text>
                     </View>
@@ -369,7 +369,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                         <Text style={styles.timelineStep}>Week 1-2</Text>
                         <Text style={styles.timelineTitle}>Acknowledgment</Text>
                         <Text style={styles.timelineDesc}>
-                            Services Australia will send you a letter confirming they received your objection. 
+                            Services Australia will send you a letter confirming they received your objection.
                             They'll assign it to an objections officer for review.
                         </Text>
                     </View>
@@ -378,7 +378,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                         <Text style={styles.timelineStep}>Week 2-4</Text>
                         <Text style={styles.timelineTitle}>Investigation</Text>
                         <Text style={styles.timelineDesc}>
-                            The objections officer reviews your evidence, checks their records, and may contact you 
+                            The objections officer reviews your evidence, checks their records, and may contact you
                             or the other parent for additional information.
                         </Text>
                     </View>
@@ -387,7 +387,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                         <Text style={styles.timelineStep}>Week 4-8</Text>
                         <Text style={styles.timelineTitle}>Decision</Text>
                         <Text style={styles.timelineDesc}>
-                            Services Australia makes a decision and sends you a written notice explaining whether 
+                            Services Australia makes a decision and sends you a written notice explaining whether
                             your objection was allowed, partially allowed, or disallowed.
                         </Text>
                     </View>
@@ -395,8 +395,8 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.warningBox}>
                         <Text style={styles.warningTitle}>⚠️ You Must Keep Paying</Text>
                         <Text style={styles.warningText}>
-                            While your objection is being reviewed, you must continue paying the assessed amount. 
-                            If you stop paying, you'll accrue debt and face enforcement action. If your objection 
+                            While your objection is being reviewed, you must continue paying the assessed amount.
+                            If you stop paying, you'll accrue debt and face enforcement action. If your objection
                             is successful and the amount is reduced, you'll receive a credit for overpayments.
                         </Text>
                     </View>
@@ -406,7 +406,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.outcomeCard}>
                         <Text style={styles.outcomeTitle}>✅ Objection Allowed</Text>
                         <Text style={styles.outcomeDesc}>
-                            Services Australia agrees with you and issues a new assessment with the corrected amount. 
+                            Services Australia agrees with you and issues a new assessment with the corrected amount.
                             Any overpayments are credited to your account.
                         </Text>
                     </View>
@@ -414,7 +414,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.outcomeCard}>
                         <Text style={styles.outcomeTitle}>⚖️ Objection Partially Allowed</Text>
                         <Text style={styles.outcomeDesc}>
-                            Services Australia agrees with some of your points but not all. The assessment is adjusted 
+                            Services Australia agrees with some of your points but not all. The assessment is adjusted
                             but may not be exactly what you requested.
                         </Text>
                     </View>
@@ -422,7 +422,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.outcomeCard}>
                         <Text style={styles.outcomeTitle}>❌ Objection Disallowed</Text>
                         <Text style={styles.outcomeDesc}>
-                            Services Australia maintains the original assessment. You have 28 days to appeal to the 
+                            Services Australia maintains the original assessment. You have 28 days to appeal to the
                             Social Security Appeals Tribunal (SSAT) if you disagree.
                         </Text>
                     </View>
@@ -433,7 +433,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        If Services Australia rejects your objection, you can appeal to the SSAT. The SSAT is an 
+                        If Services Australia rejects your objection, you can appeal to the SSAT. The SSAT is an
                         independent tribunal that reviews child support decisions.
                     </Text>
 
@@ -449,7 +449,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.infoBox}>
                         <Text style={styles.infoTitle}>💡 SSAT Appeals Are Free</Text>
                         <Text style={styles.infoText}>
-                            There's no fee to lodge an SSAT appeal. You don't need a lawyer, but many people find 
+                            There's no fee to lodge an SSAT appeal. You don't need a lawyer, but many people find
                             legal representation helpful, especially for complex cases.
                         </Text>
                     </View>
@@ -457,15 +457,15 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <Text style={styles.h3} accessibilityRole="header">If SSAT Also Rejects Your Appeal</Text>
 
                     <Text style={styles.paragraph}>
-                        If the SSAT upholds Services Australia's decision, you have one final option: appeal to the 
-                        Administrative Appeals Tribunal (AAT). AAT appeals are more formal and legal representation 
+                        If the SSAT upholds Services Australia's decision, you have one final option: appeal to the
+                        Administrative Appeals Tribunal (AAT). AAT appeals are more formal and legal representation
                         is strongly recommended.
                     </Text>
 
                     <View style={styles.infoBox}>
                         <Text style={styles.infoTitle}>💡 When Legal Help Makes the Difference</Text>
                         <Text style={styles.infoText}>
-                            SSAT and AAT appeals have significantly higher success rates with legal representation. 
+                            SSAT and AAT appeals have significantly higher success rates with legal representation.
                             Lawyers know how to present evidence effectively, cross-examine witnesses, and argue legal points.
                         </Text>
                         <Pressable
@@ -483,7 +483,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        You don't need a lawyer to lodge an objection, but legal advice can significantly improve 
+                        You don't need a lawyer to lodge an objection, but legal advice can significantly improve
                         your chances of success in certain situations.
                     </Text>
 
@@ -509,7 +509,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.ctaSection}>
                         <Text style={styles.ctaTitle}>Need Help With Your Objection?</Text>
                         <Text style={styles.ctaText}>
-                            Connect with experienced family lawyers who specialize in child support objections and appeals. 
+                            Connect with experienced family lawyers who specialize in child support objections and appeals.
                             Most offer free initial consultations to assess your case.
                         </Text>
                         <View style={styles.trustSignals}>
@@ -535,7 +535,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.mistakeCard}>
                         <Text style={styles.mistakeTitle}>❌ Missing the 28-Day Deadline</Text>
                         <Text style={styles.mistakeDesc}>
-                            This is the most common mistake. Mark your calendar immediately when you receive an 
+                            This is the most common mistake. Mark your calendar immediately when you receive an
                             assessment. Don't wait until the last minute.
                         </Text>
                     </View>
@@ -543,7 +543,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.mistakeCard}>
                         <Text style={styles.mistakeTitle}>❌ Objecting Without Evidence</Text>
                         <Text style={styles.mistakeDesc}>
-                            Saying "the amount is wrong" isn't enough. You need documents proving the error—tax returns, 
+                            Saying "the amount is wrong" isn't enough. You need documents proving the error—tax returns,
                             payslips, court orders, care calendars.
                         </Text>
                     </View>
@@ -551,7 +551,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.mistakeCard}>
                         <Text style={styles.mistakeTitle}>❌ Stopping Payments During Review</Text>
                         <Text style={styles.mistakeDesc}>
-                            You must keep paying while your objection is reviewed. Stopping payments creates debt 
+                            You must keep paying while your objection is reviewed. Stopping payments creates debt
                             and enforcement action, even if you're eventually proven right.
                         </Text>
                     </View>
@@ -559,7 +559,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.mistakeCard}>
                         <Text style={styles.mistakeTitle}>❌ Confusing Objections with Change of Assessment</Text>
                         <Text style={styles.mistakeDesc}>
-                            An objection is for errors in the calculation. A Change of Assessment is for special 
+                            An objection is for errors in the calculation. A Change of Assessment is for special
                             circumstances not captured by the formula. Using the wrong process wastes time.
                         </Text>
                     </View>
@@ -567,7 +567,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <View style={styles.mistakeCard}>
                         <Text style={styles.mistakeTitle}>❌ Being Emotional Instead of Factual</Text>
                         <Text style={styles.mistakeDesc}>
-                            Focus on facts and evidence, not emotions or complaints about the other parent. 
+                            Focus on facts and evidence, not emotions or complaints about the other parent.
                             Services Australia only cares about whether the calculation is correct.
                         </Text>
                     </View>
@@ -620,7 +620,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        Objecting to a child support assessment is your right when Services Australia makes an error. 
+                        Objecting to a child support assessment is your right when Services Australia makes an error.
                         But success depends on acting quickly, providing solid evidence, and understanding the process.
                     </Text>
 
@@ -635,8 +635,8 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     </View>
 
                     <Text style={styles.paragraph}>
-                        Before you object, verify that your assessment is actually wrong. Use our calculator to check 
-                        if the amount matches what the formula should produce. If there's a significant difference, 
+                        Before you object, verify that your assessment is actually wrong. Use our calculator to check
+                        if the amount matches what the formula should produce. If there's a significant difference,
                         you likely have grounds for an objection.
                     </Text>
 

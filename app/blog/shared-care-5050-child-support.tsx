@@ -75,23 +75,27 @@ export default function SharedCare5050ChildSupportBlogPost() {
                     </View>
 
                     <Text style={styles.intro}>
-                        Have 50/50 care and wondering about child support? Many parents assume equal care means 
-                        no child support. That's rarely true. Even with shared care, the higher-income parent usually 
-                        pays. Here's how the formula works, real examples, and what to do if you disagree about care 
+                        Have 50/50 care and wondering about child support? Many parents assume equal care means
+                        no child support. That's rarely true. Even with shared care, the higher-income parent usually
+                        pays. Here's how the formula works, real examples, and what to do if you disagree about care
                         percentages.
                     </Text>
 
                     <View style={styles.mythBox}>
                         <Text style={styles.mythTitle}>❌ Common Myth</Text>
                         <Text style={styles.mythText}>
-                            "50/50 care means no child support." FALSE. Child support equalizes the financial 
-                            burden between parents. Unless both parents earn exactly the same income, the higher 
+                            "50/50 care means no child support." FALSE. Child support equalizes the financial
+                            burden between parents. Unless both parents earn exactly the same income, the higher
                             earner pays child support even with equal care.
                         </Text>
                     </View>
 
-                    {/* How 50/50 Care Works */}
-                    <Text style={styles.h2} accessibilityRole="header">How 50/50 Care Affects Child Support</Text>
+                    {/* Featured Snippet Opportunity */}
+                    <Text style={styles.h2} accessibilityRole="header">Does Child Support Change With 50/50 Custody?</Text>
+                    <Text style={styles.paragraph}>
+                        Yes, child support changes with 50/50 custody, but it rarely drops to zero. In Australia, payments are based on the income difference between parents. Even with equal care (183 nights each), the higher-income parent typically pays the lower-income parent to equalize the detailed costs of raising children.
+                    </Text>
+
                     <Text style={styles.paragraph}>
                         With equal care (183 nights each per year), both parents have:
                     </Text>
@@ -123,7 +127,7 @@ export default function SharedCare5050ChildSupportBlogPost() {
                     <View style={styles.keyPointBox}>
                         <Text style={styles.keyPointTitle}>🔑 Key Point:</Text>
                         <Text style={styles.keyPointText}>
-                            Child support with 50/50 care is based on income difference, not care difference. The 
+                            Child support with 50/50 care is based on income difference, not care difference. The
                             higher earner pays to equalize the financial burden of raising children.
                         </Text>
                     </View>
@@ -194,7 +198,7 @@ export default function SharedCare5050ChildSupportBlogPost() {
                     <View style={styles.tipBox}>
                         <Text style={styles.tipTitle}>💡 Evidence Matters:</Text>
                         <Text style={styles.tipText}>
-                            Keep records: school pickup/dropoff logs, calendar entries, text messages confirming 
+                            Keep records: school pickup/dropoff logs, calendar entries, text messages confirming
                             arrangements. Services Australia may request evidence if care is disputed.
                         </Text>
                     </View>
@@ -207,8 +211,8 @@ export default function SharedCare5050ChildSupportBlogPost() {
                     <View style={styles.answerBox}>
                         <Text style={styles.answerTitle}>The Formula's Answer:</Text>
                         <Text style={styles.answerText}>
-                            Child support covers day-to-day costs (food, housing, utilities). School fees and 
-                            extracurriculars are separate. The formula assumes both parents contribute to daily costs 
+                            Child support covers day-to-day costs (food, housing, utilities). School fees and
+                            extracurriculars are separate. The formula assumes both parents contribute to daily costs
                             proportional to their income, regardless of who pays for extras.
                         </Text>
                     </View>
@@ -236,8 +240,8 @@ export default function SharedCare5050ChildSupportBlogPost() {
                     <View style={styles.warningBox}>
                         <Text style={styles.warningTitle}>⚠️ Verbal Agreements Don't Count:</Text>
                         <Text style={styles.warningText}>
-                            Either parent can apply for Services Australia assessment at any time, regardless of 
-                            verbal agreements. The assessment will be backdated up to 18 months. Protect yourself 
+                            Either parent can apply for Services Australia assessment at any time, regardless of
+                            verbal agreements. The assessment will be backdated up to 18 months. Protect yourself
                             with a formal Binding Agreement.
                         </Text>
                     </View>
@@ -290,7 +294,7 @@ export default function SharedCare5050ChildSupportBlogPost() {
                     <View style={styles.finalCtaSection}>
                         <Text style={styles.finalCtaTitle}>Disputes About 50/50 Care or Child Support?</Text>
                         <Text style={styles.finalCtaText}>
-                            Care percentage disputes can cost thousands per year. Connect with family lawyers who 
+                            Care percentage disputes can cost thousands per year. Connect with family lawyers who
                             specialize in shared care arrangements and can protect your rights.
                         </Text>
                         <View style={styles.trustSignals}>
@@ -334,58 +338,58 @@ const styles = StyleSheet.create({
     h3: { fontSize: 20, fontWeight: '600', color: '#1e3a8a', marginTop: 24, marginBottom: 12, ...(Platform.OS === 'web' ? { lineHeight: 28 } : {}) },
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
-    
+
     mythBox: { backgroundColor: '#fef2f2', borderRadius: 12, borderWidth: 2, borderColor: '#dc2626', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#dc2626', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     mythTitle: { fontSize: 18, fontWeight: '700', color: '#991b1b', marginBottom: 8 },
     mythText: { fontSize: 15, lineHeight: 24, color: '#991b1b' },
-    
+
     percentageCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
     percentageTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
-    
+
     exampleCard: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#86efac', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }) },
     exampleTitle: { fontSize: 15, fontWeight: '600', color: '#14532d', marginBottom: 8 },
     exampleText: { fontSize: 14, color: '#14532d', marginBottom: 4 },
     exampleCalc: { fontSize: 13, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', color: '#14532d', marginBottom: 4, paddingLeft: 8 },
     exampleResult: { fontSize: 16, fontWeight: '700', color: '#22c55e', marginTop: 8 },
-    
+
     keyPointBox: { backgroundColor: '#fef3c7', borderRadius: 12, borderWidth: 1, borderColor: '#fbbf24', padding: 16, marginBottom: 16 },
     keyPointTitle: { fontSize: 15, fontWeight: '600', color: '#78350f', marginBottom: 8 },
     keyPointText: { fontSize: 15, lineHeight: 24, color: '#78350f' },
-    
+
     scenarioCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     scenarioTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
     scenarioText: { fontSize: 14, color: '#475569', marginBottom: 8 },
     scenarioCalc: { fontSize: 13, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', color: '#64748b', marginBottom: 4, paddingLeft: 8 },
     scenarioResult: { fontSize: 15, fontWeight: '700', color: '#2563EB', marginTop: 8 },
-    
+
     calculatorButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 24, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     calculatorButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
-    
+
     impactCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
     impactTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
-    
+
     tipBox: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#86efac' },
     tipTitle: { fontSize: 15, fontWeight: '600', color: '#14532d', marginBottom: 8 },
     tipText: { fontSize: 15, lineHeight: 24, color: '#14532d' },
-    
+
     answerBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
     answerTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
     answerText: { fontSize: 15, lineHeight: 24, color: '#475569' },
-    
+
     requirementCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0' },
     requirementTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
-    
+
     warningBox: { backgroundColor: '#fef3c7', borderRadius: 12, borderWidth: 1, borderColor: '#fbbf24', padding: 16, marginBottom: 16 },
     warningTitle: { fontSize: 15, fontWeight: '600', color: '#78350f', marginBottom: 8 },
     warningText: { fontSize: 15, lineHeight: 24, color: '#78350f' },
-    
+
     ctaButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 24, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     ctaButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
-    
+
     faqItem: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0' },
     faqQuestion: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
     faqAnswer: { fontSize: 15, lineHeight: 24, color: '#475569' },
-    
+
     finalCtaSection: { backgroundColor: '#1e3a8a', borderRadius: 12, padding: 28, marginTop: 32, alignItems: 'center', ...createShadow({ shadowColor: '#1e3a8a', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     finalCtaTitle: { fontSize: 24, fontWeight: '700', color: '#ffffff', marginBottom: 12, textAlign: 'center' },
     finalCtaText: { fontSize: 16, lineHeight: 26, color: '#bfdbfe', marginBottom: 24, textAlign: 'center' },

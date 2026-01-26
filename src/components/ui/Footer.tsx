@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { PrivacyPolicyLink } from '../PrivacyPolicyLink';
@@ -31,6 +32,15 @@ export function Footer({ containerStyle }: FooterProps) {
           containerStyle={styles.privacyLinkContainer}
         />
       </View>
+
+      <View style={styles.locationLinks}>
+        <Text style={styles.locationLabel}>Find a Lawyer:</Text>
+        <Link href="/child-support-lawyer-sydney" style={styles.link}>Sydney</Link>
+        <Text style={styles.separator}>•</Text>
+        <Link href="/child-support-lawyer-melbourne" style={styles.link}>Melbourne</Link>
+        <Text style={styles.separator}>•</Text>
+        <Link href="/child-support-lawyer-brisbane" style={styles.link}>Brisbane</Link>
+      </View>
     </View>
   );
 }
@@ -51,6 +61,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexWrap: 'wrap',
     gap: 8,
+    marginBottom: 12,
   },
   copyrightText: {
     fontSize: 12,
@@ -68,6 +79,23 @@ const styles = StyleSheet.create({
   privacyLink: {
     fontSize: 12,
     color: '#64748b', // slate-500
+    textDecorationLine: 'underline',
+  },
+  locationLinks: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  locationLabel: {
+    fontSize: 12,
+    color: '#94a3b8',
+    fontWeight: '600',
+  },
+  link: {
+    fontSize: 12,
+    color: '#64748b',
     textDecorationLine: 'underline',
   },
 });
