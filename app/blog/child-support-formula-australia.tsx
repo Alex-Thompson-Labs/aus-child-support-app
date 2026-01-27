@@ -75,7 +75,7 @@ export default function ChildSupportFormulaBlogPost() {
         <>
             <PageSEO
                 title="Child Support Formula Australia 2026 | 8-Step Calculation Explained"
-                description="Master the Australian child support formula. Learn how income and care percentages determine payments. Real examples, official 2026 rates. Free calculator included."
+                description="Income % - Cost % = Your payment. Sounds simple, but 500+ table entries make errors common. See 8-step formula + real examples. Calculate in 5 minutes."
                 canonicalPath="/blog/child-support-formula-australia"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -109,6 +109,18 @@ export default function ChildSupportFormulaBlogPost() {
                         or care arrangements change? The answer lies in the 8-step formula that determines every
                         Australian child support assessment.
                     </Text>
+
+                    <View style={styles.quickAnswerBox}>
+                        <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+                        <Text style={styles.quickAnswerText}>
+                            The Australian child support formula uses 8 steps: calculate income, determine percentages, 
+                            look up costs, apply care adjustments. Payments range from $1,815 minimum to $30,000+ annually. 
+                            Calculate your amount below.
+                        </Text>
+                        <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                            <Text style={styles.quickAnswerButtonText}>Calculate Now →</Text>
+                        </Pressable>
+                    </View>
 
                     <Text style={styles.paragraph}>
                         This guide explains the Australian child support formula in plain English. You'll learn how
@@ -402,7 +414,7 @@ export default function ChildSupportFormulaBlogPost() {
                         >
                             <Text style={styles.primaryButtonText}>Use Free Calculator</Text>
                         </Pressable>
-                        <Text style={styles.ctaText} style={{ marginTop: 16, fontSize: 14 }}>
+                        <Text style={[styles.ctaText, { marginTop: 16, fontSize: 14 }]}>
                             Need legal advice?{' '}
                             <Text
                                 style={[styles.inlineLink, { color: '#bfdbfe' }]}
@@ -438,6 +450,13 @@ const styles = StyleSheet.create({
     intro: { fontSize: 18, lineHeight: 28, color: '#334155', marginBottom: 16, fontWeight: '500' },
     h2: { fontSize: 24, fontWeight: '700', color: '#1e3a8a', marginTop: 32, marginBottom: 16, ...(Platform.OS === 'web' ? { lineHeight: 32 } : {}) },
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
     highlightBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 1, borderColor: '#bfdbfe', padding: 16, marginBottom: 16, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     highlightTitle: { fontSize: 15, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },

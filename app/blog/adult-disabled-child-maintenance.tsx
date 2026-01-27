@@ -75,7 +75,7 @@ export default function AdultDisabledChildMaintenanceScreen() {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <PageSEO
         title="Adult Disabled Child Maintenance Australia 2026: Child Support Beyond 18"
-        description="Child support for adult children with disabilities in Australia. Learn eligibility, application process, assessment calculations, NDIS interaction. Updated 2026."
+        description="Child 18+ with disability? Support doesn't stop. See eligibility criteria + application process. NDIS doesn't replace child support. Apply now."
         canonicalPath="/blog/adult-disabled-child-maintenance"
         schema={[faqSchema, articleSchema]}
       />
@@ -103,6 +103,17 @@ export default function AdultDisabledChildMaintenanceScreen() {
             <Text style={styles.paragraph}>
               While child support typically ends when a child turns 18, Australian law recognizes that some children with disabilities require ongoing financial support into adulthood. If your child has a mental or physical disability that prevents them from supporting themselves, child support can continue indefinitely beyond their 18th birthday.
             </Text>
+
+            <View style={styles.quickAnswerBox}>
+              <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+              <Text style={styles.quickAnswerText}>
+                Child support can continue indefinitely for adult children with disabilities. You must apply before 
+                they turn 18 and prove they can't self-support. Calculate standard child support amounts below.
+              </Text>
+              <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={handleCalculatorPress}>
+                <Text style={styles.quickAnswerButtonText}>Calculate Amount →</Text>
+              </Pressable>
+            </View>
 
             <Text style={styles.paragraph}>
               This comprehensive guide explains everything you need to know about adult disabled child maintenance in Australia, including eligibility criteria, the application process, how assessments work, and what happens when circumstances change.
@@ -779,6 +790,13 @@ const styles = StyleSheet.create({
     color: '#334155',
     marginBottom: 16,
   },
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+
   heading2: {
     fontSize: 26,
     fontWeight: '700',

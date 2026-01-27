@@ -73,7 +73,7 @@ export default function EstimateVsActualIncomeScreen() {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <PageSEO
         title="Estimate vs Actual Income Child Support Australia 2026 | Complete Guide"
-        description="Understand estimated vs actual income for child support in Australia. Learn about reconciliation, overpayments, underpayments, and how to update your income estimate to avoid surprises."
+        description="Income reconciliation can trigger $1,000s in surprise bills. See estimated vs actual income differences + how to update estimates. Avoid shock payments."
         canonicalPath="/blog/estimate-vs-actual-income-child-support"
         schema={[faqSchema, articleSchema]}
       />
@@ -101,6 +101,17 @@ export default function EstimateVsActualIncomeScreen() {
             <Text style={styles.paragraph}>
               Child support assessments in Australia are based on income, but there's often a gap between what Services Australia estimates you'll earn and what you actually earn. This difference can lead to significant adjustments, overpayments, or underpayments when your tax return is processed.
             </Text>
+
+            <View style={styles.quickAnswerBox}>
+              <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+              <Text style={styles.quickAnswerText}>
+                Child support uses estimated income during the year, then reconciles with actual income from tax returns. 
+                Differences create overpayments or underpayments. Calculate your estimated amount below.
+              </Text>
+              <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={handleCalculatorPress}>
+                <Text style={styles.quickAnswerButtonText}>Calculate Amount →</Text>
+              </Pressable>
+            </View>
 
             <Text style={styles.paragraph}>
               This comprehensive guide explains the difference between estimated and actual income, how reconciliation works, what happens when they don't match, and how to update your income estimate to avoid surprises.
@@ -611,6 +622,13 @@ const styles = StyleSheet.create({
     color: '#475569',
     marginBottom: 16,
   },
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+
   heading2: {
     fontSize: 24,
     fontWeight: '700',

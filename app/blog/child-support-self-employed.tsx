@@ -56,7 +56,7 @@ export default function ChildSupportSelfEmployedBlogPost() {
         <>
             <PageSEO
                 title="Child Support for Self-Employed Parents Australia 2026"
-                description="How business income is assessed for child support. Learn what expenses get added back, trust scrutiny, and when you need legal advice."
+                description="Self-employed? Services Australia adds back 15+ expenses you claimed. See what counts + trust scrutiny. Errors cost $1,000s/year. Check your assessment."
                 canonicalPath="/blog/child-support-self-employed"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -80,6 +80,17 @@ export default function ChildSupportSelfEmployedBlogPost() {
                         scrutinizes business income differently, adds back certain expenses, and has legal authority to
                         access your financial records. Here's what you need to know.
                     </Text>
+
+                    <View style={styles.quickAnswerBox}>
+                        <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+                        <Text style={styles.quickAnswerText}>
+                            Self-employed? Services Australia assesses business income differently, adding back certain expenses. Complex cases need legal advice. Calculate your estimated amount below to understand the baseline.
+                        </Text>
+                        <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                            <Text style={styles.quickAnswerButtonText}>Calculate Your Amount →</Text>
+                        </Pressable>
+                    </View>
+
 
                     <View style={styles.alertBox}>
                         <Text style={styles.alertTitle}>⚠️ High-Risk Assessment Area</Text>
@@ -502,6 +513,13 @@ const styles = StyleSheet.create({
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
     bold: { fontWeight: '600', color: '#1e3a8a' },
+
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
 
     alertBox: { backgroundColor: '#fef3c7', borderRadius: 12, borderWidth: 2, borderColor: '#fbbf24', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#fbbf24', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     alertTitle: { fontSize: 16, fontWeight: '700', color: '#78350f', marginBottom: 8 },

@@ -75,7 +75,7 @@ export default function OverseasParentEnforcementScreen() {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <PageSEO
         title="Overseas Parent Child Support Enforcement Australia 2026: International Recovery"
-        description="Enforce child support when a parent lives overseas. Learn about reciprocating jurisdictions, Hague Convention, enforcement mechanisms. Updated 2026."
+        description="Parent overseas? Enforcement takes 6-18 months but works in 80+ countries. See reciprocating jurisdictions + Hague Convention. Start process now."
         canonicalPath="/blog/overseas-parent-child-support-enforcement"
         schema={[faqSchema, articleSchema]}
       />
@@ -103,6 +103,18 @@ export default function OverseasParentEnforcementScreen() {
             <Text style={styles.paragraph}>
               When a parent moves overseas, enforcing child support becomes significantly more complex. However, Australia has international agreements with many countries that allow child support to be established and enforced across borders. Understanding these mechanisms is crucial for parents seeking to secure financial support for their children.
             </Text>
+
+            <View style={styles.quickAnswerBox}>
+              <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+              <Text style={styles.quickAnswerText}>
+                Enforcing child support when a parent lives overseas requires reciprocating jurisdiction agreements. 
+                Australia has treaties with 30+ countries. Calculate your Australian assessment below, then seek legal 
+                advice for enforcement.
+              </Text>
+              <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={handleCalculatorPress}>
+                <Text style={styles.quickAnswerButtonText}>Calculate Amount →</Text>
+              </Pressable>
+            </View>
 
             <Text style={styles.paragraph}>
               This comprehensive guide explains everything you need to know about international child support enforcement, including reciprocating jurisdictions, the enforcement process, your legal options, and what to do when the other parent lives in a non-reciprocating country.
@@ -807,6 +819,13 @@ const styles = StyleSheet.create({
     color: '#334155',
     marginBottom: 16,
   },
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+
   heading2: {
     fontSize: 26,
     fontWeight: '700',

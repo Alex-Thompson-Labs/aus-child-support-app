@@ -56,7 +56,7 @@ export default function AccurateChildSupportCalculatorBlogPost() {
         <>
             <PageSEO
                 title="Accurate Child Support Calculator Australia 2026 | Free Estimate"
-                description="Free accurate child support calculator using official 2026 formula. Instant results in 5 minutes. Learn what makes calculators accurate and when you need legal advice."
+                description="Most calculators get it wrong. Ours uses official 2026 formula + flags complex cases. Get accurate estimates in 5 minutes. No registration required."
                 canonicalPath="/blog/accurate-child-support-calculator"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -80,6 +80,17 @@ export default function AccurateChildSupportCalculatorBlogPost() {
                         calculation and give you instant results. But not all calculators are equal. Here's what makes
                         a calculator accurate, how to use one effectively, and when estimates aren't enough.
                     </Text>
+
+                    <View style={styles.quickAnswerBox}>
+                        <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+                        <Text style={styles.quickAnswerText}>
+                            Get accurate child support estimates using the official 2026 formula. Our calculator handles all formula variations, shows full breakdowns, and flags complex cases. Free, instant results in 5 minutes.
+                        </Text>
+                        <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                            <Text style={styles.quickAnswerButtonText}>Calculate Your Amount →</Text>
+                        </Pressable>
+                    </View>
+
 
                     <View style={styles.ctaBox}>
                         <Text style={styles.ctaBoxTitle}>🎯 Try Our Free Calculator</Text>
@@ -546,6 +557,13 @@ const styles = StyleSheet.create({
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
     bold: { fontWeight: '600', color: '#1e3a8a' },
+
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
 
     ctaBox: { backgroundColor: '#2563EB', borderRadius: 12, padding: 24, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     ctaBoxTitle: { fontSize: 20, fontWeight: '700', color: '#ffffff', marginBottom: 8 },

@@ -46,7 +46,7 @@ export default function ChildSupportCentrelinkBlogPost() {
         <>
             <PageSEO
                 title="Child Support and Centrelink Australia 2026: Income Support Payments"
-                description="On JobSeeker, DSP, or Parenting Payment? Learn how Centrelink income support affects child support. Formula 2 explained. Updated 2026."
+                description="On Centrelink? You still pay child support—but only $5-10/week per child. See Formula 2 calculation + your exact amount. Calculate in 5 minutes."
                 canonicalPath="/blog/child-support-centrelink-income-support"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -70,6 +70,21 @@ export default function ChildSupportCentrelinkBlogPost() {
                         minimal. Services Australia uses a special formula (Formula 2) for parents on income support.
                         Here's how it works, what you'll pay, and your obligations.
                     </Text>
+
+                    <View style={styles.quickAnswerBox}>
+                        <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+                        <Text style={styles.quickAnswerText}>
+                            Receiving Centrelink payments? You pay minimum child support (<Text style={styles.intro}>
+                        On JobSeeker, DSP, or Parenting Payment? You still owe child support—but the amount is usually
+                        minimal. Services Australia uses a special formula (Formula 2) for parents on income support.
+                        Here's how it works, what you'll pay, and your obligations.
+                    </Text>,815/year in 2026) regardless of income. When you return to work, payments increase based on actual income. Calculate your amount below.
+                        </Text>
+                        <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                            <Text style={styles.quickAnswerButtonText}>Calculate Your Amount →</Text>
+                        </Pressable>
+                    </View>
+
 
                     <Pressable style={[styles.calculatorButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
                         <Text style={styles.calculatorButtonText}>Calculate Your Child Support →</Text>
@@ -115,28 +130,45 @@ export default function ChildSupportCentrelinkBlogPost() {
 
                     <Text style={styles.h2} accessibilityRole="header">Payment Amounts by Income Support Type</Text>
 
-                    <View style={styles.paymentCard}>
-                        <Text style={styles.paymentTitle}>JobSeeker Payment</Text>
-                        <Text style={styles.paymentAmount}>$5-10/week per child</Text>
-                        <Text style={styles.paymentNote}>Depends on care percentage. 0% care = higher end.</Text>
+                    <View style={styles.tableContainer}>
+                        <Text style={styles.tableTitle}>Child Support on Centrelink: Payment Amounts (2026)</Text>
+                        
+                        <View style={styles.tableHeaderRow}>
+                            <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 2 }]}>Income Support Type</Text>
+                            <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 1.5 }]}>Amount Per Child</Text>
+                            <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 2 }]}>Notes</Text>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>JobSeeker Payment</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5, fontWeight: '700', color: '#2563EB' }]}>$5-10/week</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Depends on care %. 0% care = higher end</Text>
+                        </View>
+
+                        <View style={[styles.tableRow, styles.tableRowAlt]}>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Disability Support Pension (DSP)</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5, fontWeight: '700', color: '#2563EB' }]}>$5-10/week</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Same as JobSeeker. Formula 2 applies</Text>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Parenting Payment Single</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5, fontWeight: '700', color: '#2563EB' }]}>$5-10/week</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>For children from other relationships</Text>
+                        </View>
+
+                        <View style={[styles.tableRow, styles.tableRowAlt]}>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Age Pension</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5, fontWeight: '700', color: '#2563EB' }]}>$5-10/week</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Rare but possible if children under 18</Text>
+                        </View>
                     </View>
 
-                    <View style={styles.paymentCard}>
-                        <Text style={styles.paymentTitle}>Disability Support Pension (DSP)</Text>
-                        <Text style={styles.paymentAmount}>$5-10/week per child</Text>
-                        <Text style={styles.paymentNote}>Same as JobSeeker. Formula 2 applies.</Text>
-                    </View>
-
-                    <View style={styles.paymentCard}>
-                        <Text style={styles.paymentTitle}>Parenting Payment Single</Text>
-                        <Text style={styles.paymentAmount}>$5-10/week per child</Text>
-                        <Text style={styles.paymentNote}>For children from other relationships.</Text>
-                    </View>
-
-                    <View style={styles.paymentCard}>
-                        <Text style={styles.paymentTitle}>Age Pension</Text>
-                        <Text style={styles.paymentAmount}>$5-10/week per child</Text>
-                        <Text style={styles.paymentNote}>Rare but possible if children under 18.</Text>
+                    <View style={styles.keyFactBox}>
+                        <Text style={styles.keyFactTitle}>💡 All Income Support Types:</Text>
+                        <Text style={styles.keyFactText}>
+                            All income support payments result in similar child support amounts ($5-10/week per child) because they all trigger Formula 2, which uses fixed rates rather than income-based calculations.
+                        </Text>
                     </View>
 
                     <Text style={styles.h2} accessibilityRole="header">What Happens When You Return to Work</Text>
@@ -275,6 +307,13 @@ const styles = StyleSheet.create({
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
 
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+
     keyFactBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 2, borderColor: '#2563EB', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     keyFactTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
     keyFactText: { fontSize: 15, lineHeight: 24, color: '#1e3a8a' },
@@ -326,4 +365,13 @@ const styles = StyleSheet.create({
 
     trustSignalsBox: { marginBottom: 24, alignItems: 'flex-start', width: '100%', maxWidth: 400 },
     trustSignalItem: { fontSize: 14, color: '#e0e7ff', marginBottom: 8, lineHeight: 20 },
+
+    // Table styles
+    tableContainer: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 24, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3 }) },
+    tableTitle: { fontSize: 18, fontWeight: '700', color: '#1e3a8a', marginBottom: 16, textAlign: 'center' },
+    tableHeaderRow: { flexDirection: 'row', backgroundColor: '#eff6ff', borderRadius: 8, padding: 12, marginBottom: 8 },
+    tableRow: { flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
+    tableRowAlt: { backgroundColor: '#f8fafc' },
+    tableCell: { fontSize: 14, lineHeight: 20, color: '#475569', paddingHorizontal: 4 },
+    tableHeaderCell: { fontWeight: '700', color: '#1e3a8a', fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5 },
 });

@@ -63,7 +63,7 @@ export default function ChildSupportAfter18BlogPost() {
         <>
             <PageSEO
                 title="Child Support After 18 Australia 2026 | When Does It Stop?"
-                description="Child turning 18? Learn when child support ends in Australia, what happens if they're still in school, university exceptions, and how to handle the transition smoothly."
+                description="Support doesn't auto-stop at 18 if they're in school. See exact end dates + transition rules. University = no support. Plan ahead now."
                 canonicalPath="/blog/child-support-after-18"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -88,6 +88,18 @@ export default function ChildSupportAfter18BlogPost() {
                         end, what happens with university, and how to handle the transition without surprises.
                     </Text>
 
+                    <View style={styles.quickAnswerBox}>
+                        <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+                        <Text style={styles.quickAnswerText}>
+                            Child support ends when your child turns 18, unless they're still in secondary school 
+                            (then it continues until they finish Year 12 or turn 19). Calculate how this affects 
+                            your payments below.
+                        </Text>
+                        <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                            <Text style={styles.quickAnswerButtonText}>Calculate Your Amount →</Text>
+                        </Pressable>
+                    </View>
+
                     <View style={styles.keyPointBox}>
                         <Text style={styles.keyPointTitle}>📅 Key Rule:</Text>
                         <Text style={styles.keyPointText}>
@@ -106,40 +118,38 @@ export default function ChildSupportAfter18BlogPost() {
                         The end date depends on your child's education status at age 18:
                     </Text>
 
-                    <View style={styles.scenarioCard}>
-                        <Text style={styles.scenarioTitle}>Scenario 1: Child Finishes Year 12 Before Turning 18</Text>
-                        <Text style={styles.scenarioText}>
-                            Child support ends on their 18th birthday. If they graduate in November but turn 18 in 
-                            March, payments stop in March.
-                        </Text>
-                        <Text style={styles.scenarioExample}>Example: Graduates Year 12 in Nov 2025, turns 18 in Mar 2026 → Ends Mar 2026</Text>
-                    </View>
+                    <View style={styles.tableContainer}>
+                        <Text style={styles.tableTitle}>When Child Support Ends: 4 Common Scenarios</Text>
+                        
+                        <View style={styles.tableHeaderRow}>
+                            <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 2 }]}>Scenario</Text>
+                            <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 2 }]}>When Support Ends</Text>
+                            <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 2 }]}>Example</Text>
+                        </View>
 
-                    <View style={styles.scenarioCard}>
-                        <Text style={styles.scenarioTitle}>Scenario 2: Child Still in Year 12 at 18</Text>
-                        <Text style={styles.scenarioText}>
-                            Child support continues until they complete Year 12 OR turn 19, whichever comes first. 
-                            Most students finish before 19.
-                        </Text>
-                        <Text style={styles.scenarioExample}>Example: Turns 18 in Feb 2026, graduates Year 12 in Nov 2026 → Ends Nov 2026</Text>
-                    </View>
+                        <View style={styles.tableRow}>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Finishes Year 12 before 18</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>On 18th birthday</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Graduates Nov 2025, turns 18 Mar 2026 → Ends Mar 2026</Text>
+                        </View>
 
-                    <View style={styles.scenarioCard}>
-                        <Text style={styles.scenarioTitle}>Scenario 3: Child Drops Out Before 18</Text>
-                        <Text style={styles.scenarioText}>
-                            Child support continues until they turn 18, even if they leave school early. The extension 
-                            only applies if they're enrolled at 18.
-                        </Text>
-                        <Text style={styles.scenarioExample}>Example: Drops out at 16, turns 18 in 2026 → Ends at 18 (no extension)</Text>
-                    </View>
+                        <View style={[styles.tableRow, styles.tableRowAlt]}>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Still in Year 12 at 18</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>When finishes Year 12 OR turns 19</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Turns 18 Feb 2026, graduates Nov 2026 → Ends Nov 2026</Text>
+                        </View>
 
-                    <View style={styles.scenarioCard}>
-                        <Text style={styles.scenarioTitle}>Scenario 4: Child Repeats Year 12</Text>
-                        <Text style={styles.scenarioText}>
-                            If your child repeats Year 12 and is still enrolled at 18, child support continues until 
-                            they finish or turn 19. Repeating doesn't extend beyond 19.
-                        </Text>
-                        <Text style={styles.scenarioExample}>Example: Repeats Year 12, turns 18 in Jan 2026, finishes in Nov 2026 → Ends Nov 2026</Text>
+                        <View style={styles.tableRow}>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Drops out before 18</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>On 18th birthday (no extension)</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Drops out at 16, turns 18 in 2026 → Ends at 18</Text>
+                        </View>
+
+                        <View style={[styles.tableRow, styles.tableRowAlt]}>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Repeats Year 12</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>When finishes OR turns 19 (max)</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Repeats, turns 18 Jan 2026, finishes Nov 2026 → Ends Nov 2026</Text>
+                        </View>
                     </View>
 
                     <Text style={styles.h2} accessibilityRole="header">What About University or TAFE?</Text>
@@ -441,6 +451,12 @@ const styles = StyleSheet.create({
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
     bold: { fontWeight: '600', color: '#1e3a8a' },
     
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    
     keyPointBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 2, borderColor: '#3b82f6', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#3b82f6', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 }) },
     keyPointTitle: { fontSize: 18, fontWeight: '700', color: '#1e40af', marginBottom: 8 },
     keyPointText: { fontSize: 15, lineHeight: 24, color: '#1e40af' },
@@ -501,4 +517,13 @@ const styles = StyleSheet.create({
     internalLinkBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
     internalLinkTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
     internalLinkText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 16 },
+
+    // Table styles
+    tableContainer: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 24, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3 }) },
+    tableTitle: { fontSize: 18, fontWeight: '700', color: '#1e3a8a', marginBottom: 16, textAlign: 'center' },
+    tableHeaderRow: { flexDirection: 'row', backgroundColor: '#eff6ff', borderRadius: 8, padding: 12, marginBottom: 8 },
+    tableRow: { flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
+    tableRowAlt: { backgroundColor: '#f8fafc' },
+    tableCell: { fontSize: 14, lineHeight: 20, color: '#475569', paddingHorizontal: 4 },
+    tableHeaderCell: { fontWeight: '700', color: '#1e3a8a', fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5 },
 });

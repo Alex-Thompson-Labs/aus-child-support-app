@@ -55,7 +55,7 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
         <>
             <PageSEO
                 title="Backdating Child Support Australia 2026: How Far Back Can You Claim?"
-                description="Can child support be backdated in Australia? Learn the 18-month rule, application process, evidence requirements, and payment collection. Updated 2026."
+                description="Claim up to 18 months backdated child support—but only if you apply now. See evidence requirements + collection process. Don't miss the window."
                 canonicalPath="/blog/backdating-child-support-australia"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -79,6 +79,17 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                         delay applying and now want to recover missed payments? Here's exactly how backdating works
                         in Australia, the 18-month rule, and how to maximize your claim.
                     </Text>
+
+                    <View style={styles.quickAnswerBox}>
+                        <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+                        <Text style={styles.quickAnswerText}>
+                            Child support can be backdated up to 18 months from your application date. Services Australia collects arrears from the paying parent. Calculate your current and backdated amounts below.
+                        </Text>
+                        <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                            <Text style={styles.quickAnswerButtonText}>Calculate Your Amount →</Text>
+                        </Pressable>
+                    </View>
+
 
                     <Pressable
                         style={[styles.ctaButton, isWeb && webClickableStyles]}
@@ -490,6 +501,13 @@ const styles = StyleSheet.create({
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
     bold: { fontWeight: '600', color: '#1e3a8a' },
+
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
 
     keyRuleBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 2, borderColor: '#3b82f6', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#3b82f6', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 }) },
     keyRuleTitle: { fontSize: 18, fontWeight: '700', color: '#1e40af', marginBottom: 8 },

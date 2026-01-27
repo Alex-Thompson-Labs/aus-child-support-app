@@ -61,7 +61,7 @@ export default function HowToCalculateChildSupportBlogPost() {
         <>
             <PageSEO
                 title="How to Calculate Child Support Australia 2026 | Free Calculator"
-                description="Calculate child support in 5 minutes using the official 2026 formula. Step-by-step guide with examples. Free calculator, no registration. Get accurate estimates now."
+                description="Manual calculation takes 60 minutes + risks $1,000s in errors. Our calculator uses official 2026 formula. Get accurate results in 5 minutes. Free."
                 canonicalPath="/blog/how-to-calculate-child-support"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[

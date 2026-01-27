@@ -55,7 +55,7 @@ export default function SharedCare5050ChildSupportBlogPost() {
         <>
             <PageSEO
                 title="50/50 Shared Care Child Support Australia 2026 | Do You Still Pay?"
-                description="Yes, you still pay with 50/50 care if you earn more. Learn how equal care affects child support in Australia. Real examples, calculator, and dispute resolution."
+                description="50/50 care doesn't mean $0 child support. Higher earner pays $100-600/month based on income gap. See real examples + free calculator. Check in 5 minutes."
                 canonicalPath="/blog/shared-care-5050-child-support"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -80,6 +80,17 @@ export default function SharedCare5050ChildSupportBlogPost() {
                         pays. Here's how the formula works, real examples, and what to do if you disagree about care
                         percentages.
                     </Text>
+
+                    <View style={styles.quickAnswerBox}>
+                        <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+                        <Text style={styles.quickAnswerText}>
+                            Yes, you still pay child support with 50/50 care if you earn more. The higher-income parent 
+                            pays based on income difference. Calculate your exact amount below.
+                        </Text>
+                        <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                            <Text style={styles.quickAnswerButtonText}>Calculate Your Amount →</Text>
+                        </Pressable>
+                    </View>
 
                     <View style={styles.mythBox}>
                         <Text style={styles.mythTitle}>❌ Common Myth</Text>
@@ -135,34 +146,43 @@ export default function SharedCare5050ChildSupportBlogPost() {
                     {/* Real Examples */}
                     <Text style={styles.h2} accessibilityRole="header">Real Examples: 50/50 Care with Different Incomes</Text>
 
-                    <View style={styles.scenarioCard}>
-                        <Text style={styles.scenarioTitle}>Scenario 1: Large Income Gap</Text>
-                        <Text style={styles.scenarioText}>Parent A: $120,000 | Parent B: $40,000 | 50/50 care | 1 child (age 10)</Text>
-                        <Text style={styles.scenarioCalc}>Combined income: $97,908</Text>
-                        <Text style={styles.scenarioCalc}>Parent A: 76% income, 50% cost</Text>
-                        <Text style={styles.scenarioCalc}>Parent B: 24% income, 50% cost</Text>
-                        <Text style={styles.scenarioCalc}>Total costs: $11,200</Text>
-                        <Text style={styles.scenarioResult}>Parent A pays: $2,912/year ($243/month)</Text>
+                    <View style={styles.tableContainer}>
+                        <Text style={styles.tableTitle}>50/50 Care: How Income Gap Affects Payments</Text>
+                        
+                        <View style={styles.tableHeaderRow}>
+                            <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 1.5 }]}>Income Gap</Text>
+                            <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 2 }]}>Parent Incomes</Text>
+                            <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 1.5 }]}>Children</Text>
+                            <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 1.5 }]}>Higher Earner Pays</Text>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <Text style={[styles.tableCell, { flex: 1.5 }]}>Large Gap</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>A: $120k | B: $40k</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5 }]}>1 child (age 10)</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5, fontWeight: '700', color: '#2563EB' }]}>$243/month</Text>
+                        </View>
+
+                        <View style={[styles.tableRow, styles.tableRowAlt]}>
+                            <Text style={[styles.tableCell, { flex: 1.5 }]}>Moderate Gap</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>A: $80k | B: $60k</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5 }]}>2 children (ages 5, 8)</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5, fontWeight: '700', color: '#2563EB' }]}>$93/month</Text>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <Text style={[styles.tableCell, { flex: 1.5 }]}>Small Gap</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>A: $70k | B: $65k</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5 }]}>1 child (age 14)</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5, fontWeight: '700', color: '#2563EB' }]}>$18/month</Text>
+                        </View>
                     </View>
 
-                    <View style={styles.scenarioCard}>
-                        <Text style={styles.scenarioTitle}>Scenario 2: Moderate Income Gap</Text>
-                        <Text style={styles.scenarioText}>Parent A: $80,000 | Parent B: $60,000 | 50/50 care | 2 children (ages 5, 8)</Text>
-                        <Text style={styles.scenarioCalc}>Combined income: $77,908</Text>
-                        <Text style={styles.scenarioCalc}>Parent A: 56% income, 50% cost</Text>
-                        <Text style={styles.scenarioCalc}>Parent B: 44% income, 50% cost</Text>
-                        <Text style={styles.scenarioCalc}>Total costs: $18,500</Text>
-                        <Text style={styles.scenarioResult}>Parent A pays: $1,110/year ($93/month)</Text>
-                    </View>
-
-                    <View style={styles.scenarioCard}>
-                        <Text style={styles.scenarioTitle}>Scenario 3: Small Income Gap</Text>
-                        <Text style={styles.scenarioText}>Parent A: $70,000 | Parent B: $65,000 | 50/50 care | 1 child (age 14)</Text>
-                        <Text style={styles.scenarioCalc}>Combined income: $72,908</Text>
-                        <Text style={styles.scenarioCalc}>Parent A: 52% income, 50% cost</Text>
-                        <Text style={styles.scenarioCalc}>Parent B: 48% income, 50% cost</Text>
-                        <Text style={styles.scenarioCalc}>Total costs: $10,800</Text>
-                        <Text style={styles.scenarioResult}>Parent A pays: $216/year ($18/month)</Text>
+                    <View style={styles.keyPointBox}>
+                        <Text style={styles.keyPointTitle}>💡 Key Insight:</Text>
+                        <Text style={styles.keyPointText}>
+                            With 50/50 care, the larger the income gap, the higher the child support payment. Even small income differences result in some payment to equalize the financial burden.
+                        </Text>
                     </View>
 
                     <Pressable
@@ -344,6 +364,12 @@ const styles = StyleSheet.create({
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
 
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+
     mythBox: { backgroundColor: '#fef2f2', borderRadius: 12, borderWidth: 2, borderColor: '#dc2626', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#dc2626', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     mythTitle: { fontSize: 18, fontWeight: '700', color: '#991b1b', marginBottom: 8 },
     mythText: { fontSize: 15, lineHeight: 24, color: '#991b1b' },
@@ -433,4 +459,13 @@ const styles = StyleSheet.create({
         color: '#bfdbfe',
         marginBottom: 4,
     },
+
+    // Table styles
+    tableContainer: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 24, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3 }) },
+    tableTitle: { fontSize: 18, fontWeight: '700', color: '#1e3a8a', marginBottom: 16, textAlign: 'center' },
+    tableHeaderRow: { flexDirection: 'row', backgroundColor: '#eff6ff', borderRadius: 8, padding: 12, marginBottom: 8 },
+    tableRow: { flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
+    tableRowAlt: { backgroundColor: '#f8fafc' },
+    tableCell: { fontSize: 14, lineHeight: 20, color: '#475569', paddingHorizontal: 4 },
+    tableHeaderCell: { fontWeight: '700', color: '#1e3a8a', fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5 },
 });

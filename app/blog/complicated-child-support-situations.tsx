@@ -68,7 +68,7 @@ export default function ComplicatedChildSupportBlogPost() {
         <>
             <PageSEO
                 title="Complicated Child Support Situations Australia 2026: Get Legal Help"
-                description="Self-employed, trusts, or overseas income? 8 situations requiring legal advice. Free consultations with child support specialists."
+                description="DIY child support fails with trusts, self-employment, or overseas income. 8 situations needing lawyers. Free consultations. Protect your interests."
                 canonicalPath="/blog/complicated-child-support-situations"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -101,6 +101,17 @@ export default function ComplicatedChildSupportBlogPost() {
                         Most child support cases are straightforward. Two parents, regular wages, clear care arrangement.
                         The formula works. The calculator gives you an accurate estimate.
                     </Text>
+
+                    <View style={styles.quickAnswerBox}>
+                        <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+                        <Text style={styles.quickAnswerText}>
+                            Self-employment, trusts, overseas income, or court orders make child support complex. These situations need legal advice to avoid costly mistakes. Calculate your baseline amount below, then get expert help.
+                        </Text>
+                        <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                            <Text style={styles.quickAnswerButtonText}>Calculate Your Amount →</Text>
+                        </Pressable>
+                    </View>
+
 
                     <Text style={styles.paragraph}>
                         But some situations are complicated. Self-employment income. Family trusts. Overseas assets.
@@ -1247,6 +1258,13 @@ const styles = StyleSheet.create({
         fontSize: 17,
         fontWeight: '600',
     },
+
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
 
     trustSignalBox: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#86efac' },
     trustSignalTitle: { fontSize: 16, fontWeight: '700', color: '#14532d', marginBottom: 12 },

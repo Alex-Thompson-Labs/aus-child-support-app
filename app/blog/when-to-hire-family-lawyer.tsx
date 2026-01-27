@@ -56,7 +56,7 @@ export default function WhenToHireFamilyLawyerBlogPost() {
         <>
             <PageSEO
                 title="When to Hire a Family Lawyer for Child Support Australia 2026"
-                description="3 critical signs you need a family lawyer for child support: complex income, legal documents, or high conflict. Free consultations available."
+                description="DIY child support fails with self-employment, trusts, or court orders. 3 signs you need a lawyer. Free consultations. Errors cost $10k-30k+."
                 canonicalPath="/blog/when-to-hire-family-lawyer"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -348,20 +348,44 @@ export default function WhenToHireFamilyLawyerBlogPost() {
                         Legal fees vary significantly based on complexity, location, and lawyer experience:
                     </Text>
 
-                    <View style={styles.pricingCard}>
-                        <Text style={styles.pricingTitle}>Hourly Rates:</Text>
-                        <Text style={styles.pricingItem}>• Junior lawyer: $300-400/hour</Text>
-                        <Text style={styles.pricingItem}>• Senior lawyer: $450-600/hour</Text>
-                        <Text style={styles.pricingItem}>• Partner/Principal: $600-800/hour</Text>
-                    </View>
+                    <View style={styles.tableContainer}>
+                        <Text style={styles.tableTitle}>Family Lawyer Costs in Australia (2026)</Text>
+                        
+                        <View style={styles.tableHeaderRow}>
+                            <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 2 }]}>Service Type</Text>
+                            <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 1.5 }]}>Hourly Rate</Text>
+                            <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 1.5 }]}>Typical Total Cost</Text>
+                        </View>
 
-                    <View style={styles.pricingCard}>
-                        <Text style={styles.pricingTitle}>Typical Total Costs:</Text>
-                        <Text style={styles.pricingItem}>• Initial consultation: $200-400 (1 hour)</Text>
-                        <Text style={styles.pricingItem}>• Simple advice letter: $500-1,000</Text>
-                        <Text style={styles.pricingItem}>• Change of Assessment response: $3,000-8,000</Text>
-                        <Text style={styles.pricingItem}>• SSAT representation: $5,000-12,000</Text>
-                        <Text style={styles.pricingItem}>• Court proceedings: $10,000-30,000+</Text>
+                        <View style={styles.tableRow}>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Initial consultation</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5 }]}>$200-400/hr</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5 }]}>$200-400 (1 hour)</Text>
+                        </View>
+
+                        <View style={[styles.tableRow, styles.tableRowAlt]}>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Simple advice letter</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5 }]}>$300-600/hr</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5 }]}>$500-1,000</Text>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Change of Assessment response</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5 }]}>$450-600/hr</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5 }]}>$3,000-8,000</Text>
+                        </View>
+
+                        <View style={[styles.tableRow, styles.tableRowAlt]}>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>SSAT representation</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5 }]}>$450-600/hr</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5 }]}>$5,000-12,000</Text>
+                        </View>
+
+                        <View style={styles.tableRow}>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>Court proceedings</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5 }]}>$600-800/hr</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5 }]}>$10,000-30,000+</Text>
+                        </View>
                     </View>
 
                     <View style={styles.tipCard}>
@@ -638,4 +662,13 @@ const styles = StyleSheet.create({
     // Final CTA trust signals
     finalCtaTrustSignals: { marginBottom: 20, alignSelf: 'stretch' },
     finalCtaTrustItem: { fontSize: 14, lineHeight: 22, color: '#bfdbfe', marginBottom: 6, textAlign: 'center' },
+
+    // Table styles
+    tableContainer: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 24, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3 }) },
+    tableTitle: { fontSize: 18, fontWeight: '700', color: '#1e3a8a', marginBottom: 16, textAlign: 'center' },
+    tableHeaderRow: { flexDirection: 'row', backgroundColor: '#eff6ff', borderRadius: 8, padding: 12, marginBottom: 8 },
+    tableRow: { flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#f1f5f9' },
+    tableRowAlt: { backgroundColor: '#f8fafc' },
+    tableCell: { fontSize: 14, lineHeight: 20, color: '#475569', paddingHorizontal: 4 },
+    tableHeaderCell: { fontWeight: '700', color: '#1e3a8a', fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5 },
 });

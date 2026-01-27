@@ -68,7 +68,7 @@ export default function InternationalChildSupportBlogPost() {
         <>
             <PageSEO
                 title="International Child Support Australia 2026: When Your Ex Lives Overseas"
-                description="Ex lives overseas? Australian child support still applies. Learn about reciprocating jurisdictions, Hague Convention, enforcement options. Updated 2026."
+                description="Ex fled overseas? 80+ countries enforce Australian child support. See reciprocating jurisdictions + Hague Convention. Moving doesn't erase debt."
                 canonicalPath="/blog/international-child-support-australia"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -101,6 +101,18 @@ export default function InternationalChildSupportBlogPost() {
                         Your ex-partner has moved to another country. You're still raising your children in Australia.
                         And you're wondering: <Text style={styles.emphasis}>Can I still get child support?</Text>
                     </Text>
+
+                    <View style={styles.quickAnswerBox}>
+                        <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+                        <Text style={styles.quickAnswerText}>
+                            Ex lives overseas? Australian child support still applies in reciprocating jurisdictions. 
+                            Enforcement varies by country. Calculate your Australian assessment amount below, then seek 
+                            legal advice for international enforcement.
+                        </Text>
+                        <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                            <Text style={styles.quickAnswerButtonText}>Calculate Amount →</Text>
+                        </Pressable>
+                    </View>
 
                     <Text style={styles.paragraph}>
                         The short answer is yes—Australian child support laws still apply even when one parent lives overseas.
@@ -503,6 +515,13 @@ const styles = StyleSheet.create({
         color: '#475569',
         marginBottom: 16,
     },
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+
     inlineLink: {
         color: '#2563EB',
         textDecorationLine: 'underline',

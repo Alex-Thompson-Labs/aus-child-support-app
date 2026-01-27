@@ -55,7 +55,7 @@ export default function BindingChildSupportAgreementBlogPost() {
         <>
             <PageSEO
                 title="Binding Child Support Agreement Australia 2026: Legal Guide"
-                description="Set child support outside the formula. Learn legal requirements, costs ($2,500-6,500), risks, and when binding agreements make sense."
+                description="Binding agreements are permanent—no refunds if circumstances change. See legal requirements + $2,500-6,500 costs. Get legal advice before signing."
                 canonicalPath="/blog/binding-child-support-agreement"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -79,6 +79,17 @@ export default function BindingChildSupportAgreementBlogPost() {
                         lets you do that—but it's legally complex and permanent. Here's everything you need to know
                         before signing one, including requirements, risks, and when it makes sense.
                     </Text>
+
+                    <View style={styles.quickAnswerBox}>
+                        <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+                        <Text style={styles.quickAnswerText}>
+                            A Binding Child Support Agreement lets parents set their own child support amount outside the formula. Both need legal advice, and it must be fair. Calculate the standard formula amount first.
+                        </Text>
+                        <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                            <Text style={styles.quickAnswerButtonText}>Calculate Your Amount →</Text>
+                        </Pressable>
+                    </View>
+
 
                     <View style={styles.warningBox}>
                         <Text style={styles.warningTitle}>⚠️ Critical Warning:</Text>
@@ -548,6 +559,13 @@ const styles = StyleSheet.create({
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
     bold: { fontWeight: '600', color: '#1e3a8a' },
+
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
 
     warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 2, borderColor: '#bfdbfe', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     warningTitle: { fontSize: 18, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },

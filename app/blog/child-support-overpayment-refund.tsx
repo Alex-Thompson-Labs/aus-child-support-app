@@ -55,7 +55,7 @@ export default function ChildSupportOverpaymentRefundBlogPost() {
         <>
             <PageSEO
                 title="Child Support Overpayment Refund Australia 2026: Get Your Money Back"
-                description="Overpaid child support? Learn how to claim refunds, what evidence you need, when Services Australia recovers overpayments. Updated 2026."
+                description="Overpaid? Services Australia recovers from the other parent—even if they spent it. See refund process + evidence requirements. Claim within 18 months."
                 canonicalPath="/blog/child-support-overpayment-refund"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -79,6 +79,17 @@ export default function ChildSupportOverpaymentRefundBlogPost() {
                         made calculation errors, you may be entitled to a refund. Here's how to claim overpayments,
                         what Services Australia will do, and how to avoid overpaying in the future.
                     </Text>
+
+                    <View style={styles.quickAnswerBox}>
+                        <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+                        <Text style={styles.quickAnswerText}>
+                            If you overpaid child support, Services Australia can recover it from future payments or directly from the receiving parent. You must apply within 12 months. Calculate your correct amount below.
+                        </Text>
+                        <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                            <Text style={styles.quickAnswerButtonText}>Calculate Your Amount →</Text>
+                        </Pressable>
+                    </View>
+
 
                     <Pressable
                         style={[styles.ctaButton, isWeb && webClickableStyles]}
@@ -457,6 +468,13 @@ const styles = StyleSheet.create({
     h2: { fontSize: 24, fontWeight: '700', color: '#1e3a8a', marginTop: 32, marginBottom: 16, ...(Platform.OS === 'web' ? { lineHeight: 32 } : {}) },
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
+
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
 
     keyPointBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 2, borderColor: '#3b82f6', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#3b82f6', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 }) },
     keyPointTitle: { fontSize: 18, fontWeight: '700', color: '#1e40af', marginBottom: 8 },

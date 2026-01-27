@@ -76,7 +76,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
         <>
             <PageSEO
                 title="How to Object to Child Support Assessment Australia 2026"
-                description="Object to unfair child support in 28 days. Learn valid grounds, required evidence, and SSAT appeal process. Free legal consultations available."
+                description="28-day deadline to object—miss it and you're stuck. See valid grounds + evidence requirements. SSAT appeal process explained. Act now."
                 canonicalPath="/blog/object-to-child-support-assessment"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -110,6 +110,18 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                         Maybe they've used incorrect income figures, miscalculated your care percentage, or made an
                         administrative error.
                     </Text>
+
+                    <View style={styles.quickAnswerBox}>
+                        <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+                        <Text style={styles.quickAnswerText}>
+                            Disagree with your assessment? You have 28 days to object to Services Australia. Provide 
+                            evidence of errors or special circumstances. If rejected, appeal to SSAT. Calculate your 
+                            current amount below.
+                        </Text>
+                        <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                            <Text style={styles.quickAnswerButtonText}>Calculate Correct Amount →</Text>
+                        </Pressable>
+                    </View>
 
                     <Text style={styles.paragraph}>
                         You have the right to object to a child support assessment in Australia. But you need to act
@@ -742,6 +754,13 @@ const styles = StyleSheet.create({
         color: '#475569',
         marginBottom: 16,
     },
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+
     bulletItem: {
         fontSize: 15,
         lineHeight: 24,

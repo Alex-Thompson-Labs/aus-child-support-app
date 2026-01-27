@@ -76,7 +76,7 @@ export default function CarePercentageTableBlogPost() {
         <>
             <PageSEO
                 title="Child Support Care Percentage Table Australia 2026 | Nights to %"
-                description="Official care percentage table: 52 nights = 14%, 183 nights = 50%. Convert nights to care percentages. Understand thresholds, calculate payments. Free calculator."
+                description="52 nights = 14% care, 183 nights = 50%. One night difference can change payments by $100s/month. See full table + free calculator. Check now."
                 canonicalPath="/blog/child-support-care-percentage-table"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -109,6 +109,17 @@ export default function CarePercentageTableBlogPost() {
                         How many nights per year equals 50/50 care? What about every second weekend? 
                         Care percentage determines who pays child support and how much.
                     </Text>
+
+                    <View style={styles.quickAnswerBox}>
+                        <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+                        <Text style={styles.quickAnswerText}>
+                            Care percentage determines how much of child costs you cover through direct care. 52 nights = 14%, 
+                            128 nights = 35%, 183 nights = 50%. See how care affects your payments below.
+                        </Text>
+                        <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                            <Text style={styles.quickAnswerButtonText}>Calculate Your Amount →</Text>
+                        </Pressable>
+                    </View>
 
                     <Text style={styles.paragraph}>
                         This guide provides the official child support care percentage table used by Services Australia 
@@ -774,6 +785,13 @@ const styles = StyleSheet.create({
         color: '#475569',
         marginBottom: 16,
     },
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+
     bulletItem: {
         fontSize: 15,
         lineHeight: 24,

@@ -74,7 +74,7 @@ export default function PrivateSchoolFeesScreen() {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <PageSEO
         title="Private School Fees and Child Support Australia 2026: Complete Guide"
-        description="Are private school fees included in child support? Learn about Change of Assessment, Binding Agreements, court orders, splitting education costs. Updated 2026."
+        description="Private school fees aren't automatic—you must apply for Change of Assessment. See success criteria + Binding Agreement options. $20k+/year at stake."
         canonicalPath="/blog/private-school-fees-child-support"
         schema={[faqSchema, articleSchema]}
       />
@@ -102,6 +102,17 @@ export default function PrivateSchoolFeesScreen() {
             <Text style={styles.paragraph}>
               One of the most common questions separated parents ask is whether private school fees are included in child support. The short answer is no - private school fees are not automatically covered by the standard child support formula. However, there are several ways parents can arrange for these costs to be shared.
             </Text>
+
+            <View style={styles.quickAnswerBox}>
+              <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+              <Text style={styles.quickAnswerText}>
+                Private school fees aren't automatically included in child support. You can apply for Change of Assessment 
+                or negotiate a Binding Agreement to split education costs. Calculate standard child support below.
+              </Text>
+              <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={handleCalculatorPress}>
+                <Text style={styles.quickAnswerButtonText}>Calculate Amount →</Text>
+              </Pressable>
+            </View>
 
             <Text style={styles.paragraph}>
               This comprehensive guide explains how private school fees interact with child support, your options for including these costs, and what factors Services Australia and courts consider when making decisions about educational expenses.
@@ -546,6 +557,13 @@ const styles = StyleSheet.create({
     color: '#475569',
     marginBottom: 16,
   },
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+
   heading2: {
     fontSize: 24,
     fontWeight: '700',

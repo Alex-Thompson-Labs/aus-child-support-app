@@ -54,7 +54,7 @@ export default function LumpSumChildSupportPaymentBlogPost() {
         <>
             <PageSEO
                 title="Lump Sum Child Support Payment Australia 2026: Complete Guide"
-                description="Pay all child support at once? Learn calculation methods, legal requirements, tax implications, and permanent risks. Get legal advice first."
+                description="Lump sum = permanent—no refunds if circumstances change. $240k over 10 years = $180-200k today. See calculation + risks. Get legal advice first."
                 canonicalPath="/blog/lump-sum-child-support-payment"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -78,6 +78,18 @@ export default function LumpSumChildSupportPaymentBlogPost() {
                         in Australia—but they're complex, permanent, and risky. Here's everything you need to know 
                         before making this major financial decision.
                     </Text>
+
+                    <View style={styles.quickAnswerBox}>
+                        <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+                        <Text style={styles.quickAnswerText}>
+                            A lump sum payment can satisfy future child support obligations. You transfer property or 
+                            cash instead of monthly payments. Requires legal agreement and careful calculation. See your 
+                            estimated annual amount below.
+                        </Text>
+                        <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                            <Text style={styles.quickAnswerButtonText}>Calculate Annual Amount →</Text>
+                        </Pressable>
+                    </View>
 
                     <View style={styles.warningBox}>
                         <Text style={styles.warningTitle}>⚠️ Critical Warning:</Text>
@@ -444,6 +456,13 @@ const styles = StyleSheet.create({
     h2: { fontSize: 24, fontWeight: '700', color: '#1e3a8a', marginTop: 32, marginBottom: 16, ...(Platform.OS === 'web' ? { lineHeight: 32 } : {}) },
     h3: { fontSize: 20, fontWeight: '600', color: '#1e3a8a', marginTop: 24, marginBottom: 12, ...(Platform.OS === 'web' ? { lineHeight: 28 } : {}) },
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
     bold: { fontWeight: '600', color: '#1e3a8a' },
     

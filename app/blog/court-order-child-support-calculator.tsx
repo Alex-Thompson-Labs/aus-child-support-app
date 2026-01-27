@@ -65,7 +65,7 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
         <>
             <PageSEO
                 title="Court Order Child Support Calculator Australia 2026 | Free Tool"
-                description="Have a court order for child support? Scan it with our AI tool to extract care schedules and calculate percentages. Learn how to read orders, when they expire, and plan ahead."
+                description="Court order expires when youngest turns 18—are you prepared? Scan your order with AI tool + see what happens next. Free calculator. Plan ahead now."
                 canonicalPath="/blog/court-order-child-support-calculator"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -90,6 +90,17 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                         confusing. Here's how to read yours, when it expires, and how our tools can help you understand
                         what happens next.
                     </Text>
+
+                    <View style={styles.quickAnswerBox}>
+                        <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+                        <Text style={styles.quickAnswerText}>
+                            Have a court order for child support? It overrides the standard formula until it expires. Learn when it ends and what happens next. Calculate the formula amount below.
+                        </Text>
+                        <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                            <Text style={styles.quickAnswerButtonText}>Calculate Your Amount →</Text>
+                        </Pressable>
+                    </View>
+
 
                     <View style={styles.toolPromoCard}>
                         <Text style={styles.toolPromoTitle}>🎯 New: Court Order Scanner Tool</Text>
@@ -600,6 +611,13 @@ const styles = StyleSheet.create({
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
     bold: { fontWeight: '600', color: '#1e3a8a' },
+
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
 
     alertBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 2, borderColor: '#2563EB', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     alertTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },

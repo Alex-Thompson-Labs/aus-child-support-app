@@ -47,7 +47,7 @@ export default function ChildSupportReductionStrategiesBlogPost() {
         <>
             <PageSEO
                 title="How to Reduce Child Support Payments Australia 2026: 7 Legal Ways"
-                description="7 legal strategies to reduce child support: Change of Assessment, increase care, challenge income. Success rates 40-80%. Free legal consultations."
+                description="Reduce child support legally—not by hiding income. 7 strategies with 40-80% success rates. Change of Assessment + care increases. See options now."
                 canonicalPath="/blog/child-support-reduction-strategies"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -71,6 +71,17 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                         methods that backfire. Here are 7 legitimate strategies, what works, what doesn't, and how
                         to apply without triggering penalties.
                     </Text>
+
+                    <View style={styles.quickAnswerBox}>
+                        <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+                        <Text style={styles.quickAnswerText}>
+                            Legal ways to reduce child support include increasing care time, applying for Change of Assessment, or updating income estimates. Avoid illegal strategies that risk penalties. Calculate your current amount below.
+                        </Text>
+                        <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                            <Text style={styles.quickAnswerButtonText}>Calculate Your Amount →</Text>
+                        </Pressable>
+                    </View>
+
 
                     <View style={styles.warningBox}>
                         <Text style={styles.warningTitle}>⚠️ Legal vs Illegal:</Text>
@@ -319,6 +330,13 @@ const styles = StyleSheet.create({
     h2: { fontSize: 24, fontWeight: '700', color: '#1e3a8a', marginTop: 32, marginBottom: 16, ...(Platform.OS === 'web' ? { lineHeight: 32 } : {}) },
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
+
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
 
     warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 1, borderColor: '#bfdbfe', padding: 16, marginBottom: 16 },
     warningTitle: { fontSize: 15, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },

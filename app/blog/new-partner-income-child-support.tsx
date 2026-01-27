@@ -63,7 +63,7 @@ export default function NewPartnerIncomeChildSupportBlogPost() {
         <>
             <PageSEO
                 title="New Partner Income & Child Support Australia 2026 | Does It Affect You?"
-                description="Remarried or living with a new partner? Learn how their income affects child support in Australia, when Change of Assessment applies, and how to protect your assessment."
+                description="New partner's income doesn't count—unless they pay all your bills. See when Change of Assessment applies + how to protect yourself. Know your rights."
                 canonicalPath="/blog/new-partner-income-child-support"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -88,6 +88,18 @@ export default function NewPartnerIncomeChildSupportBlogPost() {
                         how new partner income works in Australian child support law, when it matters, and how to 
                         protect yourself.
                     </Text>
+
+                    <View style={styles.quickAnswerBox}>
+                        <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
+                        <Text style={styles.quickAnswerText}>
+                            Your new partner's income doesn't directly affect child support calculations. However, if 
+                            they support your household, you may apply for Change of Assessment. Calculate your current 
+                            amount below.
+                        </Text>
+                        <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
+                            <Text style={styles.quickAnswerButtonText}>Calculate Your Amount →</Text>
+                        </Pressable>
+                    </View>
 
                     <View style={styles.keyRuleBox}>
                         <Text style={styles.keyRuleTitle}>🔑 Key Rule:</Text>
@@ -437,6 +449,13 @@ const styles = StyleSheet.create({
     h2: { fontSize: 24, fontWeight: '700', color: '#1e3a8a', marginTop: 32, marginBottom: 16, ...(Platform.OS === 'web' ? { lineHeight: 32 } : {}) },
     h3: { fontSize: 20, fontWeight: '600', color: '#1e3a8a', marginTop: 24, marginBottom: 12, ...(Platform.OS === 'web' ? { lineHeight: 28 } : {}) },
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
+
+    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
     bold: { fontWeight: '600', color: '#1e3a8a' },
     
