@@ -14,6 +14,7 @@ interface CareStepProps {
     results: CalculationResults;
     isExpanded: boolean;
     onToggle: () => void;
+    hasDeceasedParent?: boolean;
 }
 
 /**
@@ -22,7 +23,7 @@ interface CareStepProps {
  * Shows the care percentage for each child, comparing Parent A vs Parent B.
  * Renders one step card per child for multi-child scenarios.
  */
-export function CareStep({ results, isExpanded, onToggle }: CareStepProps) {
+export function CareStep({ results, isExpanded, onToggle, hasDeceasedParent = false }: CareStepProps) {
     const { colors } = useAppTheme();
 
     const dynamicStyles = useMemo(() => ({
@@ -64,26 +65,37 @@ export function CareStep({ results, isExpanded, onToggle }: CareStepProps) {
                             </Text>
                         )}
 
-                        <View style={styles.careComparison}>
-                            <Text style={[styles.careHeaderLabel, dynamicStyles.careHeaderLabel]}>
-                                <Text style={[dynamicStyles.userHighlight, { fontWeight: '700' }]}>YOU</Text> -{' '}
-                                <Text style={[dynamicStyles.userHighlight, { fontWeight: '700' }]}>
-                                    {formatPercent2dp(child.roundedCareA)}
+                        {!hasDeceasedParent ? (
+                            <View style={styles.careComparison}>
+                                <Text style={[styles.careHeaderLabel, dynamicStyles.careHeaderLabel]}>
+                                    <Text style={[dynamicStyles.userHighlight, { fontWeight: '700' }]}>YOU</Text> -{' '}
+                                    <Text style={[dynamicStyles.userHighlight, { fontWeight: '700' }]}>
+                                        {formatPercent2dp(child.roundedCareA)}
+                                    </Text>
                                 </Text>
-                            </Text>
 
-                            <PercentageBar
-                                percentA={child.roundedCareA}
-                                percentB={child.roundedCareB}
-                            />
+                                <PercentageBar
+                                    percentA={child.roundedCareA}
+                                    percentB={child.roundedCareB}
+                                />
 
-                            <Text style={[styles.careHeaderLabel, dynamicStyles.careHeaderLabel, { textAlign: 'right' }]}>
-                                <Text style={[dynamicStyles.textMuted, { fontWeight: '700' }]}>OTHER PARENT</Text> -{' '}
-                                <Text style={[dynamicStyles.textMuted, { fontWeight: '700' }]}>
-                                    {formatPercent2dp(child.roundedCareB)}
+                                <Text style={[styles.careHeaderLabel, dynamicStyles.careHeaderLabel, { textAlign: 'right' }]}>
+                                    <Text style={[dynamicStyles.textMuted, { fontWeight: '700' }]}>OTHER PARENT</Text> -{' '}
+                                    <Text style={[dynamicStyles.textMuted, { fontWeight: '700' }]}>
+                                        {formatPercent2dp(child.roundedCareB)}
+                                    </Text>
                                 </Text>
-                            </Text>
-                        </View>
+                            </View>
+                        ) : (
+                            <View style={styles.careComparison}>
+                                <Text style={[styles.careHeaderLabel, dynamicStyles.careHeaderLabel]}>
+                                    <Text style={[dynamicStyles.userHighlight, { fontWeight: '700' }]}>YOU</Text> -{' '}
+                                    <Text style={[dynamicStyles.userHighlight, { fontWeight: '700' }]}>
+                                        {formatPercent2dp(child.roundedCareA)}
+                                    </Text>
+                                </Text>
+                            </View>
+                        )}
                     </>
                 </BreakdownStepCard>
             ))}

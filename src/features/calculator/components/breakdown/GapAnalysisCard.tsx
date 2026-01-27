@@ -27,6 +27,8 @@ export interface GapAnalysisCardProps {
     isUserHighlighted?: boolean;
     /** Optional explanation when MAR/FAR cap is applied (Formula 3/4) */
     capExplanation?: string;
+    /** Hide income/cost breakdown (for deceased parent cases) */
+    simplifiedView?: boolean;
 }
 
 export function GapAnalysisCard({
@@ -42,6 +44,7 @@ export function GapAnalysisCard({
     formatCurrency,
     isUserHighlighted = false,
     capExplanation,
+    simplifiedView = false,
 }: GapAnalysisCardProps) {
     const { colors } = useAppTheme();
     const hasFixedRate = isFarApplied || isMarApplied;
@@ -98,32 +101,64 @@ export function GapAnalysisCard({
     return (
         <View style={[styles.gapCard, dynamicStyles.card]}>
             <Text style={[styles.gapCardTitle, dynamicStyles.title]}>{label}</Text>
-            <View style={styles.gapCardRow}>
-                <Text style={[styles.gapCardLabel, dynamicStyles.label]}>Income %</Text>
-                <Text style={[styles.gapCardValue, dynamicStyles.valueMuted]}>{formatPercent(incomePercent)}</Text>
-            </View>
-            <View style={styles.gapCardRow}>
-                <Text style={[styles.gapCardLabel, dynamicStyles.label]}>Cost %</Text>
-                <Text style={[styles.gapCardValue, dynamicStyles.valueMuted]}>
-                    ({formatPercent(costPercent)})
-                </Text>
-            </View>
-            <View style={[styles.gapCardDivider, dynamicStyles.divider]} />
-            <View style={[styles.gapCardRow, { marginBottom: 0 }]}>
-                <Text style={[styles.gapCardLabel, styles.gapCardLabelBold, dynamicStyles.title]}>CS %</Text>
-                <Text
-                    style={[
-                        styles.gapCardValue,
-                        !otherParentHasFixedRate && isUserHighlighted && styles.gapCardValueHighlight,
-                        !otherParentHasFixedRate && !isUserHighlighted && { fontWeight: '700', fontSize: 16 },
-                        dynamicStyles.title,
-                    ]}
-                >
-                    {otherParentHasFixedRate && csPercent === 0
-                        ? '—'
-                        : formatPercent(csPercent)}
-                </Text>
-            </View>
+            {simplifiedView ? (
+                // Simplified view for deceased parent - show calculation vertically
+                <>
+                    <View style={styles.gapCardRow}>
+                        <Text style={[styles.gapCardLabel, dynamicStyles.label]}>Income %</Text>
+                        <Text style={[styles.gapCardValue, dynamicStyles.valueMuted]}>{formatPercent(incomePercent)}</Text>
+                    </View>
+                    <View style={styles.gapCardRow}>
+                        <Text style={[styles.gapCardLabel, dynamicStyles.label]}>Cost %</Text>
+                        <Text style={[styles.gapCardValue, dynamicStyles.valueMuted]}>
+                            ({formatPercent(costPercent)})
+                        </Text>
+                    </View>
+                    <View style={[styles.gapCardDivider, dynamicStyles.divider]} />
+                    <View style={[styles.gapCardRow, { marginBottom: 0 }]}>
+                        <Text style={[styles.gapCardLabel, styles.gapCardLabelBold, dynamicStyles.title]}>CS %</Text>
+                        <Text
+                            style={[
+                                styles.gapCardValue,
+                                styles.gapCardValueHighlight,
+                                dynamicStyles.title,
+                            ]}
+                        >
+                            {formatPercent(csPercent)}
+                        </Text>
+                    </View>
+                </>
+            ) : (
+                // Standard view with Income % and Cost %
+                <>
+                    <View style={styles.gapCardRow}>
+                        <Text style={[styles.gapCardLabel, dynamicStyles.label]}>Income %</Text>
+                        <Text style={[styles.gapCardValue, dynamicStyles.valueMuted]}>{formatPercent(incomePercent)}</Text>
+                    </View>
+                    <View style={styles.gapCardRow}>
+                        <Text style={[styles.gapCardLabel, dynamicStyles.label]}>Cost %</Text>
+                        <Text style={[styles.gapCardValue, dynamicStyles.valueMuted]}>
+                            ({formatPercent(costPercent)})
+                        </Text>
+                    </View>
+                    <View style={[styles.gapCardDivider, dynamicStyles.divider]} />
+                    <View style={[styles.gapCardRow, { marginBottom: 0 }]}>
+                        <Text style={[styles.gapCardLabel, styles.gapCardLabelBold, dynamicStyles.title]}>CS %</Text>
+                        <Text
+                            style={[
+                                styles.gapCardValue,
+                                !otherParentHasFixedRate && isUserHighlighted && styles.gapCardValueHighlight,
+                                !otherParentHasFixedRate && !isUserHighlighted && { fontWeight: '700', fontSize: 16 },
+                                dynamicStyles.title,
+                            ]}
+                        >
+                            {otherParentHasFixedRate && csPercent === 0
+                                ? '—'
+                                : formatPercent(csPercent)}
+                        </Text>
+                    </View>
+                </>
+            )}
         </View>
     );
 }

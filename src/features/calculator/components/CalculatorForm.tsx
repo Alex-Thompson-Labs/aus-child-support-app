@@ -198,6 +198,33 @@ export function CalculatorForm({
   const contentPaddingBottom = isDesktopWeb ? 40 : 250;
 
   // Responsive input width
+
+  // Handler for when deceased parent toggle changes - reset Parent B care to 0
+  const handleDeceasedChange = (isDeceased: boolean) => {
+    if (isDeceased) {
+      // Reset Parent B income to 0
+      onIncomeBChange(0);
+      // Reset all children's Parent B care to 0 when deceased is enabled
+      childrenData.forEach((child) => {
+        onUpdateChild(child.id, { careAmountB: 0 });
+      });
+    }
+  };
+  
+  // Handler for when non-reciprocating jurisdiction is selected - reset Parent B income and care
+  const handleNonParentCarerChange = (info: NonParentCarerInfo) => {
+    // If switching to non-reciprocating jurisdiction, reset Parent B data
+    if (info.isNonReciprocating && !nonParentCarer.isNonReciprocating) {
+      // Reset Parent B income to 0
+      onIncomeBChange(0);
+      // Reset all children's Parent B care to 0
+      childrenData.forEach((child) => {
+        onUpdateChild(child.id, { careAmountB: 0 });
+      });
+    }
+    // Call the original handler
+    onNonParentCarerChange(info);
+  };
   const inputWidth = isMobile ? 160 : isDesktop ? 200 : 180;
 
   return (
@@ -313,61 +340,62 @@ export function CalculatorForm({
           )}
         </View>
 
-        {/* Parent B */}
-        <View
-          style={[styles.inputGroup, { marginTop: 16 }]}
-          accessibilityRole={'group' as any} // Web-only ARIA role
-          accessibilityLabel="Parent B Income and Support Details"
-        >
-          <View style={styles.labelRow}>
-            <Text style={[styles.label, dynamicStyles.label]}>
-              <Text style={[styles.parentTitleB, dynamicStyles.parentTitleB]}>
-                Other Parent&apos;s Income
+        {/* Parent B - Hidden when deceased or non-reciprocating jurisdiction */}
+        {!nonParentCarer.hasDeceasedParent && !nonParentCarer.isNonReciprocating && (
+          <View
+            style={[styles.inputGroup, { marginTop: 16 }]}
+            accessibilityRole={'group' as any} // Web-only ARIA role
+            accessibilityLabel="Parent B Income and Support Details"
+          >
+            <View style={styles.labelRow}>
+              <Text style={[styles.label, dynamicStyles.label]}>
+                <Text style={[styles.parentTitleB, dynamicStyles.parentTitleB]}>
+                  Other Parent&apos;s Income
+                </Text>
               </Text>
-            </Text>
-          </View>
-          <View style={styles.inputRow}>
-            <View
-              style={[
-                styles.currencyInputContainer,
-                { width: inputWidth, minWidth: inputWidth },
-              ]}
-            >
-              <Text style={[styles.currencySymbol, dynamicStyles.currencySymbol]}>$</Text>
-              <TextInput
-                style={[
-                  styles.currencyInput,
-                  dynamicStyles.currencyInput,
-                  { width: inputWidth, minWidth: inputWidth },
-                  errors.incomeB && dynamicStyles.inputError,
-                  isWeb && webInputStyles,
-                ]}
-                value={incomeB ? incomeB.toString() : ''}
-                onChangeText={(text) => {
-                  const val = text.replace(/[^0-9]/g, '');
-                  onIncomeBChange(parseInt(val) || 0);
-                }}
-                onFocus={(e) => {
-                  // Select all text on focus so typing replaces the value
-                  if (isWeb && e.target) {
-                    const target = e.target as unknown as HTMLInputElement;
-                    // Small timeout ensures selection persists after focus event settles
-                    setTimeout(() => target.select?.(), 50);
-                  }
-                }}
-                selectTextOnFocus={true}
-                keyboardType="numeric"
-                placeholder="0"
-                placeholderTextColor={colors.placeholder}
-                accessibilityLabel="Parent B adjusted taxable income"
-                accessibilityHint="Enter the other parent's annual gross income including super, fringe benefits, and investment losses"
-                // @ts-ignore - Web-only ARIA attribute
-                aria-describedby={errors.incomeB ? 'income-b-error' : undefined}
-                aria-invalid={!!errors.incomeB}
-              />
             </View>
-          </View>
-          {errors.incomeB && (
+            <View style={styles.inputRow}>
+              <View
+                style={[
+                  styles.currencyInputContainer,
+                  { width: inputWidth, minWidth: inputWidth },
+                ]}
+              >
+                <Text style={[styles.currencySymbol, dynamicStyles.currencySymbol]}>$</Text>
+                <TextInput
+                  style={[
+                    styles.currencyInput,
+                    dynamicStyles.currencyInput,
+                    { width: inputWidth, minWidth: inputWidth },
+                    errors.incomeB && dynamicStyles.inputError,
+                    isWeb && webInputStyles,
+                  ]}
+                  value={incomeB ? incomeB.toString() : ''}
+                  onChangeText={(text) => {
+                    const val = text.replace(/[^0-9]/g, '');
+                    onIncomeBChange(parseInt(val) || 0);
+                  }}
+                  onFocus={(e) => {
+                    // Select all text on focus so typing replaces the value
+                    if (isWeb && e.target) {
+                      const target = e.target as unknown as HTMLInputElement;
+                      // Small timeout ensures selection persists after focus event settles
+                      setTimeout(() => target.select?.(), 50);
+                    }
+                  }}
+                  selectTextOnFocus={true}
+                  keyboardType="numeric"
+                  placeholder="0"
+                  placeholderTextColor={colors.placeholder}
+                  accessibilityLabel="Parent B adjusted taxable income"
+                  accessibilityHint="Enter the other parent's annual gross income including super, fringe benefits, and investment losses"
+                  // @ts-ignore - Web-only ARIA attribute
+                  aria-describedby={errors.incomeB ? 'income-b-error' : undefined}
+                  aria-invalid={!!errors.incomeB}
+                />
+              </View>
+            </View>
+            {errors.incomeB && (
             <Text
               style={[styles.errorText, dynamicStyles.errorText]}
               // @ts-ignore - Web-only attribute
@@ -378,7 +406,8 @@ export function CalculatorForm({
               {errors.incomeB}
             </Text>
           )}
-        </View>
+          </View>
+        )}
 
         {/* Relevant Dependents - Compact Button with Popover */}
         <View style={[styles.inputGroup, { marginTop: 16 }]}>
@@ -403,7 +432,8 @@ export function CalculatorForm({
         {/* Non-Parent Carer (Formula 4) */}
         <NonParentCarerSection
           nonParentCarer={nonParentCarer}
-          onNonParentCarerChange={onNonParentCarerChange}
+          onNonParentCarerChange={handleNonParentCarerChange}
+          onDeceasedChange={handleDeceasedChange}
         />
       </View>
 
@@ -445,6 +475,7 @@ export function CalculatorForm({
               onRemove={() => onRemoveChild(child.id)}
               showNPCInput={nonParentCarer.enabled}
               showNPC2Input={nonParentCarer.enabled && (nonParentCarer.hasSecondNPC ?? false)}
+              hideParentB={(nonParentCarer.hasDeceasedParent ?? false) || (nonParentCarer.isNonReciprocating ?? false)}
               error={errors[child.id]}
             />
           ))}

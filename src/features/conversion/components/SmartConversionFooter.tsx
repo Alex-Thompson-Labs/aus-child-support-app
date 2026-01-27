@@ -114,7 +114,7 @@ export function determineCardVariant(
 ): ConversionCardVariant {
   const userIsPayer = results.payer === 'Parent A';
   const bothHaveFar = results.FAR_A > 0 && results.FAR_B > 0;
-  const isFarBoth = results.rateApplied.includes('FAR') && results.rateApplied.includes('Both');
+  const isFarBoth = results.rateApplied?.includes('FAR') && results.rateApplied?.includes('Both');
 
   if (userIsPayer && (bothHaveFar || isFarBoth)) {
     return 'payer_reversal';
@@ -127,7 +127,7 @@ export function determineCardVariant(
     }
   } else {
     const userIsReceiver = results.payer === 'Parent B';
-    const isFarOrMar = results.rateApplied.includes('FAR') || results.rateApplied.includes('MAR');
+    const isFarOrMar = results.rateApplied?.includes('FAR') || results.rateApplied?.includes('MAR');
     if (userIsReceiver && isFarOrMar) {
       return 'low_assessment';
     }

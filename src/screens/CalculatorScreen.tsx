@@ -125,6 +125,16 @@ export function CalculatorScreen() {
   ): boolean => {
     const { SSA, MAX_PPS } = getYearConstants(selectedYear);
 
+    // Skip prompt for Parent B if either parent is deceased (Formula 6)
+    if (careKey === 'careAmountB' && formState.nonParentCarer?.hasDeceasedParent) {
+      return false;
+    }
+
+    // Skip prompt for Parent B if non-reciprocating jurisdiction (Formula 5)
+    if (careKey === 'careAmountB' && formState.nonParentCarer?.isNonReciprocating) {
+      return false;
+    }
+
     // Check if parent has < 14% care for at least one child
     const hasLessThan14Care = formState.children.some((child) => {
       const carePercent = convertCareToPercentage(
@@ -340,6 +350,7 @@ export function CalculatorScreen() {
                 resetTimestamp={resetTimestamp}
                 calculatorStartTime={calculatorStartTime}
                 selectedYear={parseInt(selectedYear, 10)}
+                hasDeceasedParent={formState.nonParentCarer?.hasDeceasedParent ?? false}
               />
             </View>
           </View>

@@ -13,6 +13,7 @@ const BreakdownView = lazy(() =>
 interface ResultsSimpleExplanationProps {
   results: CalculationResults;
   formState: { supportA: boolean; supportB: boolean };
+  hasDeceasedParent?: boolean;
 }
 
 /**
@@ -31,10 +32,11 @@ interface ResultsSimpleExplanationProps {
 export function ResultsSimpleExplanation({
   results,
   formState,
+  hasDeceasedParent = false,
 }: ResultsSimpleExplanationProps) {
   return (
     <Suspense fallback={<BreakdownLoadingFallback />}>
-      <BreakdownView results={results} formState={formState} />
+      <BreakdownView results={results} formState={formState} hasDeceasedParent={hasDeceasedParent} />
     </Suspense>
   );
 }

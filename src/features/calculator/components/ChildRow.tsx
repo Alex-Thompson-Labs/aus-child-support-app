@@ -4,10 +4,10 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { CARE_PERIOD_DAYS } from '@/src/utils/child-support-constants';
 import {
-  isWeb,
-  useResponsive,
-  webClickableStyles,
-  webInputStyles,
+    isWeb,
+    useResponsive,
+    webClickableStyles,
+    webInputStyles,
 } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import { PeriodPicker } from './PeriodPicker';
@@ -23,6 +23,8 @@ interface ChildRowProps {
   showNPCInput?: boolean;
   /** Show second NPC care input when enabled */
   showNPC2Input?: boolean;
+  /** Hide Parent B input when parent is deceased (Formula 6) */
+  hideParentB?: boolean;
   /** Validation error message for this child */
   error?: string;
 }
@@ -35,6 +37,7 @@ export function ChildRow({
   totalChildren,
   showNPCInput = false,
   showNPC2Input = false,
+  hideParentB = false,
   error,
 }: ChildRowProps) {
   const { isMobile } = useResponsive();
@@ -59,7 +62,8 @@ export function ChildRow({
   // Calculate if total exceeds maximum (including NPC if enabled)
   const npcAmount = showNPCInput ? child.careAmountNPC ?? 0 : 0;
   const npc2Amount = showNPC2Input ? child.careAmountNPC2 ?? 0 : 0;
-  const totalCare = child.careAmountA + child.careAmountB + npcAmount + npc2Amount;
+  const parentBAmount = hideParentB ? 0 : child.careAmountB;
+  const totalCare = child.careAmountA + parentBAmount + npcAmount + npc2Amount;
   const isOverLimit = totalCare > maxValue;
   const periodLabel = child.carePeriod === 'percent' ? '%' : ' nights';
 
@@ -80,8 +84,8 @@ export function ChildRow({
     setLocalValue(cleanedText);
     const newAmountA = parseFloat(cleanedText) || 0;
 
-    // Only auto-adjust other parent if NPC is NOT enabled
-    if (!showNPCInput) {
+    // Only auto-adjust other parent if NPC is NOT enabled AND parent B is visible
+    if (!showNPCInput && !hideParentB) {
       const newAmountB = Math.max(0, maxValue - newAmountA);
       onUpdate({ careAmountA: newAmountA, careAmountB: newAmountB });
     } else {
@@ -107,7 +111,7 @@ export function ChildRow({
   const handleBlurA = () => {
     const newAmountA = parseFloat(localValue) || 0;
 
-    if (!showNPCInput) {
+    if (!showNPCInput && !hideParentB) {
       const newAmountB = Math.max(0, maxValue - newAmountA);
       onUpdate({ careAmountA: newAmountA, careAmountB: newAmountB });
     } else {
@@ -293,30 +297,32 @@ export function ChildRow({
             />
           </View>
 
-          {/* Parent B */}
-          <View
-            style={[styles.itemWrapper, isMobile && styles.parentItemMobile]}
-          >
-            <Text style={styles.headerLabelB}>OTHER</Text>
-            <TextInput
-              style={[
-                styles.careInput,
-                styles.compactInput,
-                isWeb && webInputStyles,
-              ]}
-              value={getDisplayValueB()}
-              onChangeText={handleChangeB}
-              onFocus={handleFocusB}
-              onBlur={handleBlurB}
-              placeholder="0"
-              keyboardType="number-pad"
-              maxLength={5}
-              placeholderTextColor="#64748b"
-              accessibilityLabel="Other parent's nights of care"
-              accessibilityHint="Enter number of nights child stays with other parent"
-              {...(isWeb && { inputMode: 'numeric' as any })}
-            />
-          </View>
+          {/* Parent B - Hidden when deceased */}
+          {!hideParentB && (
+            <View
+              style={[styles.itemWrapper, isMobile && styles.parentItemMobile]}
+            >
+              <Text style={styles.headerLabelB}>OTHER</Text>
+              <TextInput
+                style={[
+                  styles.careInput,
+                  styles.compactInput,
+                  isWeb && webInputStyles,
+                ]}
+                value={getDisplayValueB()}
+                onChangeText={handleChangeB}
+                onFocus={handleFocusB}
+                onBlur={handleBlurB}
+                placeholder="0"
+                keyboardType="number-pad"
+                maxLength={5}
+                placeholderTextColor="#64748b"
+                accessibilityLabel="Other parent's nights of care"
+                accessibilityHint="Enter number of nights child stays with other parent"
+                {...(isWeb && { inputMode: 'numeric' as any })}
+              />
+            </View>
+          )}
 
           {/* Non-Parent Carer (Formula 2/4) */}
           {showNPCInput && (

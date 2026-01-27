@@ -10,6 +10,7 @@ import { ZeroLiabilityNotice } from './ZeroLiabilityNotice';
 interface BreakdownViewProps {
   results: CalculationResults;
   formState: { supportA: boolean; supportB: boolean };
+  hasDeceasedParent?: boolean;
 }
 
 /**
@@ -18,7 +19,13 @@ interface BreakdownViewProps {
  * This component is designed to be loaded on-demand when the user
  * expands the breakdown view, reducing initial bundle size.
  */
-export function BreakdownView({ results, formState }: BreakdownViewProps) {
+export function BreakdownView({ results, formState, hasDeceasedParent = false }: BreakdownViewProps) {
+  // Check if this is a Formula 5 (non-reciprocating jurisdiction) or Formula 6 (deceased parent) case
+  // Both formulas use only one parent's income, so we hide the "OTHER PARENT" sections
+  const isFormula5 = (results as any).formulaUsed === 5;
+  const isFormula6 = (results as any).formulaUsed === 6;
+  const hideOtherParent = hasDeceasedParent || isFormula5 || isFormula6;
+  
   // Collapsible state management - 8-Step Formula
   const [expandedSteps, setExpandedSteps] = useState({
     step1: false, // Child Support Income - collapsed
@@ -50,6 +57,7 @@ export function BreakdownView({ results, formState }: BreakdownViewProps) {
           step3: expandedSteps.step3,
         }}
         onToggle={handleIncomeToggle}
+        hasDeceasedParent={hideOtherParent}
       />
 
       {/* Step 4: Care Percentage */}
@@ -59,6 +67,7 @@ export function BreakdownView({ results, formState }: BreakdownViewProps) {
         onToggle={() =>
           setExpandedSteps((prev) => ({ ...prev, step4: !prev.step4 }))
         }
+        hasDeceasedParent={hideOtherParent}
       />
 
       {/* Steps 5-7: Cost Calculation */}
@@ -70,9 +79,10 @@ export function BreakdownView({ results, formState }: BreakdownViewProps) {
           step7: expandedSteps.step7,
         }}
         onToggle={handleCostToggle}
+        hasDeceasedParent={hideOtherParent}
       />
 
-      {/* Step 8: Annual Rate / Liability */}
+            {/* Step 8: Annual Rate / Liability */}
       <LiabilityStep
         results={results}
         formState={formState}
@@ -80,6 +90,7 @@ export function BreakdownView({ results, formState }: BreakdownViewProps) {
         onToggle={() =>
           setExpandedSteps((prev) => ({ ...prev, step8: !prev.step8 }))
         }
+        hasDeceasedParent={hideOtherParent}
       />
 
       {/* Zero liability notice at the end */}

@@ -2,17 +2,17 @@ import { StepProgressIndicator } from '@/src/components/ui/StepProgressIndicator
 import type { CalculationResults, CalculationResultUnion } from '@/src/utils/calculator';
 import { isComplexityTrap } from '@/src/utils/calculator';
 import {
-  ComplexityFormData,
+    ComplexityFormData,
 } from '@/src/utils/complexity-detection';
 import { MAX_CALCULATOR_WIDTH, useResponsive } from '@/src/utils/responsive';
 import React, { useEffect } from 'react';
 import {
-  Modal,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View
+    Modal,
+    Platform,
+    Pressable,
+    StyleSheet,
+    Text,
+    View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ComplexityTrapAlert } from './ComplexityTrapAlert';
@@ -150,6 +150,7 @@ interface CalculatorResultsProps {
   resetTimestamp?: number;
   calculatorStartTime?: number;
   selectedYear?: number;
+  hasDeceasedParent?: boolean;
 }
 
 export function CalculatorResults({
@@ -160,6 +161,7 @@ export function CalculatorResults({
   resetTimestamp = 0,
   calculatorStartTime,
   selectedYear = 2025,
+  hasDeceasedParent = false,
 }: CalculatorResultsProps) {
   const insets = useSafeAreaInsets();
   const { isWeb, isDesktop } = useResponsive();
@@ -303,6 +305,7 @@ export function CalculatorResults({
             calculatorStartTime={calculatorStartTime}
             isWeb={isWeb}
             selectedYear={selectedYear}
+            hasDeceasedParent={hasDeceasedParent}
             onCloseModal={() => setIsExpanded(false)}
             onSpecialCircumstancesChange={handleSpecialCircumstancesChange}
           />
@@ -391,6 +394,7 @@ export function CalculatorResults({
             calculatorStartTime={calculatorStartTime}
             isWeb={isWeb}
             selectedYear={selectedYear}
+            hasDeceasedParent={hasDeceasedParent}
             onCloseModal={() => setIsExpanded(false)}
             onSpecialCircumstancesChange={handleSpecialCircumstancesChange}
           />

@@ -56,6 +56,7 @@ export interface ResultsModalContentProps {
   calculatorStartTime?: number;
   isWeb: boolean;
   selectedYear?: number;
+  hasDeceasedParent?: boolean;
   onCloseModal: () => void;
   onSpecialCircumstancesChange: (reasons: string[]) => void;
 }
@@ -69,6 +70,7 @@ export function ResultsModalContent({
   calculatorStartTime,
   isWeb,
   selectedYear = 2025,
+  hasDeceasedParent = false,
   onCloseModal,
   onSpecialCircumstancesChange,
 }: ResultsModalContentProps) {
@@ -125,6 +127,7 @@ export function ResultsModalContent({
                 supportA: formData?.supportA ?? false,
                 supportB: formData?.supportB ?? false,
               }}
+              hasDeceasedParent={hasDeceasedParent}
             />
           </Suspense>
         </LazyLoadErrorBoundary>

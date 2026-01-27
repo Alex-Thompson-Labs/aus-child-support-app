@@ -1,4 +1,5 @@
 import {
+    CalculationResults,
     CalculationResultUnion,
     CalculatorFormState,
     ComplexityTrapCalculationResult,
@@ -88,11 +89,17 @@ export const calculateChildSupport = (
     formState.nonParentCarer.hasDeceasedParent
   ) {
     // Formula 6 applies - use single parent income (deceased parent has no capacity)
-    // Assume Parent A is the surviving parent (doesn't matter which for calculation)
+    // Parent A is the surviving parent, calculate their actual care percentage
+    
+    // Calculate Parent A's average care percentage across all children
+    const parentACarePercentages = formState.children.map(child => 
+      convertCareToPercentage(child.careAmountA, child.carePeriod)
+    );
+    const avgParentACare = parentACarePercentages.reduce((sum, pct) => sum + pct, 0) / parentACarePercentages.length;
     
     const formula6Input: Formula6Input = {
       survivingParentATI: formState.incomeA,
-      survivingParentCarePercentage: 0, // NPC has care, parent typically has 0%
+      survivingParentCarePercentage: avgParentACare, // Use actual care percentage from form
       children: formState.children.map(c => ({ age: c.age })),
       hasMultipleCases: formState.multiCaseA.otherChildren.length > 0,
       otherCaseChildren: formState.multiCaseA.otherChildren,
@@ -104,8 +111,78 @@ export const calculateChildSupport = (
     
     try {
       const formula6Result = calculateFormula6(formula6Input);
-      // Return Formula 6 result directly
-      return formula6Result as any; // TODO: Proper type integration
+      
+      // Calculate cost bracket info for Step 7 display
+      const { cost: totalCost, bracketInfo: costBracketInfo } = getChildCost(
+        selectedYear,
+        formula6Input.children,
+        formula6Result.survivingParentCSI
+      );
+      
+      // Map Formula 6 result to standard CalculationResults structure
+      const mappedResult: CalculationResults = {
+        formulaUsed: 6, // Add formula identifier
+        ATI_A: formula6Result.survivingParentATI,
+        ATI_B: 0, // Deceased parent
+        relDepDeductibleA: 0, // TODO: Add if needed
+        relDepDeductibleB: 0,
+        SSA: getYearConstants(selectedYear).SSA,
+        FAR: getYearConstants(selectedYear).FAR,
+        MAR: getYearConstants(selectedYear).MAR,
+        MAX_PPS: getYearConstants(selectedYear).MAX_PPS,
+        CSI_A: formula6Result.survivingParentCSI,
+        CSI_B: 0, // Deceased parent
+        CCSI: formula6Result.survivingParentCSI,
+        incomePercA: 100, // Surviving parent has 100% of income
+        incomePercB: 0,
+        totalCost: formula6Result.cotc,
+        costBracketInfo, // Add bracket info for Step 7 display
+        childResults: formula6Result.childResults.map(child => ({
+          age: child.age,
+          ageRange: child.ageRange,
+          isAdultChild: child.isAdultChild,
+          isTurning18: child.age === 17,
+          careA: formula6Result.parentCarePercentage,
+          careB: 0,
+          costPerChild: child.costPerChild,
+          roundedCareA: formula6Result.parentCarePercentage,
+          roundedCareB: 0,
+          costPercA: formula6Result.parentCostPercentage,
+          costPercB: 0,
+          childSupportPercA: Math.max(0, 100 - formula6Result.parentCostPercentage), // Income% - Cost% = CS%
+          childSupportPercB: 0,
+          liabilityA: formula6Result.annualRate,
+          liabilityB: 0,
+          finalLiabilityA: formula6Result.annualRate,
+          finalLiabilityB: 0,
+          farAppliedA: false,
+          farAppliedB: false,
+          marAppliedA: false,
+          marAppliedB: false,
+          multiCaseCapAppliedA: formula6Result.multiCaseCapApplied,
+          multiCaseCapAppliedB: false,
+        })),
+        totalLiabilityA: formula6Result.annualRate,
+        totalLiabilityB: 0,
+        finalLiabilityA: formula6Result.annualRate,
+        finalLiabilityB: 0,
+        FAR_A: 0,
+        FAR_B: 0,
+        MAR_A: 0,
+        MAR_B: 0,
+        rateApplied: 'None', // Formula 6 doesn't use MAR/FAR
+        payer: 'Parent A', // Surviving parent pays to NPC
+        receiver: 'Non-Parent Carer',
+        finalPaymentAmount: formula6Result.annualRate,
+        multiCaseAllowanceA: formula6Result.multiCaseAllowance,
+        multiCaseAllowanceB: 0,
+        multiCaseCapAppliedA: formula6Result.multiCaseCapApplied,
+        multiCaseCapAppliedB: false,
+        payerRole: 'paying_parent',
+        paymentToNPC: formula6Result.annualRate,
+      } as any; // Type assertion needed for formulaUsed property
+      
+      return mappedResult;
     } catch (error) {
       console.error('Formula 6 calculation error:', error);
       return null;
@@ -128,17 +205,37 @@ export const calculateChildSupport = (
       // Formula 5 applies - use simplified calculation with one parent's income
       // Determine which parent is available (the one NOT overseas)
       // For now, assume Parent A is the Australian resident parent
-      // TODO: Add UI to specify which parent is overseas
+      
+      // Calculate Parent A's average care percentage across all children
+      const parentACarePercentages = formState.children.map(child => 
+        convertCareToPercentage(child.careAmountA, child.carePeriod)
+      );
+      const avgParentACare = parentACarePercentages.reduce((sum, pct) => sum + pct, 0) / parentACarePercentages.length;
+      
+      // Calculate NPC's average care percentage across all children
+      const npcCarePercentages = formState.children.map(child => 
+        convertCareToPercentage(child.careAmountNPC ?? 0, child.carePeriod)
+      );
+      const avgNPCCare = npcCarePercentages.reduce((sum, pct) => sum + pct, 0) / npcCarePercentages.length;
+      
+      // Calculate NPC2's average care percentage if applicable
+      let avgNPC2Care = 0;
+      if (formState.nonParentCarer.hasSecondNPC) {
+        const npc2CarePercentages = formState.children.map(child => 
+          convertCareToPercentage(child.careAmountNPC2 ?? 0, child.carePeriod)
+        );
+        avgNPC2Care = npc2CarePercentages.reduce((sum, pct) => sum + pct, 0) / npc2CarePercentages.length;
+      }
       
       const formula5Input: Formula5Input = {
         availableParentATI: formState.incomeA,
-        availableParentCarePercentage: 0, // NPC has care, parent typically has 0%
+        availableParentCarePercentage: avgParentACare,
         children: formState.children.map(c => ({ age: c.age })),
         hasMultipleCases: formState.multiCaseA.otherChildren.length > 0,
         otherCaseChildren: formState.multiCaseA.otherChildren,
         numberOfNonParentCarers: formState.nonParentCarer.hasSecondNPC ? 2 : 1,
-        carer1CarePercentage: formState.nonParentCarer.hasSecondNPC ? 60 : 100, // TODO: Get from form
-        carer2CarePercentage: formState.nonParentCarer.hasSecondNPC ? 40 : undefined, // TODO: Get from form
+        carer1CarePercentage: avgNPCCare,
+        carer2CarePercentage: formState.nonParentCarer.hasSecondNPC ? avgNPC2Care : undefined,
         reason: 'non-reciprocating',
         overseasParentCountry: formState.nonParentCarer.overseasParentCountry,
         selectedYear,
@@ -146,9 +243,78 @@ export const calculateChildSupport = (
       
       try {
         const formula5Result = calculateFormula5(formula5Input);
-        // Convert Formula5Result to CalculationResults format for compatibility
-        // This is a simplified conversion - full integration would require updating CalculationResults type
-        return formula5Result as any; // TODO: Proper type integration
+        
+        // Calculate cost bracket info for Step 7 display
+        const { cost: totalCost, bracketInfo: costBracketInfo } = getChildCost(
+          selectedYear,
+          formula5Input.children,
+          formula5Result.availableParentCSI
+        );
+        
+        // Map Formula 5 result to standard CalculationResults structure
+        const mappedResult: CalculationResults = {
+          formulaUsed: 5, // Add formula identifier
+          ATI_A: formula5Result.availableParentATI,
+          ATI_B: 0, // Overseas parent in non-reciprocating jurisdiction
+          relDepDeductibleA: 0, // TODO: Add if needed
+          relDepDeductibleB: 0,
+          SSA: getYearConstants(selectedYear).SSA,
+          FAR: getYearConstants(selectedYear).FAR,
+          MAR: getYearConstants(selectedYear).MAR,
+          MAX_PPS: getYearConstants(selectedYear).MAX_PPS,
+          CSI_A: formula5Result.availableParentCSI,
+          CSI_B: 0, // Overseas parent
+          CCSI: formula5Result.availableParentCSI,
+          incomePercA: 100, // Available parent has 100% of income
+          incomePercB: 0,
+          totalCost: formula5Result.cotc,
+          costBracketInfo, // Add bracket info for Step 7 display
+          childResults: formula5Result.childResults.map(child => ({
+            age: child.age,
+            ageRange: child.ageRange,
+            isAdultChild: child.isAdultChild,
+            isTurning18: child.age === 17,
+            careA: formula5Result.parentCarePercentage,
+            careB: 0,
+            costPerChild: child.costPerChild,
+            roundedCareA: formula5Result.parentCarePercentage,
+            roundedCareB: 0,
+            costPercA: formula5Result.parentCostPercentage,
+            costPercB: 0,
+            childSupportPercA: Math.max(0, 100 - formula5Result.parentCostPercentage), // Income% - Cost% = CS%
+            childSupportPercB: 0,
+            liabilityA: formula5Result.annualRate,
+            liabilityB: 0,
+            finalLiabilityA: formula5Result.annualRate,
+            finalLiabilityB: 0,
+            farAppliedA: false,
+            farAppliedB: false,
+            marAppliedA: false,
+            marAppliedB: false,
+            multiCaseCapAppliedA: formula5Result.multiCaseCapApplied,
+            multiCaseCapAppliedB: false,
+          })),
+          totalLiabilityA: formula5Result.annualRate,
+          totalLiabilityB: 0,
+          finalLiabilityA: formula5Result.annualRate,
+          finalLiabilityB: 0,
+          FAR_A: 0,
+          FAR_B: 0,
+          MAR_A: 0,
+          MAR_B: 0,
+          rateApplied: 'None', // Formula 5 doesn't use MAR/FAR
+          payer: 'Parent A', // Available parent pays to NPC
+          receiver: 'Non-Parent Carer',
+          finalPaymentAmount: formula5Result.annualRate,
+          multiCaseAllowanceA: formula5Result.multiCaseAllowance,
+          multiCaseAllowanceB: 0,
+          multiCaseCapAppliedA: formula5Result.multiCaseCapApplied,
+          multiCaseCapAppliedB: false,
+          payerRole: 'paying_parent',
+          paymentToNPC: formula5Result.annualRate,
+        } as any; // Type assertion needed for formulaUsed property
+        
+        return mappedResult;
       } catch (error) {
         console.error('Formula 5 calculation error:', error);
         return null;

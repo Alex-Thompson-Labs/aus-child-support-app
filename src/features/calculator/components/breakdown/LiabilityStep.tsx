@@ -11,6 +11,7 @@ interface LiabilityStepProps {
     formState: { supportA: boolean; supportB: boolean };
     isExpanded: boolean;
     onToggle: () => void;
+    hasDeceasedParent?: boolean;
 }
 
 /**
@@ -26,6 +27,7 @@ export function LiabilityStep({
     formState,
     isExpanded,
     onToggle,
+    hasDeceasedParent = false,
 }: LiabilityStepProps) {
     const { colors } = useAppTheme();
 
@@ -49,7 +51,7 @@ export function LiabilityStep({
                 </Text>
 
                 {/* Per-child payment breakdown */}
-                <AnnualRateBreakdown results={results} formState={formState} />
+                <AnnualRateBreakdown results={results} formState={formState} hasDeceasedParent={hasDeceasedParent} />
 
                 {/* Optional: Special rates notice */}
                 <SpecialRateGlossary rateApplied={results.rateApplied} />

@@ -16,6 +16,7 @@ interface IncomeStepProps {
     results: CalculationResults;
     expandedSteps: { step1: boolean; step2: boolean; step3: boolean };
     onToggle: (step: 'step1' | 'step2' | 'step3') => void;
+    hasDeceasedParent?: boolean;
 }
 
 /**
@@ -25,7 +26,7 @@ interface IncomeStepProps {
  * Step 2: Combined Child Support Income (CCSI)
  * Step 3: Income Percentage for each parent
  */
-export function IncomeStep({ results, expandedSteps, onToggle }: IncomeStepProps) {
+export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent = false }: IncomeStepProps) {
     const { colors } = useAppTheme();
 
     // Memoized dynamic styles
@@ -121,46 +122,48 @@ export function IncomeStep({ results, expandedSteps, onToggle }: IncomeStepProps
                             </View>
                         </ParentComparisonCard>
 
-                        {/* Parent B - Using Wrapper Pattern */}
-                        <ParentComparisonCard title="OTHER PARENT">
-                            <View style={[styles.deductionRow, { marginBottom: 4 }]}>
-                                <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>
-                                    Adjusted taxable income
-                                </Text>
-                                <Text style={[styles.deductionValue, dynamicStyles.textMuted]}>
-                                    {formatCurrency(results.ATI_B)}
-                                </Text>
-                            </View>
-                            <View style={styles.deductionRow}>
-                                <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>Self-support amount</Text>
-                                <Text style={[styles.deductionValueNegative, dynamicStyles.deductionValueNegative]}>
-                                    ({formatCurrency(results.SSA)})
-                                </Text>
-                            </View>
-                            {results.relDepDeductibleB > 0 && (
-                                <View style={styles.deductionRow}>
-                                    <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>Rel dep allowance</Text>
-                                    <Text style={[styles.deductionValueNegative, dynamicStyles.deductionValueNegative]}>
-                                        ({formatCurrency(results.relDepDeductibleB)})
+                        {/* Parent B - Hidden when deceased */}
+                        {!hasDeceasedParent && (
+                            <ParentComparisonCard title="OTHER PARENT">
+                                <View style={[styles.deductionRow, { marginBottom: 4 }]}>
+                                    <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>
+                                        Adjusted taxable income
+                                    </Text>
+                                    <Text style={[styles.deductionValue, dynamicStyles.textMuted]}>
+                                        {formatCurrency(results.ATI_B)}
                                     </Text>
                                 </View>
-                            )}
-                            {results.multiCaseAllowanceB !== undefined && results.multiCaseAllowanceB > 0 && (
                                 <View style={styles.deductionRow}>
-                                    <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>Multi-case allowance</Text>
+                                    <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>Self-support amount</Text>
                                     <Text style={[styles.deductionValueNegative, dynamicStyles.deductionValueNegative]}>
-                                        ({formatCurrency(results.multiCaseAllowanceB)})
+                                        ({formatCurrency(results.SSA)})
                                     </Text>
                                 </View>
-                            )}
-                            <View style={[styles.deductionDivider, dynamicStyles.deductionDivider]} />
-                            <View style={styles.deductionRow}>
-                                <Text style={[styles.deductionTotalLabel, dynamicStyles.textMuted]}>Child Support Income</Text>
-                                <Text style={[styles.deductionTotalValue, dynamicStyles.textMuted]}>
-                                    {formatCurrency(Math.max(0, results.CSI_B))}
-                                </Text>
-                            </View>
-                        </ParentComparisonCard>
+                                {results.relDepDeductibleB > 0 && (
+                                    <View style={styles.deductionRow}>
+                                        <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>Rel dep allowance</Text>
+                                        <Text style={[styles.deductionValueNegative, dynamicStyles.deductionValueNegative]}>
+                                            ({formatCurrency(results.relDepDeductibleB)})
+                                        </Text>
+                                    </View>
+                                )}
+                                {results.multiCaseAllowanceB !== undefined && results.multiCaseAllowanceB > 0 && (
+                                    <View style={styles.deductionRow}>
+                                        <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>Multi-case allowance</Text>
+                                        <Text style={[styles.deductionValueNegative, dynamicStyles.deductionValueNegative]}>
+                                            ({formatCurrency(results.multiCaseAllowanceB)})
+                                        </Text>
+                                    </View>
+                                )}
+                                <View style={[styles.deductionDivider, dynamicStyles.deductionDivider]} />
+                                <View style={styles.deductionRow}>
+                                    <Text style={[styles.deductionTotalLabel, dynamicStyles.textMuted]}>Child Support Income</Text>
+                                    <Text style={[styles.deductionTotalValue, dynamicStyles.textMuted]}>
+                                        {formatCurrency(Math.max(0, results.CSI_B))}
+                                    </Text>
+                                </View>
+                            </ParentComparisonCard>
+                        )}
                     </View>
                 </>
             </BreakdownStepCard>
@@ -174,10 +177,10 @@ export function IncomeStep({ results, expandedSteps, onToggle }: IncomeStepProps
             >
                 <>
                     <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
-                        The combined child support income is the total of both parents&apos;
-                        child support incomes. This combined figure is used to calculate
-                        each parent&apos;s income percentage and to determine the cost of
-                        the children.
+                        {hasDeceasedParent 
+                            ? "Your child support income is used to calculate your income percentage and to determine the cost of the children."
+                            : "The combined child support income is the total of both parents' child support incomes. This combined figure is used to calculate each parent's income percentage and to determine the cost of the children."
+                        }
                     </Text>
 
                     <View style={[styles.combinedIncomeCalculation, dynamicStyles.combinedIncomeCalculation]}>
@@ -201,23 +204,27 @@ export function IncomeStep({ results, expandedSteps, onToggle }: IncomeStepProps
                                 {formatCurrency(Math.max(0, results.CSI_A))}
                             </Text>
                         </View>
-                        <View style={styles.combinedIncomeRow}>
-                            <Text style={[styles.combinedIncomeLabel, dynamicStyles.textMuted, { fontWeight: '700' }]}>
-                                Other Parent&apos;s CS Income
-                            </Text>
-                            <Text style={[styles.combinedIncomeValue, dynamicStyles.textMuted, { fontWeight: '700' }]}>
-                                {formatCurrency(Math.max(0, results.CSI_B))}
-                            </Text>
-                        </View>
-                        <View style={[styles.combinedIncomeDivider, dynamicStyles.combinedIncomeDivider]} />
-                        <View style={[styles.combinedIncomeRow, { paddingTop: 2, paddingBottom: 0 }]}>
-                            <Text style={[styles.combinedIncomeTotalLabel, dynamicStyles.combinedIncomeTotalLabel]}>
-                                Combined CS Income
-                            </Text>
-                            <Text style={[styles.combinedIncomeTotalValue, dynamicStyles.combinedIncomeTotalValue]}>
-                                {formatCurrency(results.CCSI)}
-                            </Text>
-                        </View>
+                        {!hasDeceasedParent && (
+                            <>
+                                <View style={styles.combinedIncomeRow}>
+                                    <Text style={[styles.combinedIncomeLabel, dynamicStyles.textMuted, { fontWeight: '700' }]}>
+                                        Other Parent&apos;s CS Income
+                                    </Text>
+                                    <Text style={[styles.combinedIncomeValue, dynamicStyles.textMuted, { fontWeight: '700' }]}>
+                                        {formatCurrency(Math.max(0, results.CSI_B))}
+                                    </Text>
+                                </View>
+                                <View style={[styles.combinedIncomeDivider, dynamicStyles.combinedIncomeDivider]} />
+                                <View style={[styles.combinedIncomeRow, { paddingTop: 2, paddingBottom: 0 }]}>
+                                    <Text style={[styles.combinedIncomeTotalLabel, dynamicStyles.combinedIncomeTotalLabel]}>
+                                        Combined CS Income
+                                    </Text>
+                                    <Text style={[styles.combinedIncomeTotalValue, dynamicStyles.combinedIncomeTotalValue]}>
+                                        {formatCurrency(results.CCSI)}
+                                    </Text>
+                                </View>
+                            </>
+                        )}
                     </View>
                 </>
             </BreakdownStepCard>
@@ -246,36 +253,40 @@ export function IncomeStep({ results, expandedSteps, onToggle }: IncomeStepProps
                                 results.incomePercA
                             )}`}
                         />
-                        <ParentComparisonCard
-                            title="OTHER PARENT"
-                            formula={`${formatCurrency(
-                                Math.max(0, results.CSI_B)
-                            )} ÷ ${formatCurrency(results.CCSI)} = ${formatPercent2dp(
-                                results.incomePercB
-                            )}`}
-                        />
+                        {!hasDeceasedParent && (
+                            <ParentComparisonCard
+                                title="OTHER PARENT"
+                                formula={`${formatCurrency(
+                                    Math.max(0, results.CSI_B)
+                                )} ÷ ${formatCurrency(results.CCSI)} = ${formatPercent2dp(
+                                    results.incomePercB
+                                )}`}
+                            />
+                        )}
                     </View>
 
-                    <View style={styles.incomeComparison}>
-                        <Text style={[styles.careHeaderLabel, dynamicStyles.careHeaderLabel]}>
-                            <Text style={[dynamicStyles.userHighlight, { fontWeight: '700' }]}>YOU</Text> -{' '}
-                            <Text style={[dynamicStyles.userHighlight, { fontWeight: '700' }]}>
-                                {formatPercent2dp(results.incomePercA)}
+                    {!hasDeceasedParent && (
+                        <View style={styles.incomeComparison}>
+                            <Text style={[styles.careHeaderLabel, dynamicStyles.careHeaderLabel]}>
+                                <Text style={[dynamicStyles.userHighlight, { fontWeight: '700' }]}>YOU</Text> -{' '}
+                                <Text style={[dynamicStyles.userHighlight, { fontWeight: '700' }]}>
+                                    {formatPercent2dp(results.incomePercA)}
+                                </Text>
                             </Text>
-                        </Text>
 
-                        <PercentageBar
-                            percentA={results.incomePercA}
-                            percentB={results.incomePercB}
-                        />
+                            <PercentageBar
+                                percentA={results.incomePercA}
+                                percentB={results.incomePercB}
+                            />
 
-                        <Text style={[styles.careHeaderLabel, dynamicStyles.careHeaderLabel, { textAlign: 'right' }]}>
-                            <Text style={[dynamicStyles.textMuted, { fontWeight: '700' }]}>OTHER PARENT</Text> -{' '}
-                            <Text style={[dynamicStyles.textMuted, { fontWeight: '700' }]}>
-                                {formatPercent2dp(results.incomePercB)}
+                            <Text style={[styles.careHeaderLabel, dynamicStyles.careHeaderLabel, { textAlign: 'right' }]}>
+                                <Text style={[dynamicStyles.textMuted, { fontWeight: '700' }]}>OTHER PARENT</Text> -{' '}
+                                <Text style={[dynamicStyles.textMuted, { fontWeight: '700' }]}>
+                                    {formatPercent2dp(results.incomePercB)}
+                                </Text>
                             </Text>
-                        </Text>
-                    </View>
+                        </View>
+                    )}
                 </>
             </BreakdownStepCard>
         </>

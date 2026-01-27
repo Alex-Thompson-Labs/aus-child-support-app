@@ -18,6 +18,7 @@ interface CostStepProps {
     results: CalculationResults;
     expandedSteps: { step5: boolean; step6: boolean; step7: boolean };
     onToggle: (step: 'step5' | 'step6' | 'step7') => void;
+    hasDeceasedParent?: boolean;
 }
 
 /**
@@ -27,7 +28,7 @@ interface CostStepProps {
  * Step 6: Child Support Percentage
  * Step 7: Cost of Children (bracket calculation)
  */
-export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
+export function CostStep({ results, expandedSteps, onToggle, hasDeceasedParent = false }: CostStepProps) {
     const { colors } = useAppTheme();
 
     const dynamicStyles = useMemo(() => ({
@@ -146,11 +147,13 @@ export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
                                     careValue={formatPercent2dp(child.roundedCareA)}
                                     costValue={formatPercent2dp(child.costPercA)}
                                 />
-                                <ParentComparisonCard
-                                    title="OTHER PARENT"
-                                    careValue={formatPercent2dp(child.roundedCareB)}
-                                    costValue={formatPercent2dp(child.costPercB)}
-                                />
+                                {!hasDeceasedParent && (
+                                    <ParentComparisonCard
+                                        title="OTHER PARENT"
+                                        careValue={formatPercent2dp(child.roundedCareB)}
+                                        costValue={formatPercent2dp(child.costPercB)}
+                                    />
+                                )}
                             </View>
                         </View>
                     </>
@@ -210,30 +213,33 @@ export function CostStep({ results, expandedSteps, onToggle }: CostStepProps) {
                                                 ? results.farCapExplanationA
                                                 : undefined
                                     }
+                                    simplifiedView={hasDeceasedParent}
                                 />
-                                <GapAnalysisCard
-                                    label="OTHER PARENT"
-                                    incomePercent={results.incomePercB}
-                                    costPercent={child.costPercB}
-                                    csPercent={child.childSupportPercB}
-                                    isFarApplied={child.farAppliedB}
-                                    isMarApplied={child.marAppliedB}
-                                    otherParentHasFixedRate={
-                                        child.farAppliedA || child.marAppliedA
-                                    }
-                                    fixedRateAmount={
-                                        child.farAppliedB ? results.FAR : results.MAR
-                                    }
-                                    formatPercent={formatPercent2dp}
-                                    formatCurrency={formatCurrency}
-                                    capExplanation={
-                                        child.marAppliedB
-                                            ? results.marCapExplanationB
-                                            : child.farAppliedB
-                                                ? results.farCapExplanationB
-                                                : undefined
-                                    }
-                                />
+                                {!hasDeceasedParent && (
+                                    <GapAnalysisCard
+                                        label="OTHER PARENT"
+                                        incomePercent={results.incomePercB}
+                                        costPercent={child.costPercB}
+                                        csPercent={child.childSupportPercB}
+                                        isFarApplied={child.farAppliedB}
+                                        isMarApplied={child.marAppliedB}
+                                        otherParentHasFixedRate={
+                                            child.farAppliedA || child.marAppliedA
+                                        }
+                                        fixedRateAmount={
+                                            child.farAppliedB ? results.FAR : results.MAR
+                                        }
+                                        formatPercent={formatPercent2dp}
+                                        formatCurrency={formatCurrency}
+                                        capExplanation={
+                                            child.marAppliedB
+                                                ? results.marCapExplanationB
+                                                : child.farAppliedB
+                                                    ? results.farCapExplanationB
+                                                    : undefined
+                                        }
+                                    />
+                                )}
                             </View>
                         </View>
                     </>

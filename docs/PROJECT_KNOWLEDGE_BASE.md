@@ -1,6 +1,6 @@
 # Project Knowledge Base & Context Brief
 
-**Last Updated:** 2026-01-26
+**Last Updated:** 2026-01-27
 
 ---
 
@@ -247,6 +247,10 @@ Lighthouse Performance score improvements:
 7. ✅ **Navigation Issue**: LawyerInquiryScreen routing fixed
 8. ✅ **Form Spacing**: SpecialCircumstancesForm spacing tightened
 9. ✅ **Platform Import Missing** (2026-01-26): Added missing `Platform` import to `CalculatorHeader.tsx` - was causing "Can't find variable: Platform" runtime error
+10. ✅ **Formula 6 Income Support Modal** (2026-01-27): Fixed income support modal incorrectly appearing for deceased parent (Parent B) in Formula 6 cases. Added check in `needsIncomeSupportPrompt` to skip prompt when `nonParentCarer.hasDeceasedParent` is true.
+11. ✅ **Formula 6 Care Input UX** (2026-01-27): Hidden "OTHER" parent care input in ChildRow when deceased parent toggle is enabled. Added `hideParentB` prop to ChildRow component that conditionally hides Parent B input and adjusts care total calculations accordingly. Also added handler to reset Parent B care amounts to 0 when deceased toggle is enabled to prevent hidden values from affecting calculations. Additionally, hidden "Other Parent's Income" input and reset income to 0 when deceased toggle is enabled. Made deceased and overseas toggles mutually exclusive - enabling one automatically disables the other. Fixed breakdown view crash by adding null checks for `rateApplied` property in SmartConversionFooter and SpecialRateGlossary components. Fixed Formula 6 calculation to use actual parent care percentage instead of hardcoded 0%, and added proper result mapping to convert Formula6Result to CalculationResults structure with `finalPaymentAmount` for UI display.
+12. ✅ **Formula 6 Breakdown View UX** (2026-01-27): Hidden "Other Parent" details in step-by-step breakdown when deceased parent toggle is enabled. Added `hasDeceasedParent` prop that flows from `CalculatorScreen` → `CalculatorResults` → `ResultsModalContent` → `ResultsSimpleExplanation` → `BreakdownView` → individual step components (`IncomeStep`, `CareStep`, `CostStep`, `LiabilityStep`, `AnnualRateBreakdown`). When deceased parent flag is true, breakdown now hides: Parent B income deductions (Step 1), Parent B combined income row and "Combined CS Income" total (Step 2), Parent B income percentage card and comparison bar (Step 3), Parent B care percentage bar (Step 4), Parent B cost conversion card (Step 5), Parent B gap analysis card (Step 6), and "Liability to other parent" row (Step 8). Additionally, Step 6 CS% card now shows simplified view with Income%/Cost%/CS% calculation vertically stacked via `simplifiedView` prop on GapAnalysisCard. Fixed Step 7 (Cost of Children) not rendering by adding `costBracketInfo` to Formula 6 result mapping. Fixed Step 6 CS% showing incorrect value (100%) by calculating it properly as `incomePercA - costPercA` in Formula 6 mapping. This provides a cleaner, less confusing breakdown view for Formula 6 cases where only one living parent exists.
+13. ✅ **Formula 6 Step 2 Simplification** (2026-01-27): Removed redundant "Combined CS Income" line in Step 2 for deceased parent cases since it's the same as "Your CS Income". Updated explanation text to reflect single parent scenario.
 
 ### **Performance Improvements**
 

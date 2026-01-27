@@ -20,11 +20,14 @@ import { HelpTooltip } from './HelpTooltip';
 export interface NonParentCarerSectionProps {
   nonParentCarer: NonParentCarerInfo;
   onNonParentCarerChange: (info: NonParentCarerInfo) => void;
+  /** Callback when deceased parent status changes - used to reset Parent B care */
+  onDeceasedChange?: (isDeceased: boolean) => void;
 }
 
 export function NonParentCarerSection({
   nonParentCarer,
   onNonParentCarerChange,
+  onDeceasedChange,
 }: NonParentCarerSectionProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -43,13 +46,22 @@ export function NonParentCarerSection({
     onNonParentCarerChange({
       ...nonParentCarer,
       hasDeceasedParent: value,
+      // Turn off overseas when deceased is enabled
+      hasOverseasParent: value ? false : nonParentCarer.hasOverseasParent,
+      // Clear overseas-related fields if turning on deceased
+      overseasParentCountry: value ? undefined : nonParentCarer.overseasParentCountry,
+      isNonReciprocating: value ? undefined : nonParentCarer.isNonReciprocating,
     });
+    // Notify parent component to reset Parent B care amounts
+    onDeceasedChange?.(value);
   };
 
   const handleOverseasChange = (value: boolean) => {
     onNonParentCarerChange({
       ...nonParentCarer,
       hasOverseasParent: value,
+      // Turn off deceased when overseas is enabled
+      hasDeceasedParent: value ? false : nonParentCarer.hasDeceasedParent,
       // Reset country and jurisdiction status when toggling off
       overseasParentCountry: value ? nonParentCarer.overseasParentCountry : undefined,
       isNonReciprocating: value ? nonParentCarer.isNonReciprocating : undefined,
@@ -57,11 +69,17 @@ export function NonParentCarerSection({
   };
 
   const handleCountrySelect = (country: string, status: JurisdictionStatus) => {
+    const isNonReciprocating = status === 'non-reciprocating';
     onNonParentCarerChange({
       ...nonParentCarer,
       overseasParentCountry: country,
-      isNonReciprocating: status === 'non-reciprocating',
+      isNonReciprocating,
     });
+    
+    // If non-reciprocating, notify parent to reset Parent B care amounts
+    if (isNonReciprocating) {
+      onDeceasedChange?.(false); // Use the callback to reset care, but don't mark as deceased
+    }
   };
 
   const handleSecondNPCChange = (value: boolean) => {

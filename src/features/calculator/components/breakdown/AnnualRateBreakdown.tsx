@@ -13,6 +13,7 @@ import { Turning18Banner } from '../results/Turning18Banner';
 export interface AnnualRateBreakdownProps {
     results: CalculationResults;
     formState: { supportA: boolean; supportB: boolean };
+    hasDeceasedParent?: boolean;
 }
 
 // Helper to format percentage with 2 decimal places
@@ -23,6 +24,7 @@ const formatPercent2dp = (num: number): string => {
 export function AnnualRateBreakdown({
     results,
     formState,
+    hasDeceasedParent = false,
 }: AnnualRateBreakdownProps) {
     const { colors } = useAppTheme();
 
@@ -346,14 +348,16 @@ export function AnnualRateBreakdown({
                 return null;
             })()}
             <View style={[styles.perChildGapDivider, dynamicStyles.divider]} />
-            <View style={styles.perChildGapRow}>
-                <Text style={[styles.perChildGapLabel, { fontWeight: '600' }, dynamicStyles.textPrimary]}>
-                    {results.finalPaymentAmount > 0 && (results.paymentToNPC ?? 0) > 0
-                        ? 'Liability to other parent'
-                        : 'Total Annual Liability'}
-                </Text>
-                <Text style={[styles.perChildGapValue, dynamicStyles.textPrimary, { fontWeight: '700', fontSize: 18 }]}>{formatCurrency(results.finalPaymentAmount)}</Text>
-            </View>
+            {!hasDeceasedParent && (
+                <View style={styles.perChildGapRow}>
+                    <Text style={[styles.perChildGapLabel, { fontWeight: '600' }, dynamicStyles.textPrimary]}>
+                        {results.finalPaymentAmount > 0 && (results.paymentToNPC ?? 0) > 0
+                            ? 'Liability to other parent'
+                            : 'Total Annual Liability'}
+                    </Text>
+                    <Text style={[styles.perChildGapValue, dynamicStyles.textPrimary, { fontWeight: '700', fontSize: 18 }]}>{formatCurrency(results.finalPaymentAmount)}</Text>
+                </View>
+            )}
             {results.paymentToNPC !== undefined && results.paymentToNPC > 0 && (
                 <>
                     <View style={styles.npcPaymentDivider} />

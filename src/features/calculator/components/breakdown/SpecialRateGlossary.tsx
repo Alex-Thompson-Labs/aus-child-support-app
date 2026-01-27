@@ -19,7 +19,7 @@ export function SpecialRateGlossary({ rateApplied }: SpecialRateGlossaryProps) {
         text: { color: colors.textMuted },
     }), [colors]);
 
-    if (rateApplied === 'None') {
+    if (!rateApplied || rateApplied === 'None') {
         return null;
     }
 
