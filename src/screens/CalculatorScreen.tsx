@@ -20,6 +20,7 @@ import { MAX_CALCULATOR_WIDTH, useResponsive } from '../utils/responsive';
 // ✅ STANDARD IMPORTS (Reliable)
 import { CalculatorFAQ, CalculatorForm, CalculatorHeader, CalculatorResults, IncomeSupportModal } from '@/src/features/calculator';
 import { Footer } from '../components/ui/Footer';
+import { NPCCareValidationModal } from '../components/ui/NPCCareValidationModal';
 import { SEOContentSection } from '../components/ui/SEOContentSection';
 import { SEOHeroSection } from '../components/ui/SEOHeroSection';
 import { StepProgressIndicator } from '../components/ui/StepProgressIndicator';
@@ -116,6 +117,12 @@ export function CalculatorScreen() {
   const [askParentA, setAskParentA] = useState(false);
   const [askParentB, setAskParentB] = useState(false);
 
+  // =========================================================================
+  // NPC Care Validation Modal Logic (Blocking step)
+  // =========================================================================
+  const [npcCareModalVisible, setNpcCareModalVisible] = useState(false);
+  const [npcCarePercentage, setNpcCarePercentage] = useState(0);
+
   /**
    * Helper to determine if a parent needs the income support prompt
    */
@@ -167,6 +174,40 @@ export function CalculatorScreen() {
    * This is a BLOCKING step - results will not show until modal is completed or dismissed.
    */
   const handleCalculate = () => {
+    // First, check NPC care validation if NPC is enabled
+    if (formState.nonParentCarer?.enabled) {
+      // Check if any child has NPC care < 35%
+      const hasInvalidNPCCare = formState.children.some((child) => {
+        const npcCarePercent = convertCareToPercentage(
+          child.careAmountNPC || 0,
+          child.carePeriod
+        );
+        return npcCarePercent > 0 && npcCarePercent < 35;
+      });
+
+      if (hasInvalidNPCCare) {
+        // Calculate the NPC care percentage for display
+        const firstInvalidChild = formState.children.find((child) => {
+          const npcCarePercent = convertCareToPercentage(
+            child.careAmountNPC || 0,
+            child.carePeriod
+          );
+          return npcCarePercent > 0 && npcCarePercent < 35;
+        });
+
+        if (firstInvalidChild) {
+          const carePercent = convertCareToPercentage(
+            firstInvalidChild.careAmountNPC || 0,
+            firstInvalidChild.carePeriod
+          );
+          setNpcCarePercentage(carePercent);
+          setNpcCareModalVisible(true);
+          return; // Block calculation
+        }
+      }
+    }
+
+    // Then check income support prompts
     const promptA = needsIncomeSupportPrompt(formState.incomeA, 'careAmountA');
     const promptB = needsIncomeSupportPrompt(formState.incomeB, 'careAmountB');
 
@@ -363,6 +404,13 @@ export function CalculatorScreen() {
           askParentB={askParentB}
           onContinue={handleIncomeSupportContinue}
           onCancel={handleIncomeSupportCancel}
+        />
+
+        {/* NPC Care Validation Modal */}
+        <NPCCareValidationModal
+          visible={npcCareModalVisible}
+          onClose={() => setNpcCareModalVisible(false)}
+          npcCarePercentage={npcCarePercentage}
         />
       </KeyboardAvoidingView>
     </SafeAreaView>

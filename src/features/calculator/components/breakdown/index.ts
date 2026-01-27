@@ -8,24 +8,25 @@
 
 // Main breakdown view (lazy-loadable)
 export { BreakdownView } from './BreakdownView';
+export { Formula5BreakdownView } from './Formula5BreakdownView';
 
 // Loading fallback for Suspense
 export { BreakdownLoadingFallback } from './BreakdownLoadingFallback';
 
 // Individual step components
-export { IncomeStep } from './IncomeStep';
 export { CareStep } from './CareStep';
 export { CostStep } from './CostStep';
+export { IncomeStep } from './IncomeStep';
 export { LiabilityStep } from './LiabilityStep';
 
 // Supporting components
-export { BreakdownStepCard } from './BreakdownStepCard';
 export { AnnualRateBreakdown } from './AnnualRateBreakdown';
-export { ZeroLiabilityNotice } from './ZeroLiabilityNotice';
-export { PercentageBar } from './PercentageBar';
-export { SpecialRateGlossary } from './SpecialRateGlossary';
+export { BreakdownStepCard } from './BreakdownStepCard';
 export { GapAnalysisCard } from './GapAnalysisCard';
 export { ParentComparisonCard } from './ParentComparisonCard';
+export { PercentageBar } from './PercentageBar';
+export { SpecialRateGlossary } from './SpecialRateGlossary';
+export { ZeroLiabilityNotice } from './ZeroLiabilityNotice';
 
 // Constants
 export * from './constants';

@@ -135,7 +135,7 @@ export function getChildCost(
       bracketInfo: {
         minIncome: lastBandStart,
         maxIncome: null,
-        fixed: values.bases[bands.length - 1] || values.max,
+        fixed: values.max, // Use max as the base amount when income exceeds highest bracket
         rate: 0,
         incomeInBracket: CCSI - lastBandStart,
       },

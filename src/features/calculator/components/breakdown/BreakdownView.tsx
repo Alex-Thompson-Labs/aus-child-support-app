@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { CareStep } from './CareStep';
 import { CostStep } from './CostStep';
+import { Formula5BreakdownView } from './Formula5BreakdownView';
 import { IncomeStep } from './IncomeStep';
 import { LiabilityStep } from './LiabilityStep';
 import { ZeroLiabilityNotice } from './ZeroLiabilityNotice';
@@ -25,6 +26,11 @@ export function BreakdownView({ results, formState, hasDeceasedParent = false }:
   const isFormula5 = (results as any).formulaUsed === 5;
   const isFormula6 = (results as any).formulaUsed === 6;
   const hideOtherParent = hasDeceasedParent || isFormula5 || isFormula6;
+  
+  // If Formula 5, use dedicated Formula 5 breakdown
+  if (isFormula5) {
+    return <Formula5BreakdownView results={results} formState={formState} />;
+  }
   
   // Collapsible state management - 8-Step Formula
   const [expandedSteps, setExpandedSteps] = useState({

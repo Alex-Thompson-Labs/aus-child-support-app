@@ -21,12 +21,20 @@ const formatPercent2dp = (num: number): string => {
     return `${num.toFixed(2)}%`;
 };
 
+// Type guard to check if results has formulaUsed property
+function hasFormulaUsed(results: CalculationResults): results is CalculationResults & { formulaUsed: number } {
+    return 'formulaUsed' in results;
+}
+
 export function AnnualRateBreakdown({
     results,
     formState,
     hasDeceasedParent = false,
 }: AnnualRateBreakdownProps) {
     const { colors } = useAppTheme();
+    
+    // Check if this is a Formula 5 case (non-reciprocating jurisdiction)
+    const isFormula5 = hasFormulaUsed(results) && results.formulaUsed === 5;
 
     const dynamicStyles = useMemo(() => ({
         container: {
@@ -319,6 +327,8 @@ export function AnnualRateBreakdown({
                             <Text style={[styles.perChildGapLabel, { fontWeight: '700' }, showForParentA && dynamicStyles.userHighlight]}>
                                 {farApplied ? (
                                     <>Child {index + 1} - <Text style={{ color: payingParentColor, fontWeight: '700' }}>Fixed annual rate</Text></>
+                                ) : isFormula5 ? (
+                                    <>Child {index + 1} - <Text style={{ color: payingParentColor, fontWeight: '700' }}>½ × [{formatCurrency(child.costPerChild)} − ({formatPercent2dp(child.costPercA)} × {formatCurrency(child.costPerChild)})]</Text></>
                                 ) : (
                                     <>Child {index + 1} - <Text style={{ color: payingParentColor, fontWeight: '700' }}>({formatPercent2dp(gapPercentage)})</Text> × {formatCurrency(child.costPerChild)}</>
                                 )}

@@ -116,6 +116,7 @@ export const calculateChildSupport = (
       const formula6Result = calculateFormula6(formula6Input);
       
       // Calculate cost bracket info for Step 7 display
+      // Formula 6 does NOT double income, so use survivingParentCSI
       const { cost: totalCost, bracketInfo: costBracketInfo } = getChildCost(
         selectedYear,
         formula6Input.children.map(c => ({ age: c.age, careA: 0, careB: 0 })),
@@ -152,7 +153,7 @@ export const calculateChildSupport = (
           roundedCareB: 0,
           costPercA: formula6Result.parentCostPercentage,
           costPercB: 0,
-          childSupportPercA: Math.max(0, 100 - formula6Result.parentCostPercentage), // Income% - Cost% = CS%
+          childSupportPercA: Math.max(0, 100 - formula6Result.parentCostPercentage), // Income% - Cost% = CS% (no halving in Formula 6)
           childSupportPercB: 0,
           liabilityA: formula6Result.annualRate,
           liabilityB: 0,
@@ -251,12 +252,8 @@ export const calculateChildSupport = (
       try {
         const formula5Result = calculateFormula5(formula5Input);
         
-        // Calculate cost bracket info for Step 7 display
-        const { cost: totalCost, bracketInfo: costBracketInfo } = getChildCost(
-          selectedYear,
-          formula5Input.children.map(c => ({ age: c.age, careA: 0, careB: 0 })),
-          formula5Result.availableParentCSI
-        );
+        // Use bracket info from Formula 5 result (already calculated with doubled income)
+        const costBracketInfo = formula5Result.costBracketInfo;
         
         // Map Formula 5 result to standard CalculationResults structure
         const mappedResult: CalculationResults = {
@@ -271,11 +268,11 @@ export const calculateChildSupport = (
           MAX_PPS: getYearConstants(selectedYear).MAX_PPS,
           CSI_A: formula5Result.availableParentCSI,
           CSI_B: 0, // Overseas parent
-          CCSI: formula5Result.availableParentCSI,
+          CCSI: formula5Result.doubledIncome, // Use doubled income for CCSI display
           incomePercA: 100, // Available parent has 100% of income
           incomePercB: 0,
           totalCost: formula5Result.cotc,
-          costBracketInfo, // Add bracket info for Step 7 display
+          costBracketInfo, // Use bracket info from Formula 5 result
           childResults: formula5Result.childResults.map(child => ({
             age: child.age,
             ageRange: child.ageRange,

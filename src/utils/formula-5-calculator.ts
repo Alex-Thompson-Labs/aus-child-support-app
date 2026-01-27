@@ -68,6 +68,13 @@ export interface Formula5Result {
   
   // Cost calculations
   cotc: number;
+  costBracketInfo?: {
+    minIncome: number;
+    maxIncome: number | null;
+    fixed: number;
+    rate: number;
+    incomeInBracket: number;
+  };
   parentCarePercentage: number;
   parentCostPercentage: number;
   parentCostShare: number;
@@ -199,7 +206,7 @@ export function calculateFormula5(input: Formula5Input): Formula5Result {
       careB: 0, // Not used in Formula 5
     }));
   
-  const { cost: cotc } = getChildCost(
+  const { cost: cotc, bracketInfo } = getChildCost(
     input.selectedYear,
     assessableChildren,
     doubledIncome
@@ -282,6 +289,7 @@ export function calculateFormula5(input: Formula5Input): Formula5Result {
     
     // Cost calculations
     cotc,
+    costBracketInfo: bracketInfo,
     parentCarePercentage: roundedCarePercentage,
     parentCostPercentage: costPercentage,
     parentCostShare,

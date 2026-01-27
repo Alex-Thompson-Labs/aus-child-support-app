@@ -19,6 +19,11 @@ interface IncomeStepProps {
     hasDeceasedParent?: boolean;
 }
 
+// Type guard to check if results has formulaUsed property
+function hasFormulaUsed(results: CalculationResults): results is CalculationResults & { formulaUsed: number } {
+    return 'formulaUsed' in results;
+}
+
 /**
  * Income calculation breakdown - Steps 1-3
  * 
@@ -28,6 +33,9 @@ interface IncomeStepProps {
  */
 export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent = false }: IncomeStepProps) {
     const { colors } = useAppTheme();
+    
+    // Check if this is a Formula 5 case (non-reciprocating jurisdiction)
+    const isFormula5 = hasFormulaUsed(results) && results.formulaUsed === 5;
 
     // Memoized dynamic styles
     const dynamicStyles = useMemo(() => ({
@@ -177,7 +185,9 @@ export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent
             >
                 <>
                     <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
-                        {hasDeceasedParent 
+                        {isFormula5
+                            ? "Because one parent is in a non-reciprocating jurisdiction, your income is doubled to recognize the child has two parents. This doubled amount is used to calculate the cost of the children."
+                            : hasDeceasedParent 
                             ? "Your child support income is used to calculate your income percentage and to determine the cost of the children."
                             : "The combined child support income is the total of both parents' child support incomes. This combined figure is used to calculate each parent's income percentage and to determine the cost of the children."
                         }
@@ -204,7 +214,28 @@ export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent
                                 {formatCurrency(Math.max(0, results.CSI_A))}
                             </Text>
                         </View>
-                        {!hasDeceasedParent && (
+                        {isFormula5 && (
+                            <>
+                                <View style={styles.combinedIncomeRow}>
+                                    <Text style={[styles.combinedIncomeLabel, dynamicStyles.textMuted, { fontWeight: '700' }]}>
+                                        Doubled for calculation
+                                    </Text>
+                                    <Text style={[styles.combinedIncomeValue, dynamicStyles.textMuted, { fontWeight: '700' }]}>
+                                        × 2
+                                    </Text>
+                                </View>
+                                <View style={[styles.combinedIncomeDivider, dynamicStyles.combinedIncomeDivider]} />
+                                <View style={[styles.combinedIncomeRow, { paddingTop: 2, paddingBottom: 0 }]}>
+                                    <Text style={[styles.combinedIncomeTotalLabel, dynamicStyles.combinedIncomeTotalLabel]}>
+                                        Combined CS Income
+                                    </Text>
+                                    <Text style={[styles.combinedIncomeTotalValue, dynamicStyles.combinedIncomeTotalValue]}>
+                                        {formatCurrency(results.CCSI)}
+                                    </Text>
+                                </View>
+                            </>
+                        )}
+                        {!hasDeceasedParent && !isFormula5 && (
                             <>
                                 <View style={styles.combinedIncomeRow}>
                                     <Text style={[styles.combinedIncomeLabel, dynamicStyles.textMuted, { fontWeight: '700' }]}>
