@@ -137,7 +137,7 @@ export const FormField = forwardRef<TextInput, FormFieldProps>(
             // @ts-ignore - Web-only attribute
             nativeID={errorId}
             accessibilityRole="alert"
-            accessibilityLive="polite"
+            aria-live="polite"
           >
             {error}
           </Text>

@@ -7,5 +7,13 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-baseline",
+    "**/*.example.tsx",
+    "**/*.example.ts",
+    "supabase/functions/**/*"
+  ]
 }

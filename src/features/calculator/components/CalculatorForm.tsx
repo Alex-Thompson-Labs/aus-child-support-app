@@ -333,7 +333,7 @@ export function CalculatorForm({
               // @ts-ignore - Web-only attribute
               nativeID="income-a-error"
               accessibilityRole="alert"
-              accessibilityLive="polite"
+              aria-live="polite"
             >
               {errors.incomeA}
             </Text>
@@ -401,7 +401,7 @@ export function CalculatorForm({
               // @ts-ignore - Web-only attribute
               nativeID="income-b-error"
               accessibilityRole="alert"
-              accessibilityLive="polite"
+              aria-live="polite"
             >
               {errors.incomeB}
             </Text>

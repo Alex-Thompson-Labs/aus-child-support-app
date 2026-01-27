@@ -1,4 +1,5 @@
 import { PageSEO } from '@/src/components/seo/PageSEO';
+import { Breadcrumb } from '@/src/components/ui/Breadcrumb';
 import { CalculatorHeader } from '@/src/features/calculator';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';

@@ -6,7 +6,7 @@ import { shadowPresets } from '@/src/utils/shadow-styles';
 import { detectLowAssessmentTrigger } from '@/src/utils/zero-payment-detection';
 import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 /**
  * Card variant types for the Smart Conversion Footer

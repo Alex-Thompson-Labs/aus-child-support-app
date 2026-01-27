@@ -1,5 +1,6 @@
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import Accordion from '@/src/components/ui/Accordion';
+import { Breadcrumb } from '@/src/components/ui/Breadcrumb';
 import { CalculatorHeader } from '@/src/features/calculator';
 import { isWeb, MAX_CALCULATOR_WIDTH, webClickableStyles } from '@/src/utils/responsive';
 import { useRouter } from 'expo-router';
