@@ -5,10 +5,10 @@ import type { JurisdictionStatus } from '@/src/utils/jurisdiction-checker';
 import { isWeb, webClickableStyles } from '@/src/utils/responsive';
 import React, { useState } from 'react';
 import {
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import { HelpTooltip } from './HelpTooltip';
 
@@ -182,7 +182,7 @@ export function NonParentCarerSection({
                   onValueChange={handleDeceasedChange}
                   accessibilityLabel="Either parent is deceased"
                 />
-                <Text style={styles.statusLabel}>Is either parent deceased?</Text>
+                <Text style={styles.statusLabel}>Is the other parent deceased?</Text>
               </View>
 
               {/* Overseas Toggle */}
@@ -192,7 +192,7 @@ export function NonParentCarerSection({
                   onValueChange={handleOverseasChange}
                   accessibilityLabel="Either parent is living overseas"
                 />
-                <Text style={styles.statusLabel}>Is either parent living overseas?</Text>
+                <Text style={styles.statusLabel}>Is the other parent living overseas?</Text>
               </View>
 
               {/* Country Selector - shown when overseas parent is selected */}

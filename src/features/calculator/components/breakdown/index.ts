@@ -9,6 +9,7 @@
 // Main breakdown view (lazy-loadable)
 export { BreakdownView } from './BreakdownView';
 export { Formula5BreakdownView } from './Formula5BreakdownView';
+export { Formula6BreakdownView } from './Formula6BreakdownView';
 
 // Loading fallback for Suspense
 export { BreakdownLoadingFallback } from './BreakdownLoadingFallback';
