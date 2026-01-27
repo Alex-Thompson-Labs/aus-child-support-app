@@ -69,7 +69,7 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                     <Text style={styles.intro}>
                         Paying too much child support? There are legal ways to reduce payments—but also many illegal
                         methods that backfire. Here are 7 legitimate strategies, what works, what doesn't, and how
-                        to apply without triggering penalties.
+                        to apply without triggering penalties. Note: Outcomes vary by individual circumstances and evidence quality.
                     </Text>
 
                     <View style={styles.quickAnswerBox}>
@@ -102,9 +102,8 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                             <Text style={styles.strategyText}>
                                 If your circumstances changed significantly since the last assessment, apply for
                                 Change of Assessment. Valid grounds include income reduction, new dependents, high
-                                contact costs, or special needs care.
+                                contact costs, or special needs care. Outcomes depend on evidence quality and case specifics.
                             </Text>
-                            <Text style={styles.strategySuccess}>Success rate: 40-60% (with evidence)</Text>
                             <Text style={styles.strategyTime}>Timeline: 2-4 months</Text>
                         </View>
                     </View>
@@ -126,10 +125,9 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                             <Text style={styles.strategyTitle}>Increase Your Care Percentage</Text>
                             <Text style={styles.strategyText}>
                                 More nights with children = lower child support. Increasing from 14% to 35% care
-                                (52 to 128 nights/year) can reduce payments by 30-50%. Must be genuine care increase,
-                                not manipulation.
+                                (52 to 128 nights/year) can significantly reduce payments. Must be genuine care increase,
+                                not manipulation. Requires documentation and agreement or court order.
                             </Text>
-                            <Text style={styles.strategySuccess}>Success rate: High (if documented)</Text>
                             <Text style={styles.strategyTime}>Timeline: Immediate upon agreement</Text>
                         </View>
                     </View>
@@ -141,9 +139,8 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                             <Text style={styles.strategyText}>
                                 If Services Australia used wrong income (old tax return, incorrect fringe benefits),
                                 provide updated evidence. Common errors: using gross instead of taxable income,
-                                including one-time bonuses as ongoing income.
+                                including one-time bonuses as ongoing income. Corrections are straightforward when errors are proven.
                             </Text>
-                            <Text style={styles.strategySuccess}>Success rate: 70-80% (if error exists)</Text>
                             <Text style={styles.strategyTime}>Timeline: 4-8 weeks</Text>
                         </View>
                     </View>
@@ -151,13 +148,12 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                     <View style={styles.strategyCard}>
                         <Text style={styles.strategyNumber}>4</Text>
                         <View style={styles.strategyContent}>
-                            <Text style={styles.strategyTitle}>Apply for Departure from Assessment</Text>
+                            <Text style={styles.strategyTitle}>Update Income Estimate for Reduced Earnings</Text>
                             <Text style={styles.strategyText}>
-                                If income dropped significantly (job loss, illness, business failure), apply for
-                                departure. Must show income reduction is genuine and not deliberate to avoid child
-                                support.
+                                If income dropped significantly (job loss, illness, business failure), lodge an income
+                                estimate or apply for Change of Assessment. Must show income reduction is genuine and not
+                                deliberate to avoid child support. Requires evidence of changed circumstances.
                             </Text>
-                            <Text style={styles.strategySuccess}>Success rate: 50-70% (genuine hardship)</Text>
                             <Text style={styles.strategyTime}>Timeline: 2-3 months</Text>
                         </View>
                     </View>
@@ -168,11 +164,10 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                             <Text style={styles.strategyTitle}>Claim Relevant Dependents</Text>
                             <Text style={styles.strategyText}>
                                 If you have other children (new relationship, stepchildren you support), claim them
-                                as relevant dependents. This reduces your child support income by $1,786 per dependent
-                                (2026 rate).
+                                as relevant dependents. This reduces your child support income based on the Cost of Children
+                                table (amount varies by your income and number of dependents). Notify Services Australia within 28 days.
                             </Text>
-                            <Text style={styles.strategySuccess}>Success rate: 90%+ (if eligible)</Text>
-                            <Text style={styles.strategyTime}>Timeline: Next assessment</Text>
+                            <Text style={styles.strategyTime}>Timeline: Next assessment (or backdated if notified within 28 days)</Text>
                         </View>
                     </View>
 
@@ -183,8 +178,8 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                             <Text style={styles.strategyText}>
                                 If other parent agrees, negotiate lower amount via Binding Child Support Agreement.
                                 Must meet minimum payment thresholds and both parties need independent legal advice.
+                                Success depends entirely on the other parent's willingness to negotiate.
                             </Text>
-                            <Text style={styles.strategySuccess}>Success rate: Depends on negotiation</Text>
                             <Text style={styles.strategyTime}>Timeline: 1-3 months</Text>
                         </View>
                     </View>
@@ -203,13 +198,12 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                     <View style={styles.strategyCard}>
                         <Text style={styles.strategyNumber}>7</Text>
                         <View style={styles.strategyContent}>
-                            <Text style={styles.strategyTitle}>Salary Sacrifice to Super</Text>
+                            <Text style={styles.strategyTitle}>Salary Sacrifice to Super (Limited Benefit)</Text>
                             <Text style={styles.strategyText}>
                                 Salary sacrificing to superannuation reduces taxable income (up to concessional cap).
-                                However, reportable super contributions are added back to child support income. Limited
-                                benefit but can reduce tax burden.
+                                However, reportable super contributions are added back to child support income, so this
+                                provides NO reduction in child support. May reduce tax burden only.
                             </Text>
-                            <Text style={styles.strategySuccess}>Success rate: Minimal impact</Text>
                             <Text style={styles.strategyTime}>Timeline: Next tax year</Text>
                         </View>
                     </View>
@@ -246,10 +240,10 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                     <View style={styles.consequenceBox}>
                         <Text style={styles.consequenceTitle}>Consequences:</Text>
                         <Text style={styles.bulletItem}>• Earning capacity assessment (based on potential, not actual income)</Text>
-                        <Text style={styles.bulletItem}>• Penalties up to $13,200</Text>
-                        <Text style={styles.bulletItem}>• Criminal prosecution (fraud)</Text>
-                        <Text style={styles.bulletItem}>• Arrears with 10%+ interest</Text>
-                        <Text style={styles.bulletItem}>• Enforcement actions (wage garnishment, passport suspension)</Text>
+                        <Text style={styles.bulletItem}>• Significant financial penalties</Text>
+                        <Text style={styles.bulletItem}>• Criminal prosecution for fraud</Text>
+                        <Text style={styles.bulletItem}>• Accumulating arrears with penalties</Text>
+                        <Text style={styles.bulletItem}>• Enforcement actions (wage garnishment, passport suspension, tax refund intercepts)</Text>
                     </View>
 
                     <View style={styles.trustBox}>
@@ -332,15 +326,15 @@ const styles = StyleSheet.create({
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
 
 
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
 
-    warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 1, borderColor: '#bfdbfe', padding: 16, marginBottom: 16 },
-    warningTitle: { fontSize: 15, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
-    warningText: { fontSize: 15, lineHeight: 24, color: '#1e3a8a' },
+    warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#f59e0b', padding: 16, marginBottom: 16 },
+    warningTitle: { fontSize: 15, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+    warningText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     strategyCard: { flexDirection: 'row', backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#bfdbfe' },
     strategyNumber: { fontSize: 24, fontWeight: '700', color: '#2563EB', marginRight: 12, width: 32 },
@@ -353,11 +347,11 @@ const styles = StyleSheet.create({
     ctaButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 24, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     ctaButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
 
-    dangerCard: { backgroundColor: '#f1f5f9', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#cbd5e1' },
-    dangerTitle: { fontSize: 16, fontWeight: '600', color: '#475569', marginBottom: 12 },
+    dangerCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderLeftWidth: 4, borderLeftColor: '#dc2626' },
+    dangerTitle: { fontSize: 16, fontWeight: '600', color: '#1e40af', marginBottom: 12 },
 
-    consequenceBox: { backgroundColor: '#dbeafe', borderRadius: 12, borderWidth: 2, borderColor: '#3b82f6', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
-    consequenceTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 12 },
+    consequenceBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#dc2626', padding: 20, marginBottom: 24 },
+    consequenceTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 12 },
 
     faqItem: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0' },
     faqQuestion: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },

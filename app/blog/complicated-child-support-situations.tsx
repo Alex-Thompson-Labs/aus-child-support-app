@@ -707,7 +707,7 @@ export default function ComplicatedChildSupportBlogPost() {
                     </View>
 
                     <View style={styles.serviceCard}>
-                        <Text style={styles.serviceTitle}>🎯 Strategic Advice</Text>
+                        <Text style={styles.serviceTitle}>Strategic Advice</Text>
                         <Text style={styles.serviceDesc}>
                             Advise on optimal timing, which legal avenues to pursue, cost-benefit analysis, and
                             long-term strategy across multiple issues.
@@ -941,23 +941,23 @@ const styles = StyleSheet.create({
         paddingLeft: 8,
     },
     warningBox: {
-        backgroundColor: '#fef3c7',
+        backgroundColor: '#eff6ff',
         borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#fbbf24',
+        borderLeftWidth: 4,
+        borderLeftColor: '#f59e0b',
         padding: 16,
         marginBottom: 16,
     },
     warningTitle: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#78350f',
+        color: '#1e40af',
         marginBottom: 8,
     },
     warningText: {
         fontSize: 15,
         lineHeight: 24,
-        color: '#78350f',
+        color: '#475569',
     },
     situationCard: {
         flexDirection: 'row',
@@ -994,23 +994,23 @@ const styles = StyleSheet.create({
         color: '#64748b',
     },
     exampleBox: {
-        backgroundColor: '#f0fdf4',
+        backgroundColor: '#eff6ff',
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#86efac',
+        borderColor: '#bfdbfe',
         padding: 16,
         marginBottom: 16,
     },
     exampleTitle: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#14532d',
+        color: '#1e40af',
         marginBottom: 8,
     },
     exampleText: {
         fontSize: 14,
         lineHeight: 22,
-        color: '#14532d',
+        color: '#475569',
         fontStyle: 'italic',
     },
     highlightBox: {
@@ -1040,27 +1040,27 @@ const styles = StyleSheet.create({
         color: '#1e40af',
     },
     infoBox: {
-        backgroundColor: '#f0fdf4',
+        backgroundColor: '#eff6ff',
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#86efac',
+        borderColor: '#bfdbfe',
         padding: 16,
         marginBottom: 16,
     },
     infoTitle: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#14532d',
+        color: '#1e40af',
         marginBottom: 8,
     },
     infoText: {
         fontSize: 15,
         lineHeight: 24,
-        color: '#14532d',
+        color: '#475569',
         marginBottom: 12,
     },
     infoButton: {
-        backgroundColor: '#22c55e',
+        backgroundColor: '#2563eb',
         borderRadius: 8,
         paddingVertical: 10,
         paddingHorizontal: 16,
@@ -1260,15 +1260,15 @@ const styles = StyleSheet.create({
     },
 
 
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
 
-    trustSignalBox: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#86efac' },
-    trustSignalTitle: { fontSize: 16, fontWeight: '700', color: '#14532d', marginBottom: 12 },
-    trustSignalItem: { fontSize: 15, lineHeight: 24, color: '#14532d', marginBottom: 6 },
+    trustSignalBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
+    trustSignalTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 12 },
+    trustSignalItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 6 },
 
     internalLinkBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
     internalLinkTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },

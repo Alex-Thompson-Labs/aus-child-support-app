@@ -16,7 +16,7 @@ const faqSchema = {
             name: 'How far back can child support be backdated in Australia?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Child support can be backdated up to 18 months before the application date. If you apply on January 1, 2026, Services Australia can backdate to July 1, 2024. You cannot claim child support for periods before this 18-month window.',
+                text: 'For first-time applications, child support starts from your application date. For Change of Assessment applications (income changes, care changes), backdating up to 18 months is possible. Apply as soon as possible after separation to avoid losing time.',
             },
         },
         {
@@ -24,7 +24,7 @@ const faqSchema = {
             name: 'Can I get backdated child support if I never applied before?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Yes, but only for the 18 months before your application. If your child is 10 years old and you never applied, you can only claim the last 18 months—not the previous 9+ years. Apply as soon as possible to maximize backdating.',
+                text: 'First-time applications start from the date you apply—not backdated. If you separated 2 years ago but apply today, child support starts today. Apply immediately after separation to maximize your claim period.',
             },
         },
         {
@@ -32,7 +32,7 @@ const faqSchema = {
             name: 'Do I have to pay backdated child support immediately?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'No. Backdated child support becomes arrears. Services Australia typically sets up a payment plan where you pay current child support PLUS installments toward the backdated amount. Lump sum payment is possible but not required.',
+                text: 'No. Backdated amounts become arrears. Services Australia typically sets up a payment plan where you pay current child support PLUS installments toward arrears. Lump sum payment is possible but not required.',
             },
         },
     ],
@@ -76,132 +76,113 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
 
                     <Text style={styles.intro}>
                         Just separated and wondering if you can claim child support for the past year? Or did you
-                        delay applying and now want to recover missed payments? Here's exactly how backdating works
-                        in Australia, the 18-month rule, and how to maximize your claim.
+                        delay applying and now want to recover missed payments? Here's exactly how child support
+                        start dates work in Australia, when the 18-month backdating rule applies, and how to maximize your claim.
                     </Text>
 
                     <View style={styles.quickAnswerBox}>
                         <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
                         <Text style={styles.quickAnswerText}>
-                            Child support can be backdated up to 18 months from your application date. Services Australia collects arrears from the paying parent. Calculate your current and backdated amounts below.
+                            First-time applications start from your application date. Change of Assessment applications can be backdated up to 18 months. Apply immediately after separation to avoid losing time.
                         </Text>
                         <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
                             <Text style={styles.quickAnswerButtonText}>Calculate Your Amount →</Text>
                         </Pressable>
                     </View>
 
-
-                    <Pressable
-                        style={[styles.ctaButton, isWeb && webClickableStyles]}
-                        onPress={() => router.push('/')}
-                        accessibilityRole="button"
-                    >
-                        <Text style={styles.ctaButtonText}>Calculate Your Child Support Now →</Text>
-                    </Pressable>
-
                     <View style={styles.keyRuleBox}>
                         <Text style={styles.keyRuleTitle}>🔑 Key Rule:</Text>
                         <Text style={styles.keyRuleText}>
-                            Child support can be backdated up to 18 months before your application date. You CANNOT
-                            claim child support for periods before this 18-month window, no matter how long you waited.
+                            First-time child support applications start from the date you apply—NOT backdated. The 18-month backdating rule applies to Change of Assessment applications (income changes, care changes). Apply immediately after separation to avoid losing time.
                         </Text>
                     </View>
 
-                    <Text style={styles.h2} accessibilityRole="header">How far back can child support be backdated in Australia?</Text>
+                    <Text style={styles.h2} accessibilityRole="header">When does child support start in Australia?</Text>
                     <Text style={styles.paragraph}>
-                        Child support in Australia can be backdated up to 18 months before your application date. This is a hard limit set by Services Australia. If you apply on January 1, 2026, the earliest backdating date is July 1, 2024. You cannot claim child support for any period before this 18-month window, regardless of how long you waited to apply.
+                        For first-time applications, child support starts from the date you lodge your application with Services Australia. If you separated 2 years ago but apply today, child support starts today—not from your separation date. This is why applying immediately after separation is critical.
                     </Text>
 
                     <Text style={styles.h2} accessibilityRole="header">The 18-Month Backdating Rule Explained</Text>
                     <Text style={styles.paragraph}>
-                        When you apply for child support, Services Australia can backdate the assessment to a maximum
-                        of 18 months before your application date. This is a hard limit—you cannot claim further back.
+                        The 18-month backdating rule applies to Change of Assessment applications—when you're requesting changes to an existing assessment due to income changes, care changes, or special circumstances. If you apply for a Change of Assessment on January 1, 2026, Services Australia can backdate the change to July 1, 2024 (18 months earlier). This is a hard limit—you cannot claim further back without court approval.
                     </Text>
 
                     <View style={styles.exampleCard}>
-                        <Text style={styles.exampleTitle}>Example 1: Applying Within 18 Months</Text>
+                        <Text style={styles.exampleTitle}>Example 1: First-Time Application (Applied Quickly)</Text>
                         <Text style={styles.exampleText}>Separated: January 1, 2025</Text>
                         <Text style={styles.exampleText}>Applied for child support: June 1, 2025 (5 months later)</Text>
-                        <Text style={styles.exampleResult}>Backdated to: January 1, 2025 (separation date)</Text>
-                        <Text style={styles.exampleNote}>You get full backdating because you applied within 18 months</Text>
+                        <Text style={styles.exampleResult}>Assessment starts: June 1, 2025 (application date)</Text>
+                        <Text style={styles.exampleNote}>You lose 5 months because assessment starts from application date, not separation</Text>
                     </View>
 
                     <View style={styles.exampleCard}>
-                        <Text style={styles.exampleTitle}>Example 2: Applying After 18 Months</Text>
+                        <Text style={styles.exampleTitle}>Example 2: First-Time Application (Delayed)</Text>
                         <Text style={styles.exampleText}>Separated: January 1, 2024</Text>
                         <Text style={styles.exampleText}>Applied for child support: January 1, 2026 (24 months later)</Text>
-                        <Text style={styles.exampleResult}>Backdated to: July 1, 2024 (18 months before application)</Text>
-                        <Text style={styles.exampleNote}>You lose 6 months of child support because you waited too long</Text>
+                        <Text style={styles.exampleResult}>Assessment starts: January 1, 2026 (application date)</Text>
+                        <Text style={styles.exampleNote}>You lose 24 months of child support because you waited to apply</Text>
                     </View>
 
                     <View style={styles.warningBox}>
                         <Text style={styles.warningTitle}>⚠️ Critical Timing:</Text>
                         <Text style={styles.warningText}>
-                            Apply for child support as soon as possible after separation. Every month you delay is a
-                            month you might lose if you wait longer than 18 months. Don't assume you can "catch up" later.
+                            Apply for child support immediately after separation. First-time applications start from your application date—NOT your separation date. Every month you delay is a month of child support you permanently lose. You cannot "catch up" later.
                         </Text>
                     </View>
 
-                    <Text style={styles.h2} accessibilityRole="header">When Backdating Applies</Text>
+                    <Text style={styles.h2} accessibilityRole="header">When the 18-Month Backdating Rule Applies</Text>
                     <Text style={styles.paragraph}>
-                        Backdating applies in several situations:
+                        The 18-month backdating rule applies to Change of Assessment applications, not first-time applications:
                     </Text>
 
                     <View style={styles.scenarioCard}>
-                        <Text style={styles.scenarioTitle}>1. First-Time Application</Text>
+                        <Text style={styles.scenarioTitle}>1. First-Time Application (NO Backdating)</Text>
                         <Text style={styles.scenarioText}>
-                            You've never applied for child support before. Services Australia backdates to the earlier
-                            of: separation date OR 18 months before application.
+                            You've never applied for child support before. Your assessment starts from the date you apply—NOT your separation date. There is no backdating for first-time applications.
                         </Text>
                         <Text style={styles.scenarioExample}>
-                            Separated 10 months ago, applying now → Backdated to separation date (full 10 months)
+                            Separated 10 months ago, applying now → Assessment starts today (you lose 10 months)
                         </Text>
                     </View>
 
                     <View style={styles.scenarioCard}>
-                        <Text style={styles.scenarioTitle}>2. Income Change Not Reported</Text>
+                        <Text style={styles.scenarioTitle}>2. Change of Assessment: Income Change</Text>
                         <Text style={styles.scenarioText}>
-                            The paying parent's income increased significantly but they didn't report it. You can apply
-                            for backdating once you discover the income change.
+                            You have an existing assessment. The paying parent's income increased significantly but they didn't report it. You can apply for a Change of Assessment with backdating up to 18 months.
                         </Text>
                         <Text style={styles.scenarioExample}>
-                            Parent's income increased from $60K to $120K in 2024. You discover this in 2026. Backdated
-                            to 18 months before your application.
+                            Parent's income increased from $60K to $120K in 2024. You discover this in January 2026. Apply for Change of Assessment → Backdated to July 2024 (18 months).
                         </Text>
                     </View>
 
                     <View style={styles.scenarioCard}>
-                        <Text style={styles.scenarioTitle}>3. Care Percentage Change</Text>
+                        <Text style={styles.scenarioTitle}>3. Change of Assessment: Care Change</Text>
                         <Text style={styles.scenarioText}>
-                            Care arrangements changed but weren't updated with Services Australia. You can apply for
-                            backdating to reflect actual care.
+                            You have an existing assessment. Care arrangements changed but weren't updated with Services Australia. You can apply for a Change of Assessment with backdating up to 18 months.
                         </Text>
                         <Text style={styles.scenarioExample}>
-                            Child moved in with you full-time 12 months ago but assessment wasn't updated. Apply now
-                            → Backdated 12 months.
+                            Child moved in with you full-time 12 months ago but assessment wasn't updated. Apply for Change of Assessment now → Backdated 12 months.
                         </Text>
                     </View>
 
                     <View style={styles.scenarioCard}>
-                        <Text style={styles.scenarioTitle}>4. Paternity Established</Text>
+                        <Text style={styles.scenarioTitle}>4. Paternity Established (First Application)</Text>
                         <Text style={styles.scenarioText}>
-                            Paternity was disputed and recently established through DNA test or court order. Child
-                            support backdated to 18 months before application.
+                            Paternity was disputed and recently established through DNA test or court order. This is a first-time application, so child support starts from your application date—not backdated.
                         </Text>
                         <Text style={styles.scenarioExample}>
-                            DNA test confirms paternity in January 2026. Apply immediately → Backdated to July 2024.
+                            DNA test confirms paternity in January 2026. Apply immediately → Assessment starts January 2026 (application date).
                         </Text>
                     </View>
 
-                    <Text style={styles.h2} accessibilityRole="header">How to Apply for Backdating</Text>
+                    <Text style={styles.h2} accessibilityRole="header">When You Need Legal Help With Backdating</Text>
 
                     <View style={styles.stepCard}>
                         <Text style={styles.stepNumber}>1</Text>
                         <View style={styles.stepContent}>
-                            <Text style={styles.stepTitle}>Apply for Child Support</Text>
+                            <Text style={styles.stepTitle}>Proving Income Changes</Text>
                             <Text style={styles.stepText}>
-                                Contact Services Australia and apply for child support. Specify that you want backdating
-                                and provide the date you want to backdate to (up to 18 months).
+                                If the other parent's income increased but they didn't report it, you need to prove the income change occurred and when. This often requires accessing tax records, business financials, or employment records—evidence the other parent may not voluntarily provide.
                             </Text>
                         </View>
                     </View>
@@ -209,10 +190,9 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                     <View style={styles.stepCard}>
                         <Text style={styles.stepNumber}>2</Text>
                         <View style={styles.stepContent}>
-                            <Text style={styles.stepTitle}>Provide Evidence</Text>
+                            <Text style={styles.stepTitle}>Documenting Care Changes</Text>
                             <Text style={styles.stepText}>
-                                Gather evidence supporting your backdating claim: separation documents, care records,
-                                income evidence, communication with other parent.
+                                To backdate a care percentage change, you need documented evidence of when actual care changed: school records, medical appointments, witness statements, communication logs. Weak evidence means Services Australia may reject backdating.
                             </Text>
                         </View>
                     </View>
@@ -220,10 +200,9 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                     <View style={styles.stepCard}>
                         <Text style={styles.stepNumber}>3</Text>
                         <View style={styles.stepContent}>
-                            <Text style={styles.stepTitle}>Services Australia Reviews</Text>
+                            <Text style={styles.stepTitle}>Applying for Court Leave (Beyond 18 Months)</Text>
                             <Text style={styles.stepText}>
-                                Services Australia assesses your application and determines the backdating start date.
-                                They'll notify both parents of the decision.
+                                If you need backdating beyond 18 months, you must apply to Family Court for leave. This requires demonstrating exceptional circumstances, fraud, or concealment. Court applications require legal representation.
                             </Text>
                         </View>
                     </View>
@@ -231,13 +210,27 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                     <View style={styles.stepCard}>
                         <Text style={styles.stepNumber}>4</Text>
                         <View style={styles.stepContent}>
-                            <Text style={styles.stepTitle}>Backdated Amount Becomes Arrears</Text>
+                            <Text style={styles.stepTitle}>Responding to Objections</Text>
                             <Text style={styles.stepText}>
-                                The backdated child support is added to the paying parent's account as arrears. They
-                                must pay current child support PLUS arrears installments.
+                                The other parent can object to your Change of Assessment application. If they dispute your evidence or the backdating period, you may need legal representation to defend your claim and maximize your backdating.
                             </Text>
                         </View>
                     </View>
+
+                    <View style={styles.warningBox}>
+                        <Text style={styles.warningTitle}>⚠️ Don't Risk Losing Thousands:</Text>
+                        <Text style={styles.warningText}>
+                            Weak evidence or incorrect application timing can result in Services Australia rejecting your backdating claim. A single mistake could cost you months or years of child support. Get expert help to maximize your claim.
+                        </Text>
+                    </View>
+
+                    <Pressable
+                        style={[styles.ctaButton, isWeb && webClickableStyles]}
+                        onPress={() => router.push('/lawyer-inquiry?mode=direct')}
+                        accessibilityRole="button"
+                    >
+                        <Text style={styles.ctaButtonText}>Get Expert Help With Your Backdating Claim →</Text>
+                    </Pressable>
 
                     <View style={styles.evidenceCard}>
                         <Text style={styles.evidenceTitle}>Evidence to Provide:</Text>
@@ -254,7 +247,7 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                         onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                         accessibilityRole="button"
                     >
-                        <Text style={styles.ctaButtonText}>Get Legal Help With Backdating →</Text>
+                        <Text style={styles.ctaButtonText}>Get Legal Help With Change of Assessment →</Text>
                     </Pressable>
 
                     <View style={styles.internalLinkBox}>
@@ -279,10 +272,9 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                         </Pressable>
                     </View>
 
-                    <Text style={styles.h2} accessibilityRole="header">How Backdated Child Support Is Collected</Text>
+                    <Text style={styles.h2} accessibilityRole="header">How Backdated Amounts Are Collected</Text>
                     <Text style={styles.paragraph}>
-                        Once backdating is approved, the backdated amount becomes arrears. Services Australia collects
-                        it through:
+                        When a Change of Assessment is approved with backdating, the additional amount owed becomes arrears. Services Australia collects it through:
                     </Text>
 
                     <View style={styles.collectionCard}>
@@ -309,22 +301,21 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                     <View style={styles.timelineCard}>
                         <Text style={styles.timelineTitle}>Typical Payment Timeline:</Text>
                         <Text style={styles.timelineText}>
-                            Backdated amount: $20,000 | Current child support: $2,000/month | Arrears installment: $500/month
+                            Backdated amount (arrears): $20,000 | Current child support: $2,000/month | Arrears installment: $500/month
                         </Text>
                         <Text style={styles.timelineResult}>
                             Total monthly payment: $2,500 | Time to clear arrears: 40 months (~3.3 years)
                         </Text>
                     </View>
 
-                    <Text style={styles.h2} accessibilityRole="header">Common Backdating Mistakes</Text>
+                    <Text style={styles.h2} accessibilityRole="header">Common Mistakes About Backdating</Text>
 
                     <View style={styles.mistakeCard}>
                         <Text style={styles.mistakeNumber}>1.</Text>
                         <View style={styles.mistakeContent}>
                             <Text style={styles.mistakeTitle}>Waiting Too Long to Apply</Text>
                             <Text style={styles.mistakeText}>
-                                Separated 3 years ago, applying now? You lose 1.5 years of child support. Apply within
-                                18 months of separation to maximize backdating.
+                                Separated 3 years ago, applying now? You lose 3 years of child support. First-time applications start from your application date—NOT your separation date. Apply immediately after separation.
                             </Text>
                         </View>
                     </View>
@@ -332,10 +323,9 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                     <View style={styles.mistakeCard}>
                         <Text style={styles.mistakeNumber}>2.</Text>
                         <View style={styles.mistakeContent}>
-                            <Text style={styles.mistakeTitle}>Not Providing Evidence</Text>
+                            <Text style={styles.mistakeTitle}>Not Providing Evidence for Change of Assessment</Text>
                             <Text style={styles.mistakeText}>
-                                Services Australia needs proof of separation date, care arrangements, and income. Without
-                                evidence, they may not approve full backdating.
+                                When applying for a Change of Assessment with backdating, Services Australia needs proof of when circumstances changed (income evidence, care records). Without evidence, they may not approve backdating.
                             </Text>
                         </View>
                     </View>
@@ -343,10 +333,9 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                     <View style={styles.mistakeCard}>
                         <Text style={styles.mistakeNumber}>3.</Text>
                         <View style={styles.mistakeContent}>
-                            <Text style={styles.mistakeTitle}>Assuming Backdating Is Automatic</Text>
+                            <Text style={styles.mistakeTitle}>Confusing First Applications with Change of Assessment</Text>
                             <Text style={styles.mistakeText}>
-                                You must specifically request backdating and provide the date. Don't assume Services
-                                Australia will automatically backdate to separation.
+                                First-time applications start from your application date—no backdating. The 18-month backdating rule only applies to Change of Assessment applications for existing assessments.
                             </Text>
                         </View>
                     </View>
@@ -354,10 +343,9 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                     <View style={styles.mistakeCard}>
                         <Text style={styles.mistakeNumber}>4.</Text>
                         <View style={styles.mistakeContent}>
-                            <Text style={styles.mistakeTitle}>Not Updating Care Changes</Text>
+                            <Text style={styles.mistakeTitle}>Not Updating Care Changes Promptly</Text>
                             <Text style={styles.mistakeText}>
-                                If care arrangements change, update Services Australia immediately. Waiting to update
-                                limits how far back you can claim adjusted payments.
+                                If care arrangements change, update Services Australia immediately. Waiting to update limits how far back you can claim adjusted payments (maximum 18 months for Change of Assessment).
                             </Text>
                         </View>
                     </View>
@@ -368,27 +356,23 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                     </Text>
 
                     <View style={styles.exceptionCard}>
-                        <Text style={styles.exceptionTitle}>Exception 1: Special Circumstances</Text>
+                        <Text style={styles.exceptionTitle}>Exception 1: Court Leave for Extended Backdating</Text>
                         <Text style={styles.exceptionText}>
-                            If you can prove special circumstances prevented you from applying earlier (domestic violence,
-                            serious illness, other parent concealed income), Services Australia may allow backdating
-                            beyond 18 months.
+                            You can apply to Family Court for leave to backdate a Change of Assessment beyond 18 months (up to 7 years). The court may grant leave if there's evidence of fraud, concealment, or exceptional circumstances that prevented earlier application.
                         </Text>
                     </View>
 
                     <View style={styles.exceptionCard}>
-                        <Text style={styles.exceptionTitle}>Exception 2: Court Order</Text>
+                        <Text style={styles.exceptionTitle}>Exception 2: Court Orders</Text>
                         <Text style={styles.exceptionText}>
-                            Family Court can order child support backdated beyond 18 months if there's evidence of
-                            fraud, concealment, or other exceptional circumstances.
+                            Family Court can make orders for child support that apply to periods beyond the normal 18-month limit. This typically requires evidence of special circumstances or misconduct by the other parent.
                         </Text>
                     </View>
 
                     <View style={styles.exceptionCard}>
-                        <Text style={styles.exceptionTitle}>Exception 3: Binding Agreement</Text>
+                        <Text style={styles.exceptionTitle}>Exception 3: Child Support Agreements Set Aside</Text>
                         <Text style={styles.exceptionText}>
-                            If you had a Binding Child Support Agreement that was later set aside, backdating may
-                            extend beyond 18 months to when the agreement started.
+                            If you had a Binding Child Support Agreement that was later set aside by the court, the administrative assessment may apply from when the agreement started, potentially extending beyond 18 months.
                         </Text>
                     </View>
 
@@ -405,38 +389,38 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                         preselectedFactors={['change_circumstances']}
                         highlightedFactors={['income_resources_not_reflected', 'care_arrangement_change']}
                         blogTopic="backdating"
-                        ctaText="Get Help With Backdating Your Assessment"
+                        ctaText="Get Help With Change of Assessment"
                         analyticsSource="blog_backdating_child_support"
                         formReason="special_circumstances"
-                        title="Need Help Maximizing Your Backdating Claim?"
-                        description="Backdating applications require strong evidence and proper documentation. Select any factors that apply to your situation."
+                        title="Need Help With Change of Assessment?"
+                        description="Change of Assessment applications with backdating require strong evidence and proper documentation. Select any factors that apply to your situation."
                     />
 
                     <Text style={styles.h2} accessibilityRole="header">Frequently Asked Questions</Text>
 
                     <FAQItem
                         question="How far back can child support be backdated in Australia?"
-                        answer="Child support can be backdated up to 18 months before the application date. If you apply on January 1, 2026, Services Australia can backdate to July 1, 2024. You cannot claim child support for periods before this 18-month window."
+                        answer="For first-time applications, child support starts from your application date—no backdating. For Change of Assessment applications (income changes, care changes), backdating up to 18 months is possible. If you apply for a Change of Assessment on January 1, 2026, Services Australia can backdate to July 1, 2024."
                     />
 
                     <FAQItem
                         question="Can I get backdated child support if I never applied before?"
-                        answer="Yes, but only for the 18 months before your application. If your child is 10 years old and you never applied, you can only claim the last 18 months—not the previous 9+ years. Apply as soon as possible to maximize backdating."
+                        answer="No. First-time applications start from the date you apply—not backdated. If your child is 10 years old and you never applied, child support starts from today's application date. You cannot claim the previous 10 years. Apply immediately after separation to avoid losing time."
                     />
 
                     <FAQItem
                         question="Do I have to pay backdated child support immediately?"
-                        answer="No. Backdated child support becomes arrears. Services Australia typically sets up a payment plan where you pay current child support PLUS installments toward the backdated amount. Lump sum payment is possible but not required."
+                        answer="No. Backdated amounts (from Change of Assessment applications) become arrears. Services Australia typically sets up a payment plan where you pay current child support PLUS installments toward arrears. Lump sum payment is possible but not required."
                     />
 
                     <FAQItem
                         question="What if I didn't know I had to apply for child support?"
-                        answer="Ignorance doesn't extend the 18-month rule. Even if you didn't know you needed to apply, you can only backdate 18 months from your application date. Apply as soon as you separate to avoid losing months."
+                        answer="Ignorance doesn't change the rules. First-time applications start from your application date. Even if you didn't know you needed to apply, you cannot claim child support for periods before you applied. Apply immediately after separation to avoid losing time."
                     />
 
                     <FAQItem
                         question="Can backdated child support be waived?"
-                        answer="Only if both parents agree through a Binding Child Support Agreement. The receiving parent can choose not to pursue backdated amounts, but this must be formalized. Services Australia won't automatically waive backdated child support."
+                        answer="Only if both parents agree through a Binding Child Support Agreement. The receiving parent can choose not to pursue arrears from Change of Assessment backdating, but this must be formalized. Services Australia won't automatically waive arrears."
                     />
 
                     <View style={styles.calculatorSection}>
@@ -455,13 +439,12 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                     </View>
 
                     <View style={styles.finalCtaSection}>
-                        <Text style={styles.finalCtaTitle}>Need Help With Backdated Child Support?</Text>
+                        <Text style={styles.finalCtaTitle}>Need Help With Child Support Timing or Change of Assessment?</Text>
                         <Text style={styles.finalCtaText}>
-                            Connect with experienced family lawyers who can help you apply for backdating, gather
-                            evidence, or challenge unfair backdating claims.
+                            Connect with experienced family lawyers who can help you apply for child support immediately after separation, or apply for Change of Assessment with backdating for income or care changes.
                         </Text>
                         <View style={styles.trustSignalsBox}>
-                            <Text style={styles.trustSignalItem}>✓ Specialists in backdating applications</Text>
+                            <Text style={styles.trustSignalItem}>✓ Specialists in Change of Assessment applications</Text>
                             <Text style={styles.trustSignalItem}>✓ Help gathering evidence and documentation</Text>
                             <Text style={styles.trustSignalItem}>✓ Free initial consultations available</Text>
                         </View>
@@ -503,11 +486,11 @@ const styles = StyleSheet.create({
     bold: { fontWeight: '600', color: '#1e3a8a' },
 
 
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
 
     keyRuleBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 2, borderColor: '#3b82f6', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#3b82f6', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 }) },
     keyRuleTitle: { fontSize: 18, fontWeight: '700', color: '#1e40af', marginBottom: 8 },
@@ -519,9 +502,9 @@ const styles = StyleSheet.create({
     exampleResult: { fontSize: 15, lineHeight: 24, color: '#1e3a8a', fontWeight: '600', marginTop: 8 },
     exampleNote: { fontSize: 14, lineHeight: 22, color: '#64748b', fontStyle: 'italic', marginTop: 4 },
 
-    warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 1, borderColor: '#bfdbfe', padding: 16, marginBottom: 16 },
-    warningTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
-    warningText: { fontSize: 15, lineHeight: 24, color: '#1e3a8a' },
+    warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#f59e0b', padding: 16, marginBottom: 16 },
+    warningTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 8 },
+    warningText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     scenarioCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 }) },
     scenarioTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
@@ -545,10 +528,10 @@ const styles = StyleSheet.create({
     timelineText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8 },
     timelineResult: { fontSize: 15, lineHeight: 24, color: '#1e3a8a', fontWeight: '600' },
 
-    mistakeCard: { flexDirection: 'row', backgroundColor: '#f1f5f9', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#cbd5e1' },
-    mistakeNumber: { fontSize: 20, fontWeight: '700', color: '#2563EB', marginRight: 12, width: 24 },
+    mistakeCard: { flexDirection: 'row', backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderLeftWidth: 4, borderLeftColor: '#dc2626' },
+    mistakeNumber: { fontSize: 20, fontWeight: '700', color: '#dc2626', marginRight: 12, width: 24 },
     mistakeContent: { flex: 1 },
-    mistakeTitle: { fontSize: 16, fontWeight: '700', color: '#475569', marginBottom: 6 },
+    mistakeTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 6 },
     mistakeText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     exceptionCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 }) },
@@ -574,9 +557,9 @@ const styles = StyleSheet.create({
 
     finalCtaSection: { backgroundColor: '#1e3a8a', borderRadius: 12, padding: 24, marginTop: 16, alignItems: 'center' },
     finalCtaTitle: { fontSize: 20, fontWeight: '700', color: '#ffffff', marginBottom: 8, textAlign: 'center' },
-    finalCtaText: { fontSize: 15, lineHeight: 24, color: '#e0e7ff', marginBottom: 20, textAlign: 'center' },
+    finalCtaText: { fontSize: 15, lineHeight: 24, color: '#bfdbfe', marginBottom: 20, textAlign: 'center' },
     trustSignalsBox: { marginBottom: 24, alignItems: 'flex-start', width: '100%', maxWidth: 400 },
-    trustSignalItem: { fontSize: 14, color: '#e0e7ff', marginBottom: 8, lineHeight: 20 },
+    trustSignalItem: { fontSize: 14, color: '#bfdbfe', marginBottom: 8, lineHeight: 20 },
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 16, fontWeight: '600' },
 

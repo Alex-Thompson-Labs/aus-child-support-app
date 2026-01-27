@@ -41,7 +41,7 @@ const articleSchema = {
     '@context': 'https://schema.org',
     '@type': 'HowTo',
     name: 'How to Calculate Child Support in Australia',
-    description: 'Step-by-step guide to calculating child support in Australia using the 2026 formula. Includes what information you need and a free calculator.',
+    description: 'Step-by-step guide to calculating child support in Australia using the 2026 Services Australia formula. Includes what information you need and a free calculator.',
     step: [
         { '@type': 'HowToStep', name: 'Gather Required Information', text: 'Collect both parents\' income, care arrangement, and children\'s details' },
         { '@type': 'HowToStep', name: 'Calculate Child Support Income', text: 'Subtract Self-Support Amount from each parent\'s taxable income' },
@@ -104,8 +104,15 @@ export default function HowToCalculateChildSupportBlogPost() {
                     {/* Featured Snippet Opportunity */}
                     <Text style={styles.h2} accessibilityRole="header">How Is Child Support Calculated in Australia?</Text>
                     <Text style={styles.paragraph}>
-                        Child support in Australia is calculated using an 8-step formula that considers both parents' adjusted taxable incomes and care arrangements. The formula is: (Your Income % - Your Cost %) × Total Costs of Children. Services Australia applies this to determine who pays, how much, and when. Most parents pay between $1,815 (minimum) and $30,000+ annually depending on income and care.
+                        Child support in Australia is calculated using the Services Australia formula that considers both parents' adjusted taxable incomes and care arrangements. The basic formula is: (Your Income % - Your Cost %) × Total Costs of Children. Services Australia applies this to determine who pays, how much, and when. Most parents pay between $1,815 (minimum) and $30,000+ annually depending on income and care.
                     </Text>
+                    
+                    <View style={styles.disclaimerBox}>
+                        <Text style={styles.disclaimerTitle}>📌 Important Note</Text>
+                        <Text style={styles.disclaimerText}>
+                            This guide covers Formula 1 (the basic formula) for single-case assessments where only parents have care of the children. Complex situations involving multiple child support cases, non-parent carers, or overseas parents may use different formulas (Formula 2-6). Our calculator handles all formula variations automatically.
+                        </Text>
+                    </View>
 
                     {/* Step 1 */}
                     <Text style={styles.h2} accessibilityRole="header">Step 1: Gather the Information You Need</Text>
@@ -331,11 +338,11 @@ const styles = StyleSheet.create({
     h2: { fontSize: 24, fontWeight: '700', color: '#1e3a8a', marginTop: 32, marginBottom: 16, ...(Platform.OS === 'web' ? { lineHeight: 32 } : {}) },
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
     checklistCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0' },
     checklistTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
     checklistItem: { fontSize: 14, lineHeight: 22, color: '#64748b', marginBottom: 4 },
@@ -347,18 +354,18 @@ const styles = StyleSheet.create({
     exampleText: { fontSize: 14, color: '#64748b', marginBottom: 4 },
     exampleCalc: { fontSize: 13, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', color: '#64748b', marginBottom: 4 },
     exampleResult: { fontSize: 16, fontWeight: '700', color: '#2563EB', marginTop: 8 },
-    warningBox: { backgroundColor: '#fef3c7', borderRadius: 12, borderWidth: 1, borderColor: '#fbbf24', padding: 16, marginBottom: 16 },
-    warningTitle: { fontSize: 15, fontWeight: '600', color: '#78350f', marginBottom: 8 },
-    warningText: { fontSize: 15, lineHeight: 24, color: '#78350f' },
-    infoBox: { backgroundColor: '#f0fdf4', borderRadius: 12, borderWidth: 1, borderColor: '#86efac', padding: 16, marginBottom: 16 },
-    infoTitle: { fontSize: 15, fontWeight: '600', color: '#14532d', marginBottom: 8 },
-    infoText: { fontSize: 15, lineHeight: 24, color: '#14532d', marginBottom: 12 },
-    infoButton: { backgroundColor: '#22c55e', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 16, alignSelf: 'flex-start' },
+    warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#f59e0b', padding: 16, marginBottom: 16 },
+    warningTitle: { fontSize: 15, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+    warningText: { fontSize: 15, lineHeight: 24, color: '#475569' },
+    infoBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 1, borderColor: '#bfdbfe', padding: 16, marginBottom: 16 },
+    infoTitle: { fontSize: 15, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+    infoText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 12 },
+    infoButton: { backgroundColor: '#2563eb', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 16, alignSelf: 'flex-start' },
     infoButtonText: { color: '#ffffff', fontSize: 14, fontWeight: '600' },
-    riskCard: { backgroundColor: '#fef2f2', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#fecaca' },
-    riskTitle: { fontSize: 16, fontWeight: '600', color: '#991b1b', marginBottom: 12 },
-    benefitCard: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#86efac' },
-    benefitTitle: { fontSize: 16, fontWeight: '600', color: '#14532d', marginBottom: 12 },
+    riskCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderLeftWidth: 4, borderLeftColor: '#dc2626' },
+    riskTitle: { fontSize: 16, fontWeight: '600', color: '#1e40af', marginBottom: 12 },
+    benefitCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
+    benefitTitle: { fontSize: 16, fontWeight: '600', color: '#1e40af', marginBottom: 12 },
     faqItem: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0' },
     faqQuestion: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
     faqAnswer: { fontSize: 15, lineHeight: 24, color: '#475569' },
@@ -368,13 +375,17 @@ const styles = StyleSheet.create({
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 16, paddingHorizontal: 32, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 18, fontWeight: '700' },
 
-    trustSignalBox: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#86efac' },
-    trustSignalTitle: { fontSize: 16, fontWeight: '700', color: '#14532d', marginBottom: 12 },
-    trustSignalItem: { fontSize: 15, lineHeight: 24, color: '#14532d', marginBottom: 6 },
+    trustSignalBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
+    trustSignalTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 12 },
+    trustSignalItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 6 },
 
     internalLinkBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
     internalLinkTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
     internalLinkText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 16 },
     internalLinkButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 20, alignSelf: 'flex-start', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     internalLinkButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
+
+    disclaimerBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#2563eb', padding: 16, marginBottom: 16 },
+    disclaimerTitle: { fontSize: 15, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+    disclaimerText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 });

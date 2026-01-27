@@ -294,7 +294,7 @@ export default function BlogIndexPage() {
 
                     {/* Featured Posts Section */}
                     <View style={styles.featuredSection}>
-                        <Text style={styles.featuredTitle}>🎯 Complex Situation? Start Here:</Text>
+                        <Text style={styles.featuredTitle}>Complex Situation? Start Here:</Text>
                         <Text style={styles.featuredSubtitle}>
                             These guides help you understand when you need legal advice and what to expect.
                         </Text>
@@ -568,22 +568,22 @@ const styles = StyleSheet.create({
 
     // Featured Section
     featuredSection: {
-        backgroundColor: '#fef3c7',
+        backgroundColor: '#eff6ff',
         borderRadius: 12,
         padding: 20,
         marginBottom: 32,
-        borderWidth: 2,
-        borderColor: '#fbbf24',
+        borderLeftWidth: 4,
+        borderLeftColor: '#f59e0b',
     },
     featuredTitle: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#78350f',
+        color: '#1e40af',
         marginBottom: 6,
     },
     featuredSubtitle: {
         fontSize: 14,
-        color: '#92400e',
+        color: '#475569',
         marginBottom: 16,
         lineHeight: 20,
     },
@@ -595,7 +595,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 16,
         borderWidth: 1,
-        borderColor: '#fbbf24',
+        borderColor: '#e2e8f0',
         ...createShadow({
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 1 },
@@ -674,24 +674,24 @@ const styles = StyleSheet.create({
 
     // Trust Signal Box
     trustSignalBox: {
-        backgroundColor: '#f0fdf4',
+        backgroundColor: '#eff6ff',
         borderRadius: 12,
         padding: 20,
         marginTop: 32,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: '#86efac',
+        borderColor: '#bfdbfe',
     },
     trustSignalTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#14532d',
+        color: '#1e40af',
         marginBottom: 8,
     },
     trustSignalText: {
         fontSize: 15,
         lineHeight: 22,
-        color: '#14532d',
+        color: '#475569',
         marginBottom: 12,
     },
     trustSignalFeatures: {
@@ -699,7 +699,7 @@ const styles = StyleSheet.create({
     },
     trustSignalFeature: {
         fontSize: 14,
-        color: '#14532d',
+        color: '#475569',
         lineHeight: 20,
     },
 });

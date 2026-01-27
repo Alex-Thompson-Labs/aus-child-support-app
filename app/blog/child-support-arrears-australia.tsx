@@ -16,7 +16,7 @@ const faqSchema = {
             name: 'What happens if I don\'t pay child support in Australia?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Services Australia can: deduct from wages, intercept tax refunds, suspend passports and driver licenses, register charges on property, issue departure prohibition orders, and pursue criminal prosecution. Interest accrues at 10%+ annually. Arrears don\'t disappear—they follow you until paid.',
+                text: 'Services Australia can: deduct from wages, intercept tax refunds, suspend passports, register charges on property, and issue departure prohibition orders. Late payment penalties apply. Arrears don\'t disappear—they follow you until paid.',
             },
         },
         {
@@ -32,7 +32,7 @@ const faqSchema = {
             name: 'How long do I have to pay child support arrears?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'There is no time limit. Child support arrears remain enforceable forever, even after children turn 18. Services Australia can pursue collection decades later. Interest continues accruing until paid. The debt passes to your estate if you die.',
+                text: 'There is no time limit. Child support arrears remain enforceable forever, even after children turn 18. Services Australia can pursue collection decades later. Late payment penalties continue accruing until paid. The debt passes to your estate if you die.',
             },
         },
     ],
@@ -76,17 +76,17 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                     </View>
 
                     <Text style={styles.intro}>
-                        Behind on child support payments? You're not alone—thousands of Australian parents owe arrears. 
-                        But ignoring child support debt has serious consequences. Services Australia has powerful 
-                        enforcement tools, and arrears don't disappear. Here's what happens, how debt accumulates, 
+                        Behind on child support payments? You're not alone—thousands of Australian parents owe arrears.
+                        But ignoring child support debt has serious consequences. Services Australia has powerful
+                        enforcement tools, and arrears don't disappear. Here's what happens, how debt accumulates,
                         and your options to resolve it before things escalate.
                     </Text>
 
                     <View style={styles.quickAnswerBox}>
                         <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
                         <Text style={styles.quickAnswerText}>
-                            Behind on child support? Services Australia can garnish wages, intercept tax refunds, suspend 
-                            passports, or take legal action. Arrears accumulate with interest. Calculate your current amount 
+                            Behind on child support? Services Australia can garnish wages, intercept tax refunds, suspend
+                            passports, or take legal action. Arrears accumulate with interest. Calculate your current amount
                             and payment plan options below.
                         </Text>
                         <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
@@ -97,16 +97,14 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                     <View style={styles.urgentBox}>
                         <Text style={styles.urgentTitle}>🚨 Urgent: Arrears Don't Disappear</Text>
                         <Text style={styles.urgentText}>
-                            Child support debt cannot be written off through bankruptcy or time limits. It remains 
-                            enforceable indefinitely, even after children turn 18. Interest accrues at 10%+ annually. 
-                            The longer you wait, the worse it gets.
+                            Child support debt cannot be written off through bankruptcy or time limits. It remains enforceable indefinitely, even after children turn 18. Late payment penalties continue to accrue. The longer you wait, the worse it gets.
                         </Text>
                     </View>
 
                     {/* What Are Arrears */}
                     <Text style={styles.h2} accessibilityRole="header">What Are Child Support Arrears?</Text>
                     <Text style={styles.paragraph}>
-                        Arrears are unpaid child support that has accumulated over time. They occur when you miss 
+                        Arrears are unpaid child support that has accumulated over time. They occur when you miss
                         payments, pay less than required, or your assessment increases retroactively. Learn more about{' '}
                         <Text
                             style={styles.inlineLink}
@@ -129,14 +127,6 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                         <Text style={styles.bulletItem}>• Employer deductions fail or are insufficient</Text>
                     </View>
 
-                    <View style={styles.listCard}>
-                        <Text style={styles.bulletItem}>• You miss scheduled payments</Text>
-                        <Text style={styles.bulletItem}>• Payments are less than the assessed amount</Text>
-                        <Text style={styles.bulletItem}>• Your assessment increases retroactively (backdating)</Text>
-                        <Text style={styles.bulletItem}>• You stop paying without formal variation</Text>
-                        <Text style={styles.bulletItem}>• Employer deductions fail or are insufficient</Text>
-                    </View>
-
                     <View style={styles.exampleCard}>
                         <Text style={styles.exampleTitle}>Example:</Text>
                         <Text style={styles.exampleText}>Your assessment is $1,000/month</Text>
@@ -148,41 +138,45 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
 
                     {/* How Arrears Accumulate */}
                     <Text style={styles.h2} accessibilityRole="header">How Child Support Arrears Accumulate</Text>
-                    
-                    <Text style={styles.h3} accessibilityRole="header">Interest Charges</Text>
+
+                    <Text style={styles.h3} accessibilityRole="header">Late Payment Penalties</Text>
                     <Text style={styles.paragraph}>
-                        Services Australia charges interest on overdue child support at rates that compound quickly:
+                        Services Australia charges late payment penalties (LPP) on overdue child support. The penalty
+                        rate is the general interest charge rate set by the Australian Taxation Office, which changes
+                        quarterly and compounds over time.
                     </Text>
 
                     <View style={styles.interestCard}>
-                        <Text style={styles.interestTitle}>Current Interest Rates (2026):</Text>
-                        <Text style={styles.bulletItem}>• Base rate: 10.01% per annum</Text>
-                        <Text style={styles.bulletItem}>• Calculated daily, charged monthly</Text>
-                        <Text style={styles.bulletItem}>• Applies to all arrears over 3 months old</Text>
-                        <Text style={styles.bulletItem}>• Interest on interest (compound)</Text>
+                        <Text style={styles.interestTitle}>Late Payment Penalties:</Text>
+                        <Text style={styles.bulletItem}>• Rate: General interest charge (varies quarterly)</Text>
+                        <Text style={styles.bulletItem}>• Calculated on unpaid balance after due date</Text>
+                        <Text style={styles.bulletItem}>• Compounds over time</Text>
+                        <Text style={styles.bulletItem}>• Can be remitted in certain circumstances</Text>
                     </View>
 
                     <View style={styles.warningBox}>
                         <Text style={styles.warningTitle}>⚠️ Debt Spiral:</Text>
                         <Text style={styles.warningText}>
-                            $10,000 in arrears becomes $11,000 after 1 year, $12,100 after 2 years, $13,310 after 
-                            3 years—even if you don't miss another payment. Interest alone adds $3,310 over 3 years.
+                            Arrears grow with late payment penalties that compound over time. The longer debt remains
+                            unpaid, the more penalties accumulate—even if you don't miss another payment. Contact
+                            Services Australia immediately if you're struggling to pay.
                         </Text>
                     </View>
 
                     <Text style={styles.h3} accessibilityRole="header">Penalties and Fees</Text>
                     <View style={styles.penaltyCard}>
                         <Text style={styles.penaltyTitle}>Additional Costs:</Text>
-                        <Text style={styles.bulletItem}>• Late payment penalties (up to $1,320)</Text>
-                        <Text style={styles.bulletItem}>• Court filing fees ($365-$1,000+)</Text>
+                        <Text style={styles.bulletItem}>• Late payment penalties (calculated on unpaid balance)</Text>
+                        <Text style={styles.bulletItem}>• Court filing fees (if legal action taken)</Text>
                         <Text style={styles.bulletItem}>• Legal costs if Services Australia takes court action</Text>
                         <Text style={styles.bulletItem}>• Enforcement costs (sheriff, bailiff fees)</Text>
+                        <Text style={styles.bulletItem}>• Penalties may be remitted in certain circumstances</Text>
                     </View>
 
                     {/* Enforcement Actions */}
                     <Text style={styles.h2} accessibilityRole="header">What Enforcement Actions Can Services Australia Take?</Text>
                     <Text style={styles.paragraph}>
-                        Services Australia has extensive powers to collect child support arrears. These escalate 
+                        Services Australia has extensive powers to collect child support arrears. These escalate
                         based on debt amount and payment history:
                     </Text>
 
@@ -205,13 +199,13 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                     <View style={styles.enforcementCard}>
                         <Text style={styles.enforcementLevel}>Level 2: Travel Restrictions</Text>
                         <Text style={styles.bulletItem}>
-                            <Text style={styles.bold}>Passport suspension:</Text> Cannot renew or use passport (arrears $2,500+)
+                            <Text style={styles.bold}>Departure prohibition order (DPO):</Text> Prevents leaving Australia if you've persistently failed to pay
                         </Text>
                         <Text style={styles.bulletItem}>
-                            <Text style={styles.bold}>Departure prohibition order:</Text> Cannot leave Australia (arrears $5,000+)
+                            <Text style={styles.bold}>Passport issues:</Text> DPO prevents international travel until debt resolved
                         </Text>
                         <Text style={styles.bulletItem}>
-                            <Text style={styles.bold}>Driver license suspension:</Text> State-based enforcement (varies by state)
+                            <Text style={styles.bold}>No minimum threshold:</Text> Based on persistent non-payment, not specific dollar amount
                         </Text>
                     </View>
 
@@ -231,24 +225,24 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                     <View style={styles.enforcementCard}>
                         <Text style={styles.enforcementLevel}>Level 4: Legal Action</Text>
                         <Text style={styles.bulletItem}>
-                            <Text style={styles.bold}>Court proceedings:</Text> Services Australia sues for debt recovery
+                            <Text style={styles.bold}>Court proceedings:</Text> Services Australia can sue for debt recovery
                         </Text>
                         <Text style={styles.bulletItem}>
                             <Text style={styles.bold}>Judgment debt:</Text> Court orders payment, enforceable by sheriff
                         </Text>
                         <Text style={styles.bulletItem}>
-                            <Text style={styles.bold}>Criminal prosecution:</Text> Persistent non-payment (rare but possible)
+                            <Text style={styles.bold}>Bankruptcy action:</Text> Registrar can take action to bankrupt debtor
                         </Text>
                         <Text style={styles.bulletItem}>
-                            <Text style={styles.bold}>Jail time:</Text> Up to 12 months for contempt (extreme cases)
+                            <Text style={styles.bold}>Debt survives bankruptcy:</Text> Child support debt not discharged by bankruptcy
                         </Text>
                     </View>
 
                     <View style={styles.dangerBox}>
                         <Text style={styles.dangerTitle}>🚨 Real Consequences:</Text>
                         <Text style={styles.dangerText}>
-                            These aren't threats—Services Australia actively uses these powers. Thousands of parents 
-                            have passports suspended, wages garnished, and property charged annually. Don't assume 
+                            These aren't threats—Services Australia actively uses these powers. Thousands of parents
+                            have passports suspended, wages garnished, and property charged annually. Don't assume
                             they won't enforce.
                         </Text>
                     </View>
@@ -261,7 +255,7 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                         <View style={styles.optionContent}>
                             <Text style={styles.optionTitle}>Pay in Full</Text>
                             <Text style={styles.optionText}>
-                                Fastest way to stop interest and enforcement. If you have assets or can borrow, 
+                                Fastest way to stop interest and enforcement. If you have assets or can borrow,
                                 paying the full amount immediately stops the debt spiral.
                             </Text>
                             <Text style={styles.optionPros}>✓ Stops interest immediately</Text>
@@ -275,7 +269,7 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                         <View style={styles.optionContent}>
                             <Text style={styles.optionTitle}>Payment Plan</Text>
                             <Text style={styles.optionText}>
-                                Negotiate with Services Australia to pay arrears over time while maintaining current 
+                                Negotiate with Services Australia to pay arrears over time while maintaining current
                                 payments. Plans typically require paying current assessment PLUS arrears installments.
                             </Text>
                             <Text style={styles.optionPros}>✓ Manageable monthly amounts</Text>
@@ -290,8 +284,8 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                         <View style={styles.optionContent}>
                             <Text style={styles.optionTitle}>Apply for Departure from Assessment</Text>
                             <Text style={styles.optionText}>
-                                If your circumstances have changed significantly (job loss, illness, new dependents), 
-                                you can apply to reduce future payments. This doesn't erase arrears but stops them 
+                                If your circumstances have changed significantly (job loss, illness, new dependents),
+                                you can apply to reduce future payments. This doesn't erase arrears but stops them
                                 growing.
                             </Text>
                             <Text style={styles.optionPros}>✓ Reduces future liability</Text>
@@ -306,7 +300,7 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                         <View style={styles.optionContent}>
                             <Text style={styles.optionTitle}>Negotiate with Other Parent</Text>
                             <Text style={styles.optionText}>
-                                If the receiving parent agrees, you can negotiate a reduced lump sum settlement or 
+                                If the receiving parent agrees, you can negotiate a reduced lump sum settlement or
                                 modified payment plan. Requires formal agreement through Services Australia or court.
                             </Text>
                             <Text style={styles.optionPros}>✓ Potentially reduces total debt</Text>
@@ -321,8 +315,8 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                         <View style={styles.optionContent}>
                             <Text style={styles.optionTitle}>Get Legal Advice</Text>
                             <Text style={styles.optionText}>
-                                If arrears are substantial ($20,000+) or enforcement has started, a family lawyer can 
-                                negotiate with Services Australia, challenge incorrect assessments, or represent you 
+                                If arrears are substantial ($20,000+) or enforcement has started, a family lawyer can
+                                negotiate with Services Australia, challenge incorrect assessments, or represent you
                                 in court.
                             </Text>
                             <Text style={styles.optionPros}>✓ Expert negotiation</Text>
@@ -356,7 +350,7 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                         <View style={styles.mistakeContent}>
                             <Text style={styles.mistakeTitle}>Ignoring Services Australia Letters</Text>
                             <Text style={styles.mistakeText}>
-                                Every letter is a warning. Ignoring them doesn't make arrears disappear—it triggers 
+                                Every letter is a warning. Ignoring them doesn't make arrears disappear—it triggers
                                 escalation to enforcement. Respond to every communication.
                             </Text>
                         </View>
@@ -367,7 +361,7 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                         <View style={styles.mistakeContent}>
                             <Text style={styles.mistakeTitle}>Stopping Payments Without Formal Variation</Text>
                             <Text style={styles.mistakeText}>
-                                Lost your job? Income dropped? You must apply for variation. Stopping payments without 
+                                Lost your job? Income dropped? You must apply for variation. Stopping payments without
                                 formal approval creates arrears that you'll owe even if circumstances were genuine.
                             </Text>
                         </View>
@@ -378,7 +372,7 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                         <View style={styles.mistakeContent}>
                             <Text style={styles.mistakeTitle}>Assuming Bankruptcy Clears Child Support Debt</Text>
                             <Text style={styles.mistakeText}>
-                                Child support arrears survive bankruptcy. They're not dischargeable. Bankruptcy won't 
+                                Child support arrears survive bankruptcy. They're not dischargeable. Bankruptcy won't
                                 help—it may make things worse by damaging credit while debt remains.
                             </Text>
                         </View>
@@ -389,7 +383,7 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                         <View style={styles.mistakeContent}>
                             <Text style={styles.mistakeTitle}>Paying Other Parent Directly Without Recording</Text>
                             <Text style={styles.mistakeText}>
-                                Cash payments, direct transfers, or paying expenses directly don't count unless 
+                                Cash payments, direct transfers, or paying expenses directly don't count unless
                                 recorded through Services Australia. You'll still owe arrears even if you paid.
                             </Text>
                         </View>
@@ -400,7 +394,7 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                         <View style={styles.mistakeContent}>
                             <Text style={styles.mistakeTitle}>Waiting Until Enforcement Starts</Text>
                             <Text style={styles.mistakeText}>
-                                Once enforcement begins (passport suspension, property charge), your options narrow 
+                                Once enforcement begins (passport suspension, property charge), your options narrow
                                 and costs increase. Act early—negotiate before Services Australia escalates.
                             </Text>
                         </View>
@@ -423,7 +417,7 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
 
                     <FAQItem
                         question="What happens if I don't pay child support in Australia?"
-                        answer="Services Australia can: deduct from wages, intercept tax refunds, suspend passports and driver licenses, register charges on property, issue departure prohibition orders, and pursue criminal prosecution. Interest accrues at 10%+ annually. Arrears don't disappear—they follow you until paid."
+                        answer="Services Australia can: deduct from wages, intercept tax refunds, issue departure prohibition orders (preventing international travel), register charges on property, and take legal action including bankruptcy proceedings. Late payment penalties accrue on unpaid balances. Arrears don't disappear—they follow you until paid, even surviving bankruptcy."
                     />
 
                     <FAQItem
@@ -437,8 +431,8 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                     />
 
                     <FAQItem
-                        question="Can I go to jail for not paying child support in Australia?"
-                        answer="Yes, but it's rare. Criminal prosecution is reserved for persistent, deliberate non-payment. More commonly, you face civil penalties: wage garnishment, passport suspension, property charges. Jail time (up to 12 months) is for contempt of court orders, not the debt itself."
+                        question="Can late payment penalties be waived?"
+                        answer="Yes. The Registrar can remit (waive) late payment penalties in full or in part if: circumstances were beyond your control and you took reasonable action to mitigate them; circumstances were within your control but you mitigated them and it's fair to remit; or there are special circumstances making it fair and reasonable. Contact Services Australia to request remission."
                     />
 
                     <FAQItem
@@ -450,7 +444,7 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                     <View style={styles.calculatorSection}>
                         <Text style={styles.calculatorTitle}>Calculate Your Current Child Support</Text>
                         <Text style={styles.calculatorText}>
-                            Understanding your correct assessment is the first step to resolving arrears. Use our 
+                            Understanding your correct assessment is the first step to resolving arrears. Use our
                             free calculator to see what you should be paying based on current income and care.
                         </Text>
                         <Pressable
@@ -461,7 +455,7 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                             <Text style={styles.calculatorButtonText}>Calculate Now</Text>
                         </Pressable>
                         <Text style={styles.calculatorDisclaimer}>
-                            If your calculator result differs significantly from your assessment, you may have grounds 
+                            If your calculator result differs significantly from your assessment, you may have grounds
                             for variation.
                         </Text>
                     </View>
@@ -470,8 +464,8 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                     <View style={styles.finalCtaSection}>
                         <Text style={styles.finalCtaTitle}>Facing Child Support Arrears?</Text>
                         <Text style={styles.finalCtaText}>
-                            Don't wait for enforcement to start. Connect with experienced family lawyers who can 
-                            negotiate with Services Australia, challenge incorrect assessments, and protect your 
+                            Don't wait for enforcement to start. Connect with experienced family lawyers who can
+                            negotiate with Services Australia, challenge incorrect assessments, and protect your
                             rights. Most offer free initial consultations with no obligation to proceed.
                         </Text>
                         <Pressable
@@ -510,76 +504,76 @@ const styles = StyleSheet.create({
     h3: { fontSize: 20, fontWeight: '600', color: '#1e3a8a', marginTop: 24, marginBottom: 12, ...(Platform.OS === 'web' ? { lineHeight: 28 } : {}) },
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
 
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
 
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
     bold: { fontWeight: '600', color: '#1e3a8a' },
-    
-    urgentBox: { backgroundColor: '#fef2f2', borderRadius: 12, borderWidth: 2, borderColor: '#dc2626', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#dc2626', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
-    urgentTitle: { fontSize: 18, fontWeight: '700', color: '#991b1b', marginBottom: 8 },
-    urgentText: { fontSize: 15, lineHeight: 24, color: '#991b1b' },
-    
+
+    urgentBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#dc2626', padding: 20, marginBottom: 24 },
+    urgentTitle: { fontSize: 18, fontWeight: '700', color: '#1e40af', marginBottom: 8 },
+    urgentText: { fontSize: 15, lineHeight: 24, color: '#475569' },
+
     listCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0' },
-    
+
     exampleCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }) },
     exampleTitle: { fontSize: 15, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
     exampleText: { fontSize: 14, color: '#475569', marginBottom: 4 },
     exampleCalc: { fontSize: 13, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', color: '#64748b', marginBottom: 4, paddingLeft: 8 },
     exampleResult: { fontSize: 16, fontWeight: '700', color: '#dc2626', marginTop: 8 },
-    
-    interestCard: { backgroundColor: '#fef3c7', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#fbbf24' },
-    interestTitle: { fontSize: 16, fontWeight: '600', color: '#78350f', marginBottom: 12 },
-    
-    warningBox: { backgroundColor: '#fef3c7', borderRadius: 12, borderWidth: 1, borderColor: '#fbbf24', padding: 16, marginBottom: 16 },
-    warningTitle: { fontSize: 15, fontWeight: '600', color: '#78350f', marginBottom: 8 },
-    warningText: { fontSize: 15, lineHeight: 24, color: '#78350f' },
-    
-    penaltyCard: { backgroundColor: '#fef2f2', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#fecaca' },
-    penaltyTitle: { fontSize: 16, fontWeight: '600', color: '#991b1b', marginBottom: 12 },
-    
+
+    interestCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderLeftWidth: 4, borderLeftColor: '#f59e0b' },
+    interestTitle: { fontSize: 16, fontWeight: '600', color: '#1e40af', marginBottom: 12 },
+
+    warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#f59e0b', padding: 16, marginBottom: 16 },
+    warningTitle: { fontSize: 15, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+    warningText: { fontSize: 15, lineHeight: 24, color: '#475569' },
+
+    penaltyCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderLeftWidth: 4, borderLeftColor: '#dc2626' },
+    penaltyTitle: { fontSize: 16, fontWeight: '600', color: '#1e40af', marginBottom: 12 },
+
     enforcementCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     enforcementLevel: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 12 },
-    
-    dangerBox: { backgroundColor: '#fef2f2', borderRadius: 12, borderWidth: 2, borderColor: '#dc2626', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#dc2626', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
-    dangerTitle: { fontSize: 16, fontWeight: '700', color: '#991b1b', marginBottom: 8 },
-    dangerText: { fontSize: 15, lineHeight: 24, color: '#991b1b' },
-    
-    optionCard: { flexDirection: 'row', backgroundColor: '#f0fdf4', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#86efac' },
-    optionNumber: { fontSize: 24, fontWeight: '700', color: '#22c55e', marginRight: 12, width: 32 },
+
+    dangerBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#dc2626', padding: 20, marginBottom: 24 },
+    dangerTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 8 },
+    dangerText: { fontSize: 15, lineHeight: 24, color: '#475569' },
+
+    optionCard: { flexDirection: 'row', backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#bfdbfe' },
+    optionNumber: { fontSize: 24, fontWeight: '700', color: '#2563eb', marginRight: 12, width: 32 },
     optionContent: { flex: 1 },
-    optionTitle: { fontSize: 16, fontWeight: '600', color: '#14532d', marginBottom: 4 },
-    optionText: { fontSize: 14, lineHeight: 22, color: '#14532d', marginBottom: 8 },
-    optionPros: { fontSize: 13, color: '#14532d', marginBottom: 2 },
-    optionCons: { fontSize: 13, color: '#78350f', marginBottom: 2 },
-    
+    optionTitle: { fontSize: 16, fontWeight: '600', color: '#1e40af', marginBottom: 4 },
+    optionText: { fontSize: 14, lineHeight: 22, color: '#475569', marginBottom: 8 },
+    optionPros: { fontSize: 13, color: '#475569', marginBottom: 2 },
+    optionCons: { fontSize: 13, color: '#475569', marginBottom: 2 },
+
     trustCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginVertical: 16, borderWidth: 1, borderColor: '#bfdbfe', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }) },
     trustTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 12 },
     inlineLink: { color: '#2563EB', fontWeight: '600', textDecorationLine: 'underline' },
-    
+
     ctaButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 24, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     ctaButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
-    
-    mistakeCard: { flexDirection: 'row', backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0' },
+
+    mistakeCard: { flexDirection: 'row', backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 12, borderLeftWidth: 4, borderLeftColor: '#dc2626' },
     mistakeNumber: { fontSize: 24, fontWeight: '700', color: '#dc2626', marginRight: 12, width: 32 },
     mistakeContent: { flex: 1 },
     mistakeTitle: { fontSize: 15, fontWeight: '600', color: '#1e3a8a', marginBottom: 4 },
     mistakeText: { fontSize: 14, lineHeight: 22, color: '#475569' },
-    
+
     faqItem: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0' },
     faqQuestion: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
     faqAnswer: { fontSize: 15, lineHeight: 24, color: '#475569' },
-    
+
     calculatorSection: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 24, marginTop: 32, marginBottom: 16, alignItems: 'center', borderWidth: 1, borderColor: '#bfdbfe' },
     calculatorTitle: { fontSize: 22, fontWeight: '700', color: '#1e3a8a', marginBottom: 12, textAlign: 'center' },
     calculatorText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 20, textAlign: 'center' },
     calculatorButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 16, paddingHorizontal: 32, marginBottom: 12, ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     calculatorButtonText: { color: '#ffffff', fontSize: 18, fontWeight: '700' },
     calculatorDisclaimer: { fontSize: 13, color: '#64748b', textAlign: 'center', fontStyle: 'italic' },
-    
+
     finalCtaSection: { backgroundColor: '#1e3a8a', borderRadius: 12, padding: 28, marginTop: 32, alignItems: 'center', ...createShadow({ shadowColor: '#1e3a8a', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     finalCtaTitle: { fontSize: 24, fontWeight: '700', color: '#ffffff', marginBottom: 12, textAlign: 'center' },
     finalCtaText: { fontSize: 16, lineHeight: 26, color: '#bfdbfe', marginBottom: 24, textAlign: 'center' },

@@ -91,26 +91,10 @@ export default function AccurateChildSupportCalculatorBlogPost() {
                         </Pressable>
                     </View>
 
-
-                    <View style={styles.ctaBox}>
-                        <Text style={styles.ctaBoxTitle}>🎯 Try Our Free Calculator</Text>
-                        <Text style={styles.ctaBoxText}>
-                            Uses the official 2026 Services Australia formula. Get instant, accurate estimates in
-                            under 5 minutes. No registration required.
-                        </Text>
-                        <Pressable
-                            style={[styles.ctaBoxButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/')}
-                            accessibilityRole="button"
-                        >
-                            <Text style={styles.ctaBoxButtonText}>Calculate Now →</Text>
-                        </Pressable>
-                    </View>
-
                     {/* Featured Snippet Opportunity */}
                     <Text style={styles.h2} accessibilityRole="header">How Much Child Support Will I Pay in Australia?</Text>
                     <Text style={styles.paragraph}>
-                        Child support in Australia ranges from $1,815/year (minimum rate) to $30,000+/year for high earners. The exact amount depends on: your income vs the other parent's income, number and ages of children, and care percentage (nights per year). For example, if you earn $80,000, the other parent earns $50,000, you have 2 children and 0% care, you'll pay approximately $13,800/year ($1,150/month). Use our free calculator for your exact estimate.
+                        Child support in Australia ranges from $1,815/year (fixed annual rate for low-income parents) to $30,000+/year for high earners. The exact amount depends on: your income vs the other parent's income, number and ages of children, and care percentage (nights per year). For example, if you earn $80,000, the other parent earns $50,000, you have 2 children and 0% care, you'll pay approximately $11,595/year ($966/month). Use our free calculator for your exact estimate.
                     </Text>
 
                     {/* What Makes a Calculator Accurate */}
@@ -264,9 +248,9 @@ export default function AccurateChildSupportCalculatorBlogPost() {
                         <Text style={styles.exampleText}>2 children (ages 5, 8) | Parent A has 0% care</Text>
                         <Text style={styles.exampleCalc}>Combined child support income: $67,908</Text>
                         <Text style={styles.exampleCalc}>Parent A income percentage: 72%</Text>
-                        <Text style={styles.exampleCalc}>Costs of children: $19,234</Text>
+                        <Text style={styles.exampleCalc}>Costs of children: $16,085</Text>
                         <Text style={styles.exampleCalc}>Parent A cost percentage: 0% (no care)</Text>
-                        <Text style={styles.exampleResult}>Annual: $13,848 | Monthly: $1,154</Text>
+                        <Text style={styles.exampleResult}>Annual: $11,595 | Monthly: $966</Text>
                     </View>
 
                     {/* When Calculators Are Accurate */}
@@ -285,10 +269,12 @@ export default function AccurateChildSupportCalculatorBlogPost() {
                         <Text style={styles.bulletItem}>• Standard formula applies (no income support or multi-case)</Text>
                     </View>
 
-                    <Text style={styles.paragraph}>
-                        In these cases, calculator estimates typically match Services Australia assessments within
-                        $10-50/month (accounting for rounding differences).
-                    </Text>
+                    <View style={styles.accuracyBox}>
+                        <Text style={styles.accuracyTitle}>Our Calculator's Accuracy</Text>
+                        <Text style={styles.accuracyText}>
+                            Our calculator uses the exact same 8-step formula as Services Australia, with current 2026 rates and thresholds. For straightforward cases, our estimates match official assessments precisely. We also flag complex situations where professional advice is recommended, ensuring you know when an estimate alone isn't enough.
+                        </Text>
+                    </View>
 
                     {/* When Calculators Are Less Accurate */}
                     <Text style={styles.h2} accessibilityRole="header">When Calculator Estimates Are Less Accurate</Text>
@@ -559,11 +545,11 @@ const styles = StyleSheet.create({
     bold: { fontWeight: '600', color: '#1e3a8a' },
 
 
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
 
     ctaBox: { backgroundColor: '#2563EB', borderRadius: 12, padding: 24, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     ctaBoxTitle: { fontSize: 20, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
@@ -574,9 +560,9 @@ const styles = StyleSheet.create({
     checklistCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
     checklistTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
 
-    warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 1, borderColor: '#bfdbfe', padding: 16, marginBottom: 16 },
-    warningTitle: { fontSize: 15, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
-    warningText: { fontSize: 15, lineHeight: 24, color: '#1e3a8a' },
+    warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#f59e0b', padding: 16, marginBottom: 16 },
+    warningTitle: { fontSize: 15, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+    warningText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     stepCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     stepTitle: { fontSize: 15, fontWeight: '600', color: '#1e3a8a', marginTop: 12, marginBottom: 8 },
@@ -600,18 +586,22 @@ const styles = StyleSheet.create({
     greenCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
     greenCardTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
 
+    accuracyBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 16, borderWidth: 2, borderColor: '#2563EB', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.15, shadowRadius: 4, elevation: 3 }) },
+    accuracyTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
+    accuracyText: { fontSize: 15, lineHeight: 24, color: '#475569' },
+
     warningCard: { backgroundColor: '#f1f5f9', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#cbd5e1' },
     warningCardTitle: { fontSize: 16, fontWeight: '600', color: '#475569', marginBottom: 12 },
 
-    dangerBox: { backgroundColor: '#dbeafe', borderRadius: 12, borderWidth: 2, borderColor: '#3b82f6', padding: 20, marginBottom: 16, ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
-    dangerTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
+    dangerBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#dc2626', padding: 20, marginBottom: 16 },
+    dangerTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 8 },
     dangerText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     ctaButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 20, marginBottom: 16, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     ctaButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
 
-    mistakeCard: { flexDirection: 'row', backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0' },
-    mistakeNumber: { fontSize: 24, fontWeight: '700', color: '#2563EB', marginRight: 12, width: 32 },
+    mistakeCard: { flexDirection: 'row', backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 12, borderLeftWidth: 4, borderLeftColor: '#dc2626' },
+    mistakeNumber: { fontSize: 24, fontWeight: '700', color: '#dc2626', marginRight: 12, width: 32 },
     mistakeContent: { flex: 1 },
     mistakeTitle: { fontSize: 15, fontWeight: '600', color: '#1e3a8a', marginBottom: 4 },
     mistakeText: { fontSize: 14, lineHeight: 22, color: '#475569' },
@@ -634,7 +624,7 @@ const styles = StyleSheet.create({
     finalCtaTitle: { fontSize: 24, fontWeight: '700', color: '#ffffff', marginBottom: 12, textAlign: 'center' },
     finalCtaText: { fontSize: 16, lineHeight: 26, color: '#bfdbfe', marginBottom: 20, textAlign: 'center' },
     trustSignalsBox: { marginBottom: 24, alignItems: 'flex-start', width: '100%', maxWidth: 400 },
-    trustSignalItem: { fontSize: 14, color: '#e0e7ff', marginBottom: 8, lineHeight: 20 },
+    trustSignalItem: { fontSize: 14, color: '#bfdbfe', marginBottom: 8, lineHeight: 20 },
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 16, paddingHorizontal: 32, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 18, fontWeight: '700' },
 

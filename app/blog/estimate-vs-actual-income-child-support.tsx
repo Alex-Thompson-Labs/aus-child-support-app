@@ -251,7 +251,7 @@ export default function EstimateVsActualIncomeScreen() {
             <View style={styles.warningBox}>
               <Text style={styles.warningTitle}>⚠️ Important:</Text>
               <Text style={styles.warningText}>
-                Reconciliation can result in large lump sum adjustments. If your actual income was significantly higher than estimated, you may owe thousands of dollars in back child support.
+                Reconciliation can result in large lump sum adjustments. If your actual income was significantly higher than estimated, you may owe thousands of dollars in back child support. If you don't lodge your tax return within 12 months of the financial year ending, Services Australia can determine an income amount for reconciliation purposes.
               </Text>
             </View>
 
@@ -274,7 +274,7 @@ export default function EstimateVsActualIncomeScreen() {
             <Text style={styles.heading2}>Overpayments: When You Earned Less Than Estimated</Text>
 
             <Text style={styles.paragraph}>
-              If your actual income was lower than the estimate, you overpaid child support throughout the year:
+              If your actual income was lower than the estimate, Services Australia takes no further action. The lower estimate stands, meaning you don't receive a refund or credit for the difference. This is why it's crucial to update your estimate if your income drops significantly during the year.
             </Text>
 
             <View style={styles.exampleCard}>
@@ -298,10 +298,10 @@ export default function EstimateVsActualIncomeScreen() {
 
             <View style={styles.outcomeCard}>
               <Text style={styles.outcomeTitle}>What Happens Next:</Text>
-              <Text style={styles.outcomeItem}>• Services Australia credits the $1,200 overpayment to your account</Text>
-              <Text style={styles.outcomeItem}>• Your future child support payments are reduced until the credit is used up</Text>
-              <Text style={styles.outcomeItem}>• If child support has ended, you may receive a refund</Text>
-              <Text style={styles.outcomeItem}>• The receiving parent's payments are reduced accordingly</Text>
+              <Text style={styles.outcomeItem}>• Services Australia takes no further action - the lower estimate stands</Text>
+              <Text style={styles.outcomeItem}>• You don't receive a refund for the overpayment</Text>
+              <Text style={styles.outcomeItem}>• The assessment remains based on your estimated income, not the lower actual income</Text>
+              <Text style={styles.outcomeItem}>• This is why it's important to update your estimate if your income drops significantly</Text>
             </View>
 
             <Text style={styles.heading2}>Underpayments: When You Earned More Than Estimated</Text>
@@ -338,9 +338,61 @@ export default function EstimateVsActualIncomeScreen() {
             </View>
 
             <View style={styles.tipBox}>
-              <Text style={styles.tipTitle}>💡 Tip:</Text>
+              <Text style={styles.tipTitle}>💡 Estimate Penalties:</Text>
               <Text style={styles.tipText}>
-                If you know your income increased during the year, update your estimate immediately. This spreads the additional child support over the year instead of creating a large lump sum debt.
+                If your actual income is 110% or more of your estimated income, you'll be charged an estimate penalty of 10% of the difference between what you should have paid and what you did pay. This penalty can be remitted if you have a reasonable explanation. Update your estimate immediately if your income increases to avoid penalties.
+              </Text>
+            </View>
+
+            <Text style={styles.heading2}>Estimate Penalties: What You Need to Know</Text>
+
+            <Text style={styles.paragraph}>
+              If your actual income is significantly higher than your estimate, you may face an estimate penalty on top of the underpayment:
+            </Text>
+
+            <View style={styles.penaltyCard}>
+              <Text style={styles.penaltyTitle}>When Penalties Apply</Text>
+              <Text style={styles.penaltyText}>
+                An estimate penalty is charged when your actual income is 110% or more of your estimated income. For example, if you estimated $80,000 but actually earned $88,000 or more (110% = $88,000), a penalty applies.
+              </Text>
+            </View>
+
+            <View style={styles.penaltyCard}>
+              <Text style={styles.penaltyTitle}>Penalty Amount</Text>
+              <Text style={styles.penaltyText}>
+                The penalty is 10% of the difference between what you should have paid (based on actual income) and what you did pay (based on estimated income). This is a debt owed to the Commonwealth, not to the other parent.
+              </Text>
+            </View>
+
+            <View style={styles.penaltyCard}>
+              <Text style={styles.penaltyTitle}>Penalty Remission</Text>
+              <Text style={styles.penaltyText}>
+                Services Australia can waive (remit) the penalty if you have a reasonable explanation. Examples include: tax law changes you couldn't predict, genuine mistakes, or circumstances beyond your control. Contact Services Australia immediately if you believe the penalty should be remitted.
+              </Text>
+            </View>
+
+            <View style={styles.exampleCard}>
+              <Text style={styles.exampleTitle}>Estimate Penalty Example</Text>
+              <Text style={styles.exampleText}>
+                <Text style={styles.bold}>Estimated Income:</Text> $80,000
+              </Text>
+              <Text style={styles.exampleText}>
+                <Text style={styles.bold}>Actual Income:</Text> $95,000 (118.75% of estimate)
+              </Text>
+              <Text style={styles.exampleText}>
+                <Text style={styles.bold}>Should Have Paid:</Text> $7,200 (based on $95,000)
+              </Text>
+              <Text style={styles.exampleText}>
+                <Text style={styles.bold}>Did Pay:</Text> $5,400 (based on $80,000 estimate)
+              </Text>
+              <Text style={styles.exampleText}>
+                <Text style={styles.bold}>Underpayment:</Text> $1,800
+              </Text>
+              <Text style={styles.exampleText}>
+                <Text style={styles.bold}>Estimate Penalty:</Text> $180 (10% of $1,800)
+              </Text>
+              <Text style={styles.exampleText}>
+                <Text style={styles.bold}>Total Owed:</Text> $1,980 ($1,800 + $180 penalty)
               </Text>
             </View>
 
@@ -503,7 +555,7 @@ export default function EstimateVsActualIncomeScreen() {
             <View style={styles.avoidCard}>
               <Text style={styles.avoidTitle}>5. Lodge Your Tax Return Promptly</Text>
               <Text style={styles.avoidText}>
-                The sooner you lodge, the sooner reconciliation happens. This gives you more time to manage any adjustments.
+                The sooner you lodge, the sooner reconciliation happens. This gives you more time to manage any adjustments. If you don't lodge within 12 months, Services Australia can determine an income for reconciliation, which may not be accurate.
               </Text>
             </View>
 
@@ -526,12 +578,12 @@ export default function EstimateVsActualIncomeScreen() {
 
             <FAQItem
               question="How long does reconciliation take?"
-              answer="Reconciliation typically happens 2-4 weeks after the ATO processes your tax return. The ATO automatically shares your income data with Services Australia, who then recalculate your assessment and notify you of any adjustments."
+              answer="Reconciliation happens after the ATO processes your tax return and shares your income data with Services Australia. They then recalculate your assessment and notify you of any adjustments. If you don't lodge your tax return within 12 months of the financial year ending, Services Australia may determine an income amount for reconciliation purposes."
             />
 
             <FAQItem
               question="Can I dispute a reconciliation adjustment?"
-              answer="Yes, if you believe the reconciliation is incorrect, you can request a review. Contact Services Australia and provide evidence showing why the adjustment is wrong. You may need to check your tax return for errors or provide additional documentation."
+              answer="Yes, if you believe the reconciliation is incorrect, you can request a review. Contact Services Australia and provide evidence showing why the adjustment is wrong. You may need to check your tax return for errors or provide additional documentation. You can also request remission of estimate penalties if you have a reasonable explanation for the underestimation."
             />
 
             <View style={styles.finalCtaCard}>
@@ -623,11 +675,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
 
   heading2: {
     fontSize: 24,
@@ -763,23 +815,23 @@ const styles = StyleSheet.create({
     color: '#475569',
   },
   warningBox: {
-    backgroundColor: '#fef3c7',
+    backgroundColor: '#eff6ff',
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#fbbf24',
+    borderLeftWidth: 4,
+    borderLeftColor: '#f59e0b',
     padding: 16,
     marginBottom: 16,
   },
   warningTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#92400e',
+    color: '#1e40af',
     marginBottom: 8,
   },
   warningText: {
     fontSize: 15,
     lineHeight: 24,
-    color: '#92400e',
+    color: '#475569',
   },
   ctaButton: {
     backgroundColor: '#2563EB',
@@ -893,7 +945,7 @@ const styles = StyleSheet.create({
   updateNumber: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#10b981',
+    color: '#2563eb',
     marginRight: 16,
     width: 32,
   },
@@ -944,7 +996,7 @@ const styles = StyleSheet.create({
     color: '#475569',
     paddingLeft: 12,
     borderLeftWidth: 3,
-    borderLeftColor: '#10b981',
+    borderLeftColor: '#2563eb',
   },
   avoidCard: {
     backgroundColor: '#ffffff',
@@ -971,6 +1023,32 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 24,
     color: '#475569',
+  },
+  penaltyCard: {
+    backgroundColor: '#fef3c7',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#fbbf24',
+    ...createShadow({
+      shadowColor: '#f59e0b',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 3,
+    }),
+  },
+  penaltyTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#92400e',
+    marginBottom: 8,
+  },
+  penaltyText: {
+    fontSize: 15,
+    lineHeight: 24,
+    color: '#78350f',
   },
   faqItem: {
     backgroundColor: '#ffffff',
@@ -1015,7 +1093,7 @@ const styles = StyleSheet.create({
   finalCtaText: {
     fontSize: 15,
     lineHeight: 24,
-    color: '#e0e7ff',
+    color: '#bfdbfe',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -1041,9 +1119,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  trustSignalBox: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#86efac' },
-  trustSignalTitle: { fontSize: 16, fontWeight: '700', color: '#14532d', marginBottom: 12 },
-  trustSignalItem: { fontSize: 15, lineHeight: 24, color: '#14532d', marginBottom: 6 },
+  trustSignalBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
+  trustSignalTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 12 },
+  trustSignalItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 6 },
 
   internalLinkBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
   internalLinkTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },

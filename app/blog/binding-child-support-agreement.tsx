@@ -111,7 +111,7 @@ export default function BindingChildSupportAgreementBlogPost() {
                         <Text style={styles.bulletItem}>• Overrides the standard child support formula</Text>
                         <Text style={styles.bulletItem}>• Legally binding once signed and registered</Text>
                         <Text style={styles.bulletItem}>• Requires independent legal advice for both parents</Text>
-                        <Text style={styles.bulletItem}>• Can set amounts higher, lower, or $0</Text>
+                        <Text style={styles.bulletItem}>• Can set amounts higher or lower than formula (including $0)</Text>
                         <Text style={styles.bulletItem}>• Can include non-cash payments (school fees, mortgage)</Text>
                         <Text style={styles.bulletItem}>• Enforceable through courts if breached</Text>
                     </View>
@@ -132,7 +132,7 @@ export default function BindingChildSupportAgreementBlogPost() {
                     <View style={styles.comparisonCard}>
                         <Text style={styles.comparisonTitle}>Limited Agreement:</Text>
                         <Text style={styles.bulletItem}>• No legal advice required</Text>
-                        <Text style={styles.bulletItem}>• Must be within 20% of formula amount</Text>
+                        <Text style={styles.bulletItem}>• Must be at least the formula amount (cannot be less)</Text>
                         <Text style={styles.bulletItem}>• Easier to change or terminate</Text>
                         <Text style={styles.bulletItem}>• Less expensive (can DIY)</Text>
                     </View>
@@ -202,11 +202,14 @@ export default function BindingChildSupportAgreementBlogPost() {
                     </View>
 
                     <View style={styles.costCard}>
-                        <Text style={styles.costTitle}>💰 Expected Costs:</Text>
+                        <Text style={styles.costTitle}>💰 Investment Required:</Text>
                         <Text style={styles.bulletItem}>• Legal advice: $1,000-2,500 per parent</Text>
                         <Text style={styles.bulletItem}>• Agreement drafting: $500-1,500</Text>
                         <Text style={styles.bulletItem}>• Registration: Free (Services Australia)</Text>
                         <Text style={styles.costTotal}>Total: $2,500-6,500 for both parents</Text>
+                        <Text style={styles.costContext}>
+                            Estimated legal costs based on market rates. Actual costs vary by firm and complexity. Compare to $10,000-30,000+ in court costs if challenged later, or years of incorrect payments under the standard formula. Many firms offer fixed-fee packages.
+                        </Text>
                     </View>
 
                     <Text style={styles.h2} accessibilityRole="header">When to Use a Binding Agreement</Text>
@@ -274,13 +277,16 @@ export default function BindingChildSupportAgreementBlogPost() {
                         </Text>
                     </View>
 
-                    <Pressable
-                        style={[styles.ctaButton, isWeb && webClickableStyles]}
-                        onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=binding_agreement')}
-                        accessibilityRole="button"
-                    >
-                        <Text style={styles.ctaButtonText}>Get Legal Advice on Binding Agreements →</Text>
-                    </Pressable>
+                    <View style={styles.ctaWithNote}>
+                        <Pressable
+                            style={[styles.ctaButton, isWeb && webClickableStyles]}
+                            onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=binding_agreement')}
+                            accessibilityRole="button"
+                        >
+                            <Text style={styles.ctaButtonText}>Get Legal Advice on Binding Agreements →</Text>
+                        </Pressable>
+                        <Text style={styles.ctaNote}>Free initial consultation • Fixed-fee quotes available</Text>
+                    </View>
 
                     <ContextualWizard
                         preselectedFactors={['property_settlement']}
@@ -477,7 +483,7 @@ export default function BindingChildSupportAgreementBlogPost() {
 
                     <FAQItem
                         question="Can I set child support to $0 in a Binding Agreement?"
-                        answer="Yes, but it's risky. You can agree to $0 child support if both parents consent and get legal advice. However, if circumstances change significantly, the receiving parent can apply to set it aside. Courts scrutinize $0 agreements closely."
+                        answer="Yes, technically possible. You can agree to $0 child support if both parents consent and get independent legal advice. However, if the agreement is unfair or circumstances change significantly, the receiving parent can apply to court to set it aside. $0 agreements should have a clear justification (e.g., property settlement trade-off)."
                     />
 
                     <FAQItem
@@ -492,7 +498,7 @@ export default function BindingChildSupportAgreementBlogPost() {
 
                     <FAQItem
                         question="How much does a Binding Agreement cost?"
-                        answer="Expect $2,500-6,500 total for both parents. This includes legal advice ($1,000-2,500 per parent) and agreement drafting ($500-1,500). Registration with Services Australia is free."
+                        answer="Estimated $2,500-6,500 total for both parents based on market rates. This includes legal advice ($1,000-2,500 per parent) and agreement drafting ($500-1,500). Registration with Services Australia is free. Actual costs vary by firm and complexity. Many firms offer fixed-fee packages. Compare this to $10,000-30,000+ in court costs if an unfair agreement is challenged later."
                     />
 
                     <View style={styles.calculatorSection}>
@@ -519,7 +525,7 @@ export default function BindingChildSupportAgreementBlogPost() {
                         <View style={styles.finalCtaTrustSignals}>
                             <Text style={styles.finalCtaTrustItem}>✓ Independent legal advice (required by law)</Text>
                             <Text style={styles.finalCtaTrustItem}>✓ Experience with complex agreements</Text>
-                            <Text style={styles.finalCtaTrustItem}>✓ Free initial consultations available</Text>
+                            <Text style={styles.finalCtaTrustItem}>✓ Free initial consultations • Fixed-fee quotes</Text>
                             <Text style={styles.finalCtaTrustItem}>✓ Confidential case assessment</Text>
                         </View>
                         <Pressable
@@ -561,15 +567,15 @@ const styles = StyleSheet.create({
     bold: { fontWeight: '600', color: '#1e3a8a' },
 
 
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
 
-    warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 2, borderColor: '#bfdbfe', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
-    warningTitle: { fontSize: 18, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
-    warningText: { fontSize: 15, lineHeight: 24, color: '#1e3a8a' },
+    warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#f59e0b', padding: 16, marginBottom: 16 },
+    warningTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 8 },
+    warningText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     definitionCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
     definitionTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 12 },
@@ -586,14 +592,15 @@ const styles = StyleSheet.create({
     costCard: { backgroundColor: '#f8fafc', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0' },
     costTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 12 },
     costTotal: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginTop: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: '#e2e8f0' },
+    costContext: { fontSize: 14, lineHeight: 22, color: '#64748b', marginTop: 12, fontStyle: 'italic' },
 
     scenarioCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 }) },
     scenarioTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
     scenarioText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8 },
     scenarioExample: { fontSize: 14, lineHeight: 22, color: '#64748b', fontStyle: 'italic', paddingLeft: 12, borderLeftWidth: 3, borderLeftColor: '#3b82f6' },
 
-    riskCard: { backgroundColor: '#f1f5f9', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#cbd5e1' },
-    riskTitle: { fontSize: 16, fontWeight: '700', color: '#475569', marginBottom: 8 },
+    riskCard: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#dc2626', padding: 16, marginBottom: 16 },
+    riskTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 8 },
     riskText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     stepCard: { flexDirection: 'row', backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 }) },
@@ -608,8 +615,10 @@ const styles = StyleSheet.create({
     optionPros: { fontSize: 14, lineHeight: 22, color: '#2563EB', marginBottom: 4 },
     optionCons: { fontSize: 14, lineHeight: 22, color: '#64748b', marginBottom: 4 },
 
-    ctaButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 24, marginVertical: 16, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
+    ctaWithNote: { marginVertical: 16, alignItems: 'center' },
+    ctaButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     ctaButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
+    ctaNote: { fontSize: 13, color: '#64748b', marginTop: 8, textAlign: 'center', fontStyle: 'italic' },
 
     faqItem: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 }) },
     faqQuestion: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
@@ -623,7 +632,7 @@ const styles = StyleSheet.create({
 
     finalCtaSection: { backgroundColor: '#1e3a8a', borderRadius: 12, padding: 24, marginTop: 16, alignItems: 'center' },
     finalCtaTitle: { fontSize: 20, fontWeight: '700', color: '#ffffff', marginBottom: 8, textAlign: 'center' },
-    finalCtaText: { fontSize: 15, lineHeight: 24, color: '#e0e7ff', marginBottom: 20, textAlign: 'center' },
+    finalCtaText: { fontSize: 15, lineHeight: 24, color: '#bfdbfe', marginBottom: 20, textAlign: 'center' },
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 16, fontWeight: '600' },
 
@@ -646,5 +655,5 @@ const styles = StyleSheet.create({
 
     // Final CTA trust signals
     finalCtaTrustSignals: { marginBottom: 20, alignSelf: 'stretch' },
-    finalCtaTrustItem: { fontSize: 14, lineHeight: 22, color: '#e0e7ff', marginBottom: 6, textAlign: 'center' },
+    finalCtaTrustItem: { fontSize: 14, lineHeight: 22, color: '#bfdbfe', marginBottom: 6, textAlign: 'center' },
 });

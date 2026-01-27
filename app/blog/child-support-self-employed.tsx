@@ -32,7 +32,7 @@ const faqSchema = {
             name: 'What if my business income varies significantly year to year?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Child support is reassessed annually based on your latest tax return. If your income drops significantly mid-year, you can request an interim assessment. If income fluctuates dramatically, the other parent may apply for a Change of Assessment claiming your earning capacity is higher than reported income.',
+                text: 'Child support is reassessed annually based on your latest tax return. If your income drops significantly mid-year, you can lodge an Estimate of Income. If income fluctuates dramatically, the other parent may apply for a Change of Assessment claiming your earning capacity is higher than reported income.',
             },
         },
     ],
@@ -120,8 +120,10 @@ export default function ChildSupportSelfEmployedBlogPost() {
 
                     <Text style={styles.paragraph}>
                         But here's where it gets complicated: Services Australia can add back certain business expenses
-                        they consider personal benefits rather than legitimate business costs. Understanding these
-                        adjustments is critical—learn more about{' '}
+                        they consider personal benefits rather than legitimate business costs. This typically happens during a
+                        <Text style={styles.bold}> Change of Assessment </Text>
+                        process (often initiated by the other parent) if they believe your taxable income doesn't reflect your true financial resources.
+                        Understanding these adjustments is critical—learn more about{' '}
                         <Text
                             style={styles.inlineLink}
                             onPress={() => router.push('/blog/child-support-reduction-strategies')}
@@ -134,8 +136,8 @@ export default function ChildSupportSelfEmployedBlogPost() {
                     {/* Expenses That Get Added Back */}
                     <Text style={styles.h2} accessibilityRole="header">Business Expenses That Get Added Back</Text>
                     <Text style={styles.paragraph}>
-                        Even if the ATO allows these deductions, Services Australia may add them back to your income
-                        for child support purposes:
+                        While the standard assessment uses your ATO Taxable Income, Services Australia may 'add back' these deductions
+                        if a Change of Assessment occurs:
                     </Text>
 
                     <View style={styles.warningCard}>
@@ -215,10 +217,11 @@ export default function ChildSupportSelfEmployedBlogPost() {
                         income drops, your payments adjust accordingly. If it increases, you'll pay more.
                     </Text>
 
-                    <Text style={styles.h3} accessibilityRole="header">Interim Assessments (Income Drops)</Text>
+                    <Text style={styles.h3} accessibilityRole="header">Estimate of Income (Income Drops)</Text>
                     <Text style={styles.paragraph}>
                         If your income drops significantly mid-year (business downturn, loss of major client), you can
-                        request an interim assessment. You'll need to provide:
+                        lodge an <Text style={styles.bold}>Estimate of Income</Text>. This updates your assessment for the remainder of the financial year.
+                        You'll need to provide:
                     </Text>
 
                     <View style={styles.listCard}>
@@ -436,7 +439,7 @@ export default function ChildSupportSelfEmployedBlogPost() {
 
                     <FAQItem
                         question="What if my business income varies significantly year to year?"
-                        answer="Child support is reassessed annually based on your latest tax return. If your income drops significantly mid-year, you can request an interim assessment. If income fluctuates dramatically, the other parent may apply for a Change of Assessment claiming your earning capacity is higher than reported income."
+                        answer="Child support is reassessed annually based on your latest tax return. If your income drops significantly mid-year, you can lodge an Estimate of Income to adjust your payments. If income fluctuates dramatically or expenses are questionable, the other parent may apply for a Change of Assessment claiming your earning capacity is higher than reported income."
                     />
 
                     <FAQItem
@@ -515,21 +518,21 @@ const styles = StyleSheet.create({
     bold: { fontWeight: '600', color: '#1e3a8a' },
 
 
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
 
-    alertBox: { backgroundColor: '#fef3c7', borderRadius: 12, borderWidth: 2, borderColor: '#fbbf24', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#fbbf24', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
-    alertTitle: { fontSize: 16, fontWeight: '700', color: '#78350f', marginBottom: 8 },
-    alertText: { fontSize: 15, lineHeight: 24, color: '#78350f' },
+    alertBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#f59e0b', padding: 20, marginBottom: 24 },
+    alertTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 8 },
+    alertText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     listCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0' },
     listTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
 
-    warningCard: { backgroundColor: '#fef2f2', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#fecaca' },
-    warningCardTitle: { fontSize: 16, fontWeight: '600', color: '#991b1b', marginBottom: 12 },
+    warningCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderLeftWidth: 4, borderLeftColor: '#dc2626' },
+    warningCardTitle: { fontSize: 16, fontWeight: '600', color: '#1e40af', marginBottom: 12 },
 
     exampleCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }) },
     exampleTitle: { fontSize: 15, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
@@ -538,29 +541,29 @@ const styles = StyleSheet.create({
     exampleResult: { fontSize: 16, fontWeight: '700', color: '#dc2626', marginTop: 8, marginBottom: 4 },
     exampleImpact: { fontSize: 14, color: '#475569', fontStyle: 'italic', marginTop: 8 },
 
-    accessCard: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#86efac' },
-    accessTitle: { fontSize: 16, fontWeight: '600', color: '#14532d', marginBottom: 12 },
+    accessCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
+    accessTitle: { fontSize: 16, fontWeight: '600', color: '#1e40af', marginBottom: 12 },
 
-    dangerBox: { backgroundColor: '#fef2f2', borderRadius: 12, borderWidth: 2, borderColor: '#dc2626', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#dc2626', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
-    dangerTitle: { fontSize: 16, fontWeight: '700', color: '#991b1b', marginBottom: 8 },
-    dangerText: { fontSize: 15, lineHeight: 24, color: '#991b1b' },
+    dangerBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#dc2626', padding: 20, marginBottom: 24 },
+    dangerTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 8 },
+    dangerText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     structureCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     structureTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
     structureText: { fontSize: 14, lineHeight: 22, color: '#475569', marginBottom: 6 },
 
-    mistakeCard: { flexDirection: 'row', backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0' },
+    mistakeCard: { flexDirection: 'row', backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 12, borderLeftWidth: 4, borderLeftColor: '#dc2626' },
     mistakeNumber: { fontSize: 24, fontWeight: '700', color: '#dc2626', marginRight: 12, width: 32 },
     mistakeContent: { flex: 1 },
     mistakeTitle: { fontSize: 15, fontWeight: '600', color: '#1e3a8a', marginBottom: 4 },
     mistakeText: { fontSize: 14, lineHeight: 22, color: '#475569' },
 
-    legalAdviceCard: { backgroundColor: '#fef2f2', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#fecaca' },
-    legalAdviceTitle: { fontSize: 16, fontWeight: '600', color: '#991b1b', marginBottom: 12 },
+    legalAdviceCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderLeftWidth: 4, borderLeftColor: '#dc2626' },
+    legalAdviceTitle: { fontSize: 16, fontWeight: '600', color: '#1e40af', marginBottom: 12 },
 
-    costBenefitCard: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 16, marginBottom: 20, borderWidth: 1, borderColor: '#86efac' },
-    costBenefitTitle: { fontSize: 16, fontWeight: '600', color: '#14532d', marginBottom: 8 },
-    costBenefitText: { fontSize: 15, lineHeight: 24, color: '#14532d' },
+    costBenefitCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 20, borderWidth: 1, borderColor: '#bfdbfe' },
+    costBenefitTitle: { fontSize: 16, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+    costBenefitText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     ctaButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 20, marginBottom: 16, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     ctaButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
@@ -590,7 +593,7 @@ const styles = StyleSheet.create({
     internalLinkButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 20, alignSelf: 'flex-start', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     internalLinkButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
 
-    trustSignalBox: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#86efac' },
-    trustSignalTitle: { fontSize: 16, fontWeight: '700', color: '#14532d', marginBottom: 12 },
-    trustSignalItem: { fontSize: 15, lineHeight: 24, color: '#14532d', marginBottom: 6 },
+    trustSignalBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
+    trustSignalTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 12 },
+    trustSignalItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 6 },
 });

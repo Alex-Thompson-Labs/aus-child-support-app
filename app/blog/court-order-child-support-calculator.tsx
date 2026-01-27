@@ -103,7 +103,7 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
 
 
                     <View style={styles.toolPromoCard}>
-                        <Text style={styles.toolPromoTitle}>🎯 New: Court Order Scanner Tool</Text>
+                        <Text style={styles.toolPromoTitle}>New: Court Order Scanner Tool</Text>
                         <Text style={styles.toolPromoText}>
                             Upload your court order PDF and our AI-powered scanner will automatically extract the care
                             schedule, calculate exact night counts, and convert it to care percentages for child support.
@@ -144,7 +144,7 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
                         <Text style={styles.bulletItem}>• Based on income, care, and number of children</Text>
                         <Text style={styles.bulletItem}>• Automatically reassessed annually</Text>
                         <Text style={styles.bulletItem}>• Can be collected through employer deductions</Text>
-                        <Text style={styles.bulletItem}>• Most common method (80%+ of cases)</Text>
+                        <Text style={styles.bulletItem}>• Most common method</Text>
                     </View>
 
                     <View style={styles.comparisonCard}>
@@ -613,11 +613,11 @@ const styles = StyleSheet.create({
     bold: { fontWeight: '600', color: '#1e3a8a' },
 
 
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
 
     alertBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 2, borderColor: '#2563EB', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     alertTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
@@ -626,18 +626,18 @@ const styles = StyleSheet.create({
     comparisonCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     comparisonTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
 
-    keyPointBox: { backgroundColor: '#fef3c7', borderRadius: 12, borderWidth: 1, borderColor: '#fbbf24', padding: 16, marginBottom: 16 },
-    keyPointTitle: { fontSize: 15, fontWeight: '600', color: '#78350f', marginBottom: 8 },
-    keyPointText: { fontSize: 15, lineHeight: 24, color: '#78350f' },
+    keyPointBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#f59e0b', padding: 16, marginBottom: 16 },
+    keyPointTitle: { fontSize: 15, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+    keyPointText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     sectionCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0' },
     sectionText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8 },
 
-    useCaseCard: { flexDirection: 'row', backgroundColor: '#f0fdf4', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#86efac' },
-    useCaseNumber: { fontSize: 24, fontWeight: '700', color: '#22c55e', marginRight: 12, width: 32 },
+    useCaseCard: { flexDirection: 'row', backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#bfdbfe' },
+    useCaseNumber: { fontSize: 24, fontWeight: '700', color: '#2563eb', marginRight: 12, width: 32 },
     useCaseContent: { flex: 1 },
-    useCaseTitle: { fontSize: 16, fontWeight: '600', color: '#14532d', marginBottom: 4 },
-    useCaseText: { fontSize: 14, lineHeight: 22, color: '#14532d' },
+    useCaseTitle: { fontSize: 16, fontWeight: '600', color: '#1e40af', marginBottom: 4 },
+    useCaseText: { fontSize: 14, lineHeight: 22, color: '#475569' },
 
     calculatorButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 24, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     calculatorButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
@@ -655,18 +655,18 @@ const styles = StyleSheet.create({
     expiryCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     expiryTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 12 },
 
-    warningBox: { backgroundColor: '#fef3c7', borderRadius: 12, borderWidth: 1, borderColor: '#fbbf24', padding: 16, marginBottom: 16 },
-    warningTitle: { fontSize: 15, fontWeight: '600', color: '#78350f', marginBottom: 8 },
-    warningText: { fontSize: 15, lineHeight: 24, color: '#78350f' },
+    warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#f59e0b', padding: 16, marginBottom: 16 },
+    warningTitle: { fontSize: 15, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+    warningText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     stepCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#bfdbfe' },
     stepNumber: { fontSize: 14, fontWeight: '700', color: '#2563EB', marginBottom: 4 },
     stepTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 6 },
     stepText: { fontSize: 14, lineHeight: 22, color: '#475569' },
 
-    tipBox: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#86efac' },
-    tipTitle: { fontSize: 15, fontWeight: '600', color: '#14532d', marginBottom: 8 },
-    tipText: { fontSize: 15, lineHeight: 24, color: '#14532d' },
+    tipBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
+    tipTitle: { fontSize: 15, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+    tipText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     groundsCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0' },
     groundsTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
@@ -674,9 +674,9 @@ const styles = StyleSheet.create({
     processCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
     processTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
 
-    costCard: { backgroundColor: '#fef2f2', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#fecaca' },
-    costTitle: { fontSize: 16, fontWeight: '600', color: '#991b1b', marginBottom: 8 },
-    costText: { fontSize: 15, lineHeight: 24, color: '#991b1b' },
+    costCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderLeftWidth: 4, borderLeftColor: '#dc2626' },
+    costTitle: { fontSize: 16, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+    costText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     scenarioCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     scenarioTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
@@ -698,9 +698,9 @@ const styles = StyleSheet.create({
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 16, paddingHorizontal: 32, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 18, fontWeight: '700' },
 
-    trustSignalBox: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#86efac' },
-    trustSignalTitle: { fontSize: 16, fontWeight: '700', color: '#14532d', marginBottom: 12 },
-    trustSignalItem: { fontSize: 15, lineHeight: 24, color: '#14532d', marginBottom: 6 },
+    trustSignalBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
+    trustSignalTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 12 },
+    trustSignalItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 6 },
 
     internalLinkBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
     internalLinkTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },

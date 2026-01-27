@@ -33,7 +33,7 @@ const faqSchema = {
             name: 'Does the Hague Convention apply to child support in Australia?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Yes. Australia ratified the Hague Convention on the International Recovery of Child Support in 2014. This treaty allows Australia to enforce child support orders in over 40 countries that are also parties to the convention.',
+                text: 'Yes. Australia became a Contracting State to the 1973 Hague Convention on the Recognition and Enforcement of Decisions Relating to Maintenance Obligations on 1 February 2002. This treaty allows Australia to enforce child support orders in other Convention countries.',
             },
         },
     ],
@@ -207,7 +207,7 @@ export default function InternationalChildSupportBlogPost() {
                         <Text style={styles.countryTypeNumber}>2</Text>
                         <View style={styles.countryTypeContent}>
                             <Text style={styles.countryTypeTitle}>Excluded Jurisdictions</Text>
-                            <Text style={styles.countryTypeDesc}>6 countries - You need a court order, not a Services Australia assessment</Text>
+                            <Text style={styles.countryTypeDesc}>7 countries - You need a court order, not a Services Australia assessment</Text>
                         </View>
                     </View>
 
@@ -252,13 +252,15 @@ export default function InternationalChildSupportBlogPost() {
                     <Text style={styles.h3} accessibilityRole="header">The Hague Convention on Child Support</Text>
 
                     <Text style={styles.paragraph}>
-                        Many reciprocating jurisdictions operate under the Hague Convention on the International Recovery
-                        of Child Support and Other Forms of Family Maintenance (2007).
+                        Many reciprocating jurisdictions operate under the 1973 Hague Convention on the Recognition and 
+                        Enforcement of Decisions Relating to Maintenance Obligations.
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        Australia ratified the Hague Convention in 2014, significantly expanding enforcement options for
-                        parents whose ex-partners live overseas.
+                        Australia became a Contracting State to this Convention on 1 February 2002, significantly expanding 
+                        enforcement options for parents whose ex-partners live overseas. The Convention allows for recognition 
+                        of administrative assessments (not just court orders) and provides for relatively simple and speedy 
+                        enforcement of Australian liabilities by overseas authorities.
                     </Text>
 
                     <View style={styles.warningBox}>
@@ -276,23 +278,25 @@ export default function InternationalChildSupportBlogPost() {
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        Six countries are classified as excluded jurisdictions. For these countries, you cannot use a
-                        Services Australia child support assessment. Instead, you must obtain a court order.
+                        Seven countries are classified as excluded jurisdictions. For these countries, you cannot use a
+                        Services Australia child support assessment. Instead, you must obtain an Australian court order.
                     </Text>
 
                     <View style={styles.highlightBox}>
-                        <Text style={styles.highlightTitle}>The six excluded jurisdictions are:</Text>
-                        <Text style={styles.bulletItem}>• Austria</Text>
-                        <Text style={styles.bulletItem}>• Czech Republic</Text>
-                        <Text style={styles.bulletItem}>• Germany</Text>
-                        <Text style={styles.bulletItem}>• Norway</Text>
-                        <Text style={styles.bulletItem}>• Poland</Text>
-                        <Text style={styles.bulletItem}>• Switzerland</Text>
+                        <Text style={styles.highlightTitle}>The seven excluded jurisdictions are:</Text>
+                        <Text style={styles.bulletItem}>• Brunei Darussalam</Text>
+                        <Text style={styles.bulletItem}>• Cook Islands</Text>
+                        <Text style={styles.bulletItem}>• Israel</Text>
+                        <Text style={styles.bulletItem}>• Niue</Text>
+                        <Text style={styles.bulletItem}>• Papua New Guinea</Text>
+                        <Text style={styles.bulletItem}>• Samoa</Text>
+                        <Text style={styles.bulletItem}>• Yukon (in Canada)</Text>
                     </View>
 
                     <Text style={styles.paragraph}>
-                        These countries signed reciprocating agreements with Australia before the Hague Convention came
-                        into effect. Their agreements require court orders rather than administrative assessments.
+                        These jurisdictions have special arrangements with Australia that require court orders rather 
+                        than administrative assessments. Services Australia cannot make or continue a child support 
+                        assessment if the payer lives in one of these countries.
                     </Text>
 
                     <Text style={styles.paragraph}>
@@ -312,9 +316,9 @@ export default function InternationalChildSupportBlogPost() {
 
                     <View style={styles.warningBox}>
                         <Text style={styles.warningTitle}>Countries without enforcement agreements include:</Text>
-                        <Text style={styles.bulletItem}>• Most Middle Eastern countries (except Israel)</Text>
+                        <Text style={styles.bulletItem}>• Most Middle Eastern countries</Text>
                         <Text style={styles.bulletItem}>• Many African countries (except South Africa)</Text>
-                        <Text style={styles.bulletItem}>• Some Asian countries (China, Thailand, Indonesia, Philippines)</Text>
+                        <Text style={styles.bulletItem}>• Some Asian countries (China, Thailand, Indonesia)</Text>
                         <Text style={styles.bulletItem}>• Some South American countries</Text>
                     </View>
 
@@ -403,7 +407,7 @@ export default function InternationalChildSupportBlogPost() {
 
                     <FAQItem
                         question="Does the Hague Convention apply to child support in Australia?"
-                        answer="Yes. Australia ratified the Hague Convention on the International Recovery of Child Support in 2014. This treaty allows Australia to enforce child support orders in over 40 countries that are also parties to the convention. The Hague Convention streamlines international enforcement by standardizing processes and requiring countries to recognize each other's child support orders."
+                        answer="Yes. Australia became a Contracting State to the 1973 Hague Convention on the Recognition and Enforcement of Decisions Relating to Maintenance Obligations on 1 February 2002. This treaty allows Australia to enforce child support orders in other Convention countries. The Convention streamlines international enforcement by standardizing processes and requiring countries to recognize each other's child support orders, including administrative assessments."
                     />
 
                     {/* CTA Section */}
@@ -516,11 +520,11 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
 
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
 
     inlineLink: {
         color: '#2563EB',
@@ -555,36 +559,36 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     warningBox: {
-        backgroundColor: '#fef3c7',
+        backgroundColor: '#eff6ff',
         borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#fbbf24',
+        borderLeftWidth: 4,
+        borderLeftColor: '#f59e0b',
         padding: 16,
         marginBottom: 16,
     },
     warningTitle: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#78350f',
+        color: '#1e40af',
         marginBottom: 8,
     },
     warningText: {
         fontSize: 15,
         lineHeight: 24,
-        color: '#78350f',
+        color: '#475569',
     },
     infoBox: {
-        backgroundColor: '#f0fdf4',
+        backgroundColor: '#eff6ff',
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#86efac',
+        borderColor: '#bfdbfe',
         padding: 16,
         marginBottom: 16,
     },
     infoTitle: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#14532d',
+        color: '#1e40af',
         marginBottom: 8,
     },
     countryTypeCard: {

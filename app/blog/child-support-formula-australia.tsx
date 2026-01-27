@@ -113,8 +113,8 @@ export default function ChildSupportFormulaBlogPost() {
                     <View style={styles.quickAnswerBox}>
                         <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
                         <Text style={styles.quickAnswerText}>
-                            The Australian child support formula uses 8 steps: calculate income, determine percentages, 
-                            look up costs, apply care adjustments. Payments range from $1,815 minimum to $30,000+ annually. 
+                            The Australian child support formula uses 8 steps: calculate income, determine percentages,
+                            look up costs, apply care adjustments. Payments range from $551 minimum (Minimum Annual Rate) to $30,000+ annually.
                             Calculate your amount below.
                         </Text>
                         <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
@@ -307,9 +307,9 @@ export default function ChildSupportFormulaBlogPost() {
                         <Text style={styles.exampleTitle}>Example: Income Impact</Text>
                         <Text style={styles.exampleText}>Parent A: $80,000 | Parent B: $50,000 | 1 child, 0% care for Parent A</Text>
                         <Text style={styles.exampleCalc}>Combined income: $80k + $50k - $62k (SSA×2) = $68,000</Text>
-                        <Text style={styles.exampleCalc}>Parent A income %: 62% | Parent B: 38%</Text>
+                        <Text style={styles.exampleCalc}>Parent A income %: 72% | Parent B: 28%</Text>
                         <Text style={styles.exampleCalc}>Costs from table: ~$19,000/year</Text>
-                        <Text style={styles.exampleResult}>Parent A pays: ~$11,780/year</Text>
+                        <Text style={styles.exampleResult}>Parent A pays: ~$13,680/year</Text>
                     </View>
 
                     {/* How Care Affects Payments - CONDENSED */}
@@ -337,27 +337,27 @@ export default function ChildSupportFormulaBlogPost() {
                         </View>
                         <View style={styles.tableRow}>
                             <Text style={styles.tableCell}>14-34% care</Text>
-                            <Text style={styles.tableCell}>24% + 1% per % over 14%</Text>
+                            <Text style={styles.tableCell}>Fixed 24%</Text>
                         </View>
                         <View style={styles.tableRow}>
                             <Text style={styles.tableCell}>35-47% care</Text>
-                            <Text style={styles.tableCell}>45% + 1.5% per % over 35%</Text>
+                            <Text style={styles.tableCell}>25% + 2% per % over 35%</Text>
                         </View>
                         <View style={styles.tableRow}>
                             <Text style={styles.tableCell}>48-52% care</Text>
-                            <Text style={styles.tableCell}>65% + 2% per % over 48%</Text>
+                            <Text style={styles.tableCell}>Fixed 50%</Text>
                         </View>
                         <View style={styles.tableRow}>
                             <Text style={styles.tableCell}>53-65% care</Text>
-                            <Text style={styles.tableCell}>76% + 1.5% per % over 53%</Text>
+                            <Text style={styles.tableCell}>51% + 2% per % over 53%</Text>
                         </View>
                         <View style={styles.tableRow}>
                             <Text style={styles.tableCell}>66-86% care</Text>
-                            <Text style={styles.tableCell}>96% + 1% per % over 66%</Text>
+                            <Text style={styles.tableCell}>Fixed 76%</Text>
                         </View>
                         <View style={styles.tableRow}>
                             <Text style={styles.tableCell}>87-100% care</Text>
-                            <Text style={styles.tableCell}>117% cost</Text>
+                            <Text style={styles.tableCell}>100% cost</Text>
                         </View>
                     </View>
 
@@ -451,11 +451,11 @@ const styles = StyleSheet.create({
     h2: { fontSize: 24, fontWeight: '700', color: '#1e3a8a', marginTop: 32, marginBottom: 16, ...(Platform.OS === 'web' ? { lineHeight: 32 } : {}) },
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
 
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
 
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
     highlightBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 1, borderColor: '#bfdbfe', padding: 16, marginBottom: 16, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
@@ -468,10 +468,10 @@ const styles = StyleSheet.create({
     stepTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 6 },
     stepDesc: { fontSize: 14, lineHeight: 20, color: '#64748b', marginBottom: 8 },
     stepFormula: { fontSize: 13, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', color: '#2563EB', backgroundColor: '#f1f5f9', padding: 8, borderRadius: 6 },
-    infoBox: { backgroundColor: '#f0fdf4', borderRadius: 12, borderWidth: 1, borderColor: '#86efac', padding: 16, marginBottom: 16 },
-    infoTitle: { fontSize: 15, fontWeight: '600', color: '#14532d', marginBottom: 8 },
-    infoText: { fontSize: 15, lineHeight: 24, color: '#14532d', marginBottom: 12 },
-    infoButton: { backgroundColor: '#22c55e', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 16, alignSelf: 'flex-start' },
+    infoBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 1, borderColor: '#bfdbfe', padding: 16, marginBottom: 16 },
+    infoTitle: { fontSize: 15, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+    infoText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 12 },
+    infoButton: { backgroundColor: '#2563eb', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 16, alignSelf: 'flex-start' },
     infoButtonText: { color: '#ffffff', fontSize: 14, fontWeight: '600' },
     exampleCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     exampleTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },

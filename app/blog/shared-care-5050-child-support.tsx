@@ -84,7 +84,7 @@ export default function SharedCare5050ChildSupportBlogPost() {
                     <View style={styles.quickAnswerBox}>
                         <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
                         <Text style={styles.quickAnswerText}>
-                            Yes, you still pay child support with 50/50 care if you earn more. The higher-income parent 
+                            Yes, you still pay child support with 50/50 care if you earn more. The higher-income parent
                             pays based on income difference. Calculate your exact amount below.
                         </Text>
                         <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
@@ -148,7 +148,7 @@ export default function SharedCare5050ChildSupportBlogPost() {
 
                     <View style={styles.tableContainer}>
                         <Text style={styles.tableTitle}>50/50 Care: How Income Gap Affects Payments</Text>
-                        
+
                         <View style={styles.tableHeaderRow}>
                             <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 1.5 }]}>Income Gap</Text>
                             <Text style={[styles.tableCell, styles.tableHeaderCell, { flex: 2 }]}>Parent Incomes</Text>
@@ -160,21 +160,21 @@ export default function SharedCare5050ChildSupportBlogPost() {
                             <Text style={[styles.tableCell, { flex: 1.5 }]}>Large Gap</Text>
                             <Text style={[styles.tableCell, { flex: 2 }]}>A: $120k | B: $40k</Text>
                             <Text style={[styles.tableCell, { flex: 1.5 }]}>1 child (age 10)</Text>
-                            <Text style={[styles.tableCell, { flex: 1.5, fontWeight: '700', color: '#2563EB' }]}>$243/month</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5, fontWeight: '700', color: '#2563EB' }]}>$243/fortnight</Text>
                         </View>
 
                         <View style={[styles.tableRow, styles.tableRowAlt]}>
                             <Text style={[styles.tableCell, { flex: 1.5 }]}>Moderate Gap</Text>
                             <Text style={[styles.tableCell, { flex: 2 }]}>A: $80k | B: $60k</Text>
                             <Text style={[styles.tableCell, { flex: 1.5 }]}>2 children (ages 5, 8)</Text>
-                            <Text style={[styles.tableCell, { flex: 1.5, fontWeight: '700', color: '#2563EB' }]}>$93/month</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5, fontWeight: '700', color: '#2563EB' }]}>$93/fortnight</Text>
                         </View>
 
                         <View style={styles.tableRow}>
                             <Text style={[styles.tableCell, { flex: 1.5 }]}>Small Gap</Text>
                             <Text style={[styles.tableCell, { flex: 2 }]}>A: $70k | B: $65k</Text>
                             <Text style={[styles.tableCell, { flex: 1.5 }]}>1 child (age 14)</Text>
-                            <Text style={[styles.tableCell, { flex: 1.5, fontWeight: '700', color: '#2563EB' }]}>$18/month</Text>
+                            <Text style={[styles.tableCell, { flex: 1.5, fontWeight: '700', color: '#2563EB' }]}>$21/fortnight</Text>
                         </View>
                     </View>
 
@@ -217,7 +217,7 @@ export default function SharedCare5050ChildSupportBlogPost() {
                     <View style={styles.impactCard}>
                         <Text style={styles.impactTitle}>Care Percentage Impact:</Text>
                         <Text style={styles.bulletItem}>• 50/50 (183 nights each): 50% care, 50% cost</Text>
-                        <Text style={styles.bulletItem}>• 60/40 (219/146 nights): 60% care, 63% cost vs 40% care, 37% cost</Text>
+                        <Text style={styles.bulletItem}>• 60/40 (219/146 nights): 60% care, 65% cost vs 40% care, 35% cost</Text>
                         <Text style={styles.bulletItem}>• Difference: Can change child support by $200-500/month</Text>
                     </View>
 
@@ -364,28 +364,28 @@ const styles = StyleSheet.create({
     paragraph: { fontSize: 16, lineHeight: 26, color: '#475569', marginBottom: 16 },
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
 
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
 
-    mythBox: { backgroundColor: '#fef2f2', borderRadius: 12, borderWidth: 2, borderColor: '#dc2626', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#dc2626', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
-    mythTitle: { fontSize: 18, fontWeight: '700', color: '#991b1b', marginBottom: 8 },
-    mythText: { fontSize: 15, lineHeight: 24, color: '#991b1b' },
+    mythBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#dc2626', padding: 20, marginBottom: 24 },
+    mythTitle: { fontSize: 18, fontWeight: '700', color: '#1e40af', marginBottom: 8 },
+    mythText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     percentageCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
     percentageTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
 
-    exampleCard: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#86efac', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }) },
-    exampleTitle: { fontSize: 15, fontWeight: '600', color: '#14532d', marginBottom: 8 },
-    exampleText: { fontSize: 14, color: '#14532d', marginBottom: 4 },
-    exampleCalc: { fontSize: 13, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', color: '#14532d', marginBottom: 4, paddingLeft: 8 },
-    exampleResult: { fontSize: 16, fontWeight: '700', color: '#22c55e', marginTop: 8 },
+    exampleCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }) },
+    exampleTitle: { fontSize: 15, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+    exampleText: { fontSize: 14, color: '#475569', marginBottom: 4 },
+    exampleCalc: { fontSize: 13, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace', color: '#64748b', marginBottom: 4, paddingLeft: 8 },
+    exampleResult: { fontSize: 16, fontWeight: '700', color: '#2563eb', marginTop: 8 },
 
-    keyPointBox: { backgroundColor: '#fef3c7', borderRadius: 12, borderWidth: 1, borderColor: '#fbbf24', padding: 16, marginBottom: 16 },
-    keyPointTitle: { fontSize: 15, fontWeight: '600', color: '#78350f', marginBottom: 8 },
-    keyPointText: { fontSize: 15, lineHeight: 24, color: '#78350f' },
+    keyPointBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#f59e0b', padding: 16, marginBottom: 16 },
+    keyPointTitle: { fontSize: 15, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+    keyPointText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     scenarioCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     scenarioTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
@@ -399,9 +399,9 @@ const styles = StyleSheet.create({
     impactCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
     impactTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
 
-    tipBox: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#86efac' },
-    tipTitle: { fontSize: 15, fontWeight: '600', color: '#14532d', marginBottom: 8 },
-    tipText: { fontSize: 15, lineHeight: 24, color: '#14532d' },
+    tipBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
+    tipTitle: { fontSize: 15, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+    tipText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     answerBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
     answerTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
@@ -410,9 +410,9 @@ const styles = StyleSheet.create({
     requirementCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0' },
     requirementTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
 
-    warningBox: { backgroundColor: '#fef3c7', borderRadius: 12, borderWidth: 1, borderColor: '#fbbf24', padding: 16, marginBottom: 16 },
-    warningTitle: { fontSize: 15, fontWeight: '600', color: '#78350f', marginBottom: 8 },
-    warningText: { fontSize: 15, lineHeight: 24, color: '#78350f' },
+    warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#f59e0b', padding: 16, marginBottom: 16 },
+    warningTitle: { fontSize: 15, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+    warningText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     ctaButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 24, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     ctaButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },

@@ -221,14 +221,14 @@ export default function WhenToHireFamilyLawyerBlogPost() {
                         <Text style={styles.urgentCardTitle}>⏰ Urgent: Hire a Lawyer Within 7 Days</Text>
                         <Text style={styles.bulletItem}>
                             <Text style={styles.bold}>Change of Assessment application:</Text> 28 days to respond
-                            or you lose by default
+                            with objection or risk unfavorable outcome
                         </Text>
                         <Text style={styles.bulletItem}>
                             <Text style={styles.bold}>Court summons:</Text> Must appear on specified date or face
                             penalties
                         </Text>
                         <Text style={styles.bulletItem}>
-                            <Text style={styles.bold}>SSAT appeal notice:</Text> 28 days to prepare case and evidence
+                            <Text style={styles.bold}>ART (Administrative Review Tribunal) appeal notice:</Text> 28 days to prepare case and evidence
                         </Text>
                         <Text style={styles.bulletItem}>
                             <Text style={styles.bold}>Subpoena for financial records:</Text> Legal obligation to
@@ -243,9 +243,10 @@ export default function WhenToHireFamilyLawyerBlogPost() {
                     <View style={styles.warningBox}>
                         <Text style={styles.warningTitle}>⚠️ Critical Warning:</Text>
                         <Text style={styles.warningText}>
-                            Missing deadlines in legal proceedings can result in default judgments against you.
-                            This means you automatically lose, even if you have a strong case. Legal documents
-                            are not optional—they require immediate professional response.
+                            Missing deadlines in legal proceedings can result in unfavorable outcomes and limit
+                            your options. The 28-day objection period is critical—after this, the date of effect
+                            for any changes may be limited to when you lodge your objection, not backdated. Legal
+                            documents require immediate professional response.
                         </Text>
                     </View>
 
@@ -254,7 +255,7 @@ export default function WhenToHireFamilyLawyerBlogPost() {
                         <Text style={styles.bulletItem}>• Reviews legal documents and explains implications</Text>
                         <Text style={styles.bulletItem}>• Prepares formal response within required timeframes</Text>
                         <Text style={styles.bulletItem}>• Gathers evidence and witness statements</Text>
-                        <Text style={styles.bulletItem}>• Represents you at hearings (SSAT, Federal Circuit Court)</Text>
+                        <Text style={styles.bulletItem}>• Represents you at hearings (ART, Federal Circuit Court)</Text>
                         <Text style={styles.bulletItem}>• Negotiates settlements to avoid court costs</Text>
                     </View>
 
@@ -264,10 +265,13 @@ export default function WhenToHireFamilyLawyerBlogPost() {
                             Legal representation for Change of Assessment: $3,000-8,000
                         </Text>
                         <Text style={styles.costText}>
+                            ART representation: $5,000-12,000
+                        </Text>
+                        <Text style={styles.costText}>
                             Court proceedings: $10,000-30,000+
                         </Text>
                         <Text style={styles.costText}>
-                            Cost of losing by default: Potentially $5,000-20,000/year in overpaid or underpaid
+                            Cost of missing deadlines: Potentially $5,000-20,000/year in overpaid or underpaid
                             child support, plus legal costs awarded against you.
                         </Text>
                     </View>
@@ -275,7 +279,7 @@ export default function WhenToHireFamilyLawyerBlogPost() {
                     <View style={styles.urgentCtaBox}>
                         <Text style={styles.urgentCtaTitle}>⏰ Received Legal Documents? Act Now</Text>
                         <Text style={styles.urgentCtaText}>
-                            Don't risk a default judgment. Connect with experienced family lawyers who can respond within required timeframes.
+                            Don't risk missing critical deadlines. Connect with experienced family lawyers who can respond within required timeframes.
                         </Text>
                         <View style={styles.urgentFeatures}>
                             <Text style={styles.bulletItem}>• Most lawyers respond within 24 hours</Text>
@@ -376,7 +380,7 @@ export default function WhenToHireFamilyLawyerBlogPost() {
                         </View>
 
                         <View style={[styles.tableRow, styles.tableRowAlt]}>
-                            <Text style={[styles.tableCell, { flex: 2 }]}>SSAT representation</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>ART (tribunal) representation</Text>
                             <Text style={[styles.tableCell, { flex: 1.5 }]}>$450-600/hr</Text>
                             <Text style={[styles.tableCell, { flex: 1.5 }]}>$5,000-12,000</Text>
                         </View>
@@ -506,7 +510,7 @@ export default function WhenToHireFamilyLawyerBlogPost() {
 
                     <FAQItem
                         question="What happens if I don't hire a lawyer when I should?"
-                        answer="Without a lawyer in complex cases, you risk: missing legal deadlines (resulting in default judgments), accepting unfair assessments (costing thousands per year), failing to identify hidden income, and making procedural errors that weaken your case. The financial cost of not hiring a lawyer often exceeds the legal fees."
+                        answer="Without a lawyer in complex cases, you risk: missing legal deadlines (limiting your ability to backdate changes), accepting unfair assessments (costing thousands per year), failing to identify hidden income, and making procedural errors that weaken your case. The financial cost of not hiring a lawyer often exceeds the legal fees."
                     />
 
                     <FAQItem
@@ -579,8 +583,8 @@ const styles = StyleSheet.create({
     calculatorButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     calculatorButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
 
-    dangerCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
-    dangerCardTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
+    dangerCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderLeftWidth: 4, borderLeftColor: '#dc2626' },
+    dangerCardTitle: { fontSize: 16, fontWeight: '600', color: '#1e40af', marginBottom: 12 },
 
     exampleCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }) },
     exampleTitle: { fontSize: 15, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
@@ -594,12 +598,12 @@ const styles = StyleSheet.create({
     ctaButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 20, marginBottom: 16, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     ctaButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
 
-    urgentCard: { backgroundColor: '#dbeafe', borderRadius: 12, borderWidth: 2, borderColor: '#3b82f6', padding: 20, marginBottom: 16, ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
-    urgentCardTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 12 },
+    urgentCard: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#dc2626', padding: 20, marginBottom: 16 },
+    urgentCardTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 12 },
 
-    warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 1, borderColor: '#bfdbfe', padding: 16, marginBottom: 16 },
-    warningTitle: { fontSize: 15, fontWeight: '600', color: '#1e3a8a', marginBottom: 8 },
-    warningText: { fontSize: 15, lineHeight: 24, color: '#1e3a8a' },
+    warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#f59e0b', padding: 16, marginBottom: 16 },
+    warningTitle: { fontSize: 15, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
+    warningText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
     costCard: { backgroundColor: '#f8fafc', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0' },
     costTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
@@ -615,8 +619,8 @@ const styles = StyleSheet.create({
     checklistCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
     checklistTitle: { fontSize: 16, fontWeight: '600', color: '#1e3a8a', marginBottom: 12 },
 
-    redFlagCard: { backgroundColor: '#f1f5f9', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#cbd5e1' },
-    redFlagTitle: { fontSize: 16, fontWeight: '600', color: '#475569', marginBottom: 12 },
+    redFlagCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderLeftWidth: 4, borderLeftColor: '#dc2626' },
+    redFlagTitle: { fontSize: 16, fontWeight: '600', color: '#1e40af', marginBottom: 12 },
 
     frameworkCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 2 }) },
     frameworkTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
@@ -641,8 +645,8 @@ const styles = StyleSheet.create({
     trustButtonText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
 
     // Urgent CTA box styles (for legal documents CTA)
-    urgentCtaBox: { backgroundColor: '#dbeafe', borderRadius: 12, borderWidth: 2, borderColor: '#3b82f6', padding: 20, marginTop: 16, marginBottom: 16, ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
-    urgentCtaTitle: { fontSize: 18, fontWeight: '700', color: '#1e3a8a', marginBottom: 12, textAlign: 'center' },
+    urgentCtaBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#dc2626', padding: 20, marginTop: 16, marginBottom: 16 },
+    urgentCtaTitle: { fontSize: 18, fontWeight: '700', color: '#1e40af', marginBottom: 12, textAlign: 'center' },
     urgentCtaText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 12, textAlign: 'center' },
     urgentFeatures: { marginBottom: 16 },
     urgentCtaButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 16, paddingHorizontal: 24, marginBottom: 12, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 4, elevation: 3 }) },

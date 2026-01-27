@@ -15,7 +15,7 @@ const faqSchema = {
       name: 'Does parental leave affect child support payments in Australia?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes, parental leave typically reduces your income, which can lower your child support assessment. You can apply for a temporary assessment change based on your reduced income during parental leave. When you return to work, your assessment will be recalculated based on your normal income.',
+        text: 'Yes, parental leave typically reduces your income, which can lower your child support assessment. You can lodge an **Estimate of Income** to reflect your reduced earnings during parental leave. When you return to work, your assessment will be recalculated based on your normal income.',
       },
     },
     {
@@ -73,7 +73,7 @@ export default function ParentalLeaveChildSupportScreen() {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <PageSEO
         title="Parental Leave and Child Support Australia 2026 | Complete Guide"
-        description="On parental leave? Your child support should drop—but only if you notify Services Australia. See temporary assessment process. Update within 28 days."
+        description="On parental leave? Your child support should drop—but only if you notify Services Australia. Learn how to lodge an Estimate of Income. Notify immediately."
         canonicalPath="/blog/parental-leave-child-support"
         schema={[faqSchema, articleSchema]}
       />
@@ -105,7 +105,7 @@ export default function ParentalLeaveChildSupportScreen() {
             <View style={styles.quickAnswerBox}>
               <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
               <Text style={styles.quickAnswerText}>
-                Taking parental leave? Your child support temporarily decreases based on Parental Leave Pay income. 
+                Taking parental leave? Your child support temporarily decreases based on Parental Leave Pay income.
                 Notify Services Australia immediately to avoid overpayments. Calculate your adjusted amount below.
               </Text>
               <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={handleCalculatorPress}>
@@ -128,7 +128,7 @@ export default function ParentalLeaveChildSupportScreen() {
             <Text style={styles.heading2}>Does parental leave affect child support payments in Australia?</Text>
 
             <Text style={styles.paragraph}>
-              Yes. Parental leave typically reduces your income, which can lower your child support assessment. You can apply for a temporary assessment change based on your reduced income during parental leave. When you return to work, your assessment will be recalculated.
+              Yes. Parental leave typically reduces your income, which can lower your child support assessment. You can submit an **Estimate of Income** to match your current earnings, rather than your previous year's tax return. When you return to work, your assessment will be recalculated.
             </Text>
 
             <Text style={styles.heading2}>How Parental Leave Affects Your Income</Text>
@@ -161,14 +161,14 @@ export default function ParentalLeaveChildSupportScreen() {
             <View style={styles.keyPointBox}>
               <Text style={styles.keyPointTitle}>💡 Key Point:</Text>
               <Text style={styles.keyPointText}>
-                Services Australia won't automatically adjust your assessment when you go on parental leave. You must notify them and apply for a temporary assessment change based on your reduced income.
+                Services Australia won't automatically adjust your assessment when you go on parental leave. You must notify them and lodge an **Estimate of Income** to reduce your payments immediately.
               </Text>
             </View>
 
-            <Text style={styles.heading2}>Temporary Assessment Changes for Parental Leave</Text>
+            <Text style={styles.heading2}>Lodging an Estimate of Income for Parental Leave</Text>
 
             <Text style={styles.paragraph}>
-              When you go on parental leave, you can apply for a temporary assessment change. Here's how it works. For more information on how income changes affect child support, see our guide on{' '}
+              When your income drops due to parental leave, you should lodge an **Estimate of Income**. This tells Services Australia to calculate your payments based on your *current* reduced income rather than your last tax return. For more information on how income changes affect child support, see our guide on{' '}
               <Text
                 style={styles.inlineLink}
                 onPress={() => router.push('/blog/estimate-vs-actual-income-child-support')}
@@ -464,7 +464,7 @@ export default function ParentalLeaveChildSupportScreen() {
 
             <FAQItem
               question="Does parental leave affect child support payments in Australia?"
-              answer="Yes, parental leave typically reduces your income, which can lower your child support assessment. You can apply for a temporary assessment change based on your reduced income during parental leave. When you return to work, your assessment will be recalculated based on your normal income."
+              answer="Yes, parental leave typically reduces your income, which can lower your child support assessment. You can lodge an Estimate of Income based on your reduced earnings during parental leave. When you return to work, your assessment will be recalculated based on your normal income."
             />
 
             <FAQItem
@@ -490,11 +490,11 @@ export default function ParentalLeaveChildSupportScreen() {
             <View style={styles.finalCtaCard}>
               <Text style={styles.finalCtaTitle}>Need Help With Parental Leave and Child Support?</Text>
               <Text style={styles.finalCtaText}>
-                Navigating child support during parental leave can be complex. Connect with experienced family lawyers who can help you apply for assessment changes, handle disputes, and ensure you're paying the correct amount.
+                Navigating child support during parental leave can be complex. Connect with experienced family lawyers who can help you lodge accurate income estimates, handle disputes, and ensure you're paying the correct amount.
               </Text>
               <View style={styles.trustSignals}>
                 <Text style={styles.trustSignalItem}>✓ Free initial consultation</Text>
-                <Text style={styles.trustSignalItem}>✓ Specialists in assessment changes</Text>
+                <Text style={styles.trustSignalItem}>✓ Specialists in child support estimates</Text>
                 <Text style={styles.trustSignalItem}>✓ Confidential case review</Text>
               </View>
               <Pressable
@@ -581,11 +581,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
-    quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
-    quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
-    quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+  quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+  quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
+  quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
+  quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
+  quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
 
   heading2: {
     fontSize: 24,
@@ -685,23 +685,23 @@ const styles = StyleSheet.create({
     color: '#475569',
   },
   warningBox: {
-    backgroundColor: '#fef3c7',
+    backgroundColor: '#eff6ff',
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#fbbf24',
+    borderLeftWidth: 4,
+    borderLeftColor: '#f59e0b',
     padding: 16,
     marginBottom: 16,
   },
   warningTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#92400e',
+    color: '#1e40af',
     marginBottom: 8,
   },
   warningText: {
     fontSize: 15,
     lineHeight: 24,
-    color: '#92400e',
+    color: '#475569',
   },
   ctaButton: {
     backgroundColor: '#2563EB',
@@ -868,7 +868,7 @@ const styles = StyleSheet.create({
   returnNumber: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#10b981',
+    color: '#2563eb',
     marginRight: 16,
     width: 32,
   },
@@ -919,7 +919,7 @@ const styles = StyleSheet.create({
     color: '#475569',
     paddingLeft: 12,
     borderLeftWidth: 3,
-    borderLeftColor: '#10b981',
+    borderLeftColor: '#2563eb',
   },
   planCard: {
     backgroundColor: '#ffffff',
@@ -1017,7 +1017,7 @@ const styles = StyleSheet.create({
   finalCtaText: {
     fontSize: 15,
     lineHeight: 24,
-    color: '#e0e7ff',
+    color: '#bfdbfe',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -1072,7 +1072,7 @@ const styles = StyleSheet.create({
   },
   trustSignalItem: {
     fontSize: 14,
-    color: '#e0e7ff',
+    color: '#bfdbfe',
     marginBottom: 4,
   },
   internalLinkBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },

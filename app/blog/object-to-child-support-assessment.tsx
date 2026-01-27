@@ -17,7 +17,7 @@ const faqSchema = {
             name: 'How long do I have to object to a child support assessment?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'You have 28 days from the date you receive the assessment notice to lodge an objection with Services Australia. This deadline is strict. If you miss it, you may need to apply for an extension with a valid reason, or appeal directly to the Social Security Appeals Tribunal (SSAT).',
+                text: 'You have 28 days from the date you receive the assessment notice to lodge an objection with Services Australia. This deadline is strict. If you miss it, you may need to apply for an extension with a valid reason, or appeal directly to the Administrative Review Tribunal (ART).',
             },
         },
         {
@@ -41,7 +41,7 @@ const faqSchema = {
             name: 'What happens if my objection is rejected?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'If Services Australia rejects your objection, you have 28 days to appeal to the Social Security Appeals Tribunal (SSAT). The SSAT is an independent body that reviews child support decisions. You can present evidence and attend a hearing. If the SSAT also rejects your appeal, you can apply to the Administrative Appeals Tribunal (AAT).',
+                text: 'If Services Australia rejects your objection, you have 28 days to appeal to the Administrative Review Tribunal (ART). The ART is an independent body that reviews child support decisions. You can present evidence and attend a hearing. If the ART also rejects your appeal, you can apply for a second review within the ART.',
             },
         },
     ],
@@ -101,7 +101,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                         >
                             How to Challenge an Unfair Child Support Assessment in Australia
                         </Text>
-                        <Text style={styles.publishDate}>Published January 24, 2026</Text>
+                        <Text style={styles.publishDate}>Published January 24, 2026 • Updated January 27, 2026</Text>
                     </View>
 
                     {/* Introduction */}
@@ -287,10 +287,10 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
 
                     <View style={styles.stepCard}>
                         <Text style={styles.stepNumber}>Option 2</Text>
-                        <Text style={styles.stepTitle}>Appeal Directly to SSAT</Text>
+                        <Text style={styles.stepTitle}>Appeal Directly to ART</Text>
                         <Text style={styles.stepDesc}>
-                            You can skip the objection process and appeal directly to the Social Security Appeals
-                            Tribunal (SSAT) within 13 weeks of the assessment. The SSAT has more flexibility to
+                            You can skip the objection process and appeal directly to the Administrative Review
+                            Tribunal (ART) within 13 weeks of the assessment. The ART has more flexibility to
                             consider late applications.
                         </Text>
                     </View>
@@ -435,49 +435,51 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                         <Text style={styles.outcomeTitle}>❌ Objection Disallowed</Text>
                         <Text style={styles.outcomeDesc}>
                             Services Australia maintains the original assessment. You have 28 days to appeal to the
-                            Social Security Appeals Tribunal (SSAT) if you disagree.
+                            Administrative Review Tribunal (ART) if you disagree.
                         </Text>
                     </View>
 
-                    {/* Section 5: SSAT Appeals */}
+                    {/* Section 5: ART Appeals */}
                     <Text style={styles.h2} accessibilityRole="header">
-                        Appealing to the Social Security Appeals Tribunal (SSAT)
+                        Appealing to the Administrative Review Tribunal (ART)
                     </Text>
 
                     <Text style={styles.paragraph}>
-                        If Services Australia rejects your objection, you can appeal to the SSAT. The SSAT is an
-                        independent tribunal that reviews child support decisions.
+                        If Services Australia rejects your objection, you can appeal to the ART. The ART is an
+                        independent tribunal that reviews child support decisions. The ART replaced the former AAT
+                        and SSAT in October 2024.
                     </Text>
 
-                    <Text style={styles.h3} accessibilityRole="header">How SSAT Appeals Work</Text>
+                    <Text style={styles.h3} accessibilityRole="header">How ART Appeals Work</Text>
 
-                    <Text style={styles.bulletItem}>• You have 28 days from the objection decision to lodge an SSAT appeal</Text>
-                    <Text style={styles.bulletItem}>• The SSAT reviews all evidence and may request additional documents</Text>
+                    <Text style={styles.bulletItem}>• You have 28 days from the objection decision to lodge an ART appeal</Text>
+                    <Text style={styles.bulletItem}>• The ART reviews all evidence and may request additional documents</Text>
                     <Text style={styles.bulletItem}>• You can attend a hearing (in person, by phone, or video) to present your case</Text>
                     <Text style={styles.bulletItem}>• The other parent may also attend and present their view</Text>
-                    <Text style={styles.bulletItem}>• The SSAT makes an independent decision based on the evidence</Text>
-                    <Text style={styles.bulletItem}>• SSAT decisions typically take 8-12 weeks</Text>
+                    <Text style={styles.bulletItem}>• The ART makes an independent decision based on the evidence</Text>
+                    <Text style={styles.bulletItem}>• ART decisions typically take 8-12 weeks</Text>
 
                     <View style={styles.infoBox}>
-                        <Text style={styles.infoTitle}>💡 SSAT Appeals Are Free</Text>
+                        <Text style={styles.infoTitle}>💡 ART Appeals Are Free</Text>
                         <Text style={styles.infoText}>
-                            There's no fee to lodge an SSAT appeal. You don't need a lawyer, but many people find
+                            There's no fee to lodge an ART appeal. You don't need a lawyer, but many people find
                             legal representation helpful, especially for complex cases.
                         </Text>
                     </View>
 
-                    <Text style={styles.h3} accessibilityRole="header">If SSAT Also Rejects Your Appeal</Text>
+                    <Text style={styles.h3} accessibilityRole="header">If ART Also Rejects Your Appeal</Text>
 
                     <Text style={styles.paragraph}>
-                        If the SSAT upholds Services Australia's decision, you have one final option: appeal to the
-                        Administrative Appeals Tribunal (AAT). AAT appeals are more formal and legal representation
-                        is strongly recommended.
+                        If the ART upholds Services Australia's decision, you may be able to apply for a second review
+                        within the ART for certain decisions (such as care percentage decisions). For other decisions,
+                        you can appeal to the Federal Court on a question of law. Court appeals are highly formal and
+                        legal representation is strongly recommended.
                     </Text>
 
                     <View style={styles.infoBox}>
                         <Text style={styles.infoTitle}>💡 When Legal Help Makes the Difference</Text>
                         <Text style={styles.infoText}>
-                            SSAT and AAT appeals have significantly higher success rates with legal representation.
+                            ART appeals have significantly higher success rates with legal representation.
                             Lawyers know how to present evidence effectively, cross-examine witnesses, and argue legal points.
                         </Text>
                         <Pressable
@@ -504,7 +506,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                     <Text style={styles.bulletItem}>• The assessment involves complex income calculations (self-employment, trusts, overseas income)</Text>
                     <Text style={styles.bulletItem}>• You're objecting to multiple issues at once</Text>
                     <Text style={styles.bulletItem}>• The other parent has legal representation</Text>
-                    <Text style={styles.bulletItem}>• Your objection was rejected and you're appealing to SSAT</Text>
+                    <Text style={styles.bulletItem}>• Your objection was rejected and you're appealing to the ART</Text>
                     <Text style={styles.bulletItem}>• The financial stakes are high (large assessment amounts)</Text>
                     <Text style={styles.bulletItem}>• You're not confident presenting your case clearly</Text>
 
@@ -513,7 +515,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                         <Text style={styles.bulletItem}>• Review your assessment and identify all errors</Text>
                         <Text style={styles.bulletItem}>• Draft a comprehensive objection with proper legal language</Text>
                         <Text style={styles.bulletItem}>• Gather and organize evidence effectively</Text>
-                        <Text style={styles.bulletItem}>• Represent you at SSAT hearings</Text>
+                        <Text style={styles.bulletItem}>• Represent you at ART hearings</Text>
                         <Text style={styles.bulletItem}>• Negotiate with the other parent's lawyer</Text>
                         <Text style={styles.bulletItem}>• Advise whether a Change of Assessment application is more appropriate</Text>
                     </View>
@@ -603,7 +605,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
 
                     <FAQItem
                         question="How long do I have to object to a child support assessment?"
-                        answer="You have 28 days from the date you receive the assessment notice to lodge an objection with Services Australia. This deadline is strict. If you miss it, you may need to apply for an extension with a valid reason, or appeal directly to the Social Security Appeals Tribunal (SSAT)."
+                        answer="You have 28 days from the date you receive the assessment notice to lodge an objection with Services Australia. This deadline is strict. If you miss it, you may need to apply for an extension with a valid reason, or appeal directly to the Administrative Review Tribunal (ART)."
                     />
 
                     <FAQItem
@@ -618,12 +620,12 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
 
                     <FAQItem
                         question="What happens if my objection is rejected?"
-                        answer="If Services Australia rejects your objection, you have 28 days to appeal to the Social Security Appeals Tribunal (SSAT). The SSAT is an independent body that reviews child support decisions. You can present evidence and attend a hearing. If the SSAT also rejects your appeal, you can apply to the Administrative Appeals Tribunal (AAT)."
+                        answer="If Services Australia rejects your objection, you have 28 days to appeal to the Administrative Review Tribunal (ART). The ART is an independent body that reviews child support decisions. You can present evidence and attend a hearing. If the ART also rejects your appeal, you can apply for a second review within the ART for certain decisions, or appeal to the Federal Court on a question of law."
                     />
 
                     <FAQItem
                         question="Do I need a lawyer to object to a child support assessment?"
-                        answer="No, you don't need a lawyer to lodge an objection. Many people successfully object without legal representation. However, a lawyer can help with complex cases, SSAT appeals, or situations where the other parent has legal representation. Legal advice is particularly valuable if your objection involves complicated income calculations or multiple issues."
+                        answer="No, you don't need a lawyer to lodge an objection. Many people successfully object without legal representation. However, a lawyer can help with complex cases, ART appeals, or situations where the other parent has legal representation. Legal advice is particularly valuable if your objection involves complicated income calculations or multiple issues."
                     />
 
                     {/* Conclusion */}
@@ -642,7 +644,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                         <Text style={styles.bulletItem}>• You need specific grounds (an error), not just disagreement with the amount</Text>
                         <Text style={styles.bulletItem}>• Gather evidence before you lodge your objection</Text>
                         <Text style={styles.bulletItem}>• Keep paying while your objection is reviewed</Text>
-                        <Text style={styles.bulletItem}>• If rejected, you can appeal to SSAT within 28 days</Text>
+                        <Text style={styles.bulletItem}>• If rejected, you can appeal to the ART within 28 days</Text>
                         <Text style={styles.bulletItem}>• Legal help can improve your chances, especially for complex cases</Text>
                     </View>
 
@@ -755,11 +757,11 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
 
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
 
     bulletItem: {
         fontSize: 15,
@@ -769,23 +771,23 @@ const styles = StyleSheet.create({
         paddingLeft: 8,
     },
     warningBox: {
-        backgroundColor: '#fef3c7',
+        backgroundColor: '#eff6ff',
         borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#fbbf24',
+        borderLeftWidth: 4,
+        borderLeftColor: '#f59e0b',
         padding: 16,
         marginBottom: 16,
     },
     warningTitle: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#78350f',
+        color: '#1e40af',
         marginBottom: 8,
     },
     warningText: {
         fontSize: 15,
         lineHeight: 24,
-        color: '#78350f',
+        color: '#475569',
     },
     highlightBox: {
         backgroundColor: '#eff6ff',
@@ -815,27 +817,27 @@ const styles = StyleSheet.create({
         fontStyle: 'italic',
     },
     infoBox: {
-        backgroundColor: '#f0fdf4',
+        backgroundColor: '#eff6ff',
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#86efac',
+        borderColor: '#bfdbfe',
         padding: 16,
         marginBottom: 16,
     },
     infoTitle: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#14532d',
+        color: '#1e40af',
         marginBottom: 8,
     },
     infoText: {
         fontSize: 15,
         lineHeight: 24,
-        color: '#14532d',
+        color: '#475569',
         marginBottom: 12,
     },
     infoButton: {
-        backgroundColor: '#22c55e',
+        backgroundColor: '#2563eb',
         borderRadius: 8,
         paddingVertical: 10,
         paddingHorizontal: 16,
@@ -936,7 +938,7 @@ const styles = StyleSheet.create({
         padding: 16,
         marginBottom: 12,
         borderLeftWidth: 4,
-        borderLeftColor: '#22c55e',
+        borderLeftColor: '#2563eb',
         ...createShadow({
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 1 },
@@ -948,7 +950,7 @@ const styles = StyleSheet.create({
     timelineStep: {
         fontSize: 12,
         fontWeight: '700',
-        color: '#22c55e',
+        color: '#2563eb',
         textTransform: 'uppercase',
         letterSpacing: 0.5,
         marginBottom: 4,
@@ -984,23 +986,23 @@ const styles = StyleSheet.create({
         color: '#64748b',
     },
     mistakeCard: {
-        backgroundColor: '#fef2f2',
+        backgroundColor: '#eff6ff',
         borderRadius: 12,
         padding: 16,
         marginBottom: 12,
-        borderWidth: 1,
-        borderColor: '#fecaca',
+        borderLeftWidth: 4,
+        borderLeftColor: '#dc2626',
     },
     mistakeTitle: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#991b1b',
+        color: '#1e40af',
         marginBottom: 6,
     },
     mistakeDesc: {
         fontSize: 14,
         lineHeight: 20,
-        color: '#991b1b',
+        color: '#475569',
     },
     faqItem: {
         backgroundColor: '#ffffff',

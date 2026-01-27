@@ -34,6 +34,14 @@ const faqSchema = {
         text: 'Private school fees can be included in a Binding Child Support Agreement, which both parents must agree to. The agreement should specify how fees are split, who pays for extras like uniforms and excursions, and what happens if circumstances change. The agreement must meet legal requirements and be properly executed to be enforceable.',
       },
     },
+    {
+      '@type': 'Question',
+      name: 'Can private school fees be backdated?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Change of Assessment decisions can be backdated up to 18 months from the date of application, subject to the Registrar\'s discretion. Backdating beyond 18 months requires court leave under section 112, which can allow changes up to 7 years prior. The Registrar considers factors like payment capacity and whether delays were reasonable when deciding the date of effect.',
+      },
+    },
   ],
 };
 
@@ -461,7 +469,7 @@ export default function PrivateSchoolFeesScreen() {
 
             <FAQItem
               question="Can private school fees be backdated?"
-              answer="Generally no. If you apply for a Change of Assessment to include private school fees, it typically applies from the date of application forward, not retroactively. However, if you can show the other parent agreed to share fees earlier, you may be able to recover past payments through court."
+              answer="Change of Assessment decisions can be backdated up to 18 months from the date of application, subject to the Registrar's discretion. Backdating beyond 18 months requires court leave under section 112, which can allow changes up to 7 years prior. The Registrar considers factors like payment capacity and whether delays were reasonable when deciding the date of effect."
             />
 
             <View style={styles.finalCtaCard}>
@@ -558,11 +566,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
 
   heading2: {
     fontSize: 24,
@@ -646,23 +654,23 @@ const styles = StyleSheet.create({
     borderLeftColor: '#3b82f6',
   },
   warningBox: {
-    backgroundColor: '#fef3c7',
+    backgroundColor: '#eff6ff',
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#fbbf24',
+    borderLeftWidth: 4,
+    borderLeftColor: '#f59e0b',
     padding: 16,
     marginBottom: 16,
   },
   warningTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#92400e',
+    color: '#1e40af',
     marginBottom: 8,
   },
   warningText: {
     fontSize: 15,
     lineHeight: 24,
-    color: '#92400e',
+    color: '#475569',
   },
   factorCard: {
     backgroundColor: '#ffffff',
@@ -747,7 +755,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     paddingLeft: 12,
     borderLeftWidth: 3,
-    borderLeftColor: '#10b981',
+    borderLeftColor: '#2563eb',
   },
   costList: {
     backgroundColor: '#f0f9ff',
@@ -815,7 +823,7 @@ const styles = StyleSheet.create({
     color: '#475569',
     paddingLeft: 12,
     borderLeftWidth: 3,
-    borderLeftColor: '#10b981',
+    borderLeftColor: '#2563eb',
   },
   bold: {
     fontWeight: '700',
@@ -901,7 +909,7 @@ const styles = StyleSheet.create({
   finalCtaText: {
     fontSize: 15,
     lineHeight: 24,
-    color: '#e0e7ff',
+    color: '#bfdbfe',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -956,7 +964,7 @@ const styles = StyleSheet.create({
   },
   trustSignalItem: {
     fontSize: 14,
-    color: '#e0e7ff',
+    color: '#bfdbfe',
     marginBottom: 4,
   },
 });

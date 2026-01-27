@@ -488,18 +488,20 @@ export default function CarePercentageTableBlogPost() {
                         child support assessment.
                     </Text>
 
-                    <Text style={styles.h3} accessibilityRole="header">The 14-Night Rule</Text>
+                    <Text style={styles.h3} accessibilityRole="header">When to Apply for a Care Change</Text>
 
                     <View style={styles.ruleCard}>
-                        <Text style={styles.ruleTitle}>Services Australia will update your assessment if:</Text>
-                        <Text style={styles.bulletItem}>• Actual care differs from assessed care by more than 14 nights per year, OR</Text>
-                        <Text style={styles.bulletItem}>• The difference is more than 5% of care</Text>
+                        <Text style={styles.ruleTitle}>You should apply for a care change assessment when:</Text>
+                        <Text style={styles.bulletItem}>• The actual care pattern has changed from what's in your current assessment</Text>
+                        <Text style={styles.bulletItem}>• The change affects your cost percentage (crosses a threshold like 14%, 35%, or 48%)</Text>
                         <Text style={styles.bulletItem}>• The change is expected to last for at least 26 weeks</Text>
                     </View>
 
                     <Text style={styles.paragraph}>
                         Either parent can apply for a care change assessment. You'll need evidence of the actual 
-                        care arrangement—calendars, school records, or written agreements.
+                        care arrangement—calendars, school records, or written agreements. If you notify Services 
+                        Australia within 28 days of the change, the new assessment will apply from the date the 
+                        care actually changed.
                     </Text>
 
                     <Text style={styles.h3} accessibilityRole="header">How to Apply for a Care Change</Text>
@@ -563,8 +565,9 @@ export default function CarePercentageTableBlogPost() {
                     <View style={styles.disputeCard}>
                         <Text style={styles.disputeTitle}>❌ "The other parent isn't following the agreement"</Text>
                         <Text style={styles.disputeDesc}>
-                            Keep detailed records of actual care. If the difference exceeds 14 nights per year, 
-                            apply for a care change assessment with evidence.
+                            Keep detailed records of actual care. If the actual care pattern differs significantly 
+                            from the assessment, apply for a care change with evidence. Act quickly—notify within 
+                            28 days for the change to apply from the date it occurred.
                         </Text>
                     </View>
 
@@ -641,7 +644,7 @@ export default function CarePercentageTableBlogPost() {
 
                     <FAQItem
                         question="What happens if actual care differs from the assessment?"
-                        answer="If actual care differs from the assessed care by more than 14 nights per year (or 5% of care), either parent can apply to Services Australia to update the assessment. Keep accurate records of actual care provided, as you may need to prove the difference."
+                        answer="Either parent can apply to Services Australia to update the assessment when actual care differs from what's assessed. The change must be expected to last at least 26 weeks. If you notify within 28 days of the change, the new assessment applies from the date care actually changed. Keep accurate records as you'll need to prove the difference."
                     />
 
                     <FAQItem
@@ -786,11 +789,11 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
 
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
 
     bulletItem: {
         fontSize: 15,
@@ -826,27 +829,27 @@ const styles = StyleSheet.create({
         color: '#1e40af',
     },
     infoBox: {
-        backgroundColor: '#f0fdf4',
+        backgroundColor: '#eff6ff',
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#86efac',
+        borderColor: '#bfdbfe',
         padding: 16,
         marginBottom: 16,
     },
     infoTitle: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#14532d',
+        color: '#1e40af',
         marginBottom: 8,
     },
     infoText: {
         fontSize: 15,
         lineHeight: 24,
-        color: '#14532d',
+        color: '#475569',
         marginBottom: 12,
     },
     infoButton: {
-        backgroundColor: '#22c55e',
+        backgroundColor: '#2563eb',
         borderRadius: 8,
         paddingVertical: 10,
         paddingHorizontal: 16,
@@ -858,23 +861,23 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     warningBox: {
-        backgroundColor: '#fef3c7',
+        backgroundColor: '#eff6ff',
         borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#fbbf24',
+        borderLeftWidth: 4,
+        borderLeftColor: '#f59e0b',
         padding: 16,
         marginBottom: 16,
     },
     warningTitle: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#78350f',
+        color: '#1e40af',
         marginBottom: 8,
     },
     warningText: {
         fontSize: 15,
         lineHeight: 24,
-        color: '#78350f',
+        color: '#475569',
     },
     trustCard: {
         backgroundColor: '#eff6ff',
@@ -1141,7 +1144,7 @@ const styles = StyleSheet.create({
         padding: 16,
         marginBottom: 16,
         borderLeftWidth: 4,
-        borderLeftColor: '#22c55e',
+        borderLeftColor: '#2563eb',
         ...createShadow({
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 1 },
@@ -1153,7 +1156,7 @@ const styles = StyleSheet.create({
     stepNumber: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#22c55e',
+        color: '#2563eb',
         marginBottom: 4,
     },
     stepTitle: {
@@ -1168,23 +1171,23 @@ const styles = StyleSheet.create({
         color: '#475569',
     },
     disputeCard: {
-        backgroundColor: '#fef2f2',
+        backgroundColor: '#eff6ff',
         borderRadius: 12,
         padding: 16,
         marginBottom: 12,
-        borderWidth: 1,
-        borderColor: '#fecaca',
+        borderLeftWidth: 4,
+        borderLeftColor: '#dc2626',
     },
     disputeTitle: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#991b1b',
+        color: '#1e40af',
         marginBottom: 6,
     },
     disputeDesc: {
         fontSize: 14,
         lineHeight: 20,
-        color: '#991b1b',
+        color: '#475569',
     },
     faqItem: {
         backgroundColor: '#ffffff',

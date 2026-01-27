@@ -25,9 +25,10 @@ Child Support Calculator - React Native/Expo app following Australian Government
 - **High Urgency**: `#ef4444` (red-500) - Critical alerts, court dates
 - **Medium Urgency**: `#f59e0b` (amber-500) - Important notifications, Change of Assessment
 - **Low Urgency**: `#3b82f6` (blue-500) - General information
-- **Success**: `#10b981` (emerald-500) - Confirmation states, completed actions
-- **Purple Accent**: `#8b5cf6` (violet-500) - Child-related categories
+- **Success**: `#2563eb` (blue-600) - Confirmation states, completed actions
 - **Error**: `#f87171` (red-400) - Form validation errors
+
+**Note:** Purple, indigo, and green are NOT part of the brand palette. All non-warning elements use blue/slate colors only.
 
 ## Typography Scale
 
@@ -61,8 +62,8 @@ Interactive expandable section for users to identify complexity factors:
 - **Visual Hierarchy**:
   - Urgent matters: Red (`#ef4444`)
   - Income issues: Amber (`#f59e0b`) with pulsing border animation
-  - Child-related: Violet (`#8b5cf6`)
-  - Other factors: Blue (`#3b82f6`)
+  - Child-related: Blue (`#3b82f6`)
+  - Other factors: Blue (`#2563eb`)
 - **Smart Button State**: Color changes based on highest priority selected reason
 - **Forensic Accountant Note**: Contextual value-add when income complexity selected
 - **Smooth Animations**: Spring-based expand/collapse, pulsing border for income section
@@ -142,36 +143,37 @@ All callout boxes follow consistent padding and spacing for mobile readability:
 - Background: `#eff6ff` (blue-50)
 - Border: 1px solid `#bfdbfe` (blue-200)
 - Header: 17px, weight 700, color `#1e40af` (blue-800)
+- Text: color `#475569` (slate-600)
 - Use for: General information, DIY-friendly situations, tips
 
 **Real Example Boxes (Gray with Blue Accent):**
 - Background: `#f1f5f9` (slate-100) - visually distinct from info boxes
 - Left border: 4px solid `#2563eb` (blue-600)
 - Header: 17px, weight 700, color `#1e40af`
+- Text: color `#475569` (slate-600)
 - Calculation text: 16px, weight 500 (no monospace font)
 - Dollar amounts: Emphasized with larger size or bold weight
 - Use for: Case studies, concrete scenarios with financial outcomes
 
-**Urgent Boxes (Red):**
-- Background: `#fee2e2` (red-50)
-- Border: 3px solid `#dc2626` (red-600) - thicker for emphasis
-- Header: 18px, weight 700, color `#991b1b` (red-800)
-- Use for: Time-sensitive legal deadlines, court dates, critical actions
-
-**Warning Boxes (Yellow/Amber):**
-- Background: `#fef3c7` (amber-50)
-- Border: 3px solid `#f59e0b` (amber-500)
-- Header: 17px, weight 700, color `#92400e` (amber-900)
-- Text: color `#78350f` (amber-900)
+**Warning Boxes (Amber - Border Only):**
+- Background: `#eff6ff` (blue-50) - maintains brand consistency
+- Left border: 4px solid `#f59e0b` (amber-500) - semantic warning signal
+- Border radius: 12px
+- Padding: 16px
+- Header: 17px, weight 700, color `#1e40af` (blue-800)
+- Text: color `#475569` (slate-600)
 - Use for: Important cautions, potential consequences, cost warnings
+- **Design rationale**: Border-only approach maintains professional tone while preserving semantic meaning
 
-**Cost Reality Check Boxes (Amber with Left Border):**
-- Background: `#fef3c7` (amber-50)
-- Left border: 4px solid `#f59e0b` (amber-500)
-- Border: 1px solid `#fde68a` (amber-200)
-- Header: 17px, weight 700, color `#92400e`
-- Dollar amounts: 16px for emphasis
-- Use for: Financial stakes, cost comparisons
+**Danger/Critical Boxes (Red - Border Only):**
+- Background: `#eff6ff` (blue-50) - maintains brand consistency
+- Left border: 4px solid `#dc2626` (red-600) - semantic danger signal
+- Border radius: 12px
+- Padding: 16px
+- Header: 17px, weight 700, color `#1e40af` (blue-800)
+- Text: color `#475569` (slate-600)
+- Use for: Time-sensitive legal deadlines, court dates, critical actions, common mistakes
+- **Design rationale**: Border-only approach maintains professional tone while preserving semantic meaning
 
 ### CTA Buttons
 
@@ -184,9 +186,15 @@ All callout boxes follow consistent padding and spacing for mobile readability:
 - Minimum height: 48px (thumb-friendly on mobile)
 
 **Visual Hierarchy:**
-- Callout box background: `#dbeafe` (light blue)
-- CTA button: `#2563eb` (vibrant blue) - creates clear distinction
+- Info callout box background: `#eff6ff` (blue-50)
+- CTA button: `#2563eb` (blue-600) - creates clear distinction
 - Hover/press: Darken by 10%
+
+**Color Usage Rules:**
+- Blue/slate: All informational content, examples, tips, trust signals
+- Red: Critical warnings, urgent deadlines, errors
+- Amber: Important cautions, financial warnings
+- NO purple, indigo, or green (off-brand)
 
 ### Header Hierarchy Inside Callouts
 

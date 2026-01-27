@@ -15,7 +15,7 @@ const faqSchema = {
             name: 'Does child support automatically stop at 18 in Australia?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'No. Child support continues until the child turns 18 AND finishes secondary school (Year 12), whichever is later. If your child is still in Year 12 at 18, payments continue until they complete school or turn 19.',
+                text: 'No. Child support continues until the child turns 18 AND finishes secondary school (Year 12), whichever is later. If your child is still in Year 12 at 18, payments continue until they complete Year 12 in the same calendar year.',
             },
         },
         {
@@ -91,9 +91,8 @@ export default function ChildSupportAfter18BlogPost() {
                     <View style={styles.quickAnswerBox}>
                         <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
                         <Text style={styles.quickAnswerText}>
-                            Child support ends when your child turns 18, unless they're still in secondary school 
-                            (then it continues until they finish Year 12 or turn 19). Calculate how this affects 
-                            your payments below.
+                            No, child support doesn't automatically stop at 18. If your child is still in Year 12, 
+                            payments continue until they finish school (in the same calendar year). Get your exact amount below.
                         </Text>
                         <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
                             <Text style={styles.quickAnswerButtonText}>Calculate Your Amount →</Text>
@@ -101,16 +100,19 @@ export default function ChildSupportAfter18BlogPost() {
                     </View>
 
                     <View style={styles.keyPointBox}>
-                        <Text style={styles.keyPointTitle}>📅 Key Rule:</Text>
+                        <Text style={styles.keyPointTitle}>📅 The Exact Rule:</Text>
                         <Text style={styles.keyPointText}>
-                            Child support ends when your child turns 18 AND finishes Year 12, whichever is LATER. 
-                            Still in school at 18? Payments continue until they finish or turn 19.
+                            Support ends when your child turns 18 AND completes Year 12—whichever happens LAST. 
+                            Example: Child turns 18 in February but graduates in November? Support continues until November.
                         </Text>
                     </View>
 
                     <Text style={styles.h2} accessibilityRole="header">Does child support automatically stop at 18 in Australia?</Text>
                     <Text style={styles.paragraph}>
-                        No. Child support continues until your child turns 18 AND finishes Year 12, whichever is later. If your child is still in school at 18, payments continue until they complete school or turn 19.
+                        No. The law requires both conditions: your child must turn 18 AND finish Year 12. Whichever 
+                        happens later determines when support ends. If your child is still enrolled in secondary school 
+                        when they turn 18, payments continue until they complete Year 12—but only within the same 
+                        calendar year they turned 18.
                     </Text>
 
                     <Text style={styles.h2} accessibilityRole="header">When Does Child Support End?</Text>
@@ -135,7 +137,7 @@ export default function ChildSupportAfter18BlogPost() {
 
                         <View style={[styles.tableRow, styles.tableRowAlt]}>
                             <Text style={[styles.tableCell, { flex: 2 }]}>Still in Year 12 at 18</Text>
-                            <Text style={[styles.tableCell, { flex: 2 }]}>When finishes Year 12 OR turns 19</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>When finishes Year 12 (same calendar year)</Text>
                             <Text style={[styles.tableCell, { flex: 2 }]}>Turns 18 Feb 2026, graduates Nov 2026 → Ends Nov 2026</Text>
                         </View>
 
@@ -147,7 +149,7 @@ export default function ChildSupportAfter18BlogPost() {
 
                         <View style={[styles.tableRow, styles.tableRowAlt]}>
                             <Text style={[styles.tableCell, { flex: 2 }]}>Repeats Year 12</Text>
-                            <Text style={[styles.tableCell, { flex: 2 }]}>When finishes OR turns 19 (max)</Text>
+                            <Text style={[styles.tableCell, { flex: 2 }]}>When finishes (if turns 18 during repeated year)</Text>
                             <Text style={[styles.tableCell, { flex: 2 }]}>Repeats, turns 18 Jan 2026, finishes Nov 2026 → Ends Nov 2026</Text>
                         </View>
                     </View>
@@ -155,8 +157,8 @@ export default function ChildSupportAfter18BlogPost() {
                     <Text style={styles.h2} accessibilityRole="header">What About University or TAFE?</Text>
                     <Text style={styles.paragraph}>
                         Standard child support does NOT cover tertiary education. Once your child finishes Year 12 
-                        (or turns 18 if they've already finished), child support ends—even if they're starting university. 
-                        If you want to continue support, you'll need a{' '}
+                        (or turns 18 if they've already finished), the legal obligation ends—even if they're enrolled 
+                        in university or TAFE. Parents who want to continue financial support must create a voluntary{' '}
                         <Text
                             style={styles.inlineLink}
                             onPress={() => router.push('/blog/binding-child-support-agreement')}
@@ -168,19 +170,19 @@ export default function ChildSupportAfter18BlogPost() {
                     <View style={styles.internalLinkBox}>
                         <Text style={styles.internalLinkTitle}>📖 Related Reading:</Text>
                         <Text style={styles.internalLinkText}>
-                            Learn more about{' '}
+                            Considering voluntary support for university?{' '}
                             <Text
                                 style={styles.inlineLink}
                                 onPress={() => router.push('/blog/binding-child-support-agreement')}
                             >
-                                binding child support agreements
+                                Learn how binding agreements work
                             </Text>
-                            {' '}for university costs. If your child has a disability, see our guide on{' '}
+                            . If your child has a disability,{' '}
                             <Text
                                 style={styles.inlineLink}
                                 onPress={() => router.push('/blog/adult-disabled-child-maintenance')}
                             >
-                                adult disabled child maintenance
+                                adult child maintenance may apply indefinitely
                             </Text>.
                         </Text>
                     </View>
@@ -368,7 +370,7 @@ export default function ChildSupportAfter18BlogPost() {
 
                     <FAQItem
                         question="Does child support automatically stop at 18 in Australia?"
-                        answer="No. Child support continues until the child turns 18 AND finishes secondary school (Year 12), whichever is later. If your child is still in Year 12 at 18, payments continue until they complete school or turn 19."
+                        answer="No. Child support continues until the child turns 18 AND finishes secondary school (Year 12), whichever is later. If your child is still in Year 12 at 18, payments continue until they complete Year 12 in the same calendar year."
                     />
 
                     <FAQItem
@@ -451,11 +453,11 @@ const styles = StyleSheet.create({
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
     bold: { fontWeight: '600', color: '#1e3a8a' },
     
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
     
     keyPointBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 2, borderColor: '#3b82f6', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#3b82f6', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 }) },
     keyPointTitle: { fontSize: 18, fontWeight: '700', color: '#1e40af', marginBottom: 8 },
@@ -469,15 +471,15 @@ const styles = StyleSheet.create({
     infoCard: { backgroundColor: '#f0f9ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bae6fd' },
     infoTitle: { fontSize: 16, fontWeight: '700', color: '#0c4a6e', marginBottom: 12 },
     
-    agreementCard: { backgroundColor: '#fefce8', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#fde047' },
-    agreementTitle: { fontSize: 16, fontWeight: '700', color: '#713f12', marginBottom: 12 },
+    agreementCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
+    agreementTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 12 },
     
-    warningBox: { backgroundColor: '#fef3c7', borderRadius: 12, borderWidth: 1, borderColor: '#fbbf24', padding: 16, marginBottom: 16 },
-    warningTitle: { fontSize: 16, fontWeight: '700', color: '#92400e', marginBottom: 8 },
-    warningText: { fontSize: 15, lineHeight: 24, color: '#92400e' },
+    warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#f59e0b', padding: 16, marginBottom: 16 },
+    warningTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 8 },
+    warningText: { fontSize: 15, lineHeight: 24, color: '#475569' },
     
-    disabilityCard: { backgroundColor: '#f5f3ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#c4b5fd' },
-    disabilityTitle: { fontSize: 16, fontWeight: '700', color: '#5b21b6', marginBottom: 12 },
+    disabilityCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
+    disabilityTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 12 },
     
     stepCard: { flexDirection: 'row', backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 }) },
     stepNumber: { fontSize: 24, fontWeight: '700', color: '#2563EB', marginRight: 16, width: 32 },
@@ -485,11 +487,11 @@ const styles = StyleSheet.create({
     stepTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
     stepText: { fontSize: 15, lineHeight: 24, color: '#475569' },
     
-    mistakeCard: { flexDirection: 'row', backgroundColor: '#fef2f2', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#fecaca' },
+    mistakeCard: { flexDirection: 'row', backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderLeftWidth: 4, borderLeftColor: '#dc2626' },
     mistakeNumber: { fontSize: 20, fontWeight: '700', color: '#dc2626', marginRight: 12, width: 24 },
     mistakeContent: { flex: 1 },
-    mistakeTitle: { fontSize: 16, fontWeight: '700', color: '#991b1b', marginBottom: 6 },
-    mistakeText: { fontSize: 15, lineHeight: 24, color: '#991b1b' },
+    mistakeTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 6 },
+    mistakeText: { fontSize: 15, lineHeight: 24, color: '#475569' },
     
     ctaButton: { backgroundColor: '#2563EB', borderRadius: 8, paddingVertical: 14, paddingHorizontal: 24, marginVertical: 16, alignItems: 'center', ...createShadow({ shadowColor: '#2563EB', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 }) },
     ctaButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
@@ -511,7 +513,7 @@ const styles = StyleSheet.create({
     
     finalCtaSection: { backgroundColor: '#1e3a8a', borderRadius: 12, padding: 24, marginTop: 16, alignItems: 'center' },
     finalCtaTitle: { fontSize: 20, fontWeight: '700', color: '#ffffff', marginBottom: 8, textAlign: 'center' },
-    finalCtaText: { fontSize: 15, lineHeight: 24, color: '#e0e7ff', marginBottom: 20, textAlign: 'center' },
+    finalCtaText: { fontSize: 15, lineHeight: 24, color: '#bfdbfe', marginBottom: 20, textAlign: 'center' },
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 16, fontWeight: '600' },
     internalLinkBox: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },

@@ -24,7 +24,7 @@ const faqSchema = {
             name: 'How long do I have to claim a child support overpayment?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'You should claim overpayments as soon as you discover them. Services Australia typically reviews overpayments for the current assessment period and up to 18 months prior. Waiting longer may limit your recovery options.',
+                text: 'You should claim overpayments as soon as you discover them. While there is no specific statutory time limit in the Child Support legislation, delays may affect your recovery options. Contact Services Australia promptly to discuss your situation.',
             },
         },
         {
@@ -55,7 +55,7 @@ export default function ChildSupportOverpaymentRefundBlogPost() {
         <>
             <PageSEO
                 title="Child Support Overpayment Refund Australia 2026: Get Your Money Back"
-                description="Overpaid? Services Australia recovers from the other parent—even if they spent it. See refund process + evidence requirements. Claim within 18 months."
+                description="Overpaid? Services Australia recovers from the other parent—even if they spent it. See refund process + evidence requirements. Claim as soon as possible."
                 canonicalPath="/blog/child-support-overpayment-refund"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -83,7 +83,7 @@ export default function ChildSupportOverpaymentRefundBlogPost() {
                     <View style={styles.quickAnswerBox}>
                         <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
                         <Text style={styles.quickAnswerText}>
-                            If you overpaid child support, Services Australia can recover it from future payments or directly from the receiving parent. You must apply within 12 months. Calculate your correct amount below.
+                            If you overpaid child support, Services Australia can recover it from future payments or directly from the receiving parent. Claim as soon as you discover the overpayment. Calculate your correct amount below.
                         </Text>
                         <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
                             <Text style={styles.quickAnswerButtonText}>Calculate Your Amount →</Text>
@@ -91,13 +91,7 @@ export default function ChildSupportOverpaymentRefundBlogPost() {
                     </View>
 
 
-                    <Pressable
-                        style={[styles.ctaButton, isWeb && webClickableStyles]}
-                        onPress={() => router.push('/')}
-                        accessibilityRole="button"
-                    >
-                        <Text style={styles.ctaButtonText}>Calculate Your Correct Child Support →</Text>
-                    </Pressable>
+
 
                     <View style={styles.keyPointBox}>
                         <Text style={styles.keyPointTitle}>💡 Key Point:</Text>
@@ -333,8 +327,8 @@ export default function ChildSupportOverpaymentRefundBlogPost() {
                         <View style={styles.preventionContent}>
                             <Text style={styles.preventionTitle}>Update Care Changes Immediately</Text>
                             <Text style={styles.preventionText}>
-                                If care arrangements change, notify Services Australia within 28 days. Don't wait—every
-                                month you delay is a month you might overpay.
+                                If care arrangements change, notify Services Australia within 28 days to ensure the change
+                                is backdated appropriately. Don't wait—every month you delay is a month you might overpay.
                             </Text>
                         </View>
                     </View>
@@ -393,7 +387,7 @@ export default function ChildSupportOverpaymentRefundBlogPost() {
 
                     <FAQItem
                         question="How long do I have to claim a child support overpayment?"
-                        answer="You should claim overpayments as soon as you discover them. Services Australia typically reviews overpayments for the current assessment period and up to 18 months prior. Waiting longer may limit your recovery options."
+                        answer="You should claim overpayments as soon as you discover them. While there is no specific statutory time limit in the Child Support legislation, delays may affect your recovery options. Contact Services Australia promptly to discuss your situation."
                     />
 
                     <FAQItem
@@ -470,11 +464,11 @@ const styles = StyleSheet.create({
     bulletItem: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8, paddingLeft: 8 },
 
 
-    quickAnswerBox: { backgroundColor: '#22c55e', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#22c55e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
+    quickAnswerBox: { backgroundColor: '#2563eb', borderRadius: 12, padding: 20, marginBottom: 24, alignItems: 'center', ...createShadow({ shadowColor: '#2563eb', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }) },
     quickAnswerTitle: { fontSize: 18, fontWeight: '700', color: '#ffffff', marginBottom: 8 },
     quickAnswerText: { fontSize: 15, lineHeight: 24, color: '#ffffff', marginBottom: 16, textAlign: 'center' },
     quickAnswerButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24 },
-    quickAnswerButtonText: { color: '#22c55e', fontSize: 16, fontWeight: '700' },
+    quickAnswerButtonText: { color: '#2563eb', fontSize: 16, fontWeight: '700' },
 
     keyPointBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 2, borderColor: '#3b82f6', padding: 20, marginBottom: 24, ...createShadow({ shadowColor: '#3b82f6', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 }) },
     keyPointTitle: { fontSize: 18, fontWeight: '700', color: '#1e40af', marginBottom: 8 },
@@ -497,21 +491,21 @@ const styles = StyleSheet.create({
     optionCard: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 }) },
     optionTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
     optionText: { fontSize: 15, lineHeight: 24, color: '#475569', marginBottom: 8 },
-    optionExample: { fontSize: 14, lineHeight: 22, color: '#64748b', fontStyle: 'italic', paddingLeft: 12, borderLeftWidth: 3, borderLeftColor: '#10b981' },
+    optionExample: { fontSize: 14, lineHeight: 22, color: '#64748b', fontStyle: 'italic', paddingLeft: 12, borderLeftWidth: 3, borderLeftColor: '#2563eb' },
 
-    warningBox: { backgroundColor: '#fef3c7', borderRadius: 12, borderWidth: 1, borderColor: '#fbbf24', padding: 16, marginBottom: 16 },
-    warningTitle: { fontSize: 16, fontWeight: '700', color: '#92400e', marginBottom: 8 },
-    warningText: { fontSize: 15, lineHeight: 24, color: '#92400e' },
+    warningBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#f59e0b', padding: 16, marginBottom: 16 },
+    warningTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 8 },
+    warningText: { fontSize: 15, lineHeight: 24, color: '#475569' },
 
-    voluntaryCard: { backgroundColor: '#f5f3ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#c4b5fd' },
-    voluntaryTitle: { fontSize: 16, fontWeight: '700', color: '#5b21b6', marginBottom: 12 },
+    voluntaryCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#bfdbfe' },
+    voluntaryTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 12 },
 
     adviceBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderWidth: 1, borderColor: '#3b82f6', padding: 16, marginBottom: 16 },
     adviceTitle: { fontSize: 16, fontWeight: '700', color: '#1e40af', marginBottom: 8 },
     adviceText: { fontSize: 15, lineHeight: 24, color: '#1e40af' },
 
     preventionCard: { flexDirection: 'row', backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 }) },
-    preventionNumber: { fontSize: 24, fontWeight: '700', color: '#10b981', marginRight: 16, width: 32 },
+    preventionNumber: { fontSize: 24, fontWeight: '700', color: '#2563eb', marginRight: 16, width: 32 },
     preventionContent: { flex: 1 },
     preventionTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 8 },
     preventionText: { fontSize: 15, lineHeight: 24, color: '#475569' },
@@ -531,7 +525,7 @@ const styles = StyleSheet.create({
 
     finalCtaSection: { backgroundColor: '#1e3a8a', borderRadius: 12, padding: 24, marginTop: 16, alignItems: 'center' },
     finalCtaTitle: { fontSize: 20, fontWeight: '700', color: '#ffffff', marginBottom: 8, textAlign: 'center' },
-    finalCtaText: { fontSize: 15, lineHeight: 24, color: '#e0e7ff', marginBottom: 20, textAlign: 'center' },
+    finalCtaText: { fontSize: 15, lineHeight: 24, color: '#bfdbfe', marginBottom: 20, textAlign: 'center' },
     primaryButton: { backgroundColor: '#ffffff', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 24, ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 }) },
     primaryButtonText: { color: '#1e3a8a', fontSize: 16, fontWeight: '600' },
     inlineLink: { color: '#2563EB', fontWeight: '600', textDecorationLine: 'underline' },
