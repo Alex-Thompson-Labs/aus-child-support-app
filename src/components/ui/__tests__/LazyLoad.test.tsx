@@ -8,6 +8,16 @@ const TestComponent = ({ message }: { message: string }) => (
   <Text testID="test-component">{message}</Text>
 );
 
+// Suppress console.error during tests to avoid noise from expected errors
+const originalError = console.error;
+beforeAll(() => {
+  console.error = jest.fn();
+});
+
+afterAll(() => {
+  console.error = originalError;
+});
+
 describe('LazyLoad', () => {
   it('should render loading fallback initially', () => {
     const loader = () =>
