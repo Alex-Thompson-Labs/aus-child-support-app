@@ -119,6 +119,7 @@ export function useInquiryState(props: UseInquiryStateProps) {
         circumstances.push({
           id: 'court_date_dynamic',
           label: `I have an upcoming court hearing regarding child support. (${formatted})`,
+          icon: '⚖️',
           description:
             'Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance.',
           category: 'urgent' as const,
@@ -130,6 +131,7 @@ export function useInquiryState(props: UseInquiryStateProps) {
         circumstances.push({
           id: 'court_date_dynamic',
           label: 'I have an upcoming court hearing regarding child support.',
+          icon: '⚖️',
           description:
             'Upcoming court dates are critical events. Professional legal preparation is strongly recommended to protect your interests before your appearance.',
           category: 'urgent' as const,

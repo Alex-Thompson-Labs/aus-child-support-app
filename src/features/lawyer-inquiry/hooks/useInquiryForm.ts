@@ -241,6 +241,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     isUpdatingEnrichment: submission.isUpdatingEnrichment,
     enrichmentLiability: submission.enrichmentLiability,
     enrichmentPayerRole: submission.enrichmentPayerRole,
+    enrichmentCountry: submission.enrichmentCountry,
 
     // Setters from useInquiryState
     setName: state.setName,
@@ -260,6 +261,7 @@ export function useInquiryForm(props: UseInquiryFormProps) {
     // Setters from useLeadSubmission
     setEnrichmentLiability: submission.setEnrichmentLiability,
     setEnrichmentPayerRole: submission.setEnrichmentPayerRole,
+    setEnrichmentCountry: submission.setEnrichmentCountry,
 
     // Refs from useInquiryState
     emailRef: state.emailRef,

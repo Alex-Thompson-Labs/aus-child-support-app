@@ -14,8 +14,8 @@
 
 /* eslint-disable import/no-unresolved */
 
-import { createClient } from '@supabase/supabase-js';
-import * as jose from 'jose';
+import * as jose from 'jsr:@panva/jose@5';
+import { createClient } from 'jsr:@supabase/supabase-js@2';
 /* eslint-enable import/no-unresolved */
 
 declare const Deno: {

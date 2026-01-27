@@ -88,6 +88,8 @@ export interface LeadSubmission {
 
     // Privacy compliance
     consent_given: boolean;
+    consent_timestamp?: string;
+    consent_ip_address?: string;
 
     // Lead management (set by admin)
     assigned_lawyer_id?: string | null;

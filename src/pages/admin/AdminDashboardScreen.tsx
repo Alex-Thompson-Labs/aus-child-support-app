@@ -19,17 +19,17 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../../../constants/theme.ts';
-import { LeadsTable } from '../../components/admin/LeadsTable.tsx';
-import { SummaryStatCard } from '../../components/admin/SummaryStatCard.tsx';
-import { formatCurrency } from '../../utils/formatters.ts';
+import { Colors } from '../../../constants/theme';
+import { LeadsTable } from '../../components/admin/LeadsTable';
+import { SummaryStatCard } from '../../components/admin/SummaryStatCard';
+import { formatCurrency } from '../../utils/formatters';
 import {
     isWeb,
     webClickableStyles,
     webInputStyles
-} from '../../utils/responsive.ts';
-import { getSupabaseClient } from '../../utils/supabase/client.ts';
-import { fetchPaginatedLeads, type LeadSubmission } from '../../utils/supabase/leads.ts';
+} from '../../utils/responsive';
+import { getSupabaseClient } from '../../utils/supabase/client';
+import { fetchPaginatedLeads, type LeadSubmission } from '../../utils/supabase/leads';
 
 // Use brand colors from theme
 const PRIMARY_COLOR = Colors.light.tint;

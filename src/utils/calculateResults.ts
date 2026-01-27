@@ -46,7 +46,6 @@ export {
 export type { LiabilityInput, LiabilityResult } from './liability-calculator';
 export {
     calculateNPCPayment,
-    calculateTwoNPCPaymentSplit,
     determinePayerRole,
     resolvePayment
 } from './payment-resolver';
@@ -63,7 +62,7 @@ export type {
  * Determines if Formula 5 should be used based on jurisdiction status.
  * Formula 5 applies when parent is in non-reciprocating jurisdiction.
  */
-function shouldUseFormula5(status: JurisdictionStatus): boolean {
+function shouldUseFormula5(status: 'reciprocating' | 'non-reciprocating' | 'excluded'): boolean {
   return status === 'non-reciprocating';
 }
 
@@ -100,7 +99,11 @@ export const calculateChildSupport = (
     const formula6Input: Formula6Input = {
       survivingParentATI: formState.incomeA,
       survivingParentCarePercentage: avgParentACare, // Use actual care percentage from form
-      children: formState.children.map(c => ({ age: c.age })),
+      children: formState.children.map(c => ({ 
+        age: c.age,
+        careA: convertCareToPercentage(c.careAmountA, c.carePeriod),
+        careB: convertCareToPercentage(c.careAmountB, c.carePeriod),
+      })),
       hasMultipleCases: formState.multiCaseA.otherChildren.length > 0,
       otherCaseChildren: formState.multiCaseA.otherChildren,
       numberOfNonParentCarers: formState.nonParentCarer.hasSecondNPC ? 2 : 1,
@@ -115,7 +118,7 @@ export const calculateChildSupport = (
       // Calculate cost bracket info for Step 7 display
       const { cost: totalCost, bracketInfo: costBracketInfo } = getChildCost(
         selectedYear,
-        formula6Input.children,
+        formula6Input.children.map(c => ({ age: c.age, careA: 0, careB: 0 })),
         formula6Result.survivingParentCSI
       );
       
@@ -230,7 +233,11 @@ export const calculateChildSupport = (
       const formula5Input: Formula5Input = {
         availableParentATI: formState.incomeA,
         availableParentCarePercentage: avgParentACare,
-        children: formState.children.map(c => ({ age: c.age })),
+        children: formState.children.map(c => ({ 
+          age: c.age,
+          careA: convertCareToPercentage(c.careAmountA, c.carePeriod),
+          careB: convertCareToPercentage(c.careAmountB, c.carePeriod),
+        })),
         hasMultipleCases: formState.multiCaseA.otherChildren.length > 0,
         otherCaseChildren: formState.multiCaseA.otherChildren,
         numberOfNonParentCarers: formState.nonParentCarer.hasSecondNPC ? 2 : 1,
@@ -247,7 +254,7 @@ export const calculateChildSupport = (
         // Calculate cost bracket info for Step 7 display
         const { cost: totalCost, bracketInfo: costBracketInfo } = getChildCost(
           selectedYear,
-          formula5Input.children,
+          formula5Input.children.map(c => ({ age: c.age, careA: 0, careB: 0 })),
           formula5Result.availableParentCSI
         );
         
@@ -669,15 +676,12 @@ export const calculateChildSupport = (
       const roundedCareNPC2 = roundCarePercentage(rawCareNPC2);
       const costPercNPC2 = mapCareToCostPercent(roundedCareNPC2);
 
-      // Use the two NPC split function
-      const npcSplit = calculateTwoNPCPaymentSplit(
-        paymentToNPC,
-        firstChild.costPercNPC,
-        costPercNPC2
-      );
-
-      paymentToNPC1 = npcSplit.paymentToNPC1;
-      paymentToNPC2 = npcSplit.paymentToNPC2;
+      // Calculate split based on cost percentages
+      const totalCostPerc = firstChild.costPercNPC + costPercNPC2;
+      if (totalCostPerc > 0) {
+        paymentToNPC1 = (paymentToNPC * firstChild.costPercNPC) / totalCostPerc;
+        paymentToNPC2 = (paymentToNPC * costPercNPC2) / totalCostPerc;
+      }
     }
   }
 
