@@ -111,6 +111,12 @@ export default function NewPartnerIncomeChildSupportBlogPost() {
                         </Text>
                     </View>
 
+                    {/* Featured Snippet Optimization */}
+                    <Text style={styles.h2} accessibilityRole="header">Does My New Partner's Income Affect Child Support in Australia?</Text>
+                    <Text style={styles.paragraph}>
+                        No, your new partner's income does NOT affect child support in Australia. The formula only considers the biological or adoptive parents' incomes. However, if your new partner pays most household expenses, allowing you to hide income or reduce work hours, the other parent can apply for a Change of Assessment (Reason 8) arguing your actual capacity to pay is higher.
+                    </Text>
+
                     <Text style={styles.h2} accessibilityRole="header">Does my new partner's income affect child support in Australia?</Text>
                     <Text style={styles.paragraph}>
                         No. Your new partner's income is NOT included in the standard child support formula. Only YOUR income and the other parent's income count. However, there are important exceptions you need to know about.

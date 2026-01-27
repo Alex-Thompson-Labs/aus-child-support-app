@@ -101,6 +101,63 @@ export default function HowToCalculateChildSupportBlogPost() {
                         Want to understand how it works first? Keep reading for the step-by-step process.
                     </Text>
 
+                    {/* Featured Snippet Optimization: "How much will I pay" */}
+                    <Text style={styles.h2} accessibilityRole="header">How Much Child Support Will I Pay in Australia?</Text>
+                    <Text style={styles.paragraph}>
+                        Child support in Australia typically ranges from $2,000 to $20,000 per year ($167-$1,667/month), depending on your income, care arrangement, and number of children. Low-income parents pay a minimum of $534/year, while high-income parents ($200k+) can pay $30,000+ annually. The exact amount depends on the 8-step formula that considers both parents' incomes and care percentages.
+                    </Text>
+
+                    <View style={styles.rangeTable}>
+                        <Text style={styles.tableTitle}>Typical Child Support Ranges (2026)</Text>
+                        <View style={styles.tableHeaderRow}>
+                            <Text style={styles.tableHeaderCell}>Income Level</Text>
+                            <Text style={styles.tableHeaderCell}>Annual Payment</Text>
+                            <Text style={styles.tableHeaderCell}>Monthly Payment</Text>
+                        </View>
+                        <View style={styles.tableRow}>
+                            <Text style={styles.tableCell}>Low income (income support)</Text>
+                            <Text style={styles.tableCell}>$534-$1,815</Text>
+                            <Text style={styles.tableCell}>$45-$151</Text>
+                        </View>
+                        <View style={styles.tableRow}>
+                            <Text style={styles.tableCell}>Average income ($50k-$80k)</Text>
+                            <Text style={styles.tableCell}>$5,000-$12,000</Text>
+                            <Text style={styles.tableCell}>$417-$1,000</Text>
+                        </View>
+                        <View style={styles.tableRow}>
+                            <Text style={styles.tableCell}>High income ($100k-$150k)</Text>
+                            <Text style={styles.tableCell}>$15,000-$25,000</Text>
+                            <Text style={styles.tableCell}>$1,250-$2,083</Text>
+                        </View>
+                        <View style={styles.tableRow}>
+                            <Text style={styles.tableCell}>Very high income ($200k+)</Text>
+                            <Text style={styles.tableCell}>$30,000+</Text>
+                            <Text style={styles.tableCell}>$2,500+</Text>
+                        </View>
+                    </View>
+
+                    {/* Featured Snippet Optimization: "Minimum payment" */}
+                    <Text style={styles.h2} accessibilityRole="header">What Is the Minimum Child Support Payment in Australia?</Text>
+                    <Text style={styles.paragraph}>
+                        The minimum child support payment in Australia is $534 per year (2026 rate) if you receive income support and have at least regular care (2+ nights per fortnight). For low-income payers without income support, the fixed annual rate is $1,815 per child per year, capped at three children. These minimum rates ensure children receive basic financial support regardless of the paying parent's income level.
+                    </Text>
+
+                    <View style={styles.minimumRateCard}>
+                        <Text style={styles.cardTitle}>Minimum Child Support Rates (2026)</Text>
+                        <Text style={styles.bulletItem}>
+                            • <Text style={styles.bold}>Income support recipient:</Text> $534/year ($45/month) with regular care
+                        </Text>
+                        <Text style={styles.bulletItem}>
+                            • <Text style={styles.bold}>Low income (no income support):</Text> $1,815/year ($151/month) per child
+                        </Text>
+                        <Text style={styles.bulletItem}>
+                            • <Text style={styles.bold}>Maximum children:</Text> Capped at 3 children for fixed rate
+                        </Text>
+                        <Text style={styles.bulletItem}>
+                            • <Text style={styles.bold}>Care requirement:</Text> Must have less than shared care (under 128 nights/year)
+                        </Text>
+                    </View>
+
                     {/* Featured Snippet Opportunity */}
                     <Text style={styles.h2} accessibilityRole="header">How Is Child Support Calculated in Australia?</Text>
                     <Text style={styles.paragraph}>
@@ -388,4 +445,15 @@ const styles = StyleSheet.create({
     disclaimerBox: { backgroundColor: '#eff6ff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: '#2563eb', padding: 16, marginBottom: 16 },
     disclaimerTitle: { fontSize: 15, fontWeight: '600', color: '#1e40af', marginBottom: 8 },
     disclaimerText: { fontSize: 15, lineHeight: 24, color: '#475569' },
+
+    // Featured snippet optimization styles
+    rangeTable: { backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 24, borderWidth: 1, borderColor: '#e2e8f0', ...createShadow({ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 4, elevation: 3 }) },
+    tableTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 12 },
+    tableHeaderRow: { flexDirection: 'row', borderBottomWidth: 2, borderBottomColor: '#2563eb', paddingBottom: 8, marginBottom: 8 },
+    tableHeaderCell: { flex: 1, fontSize: 14, fontWeight: '700', color: '#1e3a8a' },
+    tableRow: { flexDirection: 'row', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#e2e8f0' },
+    tableCell: { flex: 1, fontSize: 14, color: '#475569' },
+    minimumRateCard: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: '#bfdbfe' },
+    cardTitle: { fontSize: 16, fontWeight: '700', color: '#1e3a8a', marginBottom: 12 },
+    bold: { fontWeight: '700', color: '#1e3a8a' },
 });

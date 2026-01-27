@@ -101,6 +101,12 @@ export default function ChildSupportSelfEmployedBlogPost() {
                         </Text>
                     </View>
 
+                    {/* Featured Snippet Optimization */}
+                    <Text style={styles.h2} accessibilityRole="header">How Is Child Support Calculated for Self-Employed Parents in Australia?</Text>
+                    <Text style={styles.paragraph}>
+                        Self-employed parents in Australia pay child support based on their taxable income from tax returns, not business revenue. Services Australia uses your most recent tax assessment, which can be 12-18 months old. If your income changes significantly, you can request an income estimate. The other parent can apply for a Change of Assessment (Reason 8) if they believe you're hiding income through business structures.
+                    </Text>
+
                     {/* How Business Income is Assessed */}
                     <Text style={styles.h2} accessibilityRole="header">How Business Income is Assessed</Text>
                     <Text style={styles.paragraph}>

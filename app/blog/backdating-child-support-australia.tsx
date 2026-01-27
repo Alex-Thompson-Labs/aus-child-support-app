@@ -97,6 +97,12 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                         </Text>
                     </View>
 
+                    {/* Featured Snippet Optimization */}
+                    <Text style={styles.h2} accessibilityRole="header">How Far Back Can Child Support Be Backdated in Australia?</Text>
+                    <Text style={styles.paragraph}>
+                        Child support in Australia can be backdated up to 3 months from your application date, or 9 months in exceptional circumstances (illness, threats, family violence). However, this only applies to new assessments. If you're owed unpaid child support (arrears), Services Australia can collect up to 7 years of back payments. Child support is never backdated before the application date.
+                    </Text>
+
                     <Text style={styles.h2} accessibilityRole="header">When does child support start in Australia?</Text>
                     <Text style={styles.paragraph}>
                         For first-time applications, child support starts from the date you lodge your application with Services Australia. If you separated 2 years ago but apply today, child support starts today—not from your separation date. This is why applying immediately after separation is critical.

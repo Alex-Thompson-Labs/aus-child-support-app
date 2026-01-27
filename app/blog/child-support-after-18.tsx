@@ -107,6 +107,12 @@ export default function ChildSupportAfter18BlogPost() {
                         </Text>
                     </View>
 
+                    {/* Featured Snippet Optimization */}
+                    <Text style={styles.h2} accessibilityRole="header">When Does Child Support End in Australia?</Text>
+                    <Text style={styles.paragraph}>
+                        Child support in Australia ends when the child turns 18, or at the end of the school year if they turn 18 while still in full-time secondary education. Payments can also end earlier if the child marries, enters a de facto relationship, or is adopted. For children with disabilities or those in tertiary education, adult child maintenance may be available through the Family Court, not Services Australia.
+                    </Text>
+
                     <Text style={styles.h2} accessibilityRole="header">Does child support automatically stop at 18 in Australia?</Text>
                     <Text style={styles.paragraph}>
                         No. The law requires both conditions: your child must turn 18 AND finish Year 12. Whichever 
