@@ -8,10 +8,10 @@ import { convertCareToPercentage } from '../utils/care-utils';
 import { triggerSuccessHaptic } from '../utils/haptics';
 import { useCalculatorState } from './useCalculatorState';
 
+import { calculateChildSupport, validateCalculatorForm } from '../utils/calculateResults';
+
 // Re-export types for backward compatibility
 export type { CalculatorFormState } from '../utils/calculator';
-
-import { calculateChildSupport, validateCalculatorForm } from '../utils/calculateResults';
 
 export function useCalculator() {
   const {

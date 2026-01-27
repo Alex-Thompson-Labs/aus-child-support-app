@@ -114,7 +114,7 @@ export default function BrisbaneLawyerPage() {
                     <View style={styles.calculatorCard}>
                         <Text style={styles.cardTitle}>Know Your Numbers First</Text>
                         <Text style={styles.cardText}>
-                            Don't walk into a lawyer's office without the facts. Use our free 2026 calculator
+                            Don&apos;t walk into a lawyer&apos;s office without the facts. Use our free 2026 calculator
                             to verify your Services Australia assessment instantly.
                         </Text>
                         <Pressable

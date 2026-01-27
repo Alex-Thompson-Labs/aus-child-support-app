@@ -118,7 +118,7 @@ export function IncomeSupportModal({
                     {/* Parent B Section */}
                     {askParentB && (
                         <View style={styles.parentSection}>
-                            <Text style={styles.parentLabel}>Other Parent's Income</Text>
+                            <Text style={styles.parentLabel}>Other Parent&apos;s Income</Text>
                             <View style={styles.toggleRow}>
                                 <Pressable
                                     onPress={() => setParentBSupport(false)}

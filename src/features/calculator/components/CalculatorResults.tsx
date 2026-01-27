@@ -166,20 +166,10 @@ export function CalculatorResults({
   const insets = useSafeAreaInsets();
   const { isWeb, isDesktop } = useResponsive();
 
-  // Handle complexity trap results - show CTA instead of calculation
-  if (isComplexityTrap(results)) {
-    return (
-      <ComplexityTrapAlert
-        trapReason={results.trapReason}
-        displayReason={results.displayReason}
-      />
-    );
-  }
+  // Cast to CalculationResults early (before hooks)
+  const calculationResults = isComplexityTrap(results) ? null : (results as CalculationResults);
 
-  // Cast to CalculationResults after trap check
-  const calculationResults = results as CalculationResults;
-
-  // Use custom hook for state and navigation logic
+  // Use custom hook for state and navigation logic (MUST be called before any returns)
   const {
     isExpanded,
     setIsExpanded,
@@ -229,42 +219,48 @@ export function CalculatorResults({
     const handleKeyDown = (event: KeyboardEvent) => {
       // Close on Escape key
       if (event.key === 'Escape') {
-        event.preventDefault();
         setIsExpanded(false);
         return;
       }
 
-      // Trap Tab key within modal
+      // Tab key focus trap
       if (event.key === 'Tab') {
-        const modalElement = modalContainerRef.current as unknown as HTMLElement;
-        if (!modalElement) return;
+        const modalEl = modalContainerRef.current as unknown as HTMLElement;
+        if (!modalEl) return;
 
-        // Get all focusable elements within the modal
-        const focusableElements = modalElement.querySelectorAll(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]), [role="button"]'
+        const focusableElements = modalEl.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
         );
-
-        if (focusableElements.length === 0) return;
-
         const firstElement = focusableElements[0] as HTMLElement;
         const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
 
-        // Shift+Tab on first element -> move to last element
         if (event.shiftKey && document.activeElement === firstElement) {
           event.preventDefault();
-          lastElement.focus();
-        }
-        // Tab on last element -> move to first element
-        else if (!event.shiftKey && document.activeElement === lastElement) {
+          lastElement?.focus();
+        } else if (!event.shiftKey && document.activeElement === lastElement) {
           event.preventDefault();
-          firstElement.focus();
+          firstElement?.focus();
         }
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isExpanded, isWeb]);
+  }, [isWeb, isExpanded, modalContainerRef, setIsExpanded]);
+
+  // Handle complexity trap results - show CTA instead of calculation
+  // This check MUST come after all hooks
+  if (isComplexityTrap(results)) {
+    return (
+      <ComplexityTrapAlert
+        trapReason={results.trapReason}
+        displayReason={results.displayReason}
+      />
+    );
+  }
+
+  // Now we can safely use calculationResults (we know it's not null here)
+  const safeResults = calculationResults!;
 
   const webModalContainerStyle = isWeb
     ? {
@@ -288,7 +284,7 @@ export function CalculatorResults({
       <View style={styles.twoColumnLayout}>
         <View style={styles.leftColumn}>
           <ResultsHero
-            results={calculationResults}
+            results={safeResults}
             isStale={isStale}
             variant="inline"
             supportA={formData?.supportA ?? false}
@@ -297,7 +293,7 @@ export function CalculatorResults({
         </View>
         <View style={styles.rightColumn}>
           <ResultsModalContent
-            results={calculationResults}
+            results={safeResults}
             formData={formData}
             localFormData={localFormData}
             currentResultsKey={currentResultsKey}
@@ -324,7 +320,7 @@ export function CalculatorResults({
     <>
       {!isExpanded && (
         <ResultsInlineSummary
-          results={calculationResults}
+          results={safeResults}
           supportA={formData?.supportA}
           supportB={formData?.supportB}
           isStale={isStale}
@@ -386,7 +382,7 @@ export function CalculatorResults({
             />
           </View>
           <ResultsModalContent
-            results={calculationResults}
+            results={safeResults}
             formData={formData}
             localFormData={localFormData}
             currentResultsKey={currentResultsKey}

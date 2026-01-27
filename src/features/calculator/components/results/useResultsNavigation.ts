@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
 export interface UseResultsNavigationProps {
-  results: CalculationResults;
+  results: CalculationResults | null;
   formData?: ComplexityFormData;
   resetTimestamp?: number;
 }
@@ -57,8 +57,10 @@ export function useResultsNavigation({
 
   // Reset tracking flag when results change significantly
   useEffect(() => {
-    hasTrackedResultsView.current = false;
-  }, [results.finalPaymentAmount, results.payer]);
+    if (results) {
+      hasTrackedResultsView.current = false;
+    }
+  }, [results?.finalPaymentAmount, results?.payer]);
 
   // Listen for event to re-open breakdown modal when returning from lawyer inquiry
   useEffect(() => {
@@ -79,9 +81,11 @@ export function useResultsNavigation({
   const [lastResultsKey, setLastResultsKey] = useState('');
 
   // Generate a unique key for the current results
-  const currentResultsKey = `${results.finalPaymentAmount}-${results.payer}-${results.childResults
-    .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
-    .join('-')}-${results.ATI_A}-${results.ATI_B}`;
+  const currentResultsKey = results 
+    ? `${results.finalPaymentAmount}-${results.payer}-${results.childResults
+        .map((c) => `${c.roundedCareA}-${c.roundedCareB}`)
+        .join('-')}-${results.ATI_A}-${results.ATI_B}`
+    : 'no-results';
 
   // Update formData when results change, but preserve selected CoA reasons
   useEffect(() => {

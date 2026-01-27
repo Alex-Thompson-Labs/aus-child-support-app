@@ -186,7 +186,7 @@ export default function MelbourneLawyerPage() {
                     <View style={styles.tipBox}>
                         <Text style={styles.tipTitle}>💡 Pro Tip:</Text>
                         <Text style={styles.tipText}>
-                            Ask for a "Costs Agreement" upfront. This document outlines estimated total costs for each stage
+                            Ask for a &ldquo;Costs Agreement&rdquo; upfront. This document outlines estimated total costs for each stage
                             of your matter so there are no surprises.
                         </Text>
                     </View>

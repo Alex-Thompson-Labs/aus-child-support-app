@@ -214,7 +214,7 @@ export function AnnualRateBreakdown({
                                         {/* Parent B Line */}
                                         <View style={[styles.perChildGapRow, { paddingLeft: 8 }]}>
                                             <Text style={[styles.npcPaymentLabel, { fontSize: 12, color: '#4b5563' }]}>
-                                                Other parent's liability {child.farAppliedB ? (
+                                                Other parent&apos;s liability {child.farAppliedB ? (
                                                     <Text style={{ fontWeight: '700' }}>(Fixed annual rate)</Text>
                                                 ) : child.marAppliedB ? (
                                                     <Text style={{ fontWeight: '700' }}>(Minimum annual rate)</Text>

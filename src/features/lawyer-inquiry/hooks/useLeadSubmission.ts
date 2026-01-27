@@ -68,7 +68,7 @@ export interface UseLeadSubmissionProps {
   validateAllFields: () => boolean;
 
   // Computed
-  validCircumstances: Array<{ urgency: 'URGENT' | 'NORMAL' }>;
+  validCircumstances: { urgency: 'URGENT' | 'NORMAL' }[];
 
   // Navigation
   navigateHome: () => void;

@@ -17,7 +17,7 @@ export const CalculatorFAQ = () => {
         iconColor={colors.primaryDark}
       >
         <Text style={styles.text}>
-          Child support payments depend on both parents' incomes, the number of children, 
+          Child support payments depend on both parents&apos; incomes, the number of children, 
           and how much time each parent cares for the children. For example:
         </Text>
         <View style={styles.list}>
@@ -70,7 +70,7 @@ export const CalculatorFAQ = () => {
         <View style={styles.highlightBox}>
           <Text style={styles.highlightText}>
             The new assessment applies from the date you notify Services Australia, not retrospectively. 
-            This is why it's important to report income changes quickly – you could be overpaying or 
+            This is why it&apos;s important to report income changes quickly – you could be overpaying or 
             underpaying for months.
           </Text>
         </View>
@@ -108,7 +108,7 @@ export const CalculatorFAQ = () => {
         <Text style={styles.text}>
           This is called a <Text style={styles.bold}>multi-case situation</Text>, and it significantly affects calculations. 
           Services Australia applies a Multi-Case Allowance that reduces your child support income to 
-          recognise you're supporting children in multiple cases.
+          recognise you&apos;re supporting children in multiple cases.
         </Text>
         <Text style={[styles.text, styles.marginTop]}>
           For example, if you have:
@@ -140,7 +140,7 @@ export const CalculatorFAQ = () => {
           use this calculator to:
         </Text>
         <View style={styles.list}>
-          <Text style={styles.listItem}>• Compare what you're paying vs. the formula amount</Text>
+          <Text style={styles.listItem}>• Compare what you&apos;re paying vs. the formula amount</Text>
           <Text style={styles.listItem}>• Understand if the agreement is still fair as circumstances change</Text>
           <Text style={styles.listItem}>• Prepare for renegotiating the agreement</Text>
         </View>
@@ -168,7 +168,7 @@ export const CalculatorFAQ = () => {
         </View>
         <Text style={[styles.text, styles.marginTop]}>
           Parents can agree to share these costs separately, or include them in a binding child support agreement. 
-          If you can't agree, you may need to apply to court for orders about additional expenses.
+          If you can&apos;t agree, you may need to apply to court for orders about additional expenses.
         </Text>
       </Accordion>
 
@@ -187,7 +187,7 @@ export const CalculatorFAQ = () => {
         </Text>
         <View style={styles.list}>
           <Text style={styles.listItem}>• How accurately you enter your income and care details</Text>
-          <Text style={styles.listItem}>• Whether your situation involves factors we can't calculate (e.g., Change of Assessment decisions)</Text>
+          <Text style={styles.listItem}>• Whether your situation involves factors we can&apos;t calculate (e.g., Change of Assessment decisions)</Text>
           <Text style={styles.listItem}>• Timing – rates and thresholds change each financial year</Text>
         </View>
         <View style={styles.highlightBox}>

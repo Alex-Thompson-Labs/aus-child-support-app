@@ -81,7 +81,7 @@ export default function AboutPage() {
                             Our Mission
                         </Text>
                         <Text style={styles.bodyText}>
-                            We provide the most comprehensive Australian child support tool available. We're the
+                            We provide the most comprehensive Australian child support tool available. We&apos;re the
                             only calculator that handles all 6 Services Australia formulas - from standard
                             separations to complex scenarios involving non-parent carers, overseas parents, and
                             deceased parents. Our goal is to provide accurate estimates while connecting parents

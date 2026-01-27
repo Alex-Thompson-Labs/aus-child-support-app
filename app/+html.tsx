@@ -41,7 +41,7 @@ export default function Root({ children }: PropsWithChildren) {
           rel="modulepreload" 
           href="/_expo/static/js/web/__common-*.js"
           // @ts-ignore - Web-only fetchpriority attribute
-          fetchpriority="high"
+          fetchPriority="high"
         />
 
         {/* Preload critical assets for LCP optimization */}
@@ -51,7 +51,7 @@ export default function Root({ children }: PropsWithChildren) {
           href="/main-page-logo.webp" 
           type="image/webp"
           // @ts-ignore - Web-only fetchpriority attribute
-          fetchpriority="high"
+          fetchPriority="high"
         />
 
         {/* Favicon */}
