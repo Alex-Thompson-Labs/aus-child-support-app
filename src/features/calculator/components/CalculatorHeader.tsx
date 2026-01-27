@@ -387,6 +387,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         flexDirection: 'column',
+        flex: 1,
     },
 
     // Decorative Background Shapes - Subtle white watermarks
@@ -423,6 +424,7 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
         gap: 10,
         zIndex: 10,
+        flexShrink: 0,
     },
     drawerLogo: {
         height: 42,
@@ -522,6 +524,8 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
         gap: 32,
         zIndex: 5,
+        flexShrink: 0,
+        flex: 1,
     },
     supportMenuItem: {
         alignItems: 'flex-start',
@@ -544,6 +548,8 @@ const styles = StyleSheet.create({
         height: 280,
         overflow: 'visible',
         zIndex: 3,
+        flexShrink: 0,
+        marginTop: 'auto',
     },
     trustTextContainer: {
         position: 'absolute',

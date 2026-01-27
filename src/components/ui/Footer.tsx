@@ -31,6 +31,8 @@ export function Footer({ containerStyle }: FooterProps) {
           textStyle={styles.privacyLink}
           containerStyle={styles.privacyLinkContainer}
         />
+        <Text style={styles.separator}>•</Text>
+        <Link href="/terms-of-service" style={styles.link}>Terms of Service</Link>
       </View>
 
       <View style={styles.locationLinks}>

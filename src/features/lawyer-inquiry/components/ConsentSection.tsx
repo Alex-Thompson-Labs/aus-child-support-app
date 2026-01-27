@@ -44,11 +44,23 @@ export function ConsentSection({
         </View>
         <View style={checkboxStyles.checkboxTextContainer}>
           <Text style={checkboxStyles.checkboxLabel}>
-            I consent to Australian Child Support Calculator sharing my contact 
-            details and case information with Australian family law firms for the 
-            purpose of arranging a legal consultation. I understand that lawyers 
-            pay to receive my information and that I may be contacted directly by 
-            lawyers who are interested in my case. *
+            I agree to the{' '}
+            <Text
+              style={checkboxStyles.checkboxLink}
+              onPress={() => {
+                if (typeof window !== 'undefined') {
+                  window.open('/terms-of-service', '_blank');
+                }
+              }}
+              accessibilityRole="link"
+            >
+              Terms of Service
+            </Text>
+            {' '}and consent to Australian Child Support Calculator sharing my contact 
+            details and case information with independent family law practitioners for the 
+            purpose of arranging a legal consultation. I understand that lawyers are 
+            independent contractors who pay to receive my information and that I may be 
+            contacted directly by lawyers who are interested in my case. *
           </Text>
         </View>
       </Pressable>

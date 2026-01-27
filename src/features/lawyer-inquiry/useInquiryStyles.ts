@@ -293,6 +293,12 @@ export function useInquiryStyles() {
         color: colors.textSecondary,
         lineHeight: 20,
       },
+      checkboxLink: {
+        fontSize: 14,
+        color: colors.userHighlight,
+        textDecorationLine: 'underline',
+        fontWeight: '600',
+      },
       checkboxErrorText: {
         marginLeft: 36,
         marginTop: 0,
