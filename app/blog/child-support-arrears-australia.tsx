@@ -55,7 +55,7 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
     return (
         <>
             <PageSEO
-                title="Child Support Arrears Australia 2026: Enforcement & Solutions"
+                title="Child Support Arrears 2026 | Enforcement & Solutions"
                 description="Arrears never expire—10% interest compounds forever. Avoid wage garnishment + passport suspension. See payment plan options. Act before enforcement."
                 canonicalPath="/blog/child-support-arrears-australia"
                 schema={[articleSchema, faqSchema]}

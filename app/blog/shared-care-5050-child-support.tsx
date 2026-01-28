@@ -54,7 +54,7 @@ export default function SharedCare5050ChildSupportBlogPost() {
     return (
         <>
             <PageSEO
-                title="50/50 Shared Care Child Support Australia 2026 | Do You Still Pay?"
+                title="50/50 Shared Care Child Support 2026 | Do You Pay?"
                 description="50/50 care doesn't mean $0 child support. Higher earner pays $100-600/month based on income gap. See real examples + free calculator. Check in 5 minutes."
                 canonicalPath="/blog/shared-care-5050-child-support"
                 schema={[articleSchema, faqSchema]}

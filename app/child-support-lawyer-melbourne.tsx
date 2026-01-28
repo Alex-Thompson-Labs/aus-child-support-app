@@ -83,7 +83,7 @@ export default function MelbourneLawyerPage() {
     return (
         <>
             <PageSEO
-                title="Child Support Lawyers Melbourne 2026: Free Calculator & Referrals"
+                title="Melbourne Child Support Lawyers | Free Calculator"
                 description="Find child support lawyers in Melbourne. Free calculator + no-cost referrals to Victorian family law specialists. Compare rates ($300-$550/hr) before you hire."
                 canonicalPath="/child-support-lawyer-melbourne"
                 schema={[localBusinessSchema, faqSchema, breadcrumbSchema]}

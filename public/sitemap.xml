@@ -132,6 +132,12 @@
 
   <!-- Blog Posts -->
   <url>
+    <loc>https://auschildsupport.com.au/blog</loc>
+    <lastmod>2026-01-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://auschildsupport.com.au/blog/court-order-child-support-calculator</loc>
     <lastmod>2026-01-27</lastmod>
     <changefreq>monthly</changefreq>
@@ -278,6 +284,24 @@
   <url>
     <loc>https://auschildsupport.com.au/blog/child-support-centrelink-income-support</loc>
     <lastmod>2026-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://auschildsupport.com.au/blog/child-support-vs-spousal-maintenance</loc>
+    <lastmod>2026-01-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://auschildsupport.com.au/blog/what-does-child-support-cover</loc>
+    <lastmod>2026-01-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://auschildsupport.com.au/blog/what-happens-if-dont-pay-child-support</loc>
+    <lastmod>2026-01-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

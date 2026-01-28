@@ -93,7 +93,7 @@ export default function HomeScreen() {
   return (
     <>
       <PageSEO
-        title="Australian Child Support Calculator | Free, Accurate Estimate 2026"
+        title="Child Support Calculator Australia 2026 | Free & Accurate"
         description="Calculate your 2026 child support payments in minutes. Free Australian calculator covering complex scenarios, income changes, and care arrangements. More detailed than Services Australia's tool."
         canonicalPath="/"
         schema={pageSchema}

@@ -62,7 +62,7 @@ export default function NewPartnerIncomeChildSupportBlogPost() {
     return (
         <>
             <PageSEO
-                title="New Partner Income & Child Support Australia 2026 | Does It Affect You?"
+                title="New Partner Income & Child Support 2026 | Impact"
                 description="New partner's income doesn't count—unless they pay all your bills. See when Change of Assessment applies + how to protect yourself. Know your rights."
                 canonicalPath="/blog/new-partner-income-child-support"
                 schema={[articleSchema, faqSchema]}

@@ -54,7 +54,7 @@ export default function ChildSupportOverpaymentRefundBlogPost() {
     return (
         <>
             <PageSEO
-                title="Child Support Overpayment Refund Australia 2026: Get Your Money Back"
+                title="Child Support Overpayment Refund 2026 | Get Money Back"
                 description="Overpaid? Services Australia recovers from the other parent—even if they spent it. See refund process + evidence requirements. Claim as soon as possible."
                 canonicalPath="/blog/child-support-overpayment-refund"
                 schema={[articleSchema, faqSchema]}

@@ -45,7 +45,7 @@ export default function ChildSupportCentrelinkBlogPost() {
     return (
         <>
             <PageSEO
-                title="Child Support and Centrelink Australia 2026: Income Support Payments"
+                title="Child Support on Centrelink 2026 | Income Support"
                 description="On Centrelink? You still pay child support—typically ~$10.60/week total (Minimum Annual Rate). See 2026 rates + your exact obligations. Calculate in 5 minutes."
                 canonicalPath="/blog/child-support-centrelink-income-support"
                 schema={[articleSchema, faqSchema]}

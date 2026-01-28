@@ -67,7 +67,7 @@ export default function InternationalChildSupportBlogPost() {
     return (
         <>
             <PageSEO
-                title="International Child Support Australia 2026: When Your Ex Lives Overseas"
+                title="International Child Support 2026 | Ex Lives Overseas"
                 description="Ex fled overseas? 80+ countries enforce Australian child support. See reciprocating jurisdictions + Hague Convention. Moving doesn't erase debt."
                 canonicalPath="/blog/international-child-support-australia"
                 schema={[articleSchema, faqSchema]}

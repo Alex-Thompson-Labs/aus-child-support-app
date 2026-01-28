@@ -67,7 +67,7 @@ export default function ComplicatedChildSupportBlogPost() {
     return (
         <>
             <PageSEO
-                title="Complicated Child Support Situations Australia 2026: Get Legal Help"
+                title="Complicated Child Support Cases 2026 | Get Legal Help"
                 description="DIY child support fails with trusts, self-employment, or overseas income. 8 situations needing lawyers. Free consultations. Protect your interests."
                 canonicalPath="/blog/complicated-child-support-situations"
                 schema={[articleSchema, faqSchema]}

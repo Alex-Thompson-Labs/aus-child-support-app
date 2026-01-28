@@ -83,7 +83,7 @@ export default function SydneyLawyerPage() {
     return (
         <>
             <PageSEO
-                title="Child Support Lawyers Sydney 2026: Free Calculator & Referrals"
+                title="Sydney Child Support Lawyers | Free Calculator 2026"
                 description="Find child support lawyers in Sydney. Free calculator + no-cost referrals to NSW family law experts. Compare rates ($350-$600/hr) and court locations."
                 canonicalPath="/child-support-lawyer-sydney"
                 schema={[localBusinessSchema, faqSchema, breadcrumbSchema]}

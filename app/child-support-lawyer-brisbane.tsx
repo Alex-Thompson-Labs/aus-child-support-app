@@ -83,7 +83,7 @@ export default function BrisbaneLawyerPage() {
     return (
         <>
             <PageSEO
-                title="Child Support Lawyers Brisbane 2026: Free Calculator & Referrals"
+                title="Brisbane Child Support Lawyers | Free Calculator"
                 description="Find child support lawyers in Brisbane. Free calculator + QLD family law referrals. FIFO/mining income specialists. Rates from $300-$500/hr."
                 canonicalPath="/child-support-lawyer-brisbane"
                 schema={[localBusinessSchema, faqSchema, breadcrumbSchema]}

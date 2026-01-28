@@ -64,7 +64,7 @@ export default function CourtOrderChildSupportCalculatorBlogPost() {
     return (
         <>
             <PageSEO
-                title="Court Order Child Support Calculator Australia 2026 | Free Tool"
+                title="Court Order Child Support Calculator 2026 | Free"
                 description="Court order expires when youngest turns 18—are you prepared? Scan your order with AI tool + see what happens next. Free calculator. Plan ahead now."
                 canonicalPath="/blog/court-order-child-support-calculator"
                 schema={[articleSchema, faqSchema]}
