@@ -200,6 +200,21 @@ export interface MultiCaseChildBreakdown {
   costPerChild: number; // Cost divided by total children
   totalChildren: number; // Current case + other case children
   isCurrentCase: boolean; // Whether this child is in the current case
+  bracketInfo?: CostBracketInfo; // COTC bracket information for detailed display
+}
+
+/**
+ * Grouped breakdown by age bracket for multi-case display
+ */
+export interface MultiCaseAgeBracketBreakdown {
+  ageBracket: 'under13' | 'over13';
+  childSupportIncome: number;
+  totalCost: number;
+  costPerChild: number;
+  totalChildren: number;
+  bracketInfo: CostBracketInfo;
+  currentCaseCount: number; // Number of children in current case for this age bracket
+  otherCaseCount: number; // Number of children in other cases for this age bracket
 }
 
 /**
@@ -208,6 +223,7 @@ export interface MultiCaseChildBreakdown {
 export interface MultiCaseAllowanceResult {
   totalAllowance: number;
   breakdown: MultiCaseChildBreakdown[];
+  groupedBreakdown?: MultiCaseAgeBracketBreakdown[]; // Grouped by age bracket for cleaner display
 }
 
 export function calculateMultiCaseAllowance(
@@ -264,7 +280,7 @@ export function calculateMultiCaseAllowanceDetailed(
     }
 
     // Calculate cost using parent's individual CSI
-    const { cost: totalCost } = getChildCost(year, virtualChildren, parentCSI);
+    const { cost: totalCost, bracketInfo } = getChildCost(year, virtualChildren, parentCSI);
 
     // This child's share
     const childCost = totalCost / totalChildCount;
@@ -277,6 +293,7 @@ export function calculateMultiCaseAllowanceDetailed(
       totalCost: totalCost,
       costPerChild: childCost,
       totalChildren: totalChildCount,
+      bracketInfo: bracketInfo,
       isCurrentCase: true,
     });
   }
@@ -300,7 +317,7 @@ export function calculateMultiCaseAllowanceDetailed(
     }
 
     // Calculate cost using parent's individual CSI
-    const { cost: totalCost } = getChildCost(year, virtualChildren, parentCSI);
+    const { cost: totalCost, bracketInfo } = getChildCost(year, virtualChildren, parentCSI);
 
     // This child's share
     const childCost = totalCost / totalChildCount;
@@ -314,13 +331,58 @@ export function calculateMultiCaseAllowanceDetailed(
       totalCost: totalCost,
       costPerChild: childCost,
       totalChildren: totalChildCount,
+      bracketInfo: bracketInfo,
       isCurrentCase: false,
+    });
+  }
+
+  // Generate grouped breakdown by age bracket for cleaner UI display
+  const groupedBreakdown: MultiCaseAgeBracketBreakdown[] = [];
+  
+  // Group children by age bracket
+  const under13Children = breakdown.filter(c => c.childAge < 13);
+  const over13Children = breakdown.filter(c => c.childAge >= 13 && c.childAge < 18);
+  
+  // Create grouped breakdown for under 13 if any exist
+  if (under13Children.length > 0) {
+    const sample = under13Children[0]; // Use first child as representative
+    const currentCaseCount = under13Children.filter(c => c.isCurrentCase).length;
+    const otherCaseCount = under13Children.filter(c => !c.isCurrentCase).length;
+    
+    groupedBreakdown.push({
+      ageBracket: 'under13',
+      childSupportIncome: sample.childSupportIncome,
+      totalCost: sample.totalCost,
+      costPerChild: sample.costPerChild,
+      totalChildren: sample.totalChildren,
+      bracketInfo: sample.bracketInfo!,
+      currentCaseCount,
+      otherCaseCount,
+    });
+  }
+  
+  // Create grouped breakdown for over 13 if any exist
+  if (over13Children.length > 0) {
+    const sample = over13Children[0]; // Use first child as representative
+    const currentCaseCount = over13Children.filter(c => c.isCurrentCase).length;
+    const otherCaseCount = over13Children.filter(c => !c.isCurrentCase).length;
+    
+    groupedBreakdown.push({
+      ageBracket: 'over13',
+      childSupportIncome: sample.childSupportIncome,
+      totalCost: sample.totalCost,
+      costPerChild: sample.costPerChild,
+      totalChildren: sample.totalChildren,
+      bracketInfo: sample.bracketInfo!,
+      currentCaseCount,
+      otherCaseCount,
     });
   }
 
   return {
     totalAllowance: Math.round(allowance),
     breakdown,
+    groupedBreakdown,
   };
 }
 

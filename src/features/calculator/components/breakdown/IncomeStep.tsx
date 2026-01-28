@@ -117,8 +117,64 @@ export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent
                                             Multi-case costs / multi-case allowance
                                         </Text>
                                         
-                                        {/* Show detailed breakdown for each child (current + other cases) */}
-                                        {results.multiCaseBreakdownA && results.multiCaseBreakdownA.length > 0 ? (
+                                        {/* Show grouped breakdown by age bracket if available, otherwise show individual breakdown */}
+                                        {results.multiCaseGroupedBreakdownA && results.multiCaseGroupedBreakdownA.length > 0 ? (
+                                            <>
+                                                {results.multiCaseGroupedBreakdownA.map((group) => {
+                                                    const ageBracketLabel = group.ageBracket === 'under13' 
+                                                        ? 'Children 13 and under' 
+                                                        : 'Children over 13';
+                                                    
+                                                    return (
+                                                        <View key={group.ageBracket} style={{ marginBottom: 16 }}>
+                                                            <Text style={[styles.multiCaseChildLabel, dynamicStyles.multiCaseChildLabel]}>
+                                                                {ageBracketLabel}
+                                                            </Text>
+                                                            <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                Child support income = {formatCurrency(group.childSupportIncome)}
+                                                            </Text>
+                                                            <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                Income bracket: {formatCurrency(group.bracketInfo.minIncome)} – {group.bracketInfo.maxIncome ? formatCurrency(group.bracketInfo.maxIncome) : 'above'}
+                                                            </Text>
+                                                            <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                Base amount {formatCurrency(group.bracketInfo.fixed)}
+                                                            </Text>
+                                                            <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                + {(group.bracketInfo.rate * 100).toFixed(2)}% × {formatCurrency(group.bracketInfo.incomeInBracket)}
+                                                            </Text>
+                                                            <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation, { marginTop: 4 }]}>
+                                                                COTC for all children at this age = {formatCurrency(group.totalCost)}
+                                                            </Text>
+                                                            <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                • {formatCurrency(group.totalCost)} ÷ {group.totalChildren}
+                                                            </Text>
+                                                            <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation, { marginTop: 4 }]}>
+                                                                Multi-case cost = {formatCurrency(group.costPerChild)}
+                                                            </Text>
+                                                        </View>
+                                                    );
+                                                })}
+                                                
+                                                {/* Summary section - only show "Children in other cases" */}
+                                                <View style={{ marginTop: 8 }}>
+                                                    {results.multiCaseGroupedBreakdownA.some(g => g.otherCaseCount > 0) && (
+                                                        <>
+                                                            {results.multiCaseGroupedBreakdownA.map((group) => {
+                                                                if (group.otherCaseCount > 0) {
+                                                                    const label = group.ageBracket === 'under13' ? 'Under 13' : 'Over 13';
+                                                                    return (
+                                                                        <Text key={`other-${group.ageBracket}`} style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                            Children in other cases: {label} ({group.otherCaseCount})
+                                                                        </Text>
+                                                                    );
+                                                                }
+                                                                return null;
+                                                            })}
+                                                        </>
+                                                    )}
+                                                </View>
+                                            </>
+                                        ) : results.multiCaseBreakdownA && results.multiCaseBreakdownA.length > 0 ? (
                                             <>
                                                 {results.multiCaseBreakdownA
                                                     .filter(child => !hideCurrentCaseMultiCostCalcs || !child.isCurrentCase)
@@ -150,8 +206,24 @@ export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent
                                                             <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
                                                                 Child support income = {formatCurrency(child.childSupportIncome)}
                                                             </Text>
-                                                            <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
-                                                                • ({formatCurrency(child.childSupportIncome)} × {((child.totalCost / child.childSupportIncome) * 100).toFixed(0)}% = {formatCurrency(child.totalCost)})
+                                                            
+                                                            {/* Show bracket info if available */}
+                                                            {child.bracketInfo && (
+                                                                <>
+                                                                    <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                        Income bracket: {formatCurrency(child.bracketInfo.minIncome)} – {child.bracketInfo.maxIncome ? formatCurrency(child.bracketInfo.maxIncome) : 'above'}
+                                                                    </Text>
+                                                                    <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                        Base amount {formatCurrency(child.bracketInfo.fixed)}
+                                                                    </Text>
+                                                                    <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                        + {(child.bracketInfo.rate * 100).toFixed(2)}% × {formatCurrency(child.bracketInfo.incomeInBracket)}
+                                                                    </Text>
+                                                                </>
+                                                            )}
+                                                            
+                                                            <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation, { marginTop: 4 }]}>
+                                                                COTC for all children at this age = {formatCurrency(child.totalCost)}
                                                             </Text>
                                                             <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
                                                                 • {formatCurrency(child.totalCost)} ÷ {child.totalChildren}
@@ -168,7 +240,7 @@ export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent
                                                 For each child in other cases, calculate:
                                                 {'\n'}• Child support income for that case
                                                 {'\n'}• COTC for that child
-                                                {'\n'}• Multi-case cost (CSI × cost percentage ÷ number of children)
+                                                {'\n'}• Multi-case cost (COTC ÷ number of children)
                                             </Text>
                                         )}
                                         
@@ -239,8 +311,64 @@ export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent
                                                 Multi-case costs / multi-case allowance
                                             </Text>
                                             
-                                            {/* Show detailed breakdown for each child (current + other cases) */}
-                                            {results.multiCaseBreakdownB && results.multiCaseBreakdownB.length > 0 ? (
+                                            {/* Show grouped breakdown by age bracket if available, otherwise show individual breakdown */}
+                                            {results.multiCaseGroupedBreakdownB && results.multiCaseGroupedBreakdownB.length > 0 ? (
+                                                <>
+                                                    {results.multiCaseGroupedBreakdownB.map((group) => {
+                                                        const ageBracketLabel = group.ageBracket === 'under13' 
+                                                            ? 'Children 13 and under' 
+                                                            : 'Children over 13';
+                                                        
+                                                        return (
+                                                            <View key={group.ageBracket} style={{ marginBottom: 16 }}>
+                                                                <Text style={[styles.multiCaseChildLabel, dynamicStyles.multiCaseChildLabel]}>
+                                                                    {ageBracketLabel}
+                                                                </Text>
+                                                                <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                    Child support income = {formatCurrency(group.childSupportIncome)}
+                                                                </Text>
+                                                                <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                    Income bracket: {formatCurrency(group.bracketInfo.minIncome)} – {group.bracketInfo.maxIncome ? formatCurrency(group.bracketInfo.maxIncome) : 'above'}
+                                                                </Text>
+                                                                <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                    Base amount {formatCurrency(group.bracketInfo.fixed)}
+                                                                </Text>
+                                                                <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                    + {(group.bracketInfo.rate * 100).toFixed(2)}% × {formatCurrency(group.bracketInfo.incomeInBracket)}
+                                                                </Text>
+                                                                <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation, { marginTop: 4 }]}>
+                                                                    COTC for all children at this age = {formatCurrency(group.totalCost)}
+                                                                </Text>
+                                                                <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                    • {formatCurrency(group.totalCost)} ÷ {group.totalChildren}
+                                                                </Text>
+                                                                <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation, { marginTop: 4 }]}>
+                                                                    Multi-case cost = {formatCurrency(group.costPerChild)}
+                                                                </Text>
+                                                            </View>
+                                                        );
+                                                    })}
+                                                    
+                                                    {/* Summary section - only show "Children in other cases" */}
+                                                    <View style={{ marginTop: 8 }}>
+                                                        {results.multiCaseGroupedBreakdownB.some(g => g.otherCaseCount > 0) && (
+                                                            <>
+                                                                {results.multiCaseGroupedBreakdownB.map((group) => {
+                                                                    if (group.otherCaseCount > 0) {
+                                                                        const label = group.ageBracket === 'under13' ? 'Under 13' : 'Over 13';
+                                                                        return (
+                                                                            <Text key={`other-${group.ageBracket}`} style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                                Children in other cases: {label} ({group.otherCaseCount})
+                                                                            </Text>
+                                                                        );
+                                                                    }
+                                                                    return null;
+                                                                })}
+                                                            </>
+                                                        )}
+                                                    </View>
+                                                </>
+                                            ) : results.multiCaseBreakdownB && results.multiCaseBreakdownB.length > 0 ? (
                                                 <>
                                                     {results.multiCaseBreakdownB
                                                         .filter(child => !hideCurrentCaseMultiCostCalcs || !child.isCurrentCase)
@@ -272,8 +400,24 @@ export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent
                                                                 <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
                                                                     Child support income = {formatCurrency(child.childSupportIncome)}
                                                                 </Text>
-                                                                <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
-                                                                    • ({formatCurrency(child.childSupportIncome)} × {((child.totalCost / child.childSupportIncome) * 100).toFixed(0)}% = {formatCurrency(child.totalCost)})
+                                                                
+                                                                {/* Show bracket info if available */}
+                                                                {child.bracketInfo && (
+                                                                    <>
+                                                                        <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                            Income bracket: {formatCurrency(child.bracketInfo.minIncome)} – {child.bracketInfo.maxIncome ? formatCurrency(child.bracketInfo.maxIncome) : 'above'}
+                                                                        </Text>
+                                                                        <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                            Base amount {formatCurrency(child.bracketInfo.fixed)}
+                                                                        </Text>
+                                                                        <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                            + {(child.bracketInfo.rate * 100).toFixed(2)}% × {formatCurrency(child.bracketInfo.incomeInBracket)}
+                                                                        </Text>
+                                                                    </>
+                                                                )}
+                                                                
+                                                                <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation, { marginTop: 4 }]}>
+                                                                    COTC for all children at this age = {formatCurrency(child.totalCost)}
                                                                 </Text>
                                                                 <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
                                                                     • {formatCurrency(child.totalCost)} ÷ {child.totalChildren}
@@ -290,7 +434,7 @@ export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent
                                                     For each child in other cases, calculate:
                                                     {'\n'}• Child support income for that case
                                                     {'\n'}• COTC for that child
-                                                    {'\n'}• Multi-case cost (CSI × cost percentage ÷ number of children)
+                                                    {'\n'}• Multi-case cost (COTC ÷ number of children)
                                                 </Text>
                                             )}
                                             

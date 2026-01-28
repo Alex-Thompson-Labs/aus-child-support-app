@@ -13,6 +13,69 @@ const formatPercent2dp = (num: number): string => {
     return `${num.toFixed(2)}%`;
 };
 
+// Helper to group children by identical cost percentages
+const groupChildrenByCost = (childResults: CalculationResults['childResults']) => {
+    const groups: {
+        indices: number[];
+        costPercA: number;
+        costPercB: number;
+    }[] = [];
+
+    childResults.forEach((child, index) => {
+        const existingGroup = groups.find(
+            g => g.costPercA === child.costPercA && g.costPercB === child.costPercB
+        );
+        
+        if (existingGroup) {
+            existingGroup.indices.push(index);
+        } else {
+            groups.push({
+                indices: [index],
+                costPercA: child.costPercA,
+                costPercB: child.costPercB,
+            });
+        }
+    });
+
+    return groups;
+};
+
+// Helper to group children by identical child support percentages
+const groupChildrenByCS = (childResults: CalculationResults['childResults']) => {
+    const groups: {
+        indices: number[];
+        csPercA: number;
+        csPercB: number;
+    }[] = [];
+
+    childResults.forEach((child, index) => {
+        const existingGroup = groups.find(
+            g => g.csPercA === child.childSupportPercA && g.csPercB === child.childSupportPercB
+        );
+        
+        if (existingGroup) {
+            existingGroup.indices.push(index);
+        } else {
+            groups.push({
+                indices: [index],
+                csPercA: child.childSupportPercA,
+                csPercB: child.childSupportPercB,
+            });
+        }
+    });
+
+    return groups;
+};
+
+// Helper to format child indices for display
+const formatChildIndices = (indices: number[]): string => {
+    if (indices.length === 1) return `CHILD ${indices[0] + 1}`;
+    if (indices.length === 2) return `CHILD ${indices[0] + 1} AND ${indices[1] + 1}`;
+    
+    const lastIndex = indices[indices.length - 1];
+    const otherIndices = indices.slice(0, -1);
+    return `CHILD ${otherIndices.map(i => i + 1).join(', ')} AND ${lastIndex + 1}`;
+};
 
 interface CostStepProps {
     results: CalculationResults;
@@ -58,25 +121,35 @@ export function CostStep({ results, expandedSteps, onToggle, hasDeceasedParent =
         tooltipBorder: { borderBottomColor: colors.border },
     }), [colors]);
 
+    const costGroups = useMemo(() => groupChildrenByCost(results.childResults), [results.childResults]);
+    const csGroups = useMemo(() => groupChildrenByCS(results.childResults), [results.childResults]);
+
     return (
         <>
-            {/* Step 5: Cost Percentage - Per Child */}
-            {results.childResults.map((child, index) => (
-                <BreakdownStepCard
-                    key={index}
-                    stepNumber={`5${results.childResults.length > 1
-                        ? String.fromCharCode(97 + index)
-                        : ''
-                        }`}
-                    title={`COST PERCENTAGE${results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''
-                        }`}
-                    description={
-                        results.childResults.length > 1
-                            ? `for Child ${index + 1}`
-                            : undefined
-                    }
-                    tooltip={
-                        index === 0 ? (
+            {/* Step 5: Cost Percentage - Grouped by identical values */}
+            {costGroups.map((group, groupIndex) => {
+                const child = results.childResults[group.indices[0]];
+                const isMultiChild = results.childResults.length > 1;
+                const hasMultipleGroups = costGroups.length > 1;
+                
+                return (
+                    <BreakdownStepCard
+                        key={groupIndex}
+                        stepNumber={`5${hasMultipleGroups
+                            ? String.fromCharCode(97 + groupIndex)
+                            : ''
+                            }`}
+                        title={`COST PERCENTAGE${isMultiChild ? ` - ${formatChildIndices(group.indices)}` : ''
+                            }`}
+                        description={
+                            isMultiChild && group.indices.length > 1
+                                ? `for ${formatChildIndices(group.indices)}`
+                                : isMultiChild
+                                    ? `for Child ${group.indices[0] + 1}`
+                                    : undefined
+                        }
+                        tooltip={
+                            groupIndex === 0 ? (
                             <View style={{ paddingVertical: 8 }}>
                                 <Text
                                     style={[{
@@ -120,133 +193,142 @@ export function CostStep({ results, expandedSteps, onToggle, hasDeceasedParent =
                                     ))}
                                 </View>
                             </View>
-                        ) : undefined
-                    }
-                    isExpanded={expandedSteps.step5}
-                    onToggle={() => onToggle('step5')}
-                >
-                    <>
-                        {index === 0 && (
-                            <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation, { lineHeight: 22 }]}>
-                                The care percentage is converted via a formula into a cost
-                                percentage. This figure reflects the share of the childs living
-                                costs that the parent covers directly while providing care.
-                            </Text>
-                        )}
+                            ) : undefined
+                        }
+                        isExpanded={expandedSteps.step5}
+                        onToggle={() => onToggle('step5')}
+                    >
+                        <>
+                            {groupIndex === 0 && (
+                                <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation, { lineHeight: 22 }]}>
+                                    The care percentage is converted via a formula into a cost
+                                    percentage. This figure reflects the share of the childs living
+                                    costs that the parent covers directly while providing care.
+                                </Text>
+                            )}
 
-                        {/* Care to Cost conversion */}
-                        <View
-                            style={[
-                                styles.careConversion,
-                                dynamicStyles.careConversion,
-                                { marginTop: index === 0 ? 12 : 4, padding: 12 },
-                            ]}
-                        >
-                            <View style={styles.conversionCards}>
-                                <ParentComparisonCard
-                                    title="YOU"
-                                    isUserHighlighted
-                                    careValue={formatPercent2dp(child.roundedCareA)}
-                                    costValue={formatPercent2dp(child.costPercA)}
-                                />
-                                {!hasDeceasedParent && (
+                            {/* Care to Cost conversion */}
+                            <View
+                                style={[
+                                    styles.careConversion,
+                                    dynamicStyles.careConversion,
+                                    { marginTop: groupIndex === 0 ? 12 : 4, padding: 12 },
+                                ]}
+                            >
+                                <View style={styles.conversionCards}>
                                     <ParentComparisonCard
-                                        title="OTHER PARENT"
-                                        careValue={formatPercent2dp(child.roundedCareB)}
-                                        costValue={formatPercent2dp(child.costPercB)}
+                                        title="YOU"
+                                        isUserHighlighted
+                                        careValue={formatPercent2dp(child.roundedCareA)}
+                                        costValue={formatPercent2dp(child.costPercA)}
                                     />
-                                )}
+                                    {!hasDeceasedParent && (
+                                        <ParentComparisonCard
+                                            title="OTHER PARENT"
+                                            careValue={formatPercent2dp(child.roundedCareB)}
+                                            costValue={formatPercent2dp(child.costPercB)}
+                                        />
+                                    )}
+                                </View>
                             </View>
-                        </View>
-                    </>
-                </BreakdownStepCard>
-            ))}
+                        </>
+                    </BreakdownStepCard>
+                );
+            })}
 
-            {/* Step 6: Child Support Percentage - Per Child */}
-            {results.childResults.map((child, index) => (
-                <BreakdownStepCard
-                    key={index}
-                    stepNumber={`6${results.childResults.length > 1
-                        ? String.fromCharCode(97 + index)
-                        : ''
-                        }`}
-                    title={`Child Support Percentage${results.childResults.length > 1 ? ` - CHILD ${index + 1}` : ''
-                        }`}
-                    description={
-                        results.childResults.length > 1
-                            ? `for Child ${index + 1}`
-                            : undefined
-                    }
-                    isExpanded={expandedSteps.step6}
-                    onToggle={() => onToggle('step6')}
-                >
-                    <>
-                        {index === 0 && (
-                            <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
-                                A parent must pay child support when their share of income is
-                                higher than their share of costs. The difference between these
-                                two shares is called the child support percentage, which is then
-                                used in the formula to calculate the child support amount.
-                            </Text>
-                        )}
+            {/* Step 6: Child Support Percentage - Grouped by identical values */}
+            {csGroups.map((group, groupIndex) => {
+                const child = results.childResults[group.indices[0]];
+                const isMultiChild = results.childResults.length > 1;
+                const hasMultipleGroups = csGroups.length > 1;
+                
+                return (
+                    <BreakdownStepCard
+                        key={groupIndex}
+                        stepNumber={`6${hasMultipleGroups
+                            ? String.fromCharCode(97 + groupIndex)
+                            : ''
+                            }`}
+                        title={`Child Support Percentage${isMultiChild ? ` - ${formatChildIndices(group.indices)}` : ''
+                            }`}
+                        description={
+                            isMultiChild && group.indices.length > 1
+                                ? `for ${formatChildIndices(group.indices)}`
+                                : isMultiChild
+                                    ? `for Child ${group.indices[0] + 1}`
+                                    : undefined
+                        }
+                        isExpanded={expandedSteps.step6}
+                        onToggle={() => onToggle('step6')}
+                    >
+                        <>
+                            {groupIndex === 0 && (
+                                <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
+                                    A parent must pay child support when their share of income is
+                                    higher than their share of costs. The difference between these
+                                    two shares is called the child support percentage, which is then
+                                    used in the formula to calculate the child support amount.
+                                </Text>
+                            )}
 
-                        <View style={[styles.gapCalculation, dynamicStyles.gapCalculation]}>
-                            <View style={styles.gapCards}>
-                                <GapAnalysisCard
-                                    label="YOU"
-                                    isUserHighlighted
-                                    incomePercent={results.incomePercA}
-                                    costPercent={child.costPercA}
-                                    csPercent={child.childSupportPercA}
-                                    isFarApplied={child.farAppliedA}
-                                    isMarApplied={child.marAppliedA}
-                                    otherParentHasFixedRate={
-                                        child.farAppliedB || child.marAppliedB
-                                    }
-                                    fixedRateAmount={
-                                        child.farAppliedA ? results.FAR : results.MAR
-                                    }
-                                    formatPercent={formatPercent2dp}
-                                    formatCurrency={formatCurrency}
-                                    capExplanation={
-                                        child.marAppliedA
-                                            ? results.marCapExplanationA
-                                            : child.farAppliedA
-                                                ? results.farCapExplanationA
-                                                : undefined
-                                    }
-                                    simplifiedView={hasDeceasedParent}
-                                />
-                                {!hasDeceasedParent && (
+                            <View style={[styles.gapCalculation, dynamicStyles.gapCalculation]}>
+                                <View style={styles.gapCards}>
                                     <GapAnalysisCard
-                                        label="OTHER PARENT"
-                                        incomePercent={results.incomePercB}
-                                        costPercent={child.costPercB}
-                                        csPercent={child.childSupportPercB}
-                                        isFarApplied={child.farAppliedB}
-                                        isMarApplied={child.marAppliedB}
+                                        label="YOU"
+                                        isUserHighlighted
+                                        incomePercent={results.incomePercA}
+                                        costPercent={child.costPercA}
+                                        csPercent={child.childSupportPercA}
+                                        isFarApplied={child.farAppliedA}
+                                        isMarApplied={child.marAppliedA}
                                         otherParentHasFixedRate={
-                                            child.farAppliedA || child.marAppliedA
+                                            child.farAppliedB || child.marAppliedB
                                         }
                                         fixedRateAmount={
-                                            child.farAppliedB ? results.FAR : results.MAR
+                                            child.farAppliedA ? results.FAR : results.MAR
                                         }
                                         formatPercent={formatPercent2dp}
                                         formatCurrency={formatCurrency}
                                         capExplanation={
-                                            child.marAppliedB
-                                                ? results.marCapExplanationB
-                                                : child.farAppliedB
-                                                    ? results.farCapExplanationB
+                                            child.marAppliedA
+                                                ? results.marCapExplanationA
+                                                : child.farAppliedA
+                                                    ? results.farCapExplanationA
                                                     : undefined
                                         }
+                                        simplifiedView={hasDeceasedParent}
                                     />
-                                )}
+                                    {!hasDeceasedParent && (
+                                        <GapAnalysisCard
+                                            label="OTHER PARENT"
+                                            incomePercent={results.incomePercB}
+                                            costPercent={child.costPercB}
+                                            csPercent={child.childSupportPercB}
+                                            isFarApplied={child.farAppliedB}
+                                            isMarApplied={child.marAppliedB}
+                                            otherParentHasFixedRate={
+                                                child.farAppliedA || child.marAppliedA
+                                            }
+                                            fixedRateAmount={
+                                                child.farAppliedB ? results.FAR : results.MAR
+                                            }
+                                            formatPercent={formatPercent2dp}
+                                            formatCurrency={formatCurrency}
+                                            capExplanation={
+                                                child.marAppliedB
+                                                    ? results.marCapExplanationB
+                                                    : child.farAppliedB
+                                                        ? results.farCapExplanationB
+                                                        : undefined
+                                            }
+                                        />
+                                    )}
+                                </View>
                             </View>
-                        </View>
-                    </>
-                </BreakdownStepCard>
-            ))}
+                        </>
+                    </BreakdownStepCard>
+                );
+            })}
         </>
     );
 }

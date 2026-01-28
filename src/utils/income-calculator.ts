@@ -76,8 +76,10 @@ export interface IncomeCalculationResult {
   multiCaseAllowanceB: number;
   /** Parent A's multi-case breakdown (for Step 1 display) */
   multiCaseBreakdownA?: MultiCaseChildBreakdown[];
+  multiCaseGroupedBreakdownA?: import('./child-support-calculations').MultiCaseAgeBracketBreakdown[];
   /** Parent B's multi-case breakdown (for Step 1 display) */
   multiCaseBreakdownB?: MultiCaseChildBreakdown[];
+  multiCaseGroupedBreakdownB?: import('./child-support-calculations').MultiCaseAgeBracketBreakdown[];
 }
 
 // ============================================================================
@@ -276,6 +278,8 @@ export function calculateIncomes(input: IncomeCalculationInput): IncomeCalculati
     multiCaseAllowanceA,
     multiCaseAllowanceB,
     multiCaseBreakdownA: multiCaseResultA.breakdown,
+    multiCaseGroupedBreakdownA: multiCaseResultA.groupedBreakdown,
     multiCaseBreakdownB: multiCaseResultB.breakdown,
+    multiCaseGroupedBreakdownB: multiCaseResultB.groupedBreakdown,
   };
 }

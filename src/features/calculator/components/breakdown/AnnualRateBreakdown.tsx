@@ -302,35 +302,46 @@ export function AnnualRateBreakdown({
                     );
                 }
 
+                // Determine which parent is paying for this specific child
+                // Only show the calculation for the parent who owes money
                 const showForParentA = parentAOwesForChild;
-                const payingParentColor = showForParentA ? colors.userHighlight : colors.textMuted;
-                const farApplied = showForParentA ? child.farAppliedA : child.farAppliedB;
+                const showForParentB = parentBOwesForChild;
+                
+                // Only show one parent's calculation per child (the one who is paying)
+                const shouldShowParentA = showForParentA && !showForParentB;
+                const shouldShowParentB = showForParentB && !showForParentA;
+                
+                // If both parents owe (shouldn't happen in standard formula), show Parent A
+                const displayForParentA = shouldShowParentA || (showForParentA && showForParentB);
+                
+                const payingParentColor = displayForParentA ? colors.userHighlight : colors.textMuted;
+                const farApplied = displayForParentA ? child.farAppliedA : child.farAppliedB;
+                const marApplied = displayForParentA ? child.marAppliedA : child.marAppliedB;
+                const childSupportPerc = displayForParentA ? child.childSupportPercA : child.childSupportPercB;
 
                 const isMixedPayment = results.finalPaymentAmount > 0 && (results.paymentToNPC ?? 0) > 0;
 
                 // For mixed payments (Rule 3), the main row should only show liability to other parent
                 // The NPC liability is shown in the separate blue box
-                const liability = showForParentA
+                const liability = displayForParentA
                     ? child.finalLiabilityA + (isMixedPayment ? 0 : (child.liabilityToNPC_A ?? 0))
                     : child.finalLiabilityB + (isMixedPayment ? 0 : (child.liabilityToNPC_B ?? 0));
 
-                const gapPercentage = child.costPerChild > 0
-                    ? (liability / child.costPerChild) * 100
-                    : 0;
-
-                const multiCaseCapApplied = showForParentA ? child.multiCaseCapAppliedA : child.multiCaseCapAppliedB;
-                const multiCaseCap = showForParentA ? child.multiCaseCapA : child.multiCaseCapB;
+                const multiCaseCapApplied = displayForParentA ? child.multiCaseCapAppliedA : child.multiCaseCapAppliedB;
+                const multiCaseCap = displayForParentA ? child.multiCaseCapA : child.multiCaseCapB;
 
                 return (
                     <View key={index}>
                         <View style={styles.perChildGapRow}>
-                            <Text style={[styles.perChildGapLabel, { fontWeight: '700' }, showForParentA && dynamicStyles.userHighlight]}>
+                            <Text style={[styles.perChildGapLabel, { fontWeight: '700' }, displayForParentA && dynamicStyles.userHighlight]}>
                                 {farApplied ? (
                                     <>Child {index + 1} - <Text style={{ color: payingParentColor, fontWeight: '700' }}>Fixed annual rate</Text></>
+                                ) : marApplied ? (
+                                    <>Child {index + 1} - <Text style={{ color: payingParentColor, fontWeight: '700' }}>Minimum annual rate</Text></>
                                 ) : isFormula5 ? (
                                     <>Child {index + 1} - <Text style={{ color: payingParentColor, fontWeight: '700' }}>½ × [{formatCurrency(child.costPerChild)} − ({formatPercent2dp(child.costPercA)} × {formatCurrency(child.costPerChild)})]</Text></>
                                 ) : (
-                                    <>Child {index + 1} - <Text style={{ color: payingParentColor, fontWeight: '700' }}>({formatPercent2dp(gapPercentage)})</Text> × {formatCurrency(child.costPerChild)}</>
+                                    <>Child {index + 1} - <Text style={{ color: payingParentColor, fontWeight: '700' }}>({formatPercent2dp(childSupportPerc)})</Text> × {formatCurrency(child.costPerChild)}</>
                                 )}
                             </Text>
                             <Text style={[styles.perChildGapValue, { color: payingParentColor, fontWeight: '700' }]}>{formatCurrency(liability)}</Text>

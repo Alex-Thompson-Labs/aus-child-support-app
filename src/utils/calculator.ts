@@ -168,7 +168,9 @@ export interface CalculationResults {
   multiCaseAllowanceA: number;
   multiCaseAllowanceB: number;
   multiCaseBreakdownA?: import('./child-support-calculations').MultiCaseChildBreakdown[];
+  multiCaseGroupedBreakdownA?: import('./child-support-calculations').MultiCaseAgeBracketBreakdown[];
   multiCaseBreakdownB?: import('./child-support-calculations').MultiCaseChildBreakdown[];
+  multiCaseGroupedBreakdownB?: import('./child-support-calculations').MultiCaseAgeBracketBreakdown[];
   multiCaseCapA?: number;
   multiCaseCapB?: number;
   multiCaseCapAppliedA: boolean;

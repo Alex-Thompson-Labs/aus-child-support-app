@@ -259,11 +259,13 @@ export function Formula3LiabilityStep({
                                     YOU
                                 </Text>
                                 {results.childResults.map((child, idx) => {
-                                    // Multi-case cost = multi-case allowance (since there's typically 1 other case child)
-                                    // Or we can get it from the breakdown
-                                    const multiCaseCost = results.multiCaseAllowanceA || 0;
+                                    // Get the child-specific multi-case cap (Solo Cost per child)
+                                    const multiCaseCap = child.multiCaseCapA;
+                                    
+                                    // Calculate the Solo Cost from the cap: cap = soloCost × (100% - costPerc)
+                                    // Therefore: soloCost = cap / (100% - costPerc)
                                     const costPerc = child.costPercA;
-                                    const calculatedCap = multiCaseCost * ((100 - costPerc) / 100);
+                                    const soloCost = multiCaseCap ? multiCaseCap / ((100 - costPerc) / 100) : 0;
                                     
                                     return (
                                         <View key={idx} style={{ marginBottom: 8 }}>
@@ -273,7 +275,7 @@ export function Formula3LiabilityStep({
                                                 </Text>
                                             )}
                                             <Text style={[styles.childLabel, dynamicStyles.textMuted, { fontSize: 13 }]}>
-                                                {formatCurrency(multiCaseCost)} × (100 - {costPerc.toFixed(2)}) = {formatCurrency(calculatedCap)}
+                                                {formatCurrency(soloCost)} × (100 - {costPerc.toFixed(2)}) = {formatCurrency(multiCaseCap || 0)}
                                             </Text>
                                         </View>
                                     );
@@ -288,10 +290,13 @@ export function Formula3LiabilityStep({
                                     OTHER PARENT
                                 </Text>
                                 {results.childResults.map((child, idx) => {
-                                    // Multi-case cost = multi-case allowance
-                                    const multiCaseCost = results.multiCaseAllowanceB || 0;
+                                    // Get the child-specific multi-case cap (Solo Cost per child)
+                                    const multiCaseCap = child.multiCaseCapB;
+                                    
+                                    // Calculate the Solo Cost from the cap: cap = soloCost × (100% - costPerc)
+                                    // Therefore: soloCost = cap / (100% - costPerc)
                                     const costPerc = child.costPercB;
-                                    const calculatedCap = multiCaseCost * ((100 - costPerc) / 100);
+                                    const soloCost = multiCaseCap ? multiCaseCap / ((100 - costPerc) / 100) : 0;
                                     
                                     return (
                                         <View key={idx} style={{ marginBottom: 8 }}>
@@ -301,7 +306,7 @@ export function Formula3LiabilityStep({
                                                 </Text>
                                             )}
                                             <Text style={[styles.childLabel, dynamicStyles.textMuted, { fontSize: 13 }]}>
-                                                {formatCurrency(multiCaseCost)} × (100 - {costPerc.toFixed(2)}) = {formatCurrency(calculatedCap)}
+                                                {formatCurrency(soloCost)} × (100 - {costPerc.toFixed(2)}) = {formatCurrency(multiCaseCap || 0)}
                                             </Text>
                                         </View>
                                     );
