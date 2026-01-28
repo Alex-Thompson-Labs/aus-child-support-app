@@ -24,7 +24,7 @@ export function Footer({ containerStyle }: FooterProps) {
       accessibilityRole={Platform.OS === 'web' ? 'contentinfo' : undefined}
     >
       <View style={styles.footerContent}>
-        <Text style={styles.copyrightText}>© {currentYear} Australian Child Support Calculator</Text>
+        <Text style={styles.copyrightText}>© {currentYear} ChildSupport Direct (ABN: 27 925 351 253)</Text>
         <Text style={styles.separator}>•</Text>
         <PrivacyPolicyLink
           linkText="Privacy Policy"
