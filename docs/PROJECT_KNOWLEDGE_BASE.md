@@ -413,6 +413,12 @@ This is a **mature, production-ready application** with a strong focus on:
 - Fixing edge cases in calculation logic
 - Optimizing conversion funnel
 
+**Recent Bug Fixes (2026-01-29)**:
+- Fixed Step 7 (Cost of Children) calculation to use "Same Age" rule per section 55HA
+  - Each child's cost is now calculated separately assuming all children are the same age as that child
+  - Matches the multi-case allowance calculation approach from Step 1
+  - Provides more accurate per-child costs for mixed-age scenarios
+
 **Current Phase**: Validation (proving parents click "Get Legal Help" buttons)
 **Success Metric**: >2% click-through rate
 

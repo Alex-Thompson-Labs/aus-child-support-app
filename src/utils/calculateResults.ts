@@ -402,17 +402,50 @@ export const calculateChildSupport = (
     multiCaseAllowanceB,
   } = incomeResults;
 
-  // Step 5: Calculate Total Cost of Children
+  // Step 7: Calculate Cost of Children (COTC)
+  // Uses the "Same Age" rule: For each child, calculate the cost assuming
+  // ALL children are the same age as that child, then divide by number of children.
+  // This is the same approach used for multi-case allowance in Step 1.
   // Adult children (18+) are excluded from Services Australia assessment
-  // They can only receive Adult Child Maintenance via court order
   const assessableChildren = children.filter((c) => c.age < 18);
-  const { cost: totalCost, bracketInfo: costBracketInfo } = getChildCost(
-    selectedYear,
-    assessableChildren,
-    CCSI
-  );
-  const costPerChild =
-    assessableChildren.length > 0 ? totalCost / assessableChildren.length : 0;
+  
+  // Calculate cost per child using the "Same Age" rule
+  // Store both the cost and bracket info for each child for detailed display
+  const childCosts: { cost: number; bracketInfo: any; totalCostAtAge: number }[] = [];
+  let totalCost = 0;
+  
+  for (const child of assessableChildren) {
+    // Create virtual children all of same age as this child
+    const ageRange = deriveAgeRangeMemoized(child.age);
+    const virtualChildren = [];
+    for (let i = 0; i < assessableChildren.length; i++) {
+      virtualChildren.push({
+        age: child.age,
+        ageRange: ageRange,
+        careA: 0,
+        careB: 0,
+      });
+    }
+    
+    // Calculate cost using CCSI
+    const { cost: childTotalCost, bracketInfo } = getChildCost(
+      selectedYear,
+      virtualChildren,
+      CCSI
+    );
+    
+    // This child's share
+    const childCost = childTotalCost / assessableChildren.length;
+    childCosts.push({ 
+      cost: childCost, 
+      bracketInfo,
+      totalCostAtAge: childTotalCost 
+    });
+    totalCost += childCost;
+  }
+  
+  // Use the first child's bracket info for display (representative)
+  const costBracketInfo = childCosts.length > 0 ? childCosts[0].bracketInfo : undefined;
 
   // Step 6–8: Calculate individual liabilities
   let totalLiabilityA = 0;
@@ -431,6 +464,11 @@ export const calculateChildSupport = (
       )
       : 0;
 
+    // Get the cost for this specific child (using "Same Age" rule)
+    // Adult children have zero cost
+    const childCostData = c.age >= 18 ? null : (childCosts[childIndex] ?? null);
+    const childCostPerChild = childCostData?.cost ?? 0;
+
     // Calculate liability using the extracted module
     const liabilityResult = calculateChildLiability({
       age: c.age,
@@ -440,7 +478,7 @@ export const calculateChildSupport = (
       careNPC: rawCareNPC,
       incomePercA,
       incomePercB,
-      costPerChild,
+      costPerChild: childCostPerChild,
       hasNPC,
     });
 
@@ -473,7 +511,10 @@ export const calculateChildSupport = (
       isAdultChild,
       isTurning18,
       // Cost per child is 0 for adult children (excluded from calculation)
-      costPerChild: isAdultChild ? 0 : costPerChild,
+      costPerChild: childCostPerChild,
+      // Store bracket info and total cost at this age for Step 7 display
+      costBracketInfo: childCostData?.bracketInfo,
+      totalCostAtAge: childCostData?.totalCostAtAge ?? 0,
       roundedCareA,
       roundedCareB,
       costPercA,

@@ -9,6 +9,7 @@
 // Main breakdown view (lazy-loadable)
 export { BreakdownView } from './BreakdownView';
 export { Formula3BreakdownView } from './Formula3BreakdownView';
+export { Formula4BreakdownView } from './Formula4BreakdownView';
 export { Formula5BreakdownView } from './Formula5BreakdownView';
 export { Formula6BreakdownView } from './Formula6BreakdownView';
 

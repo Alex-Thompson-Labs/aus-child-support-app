@@ -70,6 +70,10 @@ export interface ChildResult {
   careA: number;
   careB: number;
   costPerChild: number;
+  /** Bracket info for this child's cost calculation (Step 7 "Same Age" rule) */
+  costBracketInfo?: CostBracketInfo;
+  /** Total COTC if all children were this child's age (Step 7 "Same Age" rule) */
+  totalCostAtAge?: number;
   roundedCareA: number;
   roundedCareB: number;
   costPercA: number;

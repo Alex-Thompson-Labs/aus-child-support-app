@@ -6,7 +6,7 @@
  */
 
 import { AgeRange, ChildResult, deriveAgeRange, OtherCaseChild } from '../calculator';
-import { getChildCost } from '../child-support-calculations';
+import { calculateMultiCaseAllowanceDetailed, getChildCost } from '../child-support-calculations';
 import { AssessmentYear } from '../child-support-constants';
 import {
     applyFARMultiChildCap,
@@ -195,108 +195,82 @@ export function applyMultiCaseCaps(input: MultiCaseCapInput): MultiCaseCapResult
     };
   }
 
-  // Step 1: Calculate total gross liabilities for each parent across ALL children
-  let totalGrossLiabilityA = 0;
-  let totalGrossLiabilityB = 0;
-  
+  // Calculate multi-case breakdown for both parents (same as Step 1)
+  // This gives us the per-child multi-case costs
+  const multiCaseResultA = hasMultiCaseA
+    ? calculateMultiCaseAllowanceDetailed(
+        selectedYear,
+        preliminaryCSI_A,
+        assessableChildren,
+        otherChildrenA
+      )
+    : null;
+
+  const multiCaseResultB = hasMultiCaseB
+    ? calculateMultiCaseAllowanceDetailed(
+        selectedYear,
+        preliminaryCSI_B,
+        assessableChildren,
+        otherChildrenB
+      )
+    : null;
+
+  // Step 1: Calculate per-child caps and apply them individually
   childResults.forEach((child) => {
-    totalGrossLiabilityA += child.finalLiabilityA + (child.liabilityToNPC_A ?? 0);
-    totalGrossLiabilityB += child.finalLiabilityB + (child.liabilityToNPC_B ?? 0);
-  });
-  
-  // Step 2: Calculate net liability (offset between parents)
-  const netLiabilityA = Math.max(0, totalGrossLiabilityA - totalGrossLiabilityB);
-  const netLiabilityB = Math.max(0, totalGrossLiabilityB - totalGrossLiabilityA);
-  
-  // Step 3: Calculate multi-case cap (sum of per-child caps)
-  let totalCapA = 0;
-  let totalCapB = 0;
-  
-  if (hasMultiCaseA) {
-    const soloCostPerChildA = calculateSoloCostPerChild({
-      parentPreliminaryCSI: preliminaryCSI_A,
-      assessableChildren,
-      otherCaseChildren: otherChildrenA,
-      selectedYear,
-    });
     
-    childResults.forEach((child) => {
-      if (!child.isAdultChild) {
-        // Calculate cap: child cost × (100% - parent's cost %)
-        const capA = Math.round(soloCostPerChildA * ((100 - child.costPercA) / 100));
+    if (!child.isAdultChild) {
+      // Calculate Parent A cap for this child
+      if (hasMultiCaseA && multiCaseResultA) {
+        // Get multi-case cost from Step 1 breakdown
+        const multiCaseCost = multiCaseResultA.breakdown.find(
+          breakdown => breakdown.isCurrentCase && breakdown.childAge === child.age
+        )?.costPerChild || 0;
+        
+        const capA = Math.round(multiCaseCost * ((100 - child.costPercA) / 100));
         child.multiCaseCapA = capA;
-        totalCapA += capA;
-      }
-    });
-  }
-  
-  if (hasMultiCaseB) {
-    const soloCostPerChildB = calculateSoloCostPerChild({
-      parentPreliminaryCSI: preliminaryCSI_B,
-      assessableChildren,
-      otherCaseChildren: otherChildrenB,
-      selectedYear,
-    });
-    
-    childResults.forEach((child) => {
-      if (!child.isAdultChild) {
-        // Calculate cap: child cost × (100% - parent's cost %)
-        const capB = Math.round(soloCostPerChildB * ((100 - child.costPercB) / 100));
-        child.multiCaseCapB = capB;
-        totalCapB += capB;
-      }
-    });
-  }
-  
-  // Step 4: Compare net liability with cap and take the lower value
-  let finalNetLiabilityA = netLiabilityA;
-  let finalNetLiabilityB = netLiabilityB;
-  
-  if (hasMultiCaseA && netLiabilityA > 0) {
-    finalNetLiabilityA = Math.min(netLiabilityA, totalCapA);
-    if (finalNetLiabilityA < netLiabilityA) {
-      multiCaseCapAppliedA = true;
-      // Mark all children as having cap applied
-      childResults.forEach((child) => {
-        if (!child.isAdultChild) {
+        
+        // Calculate total liability for this child (parent-to-parent + parent-to-NPC)
+        const totalLiabilityA = child.finalLiabilityA + (child.liabilityToNPC_A ?? 0);
+        
+        // Apply cap if total liability exceeds it
+        if (totalLiabilityA > capA) {
+          multiCaseCapAppliedA = true;
           child.multiCaseCapAppliedA = true;
+          
+          // Proportionally reduce both parent-to-parent and parent-to-NPC payments
+          const reductionRatio = capA / totalLiabilityA;
+          child.finalLiabilityA = Math.round(child.finalLiabilityA * reductionRatio);
+          child.liabilityToNPC_A = Math.round((child.liabilityToNPC_A ?? 0) * reductionRatio);
         }
-      });
-    }
-  }
-  
-  if (hasMultiCaseB && netLiabilityB > 0) {
-    finalNetLiabilityB = Math.min(netLiabilityB, totalCapB);
-    if (finalNetLiabilityB < netLiabilityB) {
-      multiCaseCapAppliedB = true;
-      // Mark all children as having cap applied
-      childResults.forEach((child) => {
-        if (!child.isAdultChild) {
+      }
+      
+      // Calculate Parent B cap for this child
+      if (hasMultiCaseB && multiCaseResultB) {
+        // Get multi-case cost from Step 1 breakdown
+        const multiCaseCost = multiCaseResultB.breakdown.find(
+          breakdown => breakdown.isCurrentCase && breakdown.childAge === child.age
+        )?.costPerChild || 0;
+        
+        const capB = Math.round(multiCaseCost * ((100 - child.costPercB) / 100));
+        child.multiCaseCapB = capB;
+        
+        // Calculate total liability for this child (parent-to-parent + parent-to-NPC)
+        const totalLiabilityB = child.finalLiabilityB + (child.liabilityToNPC_B ?? 0);
+        
+        // Apply cap if total liability exceeds it
+        if (totalLiabilityB > capB) {
+          multiCaseCapAppliedB = true;
           child.multiCaseCapAppliedB = true;
+          
+          // Proportionally reduce both parent-to-parent and parent-to-NPC payments
+          const reductionRatio = capB / totalLiabilityB;
+          child.finalLiabilityB = Math.round(child.finalLiabilityB * reductionRatio);
+          child.liabilityToNPC_B = Math.round((child.liabilityToNPC_B ?? 0) * reductionRatio);
         }
-      });
+      }
     }
-  }
-  
-  // Step 5: Apply proportional reduction to each child if cap was applied
-  if (hasMultiCaseA && finalNetLiabilityA < totalGrossLiabilityA) {
-    const reductionRatio = finalNetLiabilityA / totalGrossLiabilityA;
-    childResults.forEach((child) => {
-      child.finalLiabilityA = child.finalLiabilityA * reductionRatio;
-      child.liabilityToNPC_A = (child.liabilityToNPC_A ?? 0) * reductionRatio;
-    });
-  }
-  
-  if (hasMultiCaseB && finalNetLiabilityB < totalGrossLiabilityB) {
-    const reductionRatio = finalNetLiabilityB / totalGrossLiabilityB;
-    childResults.forEach((child) => {
-      child.finalLiabilityB = child.finalLiabilityB * reductionRatio;
-      child.liabilityToNPC_B = (child.liabilityToNPC_B ?? 0) * reductionRatio;
-    });
-  }
-  
-  // Step 6: Calculate final liabilities after all adjustments
-  childResults.forEach((child) => {
+    
+    // Sum up final liabilities
     finalLiabilityA += child.finalLiabilityA;
     finalLiabilityB += child.finalLiabilityB;
   });

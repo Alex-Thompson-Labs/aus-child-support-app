@@ -6,6 +6,7 @@ import { CostOfChildrenStep } from './CostOfChildrenStep';
 import { CostStep } from './CostStep';
 import { DualNPCStep } from './DualNPCStep';
 import { Formula3BreakdownView } from './Formula3BreakdownView';
+import { Formula4BreakdownView } from './Formula4BreakdownView';
 import { Formula5BreakdownView } from './Formula5BreakdownView';
 import { Formula6BreakdownView } from './Formula6BreakdownView';
 import { IncomeStep } from './IncomeStep';
@@ -48,12 +49,22 @@ export function BreakdownView({ results, formState, hasDeceasedParent = false }:
   const isFormula6 = (results as any).formulaUsed === 6;
   const hideOtherParent = hasDeceasedParent || isFormula5 || isFormula6;
   
-  // Check if this is a Formula 3 (multi-case) scenario
+  // Check if this is a Formula 3 (multi-case) or Formula 4 (multi-case + NPC) scenario
   const hasMultiCaseAllowance = 
     (results.multiCaseAllowanceA !== undefined && results.multiCaseAllowanceA > 0) ||
     (results.multiCaseAllowanceB !== undefined && results.multiCaseAllowanceB > 0);
   
-  // If Formula 3 (multi-case), use dedicated Formula 3 breakdown
+  // Check if there's a non-parent carer (NPC) involved
+  const hasNPC = results.childResults?.some(
+    (child) => (child.liabilityToNPC_A ?? 0) > 0 || (child.liabilityToNPC_B ?? 0) > 0
+  );
+  
+  // If Formula 4 (multi-case + NPC), use dedicated Formula 4 breakdown
+  if (hasMultiCaseAllowance && hasNPC) {
+    return <Formula4BreakdownView results={results} formState={formState} />;
+  }
+  
+  // If Formula 3 (multi-case only), use dedicated Formula 3 breakdown
   if (hasMultiCaseAllowance) {
     return <Formula3BreakdownView results={results} formState={formState} />;
   }

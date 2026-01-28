@@ -14,8 +14,9 @@ interface CostOfChildrenStepProps {
 /**
  * Step 7: Cost of the Child (COTC)
  * 
- * Shows the total cost of children calculation based on combined income
- * and the cost per child used in the annual rate calculation.
+ * Shows the cost calculation for each child using the "Same Age" rule.
+ * For each child, we calculate the cost assuming ALL children are the same age
+ * as that child, then divide by the number of children.
  */
 export function CostOfChildrenStep({
     results,
@@ -35,93 +36,216 @@ export function CostOfChildrenStep({
         divider: { backgroundColor: colors.border },
         totalLabel: { color: colors.textPrimary },
         totalValue: { color: colors.textPrimary },
+        ageGroupSection: {
+            marginTop: 16,
+            paddingTop: 12,
+            borderTopWidth: 1,
+            borderTopColor: colors.border,
+        },
+        ageGroupTitle: {
+            fontSize: 14,
+            fontWeight: '600' as const,
+            color: colors.textPrimary,
+            marginBottom: 8,
+        },
     }), [colors]);
 
     // Count assessable children (exclude adult children)
     const assessableChildren = results.childResults.filter(c => !c.isAdultChild);
-    const costPerChild = assessableChildren.length > 0 
-        ? results.totalCost / assessableChildren.length 
-        : 0;
+    
+    // Group children by age bracket for display
+    const under13Children = assessableChildren.filter(c => c.age < 13);
+    const over13Children = assessableChildren.filter(c => c.age >= 13);
 
     return (
         <BreakdownStepCard
             stepNumber={7}
-            title="COST OF THE CHILD"
+            title="COST OF CHILDREN (COTC)"
             isExpanded={isExpanded}
             onToggle={onToggle}
         >
             <>
                 <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
-                    The cost of the child is calculated using the Costs of the Children Table,
-                    which is based on the combined child support income and the number and ages
-                    of the children.
+                    Calculate the costs for the child (or other and younger children separately) for the day, 
+                    calculating the costs for other and younger children separately (section 55HA). This uses 
+                    income brackets set by the Department of Social Services.
                 </Text>
 
                 <View style={[styles.calculationBox, dynamicStyles.calculationBox]}>
-                    {/* Income used for calculation */}
-                    <View style={styles.row}>
-                        <Text style={[styles.label, dynamicStyles.label]}>
-                            Combined Child Support Income
-                        </Text>
-                        <Text style={[styles.value, dynamicStyles.value]}>
-                            {formatCurrency(results.CCSI)}
-                        </Text>
-                    </View>
-
-                    {/* Bracket information if available */}
-                    {results.costBracketInfo && (
+                    {/* Children 13 and under */}
+                    {under13Children.length > 0 && under13Children[0].costBracketInfo && (
                         <>
-                            <View style={[styles.row, { marginTop: 8 }]}>
+                            <Text style={dynamicStyles.ageGroupTitle}>
+                                Children 13 and under
+                            </Text>
+                            
+                            <View style={styles.row}>
                                 <Text style={[styles.label, dynamicStyles.label]}>
-                                    Income bracket: {formatCurrency(results.costBracketInfo.minIncome)} – {
-                                        results.costBracketInfo.maxIncome 
-                                            ? formatCurrency(results.costBracketInfo.maxIncome) 
+                                    Combined CS income
+                                </Text>
+                                <Text style={[styles.value, dynamicStyles.value]}>
+                                    {formatCurrency(results.CCSI)}
+                                </Text>
+                            </View>
+                            
+                            <View style={styles.row}>
+                                <Text style={[styles.label, dynamicStyles.label]}>
+                                    Income bracket: {formatCurrency(under13Children[0].costBracketInfo.minIncome)} – {
+                                        under13Children[0].costBracketInfo.maxIncome 
+                                            ? formatCurrency(under13Children[0].costBracketInfo.maxIncome) 
                                             : 'unlimited'
                                     }
                                 </Text>
                             </View>
+                            
                             <View style={styles.row}>
                                 <Text style={[styles.label, dynamicStyles.label]}>
                                     Base amount
                                 </Text>
                                 <Text style={[styles.value, dynamicStyles.value]}>
-                                    {formatCurrency(results.costBracketInfo.fixed)}
+                                    {formatCurrency(under13Children[0].costBracketInfo.fixed)}
                                 </Text>
                             </View>
-                            {results.costBracketInfo.rate > 0 && (
+                            
+                            {under13Children[0].costBracketInfo.rate > 0 && (
                                 <View style={styles.row}>
                                     <Text style={[styles.label, dynamicStyles.label]}>
-                                        + {(results.costBracketInfo.rate * 100).toFixed(2)}% × {formatCurrency(results.costBracketInfo.incomeInBracket)}
+                                        + {(under13Children[0].costBracketInfo.rate * 100).toFixed(2)}% × {formatCurrency(under13Children[0].costBracketInfo.incomeInBracket)}
                                     </Text>
                                     <Text style={[styles.value, dynamicStyles.value]}>
-                                        +{formatCurrency(results.costBracketInfo.rate * results.costBracketInfo.incomeInBracket)}
+                                        +{formatCurrency(under13Children[0].costBracketInfo.rate * under13Children[0].costBracketInfo.incomeInBracket)}
                                     </Text>
                                 </View>
                             )}
+                            
+                            <View style={[styles.row, { marginTop: 8 }]}>
+                                <Text style={[styles.label, dynamicStyles.label]}>
+                                    COTC for all children at this age
+                                </Text>
+                                <Text style={[styles.value, dynamicStyles.value]}>
+                                    {formatCurrency(under13Children[0].totalCostAtAge || 0)}
+                                </Text>
+                            </View>
+                            
+                            <View style={styles.row}>
+                                <Text style={[styles.label, dynamicStyles.label]}>
+                                    • {formatCurrency(under13Children[0].totalCostAtAge || 0)} ÷ {assessableChildren.length}
+                                </Text>
+                            </View>
+                            
+                            <View style={styles.row}>
+                                <Text style={[styles.totalLabel, dynamicStyles.totalLabel]}>
+                                    Cost of the Child
+                                </Text>
+                                <Text style={[styles.totalValue, dynamicStyles.totalValue]}>
+                                    {formatCurrency(under13Children[0].costPerChild)}
+                                </Text>
+                            </View>
                         </>
                     )}
 
-                    <View style={[styles.divider, dynamicStyles.divider]} />
-
-                    {/* Total cost */}
-                    <View style={styles.row}>
-                        <Text style={[styles.totalLabel, dynamicStyles.totalLabel]}>
-                            Total cost of children
-                        </Text>
-                        <Text style={[styles.totalValue, dynamicStyles.totalValue]}>
-                            {formatCurrency(results.totalCost)}
-                        </Text>
-                    </View>
-
-                    {/* Cost per child */}
-                    {assessableChildren.length > 1 && (
-                        <View style={[styles.row, { marginTop: 4 }]}>
-                            <Text style={[styles.label, dynamicStyles.label]}>
-                                Cost per child ({assessableChildren.length} children)
+                    {/* Children over 13 */}
+                    {over13Children.length > 0 && over13Children[0].costBracketInfo && (
+                        <View style={dynamicStyles.ageGroupSection}>
+                            <Text style={dynamicStyles.ageGroupTitle}>
+                                Children over 13
                             </Text>
-                            <Text style={[styles.value, dynamicStyles.value]}>
-                                {formatCurrency(costPerChild)}
-                            </Text>
+                            
+                            <View style={styles.row}>
+                                <Text style={[styles.label, dynamicStyles.label]}>
+                                    Child support income
+                                </Text>
+                                <Text style={[styles.value, dynamicStyles.value]}>
+                                    {formatCurrency(results.CCSI)}
+                                </Text>
+                            </View>
+                            
+                            <View style={styles.row}>
+                                <Text style={[styles.label, dynamicStyles.label]}>
+                                    Income bracket: {formatCurrency(over13Children[0].costBracketInfo.minIncome)} – {
+                                        over13Children[0].costBracketInfo.maxIncome 
+                                            ? formatCurrency(over13Children[0].costBracketInfo.maxIncome) 
+                                            : 'unlimited'
+                                    }
+                                </Text>
+                            </View>
+                            
+                            <View style={styles.row}>
+                                <Text style={[styles.label, dynamicStyles.label]}>
+                                    Base amount
+                                </Text>
+                                <Text style={[styles.value, dynamicStyles.value]}>
+                                    {formatCurrency(over13Children[0].costBracketInfo.fixed)}
+                                </Text>
+                            </View>
+                            
+                            {over13Children[0].costBracketInfo.rate > 0 && (
+                                <View style={styles.row}>
+                                    <Text style={[styles.label, dynamicStyles.label]}>
+                                        + {(over13Children[0].costBracketInfo.rate * 100).toFixed(2)}% × {formatCurrency(over13Children[0].costBracketInfo.incomeInBracket)}
+                                    </Text>
+                                    <Text style={[styles.value, dynamicStyles.value]}>
+                                        +{formatCurrency(over13Children[0].costBracketInfo.rate * over13Children[0].costBracketInfo.incomeInBracket)}
+                                    </Text>
+                                </View>
+                            )}
+                            
+                            <View style={[styles.row, { marginTop: 8 }]}>
+                                <Text style={[styles.label, dynamicStyles.label]}>
+                                    COTC for all children at this age
+                                </Text>
+                                <Text style={[styles.value, dynamicStyles.value]}>
+                                    {formatCurrency(over13Children[0].totalCostAtAge || 0)}
+                                </Text>
+                            </View>
+                            
+                            <View style={styles.row}>
+                                <Text style={[styles.label, dynamicStyles.label]}>
+                                    • {formatCurrency(over13Children[0].totalCostAtAge || 0)} ÷ {assessableChildren.length}
+                                </Text>
+                            </View>
+                            
+                            <View style={styles.row}>
+                                <Text style={[styles.totalLabel, dynamicStyles.totalLabel]}>
+                                    Cost of the Child
+                                </Text>
+                                <Text style={[styles.totalValue, dynamicStyles.totalValue]}>
+                                    {formatCurrency(over13Children[0].costPerChild)}
+                                </Text>
+                            </View>
+                        </View>
+                    )}
+
+                    {/* Final per-child costs */}
+                    {assessableChildren.length > 0 && (
+                        <View style={dynamicStyles.ageGroupSection}>
+                            {assessableChildren.map((child, index) => (
+                                <View key={index} style={[styles.row, { marginTop: index > 0 ? 4 : 0 }]}>
+                                    <Text style={[styles.label, dynamicStyles.label]}>
+                                        Costs for child {index + 1}
+                                    </Text>
+                                    <Text style={[styles.value, dynamicStyles.value]}>
+                                        {formatCurrency(child.costPerChild)}
+                                    </Text>
+                                </View>
+                            ))}
+                            
+                            {/* Total costs */}
+                            {assessableChildren.length > 1 && (
+                                <>
+                                    <View style={[styles.divider, dynamicStyles.divider, { marginTop: 12, marginBottom: 8 }]} />
+                                    <View style={styles.row}>
+                                        <Text style={[styles.totalLabel, dynamicStyles.totalLabel]}>
+                                            Total Cost of Children
+                                        </Text>
+                                        <Text style={[styles.totalValue, dynamicStyles.totalValue]}>
+                                            {formatCurrency(
+                                                assessableChildren.reduce((sum, child) => sum + child.costPerChild, 0)
+                                            )}
+                                        </Text>
+                                    </View>
+                                </>
+                            )}
                         </View>
                     )}
                 </View>

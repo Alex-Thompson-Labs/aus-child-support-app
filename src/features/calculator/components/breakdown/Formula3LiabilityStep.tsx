@@ -86,74 +86,169 @@ export function Formula3LiabilityStep({
                         (section 55HA). This uses income brackets set by the Department of Social Services.
                     </Text>
 
-                    {/* Bracket calculation */}
-                    {results.costBracketInfo && (
-                        <View style={[styles.bracketCalculation, dynamicStyles.bracketCalculation]}>
-                            {/* Combined income */}
-                            <Text
-                                style={[
-                                    styles.combinedCSIncomeLabel,
-                                    dynamicStyles.combinedCSIncomeLabel,
-                                    { marginBottom: 12, fontSize: 12, textAlign: 'left' },
-                                ]}
-                            >
-                                COMBINED CS INCOME - {formatCurrency(results.CCSI)}
-                            </Text>
+                    {/* Group children by age bracket */}
+                    {(() => {
+                        const assessableChildren = results.childResults.filter(c => !c.isAdultChild);
+                        const under13Children = assessableChildren.filter(c => c.age < 13);
+                        const over13Children = assessableChildren.filter(c => c.age >= 13);
 
-                            <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>
-                                Your bracket:{' '}
-                                {formatCurrency(results.costBracketInfo.minIncome)} –{' '}
-                                {results.costBracketInfo.maxIncome
-                                    ? formatCurrency(results.costBracketInfo.maxIncome)
-                                    : 'unlimited'}
-                            </Text>
-
-                            <View style={styles.bracketFormula}>
-                                <View style={styles.bracketRow}>
-                                    <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>Base amount</Text>
-                                    <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>
-                                        {formatCurrency(results.costBracketInfo.fixed)}
-                                    </Text>
-                                </View>
-                                {results.costBracketInfo.rate > 0 && (
-                                    <View style={styles.bracketRow}>
-                                        <Text style={[styles.bracketLabel, dynamicStyles.bracketLabel]}>
-                                            + {(results.costBracketInfo.rate * 100).toFixed(2)}% ×{' '}
-                                            {formatCurrency(results.costBracketInfo.incomeInBracket)}
+                        return (
+                            <View style={[styles.bracketCalculation, dynamicStyles.bracketCalculation]}>
+                                {/* Children 13 and under */}
+                                {under13Children.length > 0 && under13Children[0].costBracketInfo && (
+                                    <>
+                                        <Text style={[styles.bracketTotalLabel, dynamicStyles.bracketTotalLabel, { marginBottom: 8 }]}>
+                                            Children 13 and under
                                         </Text>
-                                        <Text style={[styles.bracketValue, dynamicStyles.bracketValue]}>
-                                            +
-                                            {formatCurrency(
-                                                results.costBracketInfo.rate *
-                                                results.costBracketInfo.incomeInBracket
+                                        
+                                        <View style={styles.bracketRow}>
+                                            <Text style={[styles.bracketLabel, dynamicStyles.bracketLabel]}>
+                                                Combined CS income
+                                            </Text>
+                                            <Text style={[styles.bracketValue, dynamicStyles.bracketValue]}>
+                                                {formatCurrency(results.CCSI)}
+                                            </Text>
+                                        </View>
+                                        
+                                        <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle, { marginTop: 4 }]}>
+                                            Income bracket:{' '}
+                                            {formatCurrency(under13Children[0].costBracketInfo.minIncome)} –{' '}
+                                            {under13Children[0].costBracketInfo.maxIncome
+                                                ? formatCurrency(under13Children[0].costBracketInfo.maxIncome)
+                                                : 'unlimited'}
+                                        </Text>
+
+                                        <View style={styles.bracketFormula}>
+                                            <View style={styles.bracketRow}>
+                                                <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>Base amount</Text>
+                                                <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>
+                                                    {formatCurrency(under13Children[0].costBracketInfo.fixed)}
+                                                </Text>
+                                            </View>
+                                            {under13Children[0].costBracketInfo.rate > 0 && (
+                                                <View style={styles.bracketRow}>
+                                                    <Text style={[styles.bracketLabel, dynamicStyles.bracketLabel]}>
+                                                        + {(under13Children[0].costBracketInfo.rate * 100).toFixed(2)}% ×{' '}
+                                                        {formatCurrency(under13Children[0].costBracketInfo.incomeInBracket)}
+                                                    </Text>
+                                                    <Text style={[styles.bracketValue, dynamicStyles.bracketValue]}>
+                                                        +{formatCurrency(under13Children[0].costBracketInfo.rate * under13Children[0].costBracketInfo.incomeInBracket)}
+                                                    </Text>
+                                                </View>
                                             )}
-                                        </Text>
-                                    </View>
+                                            <View style={styles.bracketRow}>
+                                                <Text style={[styles.bracketLabel, dynamicStyles.bracketLabel]}>
+                                                    COTC for all children at this age
+                                                </Text>
+                                                <Text style={[styles.bracketValue, dynamicStyles.bracketValue]}>
+                                                    {formatCurrency(under13Children[0].totalCostAtAge || 0)}
+                                                </Text>
+                                            </View>
+                                            <View style={styles.bracketRow}>
+                                                <Text style={[styles.bracketLabel, dynamicStyles.bracketLabel]}>
+                                                    • {formatCurrency(under13Children[0].totalCostAtAge || 0)} ÷ {assessableChildren.length}
+                                                </Text>
+                                            </View>
+                                            <View style={styles.bracketRow}>
+                                                <Text style={[styles.bracketTotalLabel, dynamicStyles.bracketTotalLabel]}>
+                                                    Cost of the Child
+                                                </Text>
+                                                <Text style={[styles.bracketTotalValue, dynamicStyles.bracketTotalValue]}>
+                                                    {formatCurrency(under13Children[0].costPerChild)}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </>
                                 )}
-                                <View style={[styles.bracketDivider, dynamicStyles.bracketDivider]} />
-                                <View style={styles.bracketRow}>
-                                    <Text style={[styles.bracketTotalLabel, dynamicStyles.bracketTotalLabel]}>
-                                        Total cost of children
-                                    </Text>
-                                    <Text style={[styles.bracketTotalValue, dynamicStyles.bracketTotalValue]}>
-                                        {formatCurrency(results.totalCost)}
-                                    </Text>
-                                </View>
-                                {results.childResults.length > 0 && (
-                                    <View style={styles.bracketRow}>
-                                        <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>
-                                            Cost per child ({results.childResults.length})
+
+                                {/* Children over 13 */}
+                                {over13Children.length > 0 && over13Children[0].costBracketInfo && (
+                                    <>
+                                        {under13Children.length > 0 && <View style={[styles.bracketDivider, dynamicStyles.bracketDivider, { marginVertical: 12 }]} />}
+                                        
+                                        <Text style={[styles.bracketTotalLabel, dynamicStyles.bracketTotalLabel, { marginBottom: 8 }]}>
+                                            Children over 13
                                         </Text>
-                                        <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>
-                                            {formatCurrency(
-                                                results.totalCost / results.childResults.length
+                                        
+                                        <View style={styles.bracketRow}>
+                                            <Text style={[styles.bracketLabel, dynamicStyles.bracketLabel]}>
+                                                Child support income
+                                            </Text>
+                                            <Text style={[styles.bracketValue, dynamicStyles.bracketValue]}>
+                                                {formatCurrency(results.CCSI)}
+                                            </Text>
+                                        </View>
+                                        
+                                        <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle, { marginTop: 4 }]}>
+                                            Income bracket:{' '}
+                                            {formatCurrency(over13Children[0].costBracketInfo.minIncome)} –{' '}
+                                            {over13Children[0].costBracketInfo.maxIncome
+                                                ? formatCurrency(over13Children[0].costBracketInfo.maxIncome)
+                                                : 'unlimited'}
+                                        </Text>
+
+                                        <View style={styles.bracketFormula}>
+                                            <View style={styles.bracketRow}>
+                                                <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>Base amount</Text>
+                                                <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>
+                                                    {formatCurrency(over13Children[0].costBracketInfo.fixed)}
+                                                </Text>
+                                            </View>
+                                            {over13Children[0].costBracketInfo.rate > 0 && (
+                                                <View style={styles.bracketRow}>
+                                                    <Text style={[styles.bracketLabel, dynamicStyles.bracketLabel]}>
+                                                        + {(over13Children[0].costBracketInfo.rate * 100).toFixed(2)}% ×{' '}
+                                                        {formatCurrency(over13Children[0].costBracketInfo.incomeInBracket)}
+                                                    </Text>
+                                                    <Text style={[styles.bracketValue, dynamicStyles.bracketValue]}>
+                                                        +{formatCurrency(over13Children[0].costBracketInfo.rate * over13Children[0].costBracketInfo.incomeInBracket)}
+                                                    </Text>
+                                                </View>
                                             )}
-                                        </Text>
-                                    </View>
+                                            <View style={styles.bracketRow}>
+                                                <Text style={[styles.bracketLabel, dynamicStyles.bracketLabel]}>
+                                                    COTC for all children at this age
+                                                </Text>
+                                                <Text style={[styles.bracketValue, dynamicStyles.bracketValue]}>
+                                                    {formatCurrency(over13Children[0].totalCostAtAge || 0)}
+                                                </Text>
+                                            </View>
+                                            <View style={styles.bracketRow}>
+                                                <Text style={[styles.bracketLabel, dynamicStyles.bracketLabel]}>
+                                                    • {formatCurrency(over13Children[0].totalCostAtAge || 0)} ÷ {assessableChildren.length}
+                                                </Text>
+                                            </View>
+                                            <View style={styles.bracketRow}>
+                                                <Text style={[styles.bracketTotalLabel, dynamicStyles.bracketTotalLabel]}>
+                                                    Cost of the Child
+                                                </Text>
+                                                <Text style={[styles.bracketTotalValue, dynamicStyles.bracketTotalValue]}>
+                                                    {formatCurrency(over13Children[0].costPerChild)}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </>
+                                )}
+
+                                {/* Final per-child costs */}
+                                {assessableChildren.length > 0 && (
+                                    <>
+                                        <View style={[styles.bracketDivider, dynamicStyles.bracketDivider, { marginVertical: 12 }]} />
+                                        {assessableChildren.map((child, index) => (
+                                            <View key={index} style={[styles.bracketRow, { marginTop: index > 0 ? 4 : 0 }]}>
+                                                <Text style={[styles.bracketLabel, dynamicStyles.bracketLabel]}>
+                                                    Costs for child {index + 1}
+                                                </Text>
+                                                <Text style={[styles.bracketValue, dynamicStyles.bracketValue]}>
+                                                    {formatCurrency(child.costPerChild)}
+                                                </Text>
+                                            </View>
+                                        ))}
+                                    </>
                                 )}
                             </View>
-                        </View>
-                    )}
+                        );
+                    })()}
                 </>
             </BreakdownStepCard>
 
@@ -172,7 +267,21 @@ export function Formula3LiabilityStep({
 
                     {/* Per-child breakdown */}
                     {results.childResults.map((child, index) => {
-                        const costPerChild = results.totalCost / results.childResults.length;
+                        // Calculate correct values
+                        const costPerChild = child.costPerChild ?? 0;
+                        const csPercA = child.childSupportPercA ?? 0;
+                        const csPercB = child.childSupportPercB ?? 0;
+                        
+                        const calculatedLiabilityA = csPercA > 0 ? Math.round(costPerChild * (csPercA / 100)) : 0;
+                        const calculatedLiabilityB = csPercB > 0 ? Math.round(costPerChild * (csPercB / 100)) : 0;
+                        
+                        // Store for total calculation
+                        (child as any)._calculatedLiabilityA = calculatedLiabilityA;
+                        (child as any)._calculatedLiabilityB = calculatedLiabilityB;
+                        
+                        // Only show calculation for parent(s) with positive CS%
+                        const showParentA = csPercA > 0;
+                        const showParentB = csPercB > 0;
                         
                         return (
                             <View key={index} style={[styles.childCard, dynamicStyles.childCard]}>
@@ -182,58 +291,97 @@ export function Formula3LiabilityStep({
                                     </Text>
                                 )}
                                 
-                                {/* Parent A calculation */}
-                                <View style={styles.childRow}>
-                                    <Text style={[styles.childLabel, dynamicStyles.userHighlight, { fontWeight: '600' }]}>
-                                        YOU
-                                    </Text>
-                                </View>
-                                <View style={styles.childRow}>
-                                    <Text style={[styles.childLabel, dynamicStyles.childLabel]}>
-                                        {formatCurrency(costPerChild)} × {child.childSupportPercA.toFixed(2)}%
-                                    </Text>
-                                    <Text style={[styles.childValue, dynamicStyles.userHighlight, { fontWeight: '600' }]}>
-                                        {child.farAppliedA || child.marAppliedA 
-                                            ? formatCurrency(child.farAppliedA ? results.FAR : results.MAR)
-                                            : formatCurrency(Math.max(0, child.liabilityA))
-                                        }
-                                    </Text>
-                                </View>
-                                {(child.farAppliedA || child.marAppliedA) && (
-                                    <Text style={[styles.childLabel, dynamicStyles.childLabel, { fontSize: 11, marginTop: 4 }]}>
-                                        {child.farAppliedA ? 'Fixed Annual Rate applied' : 'Minimum Annual Rate applied'}
-                                    </Text>
+                                {/* Parent A calculation - only if positive CS% */}
+                                {showParentA && (
+                                    <>
+                                        <View style={styles.childRow}>
+                                            <Text style={[styles.childLabel, dynamicStyles.userHighlight, { fontWeight: '600' }]}>
+                                                YOU
+                                            </Text>
+                                        </View>
+                                        <View style={styles.childRow}>
+                                            <Text style={[styles.childLabel, dynamicStyles.childLabel]}>
+                                                {formatCurrency(costPerChild)} × {csPercA.toFixed(2)}%
+                                            </Text>
+                                            <Text style={[styles.childValue, dynamicStyles.userHighlight, { fontWeight: '600' }]}>
+                                                {formatCurrency(calculatedLiabilityA)}
+                                            </Text>
+                                        </View>
+                                    </>
                                 )}
 
-                                <>
+                                {/* Divider between parents - only if both have positive CS% */}
+                                {showParentA && showParentB && (
                                     <View style={[styles.bracketDivider, dynamicStyles.bracketDivider, { marginVertical: 8 }]} />
-                                    
-                                    {/* Parent B calculation */}
-                                    <View style={styles.childRow}>
-                                        <Text style={[styles.childLabel, dynamicStyles.textMuted, { fontWeight: '600' }]}>
-                                            OTHER PARENT
-                                        </Text>
-                                    </View>
-                                    <View style={styles.childRow}>
-                                        <Text style={[styles.childLabel, dynamicStyles.childLabel]}>
-                                            {formatCurrency(costPerChild)} × {child.childSupportPercB.toFixed(2)}%
-                                        </Text>
-                                        <Text style={[styles.childValue, dynamicStyles.textMuted, { fontWeight: '600' }]}>
-                                            {child.farAppliedB || child.marAppliedB 
-                                                ? formatCurrency(child.farAppliedB ? results.FAR : results.MAR)
-                                                : formatCurrency(Math.max(0, child.liabilityB))
-                                            }
-                                        </Text>
-                                    </View>
-                                    {(child.farAppliedB || child.marAppliedB) && (
-                                        <Text style={[styles.childLabel, dynamicStyles.childLabel, { fontSize: 11, marginTop: 4 }]}>
-                                            {child.farAppliedB ? 'Fixed Annual Rate applied' : 'Minimum Annual Rate applied'}
-                                        </Text>
-                                    )}
-                                </>
+                                )}
+                                
+                                {/* Parent B calculation - only if positive CS% */}
+                                {showParentB && (
+                                    <>
+                                        <View style={styles.childRow}>
+                                            <Text style={[styles.childLabel, dynamicStyles.textMuted, { fontWeight: '600' }]}>
+                                                OTHER PARENT
+                                            </Text>
+                                        </View>
+                                        <View style={styles.childRow}>
+                                            <Text style={[styles.childLabel, dynamicStyles.childLabel]}>
+                                                {formatCurrency(costPerChild)} × {csPercB.toFixed(2)}%
+                                            </Text>
+                                            <Text style={[styles.childValue, dynamicStyles.textMuted, { fontWeight: '600' }]}>
+                                                {formatCurrency(calculatedLiabilityB)}
+                                            </Text>
+                                        </View>
+                                    </>
+                                )}
                             </View>
                         );
                     })}
+                    
+                    {/* Total row - show if multiple children AND no multi-case (if multi-case, final total is in Step 10) */}
+                    {results.childResults.length > 1 && !showMultiCaseSteps && (() => {
+                        // Calculate totals from corrected values
+                        const totalLiabilityA = results.childResults.reduce((sum, child) => 
+                            sum + ((child as any)._calculatedLiabilityA || 0), 0);
+                        const totalLiabilityB = results.childResults.reduce((sum, child) => 
+                            sum + ((child as any)._calculatedLiabilityB || 0), 0);
+                        
+                        const isParentAPayer = totalLiabilityA > totalLiabilityB;
+                        const isParentBPayer = totalLiabilityB > totalLiabilityA;
+                        
+                        return (
+                            <View style={{ marginTop: 16 }}>
+                                {/* Show only the net payment - the payer and the net amount */}
+                                {isParentAPayer ? (
+                                    <View style={[styles.childRow, { marginBottom: 4 }]}>
+                                        <Text style={[styles.bracketTotalLabel, dynamicStyles.userHighlight]}>
+                                            YOU PAY
+                                        </Text>
+                                        <Text style={[styles.bracketTotalValue, dynamicStyles.userHighlight]}>
+                                            {formatCurrency(totalLiabilityA - totalLiabilityB)}/year
+                                        </Text>
+                                    </View>
+                                ) : isParentBPayer ? (
+                                    <View style={[styles.childRow, { marginBottom: 4 }]}>
+                                        <Text style={[styles.bracketTotalLabel, dynamicStyles.textMuted]}>
+                                            OTHER PARENT PAYS
+                                        </Text>
+                                        <Text style={[styles.bracketTotalValue, dynamicStyles.textMuted]}>
+                                            {formatCurrency(totalLiabilityB - totalLiabilityA)}/year
+                                        </Text>
+                                    </View>
+                                ) : (
+                                    <View style={[styles.childRow, { marginBottom: 4 }]}>
+                                        <Text style={[styles.bracketTotalLabel, dynamicStyles.textMuted]}>
+                                            NET PAYMENT
+                                        </Text>
+                                        <Text style={[styles.bracketTotalValue, dynamicStyles.textMuted]}>
+                                            {formatCurrency(0)}/year
+                                        </Text>
+                                    </View>
+                                )}
+                            </View>
+                        );
+                    })()}
                 </>
             </BreakdownStepCard>
 
@@ -242,6 +390,19 @@ export function Formula3LiabilityStep({
                 <BreakdownStepCard
                     stepNumber={9}
                     title="MULTI-CASE CAP"
+                    tooltip={
+                        <>
+                            <Text style={{ fontSize: 14, lineHeight: 20, color: '#374151', marginBottom: 8 }}>
+                                The multi-case cap ensures you don't pay more child support across multiple cases than you would if all your children lived together in one household.
+                            </Text>
+                            <Text style={{ fontSize: 14, lineHeight: 20, color: '#374151', marginBottom: 8 }}>
+                                <Text style={{ fontWeight: '600' }}>Example:</Text> If you have 2 children in this case and 1 child in another case, the calculator works out what you'd pay if all 3 children were in one case, then caps your payment at that amount.
+                            </Text>
+                            <Text style={{ fontSize: 14, lineHeight: 20, color: '#374151' }}>
+                                This protects you from paying more than your fair share when you have children in different relationships.
+                            </Text>
+                        </>
+                    }
                     isExpanded={expandedSteps.step9}
                     onToggle={() => onToggle('step9')}
                 >
@@ -252,20 +413,23 @@ export function Formula3LiabilityStep({
                             their fair share across all cases.
                         </Text>
 
-                        {/* Show calculation for YOU */}
-                        {results.multiCaseAllowanceA !== undefined && results.multiCaseAllowanceA > 0 && (
+                        {/* Show calculation for YOU - only if YOU are the payer */}
+                        {isParentAPayer && results.multiCaseAllowanceA !== undefined && results.multiCaseAllowanceA > 0 && (
                             <View style={[styles.childCard, dynamicStyles.childCard, { marginBottom: 12 }]}>
                                 <Text style={[styles.childLabel, dynamicStyles.userHighlight, { fontWeight: '700', marginBottom: 8 }]}>
                                     YOU
                                 </Text>
                                 {results.childResults.map((child, idx) => {
-                                    // Get the child-specific multi-case cap (Solo Cost per child)
-                                    const multiCaseCap = child.multiCaseCapA;
+                                    // Get multi-case cost from Step 1
+                                    const multiCaseCost = results.multiCaseBreakdownA?.find(
+                                        breakdown => breakdown.isCurrentCase && breakdown.childAge === child.age
+                                    )?.costPerChild || 0;
                                     
-                                    // Calculate the Solo Cost from the cap: cap = soloCost × (100% - costPerc)
-                                    // Therefore: soloCost = cap / (100% - costPerc)
+                                    // Get cost percentage from Step 5
                                     const costPerc = child.costPercA;
-                                    const soloCost = multiCaseCap ? multiCaseCap / ((100 - costPerc) / 100) : 0;
+                                    
+                                    // Calculate cap: multi-case cost × (100% - cost percentage)
+                                    const cap = Math.round(multiCaseCost * ((100 - costPerc) / 100));
                                     
                                     return (
                                         <View key={idx} style={{ marginBottom: 8 }}>
@@ -275,7 +439,7 @@ export function Formula3LiabilityStep({
                                                 </Text>
                                             )}
                                             <Text style={[styles.childLabel, dynamicStyles.textMuted, { fontSize: 13 }]}>
-                                                {formatCurrency(soloCost)} × (100 - {costPerc.toFixed(2)}) = {formatCurrency(multiCaseCap || 0)}
+                                                {formatCurrency(multiCaseCost)} × (100 - {costPerc.toFixed(2)})% = {formatCurrency(cap)}
                                             </Text>
                                         </View>
                                     );
@@ -283,20 +447,23 @@ export function Formula3LiabilityStep({
                             </View>
                         )}
                         
-                        {/* Show calculation for OTHER PARENT */}
-                        {results.multiCaseAllowanceB !== undefined && results.multiCaseAllowanceB > 0 && (
+                        {/* Show calculation for OTHER PARENT - only if OTHER PARENT is the payer */}
+                        {isParentBPayer && results.multiCaseAllowanceB !== undefined && results.multiCaseAllowanceB > 0 && (
                             <View style={[styles.childCard, dynamicStyles.childCard]}>
                                 <Text style={[styles.childLabel, dynamicStyles.textMuted, { fontWeight: '700', marginBottom: 8 }]}>
                                     OTHER PARENT
                                 </Text>
                                 {results.childResults.map((child, idx) => {
-                                    // Get the child-specific multi-case cap (Solo Cost per child)
-                                    const multiCaseCap = child.multiCaseCapB;
+                                    // Get multi-case cost from Step 1
+                                    const multiCaseCost = results.multiCaseBreakdownB?.find(
+                                        breakdown => breakdown.isCurrentCase && breakdown.childAge === child.age
+                                    )?.costPerChild || 0;
                                     
-                                    // Calculate the Solo Cost from the cap: cap = soloCost × (100% - costPerc)
-                                    // Therefore: soloCost = cap / (100% - costPerc)
+                                    // Get cost percentage from Step 5
                                     const costPerc = child.costPercB;
-                                    const soloCost = multiCaseCap ? multiCaseCap / ((100 - costPerc) / 100) : 0;
+                                    
+                                    // Calculate cap: multi-case cost × (100% - cost percentage)
+                                    const cap = Math.round(multiCaseCost * ((100 - costPerc) / 100));
                                     
                                     return (
                                         <View key={idx} style={{ marginBottom: 8 }}>
@@ -306,7 +473,7 @@ export function Formula3LiabilityStep({
                                                 </Text>
                                             )}
                                             <Text style={[styles.childLabel, dynamicStyles.textMuted, { fontSize: 13 }]}>
-                                                {formatCurrency(soloCost)} × (100 - {costPerc.toFixed(2)}) = {formatCurrency(multiCaseCap || 0)}
+                                                {formatCurrency(multiCaseCost)} × (100 - {costPerc.toFixed(2)})% = {formatCurrency(cap)}
                                             </Text>
                                         </View>
                                     );
@@ -343,14 +510,6 @@ export function Formula3LiabilityStep({
                                         {formatCurrency(results.finalLiabilityA || 0)}/year
                                     </Text>
                                 </View>
-                                <View style={styles.childRow}>
-                                    <Text style={[styles.childLabel, dynamicStyles.childLabel, { fontSize: 13 }]}>
-                                        Monthly
-                                    </Text>
-                                    <Text style={[styles.childValue, dynamicStyles.childLabel, { fontSize: 13 }]}>
-                                        {formatCurrency((results.finalLiabilityA || 0) / 12)}/month
-                                    </Text>
-                                </View>
                             </>
                         ) : isParentBPayer ? (
                             <>
@@ -361,14 +520,6 @@ export function Formula3LiabilityStep({
                                     </Text>
                                     <Text style={[styles.childValue, dynamicStyles.textMuted, { fontWeight: '700', fontSize: 16 }]}>
                                         {formatCurrency(results.finalLiabilityB || 0)}/year
-                                    </Text>
-                                </View>
-                                <View style={styles.childRow}>
-                                    <Text style={[styles.childLabel, dynamicStyles.childLabel, { fontSize: 13 }]}>
-                                        Monthly
-                                    </Text>
-                                    <Text style={[styles.childValue, dynamicStyles.childLabel, { fontSize: 13 }]}>
-                                        {formatCurrency((results.finalLiabilityB || 0) / 12)}/month
                                     </Text>
                                 </View>
                             </>
@@ -383,14 +534,6 @@ export function Formula3LiabilityStep({
                                         {formatCurrency(results.finalLiabilityA || 0)}/year
                                     </Text>
                                 </View>
-                                <View style={styles.childRow}>
-                                    <Text style={[styles.childLabel, dynamicStyles.childLabel, { fontSize: 13 }]}>
-                                        Monthly
-                                    </Text>
-                                    <Text style={[styles.childValue, dynamicStyles.childLabel, { fontSize: 13 }]}>
-                                        {formatCurrency((results.finalLiabilityA || 0) / 12)}/month
-                                    </Text>
-                                </View>
 
                                 <View style={[styles.bracketDivider, dynamicStyles.bracketDivider, { marginVertical: 12 }]} />
                                 
@@ -400,14 +543,6 @@ export function Formula3LiabilityStep({
                                     </Text>
                                     <Text style={[styles.childValue, dynamicStyles.textMuted, { fontWeight: '700', fontSize: 16 }]}>
                                         {formatCurrency(results.finalLiabilityB || 0)}/year
-                                    </Text>
-                                </View>
-                                <View style={styles.childRow}>
-                                    <Text style={[styles.childLabel, dynamicStyles.childLabel, { fontSize: 13 }]}>
-                                        Monthly
-                                    </Text>
-                                    <Text style={[styles.childValue, dynamicStyles.childLabel, { fontSize: 13 }]}>
-                                        {formatCurrency((results.finalLiabilityB || 0) / 12)}/month
                                     </Text>
                                 </View>
                             </>
