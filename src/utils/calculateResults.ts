@@ -5,12 +5,13 @@ import {
     ComplexityTrapCalculationResult,
     deriveAgeRangeMemoized
 } from './calculator';
-import { convertCareToPercentage } from './care-utils';
+import { convertCareToPercentage, mapCareToCostPercent } from './care-utils';
 import { getChildCost } from './child-support-calculations';
 import { AssessmentYear, getYearConstants } from './child-support-constants';
 import { detectComplexityTrap } from './complexity-detection';
 import { calculateFormula5, type Formula5Input } from './formula-5-calculator';
 import { calculateFormula6, type Formula6Input } from './formula-6-calculator';
+import { createVirtualDependentChildren } from './income-calculator';
 import { checkJurisdictionStatus } from './jurisdiction-checker';
 
 // Import from extracted modules
@@ -96,6 +97,29 @@ export const calculateChildSupport = (
     );
     const avgParentACare = parentACarePercentages.reduce((sum, pct) => sum + pct, 0) / parentACarePercentages.length;
     
+    // Calculate NPC care percentages from form
+    const npc1CarePercentages = formState.children.map(child => 
+      convertCareToPercentage(child.careAmountNPC ?? 0, child.carePeriod)
+    );
+    const avgNPC1Care = npc1CarePercentages.reduce((sum, pct) => sum + pct, 0) / npc1CarePercentages.length;
+    
+    let avgNPC2Care: number | undefined;
+    let npc2CarePercentages: number[] = [];
+    if (formState.nonParentCarer.hasSecondNPC) {
+      npc2CarePercentages = formState.children.map(child => 
+        convertCareToPercentage(child.careAmountNPC2 ?? 0, child.carePeriod)
+      );
+      avgNPC2Care = npc2CarePercentages.reduce((sum, pct) => sum + pct, 0) / npc2CarePercentages.length;
+    }
+    
+    // Calculate relevant dependent deductible for Parent A
+    const relDepChildrenA = createVirtualDependentChildren(formState.relDepA);
+    const relDepDeductibleA = getChildCost(
+      selectedYear,
+      relDepChildrenA,
+      Math.max(0, formState.incomeA - getYearConstants(selectedYear).SSA)
+    ).cost;
+    
     const formula6Input: Formula6Input = {
       survivingParentATI: formState.incomeA,
       survivingParentCarePercentage: avgParentACare, // Use actual care percentage from form
@@ -107,8 +131,9 @@ export const calculateChildSupport = (
       hasMultipleCases: formState.multiCaseA.otherChildren.length > 0,
       otherCaseChildren: formState.multiCaseA.otherChildren,
       numberOfNonParentCarers: formState.nonParentCarer.hasSecondNPC ? 2 : 1,
-      carer1CarePercentage: formState.nonParentCarer.hasSecondNPC ? 60 : 100, // TODO: Get from form
-      carer2CarePercentage: formState.nonParentCarer.hasSecondNPC ? 40 : undefined, // TODO: Get from form
+      carer1CarePercentage: avgNPC1Care,
+      carer2CarePercentage: avgNPC2Care,
+      relevantDependentDeductible: relDepDeductibleA,
       selectedYear,
     };
     
@@ -128,7 +153,7 @@ export const calculateChildSupport = (
         formulaUsed: 6, // Add formula identifier
         ATI_A: formula6Result.survivingParentATI,
         ATI_B: 0, // Deceased parent
-        relDepDeductibleA: 0, // TODO: Add if needed
+        relDepDeductibleA: relDepDeductibleA,
         relDepDeductibleB: 0,
         SSA: getYearConstants(selectedYear).SSA,
         FAR: getYearConstants(selectedYear).FAR,
@@ -141,19 +166,19 @@ export const calculateChildSupport = (
         incomePercB: 0,
         totalCost: formula6Result.cotc,
         costBracketInfo, // Add bracket info for Step 7 display
-        childResults: formula6Result.childResults.map(child => ({
+        childResults: formula6Result.childResults.map((child, index) => ({
           age: child.age,
           ageRange: child.ageRange,
           isAdultChild: child.isAdultChild,
           isTurning18: child.age === 17,
-          careA: formula6Result.parentCarePercentage,
-          careB: 0,
+          careA: child.careA,
+          careB: child.careB,
           costPerChild: child.costPerChild,
-          roundedCareA: formula6Result.parentCarePercentage,
-          roundedCareB: 0,
-          costPercA: formula6Result.parentCostPercentage,
-          costPercB: 0,
-          childSupportPercA: Math.max(0, 100 - formula6Result.parentCostPercentage), // Income% - Cost% = CS% (no halving in Formula 6)
+          roundedCareA: child.roundedCareA,
+          roundedCareB: child.roundedCareB,
+          costPercA: child.costPercA,
+          costPercB: child.costPercB,
+          childSupportPercA: Math.max(0, 100 - child.costPercA), // Income% - Cost% = CS% (no halving in Formula 6)
           childSupportPercB: 0,
           liabilityA: formula6Result.annualRate,
           liabilityB: 0,
@@ -165,6 +190,12 @@ export const calculateChildSupport = (
           marAppliedB: false,
           multiCaseCapAppliedA: formula6Result.multiCaseCapApplied,
           multiCaseCapAppliedB: false,
+          // NPC care fields for dual NPC display
+          careNPC: npc1CarePercentages[index],
+          roundedCareNPC: roundCarePercentage(npc1CarePercentages[index]),
+          costPercNPC: mapCareToCostPercent(roundCarePercentage(npc1CarePercentages[index])),
+          careNPC2: avgNPC2Care !== undefined ? npc2CarePercentages[index] : undefined,
+          roundedCareNPC2: avgNPC2Care !== undefined ? roundCarePercentage(npc2CarePercentages[index]) : undefined,
         })),
         totalLiabilityA: formula6Result.annualRate,
         totalLiabilityB: 0,
@@ -189,6 +220,9 @@ export const calculateChildSupport = (
         totalChildrenAllCasesA: formula6Result.totalChildrenAllCases,
         payerRole: 'paying_parent',
         paymentToNPC: formula6Result.annualRate,
+        // Dual NPC payment split (if applicable)
+        paymentToNPC1: formula6Result.paymentToCarer1,
+        paymentToNPC2: formula6Result.paymentToCarer2,
       } as any; // Type assertion needed for formulaUsed property
       
       return mappedResult;
@@ -236,6 +270,14 @@ export const calculateChildSupport = (
         avgNPC2Care = npc2CarePercentages.reduce((sum, pct) => sum + pct, 0) / npc2CarePercentages.length;
       }
       
+      // Calculate relevant dependent deductible for Parent A
+      const relDepChildrenA = createVirtualDependentChildren(formState.relDepA);
+      const relDepDeductibleA = getChildCost(
+        selectedYear,
+        relDepChildrenA,
+        Math.max(0, formState.incomeA - getYearConstants(selectedYear).SSA)
+      ).cost;
+      
       const formula5Input: Formula5Input = {
         availableParentATI: formState.incomeA,
         availableParentCarePercentage: avgParentACare,
@@ -251,6 +293,7 @@ export const calculateChildSupport = (
         carer2CarePercentage: formState.nonParentCarer.hasSecondNPC ? avgNPC2Care : undefined,
         reason: 'non-reciprocating',
         overseasParentCountry: formState.nonParentCarer.overseasParentCountry,
+        relevantDependentDeductible: relDepDeductibleA,
         selectedYear,
       };
       
@@ -265,7 +308,7 @@ export const calculateChildSupport = (
           formulaUsed: 5, // Add formula identifier
           ATI_A: formula5Result.availableParentATI,
           ATI_B: 0, // Overseas parent in non-reciprocating jurisdiction
-          relDepDeductibleA: 0, // TODO: Add if needed
+          relDepDeductibleA: relDepDeductibleA,
           relDepDeductibleB: 0,
           SSA: getYearConstants(selectedYear).SSA,
           FAR: getYearConstants(selectedYear).FAR,
@@ -283,14 +326,14 @@ export const calculateChildSupport = (
             ageRange: child.ageRange,
             isAdultChild: child.isAdultChild,
             isTurning18: child.age === 17,
-            careA: formula5Result.parentCarePercentage,
-            careB: 0,
+            careA: child.careA,
+            careB: child.careB,
             costPerChild: child.costPerChild,
-            roundedCareA: formula5Result.parentCarePercentage,
-            roundedCareB: 0,
-            costPercA: formula5Result.parentCostPercentage,
-            costPercB: 0,
-            childSupportPercA: Math.max(0, 100 - formula5Result.parentCostPercentage), // Income% - Cost% = CS%
+            roundedCareA: child.roundedCareA,
+            roundedCareB: child.roundedCareB,
+            costPercA: child.costPercA,
+            costPercB: child.costPercB,
+            childSupportPercA: Math.max(0, 100 - child.costPercA), // Income% - Cost% = CS%
             childSupportPercB: 0,
             liabilityA: formula5Result.annualRate,
             liabilityB: 0,
@@ -464,6 +507,14 @@ export const calculateChildSupport = (
       )
       : 0;
 
+    // Get second NPC care if dual NPC is enabled
+    const rawCareNPC2 = hasNPC && formState.nonParentCarer.hasSecondNPC
+      ? convertCareToPercentage(
+        childInput?.careAmountNPC2 ?? 0,
+        childInput?.carePeriod ?? 'fortnight'
+      )
+      : 0;
+
     // Get the cost for this specific child (using "Same Age" rule)
     // Adult children have zero cost
     const childCostData = c.age >= 18 ? null : (childCosts[childIndex] ?? null);
@@ -498,6 +549,9 @@ export const calculateChildSupport = (
       isAdultChild,
       isTurning18,
     } = liabilityResult;
+
+    // Round second NPC care percentage
+    const roundedCareNPC2 = roundCarePercentage(rawCareNPC2);
 
     // Only add liability for assessable children (not adult children)
     if (!isAdultChild) {
@@ -541,6 +595,9 @@ export const calculateChildSupport = (
       costPercNPC,
       liabilityToNPC_A,
       liabilityToNPC_B,
+      // Second NPC fields (Formula 4 dual NPC)
+      careNPC2: rawCareNPC2,
+      roundedCareNPC2,
     };
   });
 

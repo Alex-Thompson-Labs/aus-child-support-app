@@ -31,8 +31,8 @@ export interface Formula5Input {
   availableParentATI: number;
   /** Available parent's care percentage (0-100) */
   availableParentCarePercentage: number;
-  /** Children in this case (with specific ages) */
-  children: { age: number }[];
+  /** Children in this case (with specific ages and care percentages) */
+  children: { age: number; careA: number; careB: number }[];
   /** Whether available parent has children in other cases */
   hasMultipleCases: boolean;
   /** Children in other cases (for multi-case allowance) */
@@ -47,6 +47,8 @@ export interface Formula5Input {
   reason: 'non-reciprocating' | 'special-circumstances';
   /** Country of overseas parent (for display) */
   overseasParentCountry?: string;
+  /** Relevant dependent deductible for available parent */
+  relevantDependentDeductible?: number;
   /** Assessment year */
   selectedYear: AssessmentYear;
 }
@@ -112,6 +114,12 @@ export interface Formula5ChildResult {
   ageRange: AgeRange;
   costPerChild: number;
   isAdultChild: boolean;
+  careA: number;
+  careB: number;
+  roundedCareA: number;
+  roundedCareB: number;
+  costPercA: number;
+  costPercB: number;
 }
 
 // ============================================================================
@@ -179,10 +187,12 @@ export function calculateFormula5(input: Formula5Input): Formula5Result {
   const { SSA } = getYearConstants(input.selectedYear);
   
   // Step 1: Calculate available parent's Child Support Income
+  // Formula: CSI = ATI - SSA - relevant dependent deductible
   // NOTE: Multi-case is handled via CAP in Steps 7-8, NOT as an allowance here
-  const availableParentCSI = Math.max(0, input.availableParentATI - SSA);
+  const relevantDependentDeductible = input.relevantDependentDeductible ?? 0;
+  const availableParentCSI = Math.max(0, input.availableParentATI - SSA - relevantDependentDeductible);
   
-  // Multi-case allowance is NOT used in Formula 5/6
+  // Multi-case allowance is NOT used in Formula 5/6 (handled via cap instead)
   const multiCaseAllowance = 0;
   
   // Step 2: Double the income to recognize child has two parents
@@ -199,8 +209,8 @@ export function calculateFormula5(input: Formula5Input): Formula5Result {
     .map(c => ({
       age: c.age,
       ageRange: deriveAgeRangeMemoized(c.age),
-      careA: 0, // Not used in Formula 5
-      careB: 0, // Not used in Formula 5
+      careA: c.careA,
+      careB: c.careB,
     }));
   
   const { cost: cotc, bracketInfo } = getChildCost(
@@ -281,12 +291,23 @@ export function calculateFormula5(input: Formula5Input): Formula5Result {
   }
   
   // Build child results for breakdown display
-  const childResults: Formula5ChildResult[] = input.children.map(child => ({
-    age: child.age,
-    ageRange: deriveAgeRangeMemoized(child.age),
-    costPerChild: child.age < 18 ? costPerChild : 0,
-    isAdultChild: child.age >= 18,
-  }));
+  const childResults: Formula5ChildResult[] = input.children.map(child => {
+    const roundedCareA = roundCarePercentage(child.careA);
+    const costPercA = mapCareToCostPercent(roundedCareA);
+    
+    return {
+      age: child.age,
+      ageRange: deriveAgeRangeMemoized(child.age),
+      costPerChild: child.age < 18 ? costPerChild : 0,
+      isAdultChild: child.age >= 18,
+      careA: child.careA,
+      careB: child.careB,
+      roundedCareA,
+      roundedCareB: roundCarePercentage(child.careB),
+      costPercA,
+      costPercB: 0, // Overseas/unavailable parent has no cost percentage
+    };
+  });
   
   return {
     formulaUsed: 5,

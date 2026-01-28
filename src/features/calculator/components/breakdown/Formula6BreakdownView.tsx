@@ -4,6 +4,8 @@ import { formatCurrency } from '@/src/utils/formatters';
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { BreakdownStepCard } from './BreakdownStepCard';
+import { CareStep } from './CareStep';
+import { CostStep } from './CostStep';
 import { DualNPCStep } from './DualNPCStep';
 import { ParentComparisonCard } from './ParentComparisonCard';
 import { ZeroLiabilityNotice } from './ZeroLiabilityNotice';
@@ -121,51 +123,21 @@ export function Formula6BreakdownView({ results, formState }: Formula6BreakdownV
         </>
       </BreakdownStepCard>
 
-      {/* Step 2: Care Percentage */}
-      <BreakdownStepCard
-        stepNumber={2}
-        title="CARE PERCENTAGE"
+      {/* Step 2: Care Percentage - Uses reusable CareStep component */}
+      <CareStep
+        results={results}
         isExpanded={expandedSteps.step2}
         onToggle={() => handleToggle('step2')}
-      >
-        <>
-          <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
-            Work out the parent&apos;s percentage of care for the child.
-          </Text>
-          <ParentComparisonCard title="YOU" isUserHighlighted>
-            <View style={styles.deductionRow}>
-              <Text style={[styles.deductionLabel, dynamicStyles.userHighlight]}>Care percentage</Text>
-              <Text style={[styles.deductionValue, dynamicStyles.userHighlight]}>
-                {formatPercent2dp(roundedCareA)}
-              </Text>
-            </View>
-          </ParentComparisonCard>
-        </>
-      </BreakdownStepCard>
+        hasDeceasedParent={true}
+      />
 
-      {/* Step 3: Cost Percentage */}
-      <BreakdownStepCard
-        stepNumber={3}
-        title="COST PERCENTAGE"
-        isExpanded={expandedSteps.step3}
+      {/* Step 3: Cost Percentage - Uses reusable CostStep component */}
+      <CostStep
+        results={results}
+        expandedSteps={{ step5: expandedSteps.step3, step6: false }}
         onToggle={() => handleToggle('step3')}
-      >
-        <>
-          <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
-            Work out the parent&apos;s cost percentage for the child.
-          </Text>
-          <ParentComparisonCard title="YOU" isUserHighlighted>
-            <View style={styles.deductionRow}>
-              <Text style={[styles.deductionLabel, dynamicStyles.userHighlight]}>
-                {formatPercent2dp(roundedCareA)} care → Cost percentage
-              </Text>
-              <Text style={[styles.deductionValue, dynamicStyles.userHighlight]}>
-                {formatPercent2dp(costPercA)}
-              </Text>
-            </View>
-          </ParentComparisonCard>
-        </>
-      </BreakdownStepCard>
+        hasDeceasedParent={true}
+      />
 
       {/* Step 4: Cost of Children (COTC) */}
       <BreakdownStepCard

@@ -39,8 +39,8 @@ export interface Formula6Input {
   survivingParentATI: number;
   /** Surviving parent's care percentage (0-100) */
   survivingParentCarePercentage: number;
-  /** Children in this case (with specific ages) */
-  children: { age: number }[];
+  /** Children in this case (with specific ages and care percentages) */
+  children: { age: number; careA: number; careB: number }[];
   /** Whether surviving parent has children in other cases */
   hasMultipleCases: boolean;
   /** Children in other cases (for multi-case allowance) */
@@ -51,6 +51,8 @@ export interface Formula6Input {
   carer1CarePercentage?: number;
   /** Second carer's care percentage (if 2 carers) */
   carer2CarePercentage?: number;
+  /** Relevant dependent deductible for surviving parent */
+  relevantDependentDeductible?: number;
   /** Assessment year */
   selectedYear: AssessmentYear;
 }
@@ -102,6 +104,12 @@ export interface Formula6ChildResult {
   ageRange: AgeRange;
   costPerChild: number;
   isAdultChild: boolean;
+  careA: number;
+  careB: number;
+  roundedCareA: number;
+  roundedCareB: number;
+  costPercA: number;
+  costPercB: number;
 }
 
 // ============================================================================
@@ -127,9 +135,10 @@ export function validateFormula6Input(data: Formula6Input): Formula6ValidationRe
   }
   
   if (data.numberOfNonParentCarers === 2) {
-    const total = (data.carer1CarePercentage || 0) + (data.carer2CarePercentage || 0);
+    // In dual NPC scenario, all three parties' care should total 100%
+    const total = data.survivingParentCarePercentage + (data.carer1CarePercentage || 0) + (data.carer2CarePercentage || 0);
     if (Math.abs(total - 100) > 0.01) {
-      return { valid: false, error: 'Care percentages must total 100% for two carers' };
+      return { valid: false, error: `Care percentages must total 100% (Parent: ${data.survivingParentCarePercentage.toFixed(1)}%, NPC1: ${(data.carer1CarePercentage || 0).toFixed(1)}%, NPC2: ${(data.carer2CarePercentage || 0).toFixed(1)}% = ${total.toFixed(1)}%)` };
     }
   }
   
@@ -169,10 +178,12 @@ export function calculateFormula6(input: Formula6Input): Formula6Result {
   const { SSA } = getYearConstants(input.selectedYear);
   
   // Step 1: Calculate surviving parent's Child Support Income
+  // Formula: CSI = ATI - SSA - relevant dependent deductible
   // NOTE: Multi-case is handled via CAP in Steps 7-8, NOT as an allowance here
-  const survivingParentCSI = Math.max(0, input.survivingParentATI - SSA);
+  const relevantDependentDeductible = input.relevantDependentDeductible ?? 0;
+  const survivingParentCSI = Math.max(0, input.survivingParentATI - SSA - relevantDependentDeductible);
   
-  // Multi-case allowance is NOT used in Formula 5/6
+  // Multi-case allowance is NOT used in Formula 5/6 (handled via cap instead)
   const multiCaseAllowance = 0;
   
   // Step 2: Determine parent's care and cost percentages
@@ -186,8 +197,8 @@ export function calculateFormula6(input: Formula6Input): Formula6Result {
     .map(c => ({
       age: c.age,
       ageRange: deriveAgeRangeMemoized(c.age),
-      careA: 0, // Not used in Formula 6
-      careB: 0, // Not used in Formula 6
+      careA: c.careA,
+      careB: c.careB,
     }));
   
   const { cost: cotc } = getChildCost(
@@ -265,12 +276,23 @@ export function calculateFormula6(input: Formula6Input): Formula6Result {
   }
   
   // Build child results for breakdown display
-  const childResults: Formula6ChildResult[] = input.children.map(child => ({
-    age: child.age,
-    ageRange: deriveAgeRangeMemoized(child.age),
-    costPerChild: child.age < 18 ? costPerChild : 0,
-    isAdultChild: child.age >= 18,
-  }));
+  const childResults: Formula6ChildResult[] = input.children.map(child => {
+    const roundedCareA = roundCarePercentage(child.careA);
+    const costPercA = mapCareToCostPercent(roundedCareA);
+    
+    return {
+      age: child.age,
+      ageRange: deriveAgeRangeMemoized(child.age),
+      costPerChild: child.age < 18 ? costPerChild : 0,
+      isAdultChild: child.age >= 18,
+      careA: child.careA,
+      careB: child.careB,
+      roundedCareA,
+      roundedCareB: roundCarePercentage(child.careB),
+      costPercA,
+      costPercB: 0, // Deceased parent has no cost percentage
+    };
+  });
   
   return {
     formulaUsed: 6,

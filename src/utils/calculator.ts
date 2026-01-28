@@ -129,6 +129,9 @@ export interface ChildResult {
   costPercNPC?: number;
   liabilityToNPC_A?: number;
   liabilityToNPC_B?: number;
+  // Second non-parent carer fields (Formula 4 dual NPC)
+  careNPC2?: number;
+  roundedCareNPC2?: number;
 }
 
 export interface CostBracketInfo {
