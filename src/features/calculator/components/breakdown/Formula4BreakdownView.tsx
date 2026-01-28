@@ -98,7 +98,7 @@ export function Formula4BreakdownView({ results, formState }: Formula4BreakdownV
         hasDeceasedParent={false}
       />
 
-      {/* Steps 7-10 & 12: Liability Calculation (Formula 4 specific) */}
+      {/* Steps 7-10: Liability Calculation (Formula 4 specific) */}
       <Formula4LiabilityStep
         results={results}
         formState={formState}
@@ -107,7 +107,6 @@ export function Formula4BreakdownView({ results, formState }: Formula4BreakdownV
           step8: expandedSteps.step8,
           step9: expandedSteps.step9,
           step10: expandedSteps.step10,
-          step12: expandedSteps.step12,
         }}
         onToggle={handleLiabilityToggle}
       />
