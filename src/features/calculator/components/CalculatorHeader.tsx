@@ -315,7 +315,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         width: '100%',
         zIndex: 100,
-        alignItems: 'center',
     },
     mobileHeaderWrapper: {
         position: 'relative',
@@ -496,11 +495,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 10,
+        flex: 1,
+        flexWrap: 'wrap',
     },
     featureItemText: {
         fontSize: 21,
         fontWeight: '800',
         color: '#ffffff',
+        flexShrink: 1,
+        flexWrap: 'wrap',
     },
     betaBadge: {
         backgroundColor: 'rgba(255, 255, 255, 0.2)',
