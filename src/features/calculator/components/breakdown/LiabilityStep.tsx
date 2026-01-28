@@ -9,13 +9,18 @@ import { SpecialRateGlossary } from './SpecialRateGlossary';
 interface LiabilityStepProps {
     results: CalculationResults;
     formState: { supportA: boolean; supportB: boolean };
-    isExpanded: boolean;
-    onToggle: () => void;
+    expandedSteps: {
+        step1A: boolean;
+        step1B: boolean;
+        step2Multi: boolean;
+        step3Final: boolean;
+    };
+    onToggle: (step: 'step1A' | 'step1B' | 'step2Multi' | 'step3Final') => void;
     hasDeceasedParent?: boolean;
 }
 
 /**
- * Liability calculation breakdown - Step 8
+ * Liability calculation breakdown - Step 8 (Formula 1)
  * 
  * Shows the final annual rate calculation by combining
  * Child Support Percentage (Step 6) with Cost of Children (Step 7).
@@ -25,7 +30,7 @@ interface LiabilityStepProps {
 export function LiabilityStep({
     results,
     formState,
-    isExpanded,
+    expandedSteps,
     onToggle,
     hasDeceasedParent = false,
 }: LiabilityStepProps) {
@@ -39,14 +44,13 @@ export function LiabilityStep({
         <BreakdownStepCard
             stepNumber={8}
             title="ANNUAL RATE"
-            isExpanded={isExpanded}
-            onToggle={onToggle}
+            isExpanded={expandedSteps.step3Final}
+            onToggle={() => onToggle('step3Final')}
         >
             <>
                 <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
                     The final annual liability is calculated by multiplying the Child
-                    Support Percentage (
-                    <Text style={{ fontWeight: '600' }}>STEP 6</Text>) by the total Cost
+                    Support Percentage (<Text style={{ fontWeight: '600' }}>STEP 6</Text>) by the total Cost
                     of the Child (<Text style={{ fontWeight: '600' }}>STEP 7</Text>).
                 </Text>
 

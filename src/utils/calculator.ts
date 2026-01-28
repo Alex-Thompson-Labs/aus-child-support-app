@@ -167,6 +167,8 @@ export interface CalculationResults {
   // Multi-case fields (Formula 3)
   multiCaseAllowanceA: number;
   multiCaseAllowanceB: number;
+  multiCaseBreakdownA?: import('./child-support-calculations').MultiCaseChildBreakdown[];
+  multiCaseBreakdownB?: import('./child-support-calculations').MultiCaseChildBreakdown[];
   multiCaseCapA?: number;
   multiCaseCapB?: number;
   multiCaseCapAppliedA: boolean;

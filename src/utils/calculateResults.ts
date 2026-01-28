@@ -732,6 +732,8 @@ export const calculateChildSupport = (
     // Multi-case fields (Formula 3)
     multiCaseAllowanceA,
     multiCaseAllowanceB,
+    multiCaseBreakdownA: incomeResults.multiCaseBreakdownA,
+    multiCaseBreakdownB: incomeResults.multiCaseBreakdownB,
     multiCaseCapAppliedA,
     multiCaseCapAppliedB,
     // MAR/FAR cap explanations

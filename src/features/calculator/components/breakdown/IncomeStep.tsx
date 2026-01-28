@@ -17,6 +17,7 @@ interface IncomeStepProps {
     expandedSteps: { step1: boolean; step2: boolean; step3: boolean };
     onToggle: (step: 'step1' | 'step2' | 'step3') => void;
     hasDeceasedParent?: boolean;
+    hideCurrentCaseMultiCostCalcs?: boolean; // Hide multi-case cost calcs for current case children (when receiver has multi-case)
 }
 
 // Type guard to check if results has formulaUsed property
@@ -31,7 +32,7 @@ function hasFormulaUsed(results: CalculationResults): results is CalculationResu
  * Step 2: Combined Child Support Income (CCSI)
  * Step 3: Income Percentage for each parent
  */
-export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent = false }: IncomeStepProps) {
+export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent = false, hideCurrentCaseMultiCostCalcs = false }: IncomeStepProps) {
     const { colors } = useAppTheme();
     
     // Check if this is a Formula 5 case (non-reciprocating jurisdiction)
@@ -46,6 +47,12 @@ export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent
         deductionDivider: { backgroundColor: colors.border },
         deductionTotalLabel: { color: colors.textPrimary },
         deductionTotalValue: { color: colors.textPrimary },
+        multiCaseSection: { borderTopColor: colors.border },
+        multiCaseHeader: { color: colors.textMuted },
+        multiCaseChildLabel: { color: colors.textPrimary },
+        multiCaseExplanation: { color: colors.textMuted },
+        calculationBreakdown: { borderTopColor: colors.border },
+        calculationText: { color: colors.textMuted },
         combinedIncomeCalculation: {
             backgroundColor: colors.surfaceSubtle,
             borderColor: colors.border,
@@ -71,9 +78,9 @@ export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent
             >
                 <>
                     <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
-                        Child support income is a parent&apos;s income after deducting an
-                        amount for their own living costs and for any other children they
-                        support outside the child support case.
+                        Work out each parent&apos;s child support income. Child support income 
+                        is calculated separately for each case, then their child support income 
+                        needs to be calculated separately for each case.
                     </Text>
 
                     <View style={styles.deductionCards}>
@@ -81,7 +88,7 @@ export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent
                         <ParentComparisonCard title="YOU" isUserHighlighted>
                             <View style={[styles.deductionRow, { marginBottom: 4 }]}>
                                 <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>
-                                    Adjusted taxable income
+                                    ATI
                                 </Text>
                                 <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>
                                     {formatCurrency(results.ATI_A)}
@@ -95,20 +102,88 @@ export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent
                             </View>
                             {results.relDepDeductibleA > 0 && (
                                 <View style={styles.deductionRow}>
-                                    <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>Rel dep allowance</Text>
+                                    <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>Relevant dependent child amount</Text>
                                     <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>
                                         ({formatCurrency(results.relDepDeductibleA)})
                                     </Text>
                                 </View>
                             )}
+                            
+                            {/* Multi-case costs breakdown */}
                             {results.multiCaseAllowanceA !== undefined && results.multiCaseAllowanceA > 0 && (
-                                <View style={styles.deductionRow}>
-                                    <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>Multi-case allowance</Text>
-                                    <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>
-                                        ({formatCurrency(results.multiCaseAllowanceA)})
-                                    </Text>
-                                </View>
+                                <>
+                                    <View style={[styles.multiCaseSection, dynamicStyles.multiCaseSection]}>
+                                        <Text style={[styles.multiCaseHeader, dynamicStyles.multiCaseHeader]}>
+                                            Multi-case costs / multi-case allowance
+                                        </Text>
+                                        
+                                        {/* Show detailed breakdown for each child (current + other cases) */}
+                                        {results.multiCaseBreakdownA && results.multiCaseBreakdownA.length > 0 ? (
+                                            <>
+                                                {results.multiCaseBreakdownA
+                                                    .filter(child => !hideCurrentCaseMultiCostCalcs || !child.isCurrentCase)
+                                                    .map((child, idx) => {
+                                                    // Determine child label
+                                                    let childLabel: string;
+                                                    if (child.isCurrentCase) {
+                                                        // Current case child - show actual age
+                                                        const currentCaseChildren = results.multiCaseBreakdownA!.filter(c => c.isCurrentCase);
+                                                        childLabel = currentCaseChildren.length > 1
+                                                            ? `Child aged ${child.childAge} (${currentCaseChildren.findIndex(c => c.childId === child.childId) + 1})`
+                                                            : `Child aged ${child.childAge}`;
+                                                    } else {
+                                                        // Other case child - show age bracket
+                                                        const ageLabel = child.childAge < 13 ? '<13' : '≥13';
+                                                        const sameAgeBracket = results.multiCaseBreakdownA!.filter(c => 
+                                                            !c.isCurrentCase && (c.childAge < 13) === (child.childAge < 13)
+                                                        );
+                                                        childLabel = sameAgeBracket.length > 1 
+                                                            ? `${ageLabel} child (${sameAgeBracket.findIndex(c => c.childId === child.childId) + 1})`
+                                                            : `${ageLabel} child`;
+                                                    }
+                                                    
+                                                    return (
+                                                        <View key={child.childId} style={{ marginBottom: 12 }}>
+                                                            <Text style={[styles.multiCaseChildLabel, dynamicStyles.multiCaseChildLabel]}>
+                                                                {childLabel}
+                                                            </Text>
+                                                            <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                Child support income = {formatCurrency(child.childSupportIncome)}
+                                                            </Text>
+                                                            <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                • ({formatCurrency(child.childSupportIncome)} × {((child.totalCost / child.childSupportIncome) * 100).toFixed(0)}% = {formatCurrency(child.totalCost)})
+                                                            </Text>
+                                                            <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                • {formatCurrency(child.totalCost)} ÷ {child.totalChildren}
+                                                            </Text>
+                                                            <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation, { marginTop: 4 }]}>
+                                                                Multi-case cost = {formatCurrency(child.costPerChild)}
+                                                            </Text>
+                                                        </View>
+                                                    );
+                                                })}
+                                            </>
+                                        ) : (
+                                            <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                For each child in other cases, calculate:
+                                                {'\n'}• Child support income for that case
+                                                {'\n'}• COTC for that child
+                                                {'\n'}• Multi-case cost (CSI × cost percentage ÷ number of children)
+                                            </Text>
+                                        )}
+                                        
+                                        <View style={styles.deductionRow}>
+                                            <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>
+                                                Multi-case allowance
+                                            </Text>
+                                            <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>
+                                                ({formatCurrency(results.multiCaseAllowanceA)})
+                                            </Text>
+                                        </View>
+                                    </View>
+                                </>
                             )}
+                            
                             <View style={[styles.deductionDivider, dynamicStyles.deductionDivider]} />
                             <View style={styles.deductionRow}>
                                 <Text
@@ -135,7 +210,7 @@ export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent
                             <ParentComparisonCard title="OTHER PARENT">
                                 <View style={[styles.deductionRow, { marginBottom: 4 }]}>
                                     <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>
-                                        Adjusted taxable income
+                                        ATI
                                     </Text>
                                     <Text style={[styles.deductionValue, dynamicStyles.textMuted]}>
                                         {formatCurrency(results.ATI_B)}
@@ -149,20 +224,88 @@ export function IncomeStep({ results, expandedSteps, onToggle, hasDeceasedParent
                                 </View>
                                 {results.relDepDeductibleB > 0 && (
                                     <View style={styles.deductionRow}>
-                                        <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>Rel dep allowance</Text>
+                                        <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>Relevant dependent child amount</Text>
                                         <Text style={[styles.deductionValueNegative, dynamicStyles.deductionValueNegative]}>
                                             ({formatCurrency(results.relDepDeductibleB)})
                                         </Text>
                                     </View>
                                 )}
+                                
+                                {/* Multi-case costs breakdown */}
                                 {results.multiCaseAllowanceB !== undefined && results.multiCaseAllowanceB > 0 && (
-                                    <View style={styles.deductionRow}>
-                                        <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>Multi-case allowance</Text>
-                                        <Text style={[styles.deductionValueNegative, dynamicStyles.deductionValueNegative]}>
-                                            ({formatCurrency(results.multiCaseAllowanceB)})
-                                        </Text>
-                                    </View>
+                                    <>
+                                        <View style={[styles.multiCaseSection, dynamicStyles.multiCaseSection]}>
+                                            <Text style={[styles.multiCaseHeader, dynamicStyles.multiCaseHeader]}>
+                                                Multi-case costs / multi-case allowance
+                                            </Text>
+                                            
+                                            {/* Show detailed breakdown for each child (current + other cases) */}
+                                            {results.multiCaseBreakdownB && results.multiCaseBreakdownB.length > 0 ? (
+                                                <>
+                                                    {results.multiCaseBreakdownB
+                                                        .filter(child => !hideCurrentCaseMultiCostCalcs || !child.isCurrentCase)
+                                                        .map((child, idx) => {
+                                                        // Determine child label
+                                                        let childLabel: string;
+                                                        if (child.isCurrentCase) {
+                                                            // Current case child - show actual age
+                                                            const currentCaseChildren = results.multiCaseBreakdownB!.filter(c => c.isCurrentCase);
+                                                            childLabel = currentCaseChildren.length > 1
+                                                                ? `Child aged ${child.childAge} (${currentCaseChildren.findIndex(c => c.childId === child.childId) + 1})`
+                                                                : `Child aged ${child.childAge}`;
+                                                        } else {
+                                                            // Other case child - show age bracket
+                                                            const ageLabel = child.childAge < 13 ? '<13' : '≥13';
+                                                            const sameAgeBracket = results.multiCaseBreakdownB!.filter(c => 
+                                                                !c.isCurrentCase && (c.childAge < 13) === (child.childAge < 13)
+                                                            );
+                                                            childLabel = sameAgeBracket.length > 1 
+                                                                ? `${ageLabel} child (${sameAgeBracket.findIndex(c => c.childId === child.childId) + 1})`
+                                                                : `${ageLabel} child`;
+                                                        }
+                                                        
+                                                        return (
+                                                            <View key={child.childId} style={{ marginBottom: 12 }}>
+                                                                <Text style={[styles.multiCaseChildLabel, dynamicStyles.multiCaseChildLabel]}>
+                                                                    {childLabel}
+                                                                </Text>
+                                                                <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                    Child support income = {formatCurrency(child.childSupportIncome)}
+                                                                </Text>
+                                                                <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                    • ({formatCurrency(child.childSupportIncome)} × {((child.totalCost / child.childSupportIncome) * 100).toFixed(0)}% = {formatCurrency(child.totalCost)})
+                                                                </Text>
+                                                                <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                                    • {formatCurrency(child.totalCost)} ÷ {child.totalChildren}
+                                                                </Text>
+                                                                <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation, { marginTop: 4 }]}>
+                                                                    Multi-case cost = {formatCurrency(child.costPerChild)}
+                                                                </Text>
+                                                            </View>
+                                                        );
+                                                    })}
+                                                </>
+                                            ) : (
+                                                <Text style={[styles.multiCaseExplanation, dynamicStyles.multiCaseExplanation]}>
+                                                    For each child in other cases, calculate:
+                                                    {'\n'}• Child support income for that case
+                                                    {'\n'}• COTC for that child
+                                                    {'\n'}• Multi-case cost (CSI × cost percentage ÷ number of children)
+                                                </Text>
+                                            )}
+                                            
+                                            <View style={styles.deductionRow}>
+                                                <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>
+                                                    Multi-case allowance
+                                                </Text>
+                                                <Text style={[styles.deductionValueNegative, dynamicStyles.deductionValueNegative]}>
+                                                    ({formatCurrency(results.multiCaseAllowanceB)})
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </>
                                 )}
+                                
                                 <View style={[styles.deductionDivider, dynamicStyles.deductionDivider]} />
                                 <View style={styles.deductionRow}>
                                     <Text style={[styles.deductionTotalLabel, dynamicStyles.textMuted]}>Child Support Income</Text>
@@ -363,6 +506,44 @@ const styles = StyleSheet.create({
     deductionTotalValue: {
         fontSize: 14,
         fontWeight: '700',
+    },
+
+    // Multi-case section
+    multiCaseSection: {
+        marginTop: 8,
+        marginBottom: 8,
+        paddingTop: 8,
+        borderTopWidth: 1,
+        borderTopColor: '#e0e0e0',
+    },
+    multiCaseHeader: {
+        fontSize: 12,
+        fontWeight: '700',
+        marginBottom: 8,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    multiCaseChildLabel: {
+        fontSize: 13,
+        fontWeight: '600',
+        marginBottom: 4,
+    },
+    multiCaseExplanation: {
+        fontSize: 12,
+        lineHeight: 18,
+        marginBottom: 4,
+    },
+
+    // Calculation breakdown
+    calculationBreakdown: {
+        marginTop: 8,
+        paddingTop: 8,
+        borderTopWidth: 1,
+        borderTopColor: '#e0e0e0',
+    },
+    calculationText: {
+        fontSize: 12,
+        lineHeight: 18,
     },
 
     // Step 2: Combined Income Calculation

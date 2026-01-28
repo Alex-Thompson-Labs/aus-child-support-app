@@ -11,7 +11,11 @@
  */
 
 import { AgeRange, RelevantDependents } from './calculator';
-import { calculateMultiCaseAllowance, getChildCost } from './child-support-calculations';
+import {
+    calculateMultiCaseAllowanceDetailed,
+    getChildCost,
+    MultiCaseChildBreakdown
+} from './child-support-calculations';
 import { AssessmentYear, getYearConstants } from './child-support-constants';
 
 // ============================================================================
@@ -70,6 +74,10 @@ export interface IncomeCalculationResult {
   multiCaseAllowanceA: number;
   /** Parent B's multi-case allowance */
   multiCaseAllowanceB: number;
+  /** Parent A's multi-case breakdown (for Step 1 display) */
+  multiCaseBreakdownA?: MultiCaseChildBreakdown[];
+  /** Parent B's multi-case breakdown (for Step 1 display) */
+  multiCaseBreakdownB?: MultiCaseChildBreakdown[];
 }
 
 // ============================================================================
@@ -219,20 +227,23 @@ export function calculateIncomes(input: IncomeCalculationInput): IncomeCalculati
   const rawCSI_A = Math.max(0, ATI_A - SSA);
   const rawCSI_B = Math.max(0, ATI_B - SSA);
 
-  // Step 3: Calculate multi-case allowances (Formula 3)
-  const multiCaseAllowanceA = calculateMultiCaseAllowance(
+  // Step 3: Calculate multi-case allowances (Formula 3) with detailed breakdown
+  const multiCaseResultA = calculateMultiCaseAllowanceDetailed(
     selectedYear,
     rawCSI_A,
     currentCaseChildren,
     multiCaseChildrenA.map((c) => ({ id: `mc-a-${c.age}`, age: c.age }))
   );
 
-  const multiCaseAllowanceB = calculateMultiCaseAllowance(
+  const multiCaseResultB = calculateMultiCaseAllowanceDetailed(
     selectedYear,
     rawCSI_B,
     currentCaseChildren,
     multiCaseChildrenB.map((c) => ({ id: `mc-b-${c.age}`, age: c.age }))
   );
+
+  const multiCaseAllowanceA = multiCaseResultA.totalAllowance;
+  const multiCaseAllowanceB = multiCaseResultB.totalAllowance;
 
   // Step 4: Calculate preliminary CSI (before multi-case allowance)
   // Used for Solo Cost calculation in Multi-Case Cap
@@ -264,5 +275,7 @@ export function calculateIncomes(input: IncomeCalculationInput): IncomeCalculati
     incomePercB,
     multiCaseAllowanceA,
     multiCaseAllowanceB,
+    multiCaseBreakdownA: multiCaseResultA.breakdown,
+    multiCaseBreakdownB: multiCaseResultB.breakdown,
   };
 }

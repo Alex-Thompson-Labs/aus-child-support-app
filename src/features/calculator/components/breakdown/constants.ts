@@ -10,6 +10,8 @@ export const COST_PERCENTAGE_TABLE = [
     { careRange: '35% - 47%', costResult: '25% + 2% per point over 35%' },
     { careRange: '48% - 52%', costResult: '50%' },
     { careRange: '53% - 65%', costResult: '51% + 2% per point over 53%' },
+    { careRange: '66% - 86%', costResult: '76%' },
+    { careRange: '87% - 100%', costResult: '100%' },
 ] as const;
 
 export type CostPercentageRow = (typeof COST_PERCENTAGE_TABLE)[number];

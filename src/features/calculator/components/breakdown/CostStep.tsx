@@ -16,17 +16,16 @@ const formatPercent2dp = (num: number): string => {
 
 interface CostStepProps {
     results: CalculationResults;
-    expandedSteps: { step5: boolean; step6: boolean; step7: boolean };
-    onToggle: (step: 'step5' | 'step6' | 'step7') => void;
+    expandedSteps: { step5: boolean; step6: boolean };
+    onToggle: (step: 'step5' | 'step6') => void;
     hasDeceasedParent?: boolean;
 }
 
 /**
- * Cost and liability calculation breakdown - Steps 5-7
+ * Cost and child support percentage calculation - Steps 5-6
  * 
  * Step 5: Cost Percentage (conversion from care percentage)
- * Step 6: Child Support Percentage
- * Step 7: Cost of Children (bracket calculation)
+ * Step 6: Child Support Percentage (income % - cost %)
  */
 export function CostStep({ results, expandedSteps, onToggle, hasDeceasedParent = false }: CostStepProps) {
     const { colors } = useAppTheme();
@@ -97,11 +96,13 @@ export function CostStep({ results, expandedSteps, onToggle, hasDeceasedParent =
                                             style={[{
                                                 flexDirection: 'row',
                                                 justifyContent: 'space-between',
-                                                paddingVertical: 6,
+                                                alignItems: 'center',
+                                                paddingTop: 2,
+                                                paddingBottom: 8,
                                                 borderBottomWidth: 1,
                                             }, dynamicStyles.tooltipBorder]}
                                         >
-                                            <Text style={[{ fontSize: 13, flex: 1 }, dynamicStyles.tooltipText]}>
+                                            <Text style={[{ fontSize: 13, flex: 1, lineHeight: 16 }, dynamicStyles.tooltipText]}>
                                                 {row.careRange}
                                             </Text>
                                             <Text
@@ -110,6 +111,7 @@ export function CostStep({ results, expandedSteps, onToggle, hasDeceasedParent =
                                                     fontWeight: '600',
                                                     flex: 1,
                                                     textAlign: 'right',
+                                                    lineHeight: 16,
                                                 }, dynamicStyles.tooltipHighlight]}
                                             >
                                                 {row.costResult}
@@ -245,92 +247,6 @@ export function CostStep({ results, expandedSteps, onToggle, hasDeceasedParent =
                     </>
                 </BreakdownStepCard>
             ))}
-
-            {/* Step 7: Cost of Children */}
-            <BreakdownStepCard
-                stepNumber={7}
-                title="COST OF CHILDREN"
-                isExpanded={expandedSteps.step7}
-                onToggle={() => onToggle('step7')}
-            >
-                <>
-                    <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
-                        The total cost of children for an assessment is calculated using
-                        income brackets set by the Department of Social Services. Each
-                        bracket has a base cost plus a percentage applied to income within
-                        that bracket.
-                    </Text>
-
-                    {/* Bracket calculation */}
-                    {results.costBracketInfo && (
-                        <View style={[styles.bracketCalculation, dynamicStyles.bracketCalculation]}>
-                            {/* Combined income - moved inside box */}
-                            <Text
-                                style={[
-                                    styles.combinedCSIncomeLabel,
-                                    dynamicStyles.combinedCSIncomeLabel,
-                                    { marginBottom: 12, fontSize: 12, textAlign: 'left' },
-                                ]}
-                            >
-                                COMBINED CS INCOME - {formatCurrency(results.CCSI)}
-                            </Text>
-
-                            <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>
-                                Your bracket:{' '}
-                                {formatCurrency(results.costBracketInfo.minIncome)} –{' '}
-                                {results.costBracketInfo.maxIncome
-                                    ? formatCurrency(results.costBracketInfo.maxIncome)
-                                    : 'unlimited'}
-                            </Text>
-
-                            <View style={styles.bracketFormula}>
-                                <View style={styles.bracketRow}>
-                                    <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>Base amount</Text>
-                                    <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>
-                                        {formatCurrency(results.costBracketInfo.fixed)}
-                                    </Text>
-                                </View>
-                                {results.costBracketInfo.rate > 0 && (
-                                    <View style={styles.bracketRow}>
-                                        <Text style={[styles.bracketLabel, dynamicStyles.bracketLabel]}>
-                                            + {(results.costBracketInfo.rate * 100).toFixed(2)}% ×{' '}
-                                            {formatCurrency(results.costBracketInfo.incomeInBracket)}
-                                        </Text>
-                                        <Text style={[styles.bracketValue, dynamicStyles.bracketValue]}>
-                                            +
-                                            {formatCurrency(
-                                                results.costBracketInfo.rate *
-                                                results.costBracketInfo.incomeInBracket
-                                            )}
-                                        </Text>
-                                    </View>
-                                )}
-                                <View style={[styles.bracketDivider, dynamicStyles.bracketDivider]} />
-                                <View style={styles.bracketRow}>
-                                    <Text style={[styles.bracketTotalLabel, dynamicStyles.bracketTotalLabel]}>
-                                        Total cost of children
-                                    </Text>
-                                    <Text style={[styles.bracketTotalValue, dynamicStyles.bracketTotalValue]}>
-                                        {formatCurrency(results.totalCost)}
-                                    </Text>
-                                </View>
-                                {results.childResults.length > 0 && (
-                                    <View style={styles.bracketRow}>
-                                        <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>
-                                            Cost per child ({results.childResults.length})
-                                        </Text>
-                                        <Text style={[styles.bracketTitle, dynamicStyles.bracketTitle]}>
-                                            {formatCurrency(
-                                                results.totalCost / results.childResults.length
-                                            )}
-                                        </Text>
-                                    </View>
-                                )}
-                            </View>
-                        </View>
-                    )}
-                </>
-            </BreakdownStepCard>
         </>
     );
 }

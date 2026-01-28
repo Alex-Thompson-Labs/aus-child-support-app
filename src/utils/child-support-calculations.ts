@@ -189,18 +189,99 @@ export function getChildCost(
  * @param otherCaseChildren - Children in other child support cases (with specific ages)
  * @returns The multi-case allowance to deduct from the parent's income (rounded to nearest dollar)
  */
+/**
+ * Breakdown for a single other-case child in multi-case allowance calculation
+ */
+export interface MultiCaseChildBreakdown {
+  childId: string;
+  childAge: number;
+  childSupportIncome: number; // Parent's CSI for this calculation
+  totalCost: number; // COTC for all children at this age
+  costPerChild: number; // Cost divided by total children
+  totalChildren: number; // Current case + other case children
+  isCurrentCase: boolean; // Whether this child is in the current case
+}
+
+/**
+ * Result of multi-case allowance calculation with detailed breakdown
+ */
+export interface MultiCaseAllowanceResult {
+  totalAllowance: number;
+  breakdown: MultiCaseChildBreakdown[];
+}
+
 export function calculateMultiCaseAllowance(
   year: AssessmentYear,
   parentCSI: number,
   currentCaseChildren: { age: number }[],
   otherCaseChildren: OtherCaseChild[]
 ): number {
-  if (otherCaseChildren.length === 0) return 0;
-  if (parentCSI <= 0) return 0;
+  const result = calculateMultiCaseAllowanceDetailed(
+    year,
+    parentCSI,
+    currentCaseChildren,
+    otherCaseChildren
+  );
+  return result.totalAllowance;
+}
+
+/**
+ * Calculate multi-case allowance with detailed breakdown for each other-case child.
+ * This version returns intermediate calculations for display in Step 1 breakdown.
+ */
+export function calculateMultiCaseAllowanceDetailed(
+  year: AssessmentYear,
+  parentCSI: number,
+  currentCaseChildren: { age: number }[],
+  otherCaseChildren: OtherCaseChild[]
+): MultiCaseAllowanceResult {
+  if (otherCaseChildren.length === 0) {
+    return { totalAllowance: 0, breakdown: [] };
+  }
+  
+  if (parentCSI <= 0) {
+    return { totalAllowance: 0, breakdown: [] };
+  }
 
   const totalChildCount = currentCaseChildren.length + otherCaseChildren.length;
   let allowance = 0;
+  const breakdown: MultiCaseChildBreakdown[] = [];
 
+  // First, add breakdown for current case children (for display purposes)
+  for (let i = 0; i < currentCaseChildren.length; i++) {
+    const currentChild = currentCaseChildren[i];
+    const ageRange = deriveAgeRangeMemoized(currentChild.age);
+    
+    // Create virtual children all of same age as this current-case child
+    const virtualChildren: Child[] = [];
+    for (let j = 0; j < totalChildCount; j++) {
+      virtualChildren.push({
+        age: currentChild.age,
+        ageRange: ageRange,
+        careA: 0,
+        careB: 0,
+      });
+    }
+
+    // Calculate cost using parent's individual CSI
+    const { cost: totalCost } = getChildCost(year, virtualChildren, parentCSI);
+
+    // This child's share
+    const childCost = totalCost / totalChildCount;
+
+    // Store breakdown for this child (but don't add to allowance)
+    breakdown.push({
+      childId: `current-${i}`,
+      childAge: currentChild.age,
+      childSupportIncome: parentCSI,
+      totalCost: totalCost,
+      costPerChild: childCost,
+      totalChildren: totalChildCount,
+      isCurrentCase: true,
+    });
+  }
+
+  // Then, add breakdown for other case children (these contribute to allowance)
   for (const otherChild of otherCaseChildren) {
     // Create virtual children all of same age as this other-case child
     // This implements the "Same Age" rule
@@ -224,9 +305,23 @@ export function calculateMultiCaseAllowance(
     // This child's share
     const childCost = totalCost / totalChildCount;
     allowance += childCost;
+
+    // Store breakdown for this child
+    breakdown.push({
+      childId: otherChild.id,
+      childAge: otherChild.age,
+      childSupportIncome: parentCSI,
+      totalCost: totalCost,
+      costPerChild: childCost,
+      totalChildren: totalChildCount,
+      isCurrentCase: false,
+    });
   }
 
-  return Math.round(allowance);
+  return {
+    totalAllowance: Math.round(allowance),
+    breakdown,
+  };
 }
 
 /**
