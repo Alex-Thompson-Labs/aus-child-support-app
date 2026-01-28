@@ -42,19 +42,24 @@ export function useCalculatorState() {
     const [resetTimestamp, setResetTimestamp] = useState<number>(0);
 
     const addChild = useCallback(() => {
-        setFormState((prev) => ({
-            ...prev,
-            children: [
-                ...prev.children,
-                {
-                    id: `child-${Date.now()}-${Math.random()}`,
-                    age: 5, // Default to age 5 (Under 13)
-                    careAmountA: 8,
-                    careAmountB: 6,
-                    carePeriod: 'fortnight',
-                },
-            ],
-        }));
+        setFormState((prev) => {
+            // Check if we're in Formula 5/6 scenario (deceased or non-reciprocating)
+            const hideParentB = prev.nonParentCarer.hasDeceasedParent || prev.nonParentCarer.isNonReciprocating;
+            
+            return {
+                ...prev,
+                children: [
+                    ...prev.children,
+                    {
+                        id: `child-${Date.now()}-${Math.random()}`,
+                        age: 5, // Default to age 5 (Under 13)
+                        careAmountA: 8,
+                        careAmountB: hideParentB ? 0 : 6, // Set to 0 if parent B is hidden
+                        carePeriod: 'fortnight',
+                    },
+                ],
+            };
+        });
         setErrors({});
         setIsStale(true);
     }, []);

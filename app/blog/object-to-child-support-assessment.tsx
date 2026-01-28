@@ -76,7 +76,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
         <>
             <PageSEO
                 title="How to Object to Child Support Assessment Australia 2026"
-                description="28-day deadline to object—miss it and you're stuck. See valid grounds + evidence requirements. SSAT appeal process explained. Act now."
+                description="28-day deadline to object—miss it and you're stuck. See valid grounds + evidence requirements. SSAT appeal process explained. Act now to preserve your rights."
                 canonicalPath="/blog/object-to-child-support-assessment"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -212,8 +212,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.infoButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/')}
                         >
                             <Text style={styles.infoButtonText}>Check Your Assessment →</Text>
                         </Pressable>
@@ -484,8 +483,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.infoButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/blog/when-to-hire-family-lawyer')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/blog/when-to-hire-family-lawyer')}
                         >
                             <Text style={styles.infoButtonText}>When to Hire a Lawyer →</Text>
                         </Pressable>
@@ -533,8 +531,7 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                         </View>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=assessment_objection')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=assessment_objection')}
                             accessibilityLabel="Get legal help with objection"
                         >
                             <Text style={styles.primaryButtonText}>Get Legal Help</Text>
@@ -663,16 +660,14 @@ export default function ObjectToChildSupportAssessmentBlogPost() {
                         <View style={styles.ctaButtons}>
                             <Pressable
                                 style={[styles.primaryButton, isWeb && webClickableStyles]}
-                                onPress={() => router.push('/')}
-                                accessibilityRole="button"
+                                accessibilityRole="link" onPress={() => router.push('/')}
                                 accessibilityLabel="Use calculator"
                             >
                                 <Text style={styles.primaryButtonText}>Check Your Assessment</Text>
                             </Pressable>
                             <Pressable
                                 style={[styles.secondaryButton, isWeb && webClickableStyles]}
-                                onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=assessment_objection')}
-                                accessibilityRole="button"
+                                accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=assessment_objection')}
                                 accessibilityLabel="Get legal help"
                             >
                                 <Text style={styles.secondaryButtonText}>Get Legal Help</Text>

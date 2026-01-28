@@ -238,7 +238,7 @@ No, your new partner's income does NOT affect child support in Australia. The fo
 | Is CS mandatory | ✅ Exists | 🟡 Moderate | Need to create | MEDIUM | 📋 Todo |
 | Can I reduce CS | ❌ None | 🟢 Very High | ✅ Optimized | HIGH | ✅ Done |
 | Backdating CS | ✅ Exists | 🟡 Moderate | ✅ Optimized | MEDIUM | ✅ Done |
-| CS vs spousal | ✅ Weak | 🟡 Moderate | Need to create | MEDIUM | 📋 Todo |
+| CS vs spousal | ✅ Weak | 🟡 Moderate | ✅ Created | MEDIUM | ✅ Done |
 | Do both parents pay | ❌ None | 🟢 High | Need to create | HIGH | 📋 Todo |
 | CS self-employed | ❌ None | 🟢 Very High | ✅ Optimized | HIGH | ✅ Done |
 | Don't pay consequences | ❌ None | 🟢 High | Need to create | HIGH | 📋 Todo |
@@ -279,32 +279,36 @@ No, your new partner's income does NOT affect child support in Australia. The fo
 
 **Total Time:** ~2.5 hours (completed in single session)
 
-### Phase 2: Create New Content (Week 3-4)
+### ✅ Phase 2: COMPLETED - Create New Content (January 28, 2026)
+
+**All 5 new blog posts have been created with snippet-optimized sections:**
 
 **6. "What does child support cover"**
-- Action: Create new blog post
-- Time: 2 hours
-- Priority: HIGH (no snippet exists)
+- File: `app/blog/what-does-child-support-cover.tsx`
+- Status: ✅ Created with snippet-optimized section (60 words)
+- Content: General contribution explanation, not itemized, receiving parent discretion
 
 **7. "Do both parents pay child support"**
-- Action: Add section to existing post or create FAQ
-- Time: 1 hour
-- Priority: HIGH (common misconception)
+- File: `app/blog/child-support-formula-australia.tsx`
+- Status: ✅ Added snippet-optimized section (60 words)
+- Content: Both assessed, offset against each other, single payment from higher earner
 
 **8. "What happens if I don't pay child support"**
-- Action: Create new blog post or add to arrears post
-- Time: 1.5 hours
-- Priority: HIGH (compliance topic)
+- File: `app/blog/what-happens-if-dont-pay-child-support.tsx`
+- Status: ✅ Created with snippet-optimized section (60 words)
+- Content: Enforcement actions, wage garnishing, tax intercepts, travel bans
 
 **9. "Is child support mandatory"**
-- Action: Add section to "How to Calculate" post
-- Time: 30 minutes
-- Priority: MEDIUM
+- File: `app/blog/how-to-calculate-child-support.tsx`
+- Status: ✅ Added snippet-optimized section (60 words)
+- Content: Mandatory under CSA Act, private agreements allowed, equal income/care exception
 
 **10. "Child support vs spousal maintenance"**
-- Action: Create comparison post
-- Time: 1.5 hours
-- Priority: MEDIUM
+- File: `app/blog/child-support-vs-spousal-maintenance.tsx`
+- Status: ✅ Created with snippet-optimized section (60 words)
+- Content: Separate obligations, child support mandatory/formula-based, spousal maintenance discretionary/court-ordered
+
+**Total Time:** ~6-8 hours (completed in single session)
 
 ---
 

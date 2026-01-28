@@ -2,19 +2,19 @@ import { ArrowRight } from '@/src/components/icons';
 import { useAppTheme } from '@/src/theme';
 import { useAnalytics } from '@/src/utils/analytics';
 import type {
-    ChildInput,
-    FormErrors,
-    MultiCaseInfo,
-    NonParentCarerInfo,
-    OtherCaseChild,
+  ChildInput,
+  FormErrors,
+  MultiCaseInfo,
+  NonParentCarerInfo,
+  OtherCaseChild,
 } from '@/src/utils/calculator';
 import type { AssessmentYear } from '@/src/utils/child-support-constants';
 import {
-    MAX_CONTENT_WIDTH,
-    isWeb,
-    useResponsive,
-    webClickableStyles,
-    webInputStyles,
+  MAX_CONTENT_WIDTH,
+  isWeb,
+  useResponsive,
+  webClickableStyles,
+  webInputStyles,
 } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import React, { useMemo, useRef } from 'react';
@@ -416,6 +416,7 @@ export function CalculatorForm({
             relDepB={relDepB}
             onRelDepAChange={onRelDepAChange}
             onRelDepBChange={onRelDepBChange}
+            hideOtherParent={nonParentCarer.hasDeceasedParent || nonParentCarer.isNonReciprocating}
           />
         </View>
 
@@ -426,6 +427,7 @@ export function CalculatorForm({
             multiCaseB={multiCaseB}
             onMultiCaseAChange={onMultiCaseAChange}
             onMultiCaseBChange={onMultiCaseBChange}
+            hideOtherParent={nonParentCarer.hasDeceasedParent || nonParentCarer.isNonReciprocating}
           />
         </View>
 
@@ -453,7 +455,7 @@ export function CalculatorForm({
             CARE
           </Text>
           <HelpTooltip
-            what="Enter the number of nights each parent has care of the child per week, fortnight, or year and if the child is over or under 13 years of age."
+            what="Enter the number of nights each parent has care of the child per week, fortnight, or year and the age of the child."
             why=""
             hideWhatLabel
           />

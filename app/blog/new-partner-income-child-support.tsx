@@ -263,8 +263,7 @@ export default function NewPartnerIncomeChildSupportBlogPost() {
 
                     <Pressable
                         style={[styles.ctaButton, isWeb && webClickableStyles]}
-                        onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=earning_capacity')}
-                        accessibilityRole="button"
+                        accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=earning_capacity')}
                     >
                         <Text style={styles.ctaButtonText}>Get Legal Advice on Earning Capacity Assessment →</Text>
                     </Pressable>
@@ -419,8 +418,7 @@ export default function NewPartnerIncomeChildSupportBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.calculatorButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/')}
                         >
                             <Text style={styles.calculatorButtonText}>Calculate Now</Text>
                         </Pressable>
@@ -435,8 +433,7 @@ export default function NewPartnerIncomeChildSupportBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                         >
                             <Text style={styles.primaryButtonText}>Get Legal Help</Text>
                         </Pressable>

@@ -137,8 +137,14 @@ export interface CalculationResults {
   // Multi-case fields (Formula 3)
   multiCaseAllowanceA: number;
   multiCaseAllowanceB: number;
+  multiCaseCapA?: number;
+  multiCaseCapB?: number;
   multiCaseCapAppliedA: boolean;
   multiCaseCapAppliedB: boolean;
+  multiCaseCapBracketInfoA?: CostBracketInfo;
+  multiCaseCapBracketInfoB?: CostBracketInfo;
+  totalChildrenAllCasesA?: number;
+  totalChildrenAllCasesB?: number;
   // MAR/FAR cap explanations for multi-case scenarios
   marCapExplanationA?: string;
   marCapExplanationB?: string;

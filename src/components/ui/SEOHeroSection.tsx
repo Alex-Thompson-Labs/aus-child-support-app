@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
   },
   checkmark: {
     fontSize: 18,
-    color: '#10b981', // green-500 - using hex instead of theme.colors.success
+    color: '#2563eb', // blue-600 - matches brand primary color
     fontWeight: '700',
   },
   trustBadgeText: {

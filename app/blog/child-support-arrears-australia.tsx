@@ -336,8 +336,7 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
 
                     <Pressable
                         style={[styles.ctaButton, isWeb && webClickableStyles]}
-                        onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                        accessibilityRole="button"
+                        accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                     >
                         <Text style={styles.ctaButtonText}>Connect With Family Lawyers →</Text>
                     </Pressable>
@@ -449,8 +448,7 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.calculatorButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/')}
                         >
                             <Text style={styles.calculatorButtonText}>Calculate Now</Text>
                         </Pressable>
@@ -470,8 +468,7 @@ export default function ChildSupportArrearsAustraliaBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                         >
                             <Text style={styles.primaryButtonText}>Get Legal Help</Text>
                         </Pressable>

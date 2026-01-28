@@ -75,8 +75,8 @@ export default function CarePercentageTableBlogPost() {
     return (
         <>
             <PageSEO
-                title="Child Support Care Percentage Table Australia 2026 | Nights to %"
-                description="52 nights = 14% care, 183 nights = 50%. One night difference can change payments by $100s/month. See full table + free calculator. Check now."
+                title="Child Support Care % Table Australia 2026 | Nights to %"
+                description="52 nights = 14% care, 183 nights = 50%. One night difference can change payments by $100s/month. See full table + free calculator. Check your care % now."
                 canonicalPath="/blog/child-support-care-percentage-table"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -196,8 +196,7 @@ export default function CarePercentageTableBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.infoButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/')}
                         >
                             <Text style={styles.infoButtonText}>Calculate Your Child Support →</Text>
                         </Pressable>
@@ -300,8 +299,7 @@ export default function CarePercentageTableBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.ctaButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                         >
                             <Text style={styles.ctaButtonText}>Get Expert Advice on Care Arrangements →</Text>
                         </Pressable>
@@ -603,8 +601,7 @@ export default function CarePercentageTableBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                         >
                             <Text style={styles.primaryButtonText}>Get Legal Help</Text>
                         </Pressable>
@@ -681,15 +678,13 @@ export default function CarePercentageTableBlogPost() {
                         <View style={styles.ctaButtons}>
                             <Pressable
                                 style={[styles.primaryButton, isWeb && webClickableStyles]}
-                                onPress={() => router.push('/')}
-                                accessibilityRole="button"
+                                accessibilityRole="link" onPress={() => router.push('/')}
                             >
                                 <Text style={styles.primaryButtonText}>Use Calculator</Text>
                             </Pressable>
                             <Pressable
                                 style={[styles.secondaryButton, isWeb && webClickableStyles]}
-                                onPress={() => router.push('/faq')}
-                                accessibilityRole="button"
+                                accessibilityRole="link" onPress={() => router.push('/faq')}
                             >
                                 <Text style={styles.secondaryButtonText}>More FAQs</Text>
                             </Pressable>

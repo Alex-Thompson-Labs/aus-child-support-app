@@ -74,7 +74,7 @@ export default function OverseasParentEnforcementScreen() {
   return (
     <>
       <PageSEO
-        title="Overseas Parent Child Support Enforcement Australia 2026: International Recovery"
+        title="Overseas Parent Child Support Enforcement Australia 2026"
         description="Parent overseas? Enforcement works in 80+ countries through reciprocating jurisdictions. See Hague Convention agreements + enforcement process. Start now."
         canonicalPath="/blog/overseas-parent-child-support-enforcement"
         schema={[faqSchema, articleSchema]}
@@ -396,8 +396,7 @@ export default function OverseasParentEnforcementScreen() {
             </Text>
             <Pressable
               style={[styles.ctaButton, isWeb && webClickableStyles]}
-              onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-              accessibilityRole="button"
+              accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
             >
               <Text style={styles.ctaButtonText}>Get Legal Advice</Text>
             </Pressable>

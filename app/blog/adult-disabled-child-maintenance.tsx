@@ -74,7 +74,7 @@ export default function AdultDisabledChildMaintenanceScreen() {
   return (
     <>
       <PageSEO
-        title="Adult Disabled Child Maintenance Australia 2026: Child Support Beyond 18"
+        title="Adult Disabled Child Maintenance Australia 2026 | Support"
         description="Child 18+ with disability? Support doesn't stop. See eligibility criteria + application process. NDIS doesn't replace child support. Apply now."
         canonicalPath="/blog/adult-disabled-child-maintenance"
         schema={[faqSchema, articleSchema]}
@@ -235,7 +235,7 @@ export default function AdultDisabledChildMaintenanceScreen() {
 
           <View style={styles.highlightBox}>
             <Text style={styles.highlightTitle}>📚 Related Reading:</Text>
-            <Pressable onPress={() => router.push('/blog/child-support-after-18')} {...webClickableStyles}>
+            <Pressable accessibilityRole="link" onPress={() => router.push('/blog/child-support-after-18')} {...webClickableStyles}>
               <Text style={styles.inlineLink}>
                 Child Support After 18: When Does It End? →
               </Text>
@@ -449,8 +449,7 @@ export default function AdultDisabledChildMaintenanceScreen() {
             </Text>
             <Pressable
               style={[styles.ctaButton, isWeb && webClickableStyles]}
-              onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-              accessibilityRole="button"
+              accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
             >
               <Text style={styles.ctaButtonText}>Speak to a Specialist</Text>
             </Pressable>

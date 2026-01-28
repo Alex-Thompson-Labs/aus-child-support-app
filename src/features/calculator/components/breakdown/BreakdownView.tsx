@@ -22,6 +22,19 @@ interface BreakdownViewProps {
  * expands the breakdown view, reducing initial bundle size.
  */
 export function BreakdownView({ results, formState, hasDeceasedParent = false }: BreakdownViewProps) {
+  // Collapsible state management - 8-Step Formula
+  // IMPORTANT: Must be declared before any conditional returns (React Hooks rules)
+  const [expandedSteps, setExpandedSteps] = useState({
+    step1: false, // Child Support Income - collapsed
+    step2: false, // Combined Income - collapsed
+    step3: false, // Income Percentage - collapsed
+    step4: false, // Care Percentage - collapsed
+    step5: false, // Cost Percentage - collapsed
+    step6: false, // Child Support Percentage - collapsed
+    step7: false, // Cost of Children - collapsed
+    step8: true, // Annual Rate - expanded by default
+  });
+
   // Check if this is a Formula 5 (non-reciprocating jurisdiction) or Formula 6 (deceased parent) case
   // Both formulas use only one parent's income, so we hide the "OTHER PARENT" sections
   const isFormula5 = (results as any).formulaUsed === 5;
@@ -37,18 +50,6 @@ export function BreakdownView({ results, formState, hasDeceasedParent = false }:
   if (isFormula6) {
     return <Formula6BreakdownView results={results} formState={formState} />;
   }
-  
-  // Collapsible state management - 8-Step Formula
-  const [expandedSteps, setExpandedSteps] = useState({
-    step1: false, // Child Support Income - collapsed
-    step2: false, // Combined Income - collapsed
-    step3: false, // Income Percentage - collapsed
-    step4: false, // Care Percentage - collapsed
-    step5: false, // Cost Percentage - collapsed
-    step6: false, // Child Support Percentage - collapsed
-    step7: false, // Cost of Children - collapsed
-    step8: true, // Annual Rate - expanded by default
-  });
 
   const handleIncomeToggle = (step: 'step1' | 'step2' | 'step3') => {
     setExpandedSteps((prev) => ({ ...prev, [step]: !prev[step] }));

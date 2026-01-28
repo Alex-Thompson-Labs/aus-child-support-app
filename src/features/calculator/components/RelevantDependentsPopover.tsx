@@ -18,6 +18,7 @@ export interface RelevantDependentsPopoverProps {
   onRelDepAChange: (updates: Partial<{ u13: number; plus13: number }>) => void;
   onRelDepBChange: (updates: Partial<{ u13: number; plus13: number }>) => void;
   compact?: boolean; // For horizontal layout
+  hideOtherParent?: boolean; // Hide "OTHER PARENT" section when deceased or non-reciprocating
 }
 
 export function RelevantDependentsPopover({
@@ -26,12 +27,15 @@ export function RelevantDependentsPopover({
   onRelDepAChange,
   onRelDepBChange,
   compact = false,
+  hideOtherParent = false,
 }: RelevantDependentsPopoverProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { isMobile } = useResponsive();
 
-  const totalDeps = relDepA.u13 + relDepA.plus13 + relDepB.u13 + relDepB.plus13;
+  const totalDeps = hideOtherParent 
+    ? relDepA.u13 + relDepA.plus13 
+    : relDepA.u13 + relDepA.plus13 + relDepB.u13 + relDepB.plus13;
   const hasValues = totalDeps > 0;
 
   const handleToggle = () => {
@@ -193,49 +197,51 @@ export function RelevantDependentsPopover({
               </View>
             </View>
 
-            {/* Separator - Hide on mobile if wrapped */}
-            {!isMobile && <View style={popoverStyles.drawerSeparator} />}
+            {/* Separator - Hide on mobile if wrapped, hide if other parent hidden */}
+            {!isMobile && !hideOtherParent && <View style={popoverStyles.drawerSeparator} />}
 
-            {/* Other Parent */}
-            <View
-              style={popoverStyles.drawerInputGroup}
-              accessibilityRole={'group' as any} // Web-only ARIA role
-              accessibilityLabel="Other Parent's Dependents"
-            >
-              <View style={popoverStyles.drawerAgeInputs}>
-                <Text style={[popoverStyles.drawerAgeLabel, { marginBottom: 10 }]}>&lt;13</Text>
-                <View style={popoverStyles.drawerLabeledAgeGroup}>
-                  <Text style={popoverStyles.drawerParentLabelOther}>OTHER PARENT</Text>
-                  <View style={popoverStyles.drawerInputRow}>
-                    <TextInput
-                      style={[popoverStyles.drawerInput, webInputStyles]}
-                      value={relDepB.u13.toString()}
-                      onChangeText={(text) =>
-                        onRelDepBChange({
-                          u13: parseInt(text.replace(/[^0-9]/g, '')) || 0,
-                        })
-                      }
-                      keyboardType="numeric"
-                      accessibilityLabel="Other parent's dependents under 13"
-                      accessibilityHint="Number of relevant dependent children under 13 for other parent"
-                    />
-                    <Text style={popoverStyles.drawerAgeLabel}>13+</Text>
-                    <TextInput
-                      style={[popoverStyles.drawerInput, webInputStyles]}
-                      value={relDepB.plus13.toString()}
-                      onChangeText={(text) =>
-                        onRelDepBChange({
-                          plus13: parseInt(text.replace(/[^0-9]/g, '')) || 0,
-                        })
-                      }
-                      keyboardType="numeric"
-                      accessibilityLabel="Other parent's dependents 13 and over"
-                      accessibilityHint="Number of relevant dependent children 13 and over for other parent"
-                    />
+            {/* Other Parent - Hidden when deceased or non-reciprocating */}
+            {!hideOtherParent && (
+              <View
+                style={popoverStyles.drawerInputGroup}
+                accessibilityRole={'group' as any} // Web-only ARIA role
+                accessibilityLabel="Other Parent's Dependents"
+              >
+                <View style={popoverStyles.drawerAgeInputs}>
+                  <Text style={[popoverStyles.drawerAgeLabel, { marginBottom: 10 }]}>&lt;13</Text>
+                  <View style={popoverStyles.drawerLabeledAgeGroup}>
+                    <Text style={popoverStyles.drawerParentLabelOther}>OTHER PARENT</Text>
+                    <View style={popoverStyles.drawerInputRow}>
+                      <TextInput
+                        style={[popoverStyles.drawerInput, webInputStyles]}
+                        value={relDepB.u13.toString()}
+                        onChangeText={(text) =>
+                          onRelDepBChange({
+                            u13: parseInt(text.replace(/[^0-9]/g, '')) || 0,
+                          })
+                        }
+                        keyboardType="numeric"
+                        accessibilityLabel="Other parent's dependents under 13"
+                        accessibilityHint="Number of relevant dependent children under 13 for other parent"
+                      />
+                      <Text style={popoverStyles.drawerAgeLabel}>13+</Text>
+                      <TextInput
+                        style={[popoverStyles.drawerInput, webInputStyles]}
+                        value={relDepB.plus13.toString()}
+                        onChangeText={(text) =>
+                          onRelDepBChange({
+                            plus13: parseInt(text.replace(/[^0-9]/g, '')) || 0,
+                          })
+                        }
+                        keyboardType="numeric"
+                        accessibilityLabel="Other parent's dependents 13 and over"
+                        accessibilityHint="Number of relevant dependent children 13 and over for other parent"
+                      />
+                    </View>
                   </View>
                 </View>
               </View>
-            </View>
+            )}
           </View>
         </View>
       </View>

@@ -1,3 +1,4 @@
+import { ContextualWizard } from '@/src/components/blog/ContextualWizard';
 import { PageSEO } from '@/src/components/seo/PageSEO';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
@@ -12,26 +13,26 @@ const faqSchema = {
     mainEntity: [
         {
             '@type': 'Question',
-            name: 'How do I calculate child support in Australia?',
+            name: 'What does child support cover in Australia?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'To calculate child support: 1) Determine both parents\' Adjusted Taxable Income, 2) Subtract the Self-Support Amount ($31,046 in 2026) from each, 3) Calculate income percentages, 4) Look up costs from the official table, 5) Calculate care percentages, 6) Apply the formula: (Income % - Cost %) × Total Costs. Use a calculator for accuracy.',
+                text: 'Child support in Australia is a general contribution toward the costs of raising a child. It\'s not itemized for specific expenses. The receiving parent decides how to allocate it across day-to-day costs like food, clothing, housing, education, and activities. The amount is calculated using research into typical family spending patterns.',
             },
         },
         {
             '@type': 'Question',
-            name: 'What information do I need to calculate child support?',
+            name: 'Does child support cover school fees in Australia?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'You need: both parents\' taxable income (from tax returns), number of children and their ages, care arrangement (nights per year with each parent), and any relevant dependents. Optional: other child support cases, income support payments, and special circumstances.',
+                text: 'Standard child support doesn\'t specifically cover school fees. However, if private school fees are unusually high and both parents agreed to private education, you can apply for a Change of Assessment under Reason 3 to have these costs considered separately. Basic public school costs are included in the general child support amount.',
             },
         },
         {
             '@type': 'Question',
-            name: 'Is there a free child support calculator for Australia?',
+            name: 'Can child support be used for anything?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Yes. Our free calculator uses the official 2026 Services Australia formula. Enter your income, care arrangement, and children\'s details to get an instant estimate. It handles standard cases (Formulas 1-3) and flags complex situations that need legal advice.',
+                text: 'Yes. Child support is a general financial contribution, not earmarked for specific expenses. The receiving parent has discretion to allocate it toward any costs related to raising the child—housing, food, clothing, education, healthcare, activities, or savings. The law doesn\'t require itemized spending reports.',
             },
         },
     ],
@@ -39,20 +40,18 @@ const faqSchema = {
 
 const articleSchema = {
     '@context': 'https://schema.org',
-    '@type': 'HowTo',
-    name: 'How to Calculate Child Support in Australia',
-    description: 'Step-by-step guide to calculating child support in Australia using the 2026 Services Australia formula. Includes what information you need and a free calculator.',
-    step: [
-        { '@type': 'HowToStep', name: 'Gather Required Information', text: 'Collect both parents\' income, care arrangement, and children\'s details' },
-        { '@type': 'HowToStep', name: 'Calculate Child Support Income', text: 'Subtract Self-Support Amount from each parent\'s taxable income' },
-        { '@type': 'HowToStep', name: 'Determine Income Percentages', text: 'Calculate each parent\'s share of combined income' },
-        { '@type': 'HowToStep', name: 'Look Up Costs of Children', text: 'Use official table based on income and children' },
-        { '@type': 'HowToStep', name: 'Calculate Care Percentages', text: 'Convert nights per year to care and cost percentages' },
-        { '@type': 'HowToStep', name: 'Apply the Formula', text: 'Calculate final amount using income and cost percentages' },
-    ],
+    '@type': 'Article',
+    headline: 'What Does Child Support Cover in Australia? 2026 Guide',
+    description: 'Child support is a general contribution toward raising costs, not itemized expenses. Learn what it covers, what it doesn\'t, and how to claim extra costs.',
+    datePublished: '2026-01-28',
+    dateModified: '2026-01-28',
+    author: {
+        '@type': 'Organization',
+        name: 'AusChildSupport',
+    },
 };
 
-export default function HowToCalculateChildSupportBlogPost() {
+export default function WhatDoesChildSupportCoverBlogPost() {
     const router = useRouter();
 
     const webContainerStyle = isWeb ? { maxWidth: MAX_CALCULATOR_WIDTH, width: '100%' as const, alignSelf: 'center' as const } : {};
@@ -60,46 +59,62 @@ export default function HowToCalculateChildSupportBlogPost() {
     return (
         <>
             <PageSEO
-                title="Calculate Child Support Australia 2026 | Free Calculator"
-                description="Manual calculation takes 60 minutes + risks $1,000s in errors. Our calculator uses official 2026 formula. Get accurate results in 5 minutes. Free."
-                canonicalPath="/blog/how-to-calculate-child-support"
+                title="What Does Child Support Cover in Australia? 2026 Guide"
+                description="Child support is a general contribution toward raising costs, not itemized expenses. Learn what it covers, what it doesn't, and how to claim extra costs."
+                canonicalPath="/blog/what-does-child-support-cover"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
                     { label: 'Home', path: '/' },
                     { label: 'Blog', path: '/blog' },
-                    { label: 'How to Calculate' },
+                    { label: 'What Child Support Covers' },
                 ]}
             />
             <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
                 <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, webContainerStyle]}>
                     {/* Article Header */}
                     <View style={styles.articleHeader}>
-                        <Text style={styles.category}>Calculator Guide</Text>
+                        <Text style={styles.category}>Understanding Child Support</Text>
                         <Text style={styles.h1} accessibilityRole="header">
-                            How to Calculate Child Support in Australia: The 2026 Guide
+                            What Does Child Support Cover in Australia?
                         </Text>
-                        <Text style={styles.publishDate}>Published January 24, 2026</Text>
+                        <Text style={styles.publishDate}>Published January 28, 2026</Text>
                     </View>
 
                     <Text style={styles.intro}>
-                        Need to calculate child support? You're in the right place. This guide shows you exactly
-                        what information you need, how the calculation works, and the fastest way to get an accurate estimate.
+                        One of the most common questions parents ask: "What exactly does child support pay for?" 
+                        The answer might surprise you—it's not as specific as you think.
                     </Text>
 
                     <View style={styles.quickAnswerBox}>
                         <Text style={styles.quickAnswerTitle}>⚡ Quick Answer</Text>
                         <Text style={styles.quickAnswerText}>
-                            Use our free calculator below. It uses the official 2026 Services Australia formula and
-                            gives you an instant, accurate estimate in under 5 minutes.
+                            Child support in Australia is a general contribution toward the costs of raising a child. 
+                            It's not itemized for specific expenses. The receiving parent decides how to allocate it 
+                            across day-to-day costs like food, clothing, housing, education, and activities.
                         </Text>
                         <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={() => router.push('/')} accessibilityRole="button">
-                            <Text style={styles.quickAnswerButtonText}>Calculate Now →</Text>
+                            <Text style={styles.quickAnswerButtonText}>Calculate Your Amount →</Text>
                         </Pressable>
                     </View>
 
                     <Text style={styles.paragraph}>
-                        Want to understand how it works first? Keep reading for the step-by-step process.
+                        Let's break down what this means in practice, what the law actually says, and when you can 
+                        claim additional costs.
                     </Text>
+
+                    {/* Internal Link: Related Content */}
+                    <View style={styles.internalLinkBox}>
+                        <Text style={styles.internalLinkTitle}>📖 Understanding Child Support</Text>
+                        <Text style={styles.internalLinkText}>
+                            Before diving into what child support covers, you might want to understand how it's calculated:
+                        </Text>
+                        <Pressable style={[styles.internalLinkButton, isWeb && webClickableStyles]} onPress={() => router.push('/blog/child-support-formula-australia')} accessibilityRole="button">
+                            <Text style={styles.internalLinkButtonText}>How the Formula Works →</Text>
+                        </Pressable>
+                        <Pressable style={[styles.internalLinkButton, isWeb && webClickableStyles, { marginTop: 8 }]} onPress={() => router.push('/blog/how-to-calculate-child-support')} accessibilityRole="button">
+                            <Text style={styles.internalLinkButtonText}>Step-by-Step Calculation Guide →</Text>
+                        </Pressable>
+                    </View>
 
                     {/* Featured Snippet Optimization: "How much will I pay" */}
                     <Text style={styles.h2} accessibilityRole="header">How Much Child Support Will I Pay in Australia?</Text>
@@ -158,36 +173,12 @@ export default function HowToCalculateChildSupportBlogPost() {
                         </Text>
                     </View>
 
-                    {/* Section: Is Child Support Mandatory? */}
-                    <Text style={styles.h2} accessibilityRole="header">Is Child Support Mandatory in Australia?</Text>
-                    <Text style={styles.paragraph}>
-                        Child support is not strictly mandatory for all parents, but it is effectively mandatory if you receive Family Tax Benefit (FTB) Part A.
-                    </Text>
-
-                    <View style={styles.infoBox}>
-                        <Text style={styles.infoTitle}>The "Maintenance Action Test"</Text>
-                        <Text style={styles.infoText}>
-                            To receive your full Family Tax Benefit Part A entitlement, Centrelink requires you to take "reasonable maintenance action." This usually means applying for a child support assessment.
-                        </Text>
-                        <Text style={styles.infoText}>
-                            If you do not apply, your FTB Part A may be reduced to the base rate (the minimum amount).
-                        </Text>
-                    </View>
-
-                    <Text style={styles.paragraph}>
-                        <Text style={styles.bold}>Exceptions apply:</Text> You can get an exemption from seeking child support if you have experienced family violence or fear for your safety. You should contact a Centrelink social worker to discuss this.
-                    </Text>
-
-                    <Text style={styles.paragraph}>
-                        <Text style={styles.bold}>If you don't receive FTB:</Text> You are not required to use the government scheme. You can make a private agreement (Binding Child Support Agreement) or handle payments informally between yourselves. However, either parent can apply for an assessment at any time, which overrides informal agreements.
-                    </Text>
-
                     {/* Featured Snippet Opportunity */}
                     <Text style={styles.h2} accessibilityRole="header">How Is Child Support Calculated in Australia?</Text>
                     <Text style={styles.paragraph}>
                         Child support in Australia is calculated using the Services Australia formula that considers both parents' adjusted taxable incomes and care arrangements. The basic formula is: (Your Income % - Your Cost %) × Total Costs of Children. Services Australia applies this to determine who pays, how much, and when. Most parents pay between $1,815 (minimum) and $30,000+ annually depending on income and care.
                     </Text>
-
+                    
                     <View style={styles.disclaimerBox}>
                         <Text style={styles.disclaimerTitle}>📌 Important Note</Text>
                         <Text style={styles.disclaimerText}>
@@ -307,6 +298,9 @@ export default function HowToCalculateChildSupportBlogPost() {
                         <Pressable style={[styles.internalLinkButton, isWeb && webClickableStyles, { marginTop: 8 }]} onPress={() => router.push('/blog/accurate-child-support-calculator')} accessibilityRole="button">
                             <Text style={styles.internalLinkButtonText}>Why Use a Calculator? →</Text>
                         </Pressable>
+                        <Pressable style={[styles.internalLinkButton, isWeb && webClickableStyles, { marginTop: 8 }]} onPress={() => router.push('/blog/child-support-reduction-strategies')} accessibilityRole="button">
+                            <Text style={styles.internalLinkButtonText}>Legal Ways to Reduce Payments →</Text>
+                        </Pressable>
                     </View>
 
                     {/* Step 6 */}
@@ -371,15 +365,24 @@ export default function HowToCalculateChildSupportBlogPost() {
                         answer="Yes. Our free calculator uses the official 2026 Services Australia formula. Enter your income, care arrangement, and children's details to get an instant estimate. It handles standard cases (Formulas 1-3) and flags complex situations that need legal advice."
                     />
 
+                    {/* Contextual Wizard for Complex Cases */}
+                    <ContextualWizard
+                        preselectedFactors={['high_costs']}
+                        highlightedFactors={['private_school_fees', 'property_settlement', 'change_circumstances']}
+                        blogTopic="what_child_support_covers"
+                        ctaText="Get Help Claiming Extra Costs"
+                        analyticsSource="blog_what_does_child_support_cover"
+                        formReason="special_circumstances"
+                        title="Need to Claim Costs Beyond Basic Support?"
+                        description="If you have unusually high costs (private school, medical, special needs), you may be able to apply for a Change of Assessment. Select any factors that apply."
+                    />
+
                     <View style={styles.trustSignalBox}>
-                        <Text style={styles.trustSignalTitle}>💼 Complex Situation?</Text>
-                        <Text style={styles.trustSignalItem}>• Free initial consultations available with family lawyers (15-30 minutes)</Text>
-                        <Text style={styles.trustSignalItem}>• Get expert help if your calculation involves self-employment, trusts, or overseas income</Text>
-                        <Text style={styles.trustSignalItem}>• No obligation to proceed after consultation</Text>
-                        <Text style={styles.trustSignalItem}>• Understand whether your situation needs professional advice</Text>
-                        <Pressable style={[styles.infoButton, isWeb && webClickableStyles, { marginTop: 12 }]} onPress={() => router.push('/lawyer-inquiry?mode=direct')} accessibilityRole="button">
-                            <Text style={styles.infoButtonText}>Connect with a Specialist →</Text>
-                        </Pressable>
+                        <Text style={styles.trustSignalTitle}>💼 What to Expect from a Consultation</Text>
+                        <Text style={styles.trustSignalItem}>• Most family lawyers offer free initial consultations (15-30 minutes)</Text>
+                        <Text style={styles.trustSignalItem}>• Discuss whether your costs qualify for a Change of Assessment application</Text>
+                        <Text style={styles.trustSignalItem}>• No obligation to proceed—just get clarity on your options</Text>
+                        <Text style={styles.trustSignalItem}>• Typical consultation fee: $200-400 if not free (often waived for complex cases)</Text>
                     </View>
 
                     {/* Final CTA */}

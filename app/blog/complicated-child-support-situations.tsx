@@ -195,8 +195,7 @@ export default function ComplicatedChildSupportBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.ctaButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=self_employment')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=self_employment')}
                         >
                             <Text style={styles.ctaButtonText}>Get Legal Help →</Text>
                         </Pressable>
@@ -209,8 +208,7 @@ export default function ComplicatedChildSupportBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.internalLinkButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/blog/child-support-self-employed')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/blog/child-support-self-employed')}
                         >
                             <Text style={styles.internalLinkButtonText}>Child Support for Self-Employed Parents →</Text>
                         </Pressable>
@@ -263,8 +261,7 @@ export default function ComplicatedChildSupportBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.ctaButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=trusts_companies')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=trusts_companies')}
                         >
                             <Text style={styles.ctaButtonText}>Get Legal Help →</Text>
                         </Pressable>
@@ -311,8 +308,7 @@ export default function ComplicatedChildSupportBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.infoButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/blog/international-child-support-australia')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/blog/international-child-support-australia')}
                         >
                             <Text style={styles.infoButtonText}>Read International Guide →</Text>
                         </Pressable>
@@ -324,8 +320,7 @@ export default function ComplicatedChildSupportBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.ctaButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=overseas_income')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=overseas_income')}
                         >
                             <Text style={styles.ctaButtonText}>Get Legal Help →</Text>
                         </Pressable>
@@ -379,8 +374,7 @@ export default function ComplicatedChildSupportBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.ctaButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=multi_case')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=multi_case')}
                         >
                             <Text style={styles.ctaButtonText}>Get Legal Help →</Text>
                         </Pressable>
@@ -433,8 +427,7 @@ export default function ComplicatedChildSupportBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.ctaButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=court_orders')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=court_orders')}
                         >
                             <Text style={styles.ctaButtonText}>Get Legal Help →</Text>
                         </Pressable>
@@ -488,8 +481,7 @@ export default function ComplicatedChildSupportBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.ctaButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=hidden_income')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=hidden_income')}
                         >
                             <Text style={styles.ctaButtonText}>Get Legal Help →</Text>
                         </Pressable>
@@ -543,8 +535,7 @@ export default function ComplicatedChildSupportBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.ctaButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=high_value')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=high_value')}
                         >
                             <Text style={styles.ctaButtonText}>Get Legal Help →</Text>
                         </Pressable>
@@ -604,8 +595,7 @@ export default function ComplicatedChildSupportBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.ctaButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/special-circumstances')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/special-circumstances')}
                         >
                             <Text style={styles.ctaButtonText}>Explore Change of Assessment →</Text>
                         </Pressable>
@@ -757,8 +747,7 @@ export default function ComplicatedChildSupportBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.internalLinkButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/blog/when-to-hire-family-lawyer')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/blog/when-to-hire-family-lawyer')}
                         >
                             <Text style={styles.internalLinkButtonText}>When to Hire a Family Lawyer →</Text>
                         </Pressable>
@@ -842,15 +831,13 @@ export default function ComplicatedChildSupportBlogPost() {
                         <View style={styles.ctaButtons}>
                             <Pressable
                                 style={[styles.primaryButton, isWeb && webClickableStyles]}
-                                onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                                accessibilityRole="button"
+                                accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                             >
                                 <Text style={styles.primaryButtonText}>Get Legal Help</Text>
                             </Pressable>
                             <Pressable
                                 style={[styles.secondaryButton, isWeb && webClickableStyles]}
-                                onPress={() => router.push('/')}
-                                accessibilityRole="button"
+                                accessibilityRole="link" onPress={() => router.push('/')}
                             >
                                 <Text style={styles.secondaryButtonText}>Try Calculator First</Text>
                             </Pressable>

@@ -54,8 +54,8 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
     return (
         <>
             <PageSEO
-                title="Backdating Child Support Australia 2026: How Far Back Can You Claim?"
-                description="Claim up to 18 months backdated child support—but only if you apply now. See evidence requirements + collection process. Don't miss the window."
+                title="Backdating Child Support Australia 2026 | How Far Back?"
+                description="Backdating limited to 3 months (9 if special circumstances). Arrears recoverable for 7 years. See rules + evidence requirements. Act fast to maximize recovery."
                 canonicalPath="/blog/backdating-child-support-australia"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -232,8 +232,7 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
 
                     <Pressable
                         style={[styles.ctaButton, isWeb && webClickableStyles]}
-                        onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                        accessibilityRole="button"
+                        accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                     >
                         <Text style={styles.ctaButtonText}>Get Expert Help With Your Backdating Claim →</Text>
                     </Pressable>
@@ -250,8 +249,7 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
 
                     <Pressable
                         style={[styles.ctaButton, isWeb && webClickableStyles]}
-                        onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                        accessibilityRole="button"
+                        accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                     >
                         <Text style={styles.ctaButtonText}>Get Legal Help With Change of Assessment →</Text>
                     </Pressable>
@@ -260,8 +258,7 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                         <Text style={styles.internalLinkTitle}>📚 Related Reading:</Text>
                         <Pressable
                             style={[styles.internalLink, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/blog/child-support-arrears-australia')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/blog/child-support-arrears-australia')}
                         >
                             <Text style={styles.internalLinkText}>
                                 Child Support Arrears: Collection & Enforcement →
@@ -269,8 +266,7 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                         </Pressable>
                         <Pressable
                             style={[styles.internalLink, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/blog/object-to-child-support-assessment')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/blog/object-to-child-support-assessment')}
                         >
                             <Text style={styles.internalLinkText}>
                                 How to Object to an Assessment →
@@ -437,8 +433,7 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.calculatorButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/')}
                         >
                             <Text style={styles.calculatorButtonText}>Calculate Now</Text>
                         </Pressable>
@@ -456,8 +451,7 @@ export default function BackdatingChildSupportAustraliaBlogPost() {
                         </View>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                         >
                             <Text style={styles.primaryButtonText}>Speak to a Specialist</Text>
                         </Pressable>

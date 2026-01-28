@@ -237,8 +237,7 @@ export default function ChildSupportCentrelinkBlogPost() {
                         <Text style={styles.internalLinkTitle}>📚 Related Reading:</Text>
                         <Pressable
                             style={[styles.internalLink, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/blog/child-support-arrears-australia')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/blog/child-support-arrears-australia')}
                         >
                             <Text style={styles.internalLinkText}>
                                 Child Support Arrears: Collection & Enforcement →
@@ -246,8 +245,7 @@ export default function ChildSupportCentrelinkBlogPost() {
                         </Pressable>
                         <Pressable
                             style={[styles.internalLink, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/blog/object-to-child-support-assessment')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/blog/object-to-child-support-assessment')}
                         >
                             <Text style={styles.internalLinkText}>
                                 How to Object to an Assessment →

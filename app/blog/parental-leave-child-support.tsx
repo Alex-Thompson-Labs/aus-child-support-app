@@ -72,19 +72,24 @@ export default function ParentalLeaveChildSupportScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <PageSEO
-        title="Parental Leave and Child Support Australia 2026 | Complete Guide"
-        description="On parental leave? Your child support should drop—but only if you notify Services Australia. Learn how to lodge an Estimate of Income. Notify immediately."
+        title="Parental Leave Child Support Australia 2026 | PPL Guide"
+        description="Parental leave income = $0 for child support. See how PPL affects assessments + when to update. Temporary reduction possible. Apply now to reduce payments."
         canonicalPath="/blog/parental-leave-child-support"
         schema={[faqSchema, articleSchema]}
+        breadcrumbs={[
+          { label: 'Home', path: '/' },
+          { label: 'Blog', path: '/blog' },
+          { label: 'Parental Leave' },
+        ]}
       />
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.container}>
           <View style={styles.breadcrumb}>
-            <Pressable onPress={() => router.push('/')} {...webClickableStyles}>
+            <Pressable accessibilityRole="link" onPress={() => router.push('/')} {...webClickableStyles}>
               <Text style={styles.breadcrumbLink}>Home</Text>
             </Pressable>
             <Text style={styles.breadcrumbSeparator}> / </Text>
-            <Pressable onPress={() => router.push('/blog')} {...webClickableStyles}>
+            <Pressable accessibilityRole="link" onPress={() => router.push('/blog')} {...webClickableStyles}>
               <Text style={styles.breadcrumbLink}>Blog</Text>
             </Pressable>
             <Text style={styles.breadcrumbSeparator}> / </Text>
@@ -92,7 +97,7 @@ export default function ParentalLeaveChildSupportScreen() {
           </View>
 
           <View style={styles.content}>
-            <Text style={styles.title}>
+            <Text style={styles.title} accessibilityRole="header">
               Parental Leave and Child Support Australia 2026 | Complete Guide
             </Text>
 
@@ -108,7 +113,7 @@ export default function ParentalLeaveChildSupportScreen() {
                 Taking parental leave? Your child support temporarily decreases based on Parental Leave Pay income.
                 Notify Services Australia immediately to avoid overpayments. Calculate your adjusted amount below.
               </Text>
-              <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={handleCalculatorPress}>
+              <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} accessibilityRole="button" onPress={handleCalculatorPress}>
                 <Text style={styles.quickAnswerButtonText}>Calculate Amount →</Text>
               </Pressable>
             </View>

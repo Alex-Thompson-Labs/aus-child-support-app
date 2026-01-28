@@ -260,8 +260,7 @@ export default function ChildSupportSelfEmployedBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.internalLinkButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/blog/complicated-child-support-situations')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/blog/complicated-child-support-situations')}
                         >
                             <Text style={styles.internalLinkButtonText}>
                                 8 Complicated Situations That Need Legal Advice →
@@ -467,8 +466,7 @@ export default function ChildSupportSelfEmployedBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.calculatorButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/')}
                         >
                             <Text style={styles.calculatorButtonText}>Try Free Calculator</Text>
                         </Pressable>
@@ -487,8 +485,7 @@ export default function ChildSupportSelfEmployedBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=hidden_income')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=hidden_income')}
                         >
                             <Text style={styles.primaryButtonText}>Get Legal Help</Text>
                         </Pressable>

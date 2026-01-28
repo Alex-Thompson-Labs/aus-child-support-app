@@ -55,8 +55,8 @@ export default function AccurateChildSupportCalculatorBlogPost() {
     return (
         <>
             <PageSEO
-                title="Accurate Child Support Calculator Australia 2026 | Free Estimate"
-                description="Most calculators get it wrong. Ours uses official 2026 formula + flags complex cases. Get accurate estimates in 5 minutes. No registration required."
+                title="Child Support Calculator Australia 2026 | Free & Accurate"
+                description="Manual calculation errors cost $1,000s/year. Our calculator uses official 2026 formula + 500+ cost tables. Get accurate results in 5 minutes. Free."
                 canonicalPath="/blog/accurate-child-support-calculator"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -191,8 +191,7 @@ export default function AccurateChildSupportCalculatorBlogPost() {
                         <Text style={styles.internalLinkTitle}>📚 Related Resources:</Text>
                         <Pressable
                             style={[styles.internalLink, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/blog/child-support-care-percentage-table')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/blog/child-support-care-percentage-table')}
                         >
                             <Text style={styles.internalLinkText}>
                                 Full Care Percentage Table →
@@ -200,8 +199,7 @@ export default function AccurateChildSupportCalculatorBlogPost() {
                         </Pressable>
                         <Pressable
                             style={[styles.internalLink, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/blog/how-to-calculate-child-support')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/blog/how-to-calculate-child-support')}
                         >
                             <Text style={styles.internalLinkText}>
                                 Step-by-Step Calculation Guide →
@@ -322,8 +320,7 @@ export default function AccurateChildSupportCalculatorBlogPost() {
                         <Text style={styles.internalLinkTitle}>📚 Related Reading:</Text>
                         <Pressable
                             style={[styles.internalLink, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/blog/complicated-child-support-situations')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/blog/complicated-child-support-situations')}
                         >
                             <Text style={styles.internalLinkText}>
                                 8 Situations That Need Legal Advice →
@@ -331,8 +328,7 @@ export default function AccurateChildSupportCalculatorBlogPost() {
                         </Pressable>
                         <Pressable
                             style={[styles.internalLink, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/blog/when-to-hire-family-lawyer')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/blog/when-to-hire-family-lawyer')}
                         >
                             <Text style={styles.internalLinkText}>
                                 When to Hire a Family Lawyer →
@@ -484,8 +480,7 @@ export default function AccurateChildSupportCalculatorBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.calculatorButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/')}
                         >
                             <Text style={styles.calculatorButtonText}>Calculate Now</Text>
                         </Pressable>
@@ -508,8 +503,7 @@ export default function AccurateChildSupportCalculatorBlogPost() {
                         </View>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                         >
                             <Text style={styles.primaryButtonText}>Speak to a Specialist</Text>
                         </Pressable>

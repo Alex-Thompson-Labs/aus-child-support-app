@@ -20,6 +20,7 @@ export interface OtherCasesPopoverProps {
   onMultiCaseAChange: (otherChildren: OtherCaseChild[]) => void;
   onMultiCaseBChange: (otherChildren: OtherCaseChild[]) => void;
   compact?: boolean;
+  hideOtherParent?: boolean; // Hide "OTHER PARENT" section when deceased or non-reciprocating
 }
 
 /**
@@ -68,6 +69,7 @@ export function OtherCasesPopover({
   onMultiCaseAChange,
   onMultiCaseBChange,
   compact = false,
+  hideOtherParent = false,
 }: OtherCasesPopoverProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -75,8 +77,9 @@ export function OtherCasesPopover({
 
   const countsA = countByAge(multiCaseA.otherChildren);
   const countsB = countByAge(multiCaseB.otherChildren);
-  const totalOtherChildren =
-    countsA.u13 + countsA.plus13 + countsB.u13 + countsB.plus13;
+  const totalOtherChildren = hideOtherParent
+    ? countsA.u13 + countsA.plus13
+    : countsA.u13 + countsA.plus13 + countsB.u13 + countsB.plus13;
   const hasValues = totalOtherChildren > 0;
 
   const handleToggle = () => {
@@ -247,43 +250,45 @@ export function OtherCasesPopover({
               </View>
             </View>
 
-            {/* Separator */}
-            {!isMobile && <View style={popoverStyles.drawerSeparator} />}
+            {/* Separator - Hide if other parent hidden */}
+            {!isMobile && !hideOtherParent && <View style={popoverStyles.drawerSeparator} />}
 
-            {/* Other Parent */}
-            <View
-              style={popoverStyles.drawerInputGroup}
-              accessibilityRole={'group' as never}
-              accessibilityLabel="Other parent's children in other cases"
-            >
-              <View style={popoverStyles.drawerAgeInputs}>
-                <Text style={[popoverStyles.drawerAgeLabel, { marginBottom: 10 }]}>&lt;13</Text>
-                <View style={popoverStyles.drawerLabeledAgeGroup}>
-                  <Text style={popoverStyles.drawerParentLabelOther}>OTHER PARENT</Text>
-                  <View style={popoverStyles.drawerInputRow}>
-                    <TextInput
-                      style={[popoverStyles.drawerInput, webInputStyles]}
-                      value={countsB.u13.toString()}
-                      onChangeText={(text) => handleCountChange('B', 'u13', text)}
-                      keyboardType="numeric"
-                      accessibilityLabel="Other parent's children under 13 in other cases"
-                      accessibilityHint="Number of children under 13 from other parent's other child support cases"
-                    />
-                    <Text style={popoverStyles.drawerAgeLabel}>13+</Text>
-                    <TextInput
-                      style={[popoverStyles.drawerInput, webInputStyles]}
-                      value={countsB.plus13.toString()}
-                      onChangeText={(text) =>
-                        handleCountChange('B', 'plus13', text)
-                      }
-                      keyboardType="numeric"
-                      accessibilityLabel="Other parent's children 13 and over in other cases"
-                      accessibilityHint="Number of children 13 and over from other parent's other child support cases"
-                    />
+            {/* Other Parent - Hidden when deceased or non-reciprocating */}
+            {!hideOtherParent && (
+              <View
+                style={popoverStyles.drawerInputGroup}
+                accessibilityRole={'group' as never}
+                accessibilityLabel="Other parent's children in other cases"
+              >
+                <View style={popoverStyles.drawerAgeInputs}>
+                  <Text style={[popoverStyles.drawerAgeLabel, { marginBottom: 10 }]}>&lt;13</Text>
+                  <View style={popoverStyles.drawerLabeledAgeGroup}>
+                    <Text style={popoverStyles.drawerParentLabelOther}>OTHER PARENT</Text>
+                    <View style={popoverStyles.drawerInputRow}>
+                      <TextInput
+                        style={[popoverStyles.drawerInput, webInputStyles]}
+                        value={countsB.u13.toString()}
+                        onChangeText={(text) => handleCountChange('B', 'u13', text)}
+                        keyboardType="numeric"
+                        accessibilityLabel="Other parent's children under 13 in other cases"
+                        accessibilityHint="Number of children under 13 from other parent's other child support cases"
+                      />
+                      <Text style={popoverStyles.drawerAgeLabel}>13+</Text>
+                      <TextInput
+                        style={[popoverStyles.drawerInput, webInputStyles]}
+                        value={countsB.plus13.toString()}
+                        onChangeText={(text) =>
+                          handleCountChange('B', 'plus13', text)
+                        }
+                        keyboardType="numeric"
+                        accessibilityLabel="Other parent's children 13 and over in other cases"
+                        accessibilityHint="Number of children 13 and over from other parent's other child support cases"
+                      />
+                    </View>
                   </View>
                 </View>
               </View>
-            </View>
+            )}
           </View>
         </View>
       </View>

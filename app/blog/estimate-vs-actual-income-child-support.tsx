@@ -72,19 +72,24 @@ export default function EstimateVsActualIncomeScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <PageSEO
-        title="Estimate vs Actual Income Child Support Australia 2026 | Complete Guide"
-        description="Income reconciliation can trigger $1,000s in surprise bills. See estimated vs actual income differences + how to update estimates. Avoid shock payments."
+        title="Estimate vs Actual Income Child Support Australia 2026"
+        description="Income reconciliation can trigger $1,000s in surprise bills. See estimated vs actual income differences + how to update estimates. Avoid shock payments now."
         canonicalPath="/blog/estimate-vs-actual-income-child-support"
         schema={[faqSchema, articleSchema]}
+        breadcrumbs={[
+          { label: 'Home', path: '/' },
+          { label: 'Blog', path: '/blog' },
+          { label: 'Estimate vs Actual Income' },
+        ]}
       />
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.container}>
           <View style={styles.breadcrumb}>
-            <Pressable onPress={() => router.push('/')} {...webClickableStyles}>
+            <Pressable accessibilityRole="link" onPress={() => router.push('/')} {...webClickableStyles}>
               <Text style={styles.breadcrumbLink}>Home</Text>
             </Pressable>
             <Text style={styles.breadcrumbSeparator}> / </Text>
-            <Pressable onPress={() => router.push('/blog')} {...webClickableStyles}>
+            <Pressable accessibilityRole="link" onPress={() => router.push('/blog')} {...webClickableStyles}>
               <Text style={styles.breadcrumbLink}>Blog</Text>
             </Pressable>
             <Text style={styles.breadcrumbSeparator}> / </Text>
@@ -92,7 +97,7 @@ export default function EstimateVsActualIncomeScreen() {
           </View>
 
           <View style={styles.content}>
-            <Text style={styles.title}>
+            <Text style={styles.title} accessibilityRole="header">
               Estimate vs Actual Income Child Support Australia 2026 | Complete Guide
             </Text>
 
@@ -108,7 +113,7 @@ export default function EstimateVsActualIncomeScreen() {
                 Child support uses estimated income during the year, then reconciles with actual income from tax returns. 
                 Differences create overpayments or underpayments. Calculate your estimated amount below.
               </Text>
-              <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={handleCalculatorPress}>
+              <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} accessibilityRole="button" onPress={handleCalculatorPress}>
                 <Text style={styles.quickAnswerButtonText}>Calculate Amount →</Text>
               </Pressable>
             </View>

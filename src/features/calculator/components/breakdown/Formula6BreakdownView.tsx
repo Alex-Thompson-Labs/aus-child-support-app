@@ -102,14 +102,6 @@ export function Formula6BreakdownView({ results, formState }: Formula6BreakdownV
                 ({formatCurrency(results.SSA)})
               </Text>
             </View>
-            {results.multiCaseAllowanceA !== undefined && results.multiCaseAllowanceA > 0 && (
-              <View style={styles.deductionRow}>
-                <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>Multi-case allowance</Text>
-                <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>
-                  ({formatCurrency(results.multiCaseAllowanceA)})
-                </Text>
-              </View>
-            )}
             <View style={[styles.deductionDivider, dynamicStyles.deductionDivider]} />
             <View style={styles.deductionRow}>
               <Text style={[styles.deductionTotalLabel, dynamicStyles.userHighlight]}>
@@ -271,83 +263,143 @@ export function Formula6BreakdownView({ results, formState }: Formula6BreakdownV
                 Annual rate
               </Text>
               <Text style={[styles.deductionTotalValue, dynamicStyles.userHighlight]}>
-                {formatCurrency(results.finalLiabilityA)}
+                {formatCurrency(results.totalCost - (costPercA / 100) * results.totalCost)}
               </Text>
             </View>
           </View>
         </>
       </BreakdownStepCard>
 
-      {/* Step 7: Multi-case Cap - Only show if multi-case applies */}
-      {results.multiCaseCapAppliedA && (
+      {/* Step 6: Multi-case Cap - Show if multi-case exists, otherwise skip to Step 8 */}
+      {results.multiCaseCapA !== undefined && (
         <BreakdownStepCard
-          stepNumber={7}
+          stepNumber={6}
           title="MULTI-CASE CAP"
           isExpanded={expandedSteps.step7}
           onToggle={() => handleToggle('step7')}
         >
           <>
             <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
-              If the parent is assessed to pay child support for a child who is in another child support case, work out the parent&apos;s multi-case cap.
+              If the parent is assessed to pay child support for a child who is in another child support case, work out the parent&apos;s multi-case cap. This ensures you don&apos;t pay more than if all your children lived in one household.
             </Text>
             <View style={[styles.calculationBox, dynamicStyles.calculationBox]}>
               <View style={styles.deductionRow}>
                 <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>
-                  Multi-case cap applied
+                  Your Child Support Income
                 </Text>
                 <Text style={[styles.deductionValue, dynamicStyles.textPrimary]}>
-                  Yes
+                  {formatCurrency(results.CSI_A)}
                 </Text>
               </View>
               <View style={[styles.deductionRow, { marginTop: 4 }]}>
                 <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>
-                  Liability capped at
+                  Total children across all your cases
                 </Text>
                 <Text style={[styles.deductionValue, dynamicStyles.textPrimary]}>
-                  {formatCurrency(results.finalLiabilityA)}
+                  {results.totalChildrenAllCasesA || results.childResults.length} children
                 </Text>
               </View>
+              
+              {results.multiCaseCapBracketInfoA && (
+                <>
+                  <View style={[styles.deductionRow, { marginTop: 12 }]}>
+                    <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>
+                      Your bracket: {formatCurrency(results.multiCaseCapBracketInfoA.minIncome)} – {results.multiCaseCapBracketInfoA.maxIncome ? formatCurrency(results.multiCaseCapBracketInfoA.maxIncome) : 'unlimited'}
+                    </Text>
+                  </View>
+                  <View style={[styles.deductionRow, { marginTop: 4 }]}>
+                    <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>
+                      Base amount
+                    </Text>
+                    <Text style={[styles.deductionValue, dynamicStyles.textPrimary]}>
+                      {formatCurrency(results.multiCaseCapBracketInfoA.fixed)}
+                    </Text>
+                  </View>
+                  {results.multiCaseCapBracketInfoA.rate > 0 && (
+                    <View style={[styles.deductionRow, { marginTop: 4 }]}>
+                      <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>
+                        + {(results.multiCaseCapBracketInfoA.rate * 100).toFixed(2)}% × {formatCurrency(results.multiCaseCapBracketInfoA.incomeInBracket)}
+                      </Text>
+                      <Text style={[styles.deductionValue, dynamicStyles.textPrimary]}>
+                        +{formatCurrency(results.multiCaseCapBracketInfoA.rate * results.multiCaseCapBracketInfoA.incomeInBracket)}
+                      </Text>
+                    </View>
+                  )}
+                </>
+              )}
+              
+              <View style={[styles.deductionRow, { marginTop: 8 }]}>
+                <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>
+                  Total cost for all {results.totalChildrenAllCasesA || results.childResults.length} children ({firstChild.age < 13 ? '<13' : '13+'})
+                </Text>
+                <Text style={[styles.deductionValue, dynamicStyles.textPrimary]}>
+                  {formatCurrency(results.multiCaseCapA ? (results.multiCaseCapA / (1 - (costPercA / 100))) * (results.totalChildrenAllCasesA || results.childResults.length) : 0)}
+                </Text>
+              </View>
+              <View style={[styles.deductionRow, { marginTop: 4 }]}>
+                <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>
+                  Cost per child (÷ {results.totalChildrenAllCasesA || results.childResults.length})
+                </Text>
+                <Text style={[styles.deductionValue, dynamicStyles.textPrimary]}>
+                  {formatCurrency(results.multiCaseCapA ? results.multiCaseCapA / (1 - (costPercA / 100)) : 0)}
+                </Text>
+              </View>
+              
+              <View style={[styles.deductionDivider, dynamicStyles.deductionDivider, { marginVertical: 12 }]} />
+              
+              <View style={styles.deductionRow}>
+                <Text style={[styles.deductionTotalLabel, dynamicStyles.textPrimary]}>
+                  Multi-case cap ({formatCurrency(results.multiCaseCapA ? results.multiCaseCapA / (1 - (costPercA / 100)) : 0)} × {formatPercent2dp(100 - costPercA)})
+                </Text>
+                <Text style={[styles.deductionTotalValue, dynamicStyles.textPrimary]}>
+                  {formatCurrency(results.multiCaseCapA ?? 0)}
+                </Text>
+              </View>
+              <Text style={[styles.deductionLabel, dynamicStyles.textMuted, { marginTop: 8, fontSize: 12, fontStyle: 'italic' }]}>
+                This cap ensures your total payments don&apos;t exceed what you&apos;d pay if all children lived together.
+              </Text>
             </View>
           </>
         </BreakdownStepCard>
       )}
 
-      {/* Step 8: Annual Rate - Only show if multi-case applies */}
-      {results.multiCaseCapAppliedA && (
+      {/* Step 7: Annual Rate - Show if multi-case exists */}
+      {results.multiCaseCapA !== undefined && (
         <BreakdownStepCard
-          stepNumber={8}
+          stepNumber={7}
           title="ANNUAL RATE"
           isExpanded={expandedSteps.step8}
           onToggle={() => handleToggle('step8')}
         >
           <>
             <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
-              The annual rate of child support payable for the child is the lower of the annual rate calculated at Step 5, or the multi-case cap calculated at Step 7.
+              The annual rate of child support payable for the child is the lower of the annual rate calculated at Step 5, or the multi-case cap calculated at Step 6.
             </Text>
 
             <View style={[styles.calculationBox, dynamicStyles.calculationBox]}>
               <View style={styles.deductionRow}>
-                <Text style={[styles.deductionTotalLabel, dynamicStyles.userHighlight]}>
-                  Annual rate
-                </Text>
-                <Text style={[styles.deductionTotalValue, dynamicStyles.userHighlight]}>
-                  {formatCurrency(results.finalLiabilityA)}
-                </Text>
-              </View>
-              <View style={[styles.deductionRow, { marginTop: 8 }]}>
                 <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>
-                  Monthly rate
+                  Step 5 rate
                 </Text>
                 <Text style={[styles.deductionValue, dynamicStyles.textMuted]}>
-                  {formatCurrency(results.finalLiabilityA / 12)}
+                  {formatCurrency(results.totalCost - (costPercA / 100) * results.totalCost)}
                 </Text>
               </View>
               <View style={styles.deductionRow}>
                 <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>
-                  Fortnightly rate
+                  Multi-case cap (Step 6)
                 </Text>
                 <Text style={[styles.deductionValue, dynamicStyles.textMuted]}>
-                  {formatCurrency(results.finalLiabilityA / 26)}
+                  {formatCurrency(results.multiCaseCapA ?? 0)}
+                </Text>
+              </View>
+              <View style={[styles.deductionDivider, dynamicStyles.deductionDivider, { marginVertical: 8 }]} />
+              <View style={styles.deductionRow}>
+                <Text style={[styles.deductionTotalLabel, dynamicStyles.userHighlight]}>
+                  Annual rate (lower of the two)
+                </Text>
+                <Text style={[styles.deductionTotalValue, dynamicStyles.userHighlight]}>
+                  {formatCurrency(results.finalLiabilityA)}
                 </Text>
               </View>
             </View>
@@ -355,9 +407,9 @@ export function Formula6BreakdownView({ results, formState }: Formula6BreakdownV
         </BreakdownStepCard>
       )}
 
-      {/* Step 9: Payment to Non-Parent Carer */}
+      {/* Step 8: Payment to Non-Parent Carer - Always show for Formula 6 */}
       <BreakdownStepCard
-        stepNumber={9}
+        stepNumber={8}
         title="NON-PARENT CARER PAYMENT"
         isExpanded={expandedSteps.step9}
         onToggle={() => handleToggle('step9')}

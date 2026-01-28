@@ -46,8 +46,8 @@ export default function ChildSupportReductionStrategiesBlogPost() {
     return (
         <>
             <PageSEO
-                title="How to Reduce Child Support Payments Australia 2026: 7 Legal Ways"
-                description="Reduce child support legally—not by hiding income. 7 strategies with 40-80% success rates. Change of Assessment + care increases. See options now."
+                title="Reduce Child Support Payments Australia 2026 | 7 Legal Ways"
+                description="Reduce child support legally—not by hiding income. 7 strategies with 40-80% success rates. Change of Assessment + care increases. See your options now."
                 canonicalPath="/blog/child-support-reduction-strategies"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -266,8 +266,7 @@ export default function ChildSupportReductionStrategiesBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.trustButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                         >
                             <Text style={styles.trustButtonText}>Get Confidential Legal Help →</Text>
                         </Pressable>

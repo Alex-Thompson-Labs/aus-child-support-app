@@ -114,6 +114,14 @@ const BLOG_POSTS = [
         readTime: '13 min read',
     },
     {
+        slug: 'child-support-vs-spousal-maintenance',
+        title: 'Child Support vs Spousal Maintenance Australia: Key Differences',
+        excerpt: 'Child support is mandatory and formula-based. Spousal maintenance is discretionary and court-ordered. Learn the key differences, how they work together, and when each applies.',
+        category: 'Legal Advice',
+        date: '2026-01-28',
+        readTime: '14 min read',
+    },
+    {
         slug: 'child-support-self-employed',
         title: 'Child Support for Self-Employed Parents: How Business Income is Assessed',
         excerpt: 'Self-employed? Learn how Services Australia assesses business income, what expenses get added back, and when you need legal advice to protect your interests.',

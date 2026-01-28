@@ -53,8 +53,8 @@ export default function LumpSumChildSupportPaymentBlogPost() {
     return (
         <>
             <PageSEO
-                title="Lump Sum Child Support Payment Australia 2026: Complete Guide"
-                description="Lump sum = permanent—no refunds if circumstances change. $240k over 10 years = $180-200k today. See calculation + risks. Get legal advice first."
+                title="Lump Sum Child Support Payment Australia 2026 | Guide"
+                description="Lump sum = permanent—no refunds if circumstances change. $240k over 10 years = $180-200k today. See calculation + risks. Get legal advice before agreeing."
                 canonicalPath="/blog/lump-sum-child-support-payment"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -258,8 +258,7 @@ export default function LumpSumChildSupportPaymentBlogPost() {
 
                     <Pressable
                         style={[styles.ctaButton, isWeb && webClickableStyles]}
-                        onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=binding_agreement')}
-                        accessibilityRole="button"
+                        accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=binding_agreement')}
                     >
                         <Text style={styles.ctaButtonText}>Get Legal Advice on Lump Sum Payments →</Text>
                     </Pressable>
@@ -412,8 +411,7 @@ export default function LumpSumChildSupportPaymentBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.calculatorButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/')}
                         >
                             <Text style={styles.calculatorButtonText}>Calculate Now</Text>
                         </Pressable>
@@ -428,8 +426,7 @@ export default function LumpSumChildSupportPaymentBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=binding_agreement')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=binding_agreement')}
                         >
                             <Text style={styles.primaryButtonText}>Get Legal Help</Text>
                         </Pressable>

@@ -55,8 +55,8 @@ export default function WhenToHireFamilyLawyerBlogPost() {
     return (
         <>
             <PageSEO
-                title="When to Hire a Family Lawyer for Child Support Australia 2026"
-                description="DIY child support fails with self-employment, trusts, or court orders. 3 signs you need a lawyer. Free consultations. Errors cost $10k-30k+."
+                title="When to Hire a Family Lawyer Child Support Australia 2026"
+                description="DIY child support fails with self-employment, trusts, or court orders. 3 signs you need a lawyer. Free consultations available. Errors cost $10k-30k+."
                 canonicalPath="/blog/when-to-hire-family-lawyer"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -115,8 +115,7 @@ export default function WhenToHireFamilyLawyerBlogPost() {
 
                     <Pressable
                         style={[styles.calculatorButton, isWeb && webClickableStyles]}
-                        onPress={() => router.push('/')}
-                        accessibilityRole="button"
+                        accessibilityRole="link" onPress={() => router.push('/')}
                     >
                         <Text style={styles.calculatorButtonText}>Calculate Your Child Support →</Text>
                     </Pressable>
@@ -184,8 +183,7 @@ export default function WhenToHireFamilyLawyerBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.trustButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=hidden_income')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=hidden_income')}
                         >
                             <Text style={styles.trustButtonText}>Get Expert Help Uncovering Hidden Income →</Text>
                         </Pressable>
@@ -202,8 +200,7 @@ export default function WhenToHireFamilyLawyerBlogPost() {
 
                     <Pressable
                         style={[styles.ctaButton, isWeb && webClickableStyles]}
-                        onPress={() => router.push('/blog/child-support-self-employed')}
-                        accessibilityRole="button"
+                        accessibilityRole="link" onPress={() => router.push('/blog/child-support-self-employed')}
                     >
                         <Text style={styles.ctaButtonText}>
                             Read: Child Support for Self-Employed Parents →
@@ -288,8 +285,7 @@ export default function WhenToHireFamilyLawyerBlogPost() {
                         </View>
                         <Pressable
                             style={[styles.urgentCtaButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                         >
                             <Text style={styles.urgentCtaButtonText}>Find a Lawyer Now →</Text>
                         </Pressable>
@@ -534,8 +530,7 @@ export default function WhenToHireFamilyLawyerBlogPost() {
                         </View>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                         >
                             <Text style={styles.primaryButtonText}>Find a Family Lawyer</Text>
                         </Pressable>

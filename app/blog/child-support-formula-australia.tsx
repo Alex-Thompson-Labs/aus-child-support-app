@@ -43,6 +43,14 @@ const faqSchema = {
                 text: 'The Self-Support Amount (SSA) is the minimum income each parent needs to support themselves. In 2026, it\'s $31,046 per year. This amount is deducted from each parent\'s income before calculating child support, ensuring parents can meet their own basic needs.',
             },
         },
+        {
+            '@type': 'Question',
+            name: 'Do both parents have to pay child support?',
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Technically, both parents are assessed for the cost of the child based on their income. These amounts are then offset against each other and the care they provide. Usually, this results in a single strict payment from one parent to the other, but the calculation involves contributions from both.',
+            },
+        },
     ],
 };
 
@@ -74,8 +82,8 @@ export default function ChildSupportFormulaBlogPost() {
     return (
         <>
             <PageSEO
-                title="Child Support Formula Australia 2026 | 8-Step Calculation Explained"
-                description="Income % - Cost % = Your payment. Sounds simple, but 500+ table entries make errors common. See 8-step formula + real examples. Calculate in 5 minutes."
+                title="Child Support Formula Australia 2026 | 8-Step Guide"
+                description="Income % - Cost % = Your payment. Sounds simple, but 500+ table entries make errors common. See 8-step formula + real examples. Calculate in 5 minutes for free."
                 canonicalPath="/blog/child-support-formula-australia"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -273,11 +281,27 @@ export default function ChildSupportFormulaBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.infoButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/')}
                         >
                             <Text style={styles.infoButtonText}>Calculate Your Child Support →</Text>
                         </Pressable>
+                    </View>
+
+                    {/* Do Both Parents Pay? Section */}
+                    <Text style={styles.h2} accessibilityRole="header">
+                        Do Both Parents Pay Child Support?
+                    </Text>
+                    <Text style={styles.paragraph}>
+                        A common misconception is that child support is a one-way street. In reality, the formula assesses <Text style={{ fontWeight: '700' }}>both</Text> parents' incomes and determines a "mutual liability."
+                    </Text>
+                    <View style={styles.infoBox}>
+                        <Text style={styles.infoTitle}>How Offsetting Works</Text>
+                        <Text style={styles.infoText}>
+                            Think of it as a set of scales. Services Australia puts Parent A's income on one side and Parent B's income on the other. Then they add "weights" for the amount of care each parent provides.
+                        </Text>
+                        <Text style={[styles.infoText, { marginTop: 8 }]}>
+                            The final payment is the <Text style={{ fontWeight: '700' }}>net difference</Text>. This means effectively both parents are contributing to the costs of the child, but the cash transfer only goes in one direction to balance the ledger.
+                        </Text>
                     </View>
 
                     {/* How Income Affects Payments - CONDENSED */}
@@ -384,6 +408,16 @@ export default function ChildSupportFormulaBlogPost() {
                         answer="The Self-Support Amount (SSA) is the minimum income each parent needs to support themselves. In 2026, it's $31,046 per year. This amount is deducted from each parent's income before calculating child support, ensuring parents can meet their own basic needs."
                     />
 
+                    <FAQItem
+                        question="What is the Self-Support Amount in child support?"
+                        answer="The Self-Support Amount (SSA) is the minimum income each parent needs to support themselves. In 2026, it's $31,046 per year. This amount is deducted from each parent's income before calculating child support, ensuring parents can meet their own basic needs."
+                    />
+
+                    <FAQItem
+                        question="Do both parents have to pay child support?"
+                        answer="Technically, both parents are assessed for the cost of the child based on their income. These amounts are then offset against each other and the care they provide. Usually, this results in a single strict payment from one parent to the other, but the calculation involves contributions from both."
+                    />
+
                     {/* Conclusion */}
                     <Text style={styles.h2} accessibilityRole="header">Understanding the Formula</Text>
 
@@ -409,8 +443,7 @@ export default function ChildSupportFormulaBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/')}
                         >
                             <Text style={styles.primaryButtonText}>Use Free Calculator</Text>
                         </Pressable>

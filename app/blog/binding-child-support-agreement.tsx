@@ -54,8 +54,8 @@ export default function BindingChildSupportAgreementBlogPost() {
     return (
         <>
             <PageSEO
-                title="Binding Child Support Agreement Australia 2026: Legal Guide"
-                description="Binding agreements are permanent—no refunds if circumstances change. See legal requirements + $2,500-6,500 costs. Get legal advice before signing."
+                title="Binding Child Support Agreement Australia 2026 Guide"
+                description="Binding agreements are permanent—no refunds if circumstances change. See legal requirements + $2,500-6,500 costs. Get legal advice before signing any agreement."
                 canonicalPath="/blog/binding-child-support-agreement"
                 schema={[articleSchema, faqSchema]}
                 breadcrumbs={[
@@ -280,8 +280,7 @@ export default function BindingChildSupportAgreementBlogPost() {
                     <View style={styles.ctaWithNote}>
                         <Pressable
                             style={[styles.ctaButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=binding_agreement')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=binding_agreement')}
                         >
                             <Text style={styles.ctaButtonText}>Get Legal Advice on Binding Agreements →</Text>
                         </Pressable>
@@ -377,8 +376,7 @@ export default function BindingChildSupportAgreementBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.calculatorCtaButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/')}
                         >
                             <Text style={styles.calculatorCtaButtonText}>Calculate Child Support →</Text>
                         </Pressable>
@@ -509,8 +507,7 @@ export default function BindingChildSupportAgreementBlogPost() {
                         </Text>
                         <Pressable
                             style={[styles.calculatorButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/')}
                         >
                             <Text style={styles.calculatorButtonText}>Calculate Now</Text>
                         </Pressable>
@@ -530,8 +527,7 @@ export default function BindingChildSupportAgreementBlogPost() {
                         </View>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=binding_agreement')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct&reason=binding_agreement')}
                         >
                             <Text style={styles.primaryButtonText}>Get Legal Help</Text>
                         </Pressable>

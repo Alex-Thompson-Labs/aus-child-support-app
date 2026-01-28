@@ -24,9 +24,8 @@ import type { AgeRange, OtherCaseChild } from './calculator';
 import { deriveAgeRangeMemoized } from './calculator';
 import { mapCareToCostPercent, roundCarePercentage } from './care-utils';
 import {
-    calculateMultiCaseAllowance,
     calculateMultiCaseCap,
-    getChildCost,
+    getChildCost
 } from './child-support-calculations';
 import type { AssessmentYear } from './child-support-constants';
 import { getYearConstants } from './child-support-constants';
@@ -66,6 +65,7 @@ export interface Formula6Result {
   // Multi-case adjustments
   multiCaseAllowance: number;
   adjustedCSI: number;
+  totalChildrenAllCases?: number; // Total children across all cases
   
   // Cost calculations
   cotc: number;
@@ -81,6 +81,13 @@ export interface Formula6Result {
   // Multi-case cap
   multiCaseCap?: number;
   multiCaseCapApplied: boolean;
+  multiCaseCapBracketInfo?: {
+    minIncome: number;
+    maxIncome: number | null;
+    fixed: number;
+    rate: number;
+    incomeInBracket: number;
+  };
   
   // Payment distribution (if 2 carers)
   paymentToCarer1?: number;
@@ -162,21 +169,11 @@ export function calculateFormula6(input: Formula6Input): Formula6Result {
   const { SSA } = getYearConstants(input.selectedYear);
   
   // Step 1: Calculate surviving parent's Child Support Income
-  const preliminaryCSI = Math.max(0, input.survivingParentATI - SSA);
+  // NOTE: Multi-case is handled via CAP in Steps 7-8, NOT as an allowance here
+  const survivingParentCSI = Math.max(0, input.survivingParentATI - SSA);
   
-  // Step 1a: Calculate multi-case allowance if applicable
-  let multiCaseAllowance = 0;
-  if (input.hasMultipleCases && input.otherCaseChildren && input.otherCaseChildren.length > 0) {
-    multiCaseAllowance = calculateMultiCaseAllowance(
-      input.selectedYear,
-      preliminaryCSI,
-      input.children,
-      input.otherCaseChildren
-    );
-  }
-  
-  // Adjusted CSI after multi-case allowance
-  const survivingParentCSI = Math.max(0, preliminaryCSI - multiCaseAllowance);
+  // Multi-case allowance is NOT used in Formula 5/6
+  const multiCaseAllowance = 0;
   
   // Step 2: Determine parent's care and cost percentages
   const roundedCarePercentage = roundCarePercentage(input.survivingParentCarePercentage);
@@ -211,19 +208,37 @@ export function calculateFormula6(input: Formula6Input): Formula6Result {
   let finalAnnualRate = annualRate;
   let multiCaseCap: number | undefined;
   let multiCaseCapApplied = false;
+  let multiCaseCapBracketInfo: typeof cotc extends { cost: number; bracketInfo?: infer B } ? B : undefined;
+  const totalChildrenAllCases = assessableChildren.length + (input.otherCaseChildren?.length || 0);
   
-  if (input.hasMultipleCases && assessableChildren.length > 0) {
-    // Calculate solo child cost for cap
-    // Use first child as representative (all same age in solo calculation)
-    const soloChild = assessableChildren[0];
-    const { cost: soloCost } = getChildCost(
+  if (input.hasMultipleCases && input.otherCaseChildren && input.otherCaseChildren.length > 0 && assessableChildren.length > 0) {
+    // Calculate multi-case child cost for cap
+    // Per 1.1.M.50: Use total children across all cases, treat all as same age as this child
+    const representativeChild = assessableChildren[0];
+    
+    // Create array of all children (this case + other cases) with same age
+    const allChildrenSameAge = Array(totalChildrenAllCases).fill(null).map(() => ({
+      age: representativeChild.age,
+      ageRange: representativeChild.ageRange,
+      careA: 0,
+      careB: 0,
+    }));
+    
+    // Get total cost for all children (with bracket info)
+    const { cost: totalCostAllChildren, bracketInfo: multiCaseBracketInfo } = getChildCost(
       input.selectedYear,
-      [soloChild],
-      survivingParentCSI // Use single income for solo cost
+      allChildrenSameAge,
+      survivingParentCSI // Use single income for multi-case cost
     );
     
-    // Cap = solo cost × (100% - parent's cost percentage)
-    multiCaseCap = calculateMultiCaseCap(soloCost, costPercentage);
+    // Store bracket info for display
+    multiCaseCapBracketInfo = multiCaseBracketInfo;
+    
+    // Multi-case child cost = total cost ÷ total children
+    const multiCaseChildCost = totalCostAllChildren / totalChildrenAllCases;
+    
+    // Cap = multi-case child cost × (100% - parent's cost percentage)
+    multiCaseCap = calculateMultiCaseCap(multiCaseChildCost, costPercentage);
     
     if (annualRate > multiCaseCap) {
       finalAnnualRate = multiCaseCap;
@@ -267,6 +282,7 @@ export function calculateFormula6(input: Formula6Input): Formula6Result {
     // Multi-case adjustments
     multiCaseAllowance,
     adjustedCSI: survivingParentCSI,
+    totalChildrenAllCases,
     
     // Cost calculations
     cotc,
@@ -282,6 +298,7 @@ export function calculateFormula6(input: Formula6Input): Formula6Result {
     // Multi-case cap
     multiCaseCap,
     multiCaseCapApplied,
+    multiCaseCapBracketInfo,
     
     // Payment distribution
     paymentToCarer1,

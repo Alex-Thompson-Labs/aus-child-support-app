@@ -187,8 +187,7 @@ export default function SharedCare5050ChildSupportBlogPost() {
 
                     <Pressable
                         style={[styles.calculatorButton, isWeb && webClickableStyles]}
-                        onPress={() => router.push('/')}
-                        accessibilityRole="button"
+                        accessibilityRole="link" onPress={() => router.push('/')}
                     >
                         <Text style={styles.calculatorButtonText}>Calculate Your 50/50 Child Support →</Text>
                     </Pressable>
@@ -280,8 +279,7 @@ export default function SharedCare5050ChildSupportBlogPost() {
                         <Text style={styles.trustBoxItem}>• Your information remains confidential</Text>
                         <Pressable
                             style={[styles.ctaButton, isWeb && webClickableStyles, { marginTop: 12 }]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                         >
                             <Text style={styles.ctaButtonText}>Get Legal Advice on Binding Agreements →</Text>
                         </Pressable>
@@ -329,8 +327,7 @@ export default function SharedCare5050ChildSupportBlogPost() {
                         </View>
                         <Pressable
                             style={[styles.primaryButton, isWeb && webClickableStyles]}
-                            onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                            accessibilityRole="button"
+                            accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                         >
                             <Text style={styles.primaryButtonText}>Get Legal Help</Text>
                         </Pressable>

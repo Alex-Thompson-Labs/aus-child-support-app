@@ -127,8 +127,7 @@ export default function InternationalChildSupportBlogPost() {
 
                     <Pressable
                         style={[styles.primaryButton, isWeb && webClickableStyles]}
-                        onPress={() => router.push('/')}
-                        accessibilityRole="button"
+                        accessibilityRole="link" onPress={() => router.push('/')}
                         accessibilityLabel="Calculate child support"
                     >
                         <Text style={styles.primaryButtonText}>Calculate Your Child Support →</Text>
@@ -421,16 +420,14 @@ export default function InternationalChildSupportBlogPost() {
                         <View style={styles.ctaButtons}>
                             <Pressable
                                 style={[styles.primaryButton, isWeb && webClickableStyles]}
-                                onPress={() => router.push('/')}
-                                accessibilityRole="button"
+                                accessibilityRole="link" onPress={() => router.push('/')}
                                 accessibilityLabel="Go to calculator"
                             >
                                 <Text style={styles.primaryButtonText}>Use Calculator</Text>
                             </Pressable>
                             <Pressable
                                 style={[styles.secondaryButton, isWeb && webClickableStyles]}
-                                onPress={() => router.push('/lawyer-inquiry?mode=direct')}
-                                accessibilityRole="button"
+                                accessibilityRole="link" onPress={() => router.push('/lawyer-inquiry?mode=direct')}
                                 accessibilityLabel="Get legal help"
                             >
                                 <Text style={styles.secondaryButtonText}>Get Legal Help</Text>

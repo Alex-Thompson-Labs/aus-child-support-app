@@ -30,7 +30,7 @@ export function NPCCareValidationModal({
         <View style={[styles.modal, { backgroundColor: colors.cardBackground }]}>
           {/* Header */}
           <View style={styles.header}>
-            <View style={[styles.iconContainer, { backgroundColor: colors.warningLight }]}>
+            <View style={[styles.iconContainer, { backgroundColor: colors.primaryLight }]}>
               <Text style={styles.iconText}>ℹ️</Text>
             </View>
             <Text style={[styles.title, { color: colors.textPrimary }]}>
@@ -41,7 +41,7 @@ export function NPCCareValidationModal({
           {/* Content */}
           <View style={styles.content}>
             <Text style={[styles.message, { color: colors.textSecondary }]}>
-              Based on the care arrangements you've entered, the non-parent carer has{' '}
+              Based on the care arrangements you&apos;ve entered, the non-parent carer has{' '}
               <Text style={{ fontWeight: '600' }}>{npcCarePercentage.toFixed(0)}% care</Text>.
             </Text>
 

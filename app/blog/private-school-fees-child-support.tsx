@@ -81,19 +81,24 @@ export default function PrivateSchoolFeesScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <PageSEO
-        title="Private School Fees and Child Support Australia 2026: Complete Guide"
-        description="Private school fees aren't automatic—you must apply for Change of Assessment. See success criteria + Binding Agreement options. $20k+/year at stake."
+        title="Private School Fees Child Support Australia 2026 | Guide"
+        description="Private school fees NOT covered by basic child support. See Change of Assessment process + success rates. Costs $2,500-6,500 in legal fees. Apply strategically."
         canonicalPath="/blog/private-school-fees-child-support"
         schema={[faqSchema, articleSchema]}
+        breadcrumbs={[
+          { label: 'Home', path: '/' },
+          { label: 'Blog', path: '/blog' },
+          { label: 'Private School Fees' },
+        ]}
       />
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.container}>
           <View style={styles.breadcrumb}>
-            <Pressable onPress={() => router.push('/')} {...webClickableStyles}>
+            <Pressable accessibilityRole="link" onPress={() => router.push('/')} {...webClickableStyles}>
               <Text style={styles.breadcrumbLink}>Home</Text>
             </Pressable>
             <Text style={styles.breadcrumbSeparator}> / </Text>
-            <Pressable onPress={() => router.push('/blog')} {...webClickableStyles}>
+            <Pressable accessibilityRole="link" onPress={() => router.push('/blog')} {...webClickableStyles}>
               <Text style={styles.breadcrumbLink}>Blog</Text>
             </Pressable>
             <Text style={styles.breadcrumbSeparator}> / </Text>
@@ -101,7 +106,7 @@ export default function PrivateSchoolFeesScreen() {
           </View>
 
           <View style={styles.content}>
-            <Text style={styles.title}>
+            <Text style={styles.title} accessibilityRole="header">
               Private School Fees and Child Support: Complete Guide for Australia
             </Text>
 
@@ -117,7 +122,7 @@ export default function PrivateSchoolFeesScreen() {
                 Private school fees aren't automatically included in child support. You can apply for Change of Assessment 
                 or negotiate a Binding Agreement to split education costs. Calculate standard child support below.
               </Text>
-              <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} onPress={handleCalculatorPress}>
+              <Pressable style={[styles.quickAnswerButton, isWeb && webClickableStyles]} accessibilityRole="button" onPress={handleCalculatorPress}>
                 <Text style={styles.quickAnswerButtonText}>Calculate Amount →</Text>
               </Pressable>
             </View>
