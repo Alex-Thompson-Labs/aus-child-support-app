@@ -393,10 +393,10 @@ export function Formula3LiabilityStep({
                     tooltip={
                         <>
                             <Text style={{ fontSize: 14, lineHeight: 20, color: '#374151', marginBottom: 8 }}>
-                                The multi-case cap ensures you don't pay more child support across multiple cases than you would if all your children lived together in one household.
+                                The multi-case cap ensures you don&apos;t pay more child support across multiple cases than you would if all your children lived together in one household.
                             </Text>
                             <Text style={{ fontSize: 14, lineHeight: 20, color: '#374151', marginBottom: 8 }}>
-                                <Text style={{ fontWeight: '600' }}>Example:</Text> If you have 2 children in this case and 1 child in another case, the calculator works out what you'd pay if all 3 children were in one case, then caps your payment at that amount.
+                                <Text style={{ fontWeight: '600' }}>Example:</Text> If you have 2 children in this case and 1 child in another case, the calculator works out what you&apos;d pay if all 3 children were in one case, then caps your payment at that amount.
                             </Text>
                             <Text style={{ fontSize: 14, lineHeight: 20, color: '#374151' }}>
                                 This protects you from paying more than your fair share when you have children in different relationships.

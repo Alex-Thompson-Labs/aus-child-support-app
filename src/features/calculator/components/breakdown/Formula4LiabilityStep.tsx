@@ -124,7 +124,7 @@ export function Formula4LiabilityStep({
             <Text style={styles.description}>
               When a parent has children in multiple child support cases, their liability for each
               child is capped to prevent excessive payments. The cap is calculated as the cost of
-              that child alone (using the parent's preliminary income) multiplied by their payment
+              that child alone (using the parent&apos;s preliminary income) multiplied by their payment
               responsibility percentage.
             </Text>
 
