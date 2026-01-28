@@ -1,4 +1,5 @@
 import { PageSEO } from '@/src/components/seo/PageSEO';
+import { CalculatorHeader } from '@/src/features/calculator';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import { useRouter } from 'expo-router';
@@ -71,6 +72,12 @@ export default function EstimateVsActualIncomeScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
+                <CalculatorHeader
+                    title=""
+                    showBackButton={true}
+                    showCenterLogo={true}
+                    maxWidth={MAX_CALCULATOR_WIDTH}
+                />
       <PageSEO
         title="Estimate vs Actual Income Child Support Australia 2026"
         description="Income reconciliation can trigger $1,000s in surprise bills. See estimated vs actual income differences + how to update estimates. Avoid shock payments now."

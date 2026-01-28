@@ -1,5 +1,6 @@
 import { ContextualWizard } from '@/src/components/blog/ContextualWizard';
 import { PageSEO } from '@/src/components/seo/PageSEO';
+import { CalculatorHeader } from '@/src/features/calculator';
 import { createBlogStyles } from '@/src/styles/blogStyles';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { useRouter } from 'expo-router';
@@ -197,6 +198,12 @@ export default function ChildSupportVsSpousalMaintenanceBlogPost() {
                 ]}
             />
             <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+                <CalculatorHeader
+                    title=""
+                    showBackButton={true}
+                    showCenterLogo={true}
+                    maxWidth={MAX_CALCULATOR_WIDTH}
+                />
                 <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, webContainerStyle]}>
                     {/* Article Header */}
                     <View style={styles.articleHeader}>

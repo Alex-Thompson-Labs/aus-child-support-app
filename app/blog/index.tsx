@@ -277,8 +277,9 @@ export default function BlogIndexPage() {
             />
             <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
                 <CalculatorHeader
-                    title="Blog"
+                    title=""
                     showBackButton={true}
+                    showCenterLogo={true}
                     maxWidth={MAX_CALCULATOR_WIDTH}
                 />
 
@@ -443,6 +444,7 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: '#1e3a8a',
         marginBottom: 12,
+        textAlign: 'center',
         ...(Platform.OS === 'web' ? { lineHeight: 40 } : {}),
     },
     introText: {
@@ -450,6 +452,7 @@ const styles = StyleSheet.create({
         lineHeight: 24,
         color: '#475569',
         marginBottom: 24,
+        textAlign: 'center',
     },
     postsGrid: {
         gap: 16,

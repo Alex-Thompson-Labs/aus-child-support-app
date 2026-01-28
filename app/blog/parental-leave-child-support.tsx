@@ -1,4 +1,5 @@
 import { PageSEO } from '@/src/components/seo/PageSEO';
+import { CalculatorHeader } from '@/src/features/calculator';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import { useRouter } from 'expo-router';
@@ -71,6 +72,12 @@ export default function ParentalLeaveChildSupportScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
+                <CalculatorHeader
+                    title=""
+                    showBackButton={true}
+                    showCenterLogo={true}
+                    maxWidth={MAX_CALCULATOR_WIDTH}
+                />
       <PageSEO
         title="Parental Leave Child Support Australia 2026 | PPL Guide"
         description="Parental leave income = $0 for child support. See how PPL affects assessments + when to update. Temporary reduction possible. Apply now to reduce payments."

@@ -1,4 +1,5 @@
 import { PageSEO } from '@/src/components/seo/PageSEO';
+import { CalculatorHeader } from '@/src/features/calculator';
 import { MAX_CALCULATOR_WIDTH, isWeb, webClickableStyles } from '@/src/utils/responsive';
 import { createShadow } from '@/src/utils/shadow-styles';
 import { useRouter } from 'expo-router';
@@ -80,6 +81,12 @@ export default function PrivateSchoolFeesScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
+                <CalculatorHeader
+                    title=""
+                    showBackButton={true}
+                    showCenterLogo={true}
+                    maxWidth={MAX_CALCULATOR_WIDTH}
+                />
       <PageSEO
         title="Private School Fees Child Support Australia 2026 | Guide"
         description="Private school fees NOT covered by basic child support. See Change of Assessment process + success rates. Costs $2,500-6,500 in legal fees. Apply strategically."

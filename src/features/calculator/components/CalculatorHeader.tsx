@@ -25,10 +25,12 @@ const DRAWER_WIDTH = 320;
 interface CalculatorHeaderProps {
     title?: string;
     showBackButton?: boolean;
+    centerTitle?: boolean;
+    showCenterLogo?: boolean;
     maxWidth?: number;
 }
 
-export function CalculatorHeader({ title, showBackButton, maxWidth }: CalculatorHeaderProps) {
+export function CalculatorHeader({ title, showBackButton, centerTitle, showCenterLogo, maxWidth }: CalculatorHeaderProps) {
     const { isDesktop } = useResponsive();
     const router = useRouter();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -67,50 +69,98 @@ export function CalculatorHeader({ title, showBackButton, maxWidth }: Calculator
         // @ts-ignore - Web-only ARIA role
         <View style={[styles.header, styles.mobileHeaderWrapper]} accessibilityRole="banner">
             <View style={[styles.mobileHeaderRow, maxWidth ? { maxWidth } : undefined]}>
-                {/* Left: Icon/Logo + Title (side by side) or Back Button + Title */}
-                <View style={styles.leftSection}>
-                    {showBackButton ? (
-                        <>
-                            <Pressable
-                                onPress={() => router.replace('/')}
-                                accessibilityRole="button"
-                                accessibilityLabel="Go back to calculator"
-                                hitSlop={12}
-                            >
-                                <Feather name="arrow-left" size={24} color={BRAND_NAVY} />
-                            </Pressable>
-                            <Text style={styles.leftTitle}>{title || 'Calculator'}</Text>
-                        </>
-                    ) : (
-                        <>
-                            <Image
-                                source={
-                                    Platform.OS === 'web'
-                                        ? { uri: '/favicon-rounded-white-bg.webp' }
-                                        : require('@/public/favicon-rounded-white-bg.png')
-                                }
-                                style={styles.iconMobile}
-                                resizeMode="contain"
-                                // @ts-ignore - Web-only loading attribute
-                                loading="eager"
-                                // @ts-ignore - Web-only dimensions for CLS prevention
-                                width={40}
-                                height={40}
-                            />
-                            <Text style={styles.leftTitle}>{title || 'Calculator'}</Text>
-                        </>
-                    )}
-                </View>
+                {/* Centered title layout */}
+                {centerTitle ? (
+                    <>
+                        {/* Empty left spacer for balance */}
+                        <View style={styles.leftSection} />
+                        
+                        {/* Centered title */}
+                        <Text style={styles.centeredTitle}>{title || 'Calculator'}</Text>
+                        
+                        {/* Right: Hamburger */}
+                        <Pressable
+                            style={styles.rightElement}
+                            onPress={openDrawer}
+                            accessibilityRole="button"
+                            accessibilityLabel="Open menu"
+                        >
+                            <Feather name="menu" size={28} color={BRAND_NAVY} />
+                        </Pressable>
+                    </>
+                ) : (
+                    <>
+                        {/* Left: Icon/Logo + Title (side by side) or Back Button + Title */}
+                        <View style={styles.leftSection}>
+                            {showBackButton ? (
+                                <>
+                                    <Pressable
+                                        onPress={() => router.back()}
+                                        accessibilityRole="button"
+                                        accessibilityLabel="Go back"
+                                        hitSlop={12}
+                                    >
+                                        <Feather name="arrow-left" size={24} color={BRAND_NAVY} />
+                                    </Pressable>
+                                    {title && <Text style={styles.leftTitle}>{title}</Text>}
+                                </>
+                            ) : (
+                                <>
+                                    <Image
+                                        source={
+                                            Platform.OS === 'web'
+                                                ? { uri: '/favicon-rounded-white-bg.webp' }
+                                                : require('@/public/favicon-rounded-white-bg.png')
+                                        }
+                                        style={styles.iconMobile}
+                                        resizeMode="contain"
+                                        // @ts-ignore - Web-only loading attribute
+                                        loading="eager"
+                                        // @ts-ignore - Web-only dimensions for CLS prevention
+                                        width={40}
+                                        height={40}
+                                    />
+                                    <Text style={styles.leftTitle}>{title || 'Calculator'}</Text>
+                                </>
+                            )}
+                        </View>
 
-                {/* Right: Hamburger */}
-                <Pressable
-                    style={styles.rightElement}
-                    onPress={openDrawer}
-                    accessibilityRole="button"
-                    accessibilityLabel="Open menu"
-                >
-                    <Feather name="menu" size={28} color={BRAND_NAVY} />
-                </Pressable>
+                        {/* Center: Brand Logo (optional) */}
+                        {showCenterLogo && (
+                            <Pressable
+                                onPress={() => router.push('/')}
+                                accessibilityRole="button"
+                                accessibilityLabel="Go to calculator home"
+                                style={styles.centerLogoButton}
+                            >
+                                <Image
+                                    source={
+                                        Platform.OS === 'web'
+                                            ? { uri: '/brand-logo.avif' }
+                                            : require('@/public/brand-logo.avif')
+                                    }
+                                    style={styles.centerLogoImage}
+                                    resizeMode="contain"
+                                    // @ts-ignore - Web-only loading attribute
+                                    loading="eager"
+                                    // @ts-ignore - Web-only dimensions
+                                    width={230}
+                                    height={55}
+                                />
+                            </Pressable>
+                        )}
+
+                        {/* Right: Hamburger */}
+                        <Pressable
+                            style={styles.rightElement}
+                            onPress={openDrawer}
+                            accessibilityRole="button"
+                            accessibilityLabel="Open menu"
+                        >
+                            <Feather name="menu" size={28} color={BRAND_NAVY} />
+                        </Pressable>
+                    </>
+                )}
             </View>
 
             {/* Slide-out Drawer Modal */}
@@ -342,6 +392,22 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         color: BRAND_NAVY,
+    },
+    centeredTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: BRAND_NAVY,
+        flex: 1,
+        textAlign: 'center',
+    },
+    centerLogoButton: {
+        position: 'absolute',
+        left: '50%',
+        marginLeft: -115, // Half of 230px width to center
+    },
+    centerLogoImage: {
+        height: 55,
+        width: 230,
     },
     rightElement: {
         width: 40,
