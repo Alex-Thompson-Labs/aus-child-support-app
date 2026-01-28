@@ -20,7 +20,7 @@
  * https://guides.dss.gov.au/child-support-guide/2/2/7
  */
 
-import type { AgeRange, OtherCaseChild } from './calculator';
+import type { AgeRange, CostBracketInfo, OtherCaseChild } from './calculator';
 import { deriveAgeRangeMemoized } from './calculator';
 import { mapCareToCostPercent, roundCarePercentage } from './care-utils';
 import {
@@ -208,7 +208,7 @@ export function calculateFormula6(input: Formula6Input): Formula6Result {
   let finalAnnualRate = annualRate;
   let multiCaseCap: number | undefined;
   let multiCaseCapApplied = false;
-  let multiCaseCapBracketInfo: typeof cotc extends { cost: number; bracketInfo?: infer B } ? B : undefined;
+  let multiCaseCapBracketInfo: CostBracketInfo | undefined;
   const totalChildrenAllCases = assessableChildren.length + (input.otherCaseChildren?.length || 0);
   
   if (input.hasMultipleCases && input.otherCaseChildren && input.otherCaseChildren.length > 0 && assessableChildren.length > 0) {

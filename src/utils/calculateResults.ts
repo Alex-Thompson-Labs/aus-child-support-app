@@ -14,7 +14,7 @@ import { calculateFormula6, type Formula6Input } from './formula-6-calculator';
 import { checkJurisdictionStatus } from './jurisdiction-checker';
 
 // Import from extracted modules
-import { mapCareToCostPercent, roundCarePercentage } from './care-utils';
+import { roundCarePercentage } from './care-utils';
 import {
     applyMARFARCaps,
     applyMultiCaseCaps,
@@ -670,10 +670,10 @@ export const calculateChildSupport = (
   let paymentToNPC2: number | undefined;
 
   if (hasNPC && formState.nonParentCarer.hasSecondNPC && paymentToNPC && paymentToNPC > 0) {
-    // Calculate cost percentages for both NPCs from first child
+    // Calculate care percentages for both NPCs from first child
     // (All children should have same NPC care percentages in current implementation)
     const firstChild = childResults[0];
-    if (firstChild && firstChild.costPercNPC !== undefined) {
+    if (firstChild && firstChild.roundedCareNPC !== undefined) {
       // Get second NPC care from first child
       const childInput = formState.children[0];
       const rawCareNPC2 = childInput?.careAmountNPC2
@@ -681,13 +681,12 @@ export const calculateChildSupport = (
         : 0;
       
       const roundedCareNPC2 = roundCarePercentage(rawCareNPC2);
-      const costPercNPC2 = mapCareToCostPercent(roundedCareNPC2);
 
-      // Calculate split based on cost percentages
-      const totalCostPerc = firstChild.costPercNPC + costPercNPC2;
-      if (totalCostPerc > 0) {
-        paymentToNPC1 = (paymentToNPC * firstChild.costPercNPC) / totalCostPerc;
-        paymentToNPC2 = (paymentToNPC * costPercNPC2) / totalCostPerc;
+      // Calculate split based on care percentages (not cost percentages)
+      const totalCarePerc = firstChild.roundedCareNPC + roundedCareNPC2;
+      if (totalCarePerc > 0) {
+        paymentToNPC1 = (paymentToNPC * firstChild.roundedCareNPC) / totalCarePerc;
+        paymentToNPC2 = (paymentToNPC * roundedCareNPC2) / totalCarePerc;
       }
     }
   }

@@ -4,6 +4,7 @@ import { formatCurrency } from '@/src/utils/formatters';
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { BreakdownStepCard } from './BreakdownStepCard';
+import { DualNPCStep } from './DualNPCStep';
 import { ParentComparisonCard } from './ParentComparisonCard';
 import { ZeroLiabilityNotice } from './ZeroLiabilityNotice';
 
@@ -35,8 +36,13 @@ export function Formula6BreakdownView({ results, formState }: Formula6BreakdownV
     step6: false,
     step7: false,
     step8: true, // Expanded by default - final result
-    step9: false,
+    step9: false, // Dual NPC split
   });
+
+  // Check if dual NPC scenario (2 non-parent carers receiving payments)
+  const hasDualNPC = 
+    (results.paymentToNPC1 !== undefined && results.paymentToNPC1 > 0) &&
+    (results.paymentToNPC2 !== undefined && results.paymentToNPC2 > 0);
 
   const dynamicStyles = useMemo(() => ({
     stepExplanation: { color: colors.textMuted },
@@ -421,12 +427,12 @@ export function Formula6BreakdownView({ results, formState }: Formula6BreakdownV
           <View style={[styles.calculationBox, dynamicStyles.calculationBox]}>
             <View style={styles.deductionRow}>
               <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>
-                You owe child support to the non-parent carer based on your care percentage.
+                You owe child support to the non-parent carer{hasDualNPC ? 's' : ''} based on your care percentage.
               </Text>
             </View>
             <View style={[styles.deductionRow, { marginTop: 8 }]}>
               <Text style={[styles.deductionTotalLabel, dynamicStyles.textPrimary]}>
-                Total to non-parent carer
+                Total to non-parent carer{hasDualNPC ? 's' : ''}
               </Text>
               <Text style={[styles.deductionTotalValue, dynamicStyles.textPrimary]}>
                 {formatCurrency(results.paymentToNPC ?? results.finalLiabilityA)}
@@ -435,6 +441,15 @@ export function Formula6BreakdownView({ results, formState }: Formula6BreakdownV
           </View>
         </>
       </BreakdownStepCard>
+
+      {/* Step 9: Dual NPC Payment Split (only shown when 2 NPCs receive payments) */}
+      {hasDualNPC && (
+        <DualNPCStep
+          results={results}
+          isExpanded={expandedSteps.step9}
+          onToggle={() => handleToggle('step9')}
+        />
+      )}
 
       {/* Zero liability notice at the end */}
       <ZeroLiabilityNotice results={results} />

@@ -2,7 +2,9 @@ import type { CalculationResults } from '@/src/utils/calculator';
 import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { CareStep } from './CareStep';
+import { CostOfChildrenStep } from './CostOfChildrenStep';
 import { CostStep } from './CostStep';
+import { DualNPCStep } from './DualNPCStep';
 import { Formula3BreakdownView } from './Formula3BreakdownView';
 import { Formula5BreakdownView } from './Formula5BreakdownView';
 import { Formula6BreakdownView } from './Formula6BreakdownView';
@@ -23,7 +25,7 @@ interface BreakdownViewProps {
  * expands the breakdown view, reducing initial bundle size.
  */
 export function BreakdownView({ results, formState, hasDeceasedParent = false }: BreakdownViewProps) {
-  // Collapsible state management - Official 8-Step Formula
+  // Collapsible state management - Official 8-Step Formula (+ Step 9 for dual NPCs)
   // IMPORTANT: Must be declared before any conditional returns (React Hooks rules)
   const [expandedSteps, setExpandedSteps] = useState({
     step1: false, // Child Support Income - collapsed
@@ -32,10 +34,12 @@ export function BreakdownView({ results, formState, hasDeceasedParent = false }:
     step4: false, // Care Percentage - collapsed
     step5: false, // Cost Percentage - collapsed
     step6: false, // Child Support Percentage - collapsed
+    step7: false, // Cost of the Child (COTC) - collapsed
     step1A: false, // COTC for the day (Step 1A) - collapsed
     step1B: false, // Child support payable per child (Step 1B) - collapsed
     step2Multi: false, // Multi-case cap (Step 2) - collapsed
     step3Final: true, // Final child support payable (Step 3) - expanded by default
+    step9: false, // Dual NPC split (Step 9) - collapsed
   });
 
   // Check if this is a Formula 5 (non-reciprocating jurisdiction) or Formula 6 (deceased parent) case
@@ -76,6 +80,11 @@ export function BreakdownView({ results, formState, hasDeceasedParent = false }:
     setExpandedSteps((prev) => ({ ...prev, [step]: !prev[step] }));
   };
 
+  // Check if dual NPC scenario (2 non-parent carers receiving payments)
+  const hasDualNPC = 
+    (results.paymentToNPC1 !== undefined && results.paymentToNPC1 > 0) &&
+    (results.paymentToNPC2 !== undefined && results.paymentToNPC2 > 0);
+
   return (
     <View style={styles.container}>
       {/* Steps 1-3: Income Calculation */}
@@ -111,6 +120,15 @@ export function BreakdownView({ results, formState, hasDeceasedParent = false }:
         hasDeceasedParent={hideOtherParent}
       />
 
+      {/* Step 7: Cost of the Child */}
+      <CostOfChildrenStep
+        results={results}
+        isExpanded={expandedSteps.step7}
+        onToggle={() =>
+          setExpandedSteps((prev) => ({ ...prev, step7: !prev.step7 }))
+        }
+      />
+
       {/* Steps 1A-3: Liability Calculation (matching official guide) */}
       <LiabilityStep
         results={results}
@@ -124,6 +142,17 @@ export function BreakdownView({ results, formState, hasDeceasedParent = false }:
         onToggle={handleLiabilityToggle}
         hasDeceasedParent={hideOtherParent}
       />
+
+      {/* Step 9: Dual NPC Payment Split (only shown when 2 NPCs receive payments) */}
+      {hasDualNPC && (
+        <DualNPCStep
+          results={results}
+          isExpanded={expandedSteps.step9}
+          onToggle={() =>
+            setExpandedSteps((prev) => ({ ...prev, step9: !prev.step9 }))
+          }
+        />
+      )}
 
       {/* Zero liability notice at the end */}
       <ZeroLiabilityNotice results={results} />

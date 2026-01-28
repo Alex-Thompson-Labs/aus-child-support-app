@@ -17,7 +17,9 @@ export { BreakdownLoadingFallback } from './BreakdownLoadingFallback';
 
 // Individual step components
 export { CareStep } from './CareStep';
+export { CostOfChildrenStep } from './CostOfChildrenStep';
 export { CostStep } from './CostStep';
+export { DualNPCStep } from './DualNPCStep';
 export { IncomeStep } from './IncomeStep';
 export { LiabilityStep } from './LiabilityStep';
 

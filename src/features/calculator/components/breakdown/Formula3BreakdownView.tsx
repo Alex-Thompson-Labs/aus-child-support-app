@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { CareStep } from './CareStep';
 import { CostStep } from './CostStep';
+import { DualNPCStep } from './DualNPCStep';
 import { Formula3LiabilityStep } from './Formula3LiabilityStep';
 import { IncomeStep } from './IncomeStep';
 import { ZeroLiabilityNotice } from './ZeroLiabilityNotice';
@@ -43,7 +44,13 @@ export function Formula3BreakdownView({ results, formState }: Formula3BreakdownV
     step8: false, // Child support payable per child (Step 8) - collapsed
     step9: false, // Multi-case cap (Step 9) - collapsed
     step10: true, // Final child support payable (Step 10) - expanded by default
+    step11: false, // Dual NPC split (Step 11) - collapsed
   });
+
+  // Check if dual NPC scenario (2 non-parent carers receiving payments)
+  const hasDualNPC = 
+    (results.paymentToNPC1 !== undefined && results.paymentToNPC1 > 0) &&
+    (results.paymentToNPC2 !== undefined && results.paymentToNPC2 > 0);
 
   const handleIncomeToggle = (step: 'step1' | 'step2' | 'step3') => {
     setExpandedSteps((prev) => ({ ...prev, [step]: !prev[step] }));
@@ -105,6 +112,17 @@ export function Formula3BreakdownView({ results, formState }: Formula3BreakdownV
         }}
         onToggle={handleLiabilityToggle}
       />
+
+      {/* Step 11: Dual NPC Payment Split (only shown when 2 NPCs receive payments) */}
+      {hasDualNPC && (
+        <DualNPCStep
+          results={results}
+          isExpanded={expandedSteps.step11}
+          onToggle={() =>
+            setExpandedSteps((prev) => ({ ...prev, step11: !prev.step11 }))
+          }
+        />
+      )}
 
       {/* Zero liability notice at the end */}
       <ZeroLiabilityNotice results={results} />

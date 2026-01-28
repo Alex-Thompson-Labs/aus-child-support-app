@@ -227,14 +227,26 @@ export function ChildRow({
   const handlePeriodChange = (
     period: 'week' | 'fortnight' | 'year' | 'percent'
   ) => {
-    const maxNights = CARE_PERIOD_DAYS[period] || 14;
-    // For percentage, use default 57/43 split
-    const defaultA = period === 'percent' ? 57 : Math.round(maxNights * 0.57);
-    const defaultB = period === 'percent' ? 43 : Math.round(maxNights * 0.43);
+    const oldMaxNights = CARE_PERIOD_DAYS[child.carePeriod] || 14;
+    const newMaxNights = CARE_PERIOD_DAYS[period] || 14;
+    const conversionRatio = newMaxNights / oldMaxNights;
+
+    // Convert existing values proportionally
+    const newAmountA = Math.round(child.careAmountA * conversionRatio);
+    const newAmountB = Math.round(child.careAmountB * conversionRatio);
+    const newAmountNPC = child.careAmountNPC 
+      ? Math.round(child.careAmountNPC * conversionRatio) 
+      : undefined;
+    const newAmountNPC2 = child.careAmountNPC2 
+      ? Math.round(child.careAmountNPC2 * conversionRatio) 
+      : undefined;
+
     onUpdate({
       carePeriod: period,
-      careAmountA: defaultA,
-      careAmountB: defaultB,
+      careAmountA: newAmountA,
+      careAmountB: newAmountB,
+      ...(newAmountNPC !== undefined && { careAmountNPC: newAmountNPC }),
+      ...(newAmountNPC2 !== undefined && { careAmountNPC2: newAmountNPC2 }),
     });
   };
 
