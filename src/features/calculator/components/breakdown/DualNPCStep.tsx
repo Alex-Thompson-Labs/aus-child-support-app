@@ -60,7 +60,7 @@ export function DualNPCStep({
             <>
                 <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
                     When 2 non-parent carers are entitled to receive child support for a child,
-                    the amount to be paid by the parent/s is shared in accordance with each carer's
+                    the amount to be paid by the parent/s is shared in accordance with each carer&apos;s
                     share of care percentages.
                 </Text>
 

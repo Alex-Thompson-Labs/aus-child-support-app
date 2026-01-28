@@ -248,7 +248,7 @@ export function Formula3LiabilityStep({
                     <>
                         <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
                             Work out the multi-case cap (multi-case costs × (100% – cost percentage)). 
-                            This ensures parents with multiple child support cases don't pay more than 
+                            This ensures parents with multiple child support cases don&apos;t pay more than 
                             their fair share across all cases.
                         </Text>
 
