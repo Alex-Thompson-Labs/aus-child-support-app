@@ -4,8 +4,7 @@ import { formatCurrency } from '@/src/utils/formatters';
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { BreakdownStepCard } from './BreakdownStepCard';
-import { CareStep } from './CareStep';
-import { CostStep } from './CostStep';
+import { CostOfChildrenStep } from './CostOfChildrenStep';
 import { DualNPCStep } from './DualNPCStep';
 import { ParentComparisonCard } from './ParentComparisonCard';
 import { ZeroLiabilityNotice } from './ZeroLiabilityNotice';
@@ -64,7 +63,14 @@ export function Formula6BreakdownView({ results, formState }: Formula6BreakdownV
     setExpandedSteps((prev) => ({ ...prev, [step]: !prev[step] }));
   };
 
-  // Extract first child for display (all children have same percentages in Formula 6)
+  // Check if children have different care percentages
+  const hasMultipleChildren = results.childResults.length > 1;
+  const hasDifferentCarePercentages = hasMultipleChildren && 
+    results.childResults.some((child, idx) => 
+      idx > 0 && child.roundedCareA !== results.childResults[0].roundedCareA
+    );
+
+  // Extract first child for display (used when all children have same percentages)
   const firstChild = results.childResults[0];
   if (!firstChild) {
     return (
@@ -110,6 +116,14 @@ export function Formula6BreakdownView({ results, formState }: Formula6BreakdownV
                 ({formatCurrency(results.SSA)})
               </Text>
             </View>
+            {results.relDepDeductibleA > 0 && (
+              <View style={styles.deductionRow}>
+                <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>Relevant dependent allowance</Text>
+                <Text style={[styles.deductionLabel, dynamicStyles.deductionLabel]}>
+                  ({formatCurrency(results.relDepDeductibleA)})
+                </Text>
+              </View>
+            )}
             <View style={[styles.deductionDivider, dynamicStyles.deductionDivider]} />
             <View style={styles.deductionRow}>
               <Text style={[styles.deductionTotalLabel, dynamicStyles.userHighlight]}>
@@ -123,88 +137,187 @@ export function Formula6BreakdownView({ results, formState }: Formula6BreakdownV
         </>
       </BreakdownStepCard>
 
-      {/* Step 2: Care Percentage - Uses reusable CareStep component */}
-      <CareStep
-        results={results}
-        isExpanded={expandedSteps.step2}
-        onToggle={() => handleToggle('step2')}
-        hasDeceasedParent={true}
-      />
+      {/* Step 2: Care Percentage */}
+      {hasDifferentCarePercentages ? (
+        // Multiple children with different care percentages - show each child
+        results.childResults.map((child, idx) => (
+          <BreakdownStepCard
+            key={`care-${idx}`}
+            stepNumber={`2${String.fromCharCode(97 + idx)}`} // 2a, 2b, 2c, etc.
+            title={`CARE PERCENTAGE - CHILD ${idx + 1}`}
+            isExpanded={expandedSteps.step2}
+            onToggle={() => handleToggle('step2')}
+          >
+            <>
+              <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
+                Work out the parent&apos;s percentage of care for Child {idx + 1}.
+              </Text>
+              <ParentComparisonCard title="YOU" isUserHighlighted>
+                <View style={styles.deductionRow}>
+                  <Text style={[styles.deductionLabel, dynamicStyles.userHighlight]}>Care percentage</Text>
+                  <Text style={[styles.deductionValue, dynamicStyles.userHighlight]}>
+                    {formatPercent2dp(child.roundedCareA ?? 0)}
+                  </Text>
+                </View>
+              </ParentComparisonCard>
+            </>
+          </BreakdownStepCard>
+        ))
+      ) : (
+        // Single child or all children have same care percentage
+        <BreakdownStepCard
+          stepNumber={2}
+          title="CARE PERCENTAGE"
+          isExpanded={expandedSteps.step2}
+          onToggle={() => handleToggle('step2')}
+        >
+          <>
+            <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
+              Work out the parent&apos;s percentage of care for the child{hasMultipleChildren ? 'ren' : ''}.
+            </Text>
+            <ParentComparisonCard title="YOU" isUserHighlighted>
+              <View style={styles.deductionRow}>
+                <Text style={[styles.deductionLabel, dynamicStyles.userHighlight]}>Care percentage</Text>
+                <Text style={[styles.deductionValue, dynamicStyles.userHighlight]}>
+                  {formatPercent2dp(roundedCareA)}
+                </Text>
+              </View>
+            </ParentComparisonCard>
+          </>
+        </BreakdownStepCard>
+      )}
 
-      {/* Step 3: Cost Percentage - Uses reusable CostStep component */}
-      <CostStep
-        results={results}
-        expandedSteps={{ step5: expandedSteps.step3, step6: false }}
-        onToggle={() => handleToggle('step3')}
-        hasDeceasedParent={true}
-      />
+      {/* Step 3: Cost Percentage */}
+      {hasDifferentCarePercentages ? (
+        // Multiple children with different care percentages - show each child
+        results.childResults.map((child, idx) => (
+          <BreakdownStepCard
+            key={`cost-${idx}`}
+            stepNumber={`3${String.fromCharCode(97 + idx)}`} // 3a, 3b, 3c, etc.
+            title={`COST PERCENTAGE - CHILD ${idx + 1}`}
+            isExpanded={expandedSteps.step3}
+            onToggle={() => handleToggle('step3')}
+          >
+            <>
+              <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
+                Work out the parent&apos;s cost percentage for Child {idx + 1}.
+              </Text>
+              <ParentComparisonCard title="YOU" isUserHighlighted>
+                <View style={styles.deductionRow}>
+                  <Text style={[styles.deductionLabel, dynamicStyles.userHighlight]}>
+                    {formatPercent2dp(child.roundedCareA ?? 0)} care → Cost percentage
+                  </Text>
+                  <Text style={[styles.deductionValue, dynamicStyles.userHighlight]}>
+                    {formatPercent2dp(child.costPercA ?? 0)}
+                  </Text>
+                </View>
+              </ParentComparisonCard>
+            </>
+          </BreakdownStepCard>
+        ))
+      ) : (
+        // Single child or all children have same cost percentage
+        <BreakdownStepCard
+          stepNumber={3}
+          title="COST PERCENTAGE"
+          isExpanded={expandedSteps.step3}
+          onToggle={() => handleToggle('step3')}
+        >
+          <>
+            <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
+              Work out the parent&apos;s cost percentage for the child{hasMultipleChildren ? 'ren' : ''}.
+            </Text>
+            <ParentComparisonCard title="YOU" isUserHighlighted>
+              <View style={styles.deductionRow}>
+                <Text style={[styles.deductionLabel, dynamicStyles.userHighlight]}>
+                  {formatPercent2dp(roundedCareA)} care → Cost percentage
+                </Text>
+                <Text style={[styles.deductionValue, dynamicStyles.userHighlight]}>
+                  {formatPercent2dp(costPercA)}
+                </Text>
+              </View>
+            </ParentComparisonCard>
+          </>
+        </BreakdownStepCard>
+      )}
 
       {/* Step 4: Cost of Children (COTC) */}
-      <BreakdownStepCard
-        stepNumber={4}
-        title="COSTS OF THE CHILD"
-        isExpanded={expandedSteps.step4}
-        onToggle={() => handleToggle('step4')}
-      >
-        <>
-          <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
-            Work out the COTC using the income from Step 1, by using either: Formula 1 (2.2.2), or Formula 4 (2.2.5) - if the parent has more than one child support case.
-          </Text>
+      {results.multiCaseCapA !== undefined ? (
+        // Multi-case: Use detailed age-based breakdown like Formula 3/4 Step 7
+        <CostOfChildrenStep
+          results={results}
+          isExpanded={expandedSteps.step4}
+          onToggle={() => handleToggle('step4')}
+          stepNumber={4}
+        />
+      ) : (
+        // Single case: Show simple breakdown
+        <BreakdownStepCard
+          stepNumber={4}
+          title="COSTS OF THE CHILD"
+          isExpanded={expandedSteps.step4}
+          onToggle={() => handleToggle('step4')}
+        >
+          <>
+            <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
+              Work out the COTC using the income from Step 1.
+            </Text>
 
-          <View style={[styles.calculationBox, dynamicStyles.calculationBox]}>
-            <View style={styles.deductionRow}>
-              <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>
-                Child Support Income
-              </Text>
-              <Text style={[styles.deductionValue, dynamicStyles.textPrimary]}>
-                {formatCurrency(results.CSI_A)}
-              </Text>
-            </View>
-            {results.costBracketInfo && (
-              <>
-                <View style={[styles.deductionRow, { marginTop: 8 }]}>
-                  <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>
-                    Your bracket: {formatCurrency(results.costBracketInfo.minIncome)} – {results.costBracketInfo.maxIncome ? formatCurrency(results.costBracketInfo.maxIncome) : 'unlimited'}
-                  </Text>
-                </View>
-                <View style={styles.deductionRow}>
-                  <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>Base amount</Text>
-                  <Text style={[styles.deductionValue, dynamicStyles.textPrimary]}>
-                    {formatCurrency(results.costBracketInfo.fixed)}
-                  </Text>
-                </View>
-                {results.costBracketInfo.rate > 0 && (
-                  <View style={styles.deductionRow}>
+            <View style={[styles.calculationBox, dynamicStyles.calculationBox]}>
+              <View style={styles.deductionRow}>
+                <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>
+                  Child Support Income
+                </Text>
+                <Text style={[styles.deductionValue, dynamicStyles.textPrimary]}>
+                  {formatCurrency(results.CSI_A)}
+                </Text>
+              </View>
+              {results.costBracketInfo && (
+                <>
+                  <View style={[styles.deductionRow, { marginTop: 8 }]}>
                     <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>
-                      + {(results.costBracketInfo.rate * 100).toFixed(2)}% × {formatCurrency(results.costBracketInfo.incomeInBracket)}
-                    </Text>
-                    <Text style={[styles.deductionValue, dynamicStyles.textPrimary]}>
-                      +{formatCurrency(results.costBracketInfo.rate * results.costBracketInfo.incomeInBracket)}
+                      Your bracket: {formatCurrency(results.costBracketInfo.minIncome)} – {results.costBracketInfo.maxIncome ? formatCurrency(results.costBracketInfo.maxIncome) : 'unlimited'}
                     </Text>
                   </View>
-                )}
-              </>
-            )}
-            <View style={[styles.deductionDivider, dynamicStyles.deductionDivider, { marginVertical: 8 }]} />
-            <View style={styles.deductionRow}>
-              <Text style={[styles.deductionTotalLabel, dynamicStyles.textPrimary]}>
-                Total cost of children
-              </Text>
-              <Text style={[styles.deductionTotalValue, dynamicStyles.textPrimary]}>
-                {formatCurrency(results.totalCost)}
-              </Text>
+                  <View style={styles.deductionRow}>
+                    <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>Base amount</Text>
+                    <Text style={[styles.deductionValue, dynamicStyles.textPrimary]}>
+                      {formatCurrency(results.costBracketInfo.fixed)}
+                    </Text>
+                  </View>
+                  {results.costBracketInfo.rate > 0 && (
+                    <View style={styles.deductionRow}>
+                      <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>
+                        + {(results.costBracketInfo.rate * 100).toFixed(2)}% × {formatCurrency(results.costBracketInfo.incomeInBracket)}
+                      </Text>
+                      <Text style={[styles.deductionValue, dynamicStyles.textPrimary]}>
+                        +{formatCurrency(results.costBracketInfo.rate * results.costBracketInfo.incomeInBracket)}
+                      </Text>
+                    </View>
+                  )}
+                </>
+              )}
+              <View style={[styles.deductionDivider, dynamicStyles.deductionDivider, { marginVertical: 8 }]} />
+              <View style={styles.deductionRow}>
+                <Text style={[styles.deductionTotalLabel, dynamicStyles.textPrimary]}>
+                  Total cost of children
+                </Text>
+                <Text style={[styles.deductionTotalValue, dynamicStyles.textPrimary]}>
+                  {formatCurrency(results.totalCost)}
+                </Text>
+              </View>
+              <View style={styles.deductionRow}>
+                <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>
+                  Cost per child ({results.childResults.filter(c => !c.isAdultChild).length})
+                </Text>
+                <Text style={[styles.deductionValue, dynamicStyles.textMuted]}>
+                  {formatCurrency(costPerChild)}
+                </Text>
+              </View>
             </View>
-            <View style={styles.deductionRow}>
-              <Text style={[styles.deductionLabel, dynamicStyles.textMuted]}>
-                Cost per child ({results.childResults.filter(c => !c.isAdultChild).length})
-              </Text>
-              <Text style={[styles.deductionValue, dynamicStyles.textMuted]}>
-                {formatCurrency(costPerChild)}
-              </Text>
-            </View>
-          </View>
-        </>
-      </BreakdownStepCard>
+          </>
+        </BreakdownStepCard>
+      )}
 
       {/* Step 5: Calculate Rate (NO halving) */}
       <BreakdownStepCard
@@ -253,8 +366,8 @@ export function Formula6BreakdownView({ results, formState }: Formula6BreakdownV
         <BreakdownStepCard
           stepNumber={6}
           title="MULTI-CASE CAP"
-          isExpanded={expandedSteps.step7}
-          onToggle={() => handleToggle('step7')}
+          isExpanded={expandedSteps.step6}
+          onToggle={() => handleToggle('step6')}
         >
           <>
             <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
@@ -346,8 +459,8 @@ export function Formula6BreakdownView({ results, formState }: Formula6BreakdownV
         <BreakdownStepCard
           stepNumber={7}
           title="ANNUAL RATE"
-          isExpanded={expandedSteps.step8}
-          onToggle={() => handleToggle('step8')}
+          isExpanded={expandedSteps.step7}
+          onToggle={() => handleToggle('step7')}
         >
           <>
             <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
@@ -389,8 +502,8 @@ export function Formula6BreakdownView({ results, formState }: Formula6BreakdownV
       <BreakdownStepCard
         stepNumber={8}
         title="NON-PARENT CARER PAYMENT"
-        isExpanded={expandedSteps.step9}
-        onToggle={() => handleToggle('step9')}
+        isExpanded={expandedSteps.step8}
+        onToggle={() => handleToggle('step8')}
       >
         <>
           <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>

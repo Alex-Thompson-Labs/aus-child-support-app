@@ -9,6 +9,7 @@ interface CostOfChildrenStepProps {
     results: CalculationResults;
     isExpanded: boolean;
     onToggle: () => void;
+    stepNumber?: number; // Optional: defaults to 7 for Formula 3/4
 }
 
 /**
@@ -22,6 +23,7 @@ export function CostOfChildrenStep({
     results,
     isExpanded,
     onToggle,
+    stepNumber = 7, // Default to 7 for Formula 3/4
 }: CostOfChildrenStepProps) {
     const { colors } = useAppTheme();
 
@@ -59,7 +61,7 @@ export function CostOfChildrenStep({
 
     return (
         <BreakdownStepCard
-            stepNumber={7}
+            stepNumber={stepNumber}
             title="COST OF CHILDREN (COTC)"
             isExpanded={isExpanded}
             onToggle={onToggle}
@@ -216,8 +218,8 @@ export function CostOfChildrenStep({
                         </View>
                     )}
 
-                    {/* Final per-child costs */}
-                    {assessableChildren.length > 0 && (
+                    {/* Final per-child costs - only show when multiple children */}
+                    {assessableChildren.length > 1 && (
                         <View style={dynamicStyles.ageGroupSection}>
                             {assessableChildren.map((child, index) => (
                                 <View key={index} style={[styles.row, { marginTop: index > 0 ? 4 : 0 }]}>
@@ -231,21 +233,17 @@ export function CostOfChildrenStep({
                             ))}
                             
                             {/* Total costs */}
-                            {assessableChildren.length > 1 && (
-                                <>
-                                    <View style={[styles.divider, dynamicStyles.divider, { marginTop: 12, marginBottom: 8 }]} />
-                                    <View style={styles.row}>
-                                        <Text style={[styles.totalLabel, dynamicStyles.totalLabel]}>
-                                            Total Cost of Children
-                                        </Text>
-                                        <Text style={[styles.totalValue, dynamicStyles.totalValue]}>
-                                            {formatCurrency(
-                                                assessableChildren.reduce((sum, child) => sum + child.costPerChild, 0)
-                                            )}
-                                        </Text>
-                                    </View>
-                                </>
-                            )}
+                            <View style={[styles.divider, dynamicStyles.divider, { marginTop: 12, marginBottom: 8 }]} />
+                            <View style={styles.row}>
+                                <Text style={[styles.totalLabel, dynamicStyles.totalLabel]}>
+                                    Total Cost of Children
+                                </Text>
+                                <Text style={[styles.totalValue, dynamicStyles.totalValue]}>
+                                    {formatCurrency(
+                                        assessableChildren.reduce((sum, child) => sum + child.costPerChild, 0)
+                                    )}
+                                </Text>
+                            </View>
                         </View>
                     )}
                 </View>

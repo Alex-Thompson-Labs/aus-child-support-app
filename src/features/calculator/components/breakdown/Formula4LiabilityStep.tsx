@@ -239,18 +239,20 @@ export function Formula4LiabilityStep({
                     Child {index + 1}{capApplied ? ' - Cap applied' : ''}
                   </Text>
                   
-                  {/* Other Parent pays You */}
+                  {/* Other Parent pays */}
                   {paymentToYou > 0 && (
-                    <Text style={styles.paymentLine}>
-                      Other Parent pays You {formatCurrency(paymentToYou)}
-                    </Text>
+                    <View style={styles.paymentRow}>
+                      <Text style={styles.paymentLabel}>Other Parent pays</Text>
+                      <Text style={styles.paymentValue}>{formatCurrency(paymentToYou)}</Text>
+                    </View>
                   )}
                   
                   {/* Other Parent pays NPC */}
                   {paymentToNPC > 0 && (
-                    <Text style={styles.paymentLine}>
-                      Other Parent pays NPC {formatCurrency(paymentToNPC)}
-                    </Text>
+                    <View style={styles.paymentRow}>
+                      <Text style={styles.paymentLabel}>Other Parent pays NPC</Text>
+                      <Text style={styles.paymentValue}>{formatCurrency(paymentToNPC)}</Text>
+                    </View>
                   )}
                 </View>
               );
@@ -410,6 +412,21 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#1e293b',
     marginBottom: 4,
+  },
+  paymentRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  } as ViewStyle,
+  paymentLabel: {
+    fontSize: 14,
+    color: '#0f172a',
+    lineHeight: 20,
+  },
+  paymentValue: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#0f172a',
   },
   paymentLine: {
     fontSize: 14,

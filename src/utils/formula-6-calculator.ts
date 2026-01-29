@@ -190,7 +190,9 @@ export function calculateFormula6(input: Formula6Input): Formula6Result {
   const roundedCarePercentage = roundCarePercentage(input.survivingParentCarePercentage);
   const costPercentage = mapCareToCostPercent(roundedCarePercentage);
   
-  // Step 3: Calculate costs of children using SINGLE income (NOT doubled)
+  // Step 3: Calculate costs of children
+  // If multi-case: Use Formula 4 methodology (solo cost with all children)
+  // If single case: Use parent's CSI (NOT doubled)
   // Filter out adult children (18+) - they're excluded from standard assessment
   const assessableChildren = input.children
     .filter(c => c.age < 18)
@@ -201,13 +203,41 @@ export function calculateFormula6(input: Formula6Input): Formula6Result {
       careB: c.careB,
     }));
   
-  const { cost: cotc } = getChildCost(
-    input.selectedYear,
-    assessableChildren,
-    survivingParentCSI // Use single income (NOT doubled)
-  );
+  let cotc: number;
+  let costPerChild: number;
   
-  const costPerChild = assessableChildren.length > 0 ? cotc / assessableChildren.length : 0;
+  if (input.hasMultipleCases && input.otherCaseChildren && input.otherCaseChildren.length > 0) {
+    // Formula 4 methodology: Use solo cost with ALL children from all cases
+    const allChildren = [
+      ...assessableChildren,
+      ...input.otherCaseChildren.map(oc => ({
+        age: oc.age,
+        ageRange: deriveAgeRangeMemoized(oc.age),
+        careA: 0,
+        careB: 0,
+      }))
+    ];
+    
+    // Calculate using parent's CSI per Formula 4
+    const costResult = getChildCost(
+      input.selectedYear,
+      allChildren,
+      survivingParentCSI // Solo cost
+    );
+    
+    cotc = costResult.cost;
+    costPerChild = allChildren.length > 0 ? cotc / allChildren.length : 0;
+  } else {
+    // Single case: Use parent's CSI (NOT doubled in Formula 6)
+    const costResult = getChildCost(
+      input.selectedYear,
+      assessableChildren,
+      survivingParentCSI // Use single income (NOT doubled)
+    );
+    
+    cotc = costResult.cost;
+    costPerChild = assessableChildren.length > 0 ? cotc / assessableChildren.length : 0;
+  }
   
   // Step 4: Calculate parent's cost share
   const parentCostShare = (costPercentage / 100) * cotc;
@@ -280,6 +310,39 @@ export function calculateFormula6(input: Formula6Input): Formula6Result {
     const roundedCareA = roundCarePercentage(child.careA);
     const costPercA = mapCareToCostPercent(roundedCareA);
     
+    let costBracketInfo: ReturnType<typeof getChildCost>['bracketInfo'] | undefined;
+    let totalCostAtAge: number | undefined;
+    
+    // For multi-case scenarios, calculate cost bracket info per age group
+    if (input.hasMultipleCases && input.otherCaseChildren && input.otherCaseChildren.length > 0 && child.age < 18) {
+      const childAgeRange = deriveAgeRangeMemoized(child.age);
+      
+      // Create array of all children at this age
+      const allChildrenAtAge = [
+        ...assessableChildren.filter(c => deriveAgeRangeMemoized(c.age) === childAgeRange),
+        ...input.otherCaseChildren
+          .filter(oc => deriveAgeRangeMemoized(oc.age) === childAgeRange)
+          .map(oc => ({
+            age: oc.age,
+            ageRange: deriveAgeRangeMemoized(oc.age),
+            careA: 0,
+            careB: 0,
+          }))
+      ];
+      
+      if (allChildrenAtAge.length > 0) {
+        // Calculate cost using parent's CSI for multi-case
+        const costResult = getChildCost(
+          input.selectedYear,
+          allChildrenAtAge,
+          survivingParentCSI
+        );
+        
+        costBracketInfo = costResult.bracketInfo;
+        totalCostAtAge = costResult.cost;
+      }
+    }
+    
     return {
       age: child.age,
       ageRange: deriveAgeRangeMemoized(child.age),
@@ -291,6 +354,8 @@ export function calculateFormula6(input: Formula6Input): Formula6Result {
       roundedCareB: roundCarePercentage(child.careB),
       costPercA,
       costPercB: 0, // Deceased parent has no cost percentage
+      costBracketInfo,
+      totalCostAtAge,
     };
   });
   
