@@ -1,6 +1,7 @@
+import { useAppTheme } from '@/src/theme';
 import type { CalculationResults } from '@/src/utils/calculator';
 import { formatCurrency } from '@/src/utils/formatters';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { BreakdownStepCard } from './BreakdownStepCard';
 import { CostOfChildrenStep } from './CostOfChildrenStep';
@@ -33,6 +34,24 @@ export function Formula4LiabilityStep({
   expandedSteps,
   onToggle,
 }: Formula4LiabilityStepProps) {
+  const { colors } = useAppTheme();
+
+  const dynamicStyles = useMemo(() => ({
+    stepExplanation: { color: colors.textMuted },
+    childCard: {
+      backgroundColor: colors.surfaceSubtle,
+      borderColor: colors.border,
+    },
+    childLabel: { color: colors.textMuted },
+    childValue: { color: colors.textPrimary },
+    parentLabel: { color: colors.textPrimary },
+    divider: { backgroundColor: colors.border },
+    userHighlight: { color: colors.userHighlight },
+    textMuted: { color: colors.textMuted },
+    totalLabel: { color: colors.textPrimary },
+    totalValue: { color: colors.textPrimary },
+  }), [colors]);
+
   const hasMultiCaseA = results.multiCaseAllowanceA !== undefined && results.multiCaseAllowanceA > 0;
   const hasMultiCaseB = results.multiCaseAllowanceB !== undefined && results.multiCaseAllowanceB > 0;
   
@@ -63,8 +82,8 @@ export function Formula4LiabilityStep({
         isExpanded={expandedSteps.step8}
         onToggle={() => onToggle('step8')}
       >
-        <View style={styles.content}>
-          <Text style={styles.description}>
+        <>
+          <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
             Work out how much child support is payable for each child by multiplying the child support percentage (Step 6) by the cost per child (Step 7).
           </Text>
 
@@ -78,50 +97,71 @@ export function Formula4LiabilityStep({
             const calculatedLiabilityB = csPercB > 0 ? Math.round(costPerChild * (csPercB / 100)) : 0;
             
             return (
-              <View key={index} style={styles.childCard}>
-                <Text style={styles.childTitle}>Child {index + 1}</Text>
-                
-                {/* Only show Other Parent if they have positive CS% */}
-                {csPercB > 0 && (
-                  <View style={styles.parentSection}>
-                    <Text style={styles.parentLabel}>OTHER PARENT</Text>
-                    <Text style={styles.formula}>
-                      {formatCurrency(costPerChild)} × {csPercB.toFixed(2)}%
-                    </Text>
-                    <Text style={styles.result}>
-                      {formatCurrency(calculatedLiabilityB)}
-                    </Text>
-                  </View>
+              <View key={index} style={[styles.childCard, dynamicStyles.childCard]}>
+                {results.childResults.length > 1 && (
+                  <Text style={[styles.childTitle, dynamicStyles.parentLabel]}>
+                    Child {index + 1}
+                  </Text>
                 )}
                 
                 {/* Only show You if you have positive CS% */}
                 {csPercA > 0 && (
-                  <View style={styles.parentSection}>
-                    <Text style={styles.parentLabel}>YOU</Text>
-                    <Text style={styles.formula}>
-                      {formatCurrency(costPerChild)} × {csPercA.toFixed(2)}%
-                    </Text>
-                    <Text style={styles.result}>
-                      {formatCurrency(calculatedLiabilityA)}
-                    </Text>
-                  </View>
+                  <>
+                    <View style={styles.parentRow}>
+                      <Text style={[styles.parentLabel, dynamicStyles.userHighlight]}>
+                        YOU
+                      </Text>
+                    </View>
+                    <View style={styles.calculationRow}>
+                      <Text style={[styles.formula, dynamicStyles.childLabel]}>
+                        {formatCurrency(costPerChild)} × {csPercA.toFixed(2)}%
+                      </Text>
+                      <Text style={[styles.result, dynamicStyles.userHighlight]}>
+                        {formatCurrency(calculatedLiabilityA)}
+                      </Text>
+                    </View>
+                  </>
+                )}
+                
+                {/* Divider between parents if both have positive CS% */}
+                {csPercA > 0 && csPercB > 0 && (
+                  <View style={[styles.divider, dynamicStyles.divider]} />
+                )}
+                
+                {/* Only show Other Parent if they have positive CS% */}
+                {csPercB > 0 && (
+                  <>
+                    <View style={styles.parentRow}>
+                      <Text style={[styles.parentLabel, dynamicStyles.textMuted]}>
+                        OTHER PARENT
+                      </Text>
+                    </View>
+                    <View style={styles.calculationRow}>
+                      <Text style={[styles.formula, dynamicStyles.childLabel]}>
+                        {formatCurrency(costPerChild)} × {csPercB.toFixed(2)}%
+                      </Text>
+                      <Text style={[styles.result, dynamicStyles.textMuted]}>
+                        {formatCurrency(calculatedLiabilityB)}
+                      </Text>
+                    </View>
+                  </>
                 )}
               </View>
             );
           })}
-        </View>
+        </>
       </BreakdownStepCard>
 
       {/* Step 9: Multi-case cap application */}
       {(hasMultiCaseA || hasMultiCaseB) && (
         <BreakdownStepCard
           stepNumber={9}
-          title="Multi-case cap"
+          title="MULTI-CASE CAP"
           isExpanded={expandedSteps.step9}
           onToggle={() => onToggle('step9')}
         >
-          <View style={styles.content}>
-            <Text style={styles.description}>
+          <>
+            <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
               When a parent has children in multiple child support cases, their liability for each
               child is capped to prevent excessive payments. The cap is calculated as the cost of
               that child alone (using the parent&apos;s preliminary income) multiplied by their payment
@@ -151,14 +191,20 @@ export function Formula4LiabilityStep({
               const capB = Math.round(multiCaseCostB * ((100 - costPercB) / 100));
               
               return (
-                <View key={index} style={styles.childCard}>
-                  <Text style={styles.childTitle}>Child {index + 1} (Age {child.age})</Text>
+                <View key={index} style={[styles.childCard, dynamicStyles.childCard]}>
+                  {results.childResults.length > 1 && (
+                    <Text style={[styles.childTitle, dynamicStyles.parentLabel]}>
+                      Child {index + 1} (Age {child.age})
+                    </Text>
+                  )}
 
                   {/* Parent A Multi-case Cap - only show if Parent A is the payer */}
                   {hasMultiCaseA && multiCaseCostA > 0 && isParentAPayer && (
                     <View style={styles.capSection}>
-                      <Text style={styles.parentLabel}>Parent A Multi-case Cap:</Text>
-                      <Text style={styles.capCalculation}>
+                      <Text style={[styles.parentLabel, dynamicStyles.userHighlight]}>
+                        YOU - Multi-case Cap:
+                      </Text>
+                      <Text style={[styles.capCalculation, dynamicStyles.childLabel]}>
                         {formatCurrency(multiCaseCostA)} × (100 - {costPercA.toFixed(2)})% = {formatCurrency(capA)}
                       </Text>
                     </View>
@@ -167,8 +213,10 @@ export function Formula4LiabilityStep({
                   {/* Parent B Multi-case Cap - only show if Parent B is the payer */}
                   {hasMultiCaseB && multiCaseCostB > 0 && isParentBPayer && (
                     <View style={styles.capSection}>
-                      <Text style={styles.parentLabel}>Parent B Multi-case Cap:</Text>
-                      <Text style={styles.capCalculation}>
+                      <Text style={[styles.parentLabel, dynamicStyles.textMuted]}>
+                        OTHER PARENT - Multi-case Cap:
+                      </Text>
+                      <Text style={[styles.capCalculation, dynamicStyles.childLabel]}>
                         {formatCurrency(multiCaseCostB)} × (100 - {costPercB.toFixed(2)})% = {formatCurrency(capB)}
                       </Text>
                     </View>
@@ -176,7 +224,7 @@ export function Formula4LiabilityStep({
                 </View>
               );
             })}
-          </View>
+          </>
         </BreakdownStepCard>
       )}
 
@@ -187,8 +235,8 @@ export function Formula4LiabilityStep({
         isExpanded={expandedSteps.step10}
         onToggle={() => onToggle('step10')}
       >
-        <View style={styles.content}>
-          <Text style={styles.description}>
+        <>
+          <Text style={[styles.stepExplanation, dynamicStyles.stepExplanation]}>
             Calculate child support payable by comparing Step 8 with the multi-case cap (Step 9). The lower amount applies.
           </Text>
 
@@ -234,24 +282,24 @@ export function Formula4LiabilityStep({
               totalPayment += finalLiability;
               
               return (
-                <View key={index} style={styles.childPaymentCard}>
-                  <Text style={styles.childPaymentTitle}>
+                <View key={index} style={[styles.childCard, dynamicStyles.childCard]}>
+                  <Text style={[styles.childPaymentTitle, dynamicStyles.parentLabel]}>
                     Child {index + 1}{capApplied ? ' - Cap applied' : ''}
                   </Text>
                   
                   {/* Other Parent pays */}
                   {paymentToYou > 0 && (
                     <View style={styles.paymentRow}>
-                      <Text style={styles.paymentLabel}>Other Parent pays</Text>
-                      <Text style={styles.paymentValue}>{formatCurrency(paymentToYou)}</Text>
+                      <Text style={[styles.paymentLabel, dynamicStyles.childLabel]}>Other Parent pays</Text>
+                      <Text style={[styles.paymentValue, dynamicStyles.childValue]}>{formatCurrency(paymentToYou)}</Text>
                     </View>
                   )}
                   
                   {/* Other Parent pays NPC */}
                   {paymentToNPC > 0 && (
                     <View style={styles.paymentRow}>
-                      <Text style={styles.paymentLabel}>Other Parent pays NPC</Text>
-                      <Text style={styles.paymentValue}>{formatCurrency(paymentToNPC)}</Text>
+                      <Text style={[styles.paymentLabel, dynamicStyles.childLabel]}>Other Parent pays NPC</Text>
+                      <Text style={[styles.paymentValue, dynamicStyles.childValue]}>{formatCurrency(paymentToNPC)}</Text>
                     </View>
                   )}
                 </View>
@@ -262,176 +310,85 @@ export function Formula4LiabilityStep({
               <>
                 {childPayments}
                 <View style={styles.totalSection}>
-                  <Text style={styles.totalLabel}>OTHER PARENT PAYS</Text>
-                  <Text style={styles.totalValue}>{formatCurrency(totalPayment)}/year</Text>
+                  <Text style={[styles.totalSectionLabel, dynamicStyles.totalLabel]}>OTHER PARENT PAYS</Text>
+                  <Text style={[styles.totalSectionValue, dynamicStyles.totalValue]}>{formatCurrency(totalPayment)}/year</Text>
                 </View>
               </>
             );
           })()}
-        </View>
+        </>
       </BreakdownStepCard>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  content: {
-    gap: 16,
-  } as ViewStyle,
-  description: {
+  stepExplanation: {
     fontSize: 14,
     lineHeight: 20,
-    color: '#64748b',
+    marginBottom: 12,
   },
   childCard: {
-    backgroundColor: '#f8fafc',
     borderRadius: 8,
-    padding: 16,
-    gap: 12,
-  } as ViewStyle,
+    padding: 12,
+    borderWidth: 1,
+    marginTop: 8,
+  },
   childTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#1e293b',
     marginBottom: 8,
+  },
+  parentRow: {
+    marginBottom: 4,
+  },
+  parentLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   calculationRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 4,
   } as ViewStyle,
-  label: {
-    fontSize: 14,
-    color: '#64748b',
-  },
-  value: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1e293b',
-  },
-  parentSection: {
-    gap: 4,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
-  } as ViewStyle,
-  parentLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#475569',
-  },
   formula: {
-    fontSize: 14,
-    color: '#64748b',
-    fontFamily: 'monospace',
+    fontSize: 13,
   },
   result: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#0f172a',
-  },
-  noLiability: {
     fontSize: 14,
-    color: '#94a3b8',
-    fontStyle: 'italic',
+    fontWeight: '600',
+  },
+  divider: {
+    height: 1,
+    marginVertical: 8,
   },
   capSection: {
-    gap: 6,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
-  } as ViewStyle,
+    marginTop: 8,
+  },
   capCalculation: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#0f172a',
-    fontFamily: 'monospace',
-  },
-  capExplanation: {
     fontSize: 13,
-    color: '#64748b',
-    fontStyle: 'italic',
-  },
-  capApplied: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#2563eb',
     marginTop: 4,
   },
-  capNotApplied: {
-    fontSize: 14,
-    color: '#64748b',
-    marginTop: 4,
-  },
-  rulesList: {
-    backgroundColor: '#f1f5f9',
-    borderRadius: 8,
-    padding: 16,
-    gap: 12,
-  } as ViewStyle,
-  ruleTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#334155',
-  },
-  ruleText: {
-    fontSize: 14,
-    color: '#64748b',
-    marginLeft: 12,
-    marginBottom: 8,
-  },
-  ruleApplied: {
-    backgroundColor: '#dbeafe',
-    borderRadius: 6,
-    padding: 12,
-    marginBottom: 8,
-  } as ViewStyle,
-  ruleAppliedText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1e40af',
-  },
-  paymentBreakdown: {
-    gap: 8,
-  } as ViewStyle,
-  payment: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#0f172a',
-    paddingLeft: 12,
-  },
-  childPaymentCard: {
-    backgroundColor: '#f8fafc',
-    borderRadius: 8,
-    padding: 16,
-    gap: 8,
-    marginTop: 12,
-  } as ViewStyle,
   childPaymentTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#1e293b',
-    marginBottom: 4,
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 8,
   },
   paymentRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: 4,
   } as ViewStyle,
   paymentLabel: {
-    fontSize: 14,
-    color: '#0f172a',
-    lineHeight: 20,
+    fontSize: 13,
   },
   paymentValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#0f172a',
-  },
-  paymentLine: {
-    fontSize: 14,
-    color: '#0f172a',
-    lineHeight: 20,
   },
   totalSection: {
     marginTop: 16,
@@ -442,15 +399,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   } as ViewStyle,
-  totalLabel: {
+  totalSectionLabel: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#64748b',
     textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
-  totalValue: {
+  totalSectionValue: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#0f172a',
   },
 });
